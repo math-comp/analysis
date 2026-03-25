@@ -17,7 +17,7 @@ From mathcomp Require Import lebesgue_integral.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -90,14 +90,14 @@ HB.instance Definition _ := isMeasure.Build _ _ _ poisson
 Let poisson_setT : poisson [set: nat] = 1.
 Proof.
 rewrite /poisson; case: ifPn => [rate0|_]; last by rewrite probability_setT.
-rewrite [RHS](_ : _ = (expR (- rate))%:E * (expR rate)%:E); last first.
+rewrite [RHS](_ : _ = (expR (- rate))%:E * (expR rate)%:E).
   by rewrite -EFinM expRN mulVf ?gt_eqF ?expR_gt0.
-rewrite -nneseries_esumT; last by move=> *; rewrite lee_fin poisson_pmf_ge0.
+rewrite -nneseries_esumT; first by move=> *; rewrite lee_fin poisson_pmf_ge0.
 under eq_eseriesr.
   move=> n _; rewrite /poisson_pmf rate0 EFinM muleC; over.
-rewrite /= nneseriesZl/=; last first.
+rewrite /= nneseriesZl/=.
   by move=> n _; rewrite lee_fin divr_ge0// exprn_ge0// ltW.
-congr *%E; rewrite expRE -EFin_lim; last first.
+congr *%E; rewrite expRE -EFin_lim.
   rewrite /pseries/=; under eq_fun do rewrite mulrC.
   exact: is_cvg_series_exp_coeff.
 apply/congr_lim/funext => n/=; rewrite /pseries/= /series/= -sumEFin//.

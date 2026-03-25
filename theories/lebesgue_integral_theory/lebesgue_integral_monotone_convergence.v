@@ -18,7 +18,7 @@ From mathcomp Require Import lebesgue_integral_definition.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -105,7 +105,7 @@ have mh1 : measurable_fun setT h1 by exact/(measurable_restrictT _ _).1.
 have mh2 : measurable_fun setT h2 by exact/(measurable_restrictT _ _).1.
 have h12 x : h1 x <= h2 x by apply: lee_restrict.
 pose g1 := nnsfun_approx measurableT mh1.
-rewrite (@nd_ge0_integral_lim _ _ _ _ _ g1)//; last 2 first.
+rewrite (@nd_ge0_integral_lim _ _ _ _ _ g1)//.
   by move=> x m n mn; exact/lefP/nd_nnsfun_approx.
   by move=> x; exact: cvg_nnsfun_approx.
 apply: lime_le.
@@ -179,7 +179,7 @@ rewrite (@le_trans _ _ (\big[maxr/0]_(i < n) g2 i n.+1 x)%R) //.
   apply: le_bigmax2 => i _; apply: (nondecreasing_seqP (g2 i ^~ x)).2 => a b ab.
    by rewrite !nnsfun_approxE; exact/lefP/nd_approx.
 rewrite (bigmaxD1 ord_max)// le_max; apply/orP; right.
-rewrite [leRHS](eq_bigl (fun i => nat_of_ord i < n)%N).
+rewrite [leRHS](eq_bigl (fun i => nat_of_ord i < n)%N); last first.
   by rewrite (big_ord_narrow (leqnSn n)).
 move=> i /=; rewrite neq_lt; apply/orP/idP => [[//|]|]; last by left.
 by move=> /(leq_trans (ltn_ord i)); rewrite ltnn.
@@ -264,7 +264,7 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
       near=> m; have nm : (n <= m)%N by near: m; exists n.
       exact/nd_g.
   by apply: lime_le => //; [exact:ereal_nondecreasing_is_cvgn|exact:nearW].
-rewrite (@nd_ge0_integral_lim _ _ _ mu _ max_g2) //; last 2 first.
+rewrite (@nd_ge0_integral_lim _ _ _ mu _ max_g2) //.
   - move=> t; apply: lime_ge => //.
     by apply: nearW => n; exact: g0.
   - by move=> t m n mn; exact/lefP/nd_max_g2.
@@ -301,7 +301,7 @@ have mg := measurable_fun_einfs mf.
 have g0 n x : D x -> 0 <= g n x.
   by move=> Dx; apply: le_ereal_inf_tmp => _ [m /= nm <-]; exact: f0.
 under eq_integral do rewrite limn_einf_lim.
-rewrite limn_einf_lim monotone_convergence //; last first.
+rewrite limn_einf_lim monotone_convergence //.
   move=> x Dx m n mn /=; apply: ereal_inf_le_tmp => _ /= [p /= np <-].
   by exists p => //=; rewrite (leq_trans mn).
 apply: lee_lim.

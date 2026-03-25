@@ -32,7 +32,7 @@ From mathcomp Require Import normed_module.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -130,16 +130,16 @@ have [|] := eqVneq (edist (x, z)) +oo%E.
   exact: (ball_triangle xy).
 rewrite -ltey -ge0_fin_numE// => /[dup] xzfin.
 move/edist_finP => [_/posnumP[del] /= xz].
-rewrite /edist /= ?ereal_inf_EFin; first last.
+rewrite /edist /= ?ereal_inf_EFin.
+- by exists 0 => ? /= [/ltW].
 - by exists (r1%:num + r2%:num); split => //; apply: (ball_triangle xy).
 - by exists 0 => ? /= [/ltW].
 - by exists r1%:num; split.
 - by exists 0 => ? /= [/ltW].
 - by exists r2%:num; split.
-- by exists 0 => ? /= [/ltW].
-rewrite -EFinD lee_fin -inf_sumE //; first last.
-- by split; [exists r2%:num; split| exists 0 => ? /= [/ltW]].
+rewrite -EFinD lee_fin -inf_sumE //.
 - by split; [exists r1%:num; split| exists 0 => ? /= [/ltW]].
+- by split; [exists r2%:num; split| exists 0 => ? /= [/ltW]].
 apply: lb_le_inf.
   by exists (r1%:num + r2%:num); exists r1%:num => //; exists r2%:num.
 move=> ? [+ []] => _/posnumP[p] xpy [+ []] => _/posnumP[q] yqz <-.

@@ -18,7 +18,7 @@ Import Order.POrderTheory GRing.Theory Num.Theory.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -157,7 +157,7 @@ suff cardEi : forall i, k <= i ->
     exact: cardEi.
   have SnleqlimSn: ((\sum_(k <= i < N.+1) (prime_seq i)%:R^-1)%:E <=
       \sum_(k <= i <oo) ((prime_seq i)%:R^-1 : R)%:E)%E.
-    rewrite (nneseries_split _ (N.+1 - k)) => [|i leqi]; last first.
+    rewrite (nneseries_split _ (N.+1 - k)) => [i leqi|].
       by rewrite lee_fin invr_ge0.
     rewrite subnKC // raddf_sum leeDl//; apply/nneseries_ge0 => n _ _.
     by rewrite lee_fin invr_ge0.
@@ -167,7 +167,7 @@ suff cardEi : forall i, k <= i ->
     by apply: sumr_ge0 => i _; rewrite invr_ge0.
   rewrite -divn2 natf_div ?dvdn2// EFinM -lte_pdivrMl ?ltr0n//.
   by rewrite muleA -EFinM mulVf ?mul1e// pnatr_eq0 -lt0n.
-rewrite ler_pdivlMr; last first.
+rewrite ler_pdivlMr.
   rewrite ltr0n.
   have : prime_seq i \in range prime_seq by rewrite inE.
   by rewrite mem_prime_seq; apply: prime_gt0.
@@ -195,7 +195,7 @@ have: finset.trivIset (Parts i).
   move=> /andP [] x1ge x1lt /andP [] x2ge x2lt.
   rewrite (leq_trans x1lt (ltn_ord x)) (leq_trans x2lt (ltn_ord y)) => x12.
   have: y.+1 - (prime_seq i) >= x.+1.
-    rewrite -(leq_add2r (prime_seq i)) -(@leq_sub2rE x.+1); last first.
+    rewrite -(leq_add2r (prime_seq i)) -(@leq_sub2rE x.+1).
       by rewrite addnCB (Eigtpi y) // addn0.
     rewrite addnCB (Eigtpi y) // addn0 -addnBAC // subnn add0n subSS.
     apply: dvdn_leq; first by rewrite subn_gt0 ltn_neqAle; apply/andP.
@@ -222,14 +222,14 @@ have cardeltPi: forall X, X \in Parts i -> #|X| = (prime_seq i) => [X|].
   rewrite !inE size_map size_iota => x1lt y1lt.
   rewrite !(nth_map 0) ?size_iota //.
   rewrite !nth_iota => // /(congr1 val). rewrite !val_insubd /=.
-  rewrite [X in X < _]addBnA; last first.
-  - exact: ltnW.
+  rewrite [X in X < _]addBnA.
   - by rewrite -subn_eq0; apply/eqP/Eigtpi.
+  - exact: ltnW.
   rewrite -(@prednK (prime_seq i - x1)) ?subn_gt0// !subSS.
-  rewrite (leq_ltn_trans _ (ltn_ord x)); last exact: sub_ord_proof.
-  rewrite [X in X < _]addBnA; last first.
-  - exact: ltnW.
+  rewrite (leq_ltn_trans _ (ltn_ord x)); first exact: sub_ord_proof.
+  rewrite [X in X < _]addBnA.
   - by rewrite -subn_eq0; apply/eqP/Eigtpi.
+  - exact: ltnW.
   rewrite -(@prednK (prime_seq i - y1)) ?subn_gt0 // !subSS.
   suff -> : x - (prime_seq i - y1).-1 < N.+1 by apply: addnI.
   exact/(leq_ltn_trans _ (ltn_ord x))/sub_ord_proof.
@@ -244,7 +244,7 @@ suff -> : #|Parts i| = #|E i|.
   case: (boolP (x == ord0)) => [/eqP ->|xneq0 _]; last first.
     by rewrite /i1toN inE !inE xneq0.
   rewrite inE /in_mem /= => /mapP /= [] x0.
-  rewrite mem_iota subnK => [/andP [] x0b1 x0b2|]; last first.
+  rewrite mem_iota subnK => [|/andP [] x0b1 x0b2].
     by rewrite -subn_eq0; apply/eqP /Eigtpi.
   have x0b3: x0 < N.+1 => [|/(congr1 val)].
     exact: (leq_ltn_trans _ (ltn_ord i0)).
@@ -270,10 +270,10 @@ have: x2 \in [set x in [seq insubd ord0 x0
     | x0 <- iota ((\val x1).+1 - prime_seq i) (prime_seq i)]].
   rewrite enseq inE /in_mem /=. apply/mapP => /=.
   exists x2; last by apply: val_inj; rewrite !val_insubd ltn_ord.
-  rewrite mem_iota subnK; last by rewrite -subn_eq0; apply/eqP /Eigtpi.
+  rewrite mem_iota subnK; first by rewrite -subn_eq0; apply/eqP /Eigtpi.
   by rewrite ltnSn -ltnS ltn_subrL prime_gt0 // -mem_prime_seq mem_range.
 rewrite inE /in_mem /= => /mapP /= [] x3.
-rewrite mem_iota subnK => [/andP [] x3b1 x3b2 /(congr1 val)|]; last first.
+rewrite mem_iota subnK => [|/andP [] x3b1 x3b2 /(congr1 val)].
   by rewrite -subn_eq0; apply/eqP /Eigtpi.
 have x3b3: x3 < N.+1 by apply: (leq_ltn_trans _ (ltn_ord x1)).
 rewrite val_insubd x3b3 /= => x2eqx3. move: x3b2.
@@ -322,7 +322,7 @@ have binB (n : 'I_N.+1) :
   under eq_bigr do rewrite -expnM muln2 halfK.
   apply: (@leq_ltn_trans
       (\prod_(i < k) prime_seq i ^ (logn (prime_seq i) n))).
-    apply: leq_prod => i _. rewrite leq_exp2l; first exact: leq_subr.
+    apply: leq_prod => i _. rewrite leq_exp2l; last exact: leq_subr.
     by apply: prime_gt1; rewrite -mem_prime_seq inE.
   apply: (@leq_ltn_trans n); last first.
     apply: (ltn_trans (ltn_ord n)); rewrite /N.
@@ -334,16 +334,16 @@ have binB (n : 'I_N.+1) :
     (prime_seq i) ^ logn (prime_seq i) n)) -(big_map prime_seq predT
     (fun i => i ^ logn i n)) /=.
   rewrite (bigID (mem (primes n))) /=.
-  rewrite [X in _ * X]big1 => [|i inotinprimesn]; last first.
+  rewrite [X in _ * X]big1 => [i inotinprimesn|].
     have [/predU1P[->|/eqP->]//|] := boolP ((i == 0) || (i == 1)).
     move=> /norP[ineq0 ineq1].
     rewrite -(expn0 i); apply/eqP; rewrite eqn_exp2l.
-      apply/eqP; move: inotinprimesn.
-      by rewrite -logn_gt0 lt0n negbK => /eqP.
-    by rewrite ltn_neqAle lt0n ineq0 eq_sym ineq1.
+      by rewrite ltn_neqAle lt0n ineq0 eq_sym ineq1.
+    apply/eqP; move: inotinprimesn.
+    by rewrite -logn_gt0 lt0n negbK => /eqP.
   rewrite muln1 -big_filter.
   have [nltk|klen] := ltnP n k; first by rewrite (eqseq n).
-  rewrite -[in X in _ <= X](eqseq n n.+1); last exact: ltnSn.
+  rewrite -[in X in _ <= X](eqseq n n.+1); first exact: ltnSn.
   rewrite -[X in index_iota _ X.+1](subnKC (leq_trans klen (ltnSn n))).
   rewrite -addnS -subSn//.
   rewrite !big_filter /index_iota !subn0 iotaD map_cat big_cat add0n /=.
@@ -361,8 +361,8 @@ have finj x y : x \in P' k N -> y \in P' k N -> f x = f y -> x = y.
   rewrite -big_split /=.
   under eq_bigr => i _.
     rewrite -expnD tnth_mktuple /a subnK.
-      over.
-    by case: (boolP (odd (logn (prime_seq i) x))); first exact: odd_gt0.
+      by case: (boolP (odd (logn (prime_seq i) x))); first exact: odd_gt0.
+    over.
   have [xeq0|xneq0] := eqVneq x ord0.
     by move: xeq0 xinPkN => ->; rewrite /P' !inE.
   rewrite [RHS]prod_prime_decomp ?lt0n// prime_decompE big_map /=.
@@ -430,16 +430,16 @@ set PN := P k N.
 set GN := G k N.
 rewrite inE /= leqnn set_interval.set_itvoo inE /= EFinB EFinD -leqlimnSn.
 move=> /(_ erefl) /andP[+ _].
-rewrite lte_subel_addl; last by rewrite leqlimnSn.
-rewrite -lteBlDr; last exact/sum_fin_numP.
-rewrite (nneseries_split _ k); last by move=> k0 _; exact: unpos.
-rewrite /Sn add0n addrAC subee; last exact/sum_fin_numP.
+rewrite lte_subel_addl; first by rewrite leqlimnSn.
+rewrite -lteBlDr; first exact/sum_fin_numP.
+rewrite (nneseries_split _ k); first by move=> k0 _; exact: unpos.
+rewrite /Sn add0n addrAC subee; first exact/sum_fin_numP.
 rewrite add0e => Rklthalf.
 suff: N.+1 < N.+1 by rewrite ltnn.
 rewrite -[X in X < _](cardPcardG k N).
 have Neq : N./2 + (2 ^ (k.*2 + 1)).+1 = N.+1.
   rewrite addnC addSn /N -divn2.
-  rewrite -[X in _ %/ X]expn1 -expnB //; last by rewrite addn2.
+  rewrite -[X in _ %/ X]expn1 -expnB //; first by rewrite addn2.
   rewrite -addnBA /subn //= addnn.
   by rewrite -mul2n -expnS -[X in 2 ^ X]addn1 -addnA.
 rewrite -[X in _ < X]Neq -addSn.

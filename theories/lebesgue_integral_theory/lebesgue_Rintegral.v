@@ -25,7 +25,7 @@ From mathcomp Require Import lebesgue_integral_dominated_convergence.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -60,9 +60,9 @@ Lemma EFin_normr_Rintegral A f : measurable A ->
   `| \int[mu]_(x in A) f x |%:E = `| \int[mu]_(x in A) (f x)%:E |%E.
 Proof.
 move=> mA /integrableP[mf intfoo]; rewrite -[RHS]fineK.
-- rewrite /= fine_abse// fin_num_abs.
-  exact: (le_lt_trans (le_abse_integral _ _ _)).
 - rewrite abse_fin_num fin_num_abs.
+  exact: (le_lt_trans (le_abse_integral _ _ _)).
+- rewrite /= fine_abse// fin_num_abs.
   exact: (le_lt_trans (le_abse_integral _ _ _)).
 Qed.
 
@@ -90,7 +90,7 @@ Proof. by rewrite setIC Rintegral_mkcondr. Qed.
 Lemma RintegralZl D f r : measurable D -> mu.-integrable D (EFin \o f) ->
   \int[mu]_(x in D) (r * f x) = r * \int[mu]_(x in D) f x.
 Proof.
-move=> mD intf; rewrite (_ : r = fine r%:E)// -fineM//; last first.
+move=> mD intf; rewrite (_ : r = fine r%:E)// -fineM//.
   exact: integrable_fin_num.
 by congr fine; under eq_integral do rewrite EFinM; exact: integralZl.
 Qed.
@@ -117,7 +117,7 @@ rewrite -lee_fin; apply: le_trans.
   by rewrite fin_numEn => /orP[|] /eqP ->; rewrite leey.
 rewrite /Rintegral.
 move: ifoo.
-rewrite -ge0_fin_numE; last exact: integral_ge0.
+rewrite -ge0_fin_numE; first exact: integral_ge0.
 move/fineK ->.
 by apply: ge0_le_integral => //=; do 2 apply: measurableT_comp => //;
   exact/measurable_EFinP.
@@ -128,7 +128,7 @@ Lemma Rintegral_setU (A B : set T) (f : T -> R) :
     mu.-integrable (A `|` B) (EFin \o f) -> [disjoint A & B] ->
   \int[mu]_(x in (A `|` B)) f x = \int[mu]_(x in A) f x + \int[mu]_(x in B) f x.
 Proof.
-move=> mA mB mf AB; rewrite /Rintegral integral_setU_EFin//; last first.
+move=> mA mB mf AB; rewrite /Rintegral integral_setU_EFin//.
   exact/measurable_EFinP/(measurable_int mu).
 have mAf :  mu.-integrable A (EFin \o f).
   by  apply: integrableS mf => //; exact: measurableU.
@@ -163,9 +163,9 @@ Lemma le_Rintegral D f1 f2 : measurable D ->
   \int[mu]_(x in D) f1 x <= \int[mu]_(x in D) f2 x.
 Proof.
 move=> mD mf1 mf2 f12; rewrite /Rintegral fine_le//.
-- rewrite -integral_fin_num_abs//; first by case/integrableP : mf1.
+- rewrite -integral_fin_num_abs//; last by case/integrableP : mf1.
   by apply/measurable_EFinP; case/integrableP : mf1.
-- rewrite -integral_fin_num_abs//; first by case/integrableP : mf2.
+- rewrite -integral_fin_num_abs//; last by case/integrableP : mf2.
   by apply/measurable_EFinP; case/integrableP : mf2.
 - by apply/le_integral => // x xD; rewrite lee_fin f12//; exact/set_mem.
 Qed.
@@ -230,18 +230,18 @@ Proof.
 move=> itf; rewrite le_eqVlt => /predU1P[ax|ax xb].
   rewrite ax => _; rewrite [in X in _ - X]set_itv_ge ?bnd_simp//.
   by rewrite Rintegral_set0 subr0.
-rewrite (@itv_bndbnd_setU _ _ _ (BLeft x)); last 2 first.
+rewrite (@itv_bndbnd_setU _ _ _ (BLeft x)).
   by case: a ax {itf} => -[].
   by rewrite (le_trans _ xb)// bnd_simp.
 rewrite Rintegral_setU//=.
-- rewrite Rintegral_itv_bndo_bndc//; last first.
-    apply: integrableS itf => //; apply: subset_itvl.
-    by rewrite (le_trans _ xb)// bnd_simp.
-  rewrite addrC addKr Rintegral_itv_obnd_cbnd//.
-  by apply: integrableS itf => //; exact/subset_itvr/ltW.
 - by rewrite -itv_bndbnd_setU -?ltBRight_leBLeft// ltW.
 - apply/disj_setPS => y [/=]; rewrite 2!in_itv/= => /andP[_ yx] /andP[].
   by rewrite leNgt yx.
+rewrite Rintegral_itv_bndo_bndc//.
+  apply: integrableS itf => //; apply: subset_itvl.
+  by rewrite (le_trans _ xb)// bnd_simp.
+rewrite addrC addKr Rintegral_itv_obnd_cbnd//.
+by apply: integrableS itf => //; exact/subset_itvr/ltW.
 Qed.
 
 End Rintegral_lebesgue_measure.

@@ -22,7 +22,7 @@ From mathcomp Require Import lebesgue_integral ftc gauss_integral.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -150,14 +150,13 @@ Let integral_gaussFF' : sigma != 0 ->
 Proof.
 move=> s0; rewrite /normal_peak invrK.
 rewrite -mulrnAr -[in RHS]mulr_natr sqrtrM ?(sqrtrM 2) ?sqr_ge0 ?pi_ge0// !EFinM.
-rewrite muleCA ge0_integralZr//=; first last.
-  by move=> x _; rewrite lee_fin mulr_ge0//= ?gauss_fun_ge0// F'E/= invr_ge0.
-  rewrite F'E; apply/measurable_EFinP/measurable_funM => //.
+rewrite muleCA ge0_integralZr//=.
+- rewrite F'E; apply/measurable_EFinP/measurable_funM => //.
   apply/measurableT_comp => //; first exact: measurable_gauss_fun.
   by apply: measurable_funM => //; exact: measurable_funD.
+- by move=> x _; rewrite lee_fin mulr_ge0//= ?gauss_fun_ge0// F'E/= invr_ge0.
 congr *%E; last by rewrite -(mulr_natr (_ ^+ 2)) sqrtrM ?sqr_ge0.
 rewrite -increasing_ge0_integration_by_substitutionT//.
-- exact: integralT_gauss.
 - move=> x y xy; rewrite /F ltr_pM2r ?ltr_leB ?gt_eqF//.
   by rewrite invr_gt0 ?sqrtr_gt0 ?pmulrn_lgt0 ?exprn_even_gt0.
 - by rewrite F'E => ?; exact: cvg_cst.
@@ -169,6 +168,7 @@ rewrite -increasing_ge0_integration_by_substitutionT//.
   by rewrite invr_gt0// sqrtr_gt0 -mulr_natr mulr_gt0// exprn_even_gt0.
 - exact: continuous_gauss_fun.
 - by move=> x; rewrite gauss_fun_ge0.
+- exact: integralT_gauss.
 Qed.
 
 Let integral_normal_fun : sigma != 0 ->
@@ -193,7 +193,7 @@ Proof.
 rewrite /normal_pdf; have [_|s0] := eqVneq sigma 0.
   by rewrite integral_indic//= setIT lebesgue_measure_itv/= lte01 oppr0 adde0.
 under eq_integral do rewrite EFinM.
-rewrite integralZl//=; last exact: integrable_normal_fun.
+rewrite integralZl//=; first exact: integrable_normal_fun.
 by rewrite integral_normal_fun// -EFinM divff// gt_eqF// normal_peak_gt0.
 Qed.
 
@@ -221,7 +221,7 @@ Qed.
 Let normal_sigma_additive : semi_sigma_additive normal_prob.
 Proof.
 move=> /= A mA tA mUA.
-rewrite /normal_prob/= integral_bigcup//=; last first.
+rewrite /normal_prob/= integral_bigcup//=.
   by apply: (integrableS _ _ (subsetT _)) => //; exact: integrable_normal_pdf.
 apply: is_cvg_ereal_nneg_natsum_cond => n _ _.
 by apply: integral_ge0 => /= x ?; rewrite lee_fin normal_pdf_ge0 ?ltW.

@@ -97,7 +97,7 @@ From mathcomp Require Import prodnormedzmodule.
 (* transitivity, product of functions, etc.                                   *)
 (*                                                                            *)
 (******************************************************************************)
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -891,7 +891,7 @@ have [->|a0] := eqVneq a 0.
 move=> _/posnumP[eps].
 have ea : 0 < eps%:num / `| a | by rewrite divr_gt0 // normr_gt0.
 have [g /(_ _ ea) ?] := littleo; near=> y.
-rewrite normrZ -ler_pdivlMr; first by rewrite mulrAC; near: y.
+rewrite normrZ -ler_pdivlMr; last by rewrite mulrAC; near: y.
 by rewrite lt_def normr_eq0 a0 normr_ge0.
 Unshelve. all: by end_near. Qed.
 
@@ -1121,7 +1121,7 @@ rewrite (near_shift 0) /= subr0; near=> y => /=.
 rewrite -linearB opprD addrC addrNK linearN normrN; near: y.
 suff flip : \forall k \near +oo, forall x, `|f x| <= k * `|x|.
   near +oo => k; near=> y.
-  rewrite (le_lt_trans (near flip k _ _)) // -ltr_pdivlMl; last first.
+  rewrite (le_lt_trans (near flip k _ _)) // -ltr_pdivlMl.
     by near: k; exists 0.
   near: y; apply/nbhs_normP.
   eexists; last by move=> ?; rewrite /= sub0r normrN; apply.
@@ -1174,7 +1174,7 @@ Proof.
 move=> ->; apply/eqoP; move=> _/posnumP[eps]; near=> x.
 rewrite -ler_pdivrMl // -[X in g + X]opprK oppo.
 rewrite (le_trans _ (ler_dist_dist _ _)) //.
-rewrite [leRHS]ger0_norm ?lerBrDr ?add0r; last first.
+rewrite [leRHS]ger0_norm ?lerBrDr ?add0r.
   by rewrite -[leRHS]mul1r; near: x; apply: littleoP.
 rewrite [leRHS]splitr [_ / 2]mulrC.
 by rewrite lerD ?ler_pdivrMl ?mulrA //; near: x; apply: littleoP.

@@ -27,7 +27,7 @@ From mathcomp Require Import product_topology subspace_topology.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -47,7 +47,7 @@ Context {X : topologicalType} (A : set X).
 Lemma subspace_subtypeP (x : A) (U : set A) :
   nbhs x U <-> nbhs (set_val x : subspace A) (set_val @` U).
 Proof.
-rewrite /nbhs /= -nbhs_subspace_in //; first last.
+rewrite /nbhs /= -nbhs_subspace_in //.
   by case: x; rewrite set_valE => //= ? /set_mem.
 split.
   case=> _ /= [] [W oW <- /= Wx sWU]; move: oW; rewrite openE /= /interior.
@@ -72,7 +72,7 @@ split.
 rewrite continuous_subspace_in => + x Ax U nfxU.
 move=> /(_ (@exist _ _ x Ax) U) /= []; first exact: nfxU.
 move=> _ [/= [W + <- /=]] Wx svWU; rewrite nbhs_simpl/=.
-rewrite /nbhs /= -nbhs_subspace_in; last exact/set_mem.
+rewrite /nbhs /= -nbhs_subspace_in; first exact/set_mem.
 rewrite openE /= /interior=> /(_ _ Wx); rewrite {1}set_valE/=.
 apply: filter_app; apply: nearW => w Ww /= /mem_set Aw.
 by have /= := svWU (@exist _ _ w Aw); rewrite ?set_valE /=; exact.

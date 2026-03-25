@@ -50,7 +50,7 @@ Reserved Notation "f = g %[ae mu ]"
 Reserved Notation "m .-null_set" (at level 2, format "m .-null_set").
 Reserved Notation "m1 `<< m2" (at level 51).
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -139,17 +139,17 @@ Lemma negligible_bigcup d (T : sigmaRingType d) (R : realFieldType)
 Proof.
 move=> mF; exists (\bigcup_k sval (cid (mF k))); split.
 - by apply: bigcupT_measurable => // k; have [] := svalP (cid (mF k)).
-- rewrite seqDU_bigcup_eq measure_bigcup//; last first.
+- rewrite seqDU_bigcup_eq measure_bigcup//.
     move=> k _; apply: measurableD; first by case: cid => //= A [].
     by apply: bigsetU_measurable => i _; case: cid => //= A [].
   rewrite eseries0// => k _ _.
   have [mFk mFk0 ?] := svalP (cid (mF k)).
   rewrite measureD//=.
-  + rewrite mFk0 sub0e eqe_oppLRP oppe0; apply/eqP; rewrite -measure_le0.
-    rewrite -[leRHS]mFk0 le_measure//= ?inE//; apply: measurableI => //.
-    by apply: bigsetU_measurable => i _; case: cid => // A [].
   + by apply: bigsetU_measurable => i _; case: cid => // A [].
   + by rewrite mFk0.
+  rewrite mFk0 sub0e eqe_oppLRP oppe0; apply/eqP; rewrite -measure_le0.
+  rewrite -[leRHS]mFk0 le_measure//= ?inE//; apply: measurableI => //.
+  by apply: bigsetU_measurable => i _; case: cid => // A [].
 - by apply: subset_bigcup => k _; rewrite /sval/=; by case: cid => //= A [].
 Qed.
 
@@ -374,7 +374,7 @@ Lemma null_setU m B : measurable B ->
 Proof.
 move=> mB; split=> [nullB A mA|B0 A mA AB].
 - apply/eqP; rewrite eq_le.
-  rewrite (@le_measure _ _ _ _ A) ?inE ?andbT//; last exact: measurableU.
+  rewrite (@le_measure _ _ _ _ A) ?inE ?andbT//; first exact: measurableU.
   by rewrite (le_trans (measureU2 _ _ _))// (nullB B)// adde0.
 - apply/eqP; rewrite eq_le measure_ge0 andbT.
   by rewrite -(measure0 m) -[leRHS]B0// set0U le_measure// inE.

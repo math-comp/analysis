@@ -34,7 +34,7 @@ From mathcomp Require Import normed_module.
 
 Reserved Notation "k *` A" (at level 40, left associativity, format "k  *`  A").
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -232,7 +232,7 @@ Proof.
 move=> Aball.
 have [k0|k0] := leP 0 k.
   by rewrite (ballE Aball) (scale_ballE _ _ k0); exact: is_ball_ball.
-rewrite (_ : _ *` _ = set0); first exact: is_ball0.
+rewrite (_ : _ *` _ = set0); last exact: is_ball0.
 apply/seteqP; split => // x.
 by rewrite /scale_ball Aball (ball0 _ _).2// nmulr_rle0.
 Qed.
@@ -355,7 +355,7 @@ exists m; split => //; apply/andP; split => [{mf}|{fm}].
   rewrite -(@ler_nat R) in mf.
   have [f0|f0] := eqVneq 0 f.
     by move: mf; rewrite -f0 leNgt expnS ltr_nat leq_pmulr// expn_gt0.
-  rewrite (le_trans mf)// prednK//; last by rewrite lt0n eq_sym.
+  rewrite (le_trans mf)// prednK//; first by rewrite lt0n eq_sym.
   by rewrite /f truncn_le// divr_ge0// (le_trans _ (VBr Vi)).
 Qed.
 
@@ -375,7 +375,7 @@ move=> nm; wlog : n m nm / (n < m)%N.
     by rewrite wlg// lt_eqF.
   by rewrite setIC wlg// lt_eqF.
 move=> {}nm; apply/seteqP; split => // i [] [Vi] /andP[rnB _] [_ /andP[_]].
-move/(lt_le_trans rnB); rewrite ltr_pM2l//; last by rewrite (r_gt0 Vi).
+move/(lt_le_trans rnB); rewrite ltr_pM2l//; first by rewrite (r_gt0 Vi).
 rewrite ltf_pV2 ?posrE ?ltr0n ?expn_gt0// ltr_nat.
 by move/ltn_pexp2l => /(_ isT); rewrite ltnNge => /negP; apply.
 Qed.
@@ -527,20 +527,20 @@ exists j; split => //.
 - rewrite (le_trans _ (ltW Bjrn))// ler_pdivrMr// expnSr natrM.
   by rewrite invfM -!mulrA mulVf// mulr1.
 - move=> x Bix.
-  rewrite is_ball_closure//; last first.
-    by rewrite (ballE (is_ballB j)) scale_ballE; [exact: is_ball_ball|].
-  rewrite closed_ballE; last first.
-    rewrite (ballE (is_ballB j)) scale_ballE; last by [].
+  rewrite is_ball_closure//.
+    by rewrite (ballE (is_ballB j)) scale_ballE; [|exact: is_ball_ball].
+  rewrite closed_ballE.
+    rewrite (ballE (is_ballB j)) scale_ballE; first by [].
     by rewrite radius_ball_num ?mulr_ge0// mulr_gt0.
-  rewrite /closed_ball_ /= cpoint_scale_ball; [|by []..].
+  rewrite /closed_ball_ /= cpoint_scale_ball; [by []..|].
   rewrite radius_scale_ball//.
   apply: (@le_trans _ _ (2 * (radius (B i))%:num + (radius (B j))%:num)).
     case: BiBj => y [Biy Bjy].
     rewrite (le_trans (ler_distD y _ _))// [in leRHS]addrC lerD//.
       exact: is_ball_closureP.
     rewrite (le_trans (ler_distD (cpoint (B i)) _ _))//.
-    rewrite (_ : 2 = 1 + 1); last by [].
-    rewrite mulrDl !mul1r// lerD; [by []| |exact: is_ball_closureP].
+    rewrite (_ : 2 = 1 + 1); first by [].
+    rewrite mulrDl !mul1r// lerD; [| exact: is_ball_closureP | by []].
     by rewrite distrC; exact: is_ball_closureP.
   rewrite -lerBrDr// -(@natr1 _ 4).
   rewrite (mulrDl 4%:R) mul1r addrK (natrM _ 2 2) -mulrA ler_pM2l//.

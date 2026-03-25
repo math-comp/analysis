@@ -127,7 +127,7 @@ Reserved Notation "{ 'sigma_finite_measure' 'set' T '->' '\bar' R }"
 Reserved Notation "{ 'finite_measure' 'set' T '->' '\bar' R }"
   (T at level 37, format "{ 'finite_measure'  'set'  T  '->'  '\bar'  R }").
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -181,9 +181,9 @@ Lemma semi_additiveW : mu set0 = 0 -> semi_additive -> semi_additive2.
 Proof.
 move=> mu0 amx A B mA mB + AB; rewrite -bigcup2inE bigcup_mkord.
 move=> /(amx (bigcup2 A B))->.
-- by rewrite !(big_ord_recl, big_ord0)/= adde0.
 - by move=> [|[|[]]]//=.
 - by move=> [|[|i]] [|[|j]]/= _ _; rewrite ?(AB, setI0, set0I, setIC) => -[].
+- by rewrite !(big_ord_recl, big_ord0)/= adde0.
 Qed.
 
 End additivity.
@@ -224,10 +224,10 @@ Lemma semi_sigma_additive_is_additive d (T : semiRingOfSetsType d)
 Proof.
 move=> mu0 samu A n Am Atriv UAm.
 have := samu (fun i => if (i < n)%N then A i else set0).
-rewrite (bigcup_splitn n) bigcup0 ?setU0; last first.
+rewrite (bigcup_splitn n) bigcup0 ?setU0.
   by move=> i _; rewrite -ltn_subRL subnn.
 under eq_bigr do rewrite ltn_ord.
-move=> /(_ _ _ UAm)/(@cvg_lim _) <-//; last 2 first.
+move=> /(_ _ _ UAm)/(@cvg_lim _) <-//.
 - by move=> i; case: ifP.
 - move=> i j _ _; do 2![case: ifP] => ? ?; do ?by rewrite (setI0, set0I) => -[].
   by move=> /Atriv; apply.
@@ -313,7 +313,7 @@ Lemma measure_semi_additive_ord n (F : 'I_n -> set T) :
 Proof.
 move=> mF tF mUF; pose F' (i : nat) := oapp F set0 (insub i).
 have FE (i : 'I_n) : F i = (F' \o val) i by rewrite /F'/= valK/=.
-rewrite (eq_bigr (F' \o val))// (eq_bigr (mu \o F' \o val))//; last first.
+rewrite (eq_bigr (F' \o val))// (eq_bigr (mu \o F' \o val))//.
   by move=> i _; rewrite FE.
 rewrite -measure_semi_additive//.
 - by move=> k; rewrite /F'; case: insubP => /=.
@@ -397,10 +397,10 @@ Lemma measure_bigsetU_ord_cond n (P : {pred 'I_n}) (F : 'I_n -> set T) :
   mu (\big[setU/set0]_(i < n | P i) F i) = (\sum_(i < n | P i) mu (F i))%E.
 Proof.
 move=> mF tF; rewrite !(big_mkcond P)/= measure_semi_additive_ord//.
-- by apply: eq_bigr => i _; rewrite (fun_if mu) measure0.
 - by move=> k; case: ifP => //; apply: mF.
 - by rewrite -patch_pred trivIset_restr setIT.
 - by apply: bigsetU_measurable=> k _; case: ifP => //; apply: mF.
+- by apply: eq_bigr => i _; rewrite (fun_if mu) measure0.
 Qed.
 
 Lemma measure_bigsetU_ord n (P : {pred 'I_n}) (F : 'I_n -> set T) :
@@ -510,10 +510,10 @@ Lemma measure_bigcup (D : set nat) F : (forall i, D i -> measurable (F i)) ->
   trivIset D F -> mu (\bigcup_(n in D) F n) = (\sum_(i <oo | i \in D) mu (F i))%E.
 Proof.
 move=> mF tF; rewrite bigcup_mkcond measure_semi_bigcup.
-- by rewrite [in RHS]eseries_mkcond; apply: eq_eseriesr => n _; case: ifPn.
 - by move=> i; case: ifPn => // /set_mem; exact: mF.
 - by move/trivIset_mkcond : tF.
 - by rewrite -bigcup_mkcond; exact: bigcup_measurable.
+- by rewrite [in RHS]eseries_mkcond; apply: eq_eseriesr => n _; case: ifPn.
 Qed.
 
 End measure_lemmas.
@@ -536,7 +536,7 @@ Let msum_ge0 B : 0 <= msum B. Proof. by rewrite /msum; apply: sume_ge0. Qed.
 Let msum_sigma_additive : semi_sigma_additive msum.
 Proof.
 move=> F mF tF mUF; rewrite [X in _ --> X](_ : _ =
-    lim ((fun n => \sum_(0 <= i < n) msum (F i)) @ \oo)).
+    lim ((fun n => \sum_(0 <= i < n) msum (F i)) @ \oo)); last first.
   by apply: is_cvg_ereal_nneg_natsum => k _; exact: sume_ge0.
 rewrite nneseries_sum//; apply: eq_bigr => /= i _.
 exact: measure_semi_bigcup.
@@ -560,8 +560,9 @@ Let mzero_ge0 B : 0 <= mzero B. Proof. by []. Qed.
 
 Let mzero_sigma_additive : semi_sigma_additive mzero.
 Proof.
-move=> F mF tF mUF; rewrite [X in X @ \oo--> _](_ : _ = cst 0); first exact: cvg_cst.
-by apply/funext => n; rewrite big1.
+move=> F mF tF mUF; rewrite [X in X @ \oo--> _](_ : _ = cst 0).
+  by apply/funext => n; rewrite big1.
+exact: cvg_cst.
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ mzero
@@ -602,10 +603,10 @@ Proof. by rewrite /mscale mule_ge0. Qed.
 Let mscale_sigma_additive : semi_sigma_additive mscale.
 Proof.
 move=> F mF tF mUF; rewrite [X in X @ \oo --> _](_ : _ =
-    (fun n => (r%:num)%:E * \sum_(0 <= i < n) m (F i))); last first.
+    (fun n => (r%:num)%:E * \sum_(0 <= i < n) m (F i))).
   by apply/funext => k; rewrite ge0_sume_distrr.
 rewrite /mscale; have [->|r0] := eqVneq r%:num 0%R.
-  rewrite mul0e [X in X @ \oo --> _](_ : _ = cst 0); first exact: cvg_cst.
+  rewrite mul0e [X in X @ \oo --> _](_ : _ = cst 0); last exact: cvg_cst.
   by under eq_fun do rewrite mul0e.
 by apply: cvgeZl => //; exact: measure_semi_sigma_additive.
 Qed.
@@ -632,7 +633,7 @@ Proof. by rewrite /mseries ereal_series nneseries_esum//; exact: esum_ge0. Qed.
 Let mseries_sigma_additive : semi_sigma_additive mseries.
 Proof.
 move=> F mF tF mUF; rewrite [X in _ --> X](_ : _ =
-  lim ((fun n => \sum_(0 <= i < n) mseries (F i)) @ \oo)); last first.
+  lim ((fun n => \sum_(0 <= i < n) mseries (F i)) @ \oo)).
   rewrite [in LHS]/mseries.
   transitivity (\sum_(n <= k <oo) \sum_(i <oo) m k (F i)).
     rewrite 2!ereal_series.
@@ -869,7 +870,7 @@ transitivity (\sum_(X \in E) \sum_(i \in D) mu (X `&` F i)).
   rewrite [in LHS]XDF content_fin_bigcup//; first exact: trivIset_setIl.
   - by move=> i /mem_set Di; apply: measurableI; [exact: Em|exact: Fm].
   - by rewrite -XDF; exact: Em.
-rewrite exchange_fsbig //; last exact: decomp_finite_set.
+rewrite exchange_fsbig //; first exact: decomp_finite_set.
 apply: eq_fsbigr => i Di; have Feq : F i = \bigcup_(X in E) (X `&` F i).
   rewrite -setI_bigcupl setIidr// cover_decomp.
   by apply/bigcup_sup; exact: set_mem.
@@ -904,9 +905,9 @@ have AUBtriv : trivIset (A `|` B) id.
     by move=> [u [Xu Yu]]; case: (coverAB0 u); split; [exists X|exists Y].
   by move=> [u [Xu Yu]]; case: (coverAB0 u); split; [exists Y|exists X].
 rewrite -bigcup_setU !Rmu_fin_bigcup//=.
-- rewrite fsbigU//= => [X /= [XA XB]]; have [->//|/set0P[x Xx]] := eqVneq X set0.
-  by case: (coverAB0 x); split; exists X.
-- by move=> X /set_mem [|] /mem_set ?; [exact: Am|exact: Bm].
+  by move=> X /set_mem [|] /mem_set ?; [exact: Am|exact: Bm].
+rewrite fsbigU//= => [X /= [XA XB]]; have [->//|/set0P[x Xx]] := eqVneq X set0.
+by case: (coverAB0 x); split; exists X.
 Qed.
 
 #[export]
@@ -932,9 +933,9 @@ Proof.
 move=> A B; rewrite ?inE => mA mB AB; have [|muBfin] := leP +oo%E (mu B).
   by rewrite leye_eq => /eqP ->; rewrite leey.
 rewrite -[leRHS]SetRing.RmuE// -[B](setDUK AB) measureU/= ?setDIK//.
-- by rewrite SetRing.RmuE ?leeDl.
 - exact: sub_gen_smallest.
 - by apply: measurableD; exact: sub_gen_smallest.
+- by rewrite SetRing.RmuE ?leeDl.
 Qed.
 
 Lemma measure_le0 d (T : semiRingOfSetsType d) (R : realFieldType)
@@ -967,7 +968,7 @@ have DU0 i : (i >= n)%N -> seqDU B i = set0.
 rewrite -SetRing.RmuE// XE bigsetU_seqDU measure_bigsetU//.
 rewrite [leRHS](big_ord_widen n (mu \o A))//= [leRHS]big_mkcond/=.
 rewrite lee_sum => // i _; case: ltnP => ltin; last by rewrite DU0 ?measure0.
-rewrite -[leRHS]SetRing.RmuE; last exact: Am.
+rewrite -[leRHS]SetRing.RmuE; first exact: Am.
 by rewrite le_measure ?inE//=; last by apply: sub_gen_smallest; apply: Am.
 Qed.
 
@@ -1054,9 +1055,9 @@ Lemma ring_sigma_subadditive :
   measurable_subset_sigma_subadditive Rmu.
 Proof.
 move=> muS; move=> /= D A Am Dm Dsub.
-rewrite /Rmu -(eq_eseriesr (fun _ _ => esum_fset _ _))//; last first.
+rewrite /Rmu -(eq_eseriesr (fun _ _ => esum_fset _ _))//.
   by move=> *; exact: decomp_finite_set.
-rewrite nneseries_esum ?esum_esum//=; last by move=> *; rewrite esum_ge0.
+rewrite nneseries_esum ?esum_esum//=; first by move=> *; rewrite esum_ge0.
 set K := _ `*`` _.
 have /ppcard_eqP[f] : (K #= [set: nat])%card.
   apply: cardXR_eq_nat => [|i].
@@ -1079,9 +1080,9 @@ have mfD i X : X \in decomp D -> measurable (((f^-1)%FUN i).2 `&` X : set T).
   by move=> XD; apply: measurableI; [exact: mf|exact: (decomp_measurable _ XD)].
 apply: (@le_trans _ _
     (\sum_(i <oo) \sum_(X <- fset_set (decomp D)) mu ((f^-1%FUN i).2 `&` X))).
-  rewrite nneseries_sum// fsbig_finite/=; last exact: decomp_finite_set.
+  rewrite nneseries_sum// fsbig_finite/=; first exact: decomp_finite_set.
   rewrite [leLHS]big_seq [leRHS]big_seq.
-  rewrite lee_sum// => X /[!in_fset_set]; last exact: decomp_finite_set.
+  rewrite lee_sum// => X /[!in_fset_set]; first exact: decomp_finite_set.
   move=> XD; have Xm := decomp_measurable Dm XD.
   by apply: muS => // [i|]; [exact: mfD|exact: DXsub].
 apply: lee_lim => /=; do ?apply: is_cvg_nneseries=> //.
@@ -1089,17 +1090,17 @@ apply: lee_lim => /=; do ?apply: is_cvg_nneseries=> //.
 near=> n; rewrite [n in _ <= n]big_mkcond; apply: lee_sum => i _.
 rewrite ifT ?inE//.
 under eq_big_seq.
-  move=> x; rewrite in_fset_set=> [xD|]; last exact: decomp_finite_set.
-  rewrite -RmuE//; last exact: mfD.
+  move=> x; rewrite in_fset_set=> [|xD]; first exact: decomp_finite_set.
+  rewrite -RmuE//; first exact: mfD.
   over.
-rewrite -fsbig_finite/=; last exact: decomp_finite_set.
+rewrite -fsbig_finite/=; first exact: decomp_finite_set.
 rewrite -measure_fin_bigcup//=.
-- rewrite -setI_bigcupr (cover_decomp D) -[leRHS]RmuE// ?le_measure ?inE//.
-    by apply: measurableI => //; apply: sub_gen_smallest; apply: mf.
-  by apply: sub_gen_smallest; apply: mf.
 - exact: decomp_finite_set.
 - by apply: trivIset_setIl; apply: decomp_triv.
 - by move=> X /= XD; apply: sub_gen_smallest; apply: mfD; rewrite inE.
+rewrite -setI_bigcupr (cover_decomp D) -[leRHS]RmuE// ?le_measure ?inE//.
+  by apply: measurableI => //; apply: sub_gen_smallest; apply: mf.
+by apply: sub_gen_smallest; apply: mf.
 Unshelve. all: by end_near. Qed.
 
 Lemma ring_semi_sigma_additive :
@@ -1170,15 +1171,15 @@ pose g n := (f' n).2; have fVtriv : trivIset [set: nat] g.
   - by move/mem_set : f'jB => /decomp_sub; apply.
 have g_inj : set_inj [set i | g i != set0] g.
   by apply: trivIset_inj=> [i /set0P//|]; apply: sub_trivIset fVtriv.
-move=> XEbig; rewrite measure_semi_bigcup//= -?XEbig//; last first.
+move=> XEbig; rewrite measure_semi_bigcup//= -?XEbig//.
   move=> i; have [/= _ /mem_set] : K (f' i) by apply: funS.
   exact: decomp_measurable.
-rewrite [leLHS](_ : _ = \sum_(i <oo | g i != set0) mu (g i)); last first.
+rewrite [leLHS](_ : _ = \sum_(i <oo | g i != set0) mu (g i)).
   rewrite !nneseries_esum// esum_mkcond [RHS]esum_mkcond; apply: eq_esum.
   move=> i _; rewrite ifT ?inE//=; case: ifPn => //.
   by rewrite notin_setE /= -/(g _) => /negP/negPn/eqP ->.
 rewrite -(esum_pred_image mu g)//.
-rewrite [leLHS](_ : _ = \esum_(X in range g) mu X); last first.
+rewrite [leLHS](_ : _ = \esum_(X in range g) mu X).
   rewrite esum_mkcond [RHS]esum_mkcond; apply: eq_esum.
   move=> Y _; case: ifPn; rewrite ?(inE, notin_setE)/=.
     by move=> [i giN0 giY]; rewrite ifT// ?inE//=; exists i.
@@ -1190,7 +1191,7 @@ have -> : range g = \bigcup_i (decomp (seqDU B i)).
   have [/= _ f'nB] : K (f' n) by apply: funS.
     by exists (f' n).1 => //=; rewrite -gnY.
   by exists (f (n, Y)) => //; rewrite /g /f' funK//= inE.
-rewrite esum_bigcup//; last first.
+rewrite esum_bigcup//.
    move=> i j /=.
    have [->|/set0P DUBiN0] := eqVneq (seqDU B i) set0.
      rewrite decomp_set0 ?set_fset1 => /negP[].
@@ -1206,9 +1207,9 @@ rewrite esum_bigcup//; last first.
    apply: (@trivIset_seqDU _ B) => //; exists y.
    by split => //; [exact: YBi|exact: YBj].
 rewrite nneseries_esumT// le_esum// => i _.
-rewrite [leLHS](_ : _ = \sum_(j \in decomp (seqDU B i)) mu j); last first.
+rewrite [leLHS](_ : _ = \sum_(j \in decomp (seqDU B i)) mu j).
   by rewrite esum_fset//; exact: decomp_finite_set.
-rewrite -SetRing.Rmu_fin_bigcup//=; last 3 first.
+rewrite -SetRing.Rmu_fin_bigcup//=.
   exact: decomp_finite_set.
   exact: decomp_triv.
   by move=> ?; exact: decomp_measurable.
@@ -1229,11 +1230,11 @@ Lemma measure_sigma_subadditive_tail d (R : realType) (T : semiRingOfSetsType d)
 Proof.
 move=> mF mA AF; rewrite eseries_cond eseries_mkcondr.
 rewrite (@eq_eseriesr _ _ (fun n => mu (if (N <= n)%N then F n else set0))).
-- apply: measure_sigma_subadditive => //.
-  + by move=> n; case: ifPn.
-  + move: AF; rewrite bigcup_mkcond.
-    by under eq_bigcupr do rewrite mem_not_I.
-- by move=> o _; rewrite (fun_if mu) measure0.
+  by move=> o _; rewrite (fun_if mu) measure0.
+apply: measure_sigma_subadditive => //.
+  by move=> n; case: ifPn.
+move: AF; rewrite bigcup_mkcond.
+by under eq_bigcupr do rewrite mem_not_I.
 Qed.
 
 Section ring_sigma_content.
@@ -1578,11 +1579,11 @@ Lemma measureDI A B : measurable A -> measurable B ->
   mu A = mu (A `\` B) + mu (A `&` B).
 Proof.
 move=> mA mB; rewrite -measure_semi_additive2.
-- by rewrite -setDDr setDv setD0.
 - exact: measurableD.
 - exact: measurableI.
 - by apply: measurableU; [exact: measurableD |exact: measurableI].
 - by rewrite setDE setIACA setICl setI0.
+- by rewrite -setDDr setDv setD0.
 Qed.
 
 Lemma measureD A B : measurable A -> measurable B ->
@@ -1590,8 +1591,8 @@ Lemma measureD A B : measurable A -> measurable B ->
 Proof.
 move=> mA mB mAoo.
 rewrite (measureDI mA mB) addeK// fin_numE 1?gt_eqF 1?lt_eqF//.
-- by rewrite (le_lt_trans _ mAoo)// le_measure // ?inE//; exact: measurableI.
-- by rewrite (lt_le_trans _ (measure_ge0 _ _)).
+  by rewrite (lt_le_trans _ (measure_ge0 _ _)).
+by rewrite (le_lt_trans _ mAoo)// le_measure // ?inE//; exact: measurableI.
 Qed.
 
 Lemma measureU2 A B : measurable A -> measurable B ->
@@ -1615,10 +1616,10 @@ Lemma measureUfinr A B : measurable A -> measurable B -> mu B < +oo ->
   mu (A `|` B) = mu A + mu B - mu (A `&` B).
 Proof.
 move=> Am Bm mBfin; rewrite -[B in LHS](setDUK (@subIsetl _ _ A)) setUA.
-rewrite [A `|` _]setUidl; last exact: subIsetr.
-rewrite measureU//=; [|rewrite setDIr setDv set0U ?setDIK//..].
-- by rewrite measureD// ?setIA ?setIid 1?setIC ?addeA//; exact: measurableI.
-- exact: measurableD.
+rewrite [A `|` _]setUidl; first exact: subIsetr.
+rewrite measureU//=; [rewrite setDIr setDv set0U ?setDIK//..|].
+  exact: measurableD.
+by rewrite measureD// ?setIA ?setIid 1?setIC ?addeA//; exact: measurableI.
 Qed.
 
 Lemma measureUfinl A B : measurable A -> measurable B -> mu A < +oo ->
@@ -1727,7 +1728,7 @@ have HE : H `<=` E.
   by move=> X HX; rewrite /E /=; split; [exact: Hm|exact: m1m2|case: HX].
 have setDE : setSD_closed E.
   move=> A B BA [mA m1m2A AD] [mB m1m2B BD]; split; first exact: measurableD.
-  - rewrite measureD//; last first.
+  - rewrite measureD//.
       by rewrite (le_lt_trans _ m1oo)//; apply: le_measure => // /[!inE].
     rewrite setIidr//= m1m2A m1m2B measureD// ?setIidr//.
     by rewrite (le_lt_trans _ m1oo)//= -m1m2A; apply: le_measure => // /[!inE].

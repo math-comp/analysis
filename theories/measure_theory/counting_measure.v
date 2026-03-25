@@ -13,7 +13,7 @@ From mathcomp Require Import sequences measurable_structure measure_function.
 (* ```                                                                        *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -59,22 +59,22 @@ have sumFE n : \sum_(i < n) counting (F i) =
   by apply: eq_bigr => // i _; rewrite /counting asboolT.
 have [cvg_u|dvg_u] := pselect (cvg (nseries u @ \oo)).
   have [N _ Nu] : \forall n \near \oo, u n = 0%N by apply: cvg_nseries_near.
-  rewrite [X in _ --> X](_ : _ = \sum_(i < N) counting (F i)); last first.
+  rewrite [X in _ --> X](_ : _ = \sum_(i < N) counting (F i)).
     have -> : \bigcup_i (F i) = \big[setU/set0]_(i < N) F i.
       rewrite (bigcupID (`I_N)) setTI bigcup_mkord.
       rewrite [X in _ `|` X](_ : _ = set0) ?setU0// bigcup0// => i [_ /negP].
       by rewrite -leqNgt => /Nu/eqP/[!cardfs_eq0]/eqP/fset_set_set0 ->.
     by rewrite /counting /= asboolT ?sumFE// -bigcup_mkord; exact: bigcup_finite.
   rewrite -(cvg_shiftn N)/=.
-  rewrite (_ : (fun n => _) = (fun=> \sum_(i < N) counting (F i))).
+  rewrite (_ : (fun n => _) = (fun=> \sum_(i < N) counting (F i))); last first.
     exact: cvg_cst.
   apply/funext => n; rewrite /index_iota subn0 (addnC n) iotaD big_cat/=.
-  rewrite [X in _ + X](_ : _ = 0) ?adde0.
+  rewrite [X in _ + X](_ : _ = 0) ?adde0; last first.
     by rewrite -{1}(subn0 N) big_mkord.
   rewrite add0n big_seq big1// => i /[!mem_iota] => /andP[NI iNn].
   by rewrite /counting asboolT//= -/(u _) Nu.
 have {dvg_u}cvg_F : (fun n => \sum_(i < n) counting (F i)) @ \oo --> +oo.
-  rewrite (_ : (fun n => _) = [sequence (\sum_(0 <= i < n) (u i))%:R%:E]_n).
+  rewrite (_ : (fun n => _) = [sequence (\sum_(0 <= i < n) (u i))%:R%:E]_n); last first.
     exact/cvgenyP/dvg_nseries.
   apply/funext => n /=; under eq_bigr.
     by rewrite /counting => i _; rewrite asboolT//; over.
@@ -88,9 +88,9 @@ rewrite sumFE lte_fin ltr_nat ltnS.
 have -> : k = #|` fset_set (\bigcup_n F n) |.
   by apply/esym/card_eq_fsetP; rewrite fset_setK//; exists k.
 apply/fsubset_leq_card; rewrite -fset_set_sub //.
-- by move=> /= t; rewrite -bigcup_mkord => -[m _ Fmt]; exists m.
 - by rewrite -bigcup_mkord; exact: bigcup_finite.
 - by exists k.
+- by move=> /= t; rewrite -bigcup_mkord => -[m _ Fmt]; exists m.
 Unshelve. all: by end_near. Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ counting

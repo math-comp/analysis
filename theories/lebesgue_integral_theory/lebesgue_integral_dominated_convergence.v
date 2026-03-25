@@ -22,7 +22,7 @@ From mathcomp Require Import lebesgue_integral_nonneg lebesgue_integrable.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -83,7 +83,7 @@ Qed.
 
 Let gg_ n x : D x -> 0 <= 2%:E * g x - g_ n x.
 Proof.
-move=> Dx; rewrite subre_ge0; last by rewrite fin_numM// fing.
+move=> Dx; rewrite subre_ge0; first by rewrite fin_numM// fing.
 rewrite -(fineK (fing Dx)) -EFinM mulr_natl mulr2n /g_.
 rewrite (le_trans (lee_abs_sub _ _))// [in leRHS]EFinD leeD//.
   by rewrite fineK// ?fing// absfg.
@@ -105,10 +105,10 @@ Proof. by move=> Dx; rewrite gg_. Qed.
 Local Lemma dominated_cvg0 : [sequence \int[mu]_(x in D) g_ n x]_n @ \oo --> 0.
 Proof.
 have := fatou mu mD mgg gg_ge0.
-rewrite [X in X <= _ -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x) ); last first.
+rewrite [X in X <= _ -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x) ).
   apply: eq_integral => t; rewrite inE => Dt.
-  rewrite limn_einf_shift//; last by rewrite fin_numM// fing.
-  rewrite is_cvg_limn_einfE//; last first.
+  rewrite limn_einf_shift//; first by rewrite fin_numM// fing.
+  rewrite is_cvg_limn_einfE//.
     by apply: is_cvgeN; apply/cvg_ex; eexists; exact: cvg_g_.
   rewrite [X in _ + X](_ : _ = 0) ?adde0//; apply/cvg_lim => //.
   by rewrite -oppe0; apply: cvgeN; exact: cvg_g_.
@@ -120,27 +120,27 @@ have ? : \int[mu]_(x in D) (2%:E * g x)  \is a fin_num.
   by rewrite ge0_fin_numE// integral_ge0// => ? ?; rewrite mule_ge0 ?lee_fin ?g0.
 rewrite [X in _ <= X -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x)  + -
     limn_esup (fun n => \int[mu]_(x in D) g_ n x)); last first.
-  rewrite (_ : (fun _ => _) = (fun n => \int[mu]_(x in D) (2%:E * g x)  +
-      \int[mu]_(x in D) - g_ n x)); last first.
-    rewrite funeqE => n; rewrite integralB//.
-    - by rewrite -integral_ge0N// => x Dx//; rewrite /g_.
-    - exact: integrableZl.
-    - have integrable_normfn : mu.-integrable D (abse \o f_ n).
-        apply: le_integrable ig => //; first exact: measurableT_comp.
-        by move=> x Dx /=; rewrite abse_id (le_trans (absfg _ Dx))// lee_abs.
-      suff: mu.-integrable D (fun x => `|f_ n x| + `|f x|).
-        apply: le_integrable => //.
-        - by apply: measurableT_comp => //; exact: emeasurable_funB.
-        - move=> x Dx.
-          by rewrite /g_ abse_id (le_trans (lee_abs_sub _ _))// lee_abs.
-      apply: integrableD; [by []| by []|].
-      apply: le_integrable dominated_integrable => //.
-      - exact: measurableT_comp.
-      - by move=> x Dx; rewrite /= abse_id.
+  rewrite addeC -leeBlDr// subee// leeNr oppe0 => lim_ge0.
+  by apply/limn_esup_le_cvg => // n; rewrite integral_ge0// => x _; rewrite /g_.
+rewrite (_ : (fun _ => _) = (fun n => \int[mu]_(x in D) (2%:E * g x)  +
+    \int[mu]_(x in D) - g_ n x)); last first.
   rewrite limn_einf_shift // -limn_einfN; congr (_ + limn_einf _).
   by rewrite funeqE => n /=; rewrite -integral_ge0N// => x Dx; rewrite /g_.
-rewrite addeC -leeBlDr// subee// leeNr oppe0 => lim_ge0.
-by apply/limn_esup_le_cvg => // n; rewrite integral_ge0// => x _; rewrite /g_.
+rewrite funeqE => n; rewrite integralB//; last 1 first.
+- by rewrite -integral_ge0N// => x Dx//; rewrite /g_.
+- exact: integrableZl.
+have integrable_normfn : mu.-integrable D (abse \o f_ n).
+  apply: le_integrable ig => //; first exact: measurableT_comp.
+  by move=> x Dx /=; rewrite abse_id (le_trans (absfg _ Dx))// lee_abs.
+suff: mu.-integrable D (fun x => `|f_ n x| + `|f x|).
+  apply: le_integrable => //.
+  - by apply: measurableT_comp => //; exact: emeasurable_funB.
+  - move=> x Dx.
+    by rewrite /g_ abse_id (le_trans (lee_abs_sub _ _))// lee_abs.
+apply: integrableD; [by []| by []|].
+apply: le_integrable dominated_integrable => //.
+- exact: measurableT_comp.
+- by move=> x Dx; rewrite /= abse_id.
 Qed.
 
 Lemma dominated_cvg :
@@ -148,7 +148,7 @@ Lemma dominated_cvg :
 Proof.
 have h n : `| \int[mu]_(x in D) f_ n x - \int[mu]_(x in D) f x |
     <= \int[mu]_(x in D) g_ n x.
-  rewrite -(integralB _ _ dominated_integrable)//; last first.
+  rewrite -(integralB _ _ dominated_integrable)//.
     by apply: le_integrable ig => // x Dx /=; rewrite (gee0_abs (g0 Dx)) absfg.
   by apply: le_abse_integral => //; exact: emeasurable_funB.
 suff: `| \int[mu]_(x in D) f_ n x - \int[mu]_(x in D) f x | @[n \oo] --> 0.
@@ -234,7 +234,7 @@ split.
     by rewrite /f_' /f' /restrict mem_set.
 - have := @dominated_cvg _ _ _ _ _ mD _ _ _ mu_ f_f' finv ig' f_g'.
   set X := (X in _ -> X @ \oo --> _).
-  rewrite [X in X @ \oo --> _ -> _](_ : _ = X) //; last first.
+  rewrite [X in X @ \oo --> _ -> _](_ : _ = X) //.
     apply/funext => n; apply: ae_eq_integral => //.
     exists N; split => //; rewrite -(setCK N); apply: subsetC => x /= Nx Dx.
     by rewrite /f_' /restrict mem_set.
@@ -327,13 +327,13 @@ have mfn : mu.-integrable E (fun z => `|f^\- z - (n_ n z)%:E|).
 rewrite -[X in (_ <= `|X|)%R]fineD // -integralD //.
 move: finfn finfp => _ _.
 rewrite !ger0_norm ?fine_ge0 ?integral_ge0 ?fine_le//.
+- by move=> x Ex; rewrite adde_ge0.
 - by apply: integrable_fin_num => //; exact/integrable_abse/mfpn.
 - by apply: integrable_fin_num => //; exact: integrableD.
-- apply: ge0_le_integral => //.
-  + by apply: measurableT_comp => //; case/integrableP: (mfpn n).
-  + by apply: emeasurable_funD; [move: mfp | move: mfn]; case/integrableP.
-  + by move=> ? ?; rewrite fpn; exact: lee_abs_sub.
-  + by move=> x Ex; rewrite adde_ge0.
+apply: ge0_le_integral => //.
+- by apply: measurableT_comp => //; case/integrableP: (mfpn n).
+- by apply: emeasurable_funD; [move: mfp | move: mfn]; case/integrableP.
+- by move=> ? ?; rewrite fpn; exact: lee_abs_sub.
 Unshelve. all: by end_near. Qed.
 
 End simple_density_L1.

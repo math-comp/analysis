@@ -20,7 +20,7 @@ From mathcomp Require Import uniform_structure pseudometric_structure.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Import Order.TTheory GRing.Theory Num.Theory.
 

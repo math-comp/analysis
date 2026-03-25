@@ -16,7 +16,7 @@ From mathcomp Require Import derive charge ftc trigo.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -66,14 +66,14 @@ Qed.
 Let P1_lead_coef : lead_coef (a%:P - b *: 'X) = - b.
 Proof.
 rewrite addrC lead_coefDl.
-  by rewrite lead_coefN lead_coefZ lead_coefX mulr1.
-by rewrite size_polyN size_scale ?b0// size_polyX size_polyC; case: (a != 0).
+  by rewrite size_polyN size_scale ?b0// size_polyX size_polyC; case: (a != 0).
+by rewrite lead_coefN lead_coefZ lead_coefX mulr1.
 Qed.
 
 Let P_size : size ((a%:P -  b*:'X) ^+ n) = n.+1.
 Proof.
 elim : n => [|n0 Hn0]; first by rewrite expr0 size_polyC oner_neq0.
-rewrite exprS size_proper_mul; first by rewrite P1_size /= Hn0.
+rewrite exprS size_proper_mul; last by rewrite P1_size /= Hn0.
 by rewrite lead_coef_exp P1_lead_coef -exprS expf_neq0 // oppr_eq0 b0.
 Qed.
 
@@ -148,22 +148,22 @@ Qed.
 Lemma D2FDF : F^`(2) + F = f.
 Proof.
 rewrite /F linear_sum /=.
-rewrite (eq_bigr (fun i : 'I_n.+1 => (-1)^i *: f^`(i.*2.+2))); last first.
+rewrite (eq_bigr (fun i : 'I_n.+1 => (-1)^i *: f^`(i.*2.+2))).
   by move=> i _; rewrite !derivZ.
 rewrite [X in _ + X]big_ord_recl.
 rewrite -exprnP expr0 scale1r (addrC f) addrA -[RHS]add0r.
 congr (_ + _).
-rewrite big_ord_recr addrC addrA -big_split big1=>[|i _].
-  rewrite add0r /=; apply/eqP; rewrite scaler_eq0 -derivnS derivn_poly0.
-    by rewrite deriv0 eqxx orbT.
-  suff -> : size f = (n + n.+1)%N by rewrite addnS addnn.
-  rewrite /f size_scale; last first.
-    by rewrite invr_neq0 // pnatr_eq0 -lt0n (fact_gt0 n).
-  rewrite size_monicM ?monicXn //; last by rewrite -size_poly_eq0 P_size.
-  by rewrite size_polyXn P_size.
-rewrite /bump /= -scalerDl.
-apply/eqP; rewrite scaler_eq0 /bump -exprnP add1n exprSr.
-by rewrite mulrN1 addrC subr_eq0 eqxx orTb.
+rewrite big_ord_recr addrC addrA -big_split big1=>[i _|].
+  rewrite /bump /= -scalerDl.
+  apply/eqP; rewrite scaler_eq0 /bump -exprnP add1n exprSr.
+  by rewrite mulrN1 addrC subr_eq0 eqxx orTb.
+rewrite add0r /=; apply/eqP; rewrite scaler_eq0 -derivnS derivn_poly0; last first.
+  by rewrite deriv0 eqxx orbT.
+suff -> : size f = (n + n.+1)%N by rewrite addnS addnn.
+rewrite /f size_scale.
+  by rewrite invr_neq0 // pnatr_eq0 -lt0n (fact_gt0 n).
+rewrite size_monicM ?monicXn //; first by rewrite -size_poly_eq0 P_size.
+by rewrite size_polyXn P_size.
 Qed.
 
 End algebraic_part.
@@ -192,7 +192,7 @@ Qed.
 Let abx_ge0 x : 0 <= x <= pirat -> 0 <= a - b * x.
 Proof.
 move=> /andP[x0 xpi]; rewrite subr_ge0.
-rewrite -ler_pdivlMl//; last by rewrite /b ltr0n lt0n.
+rewrite -ler_pdivlMl//; first by rewrite /b ltr0n lt0n.
 by rewrite mulrC.
 Qed.
 
@@ -229,8 +229,6 @@ Proof.
 rewrite /intfsin /Rintegral.
 set h := fun x => ((F n)^`()).[x] * sin x - (F n).[x] * cos x.
 rewrite (@continuous_FTC2 _ _ h).
-- rewrite /h sin0 cospi cos0 sinpi !mulr0 !add0r mulr1 mulrN1 !opprK EFinN.
-  by rewrite oppeK -EFinD.
 - by rewrite pi_gt0.
 - exact: cfsin.
 - split=> [x x0pi| |].
@@ -240,6 +238,8 @@ rewrite (@continuous_FTC2 _ _ h).
   + by apply: cvgB; apply: cvgM => //; apply: cvg_at_left_filter;
       (exact: continuous_horner||exact: continuous_sin||exact: continuous_cos).
 - by move=> x x0pi; rewrite -fsin_antiderivative derive1E.
+- rewrite /h sin0 cospi cos0 sinpi !mulr0 !add0r mulr1 mulrN1 !opprK EFinN.
+  by rewrite oppeK -EFinD.
 Qed.
 
 Hypothesis piratE : pirat = pi.
@@ -275,14 +275,14 @@ Qed.
 
 Let intsin : (\int[mu]_(x in `[0%R, pi]) (sin x)%:E = 2%:E)%E.
 Proof.
-rewrite (@continuous_FTC2 _ _ (- cos)) ?pi_gt0//.
+rewrite (@continuous_FTC2 _ _ (- cos)) ?pi_gt0//; last 1 first.
 - by rewrite /= !EFinN cos0 cospi !EFinN oppeK.
 - exact/continuous_subspaceT/continuous_sin.
-- split.
-  + by move=> x x0pi; exact/derivableN/derivable_cos.
-  + by apply: cvgN; apply: cvg_at_right_filter; exact: continuous_cos.
-  + by apply: cvgN; apply: cvg_at_left_filter; exact: continuous_cos.
-  + by move=> x x0pi; rewrite derive1E deriveN// derive_val opprK.
+split.
+- by move=> x x0pi; exact/derivableN/derivable_cos.
+- by apply: cvgN; apply: cvg_at_right_filter; exact: continuous_cos.
+- by apply: cvgN; apply: cvg_at_left_filter; exact: continuous_cos.
+- by move=> x x0pi; rewrite derive1E deriveN// derive_val opprK.
 Qed.
 
 Let integrable_fsin n : mu.-integrable `[0%R, pi] (EFin \o fsin n).
@@ -294,7 +294,7 @@ Qed.
 Let small_ballS (m : R := pi / 2) (d := pi / 4) :
   closed_ball m d `<=` `]0%R, pi[.
 Proof.
-move=> z; rewrite closed_ball_itv/=; last by rewrite divr_gt0// pi_gt0.
+move=> z; rewrite closed_ball_itv/=; first by rewrite divr_gt0// pi_gt0.
 rewrite in_itv/= => /andP[mdz zmd]; rewrite in_itv/=; apply/andP; split.
   rewrite (lt_le_trans _ mdz)// subr_gt0.
   by rewrite ltr_pM2l// ?pi_gt0// ltf_pV2// ?posrE// ltr_nat.
@@ -315,7 +315,7 @@ exists (fsin n c).
   have /(_ _)/andP[]// := @fsin_bounded n c n0.
   have := @small_ballS c; rewrite /=in_itv/=; apply.
   by rewrite closed_ball_itv//= divr_gt0// pi_gt0.
-move=> x /set_mem; rewrite closed_ball_itv//=; first exact: Hc.
+move=> x /set_mem; rewrite closed_ball_itv//=; last exact: Hc.
 by rewrite divr_gt0// pi_gt0.
 Qed.
 
@@ -335,10 +335,10 @@ apply/andP; split.
   have [r r0] := @min_fsin _ n0.
   pose m : R := pi / 2; pose d : R := pi / 4 => rn.
   apply: (@lt_le_trans _ _ (\int[mu]_(x in closed_ball m d) r%:E))%E.
-    rewrite integral_cst//=; last exact: measurable_closed_ball.
+    rewrite integral_cst//=; first exact: measurable_closed_ball.
     rewrite mule_gt0// lebesgue_measure_closed_ball//.
-      by rewrite lte_fin mulrn_wgt0// divr_gt0// pi_gt0.
-    by rewrite divr_ge0// pi_ge0.
+      by rewrite divr_ge0// pi_ge0.
+    by rewrite lte_fin mulrn_wgt0// divr_gt0// pi_gt0.
   apply: (@le_trans _ _ (\int[mu]_(x in (closed_ball m d)) (fsin n x)%:E))%E.
     apply: ge0_le_integral => //=.
     - exact: measurable_closed_ball.
@@ -386,7 +386,7 @@ have : pi * (pi * a) ^+ n / n`!%:R @[n --> \oo] --> 0.
   by apply: cvgMl_tmp; exact: exp_fact.
 move/cvgrPdist_lt => /(_ e e0).
 apply: filterS => n.
-rewrite sub0r normrN ger0_norm; last first.
+rewrite sub0r normrN ger0_norm.
   by rewrite !mulr_ge0 ?pi_ge0// exprn_ge0// mulr_ge0// pi_ge0.
 by rewrite mulrA; exact.
 Unshelve. all: by end_near. Qed.
@@ -407,7 +407,7 @@ have [N _] := pi_irrational.intfsin_small b0 (esym piratE) (@ltr01 R).
 near \oo%classic => n.
 have Nn : (N <= n)%N by near: n; exists N.
 have := @pi_irrational.intfsin_int R _ _ b0 (esym piratE) n.
-rewrite intrEge0; last by rewrite ltW// pi_irrational.intfsin_gt0.
+rewrite intrEge0; first by rewrite ltW// pi_irrational.intfsin_gt0.
 move=> + /(_ n Nn).
 move/natrP => [k] ->.
 rewrite ltr0n ltrn1.

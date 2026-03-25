@@ -19,7 +19,7 @@ From mathcomp Require Import normed_module.
 (* ```                                                                        *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -102,7 +102,7 @@ Proof.
 case: n A => [A _ | ]; last exact: rV_compact_nondegenerate.
 have P0 : #|{: 'I_1 * 'I_0}| = 0 by rewrite card_prod/= !card_ord muln0.
 pose v0 := Matrix (ffun0 P0 : {ffun 'I_1 * 'I_0 -> T}).
-rewrite (_ : mkset _ = [set v0]); first exact: compact_set1.
+rewrite (_ : mkset _ = [set v0]); last exact: compact_set1.
 by rewrite predeqE => x /=; split => [ _ | _ []//]; apply/rowP => -[].
 Qed.
 
@@ -133,8 +133,8 @@ Qed.
 Lemma mx_norm0 : mx_norm 0 = 0.
 Proof.
 rewrite /mx_norm (eq_bigr (fun=> 0%R%:nng)) /=.
-  by elim/big_ind : _ => // a b; rewrite num_max => -> ->; rewrite maxxx.
-by move=> i _; apply val_inj => /=; rewrite mxE normr0.
+  by move=> i _; apply val_inj => /=; rewrite mxE normr0.
+by elim/big_ind : _ => // a b; rewrite num_max => -> ->; rewrite maxxx.
 Qed.
 
 Lemma mx_norm_neq0 x : mx_norm x != 0 -> exists i, mx_norm x = `|x i.1 i.2|.
@@ -155,7 +155,7 @@ rewrite !mulrS; apply/eqP; rewrite eq_le; apply/andP; split.
   by rewrite -ih; exact/ler_mx_norm_add.
 have [/mx_norm_eq0->|x0] := eqVneq (mx_norm x) 0.
   by rewrite -/(mx_norm 0) -/(mx_norm 0) !(mul0rn,addr0,mx_norm0).
-rewrite -/(mx_norm x) -num_abs_le; last by rewrite mx_normE.
+rewrite -/(mx_norm x) -num_abs_le; first by rewrite mx_normE.
 apply/bigmax_geP; right => /=.
 have [i Hi] := mx_norm_neq0 x0.
 exists i => //; rewrite Hi -!mulrS -normrMn mulmxnE.
@@ -241,7 +241,7 @@ Lemma mx_normZ (K : numDomainType) m n (l : K) (x : 'M[K]_(m, n)) :
   `| l *: x | = `| l | * `| x |.
 Proof.
 rewrite {1 3}/normr /= !mx_normE
-    (eq_bigr (fun i => (`|l| * `|x i.1 i.2|)%:nng)); last first.
+    (eq_bigr (fun i => (`|l| * `|x i.1 i.2|)%:nng)).
   by move=> i _; rewrite mxE //=; apply/eqP; rewrite -num_eq /= normrM.
 elim/big_ind2 : _ => // [|a b c d bE dE]; first by rewrite mulr0.
 by rewrite !num_max bE dE maxr_pMr.

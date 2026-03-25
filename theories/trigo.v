@@ -37,7 +37,7 @@ From mathcomp Require Import measure lebesgue_measure lebesgue_integral ftc.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -159,10 +159,10 @@ rewrite unlock.
 have /(@cvg_series_cvg_series_group _ _ 2) := @is_cvg_series_sin_coeff x.
 move=> /(_ isT); apply: cvg_trans.
 rewrite [X in _ --> series X @ \oo](_ : _ = (fun n => sin_coeff x n.*2.+1)).
-  rewrite [X in series X @ \oo --> _](_ : _ = (fun n => sin_coeff x n.*2.+1)) //.
-  by rewrite funeqE => n; exact: sin_coeff'E.
-rewrite funeqE=> n; rewrite /= 2!muln2 big_nat_recl //= sin_coeff_even add0r.
-by rewrite big_nat_recl // big_geq // addr0.
+  rewrite funeqE=> n; rewrite /= 2!muln2 big_nat_recl //= sin_coeff_even add0r.
+  by rewrite big_nat_recl // big_geq // addr0.
+rewrite [X in series X @ \oo --> _](_ : _ = (fun n => sin_coeff x n.*2.+1)) //.
+by rewrite funeqE => n; exact: sin_coeff'E.
 Qed.
 
 Lemma diffs_sin :
@@ -182,7 +182,7 @@ Qed.
 Lemma sin0 : sin 0 = 0 :> R.
 Proof.
 rewrite unlock.
-apply: lim_near_cst => //; near=> m; rewrite -[m]prednK; last by near: m.
+apply: lim_near_cst => //; near=> m; rewrite -[m]prednK; first by near: m.
 rewrite -addn1 series_addn series_sin_coeff0 big_add1 big1 ?addr0//.
 by move=> i _; rewrite /sin_coeff /= expr0n !(mulr0, mul0r).
 Unshelve. all: by end_near. Qed.
@@ -239,7 +239,7 @@ Proof.
 rewrite unlock.
 have /(@cvg_series_cvg_series_group _ _ 2) := @is_cvg_series_cos_coeff x.
 move=> /(_ isT); apply: cvg_trans.
-rewrite [X in _ --> series X @ \oo](_ : _ = (fun n => cos_coeff x n.*2)); last first.
+rewrite [X in _ --> series X @ \oo](_ : _ = (fun n => cos_coeff x n.*2)).
   rewrite funeqE=> n; rewrite /= 2!muln2 big_nat_recr //= cos_coeff_odd addr0.
   by rewrite big_nat_recl//= /index_iota subnn big_nil addr0.
 rewrite [X in series X @ \oo --> _](_ : _ = (fun n => cos_coeff x n.*2)) //.
@@ -266,7 +266,7 @@ Qed.
 Lemma cos0 : cos 0 = 1 :> R.
 Proof.
 rewrite unlock.
-apply: lim_near_cst => //; near=> m; rewrite -[m]prednK; last by near: m.
+apply: lim_near_cst => //; near=> m; rewrite -[m]prednK; first by near: m.
 rewrite -addn1 series_addn series_cos_coeff0 big_add1 big1 ?addr0//.
 by move=> i _; rewrite /cos_coeff /= expr0n !(mulr0, mul0r).
 Unshelve. all: by end_near. Qed.
@@ -276,16 +276,16 @@ Proof.
 rewrite sinE /=.
 pose s : R^nat := fun n => (odd n)%:R * (-1) ^+ (n.-1)./2 / n`!%:R.
 pose s1 n := pseries_diffs s n * x ^+ n.
-rewrite cosE /= /pseries (_ : (fun _ => _) = s1); last first.
+rewrite cosE /= /pseries (_ : (fun _ => _) = s1).
   by apply/funext => i; rewrite /s1 diffs_sin.
 apply: (@pseries_snd_diffs _ _ (`|x| + 1)); rewrite /pseries.
 - by rewrite -sin_coeffE; apply: is_cvg_series_sin_coeff.
 - rewrite (_ : (fun _ => _) = cos_coeff (`|x| + 1)).
-    exact: is_cvg_series_cos_coeff.
-  by apply/funext => i; rewrite diffs_sin cos_coeffE.
+    by apply/funext => i; rewrite diffs_sin cos_coeffE.
+  exact: is_cvg_series_cos_coeff.
 - rewrite /pseries (_ : (fun _ => _) = - sin_coeff (`|x| + 1)).
-    by rewrite is_cvg_seriesN; exact: is_cvg_series_sin_coeff.
-  by apply/funext => i; rewrite diffs_sin diffs_cos sin_coeffE !fctE !mulNr.
+    by apply/funext => i; rewrite diffs_sin diffs_cos sin_coeffE !fctE !mulNr.
+  by rewrite is_cvg_seriesN; exact: is_cvg_series_sin_coeff.
 - by rewrite [ltRHS]ger0_norm// addrC -subr_gt0 addrK.
 Qed.
 
@@ -303,18 +303,18 @@ rewrite cosE /=.
 pose s : R^nat := fun n => (~~ odd n)%:R * (-1) ^+ n./2 / n`!%:R.
 pose s1 n := pseries_diffs s n * x ^+ n.
 rewrite sinE /= /pseries.
-rewrite (_ : (fun _ => _) = - s1); last first.
+rewrite (_ : (fun _ => _) = - s1).
   by apply/funext => i; rewrite /s1 diffs_cos !fctE mulNr opprK.
-rewrite lim_seriesN ?opprK; last first.
+rewrite lim_seriesN ?opprK.
   rewrite (_ : s1 = - sin_coeff x).
-    by rewrite is_cvg_seriesN; exact: is_cvg_series_sin_coeff.
-  by apply/funext => i; rewrite /s1 diffs_cos sin_coeffE !fctE mulNr.
+    by apply/funext => i; rewrite /s1 diffs_cos sin_coeffE !fctE mulNr.
+  by rewrite is_cvg_seriesN; exact: is_cvg_series_sin_coeff.
 apply: (@pseries_snd_diffs _ _ (`|x| + 1)).
 - by rewrite /pseries -cos_coeffE; apply: is_cvg_series_cos_coeff.
 - rewrite /pseries (_ : (fun _ => _) = - sin_coeff (`|x| + 1)).
-    by rewrite is_cvg_seriesN; exact: is_cvg_series_sin_coeff.
-  by apply/funext => i; rewrite diffs_cos sin_coeffE !fctE mulNr.
-- rewrite /pseries (_ : (fun _=> _) = - cos_coeff (`|x| + 1)).
+    by apply/funext => i; rewrite diffs_cos sin_coeffE !fctE mulNr.
+  by rewrite is_cvg_seriesN; exact: is_cvg_series_sin_coeff.
+- rewrite /pseries (_ : (fun _=> _) = - cos_coeff (`|x| + 1)); last first.
     by rewrite is_cvg_seriesN; exact: is_cvg_series_cos_coeff.
   apply/funext => i; rewrite diffs_cos pseries_diffsN.
   by rewrite diffs_sin cos_coeffE mulNr.
@@ -377,14 +377,14 @@ Qed.
 Lemma sinD x y : sin (x + y) = sin x * cos y + cos x * sin y.
 Proof.
 have /eqP := sinD_cosD x y.
-rewrite paddr_eq0 => [/andP[]||]; try exact: sqr_ge0.
+rewrite paddr_eq0 => [||/andP[]]; try exact: sqr_ge0.
 by rewrite sqrf_eq0 subr_eq0 => /eqP.
 Qed.
 
 Lemma cosD x y : cos (x + y) = cos x * cos y - sin x * sin y.
 Proof.
 have /eqP := sinD_cosD x y.
-rewrite paddr_eq0 => [/andP[_]||]; try exact: sqr_ge0.
+rewrite paddr_eq0 => [||/andP[_]]; try exact: sqr_ge0.
 by rewrite sqrf_eq0 subr_eq0 => /eqP.
 Qed.
 
@@ -415,14 +415,14 @@ Qed.
 Lemma sinN x : sin (- x) = - sin x.
 Proof.
 have /eqP := sinN_cosN x.
-rewrite paddr_eq0 => [/andP[]||]; try exact: sqr_ge0.
+rewrite paddr_eq0 => [||/andP[]]; try exact: sqr_ge0.
 by rewrite sqrf_eq0 addr_eq0 => /eqP.
 Qed.
 
 Lemma cosN x : cos (- x) = cos x.
 Proof.
 have /eqP := sinN_cosN x.
-rewrite paddr_eq0 => [/andP[_]||]; try exact: sqr_ge0.
+rewrite paddr_eq0 => [||/andP[_]]; try exact: sqr_ge0.
 by rewrite sqrf_eq0 subr_eq0 => /eqP.
 Qed.
 
@@ -502,7 +502,7 @@ move=> d.
 rewrite /cos_coeff' 2!exprzD_nat (exprSz _ d.*2) -[in (-1) ^ d.*2](muln2 d).
 rewrite -(exprnP _ (d * 2)) (exprM (-1)) sqrr_sign 2!mulr1 -exprSzr.
 rewrite -[4%Z]/(_ (2 * 2))%N -(exprnP _ (2 * 2)) (exprM (-1)) sqrr_sign.
-rewrite mul1r [(-1) ^ 3](_ : _ = -1) ?mulN1r ?mulNr ?opprK; last first.
+rewrite mul1r [(-1) ^ 3](_ : _ = -1) ?mulN1r ?mulNr ?opprK.
   by rewrite -exprnP 2!exprS expr1 mulrN1 opprK mulr1.
 rewrite subr_gt0.
 rewrite addnS doubleS -[X in 2 ^+ X]addn2 exprD -mulrA ltr_pM2l//.
@@ -517,7 +517,7 @@ Proof.
 move=> /andP[x_gt0 x_lt2].
 have sinx := @cvg_sin_coeff' _ x.
 rewrite -(cvg_lim (@Rhausdorff R) sinx).
-rewrite [ltLHS](_ : 0 = \sum_(0 <= i < 0) sin_coeff' x i :> R); last first.
+rewrite [ltLHS](_ : 0 = \sum_(0 <= i < 0) sin_coeff' x i :> R).
   by rewrite big_nil.
 apply: lt_sum_lim_series; first by move/cvgP in sinx.
 move=> d.
@@ -529,9 +529,9 @@ rewrite mulNr -!mulrA -mulrBr mulr_gt0 ?exprn_gt0 //.
 set u := _.+1.
 rewrite natrM invfM.
 rewrite -[X in _ < X - _]mul1r !mulrA -mulrBl divr_gt0 // subr_gt0.
-set v := _ ^_ _; rewrite -[ltRHS](divff (_ : v%:R != 0)); last first.
+set v := _ ^_ _; rewrite -[ltRHS](divff (_ : v%:R != 0)).
   by rewrite lt0r_neq0 // (ltr_nat _ 0) ffact_gt0 leq_addl.
-rewrite ltr_pM2r; last by rewrite invr_gt0 (ltr_nat _ 0) ffact_gt0 leq_addl.
+rewrite ltr_pM2r; first by rewrite invr_gt0 (ltr_nat _ 0) ffact_gt0 leq_addl.
 rewrite {}/v !addnS addn0 !ffactnS ffactn0 muln1 /= natrM.
 by rewrite (ltr_pM (ltW _ ) (ltW _)) // (lt_le_trans x_lt2) // ler_nat.
 Qed.
@@ -956,13 +956,13 @@ Qed.
 Lemma sin_acos x : -1 <= x <= 1 -> sin (acos x) = Num.sqrt (1 - x^+2).
 Proof.
 move=> xB.
-rewrite -[LHS]ger0_norm; last by rewrite sin_ge0_pi // acos_ge0 ?acos_lepi.
+rewrite -[LHS]ger0_norm; first by rewrite sin_ge0_pi // acos_ge0 ?acos_lepi.
 by rewrite -sqrtr_sqr sin2cos2 acosK.
 Qed.
 
 Lemma continuous_acos x : -1 < x < 1 -> {for x, continuous (@acos R)}.
 Proof.
-move=> /andP[x_gtN1 x_lt1]; rewrite -[x]acosK; first last.
+move=> /andP[x_gtN1 x_lt1]; rewrite -[x]acosK.
   by have : -1 <= x <= 1 by rewrite !ltW //; case/andP: xB.
 apply: nbhs_singleton (near_can_continuous _ _); last first.
   by near=> z; apply: continuous_cos.
@@ -977,7 +977,7 @@ Lemma is_derive1_acos x :
   -1 < x < 1 -> is_derive x 1 (@acos R) (- (Num.sqrt (1 - x ^+ 2))^-1).
 Proof.
 move=> /andP[x_gtN1 x_lt1]; rewrite -sin_acos ?ltW // -invrN.
-rewrite -{1}[x]acosK; last by rewrite in_itv /= ?ltW.
+rewrite -{1}[x]acosK; first by rewrite in_itv /= ?ltW.
 have /near_in_itvoo aI : acos x \in `]0, pi[.
   by rewrite in_itv/= acos_gt0 ?ltW //= acos_ltpi // x_gtN1 ltW.
 apply: (@is_derive_inverse R cos).
@@ -986,7 +986,7 @@ apply: (@is_derive_inverse R cos).
   by near: z.
 - by near=> z; apply: continuous_cos.
 - rewrite oppr_eq0 sin_acos ?ltW // sqrtr_eq0 // -ltNge subr_gt0.
-  rewrite -real_normK ?qualifE/=; last by case: ltrgt0P.
+  rewrite -real_normK ?qualifE/=; first by case: ltrgt0P.
   by rewrite exprn_cp1 // ltr_norml x_gtN1.
 Unshelve. all: by end_near. Qed.
 
@@ -1054,13 +1054,13 @@ Qed.
 
 Lemma cos_asin x : -1 <= x <= 1 -> cos (asin x) = Num.sqrt (1 - x^+2).
 Proof.
-move=> xB; rewrite -[LHS]ger0_norm; first by rewrite -sqrtr_sqr cos2sin2 asinK.
+move=> xB; rewrite -[LHS]ger0_norm; last by rewrite -sqrtr_sqr cos2sin2 asinK.
 by apply: cos_ge0_pihalf; rewrite asin_lepi2 // asin_geNpi2.
 Qed.
 
 Lemma continuous_asin x : -1 < x < 1 -> {for x, continuous (@asin R)}.
 Proof.
-move=> /andP[x_gtN1 x_lt1]; rewrite -[x]asinK; first last.
+move=> /andP[x_gtN1 x_lt1]; rewrite -[x]asinK.
   by have : -1 <= x <= 1 by rewrite !ltW //; case/andP: xB.
 apply: nbhs_singleton (near_can_continuous _ _); last first.
   by near=> z; apply: continuous_sin.
@@ -1076,7 +1076,7 @@ Lemma is_derive1_asin x :
   -1 < x < 1 -> is_derive x 1 (@asin R) (Num.sqrt (1 - x ^+ 2))^-1.
 Proof.
 move=> /andP[x_gtN1 x_lt1]; rewrite -cos_asin ?ltW //.
-rewrite -{1}[x]asinK; last by have : -1 <= x <= 1 by rewrite ltW // ltW.
+rewrite -{1}[x]asinK; first by have : -1 <= x <= 1 by rewrite ltW // ltW.
 have /near_in_itvoo aI : asin x \in `](-(pi/2)), (pi/2)[.
   by rewrite in_itv/= asin_gtNpi2 ?ltW ?andbT //= asin_ltpi2 // ltW.
 apply: (@is_derive_inverse R sin).
@@ -1086,7 +1086,7 @@ apply: (@is_derive_inverse R sin).
   by near: z.
 - by near=> z; exact: continuous_sin.
 - rewrite cos_asin ?ltW // sqrtr_eq0 // -ltNge subr_gt0.
-  rewrite -real_normK ?qualifE/=; last by case: ltrgt0P.
+  rewrite -real_normK ?qualifE/=; first by case: ltrgt0P.
   by rewrite exprn_cp1 // ltr_norml x_gtN1.
 Unshelve. all: by end_near. Qed.
 
@@ -1145,14 +1145,14 @@ case: (He (Num.sg x * acos x1)); split; last first.
   rewrite /tan sin_sg cos_sg // acosK ?sin_acos// /x1 sqr_sqrtr// ?invr_ge0//.
   rewrite -[X in 1 - X]div1r -[X in X - _]divr1// -mulNr addf_div ?lt0r_neq0//.
   rewrite mul1r mulr1 [X in X - 1]addrC addrK// sqrtrM ?sqr_ge0// sqrtrV//.
-  rewrite invrK// mulrA divfK//; last by rewrite sqrtr_eq0 -ltNge.
+  rewrite invrK// mulrA divfK//; first by rewrite sqrtr_eq0 -ltNge.
   by rewrite sqrtr_sqr -numEsg.
 rewrite -ltr_norml normrM.
 have pi2 : 0 < pi / 2 :> R by rewrite divr_gt0 // pi_gt0.
 have [->|xD0] := eqVneq x 0; first by rewrite sgr0 normr0 mul0r.
 rewrite normr_sg xD0 mul1r ltr_norml.
 rewrite (@lt_le_trans _ _ 0) ?acos_ge0 ?oppr_cp0 //=.
-rewrite -ltr_cos ?in_itv/= ?acos_ge0/= ?acos_lepi//; last first.
+rewrite -ltr_cos ?in_itv/= ?acos_ge0/= ?acos_lepi//.
   by rewrite ltW//= ler_pdivrMr// ler_pMr ?pi_gt0// ler1n.
 by rewrite cos_pihalf acosK// sqrtr_gt0 ?invr_gt0.
 Qed.
@@ -1257,7 +1257,7 @@ Lemma cvgy_atan : (@atan R) x @[x --> +oo] --> pi / 2.
 Proof.
 have ? : ubound (range (@atan R)) (pi / 2).
   by move=> _ /= [x _ <-]; exact/ltW/atan_ltpi2.
-rewrite (_ : pi / 2 = sup (range atan)).
+rewrite (_ : pi / 2 = sup (range atan)); last first.
   by apply/(nondecreasing_cvgr le_atan); exists (pi / 2).
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
   by apply: ge_sup => //; exists 0, 0 => //; exact: atan0.
@@ -1281,20 +1281,19 @@ Proof.
 rewrite le_eqVlt => /predU1P[<-|b0].
   by rewrite set_itv1 Rintegral_set1 atan0.
 rewrite /Rintegral (@continuous_FTC2 _ _ atan)//.
-- by rewrite atan0 sube0.
 - by apply: continuous_in_subspaceT => x ?; exact: continuous_oneDsqrV.
 - split.
   + by move=> x _; exact: derivable_atan.
   + by apply: cvg_at_right_filter; exact: continuous_atan.
   + by apply: cvg_at_left_filter; exact: continuous_atan.
 - by move=> x x01; rewrite derive1_atan// mul1r.
+- by rewrite atan0 sube0.
 Qed.
 
 Lemma integral0y_oneDsqr :
   (\int[mu]_(x in `[0%R, +oo[) (oneDsqr x)^-1%:E = (pi / 2)%:E)%E.
 Proof.
 rewrite (ge0_continuous_FTC2y _ _ cvgy_atan)/=.
-- by rewrite atan0 oppr0 addr0.
 - by move=> x _; rewrite invr_ge0.
 - apply/continuous_within_itvcyP; split.
     by move=> x x0; apply: continuous_oneDsqrV.
@@ -1302,6 +1301,7 @@ rewrite (ge0_continuous_FTC2y _ _ cvgy_atan)/=.
 - move=> x x0; apply: ex_derive.
 - by apply: cvg_at_right_filter; exact: continuous_atan.
 - by move=> x _; rewrite derive1E; exact: derive_val.
+- by rewrite atan0 oppr0 addr0.
 Qed.
 
 End Atan.

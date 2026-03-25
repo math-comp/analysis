@@ -31,7 +31,7 @@ From mathcomp Require Import lebesgue_measure lebesgue_integral.
 
 Reserved Notation "m >>= f" (at level 49).
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -121,12 +121,12 @@ have mintgE n : measurable_fun [set: giry T R] (intEg n).
   by apply: measurable_funeM => //=; exact: measurable_giry_ev.
 apply: (emeasurable_fun_cvg _ (giry_int ^~ f) mintgE) => mu _.
 rewrite (_ : giry_int mu f = \int[mu]_x limn (Eg ^~ x)).
-  apply: cvg_monotone_convergence => //.
-  - by move=> n; exact/measurable_EFinP.
-  - by move=> n x _; rewrite lee_fin.
-  - by move=> t _ n m nm; apply/lefP/nd_nnsfun_approx.
-apply: eq_integral => t _.
-by apply/esym/cvg_lim  => //; exact/cvg_nnsfun_approx.
+  apply: eq_integral => t _.
+  by apply/esym/cvg_lim  => //; exact/cvg_nnsfun_approx.
+apply: cvg_monotone_convergence => //.
+- by move=> n; exact/measurable_EFinP.
+- by move=> n x _; rewrite lee_fin.
+- by move=> t _ n m nm; apply/lefP/nd_nnsfun_approx.
 Qed.
 
 End giry_integral.
@@ -241,11 +241,11 @@ Let join_ge0 A : 0 <= join A. Proof. by rewrite /join integral_ge0. Qed.
 Let join_semi_sigma_additive : semi_sigma_additive join.
 Proof.
 move=> F mF tF _; rewrite [X in _ --> X](_ : _ =
-    giry_int M (fun x => \sum_(0 <= k <oo) x (F k))); last first.
+    giry_int M (fun x => \sum_(0 <= k <oo) x (F k))).
   apply: eq_integral => mu _.
   by apply/esym/cvg_lim => //; exact: measure_sigma_additive.
 rewrite [X in X @ _](_ : _ =
-    (fun n => giry_int M (fun mu => \sum_(0 <= i < n) mu (F i)))); last first.
+    (fun n => giry_int M (fun mu => \sum_(0 <= i < n) mu (F i)))).
   apply/funext => n; rewrite -ge0_integral_sum//.
   by move=> ?; exact: measurable_giry_ev.
 apply: cvg_monotone_convergence => //.
@@ -292,9 +292,9 @@ Lemma sintegral_giry_join (M : giry (giry T R) R) (h : {nnsfun T >-> R}) :
   sintegral (giry_join M) h = \int[M]_mu sintegral mu h.
 Proof.
 under eq_integral do rewrite sintegralE.
-rewrite ge0_integral_fsum//; last 2 first.
-  by move=> r; apply: measurable_funeM; exact: measurable_giry_ev.
-  by move=> n x _; exact: nnsfun_mulemu_ge0.
+rewrite ge0_integral_fsum//.
+- by move=> r; apply: measurable_funeM; exact: measurable_giry_ev.
+- by move=> n x _; exact: nnsfun_mulemu_ge0.
 rewrite sintegralE /=; apply: eq_fsbigr => // r rh.
 rewrite integralZl//.
 have := finite_measure_integrable_cst M 1 measurableT.
@@ -323,10 +323,10 @@ transitivity (limn (fun n => \int[M]_mu \int[mu]_x gE n x)).
   apply: congr_lim; apply/funext => n.
   rewrite integralT_nnsfun sintegral_giry_join; apply: eq_integral => x _.
   by rewrite integralT_nnsfun.
-rewrite -[LHS]monotone_convergence//; last 3 first.
-  by move=> n; exact: measurable_giry_int.
-  by move=> n x _; exact: integral_ge0.
-  by move=> x _ m n mn; apply: ge0_le_integral => // t _; exact: nd_gE.
+rewrite -[LHS]monotone_convergence//.
+- by move=> n; exact: measurable_giry_int.
+- by move=> n x _; exact: integral_ge0.
+- by move=> x _ m n mn; apply: ge0_le_integral => // t _; exact: nd_gE.
 apply: eq_integral => mu _.
 rewrite -monotone_convergence//.
 apply: eq_integral => t _.
@@ -372,7 +372,7 @@ Lemma giry_joinA (x : giry (giry (giry T1 R) R) R) :
   (giry_join \o giry_join) x.
 Proof.
 move=> A mA/=.
-rewrite giry_int_map//; last exact: measurable_giry_ev.
+rewrite giry_int_map//; first exact: measurable_giry_ev.
 by rewrite giry_int_join//; exact: measurable_giry_ev.
 Qed.
 
@@ -381,8 +381,8 @@ Lemma giry_join_id1 (x : giry T1 R) :
   (giry_join \o giry_ret) x.
 Proof.
 move=> A mA/=.
-rewrite giry_int_map//; last exact: measurable_giry_ev.
-rewrite giry_int_ret//; last exact: measurable_giry_ev.
+rewrite giry_int_map//; first exact: measurable_giry_ev.
+rewrite giry_int_ret//; first exact: measurable_giry_ev.
 by rewrite /giry_int /giry_ev /giry_ret/= /dirac integral_indic// setIT.
 Qed.
 

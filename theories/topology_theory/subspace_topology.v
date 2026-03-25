@@ -33,7 +33,7 @@ From mathcomp Require Import product_topology.
 Reserved Notation "{ 'within' A , 'continuous' f }"
   (format "{ 'within'  A ,  'continuous'  f }").
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -155,8 +155,8 @@ Qed.
 Lemma open_subspace_out (U : set (subspace A)) : U `<=` ~` A -> open U.
 Proof.
 move=> Usub; rewrite (_ : U = \bigcup_(i in U) [set i]).
-  by apply: bigcup_open => ? ?; apply: open_subspace1out; exact: Usub.
-by rewrite eqEsubset; split => x; [move=> ?; exists x|case=> i ? ->].
+  by rewrite eqEsubset; split => x; [move=> ?; exists x|case=> i ? ->].
+by apply: bigcup_open => ? ?; apply: open_subspace1out; exact: Usub.
 Qed.
 
 Lemma open_subspaceT : open (A : set (subspace A)).
@@ -167,8 +167,8 @@ Proof.
 apply/propext; split; last first.
   by move=> oU; apply: openI => //; apply: open_subspaceT.
 move=> oUA; rewrite (_ : U = (U `&` A) `|` (U `&` ~`A)).
-  by apply: openU => //; apply: open_subspace_out => ? [].
-by rewrite -setIUr setUCr setIT.
+  by rewrite -setIUr setUCr setIT.
+by apply: openU => //; apply: open_subspace_out => ? [].
 Qed.
 
 Lemma open_subspaceTI (U : set (subspace A)) :
@@ -608,11 +608,10 @@ suff sAfE : separated (AfE false) (AfE true).
     have [t Et ftu] : (f @` A) u by rewrite fAE; case: b Ebu; [right|left].
     by exists t; split => //=; rewrite /preimage ftu.
   - by rewrite -setIUr -preimage_setU -fAE; exact/esym/setIidPl/preimage_image.
-  + rewrite -{2}(setIid A) ?setIA -(@closure_subspaceW _ A); last by move=> ?[].
+  + rewrite -{2}(setIid A) ?setIA -(@closure_subspaceW _ A); first by move=> ?[].
     by rewrite -/(AfE false) -setIA -/(AfE true); case: sAfE.
-  + rewrite -{1}(setIid A) setIC ?setIA -(@closure_subspaceW _ A).
-      by rewrite -/(AfE true) -setIA -/(AfE false) setIC; case: sAfE.
-    by move=> ?[].
+  + rewrite -{1}(setIid A) setIC ?setIA -(@closure_subspaceW _ A) => [? []//|].
+    by rewrite -/(AfE true) -setIA -/(AfE false) setIC; case: sAfE.
 suff cI0 b : closure (AfE b) `&` AfE (~~ b) = set0.
   by rewrite /separated cI0 setIC cI0.
 have [fAfE cEIE] :

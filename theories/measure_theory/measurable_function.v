@@ -24,7 +24,7 @@ Reserved Notation "{ 'mfun' aT >-> T }"
 Reserved Notation "[ 'mfun' 'of' f ]"
   (at level 0, format "[ 'mfun'  'of'  f ]").
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -89,7 +89,7 @@ Lemma measurable_comp F (f : T2 -> T3) E (g : T1 -> T2) :
 Proof.
 move=> mF FgE mf mg /= mE A mA.
 rewrite comp_preimage.
-rewrite (_ : _ `&` _ = E `&` g @^-1` (F `&` f @^-1` A)); last first.
+rewrite (_ : _ `&` _ = E `&` g @^-1` (F `&` f @^-1` A)).
   apply/seteqP; split=> [|? [?] []//].
   by move=> x/= [Ex Afgx]; split => //; split => //; exact: FgE.
 by apply/mg => //; exact: mf.
@@ -99,7 +99,7 @@ Lemma eq_measurable_fun D (f g : T1 -> T2) :
   {in D, f =1 g} -> measurable_fun D f -> measurable_fun D g.
 Proof.
 by move=> fg mf mD A mA; rewrite [X in measurable X](_ : _ = D `&` f @^-1` A);
-  [exact: mf|exact/esym/eq_preimage].
+  [exact/esym/eq_preimage|exact: mf].
 Qed.
 
 Lemma measurable_fun_eqP D (f g : T1 -> T2) :
@@ -153,11 +153,11 @@ Proof.
 move=> mx my /= _ B mB; rewrite (_ : _ @^-1` B =
     ((f @^-1` [set true]) `&` (g @^-1` B)) `|`
     ((f @^-1` [set false]) `&` (h @^-1` B))).
-  rewrite setIUr; apply: measurableU.
-  - by rewrite setIA; apply: mx => //; exact: mf.
-  - by rewrite setIA; apply: my => //; exact: mf.
-apply/seteqP; split=> [t /=| t /= [] [] ->//].
-by case: ifPn => ft; [left|right].
+  apply/seteqP; split=> [t /=| t /= [] [] ->//].
+  by case: ifPn => ft; [left|right].
+rewrite setIUr; apply: measurableU.
+- by rewrite setIA; apply: mx => //; exact: mf.
+- by rewrite setIA; apply: my => //; exact: mf.
 Qed.
 
 Lemma measurable_fun_set0 (f : T1 -> T2) : measurable_fun set0 f.
@@ -274,7 +274,7 @@ Lemma measurable_fun_bool D f b :
   measurable (D `&` f @^-1` [set b]) -> measurable_fun D f.
 Proof.
 move=> mb mD; have mDb : measurable (D `&` f @^-1` [set ~~ b]).
-  rewrite (_ : [set ~~ b] = [set~ b]); last first.
+  rewrite (_ : [set ~~ b] = [set~ b]).
     by apply/seteqP; split=> -[] /=; case: b {mb}.
   by rewrite -preimage_setC; exact: measurableID.
 by case: b => /= in mb mDb *; exact: measurable_fun_TF.
@@ -286,7 +286,7 @@ Lemma measurable_and D f g : measurable_fun D f -> measurable_fun D g ->
 Proof.
 move=> mf mg mD; apply: (measurable_fun_bool true) => //.
 rewrite [X in measurable X](_ : _ = D `&` f @^-1` [set true] `&`
-                                    (D `&` g @^-1` [set true])); last first.
+                                    (D `&` g @^-1` [set true])).
   by rewrite setIACA setIid; congr (_ `&` _); apply/seteqP; split => x /andP.
 by apply: measurableI; [exact: mf|exact: mg].
 Qed.
@@ -296,8 +296,8 @@ Lemma measurable_neg D f :
 Proof.
 move=> mf mD; apply: (measurable_fun_bool true) => //.
 rewrite [X in measurable X](_ : _ = (D `&` f @^-1` [set false])).
-  exact: mf.
-by apply/seteqP; split => [x [Dx/= /negbTE]|x [Dx/= ->]].
+  by apply/seteqP; split => [x [Dx/= /negbTE]|x [Dx/= ->]].
+exact: mf.
 Qed.
 
 Lemma measurable_or D f g : measurable_fun D f -> measurable_fun D g ->
@@ -305,8 +305,8 @@ Lemma measurable_or D f g : measurable_fun D f -> measurable_fun D g ->
 Proof.
 move=> mf mg.
 rewrite [X in measurable_fun _ X](_ : _ = (fun x => ~~ (~~ f x && ~~ g x))).
-  by apply: measurable_neg; apply: measurable_and; exact: measurable_neg.
-by apply/funext=> x; rewrite -negb_or negbK.
+  by apply/funext=> x; rewrite -negb_or negbK.
+by apply: measurable_neg; apply: measurable_and; exact: measurable_neg.
 Qed.
 
 End measurable_fun_bool.
@@ -470,7 +470,7 @@ move=> mf mg; apply/measurable_fun_tnthP => /= i.
 have [->//|i0] := eqVneq i ord0.
 have i1n : (i.-1 < n)%N by rewrite prednK ?lt0n// -ltnS.
 pose j := Ordinal i1n.
-rewrite (_ : _ \o _ = fun x => tnth (g x) j)//.
+rewrite (_ : _ \o _ = fun x => tnth (g x) j)//; last first.
   apply: (@measurableT_comp _ _ _ _ _ _ (fun x => tnth x j)) => //=.
   exact: measurable_tnth.
 apply/funext => x /=.

@@ -44,7 +44,7 @@ From mathcomp Require Import realfun.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -88,7 +88,7 @@ exists (PosNum [gt0 of (d%:num / 2)]) => //=.
 move: h => /(_ (a + d%:num / 2)) /=.
 rewrite opprD addNKr normrN ger0_norm// ltr_pdivrMr// ltr_pMr// 2!ltrDl.
 rewrite ltr01 divr_gt0// => /(_ erefl erefl).
-rewrite ler0_norm; last first.
+rewrite ler0_norm.
   by rewrite subr_le0 (cumulative_is_nondecreasing f)// lerDl.
 by rewrite opprB ltrBlDl; exact: ltW.
 Qed.
@@ -228,9 +228,9 @@ Lemma finite_wlength_itv i : neitv i -> wlength [set` i] < +oo ->
   wlength [set` i] = (fine (g i.2))%:E - (fine (g i.1))%:E.
 Proof.
 move=> i0 ioo; have [i1f i2f] := wlength_finite_fin_num i0 ioo.
-rewrite fineK; last first.
+rewrite fineK.
   by rewrite /g; move: i2f; case: (ereal_of_itv_bound i.2).
-rewrite fineK; last first.
+rewrite fineK.
   by rewrite /g; move: i1f; case: (ereal_of_itv_bound i.1).
 rewrite wlength_itv; case: ifPn => //; rewrite -leNgt le_eqVlt => /predU1P[->|].
   by rewrite subee// /g; move: i1f; case: (ereal_of_itv_bound i.1).
@@ -357,7 +357,7 @@ have bbi2 j : P j -> (b j).1 < (b j).2 -> (b j).2 <= (b i).2.
 apply/IHp.
 - by rewrite lt_neqAle a1bi/= a1b.
 - rewrite (leq_trans _ cP)// -(cardID (pred1 i) P).
-  rewrite [X in (_ < X + _)%N](@eq_card _ _ (pred1 i)); last first.
+  rewrite [X in (_ < X + _)%N](@eq_card _ _ (pred1 i)).
     by move=> j; rewrite !inE andbC; case: eqVneq => // ->.
   rewrite ?card1 ?ltnS// subset_leq_card//.
   by apply/fintype.subsetP => j; rewrite -topredE/= !inE andbC.
@@ -419,7 +419,7 @@ wlog wlogh : b A AE lebig / forall n, (b n).1 <= (b n).2.
   move=> /= h.
   set A' := fun n => if (b n).1 >= (b n).2 then set0 else A n.
   set b' := fun n => if (b n).1 >= (b n).2 then (0, 0) else b n.
-  rewrite [leRHS](_ : _ = \sum_(n <oo) wlength f (A' n))%E; last first.
+  rewrite [leRHS](_ : _ = \sum_(n <oo) wlength f (A' n))%E.
     apply: (@eq_eseriesr _ (wlength f \o A) (wlength f \o A')) => k.
     rewrite /= /A' AE; case: ifPn => // bn.
     by rewrite set_itv_ge//= bnd_simp -leNgt.
@@ -472,7 +472,7 @@ apply: (@le_trans _ _ (\sum_(i <- X) (wlength f `](b i).1, (b i).2]%classic) +
     by move: x kx; exact: subset_itv_oo_oc.
   rewrite addeC -big_split/=; apply: lee_sum => k _.
   by rewrite !(EFinB, wlength_itv_bnd)// addeA subeK.
-rewrite -big_split/= nneseries_esum//; last by move=> k _; rewrite adde_ge0.
+rewrite -big_split/= nneseries_esum//; first by move=> k _; rewrite adde_ge0.
 rewrite esum_ge//; exists [set` X] => //; rewrite fsbig_finite//= set_fsetK.
 rewrite big_seq [in X in (_ <= X)%E]big_seq; apply: lee_sum => k kX.
 by rewrite AE leeD2l// lee_fin lerBlDl natrX De.
@@ -639,7 +639,7 @@ pose I n : set R := `]- (n%:R), n%:R]%classic.
 have : (lsf \o I) n @[n --> \oo] --> 1%E.
   have -> : lsf \o I = (fun n => (f n%:R)%:E - (f (- n%:R))%:E)%E.
     apply/funext=> n; rewrite /= /lsf/= /lebesgue_stieltjes_measure.
-    rewrite /measure_extension measurable_mu_extE/=; last exact: is_ocitv.
+    rewrite /measure_extension measurable_mu_extE/=; first exact: is_ocitv.
     by rewrite wlength_itv_bnd// ge0_cp.
   rewrite -(sube0 1); apply: cvgeB => //.
   - by apply/cvg_EFin; [near=> F

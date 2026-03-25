@@ -23,7 +23,7 @@ From mathcomp Require Import lebesgue_integral_dominated_convergence.
 
 Reserved Notation "'d1 f" (at level 10, f at next level, format "''d1'  f").
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -75,7 +75,7 @@ have mUU n : measurable (\big[setU/set0]_(k < n) U k).
 set UU := \bigcup_n U n.
 have mUUoo : measurable UU by exact: bigcup_measurable.
 have {U0}UU0 : mu UU = 0.
-  rewrite /UU seqDU_bigcup_eq measure_bigcup//; last first.
+  rewrite /UU seqDU_bigcup_eq measure_bigcup//.
     by move=> ? _; apply: measurableD => //; exact: bigsetU_measurable.
   apply: eseries0 => n _ _; apply/eqP; rewrite -measure_le0.
   rewrite -[leRHS](U0 n) le_measure ?inE//; first exact: measurableD.
@@ -97,9 +97,9 @@ have : {near \oo, (fun n => \int[mu]_(x in B `\` ZUU) f (w n) x) =1
 move/near_eq_cvg/cvg_trans; apply.
 rewrite -(cvg_shiftn N).
 apply: fine_cvg.
-rewrite /Rintegral (negligible_integral mZUU)//; last exact: int_f.
-rewrite fineK; last first.
-  rewrite fin_num_abs -(negligible_integral mZUU)//; last exact: int_f.
+rewrite /Rintegral (negligible_integral mZUU)//; first exact: int_f.
+rewrite fineK.
+  rewrite fin_num_abs -(negligible_integral mZUU)//; first exact: int_f.
   by have /integrableP[? ?] := int_f Ia; exact/abse_integralP.
 apply: (@dominated_cvg _ _ _ mu _ _
     (fun n x => (f (w (n + N)) x)%:E) _ (EFin \o g)) => //=.
@@ -185,7 +185,7 @@ suff: forall x_, (forall n : nat, x_ n != a) ->
   near=> M.
   have /suf : (n <= M - N)%N.
     by rewrite leq_subRL; near: M; exact: nbhs_infty_ge.
-  rewrite /x subnKC; last by near: M; exact: nbhs_infty_ge.
+  rewrite /x subnKC; first by near: M; exact: nbhs_infty_ge.
   by rewrite (addrC a) addrK.
 move=> {t t_neq0 t_cvg0} x_ x_neqa x_cvga Ix_.
 pose g_ n y : R := (f (x_ n) y - f a y) / (x_ n - a).
@@ -256,15 +256,15 @@ have [intd1f g_d1f_0 _] := @dominated_convergence _ _ _ mu _ mB
   Bg_G.
 rewrite /= in g_d1f_0.
 rewrite [X in X @ _ --> _](_ : _ =
-    (fun h => \int[mu]_(z in B) g_ h z)); last first.
-  apply/funext => m; rewrite /F -RintegralB; [|by []|exact: intf..].
-  rewrite -[LHS]RintegralZl; [|by []|].
-  - by apply: eq_Rintegral => y _; rewrite mulrC.
+    (fun h => \int[mu]_(z in B) g_ h z)).
+  apply/funext => m; rewrite /F -RintegralB; [by []|exact: intf..|].
+  rewrite -[LHS]RintegralZl; [by []| |].
   - rewrite /comp; under eq_fun do rewrite EFinB.
     by apply: integrableB => //; exact: intf.
+  - by apply: eq_Rintegral => y _; rewrite mulrC.
 apply/subr_cvg0.
 rewrite [X in X @ _ --> _](_ : _ =
-    (fun x => \int[mu]_(z in B) (g_ x z - ('d1 f) a z)))%R; last first.
+    (fun x => \int[mu]_(z in B) (g_ x z - ('d1 f) a z)))%R.
   by apply/funext => n; rewrite RintegralB.
 apply: norm_cvg0.
 have {}g_d1f_0 : (\int[mu]_(y in B) `|g_ n y - ('d1 f) a y|) @[n --> \oo] --> 0.

@@ -123,7 +123,7 @@ From mathcomp Require Import ereal topology normedtype sequences.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -322,12 +322,12 @@ Lemma sigma_algebraP T U (C : set (set T)) :
 Proof.
 move=> C_subU; split => [[C0 CD CU]|[DT DC DU DI]]; split.
 - by rewrite -(setD0 U); apply: CD.
-- move=> A B BA CA CB; rewrite (_ : A `\` B = U `\` ((U `\` A) `|` B)).
+- move=> A B BA CA CB; rewrite (_ : A `\` B = U `\` ((U `\` A) `|` B)); last first.
     by apply CD; rewrite -bigcup2E; apply: CU => -[|[|[|]]] //=; exact: CD.
   rewrite setDUr setDD [in RHS]setDE setIACA setIid -setDE setIidr//.
   by rewrite setDE; apply: subIset; left; apply: C_subU.
 - by move=> F ndF DF; exact: CU.
-- move=> A B DA DB; rewrite (_ : A `&` B = U `\` ((U `\` A) `|` (U `\` B))).
+- move=> A B DA DB; rewrite (_ : A `&` B = U `\` ((U `\` A) `|` (U `\` B))); last first.
     by apply CD; rewrite -bigcup2E; apply: CU => -[|[|[|]]] //; exact: CD.
   rewrite setDUr !setDD setIACA setIid (@setIidr _ U)//.
   by apply: subIset; left; exact: C_subU.
@@ -335,17 +335,17 @@ move=> C_subU; split => [[C0 CD CU]|[DT DC DU DI]]; split.
 - by move=> A CA; apply: DC => //; exact: C_subU.
 - move=> F DF.
   rewrite [X in C X](_ : _ = \bigcup_i \big[setU/set0]_(j < i.+1) F j).
-    apply: DU; first by move=> *; exact/subsetPset/subset_bigsetU.
-    elim=> [|n ih]; first by rewrite big_ord_recr /= big_ord0 set0U; exact: DF.
-    have CU : setU_closed C.
-      move=> A B DA DB; rewrite (_ : A `|` B = U `\` ((U `\` A) `&` (U `\` B))).
-        apply DC => //; last by apply: DI; apply: DC => //; exact: C_subU.
-        by apply: subIset; left; apply: subIset; left.
+    rewrite predeqE => x; split => [[n _ Fnx]|[n _]].
+      by exists n => //; rewrite big_ord_recr /=; right.
+    by rewrite -bigcup_mkord => -[m /=]; rewrite ltnS => _ Fmx; exists m.
+  apply: DU; first by move=> *; exact/subsetPset/subset_bigsetU.
+  elim=> [|n ih]; first by rewrite big_ord_recr /= big_ord0 set0U; exact: DF.
+  have CU : setU_closed C.
+    move=> A B DA DB; rewrite (_ : A `|` B = U `\` ((U `\` A) `&` (U `\` B))).
       by rewrite setDIr// !setDD (setIidr (C_subU _ DA)) (setIidr (C_subU _ _)).
-    by rewrite big_ord_recr; exact: CU.
-  rewrite predeqE => x; split => [[n _ Fnx]|[n _]].
-    by exists n => //; rewrite big_ord_recr /=; right.
-  by rewrite -bigcup_mkord => -[m /=]; rewrite ltnS => _ Fmx; exists m.
+    apply DC => //; last by apply: DI; apply: DC => //; exact: C_subU.
+    by apply: subIset; left; apply: subIset; left.
+  by rewrite big_ord_recr; exact: CU.
 Qed.
 
 Section generated_sigma_algebra.
@@ -556,7 +556,7 @@ pose H_ A := [set X | H X /\ H (X `&` A)].
 have setDH_ A : setSD_closed (H_ A).
   move=> X Y XY [HX HXA] [HY HYA]; case: lambdaDG => h _ setDH _; split.
     exact: setDH.
-  rewrite (_ : _ `&` _ = (X `&` A) `\` (Y `&` A)); last first.
+  rewrite (_ : _ `&` _ = (X `&` A) `\` (Y `&` A)).
     rewrite predeqE => x; split=> [[[? ?] ?]|]; first by split => // -[].
     by move=> [[? ?] YAx]; split => //; split => //; apply: contra_not YAx.
   by apply: setDH => //; exact: setSI.
@@ -599,10 +599,9 @@ Lemma lambda_system_subset : (forall X, (<<s D, G >>) X -> X `<=` D) ->
   <<s D, G >> `<=` H.
 Proof.
 move=> sDGD; set M := <<l D, G >>.
-rewrite -(@smallest_lambda_system _ _ setIG D) //.
-- exact: smallest_sub.
-- apply: lambda_system_smallest => A GA.
-  by apply: sDGD; exact: sub_sigma_algebra.
+rewrite -(@smallest_lambda_system _ _ setIG D) //; last exact: smallest_sub.
+apply: lambda_system_smallest => A GA.
+by apply: sDGD; exact: sub_sigma_algebra.
 Qed.
 
 End lambda_system_subset.
@@ -647,7 +646,7 @@ split => [[GT setCG trG]|[_ GT setDG ndG]]; split => //.
   elim=> /= => [|n ih].
     by rewrite /A big_ord_recr /= big_ord0 set0U; exact: GF.
   rewrite /A /= big_ord_recr /= -/(A n).
-  rewrite (_ : _ `|` _ = ~` (~` A n `\` F n.+1)); last first.
+  rewrite (_ : _ `|` _ = ~` (~` A n `\` F n.+1)).
     by rewrite setDE setCI !setCK.
   rewrite -setTD; apply: (setDG) => //; apply: (setDG) => //; last first.
     by rewrite -setTD; apply: setDG.
@@ -1194,9 +1193,9 @@ Proof.
 move=> m1; have [->//|/set0P[r Ar]/countable_injP[f injf]] := eqVneq A set0.
 rewrite -(injpinv_image (cst r) injf).
 rewrite [X in _ X](_ : _ = \bigcup_(x in f @` A) [set 'pinv_(cst r) A f x]).
-  by apply: bigcup_measurable => _ /= [s As <-].
-by rewrite eqEsubset; split=> [_ [_ [s As <-]] <-|_ [_ [s As <-]] ->];
-  exists (f s).
+  by rewrite eqEsubset; split=> [_ [_ [s As <-]] <-|_ [_ [s As <-]] ->];
+    exists (f s).
+by apply: bigcup_measurable => _ /= [s As <-].
 Qed.
 Section sigma_ring_lambda_system.
 Context d (T : sigmaRingType d).
@@ -1222,7 +1221,7 @@ Lemma countable_bigcupT_measurable d (T : sigmaRingType d) U
 Proof.
 elim/Ppointed: U => U in F *; first by move=> *; rewrite empty_eq0 bigcup0.
 move=> /countable_bijP[B] /ppcard_eqP[f] Fm.
-rewrite (reindex_bigcup f^-1%FUN setT)//=; first exact: bigcupT_measurable.
+rewrite (reindex_bigcup f^-1%FUN setT)//=; last exact: bigcupT_measurable.
 exact: (@subl_surj _ _ B).
 Qed.
 
@@ -1412,7 +1411,7 @@ Proof.
 move=> [G0 GC GU]; split; rewrite /image_set_system.
 - by rewrite /= preimage_set0 setI0.
 - move=> A /= GfAD; rewrite setTD -preimage_setC -setDE.
-  rewrite (_ : _ `\` _ = D `\` (D `&` f @^-1` A)); first exact: GC.
+  rewrite (_ : _ `\` _ = D `\` (D `&` f @^-1` A)); last exact: GC.
   rewrite predeqE => x; split=> [[Dx fAx]|[Dx fADx]].
     by split => // -[] _ /fAx.
   by split => //; exact: contra_not fADx.
@@ -1477,7 +1476,7 @@ transitivity (\big[op/idx]_(X <- (A @` D')%fset) F X).
     move=> Di XAi; exists i; rewrite // !(inE, in_fset_set)//=.
     by rewrite (mem_set Di)/= -XAi; apply: contra_neq FXNidx => ->.
   by move=> /andP[Di AiN0] XAi; exists i; rewrite ?in_fset_set.
-rewrite big_imfset//=; last first.
+rewrite big_imfset//=.
   move=> i j; rewrite !(inE, in_fset_set)//= => /andP[+ +] /andP[+ +].
   rewrite !inE => Di /set0P[x Aix] Dj _ Aij.
   by apply: (Atriv _ _ Di Dj); exists x; split=> //; rewrite -Aij.

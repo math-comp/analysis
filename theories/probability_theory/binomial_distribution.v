@@ -24,7 +24,7 @@ From mathcomp Require Import lebesgue_integral bernoulli_distribution.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -96,11 +96,11 @@ move=> p01; rewrite /binomial_pmf.
 have pkn k : 0%R <= (p ^+ k * p.~ ^+ (n - k) *+ 'C(n, k))%:E.
   case/andP : p01 => p0 p1.
   by rewrite lee_fin mulrn_wge0// mulr_ge0 ?exprn_ge0 ?subr_ge0.
-rewrite (esumID `I_n.+1)// [X in _ + X]esum1 ?adde0; last first.
+rewrite (esumID `I_n.+1)// [X in _ + X]esum1 ?adde0.
   by move=> /= k [_ /negP]; rewrite -leqNgt => nk; rewrite bin_small.
 rewrite setTI esum_fset// -fsbig_ord//=.
 under eq_bigr do rewrite mulrC.
-rewrite sumEFin -exprDn_comm; last exact: mulrC.
+rewrite sumEFin -exprDn_comm; first exact: mulrC.
 by rewrite addrC add_onemK expr1n.
 Qed.
 
@@ -137,9 +137,9 @@ rewrite /binomial_prob; case: ifPn => [_|]; last by rewrite p1 p0.
 rewrite /msum/= /mscale/= /binomial_pmf.
 have pkn k : (0%R <= (p ^+ k * p.~ ^+ (n - k) *+ 'C(n, k))%:E)%E.
   by rewrite lee_fin mulrn_wge0// mulr_ge0 ?exprn_ge0 ?subr_ge0.
-rewrite (esumID `I_n.+1)//= [X in _ + X]esum1 ?adde0; last first.
+rewrite (esumID `I_n.+1)//= [X in _ + X]esum1 ?adde0.
   by move=> /= k [_ /negP]; rewrite -leqNgt => nk; rewrite bin_small.
-rewrite esum_mkcondl esum_fset//; last by move=> i /= _; case: ifPn.
+rewrite esum_mkcondl esum_fset//; first by move=> i /= _; case: ifPn.
 rewrite -fsbig_ord//=; apply: eq_bigr => i _.
 by rewrite diracE; case: ifPn => /= iU; [rewrite mule1|rewrite mule0].
 Qed.
@@ -163,15 +163,15 @@ Lemma integral_binomial_prob (R : realType) n p U : 0 <= p <= 1 ->
   (\int[binomial_prob n p]_y \d_(0 < y)%N U =
   bernoulli_prob (1 - p.~ ^+ n) U :> \bar R)%E.
 Proof.
-move=> /andP[p0 p1]; rewrite bernoulli_probE//=; last first.
-  rewrite subr_ge0 exprn_ile1//=; [|exact/onem_ge0|exact/onem_le1].
+move=> /andP[p0 p1]; rewrite bernoulli_probE//=.
+  rewrite subr_ge0 exprn_ile1//=; [exact/onem_ge0|exact/onem_le1|].
   by rewrite -subr_ge0 opprB subrKC; exact/exprn_ge0/onem_ge0.
 rewrite (@integral_binomial _ n p _ _ (fun y => \d_(1 <= y)%N U))//.
 rewrite !big_ord_recl/=.
 rewrite expr0 mul1r subn0 bin0 ltnn mulr1n addrC.
 rewrite onemD opprK onem1 add0r; congr +%E.
 rewrite /bump; under eq_bigr do rewrite leq0n add1n ltnS leq0n.
-rewrite -ge0_sume_distrl; last first.
+rewrite -ge0_sume_distrl.
   by move=> i _; apply/mulrn_wge0; rewrite mulr_ge0 ?exprn_ge0// onem_ge0.
 congr *%E.
 transitivity (\sum_(i < n.+1) (p.~ ^+ (n - i) * p ^+ i *+ 'C(n, i))%:E -
@@ -192,7 +192,7 @@ apply: measurable_fun_if => //=.
 apply: (eq_measurable_fun (fun t =>
     \sum_(k <oo | k \in Ys) (binomial_pmf n t k)%:E))%E.
   move=> x /set_mem[_/= x01].
-  rewrite nneseries_esum//; last by move=> *; rewrite lee_fin binomial_pmf_ge0.
+  rewrite nneseries_esum//; first by move=> *; rewrite lee_fin binomial_pmf_ge0.
   by rewrite set_mem_set.
 apply: ge0_emeasurable_sum.
   by move=> k x/= [_ x01] _; rewrite lee_fin binomial_pmf_ge0.

@@ -42,7 +42,7 @@ From mathcomp Require Import topology_structure.
 (* ```                                                                        *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -225,8 +225,8 @@ Lemma cvg_entourageP F (FF : Filter F) (p : M) :
   F --> p <-> forall A, entourage A -> \forall q \near F, A (p, q).
 Proof.
 rewrite -filter_fromP [X in filter_from _ X](_ : _ = @xsection M M ^~ p)//.
-  by rewrite filter_from_entourageE.
-by apply/funext => E; apply/seteqP; split => [|] ? /xsectionP.
+  by apply/funext => E; apply/seteqP; split => [|] ? /xsectionP.
+by rewrite filter_from_entourageE.
 Qed.
 
 Lemma cvg_entourage {F} {FF : Filter F} (x : M) :

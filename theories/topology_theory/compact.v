@@ -34,7 +34,7 @@ From mathcomp Require Import uniform_structure pseudometric_structure.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -387,7 +387,7 @@ wlog [k D'k] : D' sD sAnfcov / exists i, i \in D'.
   - by move=> p /sAnfcov [i D'i Anfip]; exists i => //=; rewrite !inE D'i.
   - by exists j; rewrite !inE orbC eq_refl.
 exists D' => /(_ sD) [p Ifp].
-have /Ifp := D'k; rewrite feAg; last by have /sD := D'k; rewrite inE.
+have /Ifp := D'k; rewrite feAg; first by have /sD := D'k; rewrite inE.
 by move=> [/sAnfcov [i D'i [_ nfip]] _]; have /Ifp := D'i.
 Qed.
 

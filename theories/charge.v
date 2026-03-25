@@ -91,7 +91,7 @@ Reserved Notation "nu .-positive_set" (at level 2, format "nu .-positive_set").
 
 Declare Scope charge_scope.
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -173,17 +173,17 @@ Lemma charge_semi_additiveW nu :
   nu set0 = 0 -> measure_function.semi_additive nu -> semi_additive2 nu.
 Proof.
 move=> nu0 anu A B mA mB + AB; rewrite -bigcup2inE bigcup_mkord.
-move=> /(anu (bigcup2 A B)) ->.
+move=> /(anu (bigcup2 A B)) ->; last 1 first.
 - by rewrite !(big_ord_recl, big_ord0)/= adde0.
 - by move=> [|[|[]]]//=.
-- move=> [|[|i]] [|[|j]]/= _ _ //.
-  + by rewrite AB => -[].
-  + by rewrite setI0 => -[].
-  + by rewrite setIC AB => -[].
-  + by rewrite setI0 => -[].
-  + by rewrite set0I => -[].
-  + by rewrite set0I => -[].
-  + by rewrite setI0 => -[].
+move=> [|[|i]] [|[|j]]/= _ _ //.
+- by rewrite AB => -[].
+- by rewrite setI0 => -[].
+- by rewrite setIC AB => -[].
+- by rewrite setI0 => -[].
+- by rewrite set0I => -[].
+- by rewrite set0I => -[].
+- by rewrite setI0 => -[].
 Qed.
 
 Lemma charge_semi_additive2E nu : semi_additive2 nu = additive2 nu.
@@ -203,11 +203,11 @@ Lemma chargeDI nu (A B : set T) : measurable A -> measurable B ->
   nu A = nu (A `\` B) + nu (A `&` B).
 Proof.
 move=> mA mB; rewrite -charge_semi_additive2.
-- by rewrite -setDDr setDv setD0.
 - exact: measurableD.
 - exact: measurableI.
 - by apply: measurableU; [exact: measurableD |exact: measurableI].
 - by rewrite setDE setIACA setICl setI0.
+- by rewrite -setDDr setDv setD0.
 Qed.
 
 Lemma charge_partition nu S P N :
@@ -277,8 +277,8 @@ Lemma chargeD nu (A B : set T) : measurable A -> measurable B ->
 Proof.
 move=> mA mB.
 rewrite (chargeDI nu mA mB) addeK// fin_numE 1?gt_eqF 1?lt_eqF//.
-- by rewrite ltey_eq fin_num_measure//; exact:measurableI.
 - by rewrite ltNye_eq fin_num_measure//; exact:measurableI.
+- by rewrite ltey_eq fin_num_measure//; exact:measurableI.
 Qed.
 
 End charge_lemmas_realFieldType.
@@ -309,7 +309,7 @@ have tFD : trivIset setT FD.
   apply/trivIsetP => i j _ _ ij.
   move/trivIsetP : tF => /(_ i j Logic.I Logic.I ij).
   by rewrite /FD setIACA => ->; rewrite set0I.
-rewrite -(charge_semi_additive _ _ mFD)//; last exact: bigsetU_measurable.
+rewrite -(charge_semi_additive _ _ mFD)//; first exact: bigsetU_measurable.
 by rewrite /crestr /FD big_distrl.
 Qed.
 
@@ -358,8 +358,8 @@ Let crestr0_sigma_additive : semi_sigma_additive restr.
 Proof.
 move=> F mF tF mU; rewrite /crestr0 mem_set//.
 rewrite [X in X @ _ --> _](_ : _ = (fun n => \sum_(0 <= i < n) crestr nu mD (F i))).
-  exact: charge_semi_sigma_additive.
-by apply/funext => n; apply: eq_bigr => i _; rewrite mem_set.
+  by apply/funext => n; apply: eq_bigr => i _; rewrite mem_set.
+exact: charge_semi_sigma_additive.
 Qed.
 
 HB.instance Definition _ := isCharge.Build _ _ _
@@ -380,7 +380,7 @@ Proof. by []. Qed.
 
 Let czero_sigma_additive : semi_sigma_additive czero.
 Proof.
-move=> F mF tF mUF; rewrite [X in X @ _ --> _](_ : _ = cst 0); first exact: cvg_cst.
+move=> F mF tF mUF; rewrite [X in X @ _ --> _](_ : _ = cst 0); last exact: cvg_cst.
 by apply/funext => n; rewrite big1.
 Qed.
 
@@ -418,11 +418,11 @@ HB.instance Definition _ :=
 Let cscale_sigma_additive : semi_sigma_additive cscale.
 Proof.
 move=> F mF tF mUF; rewrite /cscale; rewrite [X in X @ _ --> _](_ : _ =
-    (fun n => r%:E * \sum_(0 <= i < n) nu (F i))); last first.
+    (fun n => r%:E * \sum_(0 <= i < n) nu (F i))).
   apply/funext => k; rewrite fin_num_sume_distrr// => i j _ _.
   by rewrite fin_num_adde_defl// fin_num_measure.
 rewrite /mscale; have [->|r0] := eqVneq r 0%R.
-  rewrite mul0e [X in X @ _ --> _](_ : _ = (fun=> 0)); first exact: cvg_cst.
+  rewrite mul0e [X in X @ _ --> _](_ : _ = (fun=> 0)); last exact: cvg_cst.
   by under eq_fun do rewrite mul0e.
 by apply: cvgeZl => //; exact: charge_semi_sigma_additive.
 Qed.
@@ -466,7 +466,7 @@ Proof. by move=> mA; rewrite fin_numN fin_num_measure. Qed.
 Let copp_sigma_additive : semi_sigma_additive copp.
 Proof.
 move=> F mF tF mUF; rewrite /copp; under eq_fun.
-  move=> n; rewrite sumeN; last first.
+  move=> n; rewrite sumeN.
     by move=> p q _ _; rewrite fin_num_adde_defl// fin_num_measure.
   over.
 exact/cvgeN/charge_semi_sigma_additive.
@@ -694,7 +694,7 @@ have := d_ge0 A; rewrite le_eqVlt => /predU1P[<-|d_gt0].
 have /ereal_sup_gt/cid2[_ [B/= [mB BDA <- mnuB]]] : m < d_ A.
   rewrite /m; have [->|dn1oo] := eqVneq (d_ A) +oo.
     by rewrite min_r ?ltey ?gt0_mulye ?leey.
-  rewrite -(@fineK _ (d_ A)); last by rewrite gt0_fin_numE// ltey.
+  rewrite -(@fineK _ (d_ A)); first by rewrite gt0_fin_numE// ltey.
   rewrite -EFinM -fine_min// lte_fin gt_min; apply/orP; left.
   by rewrite ltr_pdivrMr// ltr_pMr ?ltr1n// fine_gt0// d_gt0/= ltey.
 by exists B; split => //; rewrite (le_trans _ (ltW mnuB)).
@@ -738,10 +738,10 @@ have nuAoo : 0 <= nu Aoo.
   move/cvg_lim : cvg_nuA => <-//=; apply: nneseries_ge0 => n _ _.
   exact: nuA_ge0.
 have A_cvg_0 : nu (A_ (v n)) @[n --> \oo] --> 0.
-  rewrite [X in X @ _ --> _](_ : _ = (fun n => (fine (nu (A_ (v n))))%:E)); last first.
+  rewrite [X in X @ _ --> _](_ : _ = (fun n => (fine (nu (A_ (v n))))%:E)).
     by apply/funext => n/=; rewrite fineK// fin_num_measure.
   apply: continuous_cvg => //; apply: cvg_series_cvg_0.
-  rewrite (_ : series _ = fine \o (fun n => \sum_(0 <= i < n) nu (A_ (v i)))); last first.
+  rewrite (_ : series _ = fine \o (fun n => \sum_(0 <= i < n) nu (A_ (v i)))).
     apply/funext => n /=.
     by rewrite /series/= sum_fine//= => i _; rewrite fin_num_measure.
   move: cvg_nuA; rewrite -(@fineK _ (nu Aoo)) ?fin_num_measure//.
@@ -752,7 +752,7 @@ have mine_cvg_0 : (mine (g_ (v n) * 2^-1%:E) 1) @[n --> \oo] --> 0.
   by apply: nearW => n /=; rewrite nuA_g_ andbT le_min lee01 andbT mule_ge0.
 have g_cvg_0 : (g_ \o v) n @[n --> \oo] --> 0 by apply: mine2_cvg_0_cvg_0 => //=.
 have nuDAoo : nu D >= nu (D `\` Aoo).
-  rewrite -[in leRHS](@setDUK _ Aoo D); last first.
+  rewrite -[in leRHS](@setDUK _ Aoo D).
     by apply: bigcup_sub => i _; exact: A_D.
   by rewrite chargeU// ?leeDr// ?setDIK//; exact: measurableD.
 split; [by []| |by []]; split; [exact: measurableD | move=> E mE EDAoo].
@@ -829,7 +829,7 @@ have := s_le0 U; rewrite le_eqVlt => /predU1P[->|s_lt0].
 have /ereal_inf_lt/cid2[_ [B/= [mB BU] <-] nuBm] : s_ U < m.
   rewrite /m; have [->|s0oo] := eqVneq (s_ U) -oo.
     by rewrite max_r ?ltNye// gt0_mulNye// leNye.
-  rewrite -(@fineK _ (s_ U)); last by rewrite lt0_fin_numE// ltNye.
+  rewrite -(@fineK _ (s_ U)); first by rewrite lt0_fin_numE// ltNye.
   rewrite -EFinM -fine_max// lte_fin lt_max; apply/orP; left.
   by rewrite ltr_pdivlMr// gtr_nMr ?ltr1n// fine_lt0// s_lt0/= ltNye andbT.
 have [C [CB nsC nuCB]] := hahn_decomposition_lemma nu mB.
@@ -876,7 +876,7 @@ have not_s_cvg_0 : ~ (z_ \o v) n @[n --> \oo]  --> 0.
     by rewrite normr_gt0// fine_eq0// ?lt_eqF// fin_num_measure.
   near \oo => n.
   have /hM : (M <= n)%N by near: n; exists M.
-  rewrite sub0r normrN /= ler0_norm ?fine_le0// ltr0_norm//; last first.
+  rewrite sub0r normrN /= ler0_norm ?fine_le0// ltr0_norm//.
     by rewrite fine_lt0// nuD0 andbT ltNye_eq fin_num_measure.
   rewrite ltrN2; apply/negP; rewrite -leNgt fine_le ?fin_num_measure//.
   by near: n; exact.
@@ -900,13 +900,13 @@ have : cvg (series (fun n => fine (maxe (z_ (v n) * 2^-1%:E) (- 1%E))) n @[n -->
   rewrite (_ : _ \o _ = (fun n =>
     \sum_(0 <= k < n) fine (maxe (z_ (v k) * 2^-1%:E)%E (- 1%E)%E))%R) //.
   apply/funext => n/=; rewrite sum_fine// => m _.
-  rewrite le0_fin_numE; first by rewrite lt_max ltNyr orbT.
+  rewrite le0_fin_numE; last by rewrite lt_max ltNyr orbT.
   by rewrite /maxe; case: ifPn => // _; rewrite mule_le0_ge0.
 move/cvg_series_cvg_0 => maxe_cvg_0.
 apply: not_s_cvg_0.
-rewrite (_ : _ \o _ = (fun n => z_ (v n) * 2^-1%:E) \* cst 2%:E); last first.
+rewrite (_ : _ \o _ = (fun n => z_ (v n) * 2^-1%:E) \* cst 2%:E).
   by apply/funext => n/=; rewrite -muleA -EFinM mulVf ?mule1.
-rewrite (_ : 0 = 0 * 2%:E); last by rewrite mul0e.
+rewrite (_ : 0 = 0 * 2%:E); first by rewrite mul0e.
 apply: cvgeM; [by rewrite mule_def_fin| |exact: cvg_cst].
 apply/fine_cvgP; split.
   move/cvgrPdist_lt : maxe_cvg_0 => /(_ _ ltr01)[M _ hM]; near=> n.
@@ -933,15 +933,15 @@ move=> [psP1 nsN1 PN1T PN10] [psP2 nsN2 PN2T PN20] S mS.
 move: (psP1) (nsN1) (psP2) (nsN2) => [mP1 _] [mN1 _] [mP2 _] [mN2 _].
 split.
 - transitivity (nu (S `&` P1 `&` P2)).
-  + rewrite (charge_partition _ _ mP2 mN2)//; last exact: measurableI.
+  + rewrite (charge_partition _ _ mP2 mN2)//; first exact: measurableI.
     by rewrite (positive_negative0 psP1 nsN2 mS) adde0.
-  + rewrite [RHS](charge_partition _ _ mP1 mN1)//; last exact: measurableI.
+  + rewrite [RHS](charge_partition _ _ mP1 mN1)//; first exact: measurableI.
     by rewrite (positive_negative0 psP2 nsN1 mS) adde0 setIAC.
 - transitivity (nu (S `&` N1 `&` N2)).
-  + rewrite (charge_partition nu _ mP2 mN2)//; last exact: measurableI.
+  + rewrite (charge_partition nu _ mP2 mN2)//; first exact: measurableI.
     have := positive_negative0 psP2 nsN1 mS.
     by rewrite setIAC => ->; rewrite add0e.
-  + rewrite [RHS](charge_partition nu _ mP1 mN1)//; last exact: measurableI.
+  + rewrite [RHS](charge_partition nu _ mP1 mN1)//; first exact: measurableI.
     by rewrite (setIAC _ _ P1) (positive_negative0 psP1 nsN2 mS) add0e setIAC.
 Qed.
 
@@ -1176,13 +1176,11 @@ have echarge n : e%:E <= charge_variation nuPN (\bigcup_(j >= n) F j).
   rewrite le_measure// ?inE//; first exact: bigcup_measurable.
   by apply: bigcup_sup => /=.
 have /(_ _ _)/cvg_lim <-// := lim_sup_set_cvg (charge_variation nuPN) F.
-  apply: lime_ge.
-    apply: ereal_nonincreasing_is_cvgn => a b ab.
-    rewrite le_measure ?inE//; [exact: bigcup_measurable|
-                                exact: bigcup_measurable|].
-    by apply: bigcup_subset => n/=; exact: leq_trans.
-  by apply: nearW => k; exact: echarge.
-by rewrite -ge0_fin_numE// fin_num_measure//; exact: bigcup_measurable.
+  by rewrite -ge0_fin_numE// fin_num_measure//; exact: bigcup_measurable.
+apply: lime_ge; last by apply: nearW => k; exact: echarge.
+apply: ereal_nonincreasing_is_cvgn => a b ab.
+rewrite le_measure ?inE//; [exact: bigcup_measurable|exact: bigcup_measurable|].
+by apply: bigcup_subset => n/=; exact: leq_trans.
 Qed.
 
 End charge_variation_continuous.
@@ -1205,7 +1203,7 @@ Lemma semi_sigma_additive_nng_induced (f : T -> \bar R) :
   measurable_fun setT f -> (forall x, 0 <= f x) ->
   semi_sigma_additive (fun A => \int[mu]_(t in A) f t).
 Proof.
-move=> mf f0 /= F mF tF mUF; rewrite ge0_integral_bigcup//=; last first.
+move=> mf f0 /= F mF tF mUF; rewrite ge0_integral_bigcup//=.
   exact: measurable_funTS.
 by apply: is_cvg_ereal_nneg_natsum_cond => // n _ _; exact: integral_ge0.
 Qed.
@@ -1227,7 +1225,7 @@ Proof.
 move=> /= F mF tF mUF; set SF := (f in f n @[n --> \oo] --> _).
 rewrite (_ : SF = fun n =>
     \sum_(0 <= i < n) (\int[mu]_(x in F i) f^\+ x) -
-    \sum_(0 <= i < n) (\int[mu]_(x in F i) f^\- x)); last first.
+    \sum_(0 <= i < n) (\int[mu]_(x in F i) f^\- x)).
   apply/funext => n; rewrite /SF; under eq_bigr do rewrite /nu integralE.
   rewrite big_split/= sumeN//= => i j _ _.
   rewrite fin_num_adde_defl// integrable_fin_num//= integrable_funeneg//=.
@@ -1289,15 +1287,15 @@ exists r; split => //= A mA Ad.
 have {re} := re _ mA Ad.
 rewrite -lte_fin; apply: le_lt_trans.
 rewrite /Rintegral fineK; last first.
-  have : mu.-integrable A (abse \o EFin \o f) by exact: integrableS intnf.
-  move/integrableP : intf => -[_ intfoo _].
-  rewrite ge0_fin_numE//=; last exact: integral_ge0.
-  apply: le_lt_trans intfoo.
-  apply: ge0_subset_integral => //=.
-  apply: measurableT_comp => //.
-  by case/integrableP : intnf => /= /measurable_EFinP.
-rewrite -[leLHS](gee0_abs)//; last exact: integral_ge0.
-exact: (le_trans _ (abse_charge_variation _ _)).
+  rewrite -[leLHS](gee0_abs)//; first exact: integral_ge0.
+  exact: (le_trans _ (abse_charge_variation _ _)).
+have : mu.-integrable A (abse \o EFin \o f) by exact: integrableS intnf.
+move/integrableP : intf => -[_ intfoo _].
+rewrite ge0_fin_numE//=; first exact: integral_ge0.
+apply: le_lt_trans intfoo.
+apply: ge0_subset_integral => //=.
+apply: measurableT_comp => //.
+by case/integrableP : intnf => /= /measurable_EFinP.
 Qed.
 
 End integral_normr_continuous.
@@ -1362,7 +1360,7 @@ Qed.
 
 Lemma sup_int_approxRN_fin_num : M \is a fin_num.
 Proof.
-rewrite ge0_fin_numE; first exact: sup_int_approxRN_lty.
+rewrite ge0_fin_numE; last exact: sup_int_approxRN_lty.
 exact: sup_int_approxRN_ge0.
 Qed.
 
@@ -1473,7 +1471,7 @@ have j0max k : (k < j0)%N -> g_ k x < g_ j0 x.
   have := h k; rewrite -(eqP j'j) -gkj' eqxx andbT (ltn_trans kj' j'm).
   by move=> /(_ erefl); rewrite leqNgt kj'.
 exists j0 => //; split.
-  rewrite /F_ /max_approxRN_seq (bigmax_eq_arg _ ord0)//; last first.
+  rewrite /F_ /max_approxRN_seq (bigmax_eq_arg _ ord0)//.
     by move=> ? _; rewrite leNye.
   rewrite /j0/=; case: ex_minnP => //= j' /andP[j'm /eqP].
   by rewrite /g_ => -> h.
@@ -1516,10 +1514,10 @@ Definition fRN := fun x => lim (F ^~ x @ \oo).
 Lemma measurable_fun_fRN : measurable_fun [set: T] fRN.
 Proof.
 rewrite (_ : fRN = fun x => limn_esup (F ^~ x)).
-  apply: measurable_fun_limn_esup => // n.
-  exact: measurable_max_approxRN_seq.
-apply/funext=> n; rewrite is_cvg_limn_esupE//.
-exact: is_cvg_max_approxRN_seq.
+  apply/funext=> n; rewrite is_cvg_limn_esupE//.
+  exact: is_cvg_max_approxRN_seq.
+apply: measurable_fun_limn_esup => // n.
+exact: measurable_max_approxRN_seq.
 Qed.
 
 Lemma fRN_ge0 x : 0 <= fRN x.
@@ -1542,7 +1540,7 @@ Let E m j := is_max_approxRN mu nu m j.
 Let int_F_nu m A (mA : measurable A) : \int[mu]_(x in A) F m x <= nu A.
 Proof.
 rewrite [leLHS](_ : _ =
-    \sum_(j < m.+1) \int[mu]_(x in (A `&` E m j)) F m x); last first.
+    \sum_(j < m.+1) \int[mu]_(x in (A `&` E m j)) F m x).
   rewrite -[in LHS](setIT A) -(bigsetU_is_max_approxRN mu nu m) big_distrr/=.
   rewrite -(@big_mkord _ _ _ m.+1 xpredT (fun i => A `&` is_max_approxRN mu nu m i)).
   rewrite ge0_integral_bigsetU ?big_mkord//.
@@ -1553,16 +1551,16 @@ rewrite [leLHS](_ : _ =
   - by apply: measurable_funTS => //; exact: measurable_max_approxRN_seq.
   - by move=> ? ?; exact: max_approxRN_seq_ge0.
 rewrite [leLHS](_ : _ =
-    \sum_(j < m.+1) (\int[mu]_(x in (A `&` (E m j))) g j x)); last first.
+    \sum_(j < m.+1) (\int[mu]_(x in (A `&` (E m j))) g j x)).
   apply: eq_bigr => i _; apply:eq_integral => x; rewrite inE => -[?] [] Fmgi h.
   by apply/eqP; rewrite eq_le; rewrite /F Fmgi lexx.
-rewrite [leRHS](_ : _ = \sum_(j < m.+1) (nu (A `&` E m j))); last first.
+rewrite [leRHS](_ : _ = \sum_(j < m.+1) (nu (A `&` E m j))).
   rewrite -(@measure_semi_additive _ _ _ nu (fun i => A `&` E m i))//.
-  - by rewrite -big_distrr/= bigsetU_is_max_approxRN// setIT.
   - by move=> k; apply: measurableI => //; exact: measurable_is_max_approxRN.
   - by apply: trivIset_setIl => //; exact: trivIset_is_max_approxRN.
   - apply: bigsetU_measurable => /= i _; apply: measurableI => //.
     exact: measurable_is_max_approxRN.
+  - by rewrite -big_distrr/= bigsetU_is_max_approxRN// setIT.
 apply: lee_sum => //= i _.
 have [+ _] := approxRN_seq_prop mu nu i.
 rewrite inE /G/= => -[_ _]; apply.
@@ -1575,7 +1573,7 @@ rewrite inE /G/=; split.
 - by move=> ?; exact: max_approxRN_seq_ge0.
 - apply/integrableP; split; first exact: measurable_max_approxRN_seq.
   under eq_integral.
-    by move=> x _; rewrite gee0_abs; last exact: max_approxRN_seq_ge0; over.
+    by move=> x _; rewrite gee0_abs; first exact: max_approxRN_seq_ge0; over.
   have /le_lt_trans := int_F_nu m measurableT; apply.
   by apply: fin_num_fun_lty; exact: fin_num_measure.
 - by move=> A; exact: int_F_nu.
@@ -1598,7 +1596,7 @@ Lemma int_fRN_lty : \int[mu]_x `|fRN x| < +oo.
 Proof.
 rewrite (@le_lt_trans _ _ M)//; last exact: sup_int_approxRN_lty.
 under eq_integral.
-  by move=> x _; rewrite gee0_abs; last exact: fRN_ge0; over.
+  by move=> x _; rewrite gee0_abs; first exact: fRN_ge0; over.
 rewrite int_fRN_lim// lime_le//; first exact: is_cvg_int_max_approxRN_seq.
 by apply: nearW => n; have [_ /andP[_ ]] := M_g_F n.
 Qed.
@@ -1624,7 +1622,7 @@ have cvgM : (M - m.+1%:R^-1%:E) @[m --> \oo] --> M.
     rewrite [X in X @ _ --> _](_ : _ = (fun x => x.+1%:R^-1)%R)//.
     apply/gtr0_cvgV0; first exact: nearW.
     apply/cvgrnyP.
-    rewrite [X in X @ _](_ : _ = fun n => n + 1)%N; first exact: cvg_addnr.
+    rewrite [X in X @ _](_ : _ = fun n => n + 1)%N; last exact: cvg_addnr.
     by apply/funext => n; rewrite addn1.
 apply: (@le_trans _ _ (lim (M - m.+1%:R^-1%:E @[m --> \oo]))).
   by move/cvg_lim : cvgM => ->.
@@ -1642,12 +1640,12 @@ Proof.
 have [muA0|] := eqVneq (mu A) 0.
   exists (PosNum ltr01).
   under eq_integral.
-    move=> x _; rewrite -(@gee0_abs _ (_ + _)); last first.
+    move=> x _; rewrite -(@gee0_abs _ (_ + _)).
       by rewrite adde_ge0 ?fRN_ge0.
     over.
   rewrite integral_abs_eq0//.
-    by rewrite (le_lt_trans _ h)// integral_ge0// => x Ax; exact: fRN_ge0.
-  by apply: emeasurable_funD => //; exact: measurable_funS measurable_fun_fRN.
+    by apply: emeasurable_funD => //; exact: measurable_funS measurable_fun_fRN.
+  by rewrite (le_lt_trans _ h)// integral_ge0// => x Ax; exact: fRN_ge0.
 rewrite neq_lt ltNge measure_ge0//= => muA_gt0.
 pose mid := ((fine (nu A) - fine (\int[mu]_(x in A) fRN x)) / 2)%R.
 pose e := (mid / fine (mu A))%R.
@@ -1658,13 +1656,13 @@ have e_gt0 : (0 < e)%R.
   rewrite /e divr_gt0//; last first.
     by rewrite fine_gt0// muA_gt0/= ltey_eq fin_num_measure.
   by rewrite divr_gt0// subr_gt0// fine_lt// fin_num_measure.
-exists (PosNum e_gt0); rewrite ge0_integralD//; last 2 first.
+exists (PosNum e_gt0); rewrite ge0_integralD//.
   by move=> x Ax; exact: fRN_ge0.
   exact: measurable_funS measurable_fun_fRN.
-rewrite integral_cst// -lteBrDr//; last first.
+rewrite integral_cst// -lteBrDr//.
   by rewrite fin_numM// fin_num_measure.
 rewrite -[X in _ * X](@fineK _ (mu A)) ?fin_num_measure//.
-rewrite -EFinM divfK; last first.
+rewrite -EFinM divfK.
   by rewrite gt_eqF// fine_gt0// muA_gt0/= ltey_eq fin_num_measure.
 rewrite lteBrDl// addeC -lteBrDl//; last first.
 rewrite -(@fineK _ (nu A))// ?fin_num_measure// -[X in _ - X](@fineK _)//.
@@ -1684,15 +1682,15 @@ Qed.
 Let fin_num_int_fRN_eps B : measurable B ->
   \int[mu]_(x in B) (fRN x + epsRN%:num%:E) \is a fin_num.
 Proof.
-move=> mB; rewrite ge0_integralD//; last 2 first.
+move=> mB; rewrite ge0_integralD//.
   by move=> x Bx; exact: fRN_ge0.
   exact: measurable_funS measurable_fun_fRN.
 rewrite fin_numD integral_cst// fin_numM ?fin_num_measure// andbT.
-rewrite ge0_fin_numE ?measure_ge0; last first.
+rewrite ge0_fin_numE ?measure_ge0.
   by apply: integral_ge0 => x Bx; exact: fRN_ge0.
 rewrite (le_lt_trans _ int_fRN_lty)//.
 under [in leRHS]eq_integral.
-  move=> x _; rewrite gee0_abs; last first.
+  move=> x _; rewrite gee0_abs.
     exact: fRN_ge0.
   over.
 apply: ge0_subset_integral => //; first exact: measurable_fun_fRN.
@@ -1709,21 +1707,21 @@ Let sigmaRN_sigma_additive : semi_sigma_additive sigmaRN.
 Proof.
 move=> H mH tH mUH.
 rewrite [X in X @ _ --> _](_ : _ = (fun n => \sum_(0 <= i < n) nu (H i) -
-  \sum_(0 <= i < n) \int[mu]_(x in H i) (fRN x + epsRN%:num%:E))); last first.
+  \sum_(0 <= i < n) \int[mu]_(x in H i) (fRN x + epsRN%:num%:E))).
   apply/funext => n; rewrite big_split/= fin_num_sumeN// => i _.
   by rewrite fin_num_int_fRN_eps.
 apply: cvgeB.
 - by rewrite adde_defC fin_num_adde_defl// fin_num_measure.
 - exact: measure_semi_sigma_additive.
-- rewrite (ge0_integral_bigcup _ mH _ _ tH).
-  + have /cvg_ex[/= l hl] : cvg ((fun n =>
-        \sum_(0 <= i < n) \int[mu]_(y in H i) (fRN y + epsRN%:num%:E)) @ \oo).
-      apply: is_cvg_ereal_nneg_natsum => n _.
-      by apply: integral_ge0 => x _; rewrite adde_ge0 ?fRN_ge0.
-    by rewrite (@cvg_lim _ _ _ _ _ _ l).
-  + apply: emeasurable_funD => //=; apply: measurable_funTS.
-    exact: measurable_fun_fRN.
-  + by move=> x _; rewrite adde_ge0 ?fRN_ge0.
+rewrite (ge0_integral_bigcup _ mH _ _ tH).
+- apply: emeasurable_funD => //=; apply: measurable_funTS.
+  exact: measurable_fun_fRN.
+- by move=> x _; rewrite adde_ge0 ?fRN_ge0.
+have /cvg_ex[/= l hl] : cvg ((fun n =>
+    \sum_(0 <= i < n) \int[mu]_(y in H i) (fRN y + epsRN%:num%:E)) @ \oo).
+  apply: is_cvg_ereal_nneg_natsum => n _.
+  by apply: integral_ge0 => x _; rewrite adde_ge0 ?fRN_ge0.
+by rewrite (@cvg_lim _ _ _ _ _ _ l).
 Qed.
 
 HB.instance Definition _ := @isCharge.Build _ _ _ sigmaRN
@@ -1785,13 +1783,13 @@ have hnuP S : measurable S -> S `<=` AP -> \int[mu]_(x in S) h x <= nu S.
   move=> mS SAP.
   have : 0 <= sigma S.
     by apply: posP => //; apply: (subset_trans SAP); exact: subIsetr.
-  rewrite sube_ge0; last by rewrite fin_num_measure// orbT.
+  rewrite sube_ge0; first by rewrite fin_num_measure// orbT.
   apply: le_trans; rewrite le_eqVlt; apply/orP; left; apply/eqP.
   rewrite -{1}(setIid S) integral_mkcondr; apply/eq_integral => x /[!inE] Sx.
   by rewrite /restrict /h !ifT// inE//; exact: SAP.
 have hnuN S : measurable S -> S `<=` ~` AP -> \int[mu]_(x in S) h x <= nu S.
   move=> mS ScAP; rewrite /h; under eq_integral.
-    move=> x xS; rewrite ifF; last first.
+    move=> x xS; rewrite ifF.
       by apply/negbTE; rewrite notin_setE; apply: ScAP; apply: set_mem.
     over.
   exact: int_fRN_ub.
@@ -1801,11 +1799,11 @@ have hnu S : measurable S -> \int[mu]_(x in S) h x <= nu S.
   have mSIAP : measurable (S `&` AP) by exact: measurableI.
   have mSDAP : measurable (S `\` AP) by exact: measurableD.
   rewrite ge0_integral_setU //.
-  - rewrite measureU//.
-      by apply: leeD; [exact: hnuN|exact: hnuP].
-    by rewrite setDE setIACA setICl setI0.
   - exact: measurable_funTS.
   - by rewrite disj_set2E setDE setIACA setICl setI0.
+  rewrite measureU//.
+    by rewrite setDE setIACA setICl setI0.
+  by apply: leeD; [exact: hnuN|exact: hnuP].
 have int_h_M : \int[mu]_x h x > M.
   have mCAP := measurableC mAP.
   have disj_AP : [disjoint AP & ~` AP] by exact/disj_set2P/setICr.
@@ -1813,16 +1811,16 @@ have int_h_M : \int[mu]_x h x > M.
   under eq_integral do rewrite ifT//.
   under [X in _ < _ + X]eq_integral.
     by move=> x; rewrite inE /= => xE0p; rewrite memNset//; over.
-  rewrite ge0_integralD//; last 2 first.
+  rewrite ge0_integralD//.
     - by move=> x _; exact: f_ge0.
     - by apply: measurable_funTS; exact: mf.
-  rewrite integral_cst // addeAC -ge0_integral_setU//; last 2 first.
+  rewrite integral_cst // addeAC -ge0_integral_setU//.
     by rewrite setUv//; exact: mf.
     by move=> x _; exact: f_ge0.
-  rewrite setUv int_fRNE -lte_subel_addl; last first.
+  rewrite setUv int_fRNE -lte_subel_addl.
     rewrite ge0_fin_numE ?sup_int_approxRN_lty.
-      exact: approxRN_seq.sup_int_approxRN_lty.
-    exact: sup_int_approxRN_ge0.
+      exact: sup_int_approxRN_ge0.
+    exact: approxRN_seq.sup_int_approxRN_lty.
   by rewrite /M subee ?mule_gt0// approxRN_seq.sup_int_approxRN_fin_num.
 have Gh : G h.
   split=> //; apply/integrableP; split => //.
@@ -1874,34 +1872,34 @@ have mf_ k : measurable_fun setT (f_ k).
 have if_T k : integrable mu setT (f_ k).
   apply/integrableP; split => //.
   under eq_integral do rewrite gee0_abs//.
-  rewrite -(setUv (E k)) ge0_integral_setU //; last 3 first.
+  rewrite -(setUv (E k)) ge0_integral_setU //.
     - exact: measurableC.
     - by rewrite setUv.
     - exact/disj_set2P/subsets_disjoint.
   rewrite /f_; under eq_integral do rewrite ifT//.
-  rewrite (@eq_measure_integral _ _ _ (E k) (mu_ k)); last first.
+  rewrite (@eq_measure_integral _ _ _ (E k) (mu_ k)).
     by move=> A mA AEj; rewrite /mu_ /= /mfrestr /mrestr setIidl.
   rewrite -int_gE ?inE//.
   under eq_integral.
-    move=> x /[!inE] /= Ekx; rewrite ifF; last by rewrite memNset.
+    move=> x /[!inE] /= Ekx; rewrite ifF; first by rewrite memNset.
     over.
   by rewrite integral0 ?adde0 ltey_eq fin_num_measure.
 have int_f_E j S : measurable S -> \int[mu]_(x in S) f_ j x = nu (S `&` E j).
   move=> mS.
   have mSIEj := measurableI _ _ mS (mE j).
   have mSDEj := measurableD mS (mE j).
-  rewrite -{1}(setUIDK S (E j)) (ge0_integral_setU _ mSIEj mSDEj)//; last 2 first.
+  rewrite -{1}(setUIDK S (E j)) (ge0_integral_setU _ mSIEj mSDEj)//.
     - by rewrite setUIDK; exact: (measurable_funS measurableT).
     - by apply/disj_set2P; rewrite setDE setIACA setICr setI0.
-  rewrite /f_ -(eq_integral _ (g_ j)); last first.
+  rewrite /f_ -(eq_integral _ (g_ j)).
     by move=> x /[!inE] SIEjx; rewrite /f_ ifT// inE; exact: (@subIsetr _ S).
-  rewrite (@eq_measure_integral _ _ _ (S `&` E j) (mu_ j)); last first.
+  rewrite (@eq_measure_integral _ _ _ (S `&` E j) (mu_ j)).
     move=> A mA; rewrite subsetI => -[_ ?]; rewrite /mu_ /=.
     by rewrite /mfrestr /mrestr setIidl.
-  rewrite -int_gE; last exact: measurableI.
+  rewrite -int_gE; first exact: measurableI.
   under eq_integral.
     move=> x; rewrite inE setDE /= => -[_ Ejx].
-    rewrite ifF; last by rewrite memNset.
+    rewrite ifF; first by rewrite memNset.
     over.
   by rewrite integral0 adde0 /nu_/= /mfrestr /mrestr -setIA setIid.
 pose f x : \bar R := \sum_(j <oo) f_ j x.
@@ -1914,7 +1912,7 @@ have int_f_nuT : \int[mu]_x f x = nu setT.
 have mf : measurable_fun setT f by exact: ge0_emeasurable_sum.
 have fi : mu.-integrable setT f.
   apply/integrableP; split => //.
-  under eq_integral do (rewrite gee0_abs; last exact: nneseries_ge0).
+  under eq_integral do (rewrite gee0_abs; first exact: nneseries_ge0).
   by rewrite int_f_nuT ltey_eq fin_num_measure.
 have ae_f := integrable_ae measurableT fi.
 pose f' x := if f x \is a fin_num then f x else 0.
@@ -1932,18 +1930,18 @@ exists f'; split.
   move/ae_eq_integral : (ff') => /(_ measurableT mf) <-//.
   by apply/abse_integralP => //; move/integrableP : fi => [].
 have nuf A : d.-measurable A -> nu A = \int[mu]_(x in A) f x.
-  move=> mA; rewrite integral_nneseries//; last first.
+  move=> mA; rewrite integral_nneseries//.
     by move=> n; exact: measurable_funTS.
-  rewrite nneseries_esum; last by move=> m _; rewrite integral_ge0.
+  rewrite nneseries_esum; first by move=> m _; rewrite integral_ge0.
   under eq_esum do rewrite int_f_E//.
-  rewrite -nneseries_esum; last first.
+  rewrite -nneseries_esum.
     by move=> n; rewrite measure_ge0//; exact: measurableI.
-  rewrite (@eq_eseriesl _ _ (fun x => x \in [set: nat])); last first.
+  rewrite (@eq_eseriesl _ _ (fun x => x \in [set: nat])).
     by move=> x; rewrite in_setT.
   rewrite -measure_bigcup//.
-  - by rewrite -setI_bigcupr UET setIT.
   - by move=> i _; exact: measurableI.
   - exact: trivIset_setIl.
+  - by rewrite -setI_bigcupr UET setIT.
 move=> A mA; rewrite nuf ?inE//; apply: ae_eq_integral => //.
 - exact/measurable_funTS.
 - exact/measurable_funTS.
@@ -2026,14 +2024,14 @@ transitivity (\int[nu]_(x in E)
   by apply: eq_integral => t tE; rewrite /= fimfunE -fsumEFin.
 have indich m r : measurable_fun E (fun x => (r * \1_(h m @^-1` [set r]) x)%:E).
   by apply: (measurable_comp measurableT) => //; exact: measurable_funM.
-rewrite ge0_integral_fsum//; last by move=> m y Ey; exact: nnfun_muleindic_ge0.
+rewrite ge0_integral_fsum//; first by move=> m y Ey; exact: nnfun_muleindic_ge0.
 transitivity (\int[mu]_(x in E) (\sum_(y \in range (h n))
     (y * \1_(h n @^-1` [set y]) x)%:E * g x)).
   under [RHS]eq_integral => x xE.
-    rewrite -ge0_mule_fsuml => [|y]; last exact: nnfun_muleindic_ge0.
+    rewrite -ge0_mule_fsuml => [y|]; first exact: nnfun_muleindic_ge0.
     rewrite fsumEFin // -(fimfunE _ x); over.
   by [].
-rewrite ge0_integral_fsum//; last 2 first.
+rewrite ge0_integral_fsum//.
   - move=> y; apply: emeasurable_funM => //; apply: measurable_funTS.
     exact: measurable_int (f_integrable _).
   - by move=> m y Ey; rewrite mule_ge0 ?f_ge0// nnfun_muleindic_ge0.
@@ -2042,14 +2040,14 @@ under [RHS]eq_integral do rewrite EFinM.
 rewrite integralZl_indic_nnsfun => //.
 under eq_integral do rewrite EFinM -muleA.
 rewrite ge0_integralZl//.
-- under eq_integral do rewrite muleC.
-  rewrite (eq_integral (g \_ (h n @^-1` [set r]))); last first.
-    by move=> x xE; rewrite epatch_indic.
-  by rewrite -integral_mkcondr -f_integral// integral_indic// setIC.
 - apply: emeasurable_funM; first exact/measurable_EFinP.
   exact/measurable_funTS/(measurable_int _ (f_integrable _)).
 - by move=> t Et; rewrite mule_ge0 ?lee_fin ?f_ge0.
 - by move: rhn; rewrite inE => -[t _ <-]; rewrite lee_fin.
+under eq_integral do rewrite muleC.
+rewrite (eq_integral (g \_ (h n @^-1` [set r]))).
+  by move=> x xE; rewrite epatch_indic.
+by rewrite -integral_mkcondr -f_integral// integral_indic// setIC.
 Qed.
 
 Lemma integrableM f E : (forall x, 0 <= f x) -> measurable E ->
@@ -2059,10 +2057,10 @@ move=> f0 mE intEf; apply/integrableP; split.
   apply: emeasurable_funM; first exact: (measurable_int nu).
   exact/measurable_funTS/(measurable_int _ (f_integrable _)).
 under eq_integral.
-  move=> x _; rewrite gee0_abs; last first.
+  move=> x _; rewrite gee0_abs.
     by apply: mule_ge0=> //; exact: f_ge0.
   over.
-rewrite change_of_variables//; last exact: (measurable_int nu).
+rewrite change_of_variables//; first exact: (measurable_int nu).
 by move/integrableP : intEf=> [mf +]; under eq_integral do rewrite gee0_abs//.
 Qed.
 
@@ -2087,10 +2085,10 @@ apply: integral_ae_eq => //.
   exact: null_dominates_trans numu mula.
 - apply: emeasurable_funM => //.
   exact/measurable_funTS/(measurable_int _ (f_integrable _)).
-- move=> A AE mA; rewrite change_of_variables//.
-  + by rewrite -!f_integral//; exact: null_dominates_trans numu mula.
-  + exact: f_ge0.
-  + exact: measurable_funS mf.
+move=> A AE mA; rewrite change_of_variables//.
+- exact: f_ge0.
+- exact: measurable_funS mf.
+- by rewrite -!f_integral//; exact: null_dominates_trans numu mula.
 Qed.
 
 End chain_rule.
@@ -2114,7 +2112,7 @@ have [fn [fn0 fnfin intfn fnE]] := @radon_nikodym_sigma_finite _ _ _ mu
 exists (fp \- fn); split; first by move=> x; rewrite fin_numB// fpfin fnfin.
   exact: integrableB.
 move=> E mE; rewrite [LHS](jordan_decomp nuPN mE)// integralB//;
-  [|exact: (integrableS measurableT)..].
+  [exact: (integrableS measurableT)..|].
 by rewrite -fpE ?inE// -fnE ?inE//= /cadd/= cscaleN1.
 Qed.
 
@@ -2177,7 +2175,7 @@ Lemma Radon_Nikodym_change_of_variables f E : measurable E ->
   \int[mu]_(x in E) (f x * ('d (charge_of_finite_measure nu) '/d mu) x) =
   \int[nu]_(x in E) f x.
 Proof.
-move=> mE mf; rewrite [in RHS](funeposneg f) integralB //; last 2 first.
+move=> mE mf; rewrite [in RHS](funeposneg f) integralB //.
   - exact: integrable_funepos.
   - exact: integrable_funeneg.
 transitivity (\int[mu]_(x in E) (f x * Radon_Nikodym_SigmaFinite.f nu mu x)).
@@ -2190,11 +2188,11 @@ transitivity (\int[mu]_(x in E) (f x * Radon_Nikodym_SigmaFinite.f nu mu x)).
   - apply: ae_eqe_mul2l.
     exact/ae_eq_sym/ae_eq_Radon_Nikodym_SigmaFinite.
 rewrite [in LHS](funeposneg f).
-under [in LHS]eq_integral => x xE. rewrite muleBl; last 2 first.
+under [in LHS]eq_integral => x xE. rewrite muleBl.
   - exact: Radon_Nikodym_SigmaFinite.f_fin_num.
   - exact: add_def_funeposneg.
   over.
-rewrite [in LHS]integralB //; last 2 first.
+rewrite [in LHS]integralB //.
 - apply: Radon_Nikodym_SigmaFinite.integrableM => //.
   exact: integrable_funepos.
 - apply: Radon_Nikodym_SigmaFinite.integrableM => //.
@@ -2218,9 +2216,9 @@ move=> mE numu; apply: integral_ae_eq => [//| | |A AE mA].
 - apply: (integrableS measurableT) => //.
   exact/Radon_Nikodym_integrable/dominates_cscalel.
 - exact/measurable_funTS/emeasurable_funM.
-- rewrite integralZl//; last first.
+- rewrite integralZl//.
     by apply: (integrableS measurableT) => //; exact: Radon_Nikodym_integrable.
-  rewrite -Radon_Nikodym_integral => //; last exact: dominates_cscalel.
+  rewrite -Radon_Nikodym_integral => //; first exact: dominates_cscalel.
   by rewrite -Radon_Nikodym_integral.
 Qed.
 
@@ -2232,8 +2230,8 @@ move=> mE nu0mu nu1mu; apply: integral_ae_eq => [//| | |A AE mA].
 - apply: (integrableS measurableT) => //.
   by apply: Radon_Nikodym_integrable => /=; exact: dominates_cadd.
 - by apply: measurable_funTS => //; exact: emeasurable_funD.
-- rewrite integralD //; [|exact: integrableS (Radon_Nikodym_integrable _)..].
-  rewrite -Radon_Nikodym_integral //=; last exact: dominates_cadd.
+- rewrite integralD //; [exact: integrableS (Radon_Nikodym_integrable _)..|].
+  rewrite -Radon_Nikodym_integral //=; first exact: dominates_cadd.
   by rewrite -Radon_Nikodym_integral // -Radon_Nikodym_integral.
 Qed.
 
@@ -2255,8 +2253,8 @@ apply: integral_ae_eq; [exact: measurableT| |exact: emeasurable_funM|].
 - exact: Radon_Nikodym_integrable.
 - move=> E _ mE.
   rewrite -Radon_Nikodym_integral// Radon_Nikodym_change_of_variables//.
-  + exact: Radon_Nikodym_integral.
   + by apply: (integrableS measurableT) => //; exact: Radon_Nikodym_integrable.
+  + exact: Radon_Nikodym_integral.
 Qed.
 
 End Radon_Nikodym_chain_rule.

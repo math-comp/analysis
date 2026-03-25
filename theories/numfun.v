@@ -46,7 +46,7 @@ Reserved Notation "{ 'nnfun' aT >-> T }"
 Reserved Notation "[ 'nnfun' 'of' f ]"
   (at level 0, format "[ 'nnfun'  'of'  f ]").
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -224,7 +224,7 @@ Lemma notin_itv_partition c s : sorted <%O s -> c \notin s ->
 Proof.
 elim: s c => // h t ih c /= ht.
 rewrite inE negb_or => /andP[]; rewrite neq_lt => /orP[ch|ch] ct.
-  rewrite ch ltNge (ltW ch)/= path_lt_filter0/= /itv_partitionR; last first.
+  rewrite ch ltNge (ltW ch)/= path_lt_filter0/= /itv_partitionR.
     exact: path_lt_head ht.
   by rewrite path_lt_filterT//; exact: path_lt_head ht.
 by rewrite ch/= ltNge (ltW ch)/= -ih//; exact: path_sorted ht.
@@ -249,7 +249,7 @@ Lemma itv_partition_rev a b s : itv_partition a b s ->
   itv_partition (- b) (- a) (rev (belast (- a) (map -%R s))).
 Proof.
 move=> [sa /eqP alb]; split.
-  rewrite (_ : - b = last (- a) (map -%R s)); last by rewrite last_map alb.
+  rewrite (_ : - b = last (- a) (map -%R s)); first by rewrite last_map alb.
   rewrite rev_path// path_map.
   by apply: sub_path sa => x y xy/=; rewrite ltrNr opprK.
 case: s sa alb => [_ <-//|h t] /= /andP[ah ht] <-{b}.
@@ -283,12 +283,12 @@ Proof.
 move=> [] sa /eqP asb; rewrite /variation [in LHS]/= (big_nth b) !big_nat.
 apply: eq_bigr => i /andP[_ si]; congr (`| _ - f _ |).
 rewrite -lock.
-rewrite prev_nth inE gt_eqF; last first.
+rewrite prev_nth inE gt_eqF.
   rewrite -[a]/(nth b (a :: s) 0) -[ltRHS]/(nth b (a :: s) i.+1).
   exact: lt_sorted_ltn_nth.
 rewrite orFb mem_nth// index_uniq//.
-  by apply: set_nth_default => /=; rewrite ltnS ltnW.
-by apply: (sorted_uniq lt_trans) => //; apply: path_sorted sa.
+  by apply: (sorted_uniq lt_trans) => //; apply: path_sorted sa.
+by apply: set_nth_default => /=; rewrite ltnS ltnW.
 Qed.
 
 Lemma variation_next a b f s : itv_partition a b s ->
@@ -302,8 +302,7 @@ congr (`| f _ - f _ |); last first.
 rewrite -lock next_nth.
 rewrite {1}lastI mem_rcons inE mem_nth ?size_belast// orbT.
 rewrite lastI -cats1 index_cat mem_nth ?size_belast//.
-rewrite index_uniq ?size_belast//.
-  exact: set_nth_default.
+rewrite index_uniq ?size_belast//; last exact: set_nth_default.
 have /lt_sorted_uniq : sorted <%R (a :: s) by [].
 by rewrite lastI rcons_uniq => /andP[].
 Qed.
@@ -386,15 +385,15 @@ move=> abl; rewrite belast_map /variation /= [LHS]big_nat_rev/= add0n.
 rewrite size_rev size_map size_belast 2!big_nat.
 apply: eq_bigr => k; rewrite leq0n /= => ks.
 rewrite nth_rev ?size_map ?size_belast// [in RHS]distrC.
-rewrite (nth_map a); last first.
+rewrite (nth_map a).
   by rewrite size_belast ltn_subLR// addSn ltnS leq_addl.
 rewrite opprK -rev_rcons nth_rev ?size_rcons ?size_map ?size_belast 1?ltnW//.
-rewrite subSn// -map_rcons (nth_map b) ?size_rcons ?size_belast; last first.
+rewrite subSn// -map_rcons (nth_map b) ?size_rcons ?size_belast.
   by rewrite ltnS ltn_subLR// addSn ltnS leq_addl.
 rewrite opprK nth_rcons size_belast -subSn// subSS.
 rewrite (ltn_subLR _ (ltnW ks)) if_same.
 case: k => [|k] in ks *.
-  rewrite add0n ltnn subn1 (_ : nth b s _ = b); last first.
+  rewrite add0n ltnn subn1 (_ : nth b s _ = b).
     case: abl ks => _.
     elim/last_ind : s => // h t _; rewrite last_rcons => /eqP -> _.
     by rewrite nth_rcons size_rcons ltnn eqxx.
@@ -437,14 +436,14 @@ Lemma variation_itv_partitionLR a b c f s : a < c -> c < b ->
 Proof.
 move=> ac bc abs; have [cl|cl] := boolP (c \in s).
   by rewrite -in_itv_partition//; case: abs => /path_sorted.
-rewrite /itv_partitionL [in leLHS](notin_itv_partition _ cl)//; last first.
+rewrite /itv_partitionL [in leLHS](notin_itv_partition _ cl)//.
   by apply: path_sorted; case: abs => + _; exact.
-rewrite -notin_itv_partition//; last first.
+rewrite -notin_itv_partition//.
   by apply: path_sorted; case: abs => /= + _; exact.
-rewrite !variation_zip//; last first.
+rewrite !variation_zip//.
   by apply: itv_partition_cat;
     [exact: (itv_partitionLP _ bc)|exact: (itv_partitionRP ac)].
-rewrite [in leLHS](notin_itv_partition _ cl); last first.
+rewrite [in leLHS](notin_itv_partition _ cl).
   by apply: path_sorted; case: abs => + _; exact.
 set L := [seq x <- s | x < c].
 rewrite -cats1 -catA.
@@ -456,17 +455,17 @@ elim/last_ind : L => [|L0 L1 _].
     by rewrite big_nil big_cons/= big_nil addr0.
   by rewrite !big_cons/= addrA lerD// -(subrKA (f c)) [leRHS]addrC ler_normD.
 rewrite -cats1.
-rewrite (_ : a :: _ ++ B = (a :: L0) ++ [:: L1] ++ B)//; last first.
+rewrite (_ : a :: _ ++ B = (a :: L0) ++ [:: L1] ++ B)//.
   by rewrite -!catA -cat_cons.
-rewrite zip_cat; last by rewrite cats1 size_rcons.
-rewrite (_ : a :: _ ++ _ ++ B = (a :: L0) ++ [:: L1] ++ [:: c] ++ B); last first.
+rewrite zip_cat; first by rewrite cats1 size_rcons.
+rewrite (_ : a :: _ ++ _ ++ B = (a :: L0) ++ [:: L1] ++ [:: c] ++ B).
   by rewrite -!catA -cat_cons.
-rewrite zip_cat; last by rewrite cats1 size_rcons.
+rewrite zip_cat; first by rewrite cats1 size_rcons.
 rewrite !big_cat lerD//.
 case: B => [|B0 B1].
   by rewrite /= big_nil big_cons big_nil addr0.
 rewrite -cat1s zip_cat// catA.
-rewrite (_ : [:: L1] ++ _ ++ B1 = ([:: L1] ++ [:: c]) ++ [:: B0] ++ B1); last first.
+rewrite (_ : [:: L1] ++ _ ++ B1 = ([:: L1] ++ [:: c]) ++ [:: B0] ++ B1).
   by rewrite catA.
 rewrite zip_cat// !big_cat lerD//= !big_cons !big_nil !addr0/= [leRHS]addrC.
 by rewrite (le_trans _ (ler_normD _ _))// subrKA.
@@ -487,9 +486,9 @@ have waW : w <= a := ltW wa.
 case: ifPn => [|] nXA.
   move/eqP : nXA itvxt itvxb => -> itvat itvt /= ta.
   rewrite -[_ :: t]cat1s -[_ :: s]cat1s.
-  rewrite ?(@variation_cat _ a)//; [|exact: itv_partition1..].
+  rewrite ?(@variation_cat _ a)//; [exact: itv_partition1..|].
   by rewrite lerD// IH.
-move=> xts; rewrite -[_ :: s]cat1s (@variation_cat _ a) => //; last first.
+move=> xts; rewrite -[_ :: s]cat1s (@variation_cat _ a) => //.
   exact: itv_partition1.
 have [y [s' s'E]] : exists y s', s = y :: s'.
   by case: {itvas itvws IH} s xts => // y s' ?; exists y, s'.
@@ -497,7 +496,7 @@ apply: (@le_trans _ _ (variation w b f s)).
   rewrite IH//.
   case: itvws => /= /andP[_]; rewrite s'E /= => /andP[ay ys' lyb].
   by split => //; rewrite (path_lt_head wa)//= ys' andbT.
-by rewrite -variation_cat//; [exact: le_variation | exact: itv_partition1].
+by rewrite -variation_cat//; [exact: itv_partition1 | exact: le_variation].
 Qed.
 
 End variation_realDomainType.
@@ -1144,7 +1143,7 @@ Lemma cvg_indic {R : realFieldType} (x : R^o) k :
   \1_(ball 0 k : set R^o) y @[y --> x] --> (\1_(ball 0 k) x : R).
 Proof.
 move=> xB; apply/(@cvgrPdist_le _ R^o) => /= e e0; near=> t.
-rewrite !indicE xB/= mem_set//=; first by rewrite subrr normr0// ltW.
+rewrite !indicE xB/= mem_set//=; last by rewrite subrr normr0// ltW.
 near: t.
 rewrite inE /ball /= sub0r normrN in xB.
 exists ((k - `|x|)/2) => /=; first by rewrite divr_gt0// subr_gt0.
@@ -1342,7 +1341,7 @@ have cvgh' : cvg (h_ @ \oo).
   pose L := (1/3) * M%:num * ((2/3) ^+ m / (1 - (2/3))).
   apply: (@le_lt_trans _ _ L); first by rewrite ler_pM2l // geometric_le_lim.
   rewrite /L onem_twothirds.
-  rewrite [_ ^+ _ * _ ^-1]mulrC mulrA -[x in x < _]ger0_norm; last by [].
+  rewrite [_ ^+ _ * _ ^-1]mulrC mulrA -[x in x < _]ger0_norm; first by [].
   near: m; near_simpl; move: eps epos.
   by apply: (cvgr0_norm_lt (fun _ => _ : R^o)); exact: cvg_geometric.
 have cvgh : {uniform, h_ @ \oo --> lim (h_ @ \oo)}.
@@ -1376,7 +1375,7 @@ exists (lim (h_ @ \oo)); split.
     by move=> n; rewrite mulr_ge0.
   rewrite (le_trans (lim_series_norm _))//; apply: le_trans.
     exact/(lim_series_le cvg_gt _ (g_bd ^~ t))/is_cvg_geometric_series.
-  rewrite (cvg_lim _ (cvg_geometric_series _))//; last exact: Rhausdorff.
+  rewrite (cvg_lim _ (cvg_geometric_series _))//; first exact: Rhausdorff.
   by rewrite onem_twothirds mulrAC divff mul1r.
 Unshelve. all: by end_near. Qed.
 

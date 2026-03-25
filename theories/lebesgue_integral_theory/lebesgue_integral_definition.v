@@ -37,7 +37,7 @@ From mathcomp Require Import measurable_realfun.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -94,11 +94,11 @@ Proof. by rewrite sintegralE fsume_ge0// => r _; exact: nnsfun_mulemu_ge0. Qed.
 
 Lemma sintegral_indic (A : set T) : sintegral mu \1_A = mu A.
 Proof.
-rewrite sintegralE (fsbig_widen _ [set 0%R; 1%R]) => //=; last 2 first.
+rewrite sintegralE (fsbig_widen _ [set 0%R; 1%R]) => //=.
   - exact: image_indic_sub.
   - by move=> t [[] -> /= /preimage10->]; rewrite measure0 mule0.
 have N01 : (0 <> 1:> R)%R by apply/eqP; rewrite eq_sym oner_eq0.
-rewrite fsbigU//=; last by move=> t [->].
+rewrite fsbigU//=; first by move=> t [->].
 rewrite !fsbig_set1 mul0e add0e mul1e.
 by rewrite preimage_indic ifT ?inE// ifN ?notin_setE.
 Qed.
@@ -148,8 +148,8 @@ Lemma sintegralrM : sintegral m (cst r \* f)%R = r%:E * sintegral m f.
 Proof.
 have [->|r0] := eqVneq r 0%R.
   by rewrite mul0e (eq_sintegral (cst 0%R)) ?sintegral0// => x/=; rewrite mul0r.
-rewrite !sintegralET ge0_mule_fsumr; last exact: nnsfun_mulemu_ge0.
-rewrite (reindex_fsbigT ( *%R r))/=; last first.
+rewrite !sintegralET ge0_mule_fsumr; first exact: nnsfun_mulemu_ge0.
+rewrite (reindex_fsbigT ( *%R r))/=.
   by exists ( *%R r^-1); [exact: mulKf|exact: mulVKf].
 by apply: eq_fsbigr => x; rewrite preimage_cstM// [(_ / r)%R]mulrC mulKf// muleA.
 Qed.
@@ -174,9 +174,9 @@ transitivity (\sum_(z \in FG) z%:E * \sum_(a \in F) m (pf a `&` pg (z - a)%R)).
   exact/trivIset_setIr/trivIset_preimage1.
 under eq_fsbigr do rewrite ge0_mule_fsumr//; rewrite exchange_fsbig//=.
 transitivity (\sum_(x \in F) \sum_(y \in G) (x + y)%:E * m (pf x `&` pg y)).
-  apply: eq_fsbigr => x _; rewrite /pf /pg (fsbig_widen G setT)//=; last first.
+  apply: eq_fsbigr => x _; rewrite /pf /pg (fsbig_widen G setT)//=.
     by move=> y [_ /= /preimage10->]; rewrite setI0 measure0 mule0.
-  rewrite (fsbig_widen FG setT)//=; last first.
+  rewrite (fsbig_widen FG setT)//=.
     move=> z [_ /= FGz]; rewrite [X in m X](_ : _ = set0) ?measure0 ?mule0//.
     rewrite -subset0 => //= {x}i /= [<-] /(canLR (@addrNK _ _)).
     by apply: contra_not FGz => <-; exists i; rewrite //= addrC.
@@ -248,7 +248,7 @@ Let mfleg c n : measurable (fleg c n).
 Proof.
 rewrite /fleg [X in _ X](_ : _ = \big[setU/set0]_(y <- fset_set (range f))
     \big[setU/set0]_(x <- fset_set (range (g n)) | c * y <= x)
-      (f @^-1` [set y] `&` (g n @^-1` [set x]))).
+      (f @^-1` [set y] `&` (g n @^-1` [set x]))); last first.
   apply: bigsetU_measurable => r _; apply: bigsetU_measurable => r' crr'.
   exact/measurableI.
 rewrite predeqE => t; split => [/= cfgn|].
@@ -306,11 +306,11 @@ suff {cg1g}<- : limn (fun n => sintegral mu (g1 c n)) = sintegral mu f.
   - exact/nearW/cg1g.
 suff : sintegral mu (g1 c n) @[n \oo] --> sintegral mu f by apply/cvg_lim.
 rewrite [X in X @ \oo --> _](_ : _ = fun n => \sum_(x <- fset_set (range f))
-    x%:E * mu (f @^-1` [set x] `&` fleg c n)); last first.
+    x%:E * mu (f @^-1` [set x] `&` fleg c n)).
   rewrite funeqE => n; rewrite sintegralE.
   transitivity (\sum_(x \in range f) x%:E * mu (g1 c n @^-1` [set x])).
     apply: eq_fbigl => r.
-    do 2 (rewrite in_finite_support; last exact/finite_setIl).
+    do 2 (rewrite in_finite_support; first exact/finite_setIl).
     apply/idP/idP.
       rewrite in_setI => /andP[]; rewrite inE/= => -[x _]; rewrite mindicE.
       have [_|xcn] := boolP (_ \in _).
@@ -334,7 +334,7 @@ apply: cvg_nnesum=> [r _|r _].
   near=> A; apply: (mulemu_ge0 (fun x => f @^-1` [set x] `&` fleg c A)) => r0.
   by rewrite preimage_nnfun0// set0I.
 apply: cvgeZl => //=; rewrite [X in _ --> X](_ : _ =
-    mu (\bigcup_n (f @^-1` [set r] `&` fleg c n))); last first.
+    mu (\bigcup_n (f @^-1` [set r] `&` fleg c n))).
   by rewrite -setI_bigcupr bigcup_fleg// setIT.
 have ? k i : measurable (f @^-1` [set k] `&` fleg c i) by exact: measurableI.
 apply: nondecreasing_cvg_mu; [by []|exact: bigcupT_measurable|].

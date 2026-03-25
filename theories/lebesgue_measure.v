@@ -38,7 +38,7 @@ From mathcomp Require Export lebesgue_stieltjes_measure.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -250,7 +250,7 @@ have bbi2 j : P j -> (b j).1 < (b j).2 -> (b j).2 <= (b i).2.
 apply/IHp.
 - by rewrite lt_neqAle a1bi/= a1b.
 - rewrite (leq_trans _ cP)// -(cardID (pred1 i) P).
-  rewrite [X in (_ < X + _)%N](@eq_card _ _ (pred1 i)); last first.
+  rewrite [X in (_ < X + _)%N](@eq_card _ _ (pred1 i)).
     by move=> j; rewrite !inE andbC; case: eqVneq => // ->.
   rewrite ?card1 ?ltnS// subset_leq_card//.
   by apply/fintype.subsetP => j; rewrite -topredE/= !inE andbC.
@@ -305,7 +305,7 @@ have /[apply] := @content_sub_fsum _ _ _ hlength _ [set` X].
 move=> /(_ _ _ _)/Box[]//=; apply: le_le_trans.
   rewrite hlength_itv ?lte_fin -?EFinD/= -addrA -opprD.
   by case: ltP => //; rewrite lee_fin subr_le0.
-rewrite nneseries_esum//; last by move=> *; rewrite adde_ge0//= ?lee_fin.
+rewrite nneseries_esum//; first by move=> *; rewrite adde_ge0//= ?lee_fin.
 rewrite esum_ge//; exists [set` X] => //; rewrite fsbig_finite// ?set_fsetK//=.
 rewrite fsbig_finite//= set_fsetK//.
 rewrite lee_sum // => i _; rewrite ?AE// !hlength_itv/= ?lte_fin -?EFinD/=.
@@ -456,9 +456,9 @@ have muG : mu G = 0.
     rewrite (le_trans (ltW (mG_ n)))// leeD// lee_fin ltW//.
     by near: n; apply: near_infty_natSinv_lt.
   rewrite measureD//=.
-  + by rewrite setIidr// muEF subee// ge0_fin_numE//; move: mEoo; rewrite muEF.
   + exact: sub_caratheodory.
   + by move: mEoo; rewrite muEF.
+  + by rewrite setIidr// muEF subee// ge0_fin_numE//; move: mEoo; rewrite muEF.
 apply: sub_sigma_algebra; exists (F `\` G); first exact: measurableD.
 exists (E `&` G).
   by apply: (@negligibleS _ _ _ mu G _ (@subIsetr _ E G)); exists G; split.
@@ -550,7 +550,7 @@ Lemma semi_sigma_additive_elebesgue_measure :
 Proof.
 move=> /= F mF tF mUF; rewrite /elebesgue_measure.
 rewrite [X in lebesgue_measure X](_ : _ =
-    \bigcup_n (fine @` (F n `\` [set -oo; +oo]%E))); last first.
+    \bigcup_n (fine @` (F n `\` [set -oo; +oo]%E))).
   rewrite predeqE => r; split.
     by move=> [x [[n _ Fnx xoo <-]]]; exists n => //; exists x.
   by move=> [n _ [x [Fnx xoo <-{r}]]]; exists x => //; split => //; exists n.
@@ -635,11 +635,11 @@ rewrite itv_bnd_open_bigcup//; transitivity (limn (lebesgue_measure \o
   - by apply: bigcup_measurable => k _; exact: measurable_itv.
   - move=> n m nm; apply/subsetPset => x /=; rewrite !in_itv/= => /andP[->/=].
     by move/le_trans; apply; rewrite lerB// lef_pV2 ?ler_nat ?posrE.
-rewrite (_ : _ \o _ = (fun n => (1 - n.+1%:R^-1)%:E)); last first.
+rewrite (_ : _ \o _ = (fun n => (1 - n.+1%:R^-1)%:E)).
   apply/funext => n /=; rewrite lebesgue_measure_itvoc.
   have [->|n0] := eqVneq n 0%N.
     by rewrite invr1 subrr set_itvoc0 wlength0.
-  rewrite wlength_itv/= lte_fin ifT; last first.
+  rewrite wlength_itv/= lte_fin ifT.
     by rewrite ler_ltB// invf_lt1// ltr1n ltnS lt0n.
   by rewrite !(EFinB,EFinN) fin_num_oppeB// addeAC addeA subee// add0e.
 apply/cvg_lim => //=; apply/fine_cvgP; split => /=; first exact: nearW.
@@ -657,7 +657,7 @@ suff : (lebesgue_measure (`]a - 1, a]%classic%R : set R) =
   rewrite wlength_itv lte_fin ltrBlDr ltrDl ltr01.
   rewrite [in X in X == _]/= EFinN EFinB fin_num_oppeB// addeA subee// add0e.
   by rewrite addeC -sube_eq ?fin_num_adde_defl// subee// => /eqP.
-rewrite -(setUitv1 true) ?bnd_simp; last by rewrite ltrBlDr ltrDl.
+rewrite -(setUitv1 true) ?bnd_simp; first by rewrite ltrBlDr ltrDl.
 by rewrite measureU// -(setDitv1r _ a true) setDKI.
 Qed.
 
@@ -667,11 +667,11 @@ Proof.
 move/countable_injP => [f injf].
 rewrite -(injpinv_image (fun=> 0) injf).
 rewrite [X in lebesgue_measure X](_ : _ = \bigcup_(x in f @` A)
-    [set 'pinv_(fun=> 0) A f x]); last first.
+    [set 'pinv_(fun=> 0) A f x]).
   rewrite eqEsubset; split => [r [n]|r [n]].
     by move=> [t At ftn] Afnr; exists n => //=; exists t.
   by move=> [t At ftn] /= rAfn; exists n => //=; exists t.
-rewrite measure_bigcup/=; last 2 first.
+rewrite measure_bigcup/=.
   by move=> ? _; exact: measurable_set1.
   move=> i j [r Ar <-] [s As <-].
   by rewrite !pinvKV ?inE// => -[x [/= <- <-]].
@@ -687,8 +687,8 @@ Proof.
 have [ab|ba] := ltP a b; last by rewrite set_itv_ge ?measure0// -leNgt.
 have := lebesgue_measure_itvoc a b.
 rewrite 2!wlength_itv => <-; rewrite -(setUitv1 true)// measureU//.
-- by have /= -> := lebesgue_measure_set1 b; rewrite adde0.
 - by apply/seteqP; split => // x [/= + xb]; rewrite in_itv/= xb ltxx andbF.
+- by have /= -> := lebesgue_measure_set1 b; rewrite adde0.
 Qed.
 
 Let lebesgue_measure_itvcc (a b : R) :
@@ -697,8 +697,8 @@ Proof.
 have [ab|ba] := leP a b; last by rewrite set_itv_ge ?measure0// -leNgt.
 have := lebesgue_measure_itvoc a b.
 rewrite 2!wlength_itv => <-; rewrite -(setU1itv false)// measureU//.
-- by have /= -> := lebesgue_measure_set1 a; rewrite add0e.
 - by apply/seteqP; split => // x [/= ->]; rewrite in_itv/= ltxx.
+- by have /= -> := lebesgue_measure_set1 a; rewrite add0e.
 Qed.
 
 Let lebesgue_measure_itvco (a b : R) :
@@ -707,8 +707,8 @@ Proof.
 have [ab|ba] := ltP a b; last by rewrite set_itv_ge ?measure0// -leNgt.
 have := lebesgue_measure_itvoo a b.
 rewrite 2!wlength_itv => <-; rewrite -(setU1itv false)// measureU//.
-- by have /= -> := lebesgue_measure_set1 a; rewrite add0e.
 - by apply/seteqP; split => // x [/= ->]; rewrite in_itv/= ltxx.
+- by have /= -> := lebesgue_measure_set1 a; rewrite add0e.
 Qed.
 
 Let lebesgue_measure_itv_bnd (x y : bool) (a b : R) :
@@ -760,7 +760,7 @@ Let lebesgue_measure_itv_infty_infty :
   lebesgue_measure ([set` Interval -oo%O +oo%O] : set R) = +oo%E.
 Proof.
 rewrite set_itvNyy -(setUv (`]-oo, 0[)) setCitv.
-rewrite [X in _ `|` (X `|` _) ]set_itvE set0U measureU//; last first.
+rewrite [X in _ `|` (X `|` _) ]set_itvE set0U measureU//.
   apply/seteqP; split => //= x [] /= /[swap].
   by rewrite !in_itv/= andbT ltNge => ->//.
 rewrite [X in (X + _)%E]lebesgue_measure_itv_infty_bnd.
@@ -823,7 +823,7 @@ Lemma lebesgue_measure_rat (R : realType) :
   lebesgue_measure (range ratr : set R) = 0%E.
 Proof.
 have /pcard_eqP/bijPex[f bijf] := card_rat; set f1 := 'pinv_(fun=> 0) setT f.
-rewrite (_ : range _ = \bigcup_n [set ratr (f1 n)]); last first.
+rewrite (_ : range _ = \bigcup_n [set ratr (f1 n)]).
   apply/seteqP; split => [_ [q _ <-]|_ [n _ /= ->]]; last by exists (f1 n).
   exists (f q) => //=; rewrite /f1 pinvKV// ?in_setE// => x y _ _.
   by apply: bij_inj; rewrite -setTT_bijective.
@@ -931,15 +931,15 @@ have muM n : mu (M n) <= mu (M' n) + (e2 n)%:E.
   rewrite inf_itv// sup_itv//.
   have -> : (`]a, (b + e2 n)%R[ = `]a, b] `|` `]b, (b + e2 n)%R[ )%classic.
     apply: funext=> r /=; rewrite (@itv_splitU _ _ (BRight b)).
-      by rewrite propeqE; split=> /orP.
-    by rewrite !bnd_simp (ltW alb)/= ltr_pwDr.
+      by rewrite !bnd_simp (ltW alb)/= ltr_pwDr.
+    by rewrite propeqE; split=> /orP.
   rewrite measureU/=.
-  - rewrite !lebesgue_measure_itv/= !lte_fin alb ltr_pwDr//=.
-    by rewrite -(EFinD (b + e2 n)) (addrC b) addrK.
   - by apply: sub_sigma_algebra; exact: is_ocitv.
   - by apply: open_measurable; exact: interval_open.
   - rewrite eqEsubset; split => // r []/andP [_ +] /andP[+ _] /=.
     by rewrite !bnd_simp => /le_lt_trans /[apply]; rewrite ltxx.
+  - rewrite !lebesgue_measure_itv/= !lte_fin alb ltr_pwDr//=.
+    by rewrite -(EFinD (b + e2 n)) (addrC b) addrK.
 pose U := \bigcup_n M n.
 exists U; have DU : D `<=` U.
   case: (covDM) => _ /subset_trans; apply; apply: subset_bigcup.
@@ -969,9 +969,9 @@ split => //.
   apply: bigcup_open => n _.
   by rewrite /M; case: pselect => /= _; [exact: open0|exact: interval_open].
 rewrite measureD//=.
-- by rewrite setIidr// lte_subel_addl// ge0_fin_numE// (lt_le_trans muU)// leey.
 - by apply: bigcup_measurable => k _; exact: mM.
 - by rewrite (lt_le_trans muU)// leey.
+- by rewrite setIidr// lte_subel_addl// ge0_fin_numE// (lt_le_trans muU)// leey.
 Qed.
 
 Lemma lebesgue_nearly_bounded (D : set R) (eps : R) :
@@ -995,11 +995,11 @@ rewrite -[mu D]fineK// => /fine_cvg/(_ (interior (ball (fine (mu D)) eps)))[].
   exact/nbhs_interior/nbhsx_ballx.
 move=> n _ /(_ _ (leqnn n))/interior_subset muDN.
 exists (-n%:R, n%:R)%R; rewrite measureD//=.
-move: muDN; rewrite /ball/= /ereal_ball/= -fineB//=; last exact: finDn.
+move: muDN; rewrite /ball/= /ereal_ball/= -fineB//=; first exact: finDn.
 rewrite -lte_fin; apply: le_lt_trans.
 have finDDn : mu D - mu (Dn n) \is a fin_num
   by rewrite ?fin_numB ?finD /= ?(finDn n).
-rewrite -fine_abse // gee0_abs ?sube_ge0 ?finD ?(finDn _) //.
+rewrite -fine_abse // gee0_abs ?sube_ge0 ?finD ?(finDn _) //; last first.
   by rewrite -[_ - _]fineK // lte_fin fine.
 by rewrite le_measure// ?inE//; [exact: measurableI |exact: subIsetl].
 Qed.
@@ -1022,7 +1022,7 @@ wlog : eps epspos D mD finD / exists ab : R * R, D `<=` `[ab.1, ab.2]%classic.
       by apply: compact_closed => //; exact: Rhausdorff.
     exact: interval_closed.
   - by move=> ? [/VDab []].
-  rewrite setDIr (setU_id2r ((D `&` `[a, b]) `\` V)); last first.
+  rewrite setDIr (setU_id2r ((D `&` `[a, b]) `\` V)).
     move=> z ; rewrite setDE setCI setCK => -[?|?];
     by apply/propext; split => [[]|[[]]].
   have mV : measurable V.
@@ -1090,7 +1090,7 @@ rewrite (@le_trans _ _ (mu V))//; last first.
   apply: ereal_sup_ubound; exists V => //=; split => //.
   exact: (subset_trans VFND (@subIsetr _ _ _)).
 rewrite -(@leeD2rE _ 1)// -EFinD (le_trans M1FD)//.
-rewrite /mu (@measureDI _ _ _ _ (F N `&` D) _ _ mV)/=; last exact: measurableI.
+rewrite /mu (@measureDI _ _ _ _ (F N `&` D) _ _ mV)/=; first exact: measurableI.
 by rewrite addeC leeD//; [rewrite measureIr//; exact: measurableI|exact/ltW].
 Qed.
 
@@ -1139,7 +1139,7 @@ suff: forall r : {posnum R}, mu (Z r%:num) = 0.
   set F := fun n => Z n%:R.
   have : mu (\bigcup_n F n) <= \sum_(i <oo) mu (F i).
     exact: outer_measure_sigma_subadditive.
-  rewrite eseries0; last by move=> n _; rewrite /F Zr.
+  rewrite eseries0; first by move=> n _; rewrite /F Zr.
   by rewrite /F -setI_bigcupr bigcup_ballT setIT measure_le0 => /eqP.
 move=> r.
 pose E := [set i | D i /\ closure (B i) `&` ball (0%R:R) r%:num !=set0].
@@ -1161,7 +1161,7 @@ have measurable_closure (C : set R) : is_ball C -> measurable (closure C).
 move: ABV => [is_ballB ABV].
 have {}EBr2 : \esum_(i in E) mu (closure (B i)) <=
               mu (ball (0:R) (r%:num + 2))%R.
-  rewrite -(set_mem_set E) -nneseries_esum// -measure_bigcup//; last 2 first.
+  rewrite -(set_mem_set E) -nneseries_esum// -measure_bigcup//.
     by move=> *; exact: measurable_closure.
     by apply: sub_trivIset tDB => ? [].
   apply/le_measure; rewrite ?inE; [|exact: measurable_ball|exact: bigcup_sub].
@@ -1172,7 +1172,7 @@ have finite_set_F i : finite_set (F i).
   move/(infinite_set_fset M) => [/= C CsubFi McardC].
   have MC : (M%:R * (1 / (2 ^ i.+1)%:R))%:E <=
             mu (\bigcup_(j in [set` C]) closure (B j)).
-    rewrite (measure_bigcup _ [set` C])//; last 2 first.
+    rewrite (measure_bigcup _ [set` C])//.
       by move=> ? _; exact: measurable_closure.
       by apply: sub_trivIset tDB; by apply: (subset_trans CsubFi) => x [[]].
     rewrite /= nneseries_esum//= set_mem_set// esum_fset// fsbig_finite//=.
@@ -1197,7 +1197,7 @@ have finite_set_F i : finite_set (F i).
   have Fir2 : mu (\bigcup_(j in F i) closure (B j)) <=
               mu (ball (0:R) (r%:num + 2))%R.
     rewrite (le_trans _ EBr2)// -(set_mem_set E) -nneseries_esum//.
-    rewrite E_partition -measure_bigcup//=; last 2 first.
+    rewrite E_partition -measure_bigcup//=.
       by move=> ? _; exact: measurable_closure.
       apply: trivIset_bigcup => //.
         by move=> n; apply: sub_trivIset tDB => ? [[]].
@@ -1224,7 +1224,7 @@ have FE : \sum_(n <oo) \esum_(i in F n) mu (closure (B i)) =
     - rewrite -bigcup_bigcup; apply: bigcup_measurable => k _.
       exact: measurable_closure.
   apply: (@eq_eseriesr _ (fun n => mu (\bigcup_(i in F n) closure (B i)))).
-  move=> i _; rewrite bigcup_mkcond measure_semi_bigcup//; last 3 first.
+  move=> i _; rewrite bigcup_mkcond measure_semi_bigcup//.
     by move=> j; case: ifPn => // _; exact: measurable_closure.
     by apply/(trivIset_mkcond _ _).1; apply: sub_trivIset tDB => x [[]].
     rewrite -bigcup_mkcond; apply: bigcup_measurable => k _.
@@ -1238,36 +1238,36 @@ have [N F5e] : exists N, \sum_(N <= n <oo) \esum_(i in F n) mu (closure (B i)) <
   pose f n := \bigcup_(i in F n) closure (B i).
   have foo : \sum_(k <oo) (mu \o f) k < +oo.
     rewrite /f /= [ltLHS](_ : _ =
-      \sum_(n <oo) \esum_(i in F n) mu (closure (B i))); last first.
+      \sum_(n <oo) \esum_(i in F n) mu (closure (B i))).
     apply: (@eq_eseriesr _
         (fun k => mu (\bigcup_(i in F k) closure (B i)))) => i _.
       rewrite measure_bigcup//=.
-      - by rewrite nneseries_esum// set_mem_set.
       - by move=> j D'ij; exact: measurable_closure.
       - by apply: sub_trivIset tDB => // x [[]].
+      - by rewrite nneseries_esum// set_mem_set.
     rewrite FE (@le_lt_trans _ _ (mu (ball (0 : R) (r%:num + 2))%R))//.
     rewrite (le_trans _ EBr2)// measure_bigcup//=.
-    + by rewrite nneseries_esum// set_mem_set.
     + by move=> i _; exact: measurable_closure.
     + by apply: sub_trivIset tDB => // x [].
+    + by rewrite nneseries_esum// set_mem_set.
   have : \sum_(N <= k <oo) (mu \o f) k @[N --> \oo] --> 0.
     exact: nneseries_tail_cvg.
   rewrite /f /= => /fine_fcvg /= /cvgrPdist_lt /=.
   have : (0 < 5%:R^-1 * e%:num)%R by rewrite mulr_gt0// invr_gt0// ltr0n.
   move=> /[swap] /[apply].
   rewrite near_map => -[N _]/(_ _ (leqnn N)) h; exists N; move: h.
-  rewrite sub0r normrN ger0_norm//; last by rewrite fine_ge0// nneseries_ge0.
+  rewrite sub0r normrN ger0_norm//; first by rewrite fine_ge0// nneseries_ge0.
   rewrite -lte_fin; apply: le_lt_trans.
   set X : \bar R := (X in fine X).
   have Xoo : X < +oo.
     apply: le_lt_trans foo.
     by rewrite (nneseries_split _ N)// leeDr//; exact: sume_ge0.
-  rewrite fineK ?ge0_fin_numE//; last exact: nneseries_ge0.
+  rewrite fineK ?ge0_fin_numE//; first exact: nneseries_ge0.
   apply: lee_nneseries => //; first by move=> i *; exact: esum_ge0.
   move=> n Nn; rewrite measure_bigcup//=.
-  - by rewrite nneseries_esum// set_mem_set.
   - by move=> i _; exact: measurable_closure.
   - by apply: sub_trivIset tDB => x [[]].
+  - by rewrite nneseries_esum// set_mem_set.
 pose K := \bigcup_(i in `I_N) \bigcup_(j in F i) closure (B j).
 have closedK : closed K.
   apply: closed_bigcup => //= i iN; apply: closed_bigcup => //.
@@ -1341,7 +1341,7 @@ have {}ZNF5 : mu (Z r%:num) <=
   apply: lee_nneseries => // n _.
   rewrite -[in leRHS](set_mem_set (F n)) -nneseries_esum// bigcup_mkcond.
   rewrite eseries_mkcond [leRHS](_ : _ = \sum_(i <oo) mu
-      (if i \in F n then closure (5%:R *` B i) else set0)); last first.
+      (if i \in F n then closure (5%:R *` B i) else set0)).
     congr (limn _); apply/funext => x.
     by under [RHS]eq_bigr do rewrite (fun_if mu) measure0.
   apply: measure_sigma_subadditive => //.
@@ -1351,7 +1351,7 @@ have {}ZNF5 : mu (Z r%:num) <=
     by apply: measurable_closure; exact: is_scale_ball.
 apply/(le_trans ZNF5).
 move/ltW: F5e; rewrite [in X in X -> _](@lee_pdivlMl R 5%:R) ?ltr0n//.
-rewrite -nneseriesZl//; last by move=> *; exact: esum_ge0.
+rewrite -nneseriesZl//; first by move=> *; exact: esum_ge0.
 apply: le_trans; apply: lee_nneseries => //; first by move=> *; exact: esum_ge0.
 move=> n _.
 rewrite -(set_mem_set (F n)) -nneseries_esum// -nneseries_esum// -nneseriesZl//.
@@ -1447,17 +1447,17 @@ have muGSfin C : C `<=` G -> mu (\bigcup_(k in C) closure (B k)) \is a fin_num.
     by move: OAoo => /andP[OA]; exact: lt_trans.
   rewrite (@le_trans _ _ (mu (\bigcup_(k in G) B k)))//; last first.
     by rewrite le_outer_measure//; apply: bigcup_sub => i /GV'[].
-  rewrite bigcup_mkcond [in leRHS]bigcup_mkcond measure_bigcup//=; last 2 first.
+  rewrite bigcup_mkcond [in leRHS]bigcup_mkcond measure_bigcup//=.
     by move=> i _; case: ifPn => // iG; exact: vitali_cover_mclosure ABF.
     by apply/(trivIset_mkcond _ _).1; apply: sub_trivIset tB.
-  rewrite measure_bigcup//=; last 2 first.
+  rewrite measure_bigcup//=.
     by move=> i _; case: ifPn => // _; exact: vitali_cover_measurable ABF.
     apply/(trivIset_mkcond _ _).1/trivIsetP => /= i j  Gi Gj ij.
     move/trivIsetP : tB => /(_ _ _ Gi Gj ij).
     by apply: subsetI_eq0; exact: subset_closure.
   apply: lee_nneseries => // n _.
   case: ifPn => [/set_mem nC|]; last by rewrite measure0.
-  rewrite (vitali_cover_ballE _ ABF) ifT; last exact/mem_set/CG.
+  rewrite (vitali_cover_ballE _ ABF) ifT; first exact/mem_set/CG.
   by rewrite closure_ballE lebesgue_measure_closed_ball// lebesgue_measure_ball.
 have muGfin : mu (\bigcup_(k in G) closure (B k)) \is a fin_num.
   by rewrite -(bigB0 G) muGSfin.
@@ -1479,7 +1479,7 @@ have [c Hc] : exists c : {posnum R},
     by exists (widen_ord (@leqnSn _) (Ordinal kn)).
   exists c.
   suff:  mu (\bigcup_(k in G `\` bigB G c%:num) closure (B k)) < e%:E.
-    rewrite EFinN lteBlDl// -lteBlDr//; last exact: muGSfin.
+    rewrite EFinN lteBlDl// -lteBlDr//; first exact: muGSfin.
     apply: le_lt_trans.
     pose setDbigB := (\bigcup_(k in G) closure (B k)) `\`
                      (\bigcup_(k in bigB G c%:num) closure (B k)).
@@ -1492,7 +1492,7 @@ have [c Hc] : exists c : {posnum R},
         by apply: measurableD;
           apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
       by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
-    rewrite measureD//=; last 3 first.
+    rewrite measureD//=.
       by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
       by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
       by rewrite -ge0_fin_numE.
@@ -1503,14 +1503,14 @@ have [c Hc] : exists c : {posnum R},
   apply: (@le_lt_trans _ _ (normr (0 -
      fine (\sum_(n <= k <oo | k \in G) mu (closure (B k)))))%:E); last first.
     by rewrite lte_fin; apply: nGe => /=.
-  rewrite sub0r normrN ger0_norm/=; last by rewrite fine_ge0// nneseries_ge0.
-  rewrite fineK//; last first.
-    move: muGfin; rewrite measure_bigcup//=; last first.
+  rewrite sub0r normrN ger0_norm/=; first by rewrite fine_ge0// nneseries_ge0.
+  rewrite fineK//.
+    move: muGfin; rewrite measure_bigcup//=.
       by move=> i _; exact: vitali_cover_mclosure ABF.
-    do 2 (rewrite ge0_fin_numE//; last exact: nneseries_ge0).
+    do 2 (rewrite ge0_fin_numE//; first exact: nneseries_ge0).
     apply: le_lt_trans.
     by rewrite [leRHS](nneseries_split_cond 0%N n)// add0n leeDr// sume_ge0.
-  rewrite measure_bigcup//=; last 2 first.
+  rewrite measure_bigcup//=.
     by move=> i _; exact: vitali_cover_mclosure ABF.
     by apply: sub_trivIset tB; exact: subDsetl.
   rewrite [in leRHS]eseries_cond.
@@ -1521,30 +1521,30 @@ have [c Hc] : exists c : {posnum R},
   by move/set_mem: iGG' => [Gi] /not_andP[//|/negP]; rewrite -ltNge.
 have {}Hc : mu (\bigcup_(k in G) closure (B k) `\`
                 \bigcup_(k in bigB G c%:num) closure (B k)) < e%:E.
-  rewrite measureD//=; first last.
+  rewrite measureD//=.
+  - by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
+  - by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
   - by rewrite -ge0_fin_numE.
-  - by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
-  - by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
-  rewrite setIidr; last exact: bigcup_subset.
+  rewrite setIidr; first exact: bigcup_subset.
   by rewrite lteBlDr-?lteBlDl//; exact: muGSfin.
 have bigBG_fin (r : {posnum R}) : finite_set (bigB G r%:num).
   pose M := (truncn (fine (mu O) / r%:num)).+1.
   apply: contrapT => /infinite_set_fset /= /(_ M)[G0 G0G'r MG0].
   have : mu O < mu (\bigcup_(k in bigB G r%:num) closure (B k)).
     apply: (@lt_le_trans _ _ (mu (\bigcup_(k in [set` G0]) closure (B k)))).
-      rewrite bigcup_fset measure_fbigsetU//=; last 2 first.
+      rewrite bigcup_fset measure_fbigsetU//=.
         by move=> k _; exact: vitali_cover_mclosure ABF.
         by apply: sub_trivIset tB => x /G0G'r[].
       apply: (@lt_le_trans _ _ (\sum_(i <- G0) r%:num%:E)%R).
         rewrite sumEFin big_const_seq iter_addr addr0 -mulr_natr.
         apply: (@lt_le_trans _ _ (r%:num * M%:R)%:E); last first.
           by rewrite lee_fin ler_wpM2l// ler_nat count_predT.
-        rewrite EFinM -lte_pdivrMl// muleC -(@fineK _ (mu O)); last first.
+        rewrite EFinM -lte_pdivrMl// muleC -(@fineK _ (mu O)).
           by rewrite ge0_fin_numE//; case/andP: OAoo => ?; exact: lt_trans.
         by rewrite -EFinM /M lte_fin truncnS_gt.
       rewrite big_seq [in leRHS]big_seq.
       apply: lee_sum => //= i /G0G'r [iG rBi].
-      rewrite -[leRHS]fineK//; last first.
+      rewrite -[leRHS]fineK//.
         rewrite (vitali_cover_ballE _ ABF).
         by rewrite closure_ballE lebesgue_measure_closed_ball.
       rewrite (vitali_cover_ballE _ ABF) closure_ballE.
@@ -1554,10 +1554,10 @@ have bigBG_fin (r : {posnum R}) : finite_set (bigB G r%:num).
     - by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
   apply/negP; rewrite -leNgt.
   apply: (@le_trans _ _ (mu (\bigcup_(k in bigB G r%:num) B k))).
-    rewrite measure_bigcup//; last 2 first.
+    rewrite measure_bigcup//.
       by move=> k _; exact: vitali_cover_mclosure ABF.
       exact: sub_trivIset tB.
-    rewrite /= measure_bigcup//; last 2 first.
+    rewrite /= measure_bigcup//.
       by move=> k _; exact: vitali_cover_measurable ABF.
       apply/trivIsetP => /= i j [Gi ri] [Gj rj] ij.
       move/trivIsetP : tB => /(_ _ _ Gi Gj ij).

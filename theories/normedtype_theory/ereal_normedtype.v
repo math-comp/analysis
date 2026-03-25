@@ -29,7 +29,7 @@ From mathcomp Require Import real_interval num_normedtype.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -280,18 +280,18 @@ Implicit Types r : R.
 Lemma open_ereal_lt y : open [set r : R | r%:E < y].
 Proof.
 case: y => [y||] /=; first exact: open_lt.
-- rewrite (_ : [set _ | _] = setT); first exact: openT.
+- rewrite (_ : [set _ | _] = setT); last exact: openT.
   by rewrite funeqE => ? /=; rewrite ltry trueE.
-- rewrite (_ : [set _ | _] = set0); first exact: open0.
+- rewrite (_ : [set _ | _] = set0); last exact: open0.
   by rewrite funeqE => ? /=; rewrite falseE.
 Qed.
 
 Lemma open_ereal_gt y : open [set r : R | y < r%:E].
 Proof.
 case: y => [y||] /=; first exact: open_gt.
-- rewrite (_ : [set _ | _] = set0); first exact: open0.
+- rewrite (_ : [set _ | _] = set0); last exact: open0.
   by rewrite funeqE => ? /=; rewrite falseE.
-- rewrite (_ : [set _ | _] = setT); first exact: openT.
+- rewrite (_ : [set _ | _] = setT); last exact: openT.
   by rewrite funeqE => ? /=; rewrite ltNyr trueE.
 Qed.
 
@@ -346,14 +346,14 @@ Qed.
 
 Lemma closed_ereal_le_ereal y : closed [set x | y <= x].
 Proof.
-rewrite (_ : [set x | y <= x] = ~` [set x | y > x]); last first.
+rewrite (_ : [set x | y <= x] = ~` [set x | y > x]).
   by rewrite predeqE=> x; split=> [rx|/negP]; [apply/negP|]; rewrite -leNgt.
 exact/open_closedC/open_ereal_lt_ereal.
 Qed.
 
 Lemma closed_ereal_ge_ereal y : closed [set x | y >= x].
 Proof.
-rewrite (_ : [set x | y >= x] = ~` [set x | y < x]); last first.
+rewrite (_ : [set x | y >= x] = ~` [set x | y < x]).
   by rewrite predeqE=> x; split=> [rx|/negP]; [apply/negP|]; rewrite -leNgt.
 exact/open_closedC/open_ereal_gt_ereal.
 Qed.

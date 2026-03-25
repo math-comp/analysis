@@ -17,7 +17,7 @@ From mathcomp Require Import lebesgue_measure lebesgue_integral ftc.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -71,7 +71,7 @@ Lemma in_continuous_exponential_pdf :
 Proof.
 move=> x; rewrite in_itv/= andbT => x0.
 apply/(@cvgrPdist_lt _ R^o) => e e0; near=> y.
-rewrite 2?(exponential_pdfE (ltW _))//; last by near: y; exact: lt_nbhsr.
+rewrite 2?(exponential_pdfE (ltW _))//; first by near: y; exact: lt_nbhsr.
 near: y; move: e e0; apply/(@cvgrPdist_lt _ R^o).
 by apply: continuous_comp => //; exact: continuous_exponential_pdfT.
 Unshelve. end_near. Qed.
@@ -118,7 +118,7 @@ Lemma exponential_prob_itv0c (x : R) : 0 < x ->
   exponential_prob rate `[0, x] = (1 - (expR (- rate * x))%:E)%E.
 Proof.
 move=> x0.
-rewrite (_ : 1 = - (- expR (- rate * 0))%:E)%E; last first.
+rewrite (_ : 1 = - (- expR (- rate * 0))%:E)%E.
   by rewrite mulr0 expR0 EFinN oppeK.
 rewrite addeC.
 apply: (@continuous_FTC2 _ _ (fun x => - expR (- rate * x))) => //.
@@ -139,26 +139,26 @@ Proof.
 move=> rate0.
 have mEex : measurable_fun setT (EFin \o exponential_pdf rate).
   by apply/measurable_EFinP; exact: measurable_exponential_pdf.
-rewrite -(setUv `[0, +oo[%classic) ge0_integral_setU//=; last 4 first.
+rewrite -(setUv `[0, +oo[%classic) ge0_integral_setU//=.
   exact: measurableC.
   by rewrite setUv.
   by move=> x _; rewrite lee_fin exponential_pdf_ge0// ltW.
   exact/disj_setPCl.
-rewrite [X in _ + X]integral0_eq ?adde0; last first.
+rewrite [X in _ + X]integral0_eq ?adde0.
   by move=> x x0; rewrite /exponential_pdf patchE ifF// memNset.
 rewrite (@ge0_continuous_FTC2y _ _
   (fun x => - (expR (- rate * x))) _ 0)//.
-- by rewrite mulr0 expR0 EFinN oppeK add0e.
 - by move=> x _; apply: exponential_pdf_ge0; exact: ltW.
 - exact: within_continuous_exponential_pdf.
 - rewrite -oppr0; apply: cvgN.
   rewrite (_ : (fun x => expR (- rate * x)) =
-               (fun z => expR (- z)) \o (fun z => rate * z)); last first.
+               (fun z => expR (- z)) \o (fun z => rate * z)).
     by apply: eq_fun => x; rewrite mulNr.
   apply: (@cvg_comp _ _ _ _ _ _ (pinfty_nbhs R)); last exact: cvgr_expR.
   exact: gt0_cvgMry.
 - by apply: cvgN; apply/cvg_at_right_filter; exact: cexpNM.
 - exact: derive1_exponential_pdf.
+- by rewrite mulr0 expR0 EFinN oppeK add0e.
 Qed.
 
 Lemma integrable_exponential_pdf : 0 < rate ->

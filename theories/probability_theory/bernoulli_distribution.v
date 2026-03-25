@@ -21,7 +21,7 @@ From mathcomp Require Import lebesgue_integral kernel.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -46,7 +46,7 @@ Qed.
 
 Lemma bernoulli_pmf1 : \sum_(i \in [set: bool]) (bernoulli_pmf i)%:E = 1%E.
 Proof.
-rewrite setT_bool fsbigU//=; last by move=> x [/= ->].
+rewrite setT_bool fsbigU//=; first by move=> x [/= ->].
 by rewrite !fsbig_set1/= -EFinD subrKC.
 Qed.
 
@@ -91,7 +91,7 @@ apply: cvg_toP.
 transitivity (\sum_(0 <= i <oo) (\esum_(j in F i) (bernoulli_pmf p j)%:E))%E.
 apply: eq_eseriesr => k _; rewrite esum_fset//= => b _.
   by rewrite lee_fin bernoulli_pmf_ge0.
-rewrite -nneseries_sum_bigcup//=; last first.
+rewrite -nneseries_sum_bigcup//=.
   by move=> b; rewrite lee_fin bernoulli_pmf_ge0.
 by rewrite esum_fset//= => b _; rewrite lee_fin bernoulli_pmf_ge0.
 Qed.
@@ -110,16 +110,16 @@ Lemma eq_bernoulli (P : probability bool R) :
 Proof.
 move=> Ptrue sb; rewrite /bernoulli /bernoulli_pmf.
 have Pfalse : P [set false] = (1 - p%:E)%E.
-  rewrite -Ptrue -(probability_setT P) setT_bool measureU//; last first.
+  rewrite -Ptrue -(probability_setT P) setT_bool measureU//.
     by rewrite disjoints_subset => -[].
   by rewrite addeAC subee ?add0e//= Ptrue.
 have : (0 <= p%:E <= 1)%E by rewrite -Ptrue measure_ge0 probability_le1.
 rewrite !lee_fin => ->.
 have eq_sb := etrans (bigcup_imset1 (_ : set bool) id) (image_id _).
 rewrite -[in LHS](eq_sb sb)/= measure_fin_bigcup//.
-- by apply: eq_fsbigr => /= -[].
 - exact: finite_finset.
 - by move=> [] [] _ _ [[]]//= [].
+- by apply: eq_fsbigr => /= -[].
 Qed.
 
 End bernoulli.
@@ -136,15 +136,15 @@ apply/funext => U; rewrite /bernoulli_prob; case: ifPn => [p01|]; last first.
 rewrite measure_addE/= /mscale/=.
 have := @subsetT _ U; rewrite setT_bool => UT.
 have [->|->|->|->] /= := subset_set2 UT.
-- rewrite -esum_fset//=; last by move=> b; rewrite lee_fin bernoulli_pmf_ge0.
+- rewrite -esum_fset//=; first by move=> b; rewrite lee_fin bernoulli_pmf_ge0.
   by rewrite esum_set0 2!measure0 2!mule0 adde0.
-- rewrite -esum_fset//=; last by move=> b; rewrite lee_fin bernoulli_pmf_ge0.
+- rewrite -esum_fset//=; first by move=> b; rewrite lee_fin bernoulli_pmf_ge0.
   rewrite esum_set1/= ?lee_fin// 2!diracE mem_set//= memNset//= mule0 adde0.
   by rewrite mule1.
-- rewrite -esum_fset//=; last by move=> b; rewrite lee_fin bernoulli_pmf_ge0.
+- rewrite -esum_fset//=; first by move=> b; rewrite lee_fin bernoulli_pmf_ge0.
   rewrite esum_set1/= ?lee_fin ?subr_ge0// 2!diracE memNset//= mem_set//=.
   by rewrite mule0 add0e mule1.
-- rewrite fsbigU//=; last by move=> x [->].
+- rewrite fsbigU//=; first by move=> x [->].
   by rewrite 2!fsbig_set1/= -setT_bool 2!diracT !mule1.
 Qed.
 
@@ -156,7 +156,7 @@ Lemma eq_bernoulliV2 {R : realType} (P : probability bool R) :
 Proof.
 move=> Ptrue_eq_false; apply/eq_bernoulli.
 have : P [set: bool] = 1%E := probability_setT P.
-rewrite setT_bool measureU//=; last by rewrite disjoints_subset => -[].
+rewrite setT_bool measureU//=; first by rewrite disjoints_subset => -[].
 rewrite Ptrue_eq_false -mule2n => /esym/eqP.
 by rewrite -mule_natl -eqe_pdivrMl// mule1 => /eqP<-.
 Qed.

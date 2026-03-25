@@ -34,7 +34,7 @@ From mathcomp Require Import sequences derive realfun convex.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -68,14 +68,14 @@ move=> Cx zLx; have [K [Kreal Kf]] := cvg_series_bounded Cx.
 have Kzxn n : 0 <= `|K + 1| * `|z ^+ n| / `|x ^+ n| by rewrite !mulr_ge0.
 apply: normed_cvg.
 apply: series_le_cvg Kzxn _ _ => [//=| /= n|].
-  rewrite (_ : `|_ * _| = `|f n * x ^+ n| * `|z ^+ n| / `|x ^+ n|); last first.
+  rewrite (_ : `|_ * _| = `|f n * x ^+ n| * `|z ^+ n| / `|x ^+ n|).
     rewrite !normrM normr_id mulrAC mulfK // normr_eq0 expf_eq0 andbC.
     by case: ltrgt0P zLx; rewrite //= normr_lt0.
   do! (apply: ler_pM || apply: mulr_ge0 || rewrite invr_ge0) => //.
   by apply Kf => //; rewrite (lt_le_trans _ (ler_norm _))// ltrDl.
 have F : `|z / x| < 1.
   by rewrite normrM normfV ltr_pdivrMr ?mul1r // (le_lt_trans _ zLx).
-rewrite (_ : (fun _ => _) = geometric `|K + 1| `|z / x|); last first.
+rewrite (_ : (fun _ => _) = geometric `|K + 1| `|z / x|).
   by apply/funext => i /=; rewrite normrM exprMn mulrA normfV !normrX exprVn.
 by apply: is_cvg_geometric_series; rewrite normr_id.
 Qed.
@@ -85,7 +85,7 @@ Fact is_cvg_pseries_inside f (x z : R) :
 Proof.
 move=> Cx zLx.
 apply: normed_cvg; rewrite /normed_series_of /=.
-rewrite (_ : (fun _ => _) = (fun i => `|f i| * `|z| ^+ i)); last first.
+rewrite (_ : (fun _ => _) = (fun i => `|f i| * `|z| ^+ i)).
   by apply/funext => i; rewrite normrM normrX.
 by apply: is_cvg_pseries_inside_norm Cx _; rewrite normr_id.
 Qed.
@@ -118,7 +118,7 @@ Proof.
 move=> s Cx; rewrite -[lim _]subr0.
 rewrite /pseries/= [X in X @ \oo --> _]/series /=.
 rewrite [X in X @ \oo --> _](_ : _ = (fun n => \sum_(0 <= i < n)
-    pseries_diffs f i * x ^+ i - n%:R * f n * x ^+ n.-1)); last first.
+    pseries_diffs f i * x ^+ i - n%:R * f n * x ^+ n.-1)).
   by rewrite funeqE => n; rewrite pseries_diffs_sumE addrK.
 by apply: cvgB => //; rewrite -cvg_shiftS; exact: cvg_series_cvg_0.
 Qed.
@@ -172,7 +172,7 @@ case: n => //= n ni.
 rewrite normrM.
 pose d := (n.-1 - i)%N.
 rewrite -[(n - i)%N]prednK ?subn_gt0// predn_sub -/d.
-rewrite -(subnK (_ : i <= n.-1)%N) -/d; last first.
+rewrite -(subnK (_ : i <= n.-1)%N) -/d.
   by rewrite -ltnS prednK// (leq_ltn_trans _ ni).
 rewrite addnC exprD mulrAC -mulrA.
 apply: ler_pM => //.
@@ -201,7 +201,7 @@ suff hfxs : h^-1 *: (f (h + x) - f x) @[h --> 0^'] --> limn (series s).
   have F : f^`() x = limn (series s) by apply: cvg_lim hfxs.
   have Df : derivable f x 1.
     move: hfxs; rewrite /derivable [X in X @ 0^'](_ : _ =
-        (fun h => h^-1 *: (f (h%:A + x) - f x))) /=; last first.
+        (fun h => h^-1 *: (f (h%:A + x) - f x))) /=.
       by apply/funext => i //=; rewrite [i%:A]mulr1.
     by move=> /(cvg_lim _) -> //.
   by constructor; [exact: Df|rewrite -derive1E].
@@ -214,17 +214,17 @@ suff Cc : limn (h^-1 *: (series (shx h - sx))) @[h --> 0^'] --> limn (series s).
   near=> h; rewrite sub0r normrN /=.
   rewrite (le_lt_trans _ eps_gt0)//.
   rewrite normr_le0 subr_eq0 -/sx -/(shx _); apply/eqP.
-  have Cshx' : cvgn (series (shx h)).
-    apply: is_cvg_pseries_inside Ck _.
-    rewrite (le_lt_trans (ler_normD _ _))// -(subrK  `|x| `|K|) ltrD2r.
-    near: h.
-    apply/nbhs_ballP => /=; exists ((`|K| - `|x|) /2%:R) => /=.
-      by rewrite divr_gt0 // subr_gt0.
-    move=> t; rewrite /ball /= sub0r normrN => H tNZ.
-    rewrite (lt_le_trans H)// ler_pdivrMr // mulr2n mulrDr mulr1.
-    by rewrite ler_wpDr // subr_ge0 ltW.
-  rewrite limZl_tmp; last exact/is_cvg_seriesB/Csx.
-  by rewrite lim_seriesB; last exact: Csx.
+  suff Cshx' : cvgn (series (shx h)).
+    rewrite limZl_tmp; first exact/is_cvg_seriesB/Csx.
+    by rewrite lim_seriesB; [|exact: Csx|].
+  apply: is_cvg_pseries_inside Ck _.
+  rewrite (le_lt_trans (ler_normD _ _))// -(subrK  `|x| `|K|) ltrD2r.
+  near: h.
+  apply/nbhs_ballP => /=; exists ((`|K| - `|x|) /2%:R) => /=.
+    by rewrite divr_gt0 // subr_gt0.
+  move=> t; rewrite /ball /= sub0r normrN => H tNZ.
+  rewrite (lt_le_trans H)// ler_pdivrMr // mulr2n mulrDr mulr1.
+  by rewrite ler_wpDr // subr_ge0 ltW.
 apply: cvg_zero => /=.
 suff Cc : limn
     (series (fun n => c n * (((h + x) ^+ n - x ^+ n) / h - n%:R * x ^+ n.-1)))
@@ -312,7 +312,7 @@ Implicit Types x : R.
 Lemma expR0 : expR 0 = 1 :> R.
 Proof.
 apply: lim_near_cst => //.
-near=> m; rewrite -[m]prednK; last by near: m.
+near=> m; rewrite -[m]prednK; first by near: m.
 rewrite -addn1 series_addn series_exp_coeff0 big_add1 big1 ?addr0//.
 by move=> i _; rewrite /exp_coeff /= expr0n mul0r.
 Unshelve. all: by end_near. Qed.
@@ -325,13 +325,13 @@ have F m : (n.+1 < m)%N ->
     \sum_(0 <= i < m) (f n.+1 x i) = 1 + x ^+ n.+1 / n.+1`!%:R.
   move=> n1m.
   rewrite (@big_cat_nat _ _ _ n.+2)//= big_nat_recr// big_nat_recl//=.
-  rewrite big_nat_cond big1 ?addr0; last first.
+  rewrite big_nat_cond big1 ?addr0.
     by move=> i /[!andbT] /[!leq0n]/= ni; rewrite /f/= lt_eqF//= add0r.
-  rewrite big_nat_cond big1 ?addr0; last first.
+  rewrite big_nat_cond big1 ?addr0.
     move=> i /[!andbT] /andP[ni mi]; rewrite /f !gtn_eqF//= ?add0r//.
     exact: ltn_trans ni.
   by rewrite /f/= add0r mulr0n addr0 eqxx 2!mulr1n.
-rewrite [leLHS](_ : _ = limn (series (f n.+1 x))); last first.
+rewrite [leLHS](_ : _ = limn (series (f n.+1 x))).
   by apply/esym/(@lim_near_cst R^o) => //; near=> k; apply: F; near: k.
 apply: ler_lim; first by apply: is_cvg_near_cst; near=> k; apply: F; near: k.
   exact: is_cvg_series_exp_coeff.
@@ -356,16 +356,16 @@ Proof. by apply/funext => x; rewrite /pseries -exp_coeffE. Qed.
 Global Instance is_derive_expR x : is_derive x 1 expR (expR x).
 Proof.
 pose s1 n := pseries_diffs (fun n => n`!%:R^-1) n * x ^+ n.
-rewrite expRE /= /pseries (_ : (fun _ => _) = s1); last first.
+rewrite expRE /= /pseries (_ : (fun _ => _) = s1).
   by apply/funext => i; rewrite /s1 pseries_diffs_inv_fact.
 apply: (@pseries_snd_diffs _ _ (`|x| + 1)); rewrite /pseries.
 - by rewrite -exp_coeffE; apply: is_cvg_series_exp_coeff.
 - rewrite (_ : (fun _ => _) = exp_coeff (`|x| + 1)).
-    exact: is_cvg_series_exp_coeff.
-  by apply/funext => i; rewrite pseries_diffs_inv_fact exp_coeffE.
+    by apply/funext => i; rewrite pseries_diffs_inv_fact exp_coeffE.
+  exact: is_cvg_series_exp_coeff.
 - rewrite (_ : (fun _ => _) = exp_coeff (`|x| + 1)).
-    exact: is_cvg_series_exp_coeff.
-  by apply/funext => i; rewrite !pseries_diffs_inv_fact exp_coeffE.
+    by apply/funext => i; rewrite !pseries_diffs_inv_fact exp_coeffE.
+  exact: is_cvg_series_exp_coeff.
 by rewrite [ltRHS]ger0_norm// addrC -subr_gt0 addrK.
 Qed.
 
@@ -505,7 +505,7 @@ Qed.
 Lemma cvgr_expR : @expR R (- x) @[x --> +oo] --> 0.
 Proof.
 apply/cvgrPdist_le => e e0; near=> x.
-rewrite sub0r normrN ger0_norm; last exact: expR_ge0.
+rewrite sub0r normrN ger0_norm; first exact: expR_ge0.
 rewrite expRN -[leRHS]invrK lef_pV2 ?posrE ?expR_gt0 ?invr_gt0//.
 rewrite (le_trans _ (expR_ge1Dx _))// -lerBlDl.
 by near: x; apply: nbhs_pinfty_ge; exact: num_real.
@@ -815,7 +815,7 @@ Local Close Scope convex_scope.
 
 Lemma lnNy : ln x @[x --> 0^'+] --> -oo.
 Proof.
-apply/cvgrNyPle => y; near=> x; rewrite -ler_expR lnK; last by rewrite posrE.
+apply/cvgrNyPle => y; near=> x; rewrite -ler_expR lnK; first by rewrite posrE.
 by near: x; apply: nbhs_right_le; exact: expR_gt0.
 Unshelve. end_near. Qed.
 
@@ -1017,7 +1017,7 @@ Proof.
 rewrite le_eqVlt => /predU1P[<-|a0].
   by rewrite powR0 ?invr_eq0 ?pnatr_eq0// sqrtr0.
 have /eqP : (a `^ (2^-1)) ^+ 2 = (Num.sqrt a) ^+ 2.
-  rewrite sqr_sqrtr; last exact: ltW.
+  rewrite sqr_sqrtr; first exact: ltW.
   by rewrite /powR gt_eqF// -expRM_natl mulVKf// lnK.
 rewrite eqf_sqr => /predU1P[//|/eqP h].
 have : 0 < a `^ 2^-1 by exact: powR_gt0.
@@ -1105,16 +1105,16 @@ Lemma powR_derive1 a : {in `]0, +oo[%R,
 Proof.
 move=> x; rewrite in_itv/= andbT => x0.
 rewrite derive1E.
-rewrite (@near_eq_derive _ _ _ _ (fun x => expR (a * ln x)))//; last first.
+rewrite (@near_eq_derive _ _ _ _ (fun x => expR (a * ln x)))//.
   by near=> z; rewrite /powR gt_eqF//; near: z; exact: lt_nbhsr.
 rewrite -derive1E.
-rewrite derive1_comp//=; last first.
+rewrite derive1_comp//=.
   by apply: derivableM => //; apply: ex_derive; exact: is_derive1_ln.
 rewrite 2!derive1E.
-rewrite deriveM//; last by apply: ex_derive; exact: is_derive1_ln.
+rewrite deriveM//; first by apply: ex_derive; exact: is_derive1_ln.
 rewrite !derive_val scaler0 addr0.
 have [_ ->] := (is_derive1_ln x0).
-rewrite mulrC powRB; last by rewrite (@gt_eqF _ _ x)//; apply: implybT.
+rewrite mulrC powRB; first by rewrite (@gt_eqF _ _ x)//; apply: implybT.
 by rewrite powRr1 ?ltW// mulrA [in RHS]mulrAC /powR gt_eqF.
 Unshelve. end_near. Qed.
 

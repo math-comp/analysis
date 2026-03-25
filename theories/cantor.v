@@ -33,7 +33,7 @@ From mathcomp Require Import cardinality reals topology.
 (*                                                                            *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -196,7 +196,7 @@ Unshelve. all: end_near. Qed.
 Let apx_prefix b c n :
   (forall i, (i < n)%N -> b i = c i) -> branch_apx b n = branch_apx c n.
 Proof.
-elim: n => //= n IH inS; rewrite IH; first by rewrite inS.
+elim: n => //= n IH inS; rewrite IH; last by rewrite inS.
 by move=> ? ?; exact/inS/ltnW.
 Qed.
 

@@ -56,7 +56,7 @@ From mathcomp Require Import pseudometric_normed_Zmodule.
 (* - The product of two Tvs is endowed with the structure of ConvexTvs.       *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -107,7 +107,7 @@ HB.builders Context M & PreTopologicalNmodule_isTopologicalZmodule M.
 Lemma opp_continuous : continuous (-%R : M -> M).
 Proof.
 move=> x; rewrite /continuous_at.
-rewrite -(@eq_cvg _ _ _ (fun x => 0 - x)); last by move=> y; exact: add0r.
+rewrite -(@eq_cvg _ _ _ (fun x => 0 - x)); first by move=> y; exact: add0r.
 rewrite -[- x]add0r.
 apply: (@continuous_comp _ _ _ (fun x => (0, x)) (fun x : M * M => x.1 - x.2)).
   by apply: cvg_pair => /=; [exact: cvg_cst|exact: cvg_id].
@@ -117,7 +117,7 @@ Qed.
 Lemma add_continuous : continuous (fun x : M * M => x.1 + x.2).
 Proof.
 move=> x; rewrite /continuous_at.
-rewrite -(@eq_cvg _ _ _ (fun x => x.1 - (- x.2))); last first.
+rewrite -(@eq_cvg _ _ _ (fun x => x.1 - (- x.2))).
   by move=> y; rewrite opprK.
 rewrite -[in x.1 + _](opprK x.2).
 apply: (@continuous_comp _ _ _ (fun x => (x.1, - x.2)) (fun x => x.1 - x.2)).
@@ -171,7 +171,7 @@ HB.builders Context R M & TopologicalNmodule_isTopologicalLmodule R M.
 Lemma opp_continuous : continuous (-%R : M -> M).
 Proof.
 move=> x; rewrite /continuous_at.
-rewrite -(@eq_cvg _ _ _ (fun x => -1 *: x)); last by move=> y; rewrite scaleN1r.
+rewrite -(@eq_cvg _ _ _ (fun x => -1 *: x)); first by move=> y; rewrite scaleN1r.
 rewrite -[- x]scaleN1r.
 apply: (@continuous_comp M (R^o * M)%type M (fun x => (-1, x))
   (fun x => x.1 *: x.2)); last exact: scale_continuous.
@@ -417,7 +417,7 @@ exists [set w | (W1 `&` W2) (w.1 - w.2)].
   exists (U1 `&` U2); first exact: open_nbhsI.
   by move=> t [U1t U2t]; split; [exact: UW1|exact: UW2].
 move => xy /= [z [H1 _] [_ H2]]; apply/set_mem/(Uxy xy)/mem_set.
-rewrite [_ - _](_ : _ = (xy.1 - z) + (z - xy.2)); last by rewrite addrA subrK.
+rewrite [_ - _](_ : _ = (xy.1 - z) + (z - xy.2)); first by rewrite addrA subrK.
 exact: (Wadd (xy.1 - z,z - xy.2)).
 Qed.
 
@@ -516,7 +516,7 @@ Proof.
 apply/convex_setW => z y; rewrite !inE -!ball_normE /= => zx yx l l0 l1.
 rewrite inE/=.
 rewrite [X in `|X|](_ : _ = (x - z : convex_lmodType _) <| l |>
-                            (x - y : convex_lmodType _)); last first.
+                            (x - y : convex_lmodType _)).
   by rewrite opprD -[in LHS](convmm l x) addrACA -scalerBr -scalerBr.
 rewrite (le_lt_trans (ler_normD _ _))// !normrM.
 rewrite (@ger0_norm _ l%:num)// (@ger0_norm _ l%:num.~) ?onem_ge0//.

@@ -47,7 +47,7 @@ From mathcomp Require Import cardinality fsbigop reals topology.
 (* - bipointed                                                                *)
 (******************************************************************************)
 
-Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -194,7 +194,7 @@ Lemma wedge_connected : (forall i, connected [set: X i]) ->
 Proof.
 move=> ctdX; rewrite -wedgeTE.
 have [I0|/set0P[i0 Ii0]] := eqVneq [set: I] set0.
-  rewrite [X in connected X](_ : _ = set0); first exact: connected0.
+  rewrite [X in connected X](_ : _ = set0); last exact: connected0.
   by rewrite I0 bigcup_set0.
 apply: bigcup_connected.
   exists (@wedge_lift i0 (p0 _)) => i Ii; exists (p0 i) => //.
@@ -289,9 +289,9 @@ move=> fsetI clI; case: wedge_nbhs_specP => [//|i0 bcA|i z zNp0 /= wNz].
   apply: filter_bigI => i _; rewrite /B_; apply: proj_continuous.
   have /bcA : [set: I] i by [].
   congr (nbhs _ _).
-  rewrite /proj /wedge_prod wedge_lift_funE; first by case: dfwithP.
+  rewrite /proj /wedge_prod wedge_lift_funE; last by case: dfwithP.
   exact: wedge_prod_pointE.
-rewrite [x in nbhs x _]/wedge_prod /= wedge_lift_funE; first last.
+rewrite [x in nbhs x _]/wedge_prod /= wedge_lift_funE.
   exact: wedge_prod_pointE.
 have : wedge_prod @` (A `&` (@wedge_lift i @` (~`[set p0 i])))
     `<=`  wedge_prod @` A.
@@ -308,7 +308,7 @@ exists (proj i @^-1` (@wedge_lift i @^-1`
 rewrite eqEsubset; split => // prodX; case => /[swap] [][] r _ <- /=.
   case => _ /[swap] /wedge_prod_inj -> [+ [e /[swap]]] => /[swap].
   move=> <- Awe eNpi; rewrite /proj /wedge_prod /=.
-  rewrite wedge_lift_funE; last exact: wedge_prod_pointE.
+  rewrite wedge_lift_funE; first exact: wedge_prod_pointE.
   rewrite dfwithin; split => //; first by split => //; exists e.
   exists (wedge_lift e) => //.
   by rewrite wedge_lift_funE //; exact: wedge_prod_pointE.
@@ -316,7 +316,7 @@ case=> /[swap] [][y] yNpi E Ay.
 have [riE|R] := eqVneq i (projT1 (repr r)); last first.
   apply: absurd yNpi.
   move: E; rewrite /proj/wedge_prod /wedge_fun /=/sigT_fun /=.
-  rewrite dfwithout //; last by rewrite eq_sym.
+  rewrite dfwithout //; first by rewrite eq_sym.
   by case/eqmodP/orP => [/eqP E|/andP[/= /eqP//]]; exact: (existT_inj2 E).
 split; exists (wedge_lift y); [by split; [rewrite E | exists y]| |by []|].
 - congr wedge_prod; rewrite E.
