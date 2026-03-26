@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.hoelder</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 2e5e368" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis abe36a3" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -292,17 +292,17 @@ Lp-spaces and properties of Lp-norms:
 <span class="vernacular">Declare</span><span class="vernacular"> Scope</span><span class="id"> Lnorm_scope</span>.<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
-<span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>atan_unlock_subterm :
+<span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>locked_asin :
 unlockable
   (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (- (trigo.pi / 2) < y < trigo.pi / 2)%R /\
-                          tan y = x]%classic
+   [get x0 : _ | [set y | (- (trigo.pi / 2) <= y <= trigo.pi / 2)%R /\
+                          sin y = x]%classic
                    x0])
 
-atan_unlock_subterm is not universe polymorphic
-atan_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.atan_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 1098, characters 0-106
+locked_asin is not universe polymorphic
+locked_asin is transparent
+Expands to: Constant mathcomp.analysis.trigo.locked_asin
+Declared in library mathcomp.analysis.trigo, line 1000, characters 10-21
 </p></span></div></span></span></span></span></span></span></span></span>.<span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>atan_unlock_subterm :
 unlockable
   (fun (R : realType) (x : R) =>
@@ -354,17 +354,17 @@ Declared in library mathcomp.analysis.trigo, line 1098, characters 0-106
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span><span class="id">%E</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#mu:4">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#T:2">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'&gt;'_x"> &gt;</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'&gt;'_x"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.ess_sup_inf.html#ess_sup">ess_sup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#mu:4">mu</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#abse">abse</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#f:6">f</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">0</span><br/>
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-oo'">-oo</a></span><span class="id">%E</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#mu:4">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#T:2">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'&gt;'_x"> &gt;</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'&gt;'_x"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.ess_sup_inf.html#ess_inf">ess_inf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#mu:4">mu</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#abse">abse</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#f:6">f</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">0</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">end</span>.<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_Lnorm" class="id"><div name="locked_Lnorm" class=" tooltip">locked_Lnorm<span class='tooltip-area'><p>locked_atan :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_Lnorm" class="id"><div name="locked_Lnorm" class=" tooltip">locked_Lnorm<span class='tooltip-area'><p>atan_unlock_subterm :
 unlockable
   (fun (R : realType) (x : R) =>
    [get x0 : _ | [set y | (- (trigo.pi / 2) < y < trigo.pi / 2)%R /\
                           tan y = x]%classic
                    x0])
 
-locked_atan is not universe polymorphic
-locked_atan is transparent
-Expands to: Constant mathcomp.analysis.trigo.locked_atan
-Declared in library mathcomp.analysis.trigo, line 1100, characters 10-21
+atan_unlock_subterm is not universe polymorphic
+atan_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.trigo.atan_unlock_subterm
+Declared in library mathcomp.analysis.trigo, line 1098, characters 0-106
 </p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#Unlockable">Unlockable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#unlock">Lnorm</a></span>.<span class="id"><a href="mathcomp.analysis.hoelder.html#unlock">unlock</a></span>.<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#body">Lnorm</a></span><span class="id"> {d</span><span class="id"> T</span><span class="id"> R}</span><span class="id"> mu</span><span class="id"> p</span><span class="id"> f</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Close</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
@@ -509,13 +509,17 @@ Qed.</div></details>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="hoelder_conjugate" class="id"><div name="hoelder_conjugate" class=" tooltip">hoelder_conjugate<span class='tooltip-area'><p>oneDsqr : forall {R : realType}, R -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="hoelder_conjugate" class="id"><div name="hoelder_conjugate" class=" tooltip">hoelder_conjugate<span class='tooltip-area'><p>locked_atan :
+unlockable
+  (fun (R : realType) (x : R) =>
+   [get x0 : _ | [set y | (- (trigo.pi / 2) < y < trigo.pi / 2)%R /\
+                          tan y = x]%classic
+                   x0])
 
-oneDsqr is not universe polymorphic
-Arguments oneDsqr {R} x%_ring_scope
-oneDsqr is transparent
-Expands to: Constant mathcomp.analysis.trigo.oneDsqr
-Declared in library mathcomp.analysis.trigo, line 1106, characters 11-18
+locked_atan is not universe polymorphic
+locked_atan is transparent
+Expands to: Constant mathcomp.analysis.trigo.locked_atan
+Declared in library mathcomp.analysis.trigo, line 1100, characters 10-21
 </p></span></div></span><span class="id"> </span><span id="p:58" class="id"><a name="p:58" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#hoelder_conjugate.R">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#p:58">p</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> ==</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#p:58">p</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> ==</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-oo'">-oo</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><br/>
@@ -1175,7 +1179,14 @@ Qed.</div></details>
 &nbsp;&nbsp;<span class="id">note=</span><span class="id">&quot;use `minkowski_EFin` or `eminkowski` instead&quot;</span>)<span class="id">]</span><br/>
 <span class="vernacular">Notation</span><span class="id"> </span><span id="minkowski" class="id"><a name="minkowski" class="">minkowski</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#minkowski_EFin">minkowski_EFin</a></span> (<span class="id">only</span><span class="id"> parsing</span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="finite_norm" class="id"><div name="finite_norm" class=" tooltip">finite_norm<span class='tooltip-area'><p>oneDsqr_inum : forall {R : realType}, R -> {itv R & `[1%Z, +oo[%R}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="finite_norm" class="id"><div name="finite_norm" class=" tooltip">finite_norm<span class='tooltip-area'><p>oneDsqr : forall {R : realType}, R -> R
+
+oneDsqr is not universe polymorphic
+Arguments oneDsqr {R} x%_ring_scope
+oneDsqr is transparent
+Expands to: Constant mathcomp.analysis.trigo.oneDsqr
+Declared in library mathcomp.analysis.trigo, line 1106, characters 11-18
+oneDsqr_inum : forall {R : realType}, R -> {itv R & `[1%Z, +oo[%R}
 
 oneDsqr_inum is not universe polymorphic
 Arguments oneDsqr_inum {R} x%_ring_scope
