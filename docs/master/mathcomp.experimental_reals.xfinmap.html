@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.experimental_reals.xfinmap</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis abe36a3" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis bd05c57" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -233,7 +233,7 @@
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_ssreflect_compat.html">all_ssreflect_compat</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.all_algebra.html">all_algebra</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap">finmap</a></span>.<br/>
 <br/>
-<span class="gallina-kwd">Set</span><span class="id"> SsrOldRewriteGoalsOrder</span>.  <br/>
+<span class="vernacular">Unset</span><span class="id"> SsrOldRewriteGoalsOrder</span>.  <br/>
 <span class="gallina-kwd">Set</span><span class="vernacular"> Implicit</span><span class="vernacular"> Arguments</span>.<br/>
 <span class="vernacular">Unset</span><span class="vernacular"> Strict</span><span class="vernacular"> Implicit</span>.<br/>
 <span class="vernacular">Unset</span><span class="vernacular"> Printing</span><span class="vernacular"> Implicit</span><span class="vernacular"> Defensive</span>.<br/>
@@ -392,7 +392,7 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="id">rewrite</span><span class="id"> -</span>(<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#big_map">big_map</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#val">val</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#xpredT">xpredT</a></span>)<span class="id"> /=;</span><span class="id"> apply/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#perm_big">perm_big</a></span>.<br/>
 <span class="id">apply/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#uniq_perm">uniq_perm</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> ?</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#iota_uniq">iota_uniq</a></span><span class="id"> //</span>.<br/>
-&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#map_inj_uniq">map_inj_uniq</a></span><span class="id"> /=;</span><span class="id"> last</span><span class="id"> apply/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#val_inj">val_inj</a></span>.<br/>
+&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#map_inj_uniq">map_inj_uniq</a></span><span class="id"> /=;</span><span class="id"> first</span><span class="id"> apply/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#val_inj">val_inj</a></span>.<br/>
 &nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#index_enum">index_enum</a></span><span class="id"> -</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#enumT">enumT</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#enum_uniq">enum_uniq</a></span>.<br/>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> i;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#index_enum">index_enum</a></span><span class="id"> -</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#enumT">enumT</a></span><span class="id"> -</span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#enum_fsetE">enum_fsetE</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#in_fset">in_fset</a></span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#index_iota">index_iota</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#subn0">subn0</a></span>.<br/>
 Qed.</div></details>

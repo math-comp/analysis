@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.topology_theory.product_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis abe36a3" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis bd05c57" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -247,7 +247,7 @@ Product `(T * U)%type` are endowed with the structures of:
 <br/>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.TTheory">Order</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.TTheory">TTheory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory">Theory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.Theory">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.Theory">Theory</a></span>.<br/>
 <br/>
-<span class="gallina-kwd">Set</span><span class="id"> SsrOldRewriteGoalsOrder</span>.  <br/>
+<span class="vernacular">Unset</span><span class="id"> SsrOldRewriteGoalsOrder</span>.  <br/>
 <span class="gallina-kwd">Set</span><span class="vernacular"> Implicit</span><span class="vernacular"> Arguments</span>.<br/>
 <span class="vernacular">Unset</span><span class="vernacular"> Strict</span><span class="vernacular"> Implicit</span>.<br/>
 <span class="vernacular">Unset</span><span class="vernacular"> Printing</span><span class="vernacular"> Implicit</span><span class="vernacular"> Defensive</span>.<br/>
@@ -316,15 +316,15 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="prod_Uniform.U" class="id"><a name="prod_Uniform.U" class="">U</a></span><span class="id"> </span><span id="prod_Uniform.V" class="id"><a name="prod_Uniform.V" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#Uniform.Exports.uniformType">uniformType</a></span><span class="id">}</span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> A</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> ((<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.V">V</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.V">V</a></span>)).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="prod_ent" class="id"><div name="prod_ent" class=" tooltip">prod_ent<span class='tooltip-area'><p>discrete_ball : forall {R : numDomainType} {T : Type}, T -> R -> T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="prod_ent" class="id"><div name="prod_ent" class=" tooltip">prod_ent<span class='tooltip-area'><p>prod_ent : forall {U V : uniformType}, set (set (U * V * (U * V)))
 
-discrete_ball is not universe polymorphic
-Arguments discrete_ball {R} {T}%_type_scope x eps%_ring_scope y
-discrete_ball is transparent
+prod_ent is not universe polymorphic
+Arguments prod_ent {U V} _
+prod_ent is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.discrete_topology.discrete_ball
+            mathcomp.analysis.topology_theory.product_topology.prod_ent
 Declared in
-library mathcomp.analysis.topology_theory.discrete_topology, line 51, characters 11-24
+library mathcomp.analysis.topology_theory.product_topology, line 78, characters 11-19
 </p></span></div></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span id="A:17" class="id"><a name="A:17" class="">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> :</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> ((<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.V">V</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.V">V</a></span>))<span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> |</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#filter_prod">filter_prod</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.U">U</a></span>) (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_Uniform.V">V</a></span>)<br/>
@@ -420,15 +420,17 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="prod_PseudoMetric.R" class="id"><a name="prod_PseudoMetric.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span><span class="id">}</span><span class="id"> {</span><span id="prod_PseudoMetric.U" class="id"><a name="prod_PseudoMetric.U" class="">U</a></span><span class="id"> </span><span id="prod_PseudoMetric.V" class="id"><a name="prod_PseudoMetric.V" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#PseudoMetric.Exports.pseudoMetricType">pseudoMetricType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#R:31">R</a></span><span class="id">}</span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">x</span><span class="id"> y</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_PseudoMetric.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_PseudoMetric.V">V</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="prod_ball" class="id"><div name="prod_ball" class=" tooltip">prod_ball<span class='tooltip-area'><p>discrete_topology : Type -> Type
+<span class="vernacular">Definition</span><span class="id"> </span><span id="prod_ball" class="id"><div name="prod_ball" class=" tooltip">prod_ball<span class='tooltip-area'><p>prod_ball :
+forall {R : numDomainType} {U V : pseudoMetricType R},
+U * V -> R -> U * V -> Prop
 
-discrete_topology is not universe polymorphic
-Arguments discrete_topology T%_type_scope
-discrete_topology is transparent
+prod_ball is not universe polymorphic
+Arguments prod_ball {R U V} x eps%_ring_scope y
+prod_ball is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.discrete_topology.discrete_topology
+            mathcomp.analysis.topology_theory.product_topology.prod_ball
 Declared in
-library mathcomp.analysis.topology_theory.discrete_topology, line 182, characters 11-28
+library mathcomp.analysis.topology_theory.product_topology, line 161, characters 11-20
 </p></span></div></span><span class="id"> </span><span id="x:34" class="id"><a name="x:34" class="">x</a></span> (<span id="eps:35" class="id"><a name="eps:35" class="">eps</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#prod_PseudoMetric.R">R</a></span>)<span class="id"> </span><span id="y:36" class="id"><a name="y:36" class="">y</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#ball">ball</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#fst">fst</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#x:34">x</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#eps:35">eps</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#fst">fst</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#y:36">y</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#ball">ball</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#snd">snd</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#x:34">x</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#eps:35">eps</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#snd">snd</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.product_topology.html#y:36">y</a></span>).<br/>
 <br/>
