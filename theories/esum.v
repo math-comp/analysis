@@ -100,6 +100,21 @@ Proof.
 by move=> ?; rewrite esum_fset// ?fset_set1// ?fsbig_set1// => t' /[!inE] ->.
 Qed.
 
+Lemma esum_pos_e a:
+  ((forall i : T, 0%R <= a i) ->
+   (0%R = \esum_(x in [set: T]) a x) ->
+   forall x: T, 0%R = a x)%E.
+Proof.
+  move => hi hs x.
+  apply/eqP;rewrite eq_le; apply/andP; split.
+  + by apply hi.
+  + rewrite hs.
+    apply ereal_sup_ubound => //=.
+    rewrite -esum_set1 //.
+    exists [set x]%classic => //.
+    by rewrite esum_fset.
+Qed.
+
 End esum_realType.
 
 Lemma esum1 [R : realFieldType] [I : choiceType] (D : set I) (a : I -> \bar R) :
@@ -128,6 +143,46 @@ Lemma eq_esum [R : realType] [T : choiceType] (I : set T) (a b : T -> \bar R) :
   (forall i, I i -> a i = b i) ->
   \esum_(i in I) a i = \esum_(i in I) b i.
 Proof. by move=> e; apply/eqP; rewrite eq_le !le_esum// => i Ii; rewrite e. Qed.
+
+Lemma esumZ [R : realType] [T : choiceType] S (c : \bar R) :
+  (0 <= c -> (forall i : T, 0 <= S i) ->
+   esum [set:T] (fun x =>  c * (S x)) = c * (esum [set:T] S))%E.
+Proof.
+  rewrite le_eqVlt => /orP[/eqP<-|cgt0].
+  - by rewrite mul0e esum1 // => ??; rewrite mul0e.
+  move => Sg0; apply/eqP; rewrite eq_le; apply/andP; split.
+  - rewrite ge_ereal_sup//= => x [X [finX XI]] <-.
+    setoid_rewrite <- (@ge0_mule_fsumr _ _ c S X Sg0).
+    rewrite lee_pmul //.
+    + by rewrite ltW.
+    + by rewrite fsume_ge0 //.
+    + by rewrite ereal_sup_ubound //=; exists X.
+  - revert cgt0.
+    case c => //.
+    + move => s hs.
+      rewrite -lee_pdivlMl //.
+      rewrite ge_ereal_sup//= => _ [X [finX XI]] <-.
+      rewrite lee_pdivlMl //.
+      rewrite ge0_mule_fsumr //.
+      by rewrite ereal_sup_ubound //=; exists X.
+    + move => h.
+      have he: (0 <= \esum_(x in [set: T]) S x)%E.
+      - by apply esum_ge0; move => ??; apply Sg0.
+      rewrite le_eqVlt in he;revert he.
+      move => /orP [/eqP Sgt0|Sgt0].
+      + rewrite -Sgt0 mule0.
+        rewrite (eq_esum (b := (fun _ => 0)%E)).
+        - by intros ??; rewrite -(esum_pos_e (a:= S)) // mule0.
+        by rewrite esum1.
+      + rewrite gt0_mulye //.
+        have [y [H ? ? ?]] :=  (ereal_sup_gt Sgt0).
+        rewrite leye_eq; apply/eqP /eq_infty => y'; rewrite esum_ge//.
+        exists H; move => //.
+        rewrite -ge0_mule_fsumr //.
+        subst.
+        rewrite gt0_mulye //.
+        by rewrite leey.
+Qed.
 
 Lemma esumD [R : realType] [T : choiceType] (I : set T) (a b : T -> \bar R) :
   (forall i, I i -> 0 <= a i) -> (forall i, I i -> 0 <= b i) ->
@@ -355,6 +410,23 @@ rewrite fsbig_finite//= set_fsetK big_imfset => //=.
 by rewrite -fsbig_finite//; apply: eq_fsbigr=> x /[!inE]/XQ ?; rewrite invK ?inE.
 Qed.
 Arguments reindex_esum {R T T'} P Q e a.
+
+Lemma esum_esum' [R : realType] [T U : choiceType] (f: T -> U -> \bar R):
+  (forall i j, (0%R <= f i j)%E) ->
+  esum [set:T] (fun x => esum [set:U] (fun y => f x y)) =
+  esum [set:U] (fun y => esum [set:T] (fun x => f x y)).
+Proof.
+  move => h.
+  rewrite !esum_esum //=.
+  rewrite /setXR.
+  rewrite  (reindex_esum
+                  (fun z=> [set: U]%classic z.1 /\ [set: T]%classic z.2)
+                  (fun z => [set: T]%classic z.1 /\ [set: U]%classic z.2)
+                  (fun x => (x.2, x.1))) //=.
+  - split => //=.
+    by move=> [i1 i2] [j1 j2] /= _ _ [] -> ->.
+    by move=> [i1 i2] [Pi1 Qi2] /=; exists (i2, i1).
+Qed.
 
 Section nneseries_interchange.
 Local Open Scope ereal_scope.
@@ -665,3 +737,373 @@ by rewrite ge0_esum_posneg// ge0_esum_posneg// => /eqP ->.
 Qed.
 
 End esumB.
+
+
+(* This should go to ereal*)
+Section Ereal.
+  Context {R : realType}.
+
+  Definition esg (x: \bar R) : \bar R :=
+    (if x == 0 then 0 else if x < 0 then -1 else 1)%E.
+
+  Lemma numEsg (x : \bar R): (x = esg x * `|x|)%E.
+  Proof.
+    rewrite /esg.
+    case (comparable_ltgtP (comparableT x 0)%E) => h.
+    + by rewrite (lt_eqF h) h lte0_abs // muleNN mul1e.
+    + by rewrite (gt_eqF h) (lt_gtF h) gte0_abs // mul1e.
+    + by rewrite h eq_refl mul0e.
+  Qed.
+
+  Lemma gte0_esg (x : \bar R): (x < 0 -> esg x = -1)%E.
+  Proof.
+    by move => h; rewrite /esg (lt_eqF h) h.
+  Qed.
+
+  Lemma lte0_esg (x : \bar R): (0 < x -> esg x = 1)%E.
+  Proof.
+     by move => h; rewrite /esg (gt_eqF h) (lt_gtF h).
+  Qed.
+
+  Lemma esg0 : (esg 0 = 0)%E.
+  Proof.
+     by rewrite /esg eq_refl.
+  Qed.
+
+End Ereal.
+
+
+Section Sum.
+  Context {R : realType} {T : choiceType}.
+
+  Implicit Types f (* g *) : T -> \bar R.
+
+(* Use the following function (numfun.funepos.body f \+ numfun.funeneg.body f)%E *)
+
+  Definition fpos f := fun x => `|maxe 0%E (f x)|%E.
+  Definition fneg f := fun x => `|mine 0%E (f x)|%E.
+
+  Lemma min_l (x y : \bar R) : (x <= y -> mine x y = x)%E. Proof. by case: comparableP. Qed.
+
+  Lemma min_r (x y : \bar R) : (y <= x -> mine x y = y)%E. Proof. by case: comparableP. Qed.
+
+  Lemma max_l (x y : \bar R) : (y <= x -> maxe x y = x)%E. Proof. by case: comparableP. Qed.
+
+  Lemma max_r (x y : \bar R) : (x <= y -> maxe x y = y)%E. Proof. by case: comparableP. Qed.
+
+  Lemma fneg_ge0 f x : (forall x, 0%R <= f x)%E -> fneg f x = 0.
+  Proof. by move => ?; rewrite /fneg  min_l ?abse0. Qed.
+
+  Lemma fpos_ge0 f x : (forall x, 0%R <= f x )%E -> fpos f x = f x.
+  Proof. by move=> ?; rewrite /fpos  max_r ?gee0_abs. Qed.
+
+  Lemma fpos0 x : fpos (fun _ : T => 0) x = 0.
+  Proof. by rewrite /fpos /maxe ltxx abse0. Qed.
+
+  Lemma fneg0 x : fneg (fun _ : T => 0) x = 0.
+  Proof. by rewrite /fneg /mine ltxx abse0. Qed.
+
+  Lemma fnegN f : (fneg (\- f ) =1 fpos f)%E.
+  Proof. by move => x; rewrite /fpos /fneg -{1}oppe0  -oppe_max abseN. Qed.
+
+  Lemma fposN f : (fpos (\- f ) =1 fneg f)%E.
+  Proof. by move=> x; rewrite /fpos /fneg -{1}oppe0  -oppe_min abseN. Qed.
+
+  Lemma le_fpos f1 f2 : ((forall x, f1 x  <= f2 x) -> (forall x, fpos f1 x <= fpos f2 x))%E.
+  Proof.
+    move=> le_f x; rewrite /fpos !gee0_abs ?le_max ?lexx //.
+    by rewrite ge_max lexx /=; case: ltP => //=; rewrite le_f.
+  Qed.
+
+  Definition sum f : \bar R := esum [set:T] (fpos f) - esum [set:T] (fneg f).
+End Sum.
+
+Section SumTheory.
+  Context {R : realType} {T : choiceType}.
+  Implicit Types (S : T -> \bar R).
+
+  Lemma sum0 : @sum R _ (fun _ : T => 0%E) = 0%E.
+  Proof.
+    rewrite /sum esum1.
+    + by move => ??; rewrite max_l; [| rewrite abse0].
+    by rewrite sube0.
+ Qed.
+
+  Lemma eq_sum S1 S2: S1 =1 S2 -> sum S1 = sum S2.
+  Proof.
+    move=> eq_fg; rewrite /sum.
+    rewrite (eq_esum (a:= fpos S2) (b:= fpos S1)).
+    - by move => ??; rewrite /fpos eq_fg.
+    rewrite (eq_esum (a:= fneg S2) (b:= fneg S1)).
+    - by move => ??; rewrite /fneg eq_fg.
+    by idtac.
+  Qed.
+
+  Lemma esum_unit S x :
+    esum [set:T] (fun y => if x == y then S y else 0) = \esum_(i in [set x]) S i.
+  Proof.
+    rewrite (esum_mkcond [set x] S).
+    apply eq_esum => i ? //=.
+    by case_eq (x == i);rewrite eq_sym -in_fset1 -cardinality.fset_set1
+       cardinality.in_fset_set => //= ->.
+  Qed.
+
+  Lemma sum_unit S x : sum (fun y => if x == y then S y else 0) = S x.
+  Proof.
+    rewrite /sum.
+    rewrite (@eq_esum _ _ _ (fpos _) (fun y : T => if x == y then fpos S y else 0%R)).
+    + move =>  i ? ; rewrite  /fpos /maxe => //=.
+       case (x == i) => //=.
+       by case (_ < _)%E; rewrite abse0.
+    rewrite (@eq_esum _ _ _ (fneg _) (fun y : T => if x == y then fneg S y else 0%R)).
+    + move =>  i ? ; rewrite  /fneg /mine => //=.
+      case (x == i) => //=.
+      by case (_ < _)%E; rewrite abse0.
+    rewrite !esum_unit.
+    case (comparable_ltP (comparableT (S x) 0)%E) => h;last first.
+    + rewrite esum_set1.
+      + by rewrite /fpos  max_r ?gee0_abs.
+      rewrite esum1.
+      + by move => i //= ->; rewrite /fneg min_l ?gee0_abs.
+      by rewrite /fpos  max_r ?gee0_abs ?sube0.
+    rewrite esum1.
+    + by move => i //= ->; rewrite /fpos  max_l ?abse0 => //=; apply ltW.
+    rewrite esum_set1.
+    + by rewrite /fneg  min_r ?lte0_abs ?oppe_ge0 => //=; apply ltW.
+    rewrite /fneg min_r.
+    + by apply ltW.
+    rewrite lte0_abs ?sub0e => //=.
+    by apply (eqe_oppLRP (- (S x))).
+  Qed.
+
+  Section SumTheoryP.
+
+  Lemma esum_sum' S : (forall x, 0%:E <= S x)%E -> sum S = esum [set:T] S.
+  Proof.
+    move=> ge0_S; rewrite /sum.  rewrite (@esum1 R T [set:T] (fneg S)).
+    +  by move => x ?; rewrite fneg_ge0.
+    by rewrite sube0; apply eq_esum => x ?;  rewrite fpos_ge0.
+  Qed.
+
+  Lemma sum_pos S : (forall x, 0%:E <= S x)%E -> (0%R <= sum S)%E.
+  Proof.
+    by move=> ge0_S; rewrite esum_sum' // esum_ge0.
+  Qed.
+
+  Lemma le_sum S1 S2:
+    ((forall x, 0%:E <= S1 x) ->
+    (forall x, 0%:E <= S2 x) ->
+    (forall x, S1 x <= S2 x) ->
+    sum S1 <= sum S2)%E.
+  Proof.
+    move=> pS1 pS2 leS. rewrite /sum leeB //.
+    + apply le_esum.
+      by move => ??; rewrite !fpos_ge0.
+    apply le_esum.
+    by  move => ??; rewrite !fneg_ge0.
+  Qed.
+
+  Lemma sumN S :
+    (forall x, 0%:E <= S x)%E ->
+    (sum (\- S ) = - sum S)%E.
+  Proof.
+    move => h; rewrite /sum.
+    rewrite (eq_esum (a:=fpos _) (b:=fun _ : T => 0%E)).
+    +  by move => ?? ; rewrite fposN fneg_ge0.
+    rewrite (eq_esum (a:= fneg S) (b:= fun _ : T => 0%E)).
+    + by move => ?? ; rewrite fneg_ge0.
+    rewrite (eq_esum (a:=fneg (\- S)%E) (b:=fpos S)).
+    + by move => ?? ; rewrite fnegN.
+    rewrite esum1  => //=.
+    by rewrite sube0 sub0e.
+  Qed.
+
+  Lemma sumZ S c :
+    (forall x, 0%:E <= S x)%E ->
+    (sum (fun x => mule c (S x)) = mule c (sum S))%E.
+  Proof.
+    move => h.
+    rewrite (eq_sum (S2 := fun x => esg c * (`|c| * S x))%E).
+      by move=> x ; rewrite muleA -numEsg.
+    transitivity (esg c * sum (fun x => `|c| * (S x)))%E.
+    - case (comparable_ltgtP (comparableT c 0)%E) => hc.
+      + rewrite {1}lte0_abs // gte0_esg //.
+        rewrite (eq_sum (S2 := fun x : T => (- (- c * S x))%E)).
+        - by move => ?; rewrite  mulN1e.
+        rewrite mulN1e -sumN;[|rewrite lte0_abs //].
+        by move => ?; rewrite mule_ge0.
+      + rewrite gte0_abs // lte0_esg // mul1e.
+        rewrite (eq_sum (S2 := fun x : T => ( c * S x)%E)).
+         - by move => ?; rewrite mul1e.
+        by idtac.
+      + rewrite hc esg0 mul0e.
+        rewrite (eq_sum (S2 := fun _ : T => 0%E)).
+         - by move => ?; rewrite mul0e.
+        by rewrite sum0.
+   - rewrite {1}/sum.
+     rewrite (eq_esum (a:= fpos _) (b:= (fun x : T => `|c| * S x)%E)).
+     +  by move => ??; rewrite fpos_ge0 // => x; rewrite mule_ge0.
+     rewrite (eq_esum (a:=fneg _) (b:=fun _ : T => 0%E)).
+     + by move => ?? ; rewrite fneg_ge0 // => x; rewrite mule_ge0.
+     rewrite (esum1 (a:= fun _ => 0%E)) // sube0.
+     by rewrite esumZ // muleA -numEsg esum_sum'.
+  Qed.
+
+  End SumTheoryP.
+
+  Section SumTheoryS.
+
+  Lemma le_sum_s S1 S2 :
+    (summable [set:T] S1 -> summable [set : T] S2 ->
+    (forall x, S1 x <= S2 x) ->
+    sum S1 <= sum S2)%E.
+  Proof.
+    move=> smS1 smS2 leS; rewrite /sum leeB //.
+    + by apply le_esum => ??; apply le_fpos.
+    apply le_esum => ??.
+    rewrite -!fposN. apply le_fpos => ?.
+    by rewrite leeN2.
+  Qed.
+
+  End SumTheoryS.
+
+End SumTheory.
+
+Lemma ereal_sup_comm {R:realType} {X Y : Type} (f : X -> Y -> \bar R) (A : set X) (B : set Y) :
+  ereal_sup [set ereal_sup [set f x y | y in B] | x in A] =
+    ereal_sup [set ereal_sup [set f x y | x in A] | y in B].
+Proof.
+  suff key : forall (X' Y' : Type) (g : X' -> Y' -> \bar R) (C : set X') (D : set Y'),
+      ereal_sup [set ereal_sup [set g x y | y in D] | x in C] <=
+        ereal_sup [set ereal_sup [set g x y | x in C] | y in D].
+  apply: le_anti. apply/andP; split; [exact: key | exact: (key _ _ (fun y x => f x y) B A)].
+  move=> X' Y' g C D.
+  apply/ereal_supP => _ [x hx <-].
+  apply/ereal_supP => _ [y hy <-].
+  apply: le_ereal_sup_tmp; exists (ereal_sup [set g x0 y | x0 in C]).
+  - exists y => //.
+  - apply: le_ereal_sup_tmp; exists (g x y); [exists x => // | exact: le_refl].
+Qed.
+
+
+Section mono_esum.
+  Context
+    {R : realType}
+    {T : choiceType}
+    {f : T -> nat -> \bar R}
+    {fpos : forall t n, 0 <= f t n}
+    (hmono : (forall n m : nat, (n <= m)%N -> forall x : T, f x n <= f x m)).
+
+Lemma esupZl (c : \bar R) (X : set \bar R):
+  0 <= c ->
+  X != set0 ->
+  (forall x, X x -> 0 <= x) ->
+  ereal_sup [ set c * x | x in X ] = c * ereal_sup X.
+Proof.
+move=> cpos Xne Xpos.
+  have /set0P [x Xx] := Xne.
+  case: c cpos => [r|_|//].
+  - move=> hr.
+    case: (eqVneq r 0%R) => [-> | rne0].
+    + rewrite mul0e.
+      under eq_imagel => a _ do rewrite mul0e.
+      rewrite ereal_sup_cst //.
+      exact: ereal_supZl Xne hr.
+  - case: (boolp.pselect (forall a, X a -> a = 0)) => [hall | hnall].
+    + have -> : [set +oo * x | x in X] = [set 0]. {
+         apply/seteqP; split.
+         + by move=> _ [z Xz <-]; rewrite (hall _ Xz) mule0 //.
+         + by move=> y /= ->; exists x => //; rewrite (hall _ Xx) mule0.
+       }
+       have -> : X = [set 0]. {
+         apply/seteqP; split.
+         + by move=> y Xy; rewrite (hall _ Xy)=> //.
+         + by move=> y /= ->; rewrite -(hall _ Xx) //.
+       }
+       by rewrite ereal_sup1 mule0.
+     + move: hnall; rewrite -boolp.existsNE.
+       move => [y /boolp.not_implyP [Xy hy] ].
+       have ygt0: 0 < y by rewrite lt_def Xpos // andbT; apply/eqP.
+       rewrite gt0_mulye //.
+       - apply: (lt_le_trans ygt0); exact: ereal_sup_ubound.
+       apply: ereal_supy. exists y => //. exact: gt0_mulye.
+Qed.
+
+  Lemma esupZl_range (c : \bar R) (x : T) (cpos : 0 <= c) :
+    (c * ereal_sup (range (f x)) =
+     ereal_sup (range (fun n => c * f x n)))%E.
+  Proof.
+    have seteq :
+      [set c * y | y in range (f x)] = range (fun n => c * f x n).
+      apply/seteqP; split.
+      - by move=> _ [_ [n _ <-] <-]; exists n.
+      - by move=> _ [n _ <-]; exists (f x n) => //; exists n.
+    rewrite -seteq esupZl //.
+    - by apply/set0P; exists (f x 0%N), 0%N.
+    - by move=> _ [n _ <-]; exact: fpos.
+  Qed.
+
+  Lemma esup_add (u v : nat -> \bar R) :
+    (forall n, 0 <= u n) -> (forall n, 0 <= v n) ->
+    nondecreasing_seq u -> nondecreasing_seq v ->
+    ereal_sup (range u) + ereal_sup (range v) =
+    ereal_sup (range (fun n => u n + v n)).
+  Proof.
+    move=> u0 v0 ndu ndv.
+    have su_ge0 : 0 <= ereal_sup (range u).
+      by rewrite (le_trans (u0 0%N))// ereal_sup_ubound//; exists 0%N.
+    have sv_ge0 : 0 <= ereal_sup (range v).
+      by rewrite (le_trans (v0 0%N))// ereal_sup_ubound//; exists 0%N.
+    have ndsum : nondecreasing_seq (fun n => u n + v n).
+      by move=> n m nm; apply: leeD; [exact: ndu | exact: ndv].
+    have cuv_add :
+      (fun n => u n + v n) @ \oo -->
+      ereal_sup (range u) + ereal_sup (range v).
+      apply: cvgeD.
+      - by apply: ge0_adde_def; rewrite inE.
+      - exact: ereal_nondecreasing_cvgn.
+      - exact: ereal_nondecreasing_cvgn.
+    have cuv_sup :
+      (fun n => u n + v n) @ \oo -->
+      ereal_sup (range (fun n => u n + v n)).
+      exact: ereal_nondecreasing_cvgn.
+    exact: cvg_unique cuv_add cuv_sup.
+  Qed.
+
+  Lemma ereal_sup_sum (A : {fset T}) :
+    \sum_(x <- A) ereal_sup (range (f x)) =
+      ereal_sup (range (fun n => \sum_(x <- A) f x n)).
+  Proof.
+    have key (l : seq T) :
+        \sum_(x <- l) ereal_sup (range (f x)) =
+          ereal_sup (range (fun n => \sum_(x <- l) f x n)).
+      elim: l => [|x xs IH].
+      - rewrite big_nil.
+        under eq_fun => n do rewrite big_nil.
+        by rewrite ereal_sup_cst//; apply/set0P; exists 0%N.
+      - rewrite big_cons IH.
+        under [in RHS]eq_fun => n do rewrite big_cons.
+        apply: esup_add.
+        + by move=> n; exact: fpos.
+        + by move=> n; apply: sume_ge0 => y _; exact: fpos.
+        + by move=> n m nm; exact: hmono.
+        + by move=> n m nm; apply: lee_sum => y _; exact: hmono.
+    exact: key.
+  Qed.
+
+  Lemma esum_esup_comm :
+      (\esum_(i in [set: T]) ereal_sup (range (f i)))%E =
+        (ereal_sup (range (fun n => esum [set:T] (fun x : T => f x n))))%E.
+  Proof.
+    rewrite /esum.
+    under eq_imagel => A [fin ?] do
+    rewrite fsbig_finite // ereal_sup_sum //.
+    rewrite ereal_sup_comm.
+    congr ereal_sup.
+    apply: eq_imagel => n S.
+    congr ereal_sup.
+    apply: eq_imagel  => n' [A _].
+    rewrite fsbig_finite //.
+Qed.
+
+End mono_esum.
