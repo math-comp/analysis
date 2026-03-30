@@ -3,12 +3,13 @@
 (* Copyright (c) - 2015--2018 - Inria                                   *)
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
-From mathcomp Require Import all_ssreflect_compat all_algebra.
+From mathcomp Require Import all_boot all_order all_algebra.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp.classical Require Import boolp.
+From mathcomp.classical Require Import boolp fsbigop.
 From mathcomp Require Import xfinmap constructive_ereal reals discrete realseq.
 From mathcomp.classical Require Import classical_sets functions.
+From mathcomp.analysis Require Import esum ereal.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -194,6 +195,18 @@ case/(_ (NPInf M)): cu => K /= /(_ K (leqnn _)).
 rewrite inE/= => /ltW /le_trans /(_ (ler_norm _)).
 by move/le_lt_trans/(_ (bdu _)); rewrite ltxx.
 Qed.
+
+Lemma ncvg_mono_sum {T : eqType} [f : nat -> T -> R] [l : T -> R] [J : seq T] :
+  (forall x, ncvg (fun n => f n x) (l x)%:E) ->
+  ncvg (fun n => \sum_(x <- J) f n x) (\sum_(x <- J) l x)%:E.
+Proof.
+move=> hcvg; elim: J => //= [|j J ih].
+- rewrite big_nil; apply/(@ncvg_eq _ (fun _ => 0))/ncvgC.
+  by move=> n /=; rewrite big_nil.
+- rewrite big_cons; have := ncvgD (hcvg j) ih; apply/ncvg_eq.
+  by move=> n /=; rewrite big_cons.
+Qed.
+
 End PosCnv.
 
 (* -------------------------------------------------------------------- *)
@@ -342,6 +355,47 @@ move=> smF; rewrite /psum (asboolT smF) => /lt_sup_imfset.
 by case=> /= [|J lt_lJ _]; [apply/summable_sup | exists J].
 Qed.
 End SumTh.
+
+(* -------------------------------------------------------------------- *)
+Section Esum.
+
+  Context {R : realType} {T : choiceType}.
+
+  Lemma esum_psum (S: T -> R) :
+    (forall i : T, 0%R <= S i) ->
+    summable S ->
+    esum [set:T] (fun x => (S x)%:E) = (psum S)%:E.
+  Proof.
+    move => Sg0 h; apply/eqP; rewrite eq_le; apply/andP; split.
+    - rewrite ge_ereal_sup//=  => x [] X []  finX XT.
+      rewrite fsumEFin // => <-.
+      rewrite lee_fin.
+      rewrite fsbig_finite //=.
+      revert finX.
+      rewrite cardinality.finite_fsetP.
+      move => []  J ->.
+      rewrite cardinality.set_fsetK.
+      apply: (le_trans _ (gerfin_psum J  h)).
+      rewrite -(@big_fset_seq R _ _ T J S)  //=.
+      apply: (le_trans _ (ler_norm_sum _ _ _)).
+      exact : ler_norm.
+    - rewrite (eq_esum (b:= fun x => `| S x |%:E)%E).
+    - by move => ??; rewrite  ger0_norm.
+      have [H1 H3] := (summable_sup h).
+      rewrite psum_absE //.
+      rewrite -(ereal_sup_EFin H3 H1).
+      rewrite ge_ereal_sup//= => x [] X []  Fs XT <-.
+      rewrite esum_ge //.
+      exists ([set` Fs]%classic) => //.
+      rewrite fsumEFin //.
+      rewrite lee_fin.
+      rewrite XT.
+      rewrite (@big_fset_seq R _ _ T _ (fun x => `|S x|))  //=.
+      rewrite -{1}(cardinality.set_fsetK Fs).
+      by rewrite -fsbig_finite.
+  Qed.
+
+End Esum.
 
 (* -------------------------------------------------------------------- *)
 Lemma max_sup {R : realType} x (E : set R) :
@@ -693,6 +747,29 @@ by apply/(eq_summable _ summable0) => x; rewrite mulr0.
 Qed.
 
 End SummableAlg.
+
+(* -------------------------------------------------------------------- *)
+Section Sum_Sum.
+  Context {T: choiceType} {R : realType}.
+
+  Lemma sum_sum (S: T -> R) :
+    summable S ->
+    esum.sum (fun x => (S x)%:E) = (sum S)%:E.
+  Proof.
+    move => hs. rewrite /esum.sum /sum.
+    rewrite (eq_esum (a:= esum.fpos (fun x => (S x)%:E)) (b:= fun x => (fpos S x)%:E)).
+    - by move => ??; rewrite /esum.fpos /fpos -fine_max.
+      rewrite (eq_esum (a:= esum.fneg (fun x => (S x)%:E)) (b:= fun x => (realsum.fneg S x)%:E)).
+    - by move => ??; rewrite /esum.fneg /fneg -fine_min.
+    rewrite esum_psum //.
+    - move => ?. rewrite /realsum.fpos. exact : normr_ge0.
+    - exact : summable_fpos.
+    rewrite esum_psum //.
+    - move => ?. rewrite /realsum.fneg. exact : normr_ge0.
+    - exact : summable_fneg.
+  Qed.
+
+End Sum_Sum.
 
 (* -------------------------------------------------------------------- *)
 Section StdSum.

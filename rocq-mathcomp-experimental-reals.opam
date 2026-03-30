@@ -19,6 +19,7 @@ build: [make "-C" "experimental_reals" "-j%{jobs}%"]
 install: [make "-C" "experimental_reals" "install"]
 depends: [
   "rocq-mathcomp-reals" { = version}
+  "rocq-mathcomp-analysis" { = "dev"}
   "rocq-mathcomp-bigenough" { (>= "1.0.0") }
 ]
 
