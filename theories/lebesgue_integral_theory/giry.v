@@ -51,97 +51,101 @@ Global Hint Extern 0 (_ ≡μ _) => reflexivity : core.
 Local Open Scope classical_set_scope.
 Local Open Scope ereal_scope.
 
-Section rectangle_cross.
-Context {T1 T2 : Type}.
-Implicit Types (X : set_system T1) (Y : set_system T2).
-
-Definition rectangle X Y := [set U `*` V | U in X & V in Y].
-
-Definition cross X Y :=
-  preimage_set_system setT fst X `|` preimage_set_system setT snd Y.
-
-End rectangle_cross.
-
-Reserved Notation "A `x` B"  (at level 46, left associativity).
-Notation "A `x` B" := (cross A B) : classical_set_scope.
-
-Lemma yoneda {T} (A B : set_system T) :
-  sigma_algebra setT A ->
-  sigma_algebra setT B ->
-  (forall Z, sigma_algebra setT Z -> A `<=` Z <-> B `<=` Z)
-  <->
-  A = B.
-Proof.
-move=> sA sB.
-split=> [AB|AB]; last by rewrite AB.
-by apply/seteqP; split; exact/AB.
-Qed.
-
-Lemma preimage_set_system_mon {T1 T2} (A B : set_system T2) (f : T1 -> T2) :
+Lemma preimage_set_systemS {T1 T2} (A B : set_system T2) (f : T1 -> T2) :
   A `<=` B ->
   preimage_set_system [set: _] f A `<=` preimage_set_system [set: _] f B.
 Proof. by move=> AB _ [C ? <-]; exists C => //; exact: AB. Qed.
 
+Section rectangle.
+Context {T1 T2 : Type}.
+Implicit Types (X : set_system T1) (Y : set_system T2).
+
+Definition rectangle X Y : set_system (T1 * T2):= [set U `*` V | U in X & V in Y].
+
+Lemma rectangle_setX X Y A B : X A -> Y B -> rectangle X Y (A `*` B).
+Proof. by move=> XA YB; exists A => //; exists B. Qed.
+
+Lemma setI_closed_rectangle X Y :
+  setI_closed X -> setI_closed Y ->
+  setI_closed (rectangle X Y).
+Proof.
+move=> IG IH _ _ [A mA [B mB] <-] [A' mA' [B' mB'] <-].
+by rewrite -setXI; apply: rectangle_setX; [exact: IG|exact: IH].
+Qed.
+
+End rectangle.
+
+Reserved Notation "A `x` B"  (at level 46, left associativity).
+Section cross.
+Context {T1 T2 : Type}.
+Implicit Types (X : set_system T1) (Y : set_system T2).
+
+Definition cross X Y :=
+  preimage_set_system [set: T1 * T2] fst X
+  `|` preimage_set_system [set: T1 * T2] snd Y.
+
+End cross.
+Notation "A `x` B" := (cross A B) : classical_set_scope.
+
+(* yoneda *)
+Lemma forall_subset_eq {T} (A B : set_system T) :
+  sigma_algebra [set: T] A -> sigma_algebra [set: T] B ->
+  (forall Z, sigma_algebra [set: T] Z -> A `<=` Z <-> B `<=` Z)
+  <-> A = B.
+Proof.
+move=> sA sB; split=> [AB|AB]; last by rewrite AB.
+by apply/seteqP; split; exact/AB.
+Qed.
+
+Lemma g_sigma_algebraSP {T : Type} (X Y : set_system T) :
+  sigma_algebra [set: T] Y ->
+  <<s X >> `<=` Y <-> X `<=` Y.
+Proof.
+move=> sY; split=> [sXY|]; last exact: smallest_sub.
+by rewrite {sY}; apply: subset_trans sXY; exact: sub_gen_smallest.
+Qed.
+
 Section rect_cross_prop.
 Context {T1 T2 T3 : pointedType}.
 
-Definition RR {T : pointedType} (Z : set_system T) : set_system T := <<s Z>>.
-
-Lemma thm4 {T : pointedType} (X Y : set_system T) : sigma_algebra setT Y ->
-  RR X `<=` Y <-> X `<=` Y.
-Proof.
-move=> sY.
-split=> [RXY|].
-  clear sY.
-  apply: subset_trans RXY.
-  exact: sub_gen_smallest.
-exact: smallest_sub.
-Qed.
-
-Lemma lem6' (Y : set_system T2) :
-  preimage_set_system setT (@snd T1 T2) (RR Y) =
-  RR (preimage_set_system setT snd Y).
+Lemma preimage_smallest_sigma_algebra (Y : set_system T2) :
+  preimage_set_system [set: T1 * T2] snd (<<s Y>>) =
+  <<s preimage_set_system [set: T1 * T2] snd Y>>.
 Proof.
 apply/seteqP; split; last first.
-  apply/(thm4 _ _).2.
+  apply/(g_sigma_algebraSP _ _).2.
     set RY := @g_sigma_algebraType _ Y.
     exact: (sigma_algebra_measurable (g_sigma_algebra_preimageType (@snd T1 RY))).
-  apply: preimage_set_system_mon.
+  apply: preimage_set_systemS.
   exact: sub_sigma_algebra.
-move=> _ [Z RYZ <-].
-rewrite /preimage_set_system.
-red.
-move=> /= G [sigG HG].
+move=> _ [Z RYZ <-] /= G [sigG HG].
 pose i := @image_set_system _ T2 setT (@snd _ _) G.
 (* TODO: use image_set_system *)
 apply: (RYZ i).
 split.
-  by apply: sigma_algebra_image.
+  exact: sigma_algebra_image.
 move=> A YA.
 apply: HG => //.
 by exists A.
 Qed.
 
-Lemma lem6 (X : set_system T1) (Y : set_system T2) :
-  RR (X `x` RR Y) = RR (X `x` Y).
+Lemma g_sigma_algebra_cross (X : set_system T1) (Y : set_system T2) :
+  <<s X `x` <<s Y >> >> = <<s X `x` Y >>.
 Proof.
-apply/yoneda; [exact: smallest_sigma_algebra..|].
+apply/forall_subset_eq; [exact: smallest_sigma_algebra..|].
 move => /= Z mZ.
-rewrite thm4//=.
+rewrite g_sigma_algebraSP//=.
 rewrite {1}/cross/=.
 rewrite subUset.
-rewrite lem6'//.
-rewrite thm4//=.
+rewrite preimage_smallest_sigma_algebra//.
+rewrite g_sigma_algebraSP//=.
 rewrite -subUset.
-by rewrite -thm4//=.
+by rewrite -g_sigma_algebraSP.
 Qed.
 
-Lemma lem9 (X : set_system T1) (Y : set_system T2) :
-  X setT ->
-  Y setT ->
-(*  sigma_algebra setT X ->
-  sigma_algebra setT Y ->*)
-  RR (rectangle X Y) = RR (X `x` Y).
+Lemma g_sigma_algebra_rectangle (X : set_system T1) (Y : set_system T2) :
+  X [set: T1] -> Y [set: T2] ->
+  <<s rectangle X Y >> = <<s X `x` Y >>.
 Proof.
 move=> sX sY; apply/seteqP; split; last first.
   apply: sub_sigma_algebra2.
@@ -150,27 +154,18 @@ move=> sX sY; apply/seteqP; split; last first.
     rewrite -setXT setTI.
     rewrite /rectangle/=. (* TODO: lemma *)
     exists A1 =>//.
-    by exists setT => //.
+    by exists setT.
   rewrite /preimage_set_system/= => -[A1 XA1 <-{A}].
   rewrite -setTX setTI.
-  rewrite /rectangle/=. (* TODO: lemma *)
-  exists setT => //.
-  by exists A1.
+  exact: rectangle_setX.
   (*  apply: sub_sigma_algebra2. (* TODO: rename that thing!! *) *)
-rewrite thm4//; last first.
-  exact: smallest_sigma_algebra.
-move=> _ [A1 X1] [A2 X2] <-.
-rewrite /setX.
-rewrite (_ : [set z | A1 z.1 /\ A2 z.2] = fst @^-1` A1 `&` snd @^-1` A2)//.
+rewrite g_sigma_algebraSP// => _ [A1 X1] [A2 X2] <-.
+rewrite (_ : _ `*` _ = fst @^-1` A1 `&` snd @^-1` A2)//.
 apply: (@measurableI _ (@g_sigma_algebraType _ (X `x` Y))).
-- apply: sub_sigma_algebra.
-  left.
-  exists A1 => //.
-  by rewrite setTI.
-- apply: sub_sigma_algebra.
-  right.
-  exists A2 => //.
-  by rewrite setTI.
+- apply: sub_sigma_algebra; left.
+  by exists A1 => //; rewrite setTI.
+- apply: sub_sigma_algebra; right.
+  by exists A2 => //; rewrite setTI.
 Qed.
 
 End rect_cross_prop.
@@ -178,25 +173,20 @@ End rect_cross_prop.
 Section rect_cross_prop2.
 Context {T1 T2 T3 : pointedType}.
 
-Lemma lem17 (X : set_system T1) (Y : set_system T2) (Z : set_system T3) :
-  X setT ->
-  Y setT ->
-  Z  setT ->
-  RR (X `x` RR (Y `x` Z)) = RR (rectangle X (rectangle Y Z)).
+Lemma g_sigma_algebra_cross_rectangle (X : set_system T1) (Y : set_system T2)
+    (Z : set_system T3) :
+  X [set: T1] -> Y [set: T2] -> Z [set: T3] ->
+  <<s (X `x` <<s Y `x` Z >>) >> = <<s rectangle X (rectangle Y Z) >>.
 Proof.
-move=> mX mY mZ.
-rewrite -(lem9 mY mZ).
-rewrite lem6.
-rewrite -(lem9 mX)//.
-red.
-exists setT => //.
-exists setT => //.
-by rewrite setXTT.
+move=> mX mY mZ; rewrite -(g_sigma_algebra_rectangle mY mZ).
+rewrite g_sigma_algebra_cross -(g_sigma_algebra_rectangle mX)//= -setXTT.
+exact: rectangle_setX.
 Qed.
 
 End rect_cross_prop2.
 
 (* TODO: move *)
+
 Definition fun_pair {X T1 T2} (f : X -> T1) (g : X -> T2)
   (x : X) := (f x, g x).
 
@@ -204,7 +194,7 @@ Lemma preimage_fun_pair {X T1 T2} (f : X -> T1) (g : X -> T2) A B :
   (fun_pair f g) @^-1` (A `*` B) = f @^-1` A `&` g @^-1` B.
 Proof. by []. Qed.
 
-Lemma prodAE {X Y Z} :
+Lemma prodA_fun_pair {X Y Z} :
   @prodA X Y Z = fun_pair (fst \o fst) (fun_pair (snd \o fst) snd).
 Proof. by apply/funext => -[[]]. Qed.
 
@@ -233,14 +223,17 @@ HB.instance Definition _ := isMeasurableFun.Build _ _ _ _
 
 End fun_product.
 
-HB.instance Definition _ {d1 d2 : measure_display} {T1 : measurableType d1} {T2 : measurableType d2} :=
+HB.instance Definition _ {d1 d2 : measure_display} {T1 : measurableType d1}
+    {T2 : measurableType d2} :=
   isMeasurableFun.Build _ _ _ _ snd (@measurable_snd _ _ T1 T2).
 
-HB.instance Definition _ {d1 d2 : measure_display} {T1 : measurableType d1} {T2 : measurableType d2} :=
+HB.instance Definition _ {d1 d2 : measure_display} {T1 : measurableType d1}
+    {T2 : measurableType d2} :=
   isMeasurableFun.Build _ _ _ _ fst (@measurable_fst _ _ T1 T2).
 
 Section prodA_measurable.
-Context {d1 d2 d3} {X : measurableType d1} {Y : measurableType d2} {Z : measurableType d3}.
+Context {d1 d2 d3} {X : measurableType d1} {Y : measurableType d2}
+  {Z : measurableType d3}.
 
 Let measurable_prodA : measurable_fun [set: X * Y * Z] (@prodA X Y Z).
 Proof.
@@ -260,7 +253,8 @@ HB.instance Definition _ := isMeasurableFun.Build _ _ _ _
   swap (@measurable_swap _ _ X Y).
 End swap_measurable.
 
-Lemma preimage_swap {T1 T2} (U1 : set T1) (U2 : set T2) : swap @^-1` (U1 `*` U2) = U2 `*` U1.
+Lemma preimage_swap {T1 T2} (U1 : set T1) (U2 : set T2) :
+  swap @^-1` (U1 `*` U2) = U2 `*` U1.
 Proof. by rewrite /preimage; apply/seteqP; split => [[a b]|[a b]]//= []. Qed.
 (* /TODO: move *)
 
@@ -767,17 +761,17 @@ case: c => a b.
 move=> U mU.
 rewrite /giry_prod /giry_join /giry_join. (* NB: don't /= here*)
 apply: product_measure_unique => //= A B mA mB.
-rewrite /giry_int /giry_map ge0_integral_pushforward//=; last first.
+rewrite /giry_int /giry_map ge0_integral_pushforward//=.
   apply: measurable_giry_ev.
   exact: measurableX.
-rewrite fubini_tonelli1//; last first.
+rewrite fubini_tonelli1//.
   have mAB : measurable (A `*` B) by apply: measurableX.
   by rewrite [X in measurable_fun _ X](_ : _ = @mgiry_ev _ _ R _ mAB \o giry_prod).
-rewrite -ge0_integralZr//; last 2 first.
+rewrite -ge0_integralZr//.
   exact: measurable_giry_ev.
   exact: integral_ge0.
 apply: eq_integral => /= x _.
-rewrite /fubini_F/= -ge0_integralZl//; last exact: measurable_giry_ev.
+rewrite /fubini_F/= -ge0_integralZl//; first exact: measurable_giry_ev.
 apply: eq_integral => /= y _.
 by rewrite product_measure1E.
 Qed.
@@ -813,72 +807,42 @@ Admitted.
 HB.instance Definition _ xyz U1 := isMeasure.Build _ _ _ (m2 xyz U1)
  (m2_measure0 xyz U1) (m2_measure_ge0 xyz U1) (@m2_measure_semi_sigma_additive xyz U1).*)
 
-Lemma giry_monoidal_assoc (xyz : (giry X R * giry Y R) * giry Y' R) :
+Lemma giry_monoidalA (xyz : (giry X R * giry Y R) * giry Y' R) :
   (giry_prod \o (id \X giry_prod) \o prodA) xyz ≡μ
   (giry_map prodA \o giry_prod \o (giry_prod \X id)) xyz.
 Proof.
 move: xyz => [[x y] z].
 move=> U mU.
-red in mU.
-simpl in mU.
-rewrite /g_sigma_preimageU in mU.
-have mU' : RR (@measurable _ X `x` RR (@measurable _ Y `x` @measurable _ Y')) U.
-  rewrite /RR.
-  rewrite /cross/=.
-  done.
-rewrite lem17 in mU'; [|exact: measurableT..].
-red in mU'.
-apply: (measure_unique (rectangle d1.-measurable (rectangle d2.-measurable d2'.-measurable)) (fun=> setT)) => //.
-rewrite -/(RR (rectangle _ (rectangle _ _))).
-by rewrite -lem17//.
-move=> /= P Q [P1 mP1 [P2 [P3 mP3 [P4 mP4]]]] HP2 Hp.
-move=> [Q1 mQ1 [Q2 [Q3 mQ3] [Q4 mQ4]]] HQ2 HQ.
-red.
-simpl.
-rewrite -HQ -Hp.
-rewrite -setXI.
-exists (P1 `&` Q1).
-exact: measurableI.
-exists (P2 `&` Q2).
-red.
-simpl.
-rewrite -HQ2 -HP2.
-rewrite -setXI.
-exists (P3 `&` Q3).
-exact: measurableI.
-exists (P4 `&` Q4).
-exact: measurableI.
-done.
-done.
-move=> _.
-rewrite /=.
-exists setT => //.
-exists setT => //.
-exists setT => //.
-exists setT => //.
-by rewrite setXTT.
-by rewrite setXTT.
-apply: bigcupT => //.
-by exists O.
-move=> A /=.
-case => Q mQ [E].
-case => E1 mE1 [E2 mE2] <- <-.
-rewrite /pushforward.
-rewrite (_ : _ @^-1` _ = ((Q `*` E1) `*` E2)); last first.
-  by apply/seteqP; split => -[[]]/= *; tauto.
-rewrite !product_measure1E//=.
-rewrite (@product_measure1E _ _ _ _ _ x (product_subprobability (y, z)))//=.
-rewrite !product_measure1E//=.
-by rewrite muleA.
-exact: measurableX.
-exact: measurableX.
-by rewrite ltey_eq fin_num_measure.
+rewrite /measurable /= /g_sigma_preimageU in mU.
+have mU' :
+    <<s (d1.-measurable `x` <<s (d2.-measurable `x` d2'.-measurable) >>) >> U.
+  by [].
+rewrite g_sigma_algebra_cross_rectangle in mU'; [exact: measurableT..|].
+apply: (measure_unique (rectangle d1.-measurable
+         (rectangle d2.-measurable d2'.-measurable)) (fun=> setT)) => //.
+- by rewrite -g_sigma_algebra_cross_rectangle.
+- apply: setI_closed_rectangle => //; first exact: measurableI.
+  by apply: setI_closed_rectangle => //; exact: measurableI.
+- move=> _.
+  rewrite -!setXTT.
+  by apply: rectangle_setX => //; exact: rectangle_setX.
+- apply: bigcupT => //.
+  by exists O.
+- move=> A [Q mQ] [E [E1 mE1 [E2 mE2]]] <- <- /=.
+  rewrite /pushforward.
+  rewrite (_ : _ @^-1` _ = (Q `*` E1) `*` E2).
+    by apply/seteqP; split => -[[]]/= *; tauto.
+  rewrite !product_measure1E//=.
+    exact: measurableX.
+  rewrite (@product_measure1E _ _ _ _ _ x (product_subprobability (y, z)))//=.
+    exact: measurableX.
+  by rewrite !product_measure1E//= muleA.
+- by rewrite ltey_eq fin_num_measure.
 Qed.
 
 Definition giry_copy (x : X) : giry _ R := giry_ret (x, x).
 
 Definition giry_discard (x : X) : giry _ R := giry_ret tt.
-
 
 Lemma test (P1 P2 : probability unit R) : P1 ≡μ P2.
 Proof.
