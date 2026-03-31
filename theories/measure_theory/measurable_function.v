@@ -354,20 +354,22 @@ Lemma preimage_set_system_measurable_fun d (aT : pointedType)
     (D : set (g_sigma_algebraType (preimage_set_system D f measurable))) f.
 Proof. by move=> mD A mA; apply: sub_sigma_algebra; exists A. Qed.
 
+(** The converse hols when `D` is measurable *)
+Lemma preimage_measurability d d' (aT : measurableType d)
+    (rT : measurableType d') (D : set aT) (f : aT -> rT) :
+  preimage_set_system D f (@measurable _ rT) `<=` @measurable _ aT ->
+  measurable_fun D f.
+Proof. by move=> + mD Y mY; apply; exists Y. Qed.
+
 Lemma measurability d d' (aT : measurableType d) (rT : measurableType d')
     (D : set aT) (f : aT -> rT) (G : set (set rT)) :
-  @measurable _ rT = <<s G >> -> preimage_set_system D f G `<=` @measurable _ aT ->
+  @measurable _ rT = <<s G >> ->
+  preimage_set_system D f G `<=` @measurable _ aT ->
   measurable_fun D f.
 Proof.
-move=> sG_rT fG_aT mD.
-suff h : preimage_set_system D f (@measurable _ rT) `<=` @measurable _ aT.
-  by move=> A mA; apply: h; exists A.
-have -> : preimage_set_system D f (@measurable _ rT) =
-         <<s D, preimage_set_system D f G >>.
-  by rewrite [in LHS]sG_rT [in RHS]g_sigma_preimageE.
-apply: smallest_sub => //; split => //.
-- by move=> A mA; exact: measurableD.
-- by move=> F h; exact: bigcupT_measurable.
+move=> sG_rT fG_aT /[dup] mD; apply: preimage_measurability.
+rewrite sG_rT -g_sigma_preimageE smallest_sub_iff//.
+exact: sigma_algebra_measurable.
 Qed.
 
 End measurability.

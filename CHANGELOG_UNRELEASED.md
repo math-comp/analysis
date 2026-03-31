@@ -14,7 +14,10 @@
   + lemma `preimage_set_systemS`
 
 - in `measurable_structure.v`:
-  + lemmas `preimage_g_sigma_algebra`, `g_sigma_algebra_cross`, `g_sigma_algebra_rectangle`
+  + lemmas `g_sigma_algebra_cross`, `g_sigma_algebra_rectangle`
+
+- in `measurable_function.v`:
+  + lemma `preimage_measurability`
 
 ### Changed
 
@@ -39,6 +42,9 @@
     ` PseudoMetricNormedZmod_ConvexTvs_isNormedModule`
 
 ### Generalized
+
+- in `measurable_structure.v`:
+  + lemma `sigma_algebra_measurable` (not specialized to `setT` anymore)
 
 ### Deprecated
 

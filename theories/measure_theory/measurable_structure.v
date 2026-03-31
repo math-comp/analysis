@@ -1231,8 +1231,11 @@ Section measurable_lemmas.
 Context d (T : measurableType d).
 Implicit Types (A B : set T) (F : (set T)^nat) (P : set nat).
 
-Lemma sigma_algebra_measurable : sigma_algebra setT (@measurable d T).
-Proof. by split=> // [A|]; [exact: measurableD|exact: bigcupT_measurable]. Qed.
+Lemma sigma_algebra_measurable D : measurable D ->
+  sigma_algebra D (@measurable d T).
+Proof.
+by move=> mD; split=> // [A|]; [exact: measurableD|exact: bigcupT_measurable].
+Qed.
 
 Lemma bigcap_measurableType F P :
   (forall k, P k -> measurable (F k)) -> measurable (\bigcap_(i in P) F i).
@@ -1390,23 +1393,6 @@ move=> [G0 GC GU]; split; rewrite /image_set_system.
 - by move=> F /= mF; rewrite preimage_bigcup setI_bigcupr; exact: GU.
 Qed.
 
-Lemma preimage_g_sigma_algebra {T1 T2 : pointedType}
-    (Y : set_system T2) :
-  preimage_set_system [set: T1 * T2] snd (<<s Y>>) =
-  <<s preimage_set_system [set: T1 * T2] snd Y>>.
-Proof.
-apply/seteqP; split; last first.
-  apply: smallest_sub.
-    set Z := @g_sigma_algebraType _ Y.
-    exact: (sigma_algebra_measurable (g_sigma_algebra_preimageType (@snd _ Z))).
-  apply: preimage_set_systemS.
-  exact: sub_sigma_algebra.
-move=> _ [Z RYZ <-] /= G [sigG HG].
-apply: (RYZ (@image_set_system _ T2 setT (@snd _ _) G)).
-split; first exact: sigma_algebra_image.
-by move=> A YA; apply: HG => //; exists A.
-Qed.
-
 Lemma g_sigma_preimageE aT (rT : pointedType) (D : set aT)
     (f : aT -> rT) (G' : set (set rT)) :
   <<s D, preimage_set_system D f G' >> =
@@ -1560,7 +1546,7 @@ Proof.
 apply/forall_subset_eq; [exact: smallest_sigma_algebra..|].
 move=> Z mZ.
 rewrite smallest_sub_iff//=.
-rewrite {1}/cross12/= subUset preimage_g_sigma_algebra//.
+rewrite {1}/cross12/= subUset -g_sigma_preimageE//.
 rewrite smallest_sub_iff//= -subUset -[_ `|` _]/(cross12 X Y)//.
 by rewrite smallest_sub_iff.
 Qed.

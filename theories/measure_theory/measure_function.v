@@ -1867,7 +1867,7 @@ Lemma g_sigma_algebra_measure_unique_cover :
 Proof.
 pose GT : ringOfSetsType G.-sigma:= g_sigma_algebraType G.
 move=> sGm1m2; pose g' k := \bigcup_(i < k) g i.
-have sGm := smallest_sub (@sigma_algebra_measurable _ T) Gm.
+have sGm := smallest_sub (@sigma_algebra_measurable _ T _ measurableT) Gm.
 have Gg' i : <<s G >> (g' i).
   apply: (@fin_bigcup_measurable _ GT) => //.
   by move=> n _; apply: sub_sigma_algebra.
