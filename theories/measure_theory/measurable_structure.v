@@ -1622,9 +1622,7 @@ Lemma measurableX d1 d2 (T1 : semiRingOfSetsType d1) (T2 : semiRingOfSetsType d2
   measurable A -> measurable B -> measurable (A `*` B).
 Proof.
 move=> mA mB.
-have -> : A `*` B = (A `*` setT) `&` (setT `*` B) :> set (T1 * T2).
-  by rewrite -{1}(setIT A) -{1}(setTI B) setXI.
-rewrite setXT setTX; apply: measurableI.
+rewrite -(setIT A) -(setTI B) setXI setXT setTX; apply: measurableI.
 - by apply: sub_sigma_algebra; left; exists A => //; rewrite setTI.
 - by apply: sub_sigma_algebra; right; exists B => //; rewrite setTI.
 Qed.
@@ -1633,18 +1631,17 @@ Section product_salgebra_algebraOfSetsType.
 Context d1 d2 (T1 : algebraOfSetsType d1) (T2 : algebraOfSetsType d2).
 Let M1 := @measurable _ T1.
 Let M2 := @measurable _ T2.
-Let M1xM2 := [set A `*` B | A in M1 & B in M2].
 
 Lemma measurable_prod_measurableType :
-  (d1, d2).-prod.-measurable = <<s M1xM2 >>.
+  (d1, d2).-prod.-measurable = <<s rectangle M1 M2 >>.
 Proof.
 rewrite eqEsubset; split.
   apply: smallest_sub; first exact: smallest_sigma_algebra.
   rewrite subUset; split.
-  - have /subset_trans : preimage_set_system setT fst M1 `<=` M1xM2.
+  - have /subset_trans : preimage_set_system setT fst M1 `<=` rectangle M1 M2.
       by move=> _ [X MX <-]; exists X=> //; exists setT; rewrite /M2 // setIC//.
     by apply; exact: sub_sigma_algebra.
-  - have /subset_trans : preimage_set_system setT snd M2 `<=` M1xM2.
+  - have /subset_trans : preimage_set_system setT snd M2 `<=` rectangle M1 M2.
       by move=> _ [Y MY <-]; exists setT; rewrite /M1 //; exists Y.
     by apply; exact: sub_sigma_algebra.
 apply: smallest_sub; first exact: smallest_sigma_algebra.
@@ -1660,7 +1657,7 @@ Hypothesis setTC2 : setT `<=` C2.
 (* NB: useful? *)
 Lemma measurable_prod_g_measurableTypeR :
   @measurable _ (T1 * g_sigma_algebraType C2)%type
-  = <<s [set A `*` B | A in measurable & B in C2] >>.
+  = <<s rectangle (@measurable _ T1) C2 >>.
 Proof.
 rewrite measurable_prod_measurableType //; congr (<<s _ >>).
 rewrite predeqE => X; split=> [[A mA] [B mB] <-{X}|[A C1A] [B C2B] <-{X}].
@@ -1676,7 +1673,7 @@ Hypotheses (setTC1 : setT `<=` C1) (setTC2 : setT `<=` C2).
 
 Lemma measurable_prod_g_measurableType :
   @measurable _ (g_sigma_algebraType C1 * g_sigma_algebraType C2)%type =
-  <<s [set A `*` B | A in C1 & B in C2] >>.
+  <<s rectangle C1 C2 >>.
 Proof.
 rewrite measurable_prod_measurableType //; congr (<<s _ >>).
 rewrite predeqE => X; split=> [[A mA] [B mB] <-{X}|[A C1A] [B C2B] <-{X}].

@@ -6,6 +6,9 @@
 
 - in `realfun.v`:
   + lemma `derivable_sqrt`
+- in `classical_sets.v`:
+  + definition `rectangle`
+  + lemmas `rectangle_setX`, `setI_closed_rectangle`
 
 ### Changed
 

@@ -601,12 +601,10 @@ Lemma measurable_prod_subset_xsection_kernel :
   measurable `<=` XY.
 Proof.
 move=> kD_ub; rewrite measurable_prod_measurableType.
-set C := [set A `*` B | A in measurable & B in measurable].
+set C := rectangle (@measurable _ X) (@measurable _ Y).
 have CI : setI_closed C.
-  move=> _ _ [X1 mX1 [X2 mX2 <-]] [Y1 mY1 [Y2 mY2 <-]].
-  exists (X1 `&` Y1); first exact: measurableI.
-  by exists (X2 `&` Y2); [exact: measurableI|rewrite setXI].
-have CT : C setT by exists setT => //; exists setT => //; rewrite setXTT.
+  by apply: setI_closed_rectangle => E F mE MF; exact: measurableI.
+have CT : C setT by rewrite -setXTT; exact: rectangle_setX.
 have CXY : C `<=` XY.
   move=> _ [A mA [B mB <-]]; split; first exact: measurableX.
   rewrite phiM.
@@ -1305,15 +1303,6 @@ exists (fun n => if n is O then mu else mzero) => [[]//|U mU].
 by rewrite /mseries nneseries_recl// eseries0 ?adde0// => -[|].
 Qed.
 
-Let setI_closedX (d1 d2 : measure_display) (T1 : measurableType d1)
-    (T2 : measurableType d2) : @setI_closed (T1 * T2)
-  [set A `*` B | A in d1.-measurable & B in d2.-measurable].
-Proof.
-move=> X Y [X1 mX1 [X2 mX2 <-{X}]] [Y1 mY1 [Y2 mY2 <-{Y}]].
-exists (X1 `&` Y1); first exact: measurableI.
-by exists (X2 `&` Y2); [exact: measurableI|rewrite setXI].
-Qed.
-
 Variables (d1 d2 : measure_display) (T1 : measurableType d1)
   (T2 : measurableType d2) (R : realType) (k : R.-ftker T1 ~> T2)
   (f : T1 * T2 -> \bar R).
@@ -1399,7 +1388,9 @@ move=> m.
 have DE : D = @measurable _ (T1 * T2)%type.
   apply/seteqP; split => [/= A []//|].
   rewrite measurable_prod_measurableType.
-  apply: lambda_system_subset => //= C [A mA [B mB] <-].
+  apply: lambda_system_subset => //=.
+    by apply: setI_closed_rectangle => ? ? ? ?; exact: measurableI.
+  move=> C [A mA [B mB] <-].
   split; [exact: measurableX|rewrite /K kfcompkg//].
   apply: emeasurable_funM; first exact/measurable_EFinP.
   exact: measurable_kernel.

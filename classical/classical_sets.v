@@ -104,6 +104,7 @@ From mathcomp Require Import mathcomp_extra boolp wochoice.
 (*      setI_closed G == the set of sets G is closed under finite             *)
 (*                       intersection                                         *)
 (*      setU_closed G == the set of sets G is closed under finite union       *)
+(*      rectangle X Y := [set U `*` V | U in X & V in Y]                      *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ```                                                                        *)
@@ -1642,6 +1643,25 @@ Definition setI_closed := forall A B, G A -> G B -> G (A `&` B).
 Definition setU_closed := forall A B, G A -> G B -> G (A `|` B).
 
 End set_systems.
+
+Section rectangle.
+Context {T1 T2 : Type}.
+Implicit Types (X : set_system T1) (Y : set_system T2).
+
+Definition rectangle X Y : set_system (T1 * T2) :=
+  [set U `*` V | U in X & V in Y].
+
+Lemma rectangle_setX X Y A B : X A -> Y B -> rectangle X Y (A `*` B).
+Proof. by move=> XA YB; exists A => //; exists B. Qed.
+
+Lemma setI_closed_rectangle X Y : setI_closed X -> setI_closed Y ->
+  setI_closed (rectangle X Y).
+Proof.
+move=> IG IH _ _ [A mA [B mB] <-] [A' mA' [B' mB'] <-].
+by rewrite -setXI; apply: rectangle_setX; [exact: IG|exact: IH].
+Qed.
+
+End rectangle.
 
 Lemma subKimage {T T'} {P : set (set T')} (f : T -> T') (g : T' -> T) :
   cancel f g -> [set A | P (f @` A)] `<=` [set g @` A | A in P].

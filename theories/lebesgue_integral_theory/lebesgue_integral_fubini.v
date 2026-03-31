@@ -117,12 +117,10 @@ Lemma measurable_prod_subset_xsection
   measurable `<=` B.
 Proof.
 rewrite measurable_prod_measurableType.
-set C := [set A1 `*` A2 | A1 in measurable & A2 in measurable].
+set C := rectangle (@measurable _ T1) (@measurable _ T2).
 have CI : setI_closed C.
-  move=> X Y [X1 mX1 [X2 mX2 <-{X}]] [Y1 mY1 [Y2 mY2 <-{Y}]].
-  exists (X1 `&` Y1); first exact: measurableI.
-  by exists (X2 `&` Y2); [exact: measurableI|rewrite setXI].
-have CT : C setT by exists setT => //; exists setT => //; rewrite setXTT.
+  by apply: setI_closed_rectangle => E F mE MF; exact: measurableI.
+have CT : C setT by rewrite -setXTT; exact: rectangle_setX.
 have CB : C `<=` B.
   move=> X [X1 mX1 [X2 mX2 <-{X}]]; split; first exact: measurableX.
   have -> : phi (X1 `*` X2) = (fun x => m2D X2 * (\1_X1 x)%:E)%E.
@@ -158,12 +156,10 @@ Lemma measurable_prod_subset_ysection
   measurable `<=` B.
 Proof.
 rewrite measurable_prod_measurableType.
-set C := [set A1 `*` A2 | A1 in measurable & A2 in measurable].
+set C := rectangle (@measurable _ T1) (@measurable _ T2).
 have CI : setI_closed C.
-  move=> X Y [X1 mX1 [X2 mX2 <-{X}]] [Y1 mY1 [Y2 mY2 <-{Y}]].
-  exists (X1 `&` Y1); first exact: measurableI.
-  by exists (X2 `&` Y2); [exact: measurableI|rewrite setXI].
-have CT : C setT by exists setT => //; exists setT => //; rewrite setXTT.
+  by apply: setI_closed_rectangle => E F mE MF; exact: measurableI.
+have CT : C setT by rewrite -setXTT; exact: rectangle_setX.
 have CB : C `<=` B.
   move=> X [X1 mX1 [X2 mX2 <-{X}]]; split; first exact: measurableX.
   have -> : psi (X1 `*` X2) = (fun x => m1D X1 * (\1_X2 x)%:E)%E.
