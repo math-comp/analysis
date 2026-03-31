@@ -9,8 +9,19 @@
 - in `classical_sets.v`:
   + definition `rectangle`
   + lemmas `rectangle_setX`, `setI_closed_rectangle`
+  + definitions `cross`, `cross12`
+  + lemmas `smallest_sub_sub`, `bigcap_closed_smallest`, `smallest_sub_iff`
+  + lemma `preimage_set_systemS`
+
+- in `measurable_structure.v`:
+  + lemmas `preimage_g_sigma_algebra`, `g_sigma_algebra_cross`, `g_sigma_algebra_rectangle`
 
 ### Changed
+
+- moved from `measurable_structure.v` to `classical_sets.v`:
+  + definition `preimage_set_system`
+  + lemmas `preimage_set_system0`, `preimage_set_systemU`, `preimage_set_system_comp`,
+    `preimage_set_system_id`
 
 ### Renamed
 
@@ -32,6 +43,9 @@
 ### Deprecated
 
 ### Removed
+
+- in `measurable_structure.v`:
+  + lemmas `measurable_prod_g_measurableType`, `measurable_prod_g_measurableTypeR`
 
 ### Infrastructure
 

@@ -100,11 +100,17 @@ From mathcomp Require Import mathcomp_extra boolp wochoice.
 (*                                                                            *)
 (* ### About sets of sets                                                     *)
 (* ```                                                                        *)
-(*       set_system T := set (set T)                                          *)
-(*      setI_closed G == the set of sets G is closed under finite             *)
-(*                       intersection                                         *)
-(*      setU_closed G == the set of sets G is closed under finite union       *)
-(*      rectangle X Y := [set U `*` V | U in X & V in Y]                      *)
+(*                set_system T := set (set T)                                 *)
+(*               setI_closed G == the set of sets G is closed under finite    *)
+(*                                intersection                                *)
+(*               setU_closed G == the set of sets G is closed under finite    *)
+(*                                union                                       *)
+(*               rectangle X Y := [set U `*` V | U in X & V in Y]             *)
+(*   preimage_set_system D f G == set system of the preimages by f of sets    *)
+(*                                in G                                        *)
+(*               cross f g X Y := preimage_set_system setT f X                *)
+(*                                `|` preimage_set_system setT g Y            *)
+(*                     X `x` Y := cross fst snd X Y                           *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ```                                                                        *)
@@ -259,6 +265,7 @@ Reserved Notation "[ 'disjoint' A & B ]"
 Reserved Notation "F `#` G"
   (at level 48, left associativity, format "F  `#`  G").
 Reserved Notation "'`I_' n" (at level 8, n at level 2, format "'`I_' n").
+Reserved Notation "A `x` B"  (at level 46, left associativity).
 
 Definition set T := T -> Prop.
 (* we use fun x => instead of pred to prevent inE from working *)
@@ -1663,6 +1670,50 @@ Qed.
 
 End rectangle.
 
+Definition preimage_set_system {aT rT : Type} (D : set aT) (f : aT -> rT)
+    (G : set_system rT) : set (set aT) :=
+  [set D `&` f @^-1` B | B in G].
+
+Lemma preimage_set_system0 {aT rT : Type} (D : set aT) (f : aT -> rT) :
+  preimage_set_system D f set0 = set0.
+Proof. exact: image_set0. Qed.
+
+Lemma preimage_set_systemU {aT rT : Type} (D : set aT) (f : aT -> rT) :
+  {morph preimage_set_system D f : x y / x `|` y >-> x `|` y}.
+Proof. exact: image_setU. Qed.
+
+Lemma preimage_set_system_comp {aT bT rT : Type} (D : set aT)
+    (f : aT -> bT) (g : bT -> rT) (F : set_system rT) :
+  preimage_set_system D (g \o f) F
+    = preimage_set_system D f (preimage_set_system setT g F).
+Proof.
+apply/seteqP; split=> [_ [B FB] <-|_ [_ [C FC <-] <-]].
+  by exists (g @^-1` B) => //; exists B => //; rewrite setTI.
+by exists C => //; rewrite setTI comp_preimage.
+Qed.
+
+Lemma preimage_set_system_id {aT : Type} (D : set aT) (F : set (set aT)) :
+  preimage_set_system D idfun F = setI D @` F.
+Proof. by []. Qed.
+
+Lemma preimage_set_systemS {T1 T2} (A B : set_system T2) (f : T1 -> T2) :
+  A `<=` B ->
+  preimage_set_system [set: _] f A `<=` preimage_set_system [set: _] f B.
+Proof. by move=> AB _ [C ? <-]; exists C => //; exact: AB. Qed.
+
+Section cross.
+Context {T T1 T2 : Type}.
+Implicit Types (X : set_system T1) (Y : set_system T2).
+
+Definition cross (f : T -> T1) (g : T -> T2) X Y :=
+  preimage_set_system [set: T] f X
+  `|` preimage_set_system [set: T] g Y.
+
+End cross.
+
+Definition cross12 {T1 T2 : Type} := @cross (T1 * T2)%type T1 T2 fst snd.
+Notation "A `x` B" := (cross12 A B) : classical_set_scope.
+
 Lemma subKimage {T T'} {P : set (set T')} (f : T -> T') (g : T' -> T) :
   cancel f g -> [set A | P (f @` A)] `<=` [set g @` A | A in P].
 Proof. by move=> ? A; exists (f @` A); rewrite ?image_comp ?eq_image_id/=. Qed.
@@ -2248,34 +2299,56 @@ move=> /mem_set; rewrite (@big_morph _ _ (fun X => u \in X) false orb).
 Qed.
 
 Section smallest.
-Context {T} (C : set T -> Prop) (G : set T).
+Context {T} (C : set T -> Prop).
 
-Definition smallest := \bigcap_(A in [set M | C M /\ G `<=` M]) A.
+Definition smallest (G : set T) := \bigcap_(A in [set M | C M /\ G `<=` M]) A.
 
-Lemma sub_smallest X : X `<=` G -> X `<=` smallest.
-Proof. by move=> XG A /XG GA Y /= [PY]; apply. Qed.
-
-Lemma sub_gen_smallest : G `<=` smallest. Proof. exact: sub_smallest. Qed.
-
-Lemma smallest_sub X : C X -> G `<=` X -> smallest `<=` X.
+Lemma smallest_sub G X : C X -> G `<=` X -> smallest G `<=` X.
 Proof. by move=> XC GX A; apply. Qed.
 
-Lemma smallest_id : C G -> smallest = G.
+Lemma smallest_sub_sub G X : smallest G `<=` X -> G `<=` X.
+Proof. by apply: subset_trans => t Gt B [CB]; exact. Qed.
+
+Lemma sub_smallest G X : X `<=` G -> X `<=` smallest G.
+Proof. by move=> XG A /XG GA Y /= [PY]; exact. Qed.
+
+Lemma sub_gen_smallest G : G `<=` smallest G. Proof. exact: sub_smallest. Qed.
+
+Lemma smallest_id G : C G -> smallest G = G.
 Proof.
-by move=> Cs; apply/seteqP; split; [apply: smallest_sub|apply: sub_smallest].
+by move=> Cs; apply/seteqP; split; [exact: smallest_sub|exact: sub_smallest].
 Qed.
 
 End smallest.
 #[global] Hint Resolve sub_gen_smallest : core.
 
-Lemma sub_smallest2r {T} (C : set T-> Prop) G1 G2 :
+Lemma smallest_sub_iff {T} (C : set T -> Prop) (X Y : set T) :
+  C Y -> smallest C X `<=` Y <-> X `<=` Y.
+Proof.
+by move=> CY; split; [exact: smallest_sub_sub|exact: smallest_sub].
+Qed.
+
+Definition bigcap_closed {T} (C : set T -> Prop) :=
+  forall (MM : set_system T), MM `<=` C -> C (\bigcap_(A in MM) A).
+
+Section bigcap_closed_smallest.
+Context {T} (C : set T -> Prop).
+
+Lemma bigcap_closed_smallest (G : set T) : bigcap_closed C -> C (smallest C G).
+Proof. by apply; exact: subIsetl. Qed.
+
+End bigcap_closed_smallest.
+
+Lemma sub_smallest2r {T} (C : set T -> Prop) G1 G2 :
    C (smallest C G2) -> G1 `<=` G2 -> smallest C G1 `<=` smallest C G2.
-Proof. by move=> *; apply: smallest_sub=> //; apply: sub_smallest. Qed.
+Proof.
+by move=> CCG2 G12; apply: smallest_sub => //; exact: sub_smallest.
+Qed.
 
 Lemma sub_smallest2l {T} (C1 C2 : set T -> Prop) :
    (forall G, C2 G -> C1 G) ->
    forall G, smallest C1 G `<=` smallest C2 G.
-Proof. by move=> C12 G X sX M [/C12 C1M GM]; apply: sX. Qed.
+Proof. by move=> C12 G X sX M [/C12 C1M GM]; exact: sX. Qed.
 
 Section bigop_nat_lemmas.
 Context {T : Type}.

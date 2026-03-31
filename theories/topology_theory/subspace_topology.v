@@ -261,10 +261,12 @@ have /closed_subspaceP := @closed_closure _ (U : set (subspace A)).
 move=> [V clV VAclUA] /[dup] /(@closureS (subspace _)).
 have /closure_id <- := closed_subspaceT => /setIidr <-; rewrite setIC.
 move=> UsubA; rewrite eqEsubset; split.
-  apply: setSI; rewrite closureE; apply: smallest_sub (@subset_closure _ U).
+  apply: setSI; rewrite closureE.
+  apply: smallest_sub (@subset_closure _ U).
   by apply: closed_subspaceW; exact: closed_closure.
-rewrite -VAclUA; apply: setSI; rewrite closureE //=; apply: smallest_sub => //.
-apply: subset_trans (@subIsetl _ V A); rewrite VAclUA subsetI; split => //.
+rewrite -VAclUA; apply: setSI; rewrite closureE //=.
+apply: smallest_sub => //; apply: subset_trans (@subIsetl _ V A).
+rewrite VAclUA subsetI; split => //.
 exact: (@subset_closure _ (U : set (subspace A))).
 Qed.
 

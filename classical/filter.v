@@ -1482,7 +1482,7 @@ Lemma filterI_iterE {T : Type} (F : set (set T)) :
   smallest Filter F = filter_from (\bigcup_n (filterI_iter F n)) id.
 Proof.
 rewrite eqEsubset; split.
-  apply: smallest_sub => //; first last.
+  apply: smallest_sub; first last.
     by move=> A FA; exists A => //; exists O => //; right.
   apply: filter_from_filter; first by exists setT; exists O => //; left.
   move=> P Q [i _ sFP] [j _ sFQ]; exists (P `&` Q) => //.

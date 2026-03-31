@@ -1227,8 +1227,8 @@ have C : compact R.
 apply: (subclosed_compact _ C); first exact: closed_closure.
 have WsubR : (fW @` W) `<=` R.
   by move=> f [i Wi <-] x; rewrite /K; apply: subset_closure; exists i.
-rewrite closureE; apply: smallest_sub (compact_closed _ C) WsubR.
-exact: hausdorff_product.
+rewrite closureE; apply: smallest_sub => //.
+by apply: compact_closed => //=; exact: hausdorff_product.
 Qed.
 
 Lemma uniform_pointwise_compact (W : set (X -> Y)) :

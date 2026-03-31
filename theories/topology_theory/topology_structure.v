@@ -858,14 +858,14 @@ Definition closure_subset := closureS.
 Lemma closureE A : closure A = smallest closed A.
 Proof.
 rewrite eqEsubset; split=> [x ? B [cB AB]|]; first exact/cB/(closureS AB).
-exact: (smallest_sub (@closed_closure _ _) (@subset_closure _ _)).
+by apply: smallest_sub; [exact: closed_closure|exact: subset_closure].
 Qed.
 
 (* TODO: the LHS and RHS of the equality should be swapped *)
 Lemma closure_id E : closed E <-> E = closure E.
 Proof.
 split=> [?|->]; last exact: closed_closure.
-rewrite eqEsubset; split => //; exact: subset_closure.
+by rewrite eqEsubset; split => //; exact: subset_closure.
 Qed.
 
 End closure_lemmas.
