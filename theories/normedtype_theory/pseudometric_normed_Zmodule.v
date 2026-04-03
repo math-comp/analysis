@@ -143,6 +143,22 @@ HB.structure Definition PseudoMetricNormedZmod (R : numDomainType) :=
   {T of Num.NormedZmodule R T & PseudoMetric R T
    & NormedZmod_PseudoMetric_eq R T & isPointed T}.
 
+HB.mixin Record Zmodule_isSubSemiNormed (R : numDomainType)
+    (M : semiNormedZmodType R) (S : pred M) T & SubType M S T
+    & Num.NormedZmodule R T := {
+  norm_valE : @Num.norm _ M \o (val : T -> M) = @Num.norm _ T
+}.
+
+#[short(type="subSemiNormedZmodType")]
+HB.structure Definition SubSemiNormedZmodule (R : numDomainType)
+    (V : semiNormedZmodType R) (S : pred V) :=
+  { W of GRing.SubZmodule V S W & Zmodule_isSubSemiNormed R V S W}.
+
+#[short(type="subNormedZmodType")]
+HB.structure Definition SubNormedZmodule (R : numDomainType)
+    (V : normedZmodType R) (S : pred V) :=
+  { U of SubChoice V S U & Num.NormedZmodule R U & @SubSemiNormedZmodule R V S U }.
+
 (* alternative definition of a PseudoMetricNormedZmod *)
 HB.factory Record NormedZmoduleMetric (R : numDomainType) T
     & Num.NormedZmodule R T & Metric R T & isPointed T := {
