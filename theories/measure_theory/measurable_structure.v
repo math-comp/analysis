@@ -1529,7 +1529,7 @@ Proof. by case: x. Qed.
 
 Section g_sigma_algebra_cross.
 
-(* yoneda *)
+(**md Yoneda Lemma: two elements in a poset are equal if and only if they share the same set of upper bounds *)
 Let forall_subset_eq {T} (A B : set_system T) :
   sigma_algebra [set: T] A -> sigma_algebra [set: T] B ->
   (forall Z, sigma_algebra [set: T] Z -> A `<=` Z <-> B `<=` Z)
