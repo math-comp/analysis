@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.charge</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 331a700" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis db1c38a" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -2274,10 +2274,7 @@ Qed.</div></details>
 forall [d : measure_display] [T : measurableType d] [R : realType],
 {finite_measure set T -> \bar R}%R ->
 {finite_measure set T -> \bar R}%R ->
-T ->
-filter.PointedFiltered.Exports.filter_PointedFiltered__to__classical_sets_Pointed
-  (filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_PointedFiltered
-     ereal.constructive_ereal_extended__canonical__filter_PointedNbhs)
+T -> constructive_ereal_extended__canonical__filter_PointedNbhs
 
 lim_max_approxRN_seq.fRN is not universe polymorphic
 Arguments lim_max_approxRN_seq.fRN [d]%_measure_display_scope [T R] mu nu x
