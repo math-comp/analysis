@@ -1200,11 +1200,11 @@ Expands to: Constant
 Declared in
 library mathcomp.analysis.measure_theory.measure_function, line 690, characters 11-15
 </p></span></div></span> (<span id="T:406" class="id"><a name="T:406" class="">T</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#T:406">T</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="SetRing.display" class="id"><div name="SetRing.display" class=" tooltip">display<span class='tooltip-area'><p>display : measure_display -> measure_display
+<span class="vernacular">Definition</span><span class="id"> </span><span id="SetRing.display" class="id"><div name="SetRing.display" class=" tooltip">display<span class='tooltip-area'><p>SetRing.display : measure_display -> measure_display
 
-display is not universe polymorphic
-Arguments display _%_measure_display_scope
-display is opaque
+SetRing.display is not universe polymorphic
+Arguments SetRing.display _%_measure_display_scope
+SetRing.display is opaque
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.display
 Declared in
@@ -1316,13 +1316,14 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#notin_setE">notin_setE</a></span><span class="id">/=</span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#negP">negP</a></span><span class="id">/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#negPn">negPn</a></span><span class="id">/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="SetRing.decomp" class="id"><div name="SetRing.decomp" class=" tooltip">decomp<span class='tooltip-area'><p>decomp :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="SetRing.decomp" class="id"><div name="SetRing.decomp" class=" tooltip">decomp<span class='tooltip-area'><p>SetRing.decomp :
 forall [d : measure_display] {T : semiRingOfSetsType d},
 set (SetRing.type T) -> set (set T)
 
-decomp is not universe polymorphic
-Arguments decomp [d]%_measure_display_scope {T} A%_classical_set_scope _
-decomp is transparent
+SetRing.decomp is not universe polymorphic
+Arguments SetRing.decomp [d]%_measure_display_scope 
+  {T} A%_classical_set_scope _
+SetRing.decomp is transparent
 Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.SetRing.decomp
 Declared in

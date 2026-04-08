@@ -288,13 +288,15 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> PIncl</span>.<br/>
 <span class="vernacular">Variables</span> (<span id="PIncl.T" class="id"><a name="PIncl.T" class="">T</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>) (<span id="PIncl.E" class="id"><a name="PIncl.E" class="">E</a></span><span class="id"> </span><span id="PIncl.F" class="id"><a name="PIncl.F" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred">pred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#T:22">T</a></span>) (<span id="PIncl.le" class="id"><a name="PIncl.le" class="">le</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">{subset</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#E:25">E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> &lt;=</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#F:26">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">}</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="pincl" class="id"><div name="pincl" class=" tooltip">pincl<span class='tooltip-area'><p>Rinvx : R -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="pincl" class="id"><div name="pincl" class=" tooltip">pincl<span class='tooltip-area'><p>pincl :
+forall [T : Type] [E F : pred T], {subset E <= F} -> [psub E] -> [psub F]
 
-Rinvx is not universe polymorphic
-Arguments Rinvx _%_R_scope
-Rinvx is transparent
-Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rinvx
-Declared in library mathcomp.reals_stdlib.Rstruct, line 164, characters 11-16
+pincl is not universe polymorphic
+Arguments pincl [T]%_type_scope [E F] le x
+pincl is transparent
+Expands to: Constant mathcomp.experimental_reals.discrete.pincl
+Declared in
+library mathcomp.experimental_reals.discrete, line 66, characters 11-16
 </p></span></div></span> (<span id="x:29" class="id"><a name="x:29" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#PIncl.E">E</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#PIncl.F">F</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.experimental_reals.discrete.html#PSubSub">PSubSub</a></span> (<span class="id"><a href="mathcomp.experimental_reals.discrete.html#PIncl.le">le</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#valP">valP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#x:29">x</a></span>)).<br/>
 <span class="vernacular">End</span><span class="id"> PIncl</span>.<br/>
@@ -308,23 +310,27 @@ Declared in library mathcomp.reals_stdlib.Rstruct, line 164, characters 11-16
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="runpickle:37" class="id"><a name="runpickle:37" class="">runpickle</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#option">option</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#Countable.E">E</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id">of</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#pcancel">pcancel</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#rpickle:36">rpickle</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#runpickle:37">runpickle</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="rpickle" class="id"><div name="rpickle" class=" tooltip">rpickle<span class='tooltip-area'><p>Rleb : R -> R -> bool
+<span class="vernacular">Definition</span><span class="id"> </span><span id="rpickle" class="id"><div name="rpickle" class=" tooltip">rpickle<span class='tooltip-area'><p>rpickle :
+forall [T : Type] [E : pred T], countable (T:=T) E -> [psub E] -> nat
 
-Rleb is not universe polymorphic
-Arguments Rleb (r1 r2)%_R_scope
-Rleb is transparent
-Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rleb
-Declared in library mathcomp.reals_stdlib.Rstruct, line 182, characters 11-15
+rpickle is not universe polymorphic
+Arguments rpickle [T]%_type_scope [E] c _
+rpickle is transparent
+Expands to: Constant mathcomp.experimental_reals.discrete.rpickle
+Declared in
+library mathcomp.experimental_reals.discrete, line 80, characters 11-18
 </p></span></div></span> (<span id="c:38" class="id"><a name="c:38" class="">c</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#countable">countable</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id">let:</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#Countable">Countable</a></span><span class="id"> p</span><span class="id"> _</span><span class="id"> _</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c:38">c</a></span><span class="gallina-kwd"> in</span><span class="id"> p</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="runpickle" class="id"><div name="runpickle" class=" tooltip">runpickle<span class='tooltip-area'><p>Rltb : R -> R -> bool
+<span class="vernacular">Definition</span><span class="id"> </span><span id="runpickle" class="id"><div name="runpickle" class=" tooltip">runpickle<span class='tooltip-area'><p>runpickle :
+forall [T : Type] [E : pred T], countable (T:=T) E -> nat -> option [psub E]
 
-Rltb is not universe polymorphic
-Arguments Rltb (r1 r2)%_R_scope
-Rltb is transparent
-Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rltb
-Declared in library mathcomp.reals_stdlib.Rstruct, line 183, characters 11-15
+runpickle is not universe polymorphic
+Arguments runpickle [T]%_type_scope [E] c _%_nat_scope
+runpickle is transparent
+Expands to: Constant mathcomp.experimental_reals.discrete.runpickle
+Declared in
+library mathcomp.experimental_reals.discrete, line 83, characters 11-20
 </p></span></div></span> (<span id="c:40" class="id"><a name="c:40" class="">c</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#countable">countable</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id">let:</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#Countable">Countable</a></span><span class="id"> _</span><span class="id"> p</span><span class="id"> _</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c:40">c</a></span><span class="gallina-kwd"> in</span><span class="id"> p</span>.<br/>
 <br/>
@@ -359,22 +365,30 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> CountType</span>.<br/>
 <span class="vernacular">Variables</span> (<span id="CountableTheory.CountType.T" class="id"><a name="CountableTheory.CountType.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#Equality.Exports.eqType">eqType</a></span>) (<span id="CountableTheory.CountType.E" class="id"><a name="CountableTheory.CountType.E" class="">E</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred">pred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#T:57">T</a></span>) (<span id="CountableTheory.CountType.c" class="id"><a name="CountableTheory.CountType.c" class="">c</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#countable">countable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#E:59">E</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="countable_countMixin" class="id"><div name="countable_countMixin" class=" tooltip">countable_countMixin<span class='tooltip-area'><p>Rgeb : R -> R -> bool
+<span class="vernacular">Definition</span><span class="id"> </span><span id="countable_countMixin" class="id"><div name="countable_countMixin" class=" tooltip">countable_countMixin<span class='tooltip-area'><p>countable_countMixin :
+forall [T : eqType] [E : pred T],
+countable (T:=T) E -> Countable.axioms_ [psub E]
 
-Rgeb is not universe polymorphic
-Arguments Rgeb (r1 r2)%_R_scope
-Rgeb is transparent
-Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rgeb
-Declared in library mathcomp.reals_stdlib.Rstruct, line 184, characters 11-15
+countable_countMixin is not universe polymorphic
+Arguments countable_countMixin [T E] c
+countable_countMixin is transparent
+Expands to: Constant
+            mathcomp.experimental_reals.discrete.countable_countMixin
+Declared in
+library mathcomp.experimental_reals.discrete, line 110, characters 11-31
 </p></span></div></span> <span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Countable.copy">Countable</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Countable.copy">copy</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.E">E</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#pcan_type">pcan_type</a></span> (<span class="id"><a href="mathcomp.experimental_reals.discrete.html#rpickleK">rpickleK</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.c">c</a></span>)).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="countable_choiceMixin" class="id"><div name="countable_choiceMixin" class=" tooltip">countable_choiceMixin<span class='tooltip-area'><p>Rgtb : R -> R -> bool
+<span class="vernacular">Definition</span><span class="id"> </span><span id="countable_choiceMixin" class="id"><div name="countable_choiceMixin" class=" tooltip">countable_choiceMixin<span class='tooltip-area'><p>countable_choiceMixin :
+forall [T : eqType] [E : pred T],
+countable (T:=T) E -> Choice.axioms_ [psub E]
 
-Rgtb is not universe polymorphic
-Arguments Rgtb (r1 r2)%_R_scope
-Rgtb is transparent
-Expands to: Constant mathcomp.reals_stdlib.Rstruct.Rgtb
-Declared in library mathcomp.reals_stdlib.Rstruct, line 185, characters 11-15
+countable_choiceMixin is not universe polymorphic
+Arguments countable_choiceMixin [T E] c
+countable_choiceMixin is transparent
+Expands to: Constant
+            mathcomp.experimental_reals.discrete.countable_choiceMixin
+Declared in
+library mathcomp.experimental_reals.discrete, line 112, characters 11-32
 </p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.copy">Choice</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.copy">copy</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.E">E</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#pcan_type">pcan_type</a></span> (<span class="id"><a href="mathcomp.experimental_reals.discrete.html#rpickleK">rpickleK</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.c">c</a></span>)).<br/>
 <span class="vernacular">End</span><span class="id"> CountType</span>.<br/>

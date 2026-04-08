@@ -471,7 +471,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="ae_filter_ringOfSetsType" class="id"><div name="ae_filter_ringOfSetsType" class=" tooltip">ae_filter_ringOfSetsType<span class='tooltip-area'><p>ae_filter_ringOfSetsType :
 forall [d : measure_display] {T : ringOfSetsType d} 
   [R : realFieldType] (mu : measure T R),
-Filter (almost_everywhere (T:=T) (R:=R) mu)
+filter.Filter (almost_everywhere (T:=T) (R:=R) mu)
 
 ae_filter_ringOfSetsType is not universe polymorphic
 Arguments ae_filter_ringOfSetsType [d]%_measure_display_scope {T} [R] mu
@@ -493,7 +493,7 @@ Qed.</div></details>
 forall [d : measure_display] {T : algebraOfSetsType d} 
   [R : realFieldType] [mu : measure T R],
 (0%R < mu [set: T]%classic)%E ->
-ProperFilter (almost_everywhere (T:=T) (R:=R) mu)
+filter.ProperFilter (almost_everywhere (T:=T) (R:=R) mu)
 
 ae_properfilter_algebraOfSetsType is not universe polymorphic
 Arguments ae_properfilter_algebraOfSetsType [d]%_measure_display_scope 

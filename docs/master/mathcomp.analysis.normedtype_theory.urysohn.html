@@ -277,7 +277,10 @@
 <span class="vernacular">Context</span><span class="id"> {</span><span id="pseudoMetricDist.R" class="id"><a name="pseudoMetricDist.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> {</span><span id="pseudoMetricDist.X" class="id"><a name="pseudoMetricDist.X" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#PseudoMetric.Exports.pseudoMetricType">pseudoMetricType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#R:1">R</a></span><span class="id">}</span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> r</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#pseudoMetricDist.R">R</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="edist" class="id"><div name="edist" class=" tooltip">edist<span class='tooltip-area'><p>edist : forall {R : realType} {X : pseudoMetricType R}, X * X -> \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="edist" class="id"><div name="edist" class=" tooltip">edist<span class='tooltip-area'><p>edist :
+forall {R : realType} {X : pseudometric_structure.PseudoMetric.type R},
+pseudometric_structure.PseudoMetric.sort X *
+pseudometric_structure.PseudoMetric.sort X -> \bar R
 
 edist is not universe polymorphic
 Arguments edist {R X} xy
@@ -492,7 +495,9 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="edist_inf.R" class="id"><a name="edist_inf.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> {</span><span id="edist_inf.T" class="id"><a name="edist_inf.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#PseudoMetric.Exports.pseudoMetricType">pseudoMetricType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#R:34">R</a></span><span class="id">}</span> (<span id="edist_inf.A" class="id"><a name="edist_inf.A" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#T:35">T</a></span>).<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="edist_inf" class="id"><div name="edist_inf" class=" tooltip">edist_inf<span class='tooltip-area'><p>edist_inf :
-forall {R : realType} {T : pseudoMetricType R}, set T -> T -> \bar R
+forall {R : realType} {T : pseudometric_structure.PseudoMetric.type R},
+set (pseudometric_structure.PseudoMetric.sort T) ->
+pseudometric_structure.PseudoMetric.sort T -> \bar R
 
 edist_inf is not universe polymorphic
 Arguments edist_inf {R T} A%_classical_set_scope z
@@ -647,7 +652,10 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> topological_urysohn_separator</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="topological_urysohn_separator.T" class="id"><a name="topological_urysohn_separator.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span><span class="id"> {</span><span id="topological_urysohn_separator.R" class="id"><a name="topological_urysohn_separator.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="uniform_separator" class="id"><div name="uniform_separator" class=" tooltip">uniform_separator<span class='tooltip-area'><p>uniform_separator : forall {T : topologicalType}, set T -> set T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="uniform_separator" class="id"><div name="uniform_separator" class=" tooltip">uniform_separator<span class='tooltip-area'><p>uniform_separator :
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) ->
+set (topology_structure.Topological.sort T) -> Prop
 
 uniform_separator is not universe polymorphic
 Arguments uniform_separator {T} (A B)%_classical_set_scope
@@ -678,7 +686,10 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 355, characters 11-28
 Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Urysohn" class="id"><div name="Urysohn" class=" tooltip">Urysohn<span class='tooltip-area'><p>Urysohn :
-forall {T : topologicalType} {R : realType}, set T -> set T -> T -> R
+forall {T : topology_structure.Topological.type} {R : realType},
+set (topology_structure.Topological.sort T) ->
+set (topology_structure.Topological.sort T) ->
+topology_structure.Topological.sort T -> R
 
 Urysohn is not universe polymorphic
 Arguments Urysohn {T R} (A B)%_classical_set_scope _
@@ -868,7 +879,7 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> n</span><span class="id"> IH</span><span class="id"> G</span><span class="id"> [R]</span><span class="id"> /IH</span><span class="id"> AAR</span><span class="id"> [M]</span><span class="id"> /IH</span><span class="id"> AAM</span><span class="id"> &lt;-</span><span class="id"> z;</span><span class="id"> split;</span><span class="id"> [exact:</span><span class="id"> AAR</span><span class="id"> |</span><span class="id"> exact:</span><span class="id"> AAM]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="urysohnType" class="id"><div name="urysohnType" class=" tooltip">urysohnType<span class='tooltip-area'><p>urysohnType : topologicalType -> Type
+<span class="vernacular">Definition</span><span class="id"> </span><span id="urysohnType" class="id"><div name="urysohnType" class=" tooltip">urysohnType<span class='tooltip-area'><p>urysohnType : topology_structure.Topological.type -> Type
 
 urysohnType is not universe polymorphic
 Arguments urysohnType {T}
@@ -1013,7 +1024,7 @@ Qed.</div></details>
    If you don't care, you can use the `completely_regular_uniformity.type`
    which builds the uniformity.
 </div>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="completely_regular_space" class="id"><div name="completely_regular_space" class=" tooltip">completely_regular_space<span class='tooltip-area'><p>completely_regular_space : topologicalType -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="completely_regular_space" class="id"><div name="completely_regular_space" class=" tooltip">completely_regular_space<span class='tooltip-area'><p>completely_regular_space : topology_structure.Topological.type -> Prop
 
 completely_regular_space is not universe polymorphic
 Arguments completely_regular_space T
@@ -1105,7 +1116,9 @@ Qed.</div></details>
 Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="completely_regular_uniformity.type" class="id"><div name="completely_regular_uniformity.type" class=" tooltip">type<span class='tooltip-area'><p>completely_regular_uniformity.type :
-realType -> forall {X : topologicalType}, completely_regular_space X -> Type
+realType ->
+forall {X : topology_structure.Topological.type},
+completely_regular_space X -> Type
 
 completely_regular_uniformity.type is not universe polymorphic
 Arguments completely_regular_uniformity.type {R X} crs

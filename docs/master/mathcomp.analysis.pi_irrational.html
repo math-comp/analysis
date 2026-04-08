@@ -542,16 +542,20 @@ Qed.</div></details>
 <br/>
 <span id="pi_irrational.Unnamed_thm" class="id"><div name="pi_irrational.Unnamed_thm" class=" tooltip">Goal<span class='tooltip-area'><p>pi_irrational.Unnamed_thm :
 forall {R : realType} [p : {poly R}] [c : R],
-(p.[x]%R @[x --> c^'+] --> p.[c]%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap [eta horner p]
+        (filter.nbhs (num_topology.at_right (R:=R) c))))
+  (filter.nbhs p.[c]%R)
 
 pi_irrational.Unnamed_thm is not universe polymorphic
 Expanded type for implicit arguments
 pi_irrational.Unnamed_thm :
 forall {R : realType} [p : {poly R}] [c : R] [t : set R],
-nbhs p.[c]%R t ->
+filter.nbhs p.[c]%R t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
-  (ball_ [eta normr] c i
+  (pseudometric_structure.ball_ [eta normr] c i
    `<=` (fun t0 : R =>
          (fun u : R => is_true (c < u)%R) t0 -> ([eta horner p] @^-1` t) t0))%classic
 
@@ -563,16 +567,20 @@ Declared in
 library mathcomp.analysis.pi_irrational, line 223, characters 0-59
 </p></span></div></span><span id="pi_irrational.Unnamed_thm" class="id"><div name="pi_irrational.Unnamed_thm" class=" tooltip"> forall<span class='tooltip-area'><p>pi_irrational.Unnamed_thm :
 forall {R : realType} [p : {poly R}] [c : R],
-(p.[x]%R @[x --> c^'+] --> p.[c]%R)%classic
+filter.cvg_to
+  (filter.nbhs
+     (filter.fmap [eta horner p]
+        (filter.nbhs (num_topology.at_right (R:=R) c))))
+  (filter.nbhs p.[c]%R)
 
 pi_irrational.Unnamed_thm is not universe polymorphic
 Expanded type for implicit arguments
 pi_irrational.Unnamed_thm :
 forall {R : realType} [p : {poly R}] [c : R] [t : set R],
-nbhs p.[c]%R t ->
+filter.nbhs p.[c]%R t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
-  (ball_ [eta normr] c i
+  (pseudometric_structure.ball_ [eta normr] c i
    `<=` (fun t0 : R =>
          (fun u : R => is_true (c < u)%R) t0 -> ([eta horner p] @^-1` t) t0))%classic
 

@@ -3134,9 +3134,11 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="limn_sup" class="id"><div name="limn_sup" class=" tooltip">limn_sup<span class='tooltip-area'><p>limn_sup :
 forall [R : realType],
 (R^o) ^nat ->
-join_order_topology_POrderedPointedTopological_between_Order_POrder_and_filter_PointedNbhs
-  (numFieldTopology.Real_sort__canonical__order_topology_POrderedPointedTopological
-     R)
+filter.PointedFiltered.Exports.filter_PointedFiltered__to__classical_sets_Pointed
+  (filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_PointedFiltered
+     (join_order_topology_POrderedPointedTopological_between_Order_POrder_and_filter_PointedNbhs
+        (numFieldTopology.Real_sort__canonical__order_topology_POrderedPointedTopological
+           R)))
 
 limn_sup is not universe polymorphic
 Arguments limn_sup [R] u
@@ -3148,9 +3150,11 @@ Declared in library mathcomp.analysis.sequences, line 2269, characters 11-19
 <span class="vernacular">Definition</span><span class="id"> </span><span id="limn_inf" class="id"><div name="limn_inf" class=" tooltip">limn_inf<span class='tooltip-area'><p>limn_inf :
 forall [R : realType],
 (R^o) ^nat ->
-join_pseudometric_normed_Zmodule_PseudoMetricNormedZmod_between_Algebra_BaseZmodule_and_filter_PointedNbhs
-  (numFieldNormedType.Real_sort__canonical__pseudometric_normed_Zmodule_PseudoMetricNormedZmod
-     R)
+filter.PointedFiltered.Exports.filter_PointedFiltered__to__classical_sets_Pointed
+  (filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_PointedFiltered
+     (join_pseudometric_normed_Zmodule_PseudoMetricNormedZmod_between_Algebra_BaseZmodule_and_filter_PointedNbhs
+        (numFieldNormedType.Real_sort__canonical__pseudometric_normed_Zmodule_PseudoMetricNormedZmod
+           R)))
 
 limn_inf is not universe polymorphic
 Arguments limn_inf [R] u

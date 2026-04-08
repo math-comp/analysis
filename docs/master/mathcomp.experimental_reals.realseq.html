@@ -277,7 +277,16 @@
 <span class="id">|</span><span class="id"> </span><span id="NPInf" class="id"><a name="NPInf" class="">NPInf</a></span> (<span id="M:15" class="id"><a name="M:15" class="">M</a></span>  <span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#Nbh.R">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#nbh:11">nbh</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span><br/>
 <span class="id">|</span><span class="id"> </span><span id="NNInf" class="id"><a name="NNInf" class="">NNInf</a></span> (<span id="M:16" class="id"><a name="M:16" class="">M</a></span>  <span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#Nbh.R">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#nbh:11">nbh</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-oo'">-oo</a></span>.<br/>
 <br/>
-<span class="vernacular">Coercion</span><span class="id"> </span><span id="pred_of_nbh" class="id"><div name="pred_of_nbh" class=" tooltip">pred_of_nbh<span class='tooltip-area'></span></div></span><span class="id"> </span><span id="l:17" class="id"><a name="l:17" class="">l</a></span> (<span id="v:18" class="id"><a name="v:18" class="">v</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#nbh">nbh</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#l:17">l</a></span>)<span class="id"> :=</span><br/>
+<span class="vernacular">Coercion</span><span class="id"> </span><span id="pred_of_nbh" class="id"><div name="pred_of_nbh" class=" tooltip">pred_of_nbh<span class='tooltip-area'><p>pred_of_nbh : forall {R : realType} [l : \bar R], nbh l -> simpl_pred R
+
+pred_of_nbh is not universe polymorphic
+Arguments pred_of_nbh {R} [l]%_ereal_scope v
+pred_of_nbh is a coercion
+pred_of_nbh is transparent
+Expands to: Constant mathcomp.experimental_reals.realseq.pred_of_nbh
+Declared in
+library mathcomp.experimental_reals.realseq, line 51, characters 9-20
+</p></span></div></span><span class="id"> </span><span id="l:17" class="id"><a name="l:17" class="">l</a></span> (<span id="v:18" class="id"><a name="v:18" class="">v</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#nbh">nbh</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#l:17">l</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#v:18">v</a></span><span class="gallina-kwd"> with</span><br/>
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> @</span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#NFin">NFin</a></span> <span class="id"> l</span><span class="id"> e</span><span class="id"> _</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#3662b77a25de8e1e26565fdd27c41e6b">[pred</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#3662b77a25de8e1e26565fdd27c41e6b"> </a></span><span id="x:20" class="id"><a name="x:20" class="">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#3662b77a25de8e1e26565fdd27c41e6b"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#3662b77a25de8e1e26565fdd27c41e6b"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#Nbh.R">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#3662b77a25de8e1e26565fdd27c41e6b"> |</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#3662b77a25de8e1e26565fdd27c41e6b"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#x:20">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#l:17">l</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id">e</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#3662b77a25de8e1e26565fdd27c41e6b">]</a></span><br/>
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> @</span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#NPInf">NPInf</a></span><span class="id"> M</span>    <span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#3662b77a25de8e1e26565fdd27c41e6b">[pred</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#3662b77a25de8e1e26565fdd27c41e6b"> </a></span><span id="x:21" class="id"><a name="x:21" class="">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#3662b77a25de8e1e26565fdd27c41e6b"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#3662b77a25de8e1e26565fdd27c41e6b"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#Nbh.R">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#3662b77a25de8e1e26565fdd27c41e6b"> |</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#3662b77a25de8e1e26565fdd27c41e6b"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#x:21">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&gt;'_x"> &gt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&gt;'_x"> </a></span><span class="id">M</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#3662b77a25de8e1e26565fdd27c41e6b">]</a></span><br/>
@@ -321,7 +330,15 @@ Qed.</div></details>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#nbh_pinfW">nbh_pinfW</a></span><span class="id"> :</span><span class="id"> clear</span><span class="id"> implicits</span>.<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#nbh_ninfW">nbh_ninfW</a></span><span class="id"> :</span><span class="id"> clear</span><span class="id"> implicits</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="eclamp" class="id"><div name="eclamp" class=" tooltip">eclamp<span class='tooltip-area'></span></div></span><span class="id"> {</span><span id="R:38" class="id"><a name="R:38" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="e:39" class="id"><a name="e:39" class="">e</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#R:38">R</a></span>)<span class="id"> :=</span><br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="eclamp" class="id"><div name="eclamp" class=" tooltip">eclamp<span class='tooltip-area'><p>eclamp : forall {R : realType}, R -> R
+
+eclamp is not universe polymorphic
+Arguments eclamp {R} e%_ring_scope
+eclamp is transparent
+Expands to: Constant mathcomp.experimental_reals.realseq.eclamp
+Declared in
+library mathcomp.experimental_reals.realseq, line 91, characters 11-17
+</p></span></div></span><span class="id"> {</span><span id="R:38" class="id"><a name="R:38" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="e:39" class="id"><a name="e:39" class="">e</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#R:38">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#e:39">e</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#e:39">e</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="gt0_clamp" class="id"><a name="gt0_clamp" class="">gt0_clamp</a></span><span class="id"> {</span><span id="R:40" class="id"><a name="R:40" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="e:41" class="id"><a name="e:41" class="">e</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#R:40">R</a></span>)<span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#eclamp">eclamp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#e:41">e</a></span>.<br/>
@@ -336,51 +353,25 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.TotalTheory.ltNge">ltNge</a></span><span class="id"> /</span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#eclamp">eclamp</a></span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#negbTE">negbTE</a></span><span class="id"> -&gt;</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="B1" class="id"><div name="B1" class=" tooltip">B1<span class='tooltip-area'><p>summable : forall [T : choiceType] [R : realType], (T -> R) -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="B1" class="id"><div name="B1" class=" tooltip">B1<span class='tooltip-area'><p>B1 : forall {R : realType} (x : R), nbh x%:E
 
-summable is not universe polymorphic
-Arguments summable [T R] f%_function_scope
-summable is transparent
-Expands to: Constant mathcomp.experimental_reals.realsum.summable
+B1 is not universe polymorphic
+Arguments B1 {R} x%_ring_scope
+B1 is transparent
+Expands to: Constant mathcomp.experimental_reals.realseq.B1
 Declared in
-library mathcomp.experimental_reals.realsum, line 31, characters 11-19
+library mathcomp.experimental_reals.realseq, line 100, characters 11-13
 </p></span></div></span><span class="id"> {</span><span id="R:44" class="id"><a name="R:44" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="x:45" class="id"><a name="x:45" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#R:44">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id">@</span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#NFin">NFin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#R:44">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#x:45">x</a></span><span class="id"> 1</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ltr01">ltr01</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="B" class="id"><div name="B" class=" tooltip">B<span class='tooltip-area'><p>fpos :
-forall {R : realType} {T : choiceType},
-(T -> R) ->
-T ->
-{|
-  Num.POrderedZmodule.sort := R;
-  Num.POrderedZmodule.class :=
-    {|
-      Num.POrderedZmodule.Algebra_hasOpp_mixin := Num.NumDomain.class R;
-      Num.POrderedZmodule.Algebra_hasZero_mixin := Num.NumDomain.class R;
-      Num.POrderedZmodule.Algebra_hasAdd_mixin := Num.NumDomain.class R;
-      Num.POrderedZmodule.Algebra_BaseZmoduleNmodule_isZmodule_mixin :=
-        Num.NumDomain.class R;
-      Num.POrderedZmodule.Algebra_BaseAddUMagma_isAddUMagma_mixin :=
-        Num.NumDomain.class R;
-      Num.POrderedZmodule.Algebra_BaseAddMagma_isAddMagma_mixin :=
-        Num.NumDomain.class R;
-      Num.POrderedZmodule.choice_hasChoice_mixin := Num.NumDomain.class R;
-      Num.POrderedZmodule.eqtype_hasDecEq_mixin := Num.NumDomain.class R;
-      Num.POrderedZmodule.Order_isDuallyPreorder_mixin :=
-        Num.NumDomain.class R;
-      Num.POrderedZmodule.Order_Preorder_isDuallyPOrder_mixin :=
-        Num.NumDomain.class R;
-      Num.POrderedZmodule.Algebra_AddMagma_isAddSemigroup_mixin :=
-        Num.NumDomain.class R
-    |}
-|}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="B" class="id"><div name="B" class=" tooltip">B<span class='tooltip-area'><p>B : forall {R : realType} (x : R), R -> nbh x%:E
 
-fpos is not universe polymorphic
-Arguments fpos {R T} f%_function_scope x
-fpos is transparent
-Expands to: Constant mathcomp.experimental_reals.realsum.fpos
+B is not universe polymorphic
+Arguments B {R} (x e)%_ring_scope
+B is transparent
+Expands to: Constant mathcomp.experimental_reals.realseq.B
 Declared in
-library mathcomp.experimental_reals.realsum, line 49, characters 11-15
+library mathcomp.experimental_reals.realseq, line 103, characters 11-12
 </p></span></div></span><span class="id"> {</span><span id="R:46" class="id"><a name="R:46" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="x:47" class="id"><a name="x:47" class="">x</a></span><span class="id"> </span><span id="e:48" class="id"><a name="e:48" class="">e</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#R:46">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id">@</span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#NFin">NFin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#R:46">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#x:47">x</a></span> (<span class="id"><a href="mathcomp.experimental_reals.realseq.html#eclamp">eclamp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#e:48">e</a></span>) (<span class="id"><a href="mathcomp.experimental_reals.realseq.html#gt0_clamp">gt0_clamp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#e:48">e</a></span>).<br/>
 <br/>
@@ -428,61 +419,35 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">u</span><span class="id"> v</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#SequenceLim.R">R</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="ncvg" class="id"><div name="ncvg" class=" tooltip">ncvg<span class='tooltip-area'><p>fneg :
-forall {R : realType} {T : choiceType},
-(T -> R) ->
-T ->
-{|
-  Num.POrderedZmodule.sort := R;
-  Num.POrderedZmodule.class :=
-    {|
-      Num.POrderedZmodule.Algebra_hasOpp_mixin := Num.NumDomain.class R;
-      Num.POrderedZmodule.Algebra_hasZero_mixin := Num.NumDomain.class R;
-      Num.POrderedZmodule.Algebra_hasAdd_mixin := Num.NumDomain.class R;
-      Num.POrderedZmodule.Algebra_BaseZmoduleNmodule_isZmodule_mixin :=
-        Num.NumDomain.class R;
-      Num.POrderedZmodule.Algebra_BaseAddUMagma_isAddUMagma_mixin :=
-        Num.NumDomain.class R;
-      Num.POrderedZmodule.Algebra_BaseAddMagma_isAddMagma_mixin :=
-        Num.NumDomain.class R;
-      Num.POrderedZmodule.choice_hasChoice_mixin := Num.NumDomain.class R;
-      Num.POrderedZmodule.eqtype_hasDecEq_mixin := Num.NumDomain.class R;
-      Num.POrderedZmodule.Order_isDuallyPreorder_mixin :=
-        Num.NumDomain.class R;
-      Num.POrderedZmodule.Order_Preorder_isDuallyPOrder_mixin :=
-        Num.NumDomain.class R;
-      Num.POrderedZmodule.Algebra_AddMagma_isAddSemigroup_mixin :=
-        Num.NumDomain.class R
-    |}
-|}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="ncvg" class="id"><div name="ncvg" class=" tooltip">ncvg<span class='tooltip-area'><p>ncvg : forall [R : realType], (nat -> R) -> \bar R -> Prop
 
-fneg is not universe polymorphic
-Arguments fneg {R T} f%_function_scope x
-fneg is transparent
-Expands to: Constant mathcomp.experimental_reals.realsum.fneg
+ncvg is not universe polymorphic
+Arguments ncvg [R] u%_function_scope l%_ereal_scope
+ncvg is transparent
+Expands to: Constant mathcomp.experimental_reals.realseq.ncvg
 Declared in
-library mathcomp.experimental_reals.realsum, line 50, characters 11-15
+library mathcomp.experimental_reals.realseq, line 148, characters 11-15
 </p></span></div></span><span class="id"> </span><span id="u:64" class="id"><a name="u:64" class="">u</a></span><span class="id"> </span><span id="l:65" class="id"><a name="l:65" class="">l</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="v:66" class="id"><a name="v:66" class="">v</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#nbh">nbh</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#l:65">l</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">exists</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="K:67" class="id"><a name="K:67" class="">K</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="gallina-kwd">forall</span><span class="id"> </span><span id="n:68" class="id"><a name="n:68" class="">n</a></span><span class="id">,</span> (<span class="id"><a href="mathcomp.experimental_reals.realseq.html#K:67">K</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#cb53cf0ee22c036a03b4a9281c68b5a3"> &lt;=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#cb53cf0ee22c036a03b4a9281c68b5a3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#n:68">n</a></span>)<span class="id">%N</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#u:64">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#n:68">n</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#v:66">v</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="iscvg" class="id"><div name="iscvg" class=" tooltip">iscvg<span class='tooltip-area'><p>psum : forall {R : realType} {T : choiceType}, (T -> R) -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="iscvg" class="id"><div name="iscvg" class=" tooltip">iscvg<span class='tooltip-area'><p>iscvg : forall [R : realType], (nat -> R) -> Prop
 
-psum is not universe polymorphic
-Arguments psum {R T} f%_function_scope
-psum is transparent
-Expands to: Constant mathcomp.experimental_reals.realsum.psum
+iscvg is not universe polymorphic
+Arguments iscvg [R] u%_function_scope
+iscvg is transparent
+Expands to: Constant mathcomp.experimental_reals.realseq.iscvg
 Declared in
-library mathcomp.experimental_reals.realsum, line 128, characters 11-15
+library mathcomp.experimental_reals.realseq, line 151, characters 11-16
 </p></span></div></span> (<span id="u:69" class="id"><a name="u:69" class="">u</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#SequenceLim.R">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">exists</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="l:70" class="id"><a name="l:70" class="">l</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#ncvg">ncvg</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#u:69">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#l:70">l</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="nbounded" class="id"><div name="nbounded" class=" tooltip">nbounded<span class='tooltip-area'><p>sum : forall {R : realType} {T : choiceType}, (T -> R) -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="nbounded" class="id"><div name="nbounded" class=" tooltip">nbounded<span class='tooltip-area'><p>nbounded : forall [R : realType], (nat -> R) -> Prop
 
-sum is not universe polymorphic
-Arguments sum {R T} f%_function_scope
-sum is transparent
-Expands to: Constant mathcomp.experimental_reals.realsum.sum
+nbounded is not universe polymorphic
+Arguments nbounded [R] u%_function_scope
+nbounded is transparent
+Expands to: Constant mathcomp.experimental_reals.realseq.nbounded
 Declared in
-library mathcomp.experimental_reals.realsum, line 133, characters 11-14
+library mathcomp.experimental_reals.realseq, line 153, characters 11-19
 </p></span></div></span><span class="id"> </span><span id="u:71" class="id"><a name="u:71" class="">u</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">exists</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="v:72" class="id"><a name="v:72" class="">v</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#nbh">nbh</a></span><span class="id"> 0</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="gallina-kwd">forall</span><span class="id"> </span><span id="n:73" class="id"><a name="n:73" class="">n</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#u:71">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#n:73">n</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#v:72">v</a></span>.<br/>
 <br/>
@@ -830,7 +795,15 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">u</span><span class="id"> v</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#LimOp.R">R</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="nlim" class="id"><div name="nlim" class=" tooltip">nlim<span class='tooltip-area'></span></div></span><span class="id"> </span><span id="u:205" class="id"><a name="u:205" class="">u</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#LimOp.R">R</a></span><span class="id"> :=</span><br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="nlim" class="id"><div name="nlim" class=" tooltip">nlim<span class='tooltip-area'><p>nlim : forall {R : realType}, (nat -> R) -> \bar R
+
+nlim is not universe polymorphic
+Arguments nlim {R} u%_function_scope
+nlim is transparent
+Expands to: Constant mathcomp.experimental_reals.realseq.nlim
+Declared in
+library mathcomp.experimental_reals.realseq, line 425, characters 11-15
+</p></span></div></span><span class="id"> </span><span id="u:205" class="id"><a name="u:205" class="">u</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#LimOp.R">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">if</span><span class="id"> @</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#idP">idP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">exists</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="l:206" class="id"><a name="l:206" class="">l</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#ncvg">ncvg</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#u:205">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#l:206">l</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> &gt;]</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> &gt;]</a></span><span class="id"> is</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#ReflectT">ReflectT</a></span><span class="id"> Px</span><span class="gallina-kwd"> then</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#xchoose">xchoose</a></span> (<span class="id"><a href="mathcomp.classical.boolp.html#asboolP">asboolP</a></span><span class="id"> _</span><span class="id"> Px</span>)<span class="gallina-kwd"> else</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-oo'">-oo</a></span>.<br/>
 <br/>

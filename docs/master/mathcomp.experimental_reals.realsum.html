@@ -252,7 +252,15 @@
 <span class="vernacular">Section</span><span class="id"> Summable</span>.<br/>
 <span class="vernacular">Variables</span> (<span id="Summable.T" class="id"><a name="Summable.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span>) (<span id="Summable.R" class="id"><a name="Summable.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>) (<span id="Summable.f" class="id"><a name="Summable.f" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#T:3">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#R:5">R</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="summable" class="id"><div name="summable" class=" tooltip">summable<span class='tooltip-area'></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">exists</a></span> (<span id="M:8" class="id"><a name="M:8" class="">M</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#Summable.R">R</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="gallina-kwd">forall</span> (<span id="J:9" class="id"><a name="J:9" class="">J</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c">{fset</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#Summable.T">T</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c">}</a></span>)<span class="id">,</span><br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="summable" class="id"><div name="summable" class=" tooltip">summable<span class='tooltip-area'><p>summable : forall [T : choiceType] [R : realType], (T -> R) -> Prop
+
+summable is not universe polymorphic
+Arguments summable [T R] f%_function_scope
+summable is transparent
+Expands to: Constant mathcomp.experimental_reals.realsum.summable
+Declared in
+library mathcomp.experimental_reals.realsum, line 31, characters 11-19
+</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">exists</a></span> (<span id="M:8" class="id"><a name="M:8" class="">M</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#Summable.R">R</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="gallina-kwd">forall</span> (<span id="J:9" class="id"><a name="J:9" class="">J</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c">{fset</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#Summable.T">T</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c">}</a></span>)<span class="id">,</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#210141cbb4af7051facf94762acee6df">\sum_</a></span>(<span id="x:12" class="id"><span id="x:11" class="id"><span id="x:10" class="id"><a name="x:12" class="">x</a></span></span></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#210141cbb4af7051facf94762acee6df"> :</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#210141cbb4af7051facf94762acee6df"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#J:9">J</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#210141cbb4af7051facf94762acee6df"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#Summable.f">f</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#val">val</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#x:10">x</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#M:8">M</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="summableP" class="id"><a name="summableP" class="">summableP</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#summable">summable</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
@@ -271,25 +279,75 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> f</span><span class="id"> g</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#Sum.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#Sum.R">R</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="fpos" class="id"><div name="fpos" class=" tooltip">fpos<span class='tooltip-area'><p>pincl :
-forall [T : Type] [E F : pred T], {subset E <= F} -> [psub E] -> [psub F]
+<span class="vernacular">Definition</span><span class="id"> </span><span id="fpos" class="id"><div name="fpos" class=" tooltip">fpos<span class='tooltip-area'><p>fpos :
+forall {R : realType} {T : choiceType},
+(T -> R) ->
+T ->
+{|
+  Num.POrderedZmodule.sort := R;
+  Num.POrderedZmodule.class :=
+    {|
+      Num.POrderedZmodule.Algebra_hasOpp_mixin := Num.NumDomain.class R;
+      Num.POrderedZmodule.Algebra_hasZero_mixin := Num.NumDomain.class R;
+      Num.POrderedZmodule.Algebra_hasAdd_mixin := Num.NumDomain.class R;
+      Num.POrderedZmodule.Algebra_BaseZmoduleNmodule_isZmodule_mixin :=
+        Num.NumDomain.class R;
+      Num.POrderedZmodule.Algebra_BaseAddUMagma_isAddUMagma_mixin :=
+        Num.NumDomain.class R;
+      Num.POrderedZmodule.Algebra_BaseAddMagma_isAddMagma_mixin :=
+        Num.NumDomain.class R;
+      Num.POrderedZmodule.choice_hasChoice_mixin := Num.NumDomain.class R;
+      Num.POrderedZmodule.eqtype_hasDecEq_mixin := Num.NumDomain.class R;
+      Num.POrderedZmodule.Order_isDuallyPreorder_mixin :=
+        Num.NumDomain.class R;
+      Num.POrderedZmodule.Order_Preorder_isDuallyPOrder_mixin :=
+        Num.NumDomain.class R;
+      Num.POrderedZmodule.Algebra_AddMagma_isAddSemigroup_mixin :=
+        Num.NumDomain.class R
+    |}
+|}
 
-pincl is not universe polymorphic
-Arguments pincl [T]%_type_scope [E F] le x
-pincl is transparent
-Expands to: Constant mathcomp.experimental_reals.discrete.pincl
+fpos is not universe polymorphic
+Arguments fpos {R T} f%_function_scope x
+fpos is transparent
+Expands to: Constant mathcomp.experimental_reals.realsum.fpos
 Declared in
-library mathcomp.experimental_reals.discrete, line 66, characters 11-16
+library mathcomp.experimental_reals.realsum, line 49, characters 11-15
 </p></span></div></span><span class="id"> </span><span id="f:21" class="id"><a name="f:21" class="">f</a></span><span class="id"> :=</span><span class="gallina-kwd"> fun</span><span class="id"> </span><span id="x:22" class="id"><a name="x:22" class="">x</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.max">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.max">max</a></span><span class="id"> 0</span> (<span class="id"><a href="mathcomp.experimental_reals.realsum.html#f:21">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#x:22">x</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="fneg" class="id"><div name="fneg" class=" tooltip">fneg<span class='tooltip-area'><p>rpickle :
-forall [T : Type] [E : pred T], countable (T:=T) E -> [psub E] -> nat
+<span class="vernacular">Definition</span><span class="id"> </span><span id="fneg" class="id"><div name="fneg" class=" tooltip">fneg<span class='tooltip-area'><p>fneg :
+forall {R : realType} {T : choiceType},
+(T -> R) ->
+T ->
+{|
+  Num.POrderedZmodule.sort := R;
+  Num.POrderedZmodule.class :=
+    {|
+      Num.POrderedZmodule.Algebra_hasOpp_mixin := Num.NumDomain.class R;
+      Num.POrderedZmodule.Algebra_hasZero_mixin := Num.NumDomain.class R;
+      Num.POrderedZmodule.Algebra_hasAdd_mixin := Num.NumDomain.class R;
+      Num.POrderedZmodule.Algebra_BaseZmoduleNmodule_isZmodule_mixin :=
+        Num.NumDomain.class R;
+      Num.POrderedZmodule.Algebra_BaseAddUMagma_isAddUMagma_mixin :=
+        Num.NumDomain.class R;
+      Num.POrderedZmodule.Algebra_BaseAddMagma_isAddMagma_mixin :=
+        Num.NumDomain.class R;
+      Num.POrderedZmodule.choice_hasChoice_mixin := Num.NumDomain.class R;
+      Num.POrderedZmodule.eqtype_hasDecEq_mixin := Num.NumDomain.class R;
+      Num.POrderedZmodule.Order_isDuallyPreorder_mixin :=
+        Num.NumDomain.class R;
+      Num.POrderedZmodule.Order_Preorder_isDuallyPOrder_mixin :=
+        Num.NumDomain.class R;
+      Num.POrderedZmodule.Algebra_AddMagma_isAddSemigroup_mixin :=
+        Num.NumDomain.class R
+    |}
+|}
 
-rpickle is not universe polymorphic
-Arguments rpickle [T]%_type_scope [E] c _
-rpickle is transparent
-Expands to: Constant mathcomp.experimental_reals.discrete.rpickle
+fneg is not universe polymorphic
+Arguments fneg {R T} f%_function_scope x
+fneg is transparent
+Expands to: Constant mathcomp.experimental_reals.realsum.fneg
 Declared in
-library mathcomp.experimental_reals.discrete, line 80, characters 11-18
+library mathcomp.experimental_reals.realsum, line 50, characters 11-15
 </p></span></div></span><span class="id"> </span><span id="f:23" class="id"><a name="f:23" class="">f</a></span><span class="id"> :=</span><span class="gallina-kwd"> fun</span><span class="id"> </span><span id="x:24" class="id"><a name="x:24" class="">x</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.min">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.min">min</a></span><span class="id"> 0</span> (<span class="id"><a href="mathcomp.experimental_reals.realsum.html#f:23">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#x:24">x</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eq_fpos" class="id"><a name="eq_fpos" class="">eq_fpos</a></span><span class="id"> </span><span id="f:25" class="id"><a name="f:25" class="">f</a></span><span class="id"> </span><span id="g:26" class="id"><a name="g:26" class="">g</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#f:25">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> =1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#g:26">g</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#fpos">fpos</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#f:25">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> =1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#fpos">fpos</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#g:26">g</a></span>.<br/>
@@ -412,30 +470,26 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.gtr0_norm">gtr0_norm</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="psum" class="id"><div name="psum" class=" tooltip">psum<span class='tooltip-area'><p>runpickle :
-forall [T : Type] [E : pred T], countable (T:=T) E -> nat -> option [psub E]
+<span class="vernacular">Definition</span><span class="id"> </span><span id="psum" class="id"><div name="psum" class=" tooltip">psum<span class='tooltip-area'><p>psum : forall {R : realType} {T : choiceType}, (T -> R) -> R
 
-runpickle is not universe polymorphic
-Arguments runpickle [T]%_type_scope [E] c _%_nat_scope
-runpickle is transparent
-Expands to: Constant mathcomp.experimental_reals.discrete.runpickle
+psum is not universe polymorphic
+Arguments psum {R T} f%_function_scope
+psum is transparent
+Expands to: Constant mathcomp.experimental_reals.realsum.psum
 Declared in
-library mathcomp.experimental_reals.discrete, line 83, characters 11-20
+library mathcomp.experimental_reals.realsum, line 128, characters 11-15
 </p></span></div></span><span class="id"> </span><span id="f:61" class="id"><a name="f:61" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#Sum.R">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">let</span><span class="id"> </span><span id="S:67" class="id"><a name="S:67" class="">S</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="x:62" class="id"><a name="x:62" class="">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">exists</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="J:63" class="id"><a name="J:63" class="">J</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c">{fset</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#Sum.T">T</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#56b55a79be47ef2ec896f3a7734c305c">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#x:62">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#210141cbb4af7051facf94762acee6df">\sum_</a></span>(<span id="x:66" class="id"><span id="x:65" class="id"><span id="x:64" class="id"><a name="x:66" class="">x</a></span></span></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#210141cbb4af7051facf94762acee6df"> :</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#210141cbb4af7051facf94762acee6df"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#J:63">J</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#210141cbb4af7051facf94762acee6df"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#f:61">f</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#val">val</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#x:64">x</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> ]</a></span><span class="id">%classic</span><span class="gallina-kwd"> in</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#summable">summable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#f:61">f</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">&gt;]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#sup">sup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#S:67">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">0</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sum" class="id"><div name="sum" class=" tooltip">sum<span class='tooltip-area'><p>countable_countMixin :
-forall [T : eqType] [E : pred T],
-countable (T:=T) E -> Countable.axioms_ [psub E]
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sum" class="id"><div name="sum" class=" tooltip">sum<span class='tooltip-area'><p>sum : forall {R : realType} {T : choiceType}, (T -> R) -> R
 
-countable_countMixin is not universe polymorphic
-Arguments countable_countMixin [T E] c
-countable_countMixin is transparent
-Expands to: Constant
-            mathcomp.experimental_reals.discrete.countable_countMixin
+sum is not universe polymorphic
+Arguments sum {R T} f%_function_scope
+sum is transparent
+Expands to: Constant mathcomp.experimental_reals.realsum.sum
 Declared in
-library mathcomp.experimental_reals.discrete, line 110, characters 11-31
+library mathcomp.experimental_reals.realsum, line 133, characters 11-14
 </p></span></div></span><span class="id"> </span><span id="f:68" class="id"><a name="f:68" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#Sum.R">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#psum">psum</a></span> (<span class="id"><a href="mathcomp.experimental_reals.realsum.html#fpos">fpos</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#f:68">f</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#psum">psum</a></span> (<span class="id"><a href="mathcomp.experimental_reals.realsum.html#fneg">fneg</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#f:68">f</a></span>).<br/>
 <span class="vernacular">End</span><span class="id"> Sum</span>.<br/>
 <br/>

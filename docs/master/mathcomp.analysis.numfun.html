@@ -322,7 +322,7 @@ Qed.</div></details>
 <br/>
 <div class="doc">a :: s is a partition of the interval <code class="bracket"><span class="id">a</span>, <span class="id">b</span></code> </div>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partition" class="id"><div name="itv_partition" class=" tooltip">itv_partition<span class='tooltip-area'><p>itv_partition :
-forall {d : disp_t} {T : porderType d}, T -> T -> seq T -> Prop
+forall {d : Order.disp_t} {T : porderType d}, T -> T -> seq T -> Prop
 
 itv_partition is not universe polymorphic
 Arguments itv_partition {d T} a b s%_seq_scope
@@ -440,7 +440,8 @@ Qed.</div></details>
 Qed.</div></details>
 <br/>
 <div class="doc">given a partition of <code class="bracket"><span class="id">a</span>, <span class="id">b</span></code> and c, returns a partition of <code class="bracket"><span class="id">a</span>, <span class="id">c</span></code> </div>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partitionL" class="id"><div name="itv_partitionL" class=" tooltip">itv_partitionL<span class='tooltip-area'><p>itv_partitionL : forall {d : disp_t} {T : porderType d}, seq T -> T -> seq T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partitionL" class="id"><div name="itv_partitionL" class=" tooltip">itv_partitionL<span class='tooltip-area'><p>itv_partitionL :
+forall {d : Order.disp_t} {T : porderType d}, seq T -> T -> seq T
 
 itv_partitionL is not universe polymorphic
 Arguments itv_partitionL {d T} s%_seq_scope c
@@ -450,7 +451,8 @@ Declared in library mathcomp.analysis.numfun, line 176, characters 11-25
 </p></span></div></span><span class="id"> </span><span id="s:70" class="id"><a name="s:70" class="">s</a></span><span class="id"> </span><span id="c:71" class="id"><a name="c:71" class="">c</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#rcons">rcons</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#3de67eb42556f00623e74d6756c5ab67">[seq</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#3de67eb42556f00623e74d6756c5ab67"> </a></span><span id="x:72" class="id"><a name="x:72" class="">x</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#3de67eb42556f00623e74d6756c5ab67"> &lt;-</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#3de67eb42556f00623e74d6756c5ab67"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#s:70">s</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#3de67eb42556f00623e74d6756c5ab67"> |</a></span> (<span class="id"><a href="mathcomp.analysis.numfun.html#x:72">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.preorder.html#Order.PreOSyntax.::order_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.preorder.html#Order.PreOSyntax.::order_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#c:71">c</a></span>)<span class="id">%O</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#3de67eb42556f00623e74d6756c5ab67">]</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#c:71">c</a></span>.<br/>
 <br/>
 <div class="doc">given a partition of <code class="bracket"><span class="id">a</span>, <span class="id">b</span></code> and c, returns a partition of <code class="bracket"><span class="id">c</span>, <span class="id">b</span></code> </div>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partitionR" class="id"><div name="itv_partitionR" class=" tooltip">itv_partitionR<span class='tooltip-area'><p>itv_partitionR : forall {d : disp_t} {T : porderType d}, seq T -> T -> seq T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partitionR" class="id"><div name="itv_partitionR" class=" tooltip">itv_partitionR<span class='tooltip-area'><p>itv_partitionR :
+forall {d : Order.disp_t} {T : porderType d}, seq T -> T -> seq T
 
 itv_partitionR is not universe polymorphic
 Arguments itv_partitionR {d T} s%_seq_scope c
@@ -1331,7 +1333,7 @@ Qed.</div></details>
 <span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><div name="funepos_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>funepos_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (f x) 0%R)
+   Order.Def.max (f x) 0%R)
 
 funepos_unlock_subterm is not universe polymorphic
 funepos_unlock_subterm is transparent
@@ -1340,7 +1342,7 @@ Declared in library mathcomp.analysis.numfun, line 814, characters 0-95
 </p></span></div></span></span></span></span></span></span></span></span>.<span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><div name="funepos_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>funepos_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (f x) 0%R)
+   Order.Def.max (f x) 0%R)
 
 funepos_unlock_subterm is not universe polymorphic
 funepos_unlock_subterm is transparent
@@ -1350,7 +1352,7 @@ Declared in library mathcomp.analysis.numfun, line 814, characters 0-95
 <span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><div name="funepos_unlock_subterm" class=" tooltip">Definition<span class='tooltip-area'><p>funepos_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (f x) 0%R)
+   Order.Def.max (f x) 0%R)
 
 funepos_unlock_subterm is not universe polymorphic
 funepos_unlock_subterm is transparent
@@ -1359,7 +1361,7 @@ Declared in library mathcomp.analysis.numfun, line 814, characters 0-95
 </p></span></div></span></span></span></span></span></span></span></span><span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><div name="funepos_unlock_subterm" class=" tooltip"> funepos<span class='tooltip-area'><p>funepos_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (f x) 0%R)
+   Order.Def.max (f x) 0%R)
 
 funepos_unlock_subterm is not universe polymorphic
 funepos_unlock_subterm is transparent
@@ -1368,7 +1370,7 @@ Declared in library mathcomp.analysis.numfun, line 814, characters 0-95
 </p></span></div></span></span></span></span></span></span></span></span><span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><div name="funepos_unlock_subterm" class=" tooltip"> T<span class='tooltip-area'><p>funepos_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (f x) 0%R)
+   Order.Def.max (f x) 0%R)
 
 funepos_unlock_subterm is not universe polymorphic
 funepos_unlock_subterm is transparent
@@ -1379,7 +1381,7 @@ Declared in library mathcomp.analysis.numfun, line 814, characters 0-95
 <span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><div name="funeneg_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>funeneg_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (- f x)%E 0%R)
+   Order.Def.max (- f x)%E 0%R)
 
 funeneg_unlock_subterm is not universe polymorphic
 funeneg_unlock_subterm is transparent
@@ -1388,7 +1390,7 @@ Declared in library mathcomp.analysis.numfun, line 817, characters 0-102
 </p></span></div></span></span></span></span></span></span></span></span>.<span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><div name="funeneg_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>funeneg_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (- f x)%E 0%R)
+   Order.Def.max (- f x)%E 0%R)
 
 funeneg_unlock_subterm is not universe polymorphic
 funeneg_unlock_subterm is transparent
@@ -1398,7 +1400,7 @@ Declared in library mathcomp.analysis.numfun, line 817, characters 0-102
 <span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><div name="funeneg_unlock_subterm" class=" tooltip">Definition<span class='tooltip-area'><p>funeneg_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (- f x)%E 0%R)
+   Order.Def.max (- f x)%E 0%R)
 
 funeneg_unlock_subterm is not universe polymorphic
 funeneg_unlock_subterm is transparent
@@ -1407,7 +1409,7 @@ Declared in library mathcomp.analysis.numfun, line 817, characters 0-102
 </p></span></div></span></span></span></span></span></span></span></span><span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><div name="funeneg_unlock_subterm" class=" tooltip"> funeneg<span class='tooltip-area'><p>funeneg_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (- f x)%E 0%R)
+   Order.Def.max (- f x)%E 0%R)
 
 funeneg_unlock_subterm is not universe polymorphic
 funeneg_unlock_subterm is transparent
@@ -1416,7 +1418,7 @@ Declared in library mathcomp.analysis.numfun, line 817, characters 0-102
 </p></span></div></span></span></span></span></span></span></span></span><span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><div name="funeneg_unlock_subterm" class=" tooltip"> T<span class='tooltip-area'><p>funeneg_unlock_subterm :
 unlockable
   (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (- f x)%E 0%R)
+   Order.Def.max (- f x)%E 0%R)
 
 funeneg_unlock_subterm is not universe polymorphic
 funeneg_unlock_subterm is transparent

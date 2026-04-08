@@ -3100,7 +3100,8 @@ Qed.</div></details>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="open_set_disjoint_real_intervals.U" class="id"><a name="open_set_disjoint_real_intervals.U" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.normed_module.html#open_set_disjoint_real_intervals.R">R</a></span>.<br/>
 <span class="vernacular">Hypothesis</span><span class="id"> </span><span id="open_set_disjoint_real_intervals.oU" class="id"><a name="open_set_disjoint_real_intervals.oU" class="">oU</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.normed_module.html#open_set_disjoint_real_intervals.U">U</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="open_disjoint_itv" class="id"><div name="open_disjoint_itv" class=" tooltip">open_disjoint_itv<span class='tooltip-area'><p>open_disjoint_itv : forall {R : realType} [U : set R], open U -> nat -> set R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="open_disjoint_itv" class="id"><div name="open_disjoint_itv" class=" tooltip">open_disjoint_itv<span class='tooltip-area'><p>open_disjoint_itv :
+forall {R : realType} [U : set R], topology_structure.open U -> nat -> set R
 
 open_disjoint_itv is not universe polymorphic
 Arguments open_disjoint_itv {R} [U]%_classical_set_scope oU _%_nat_scope _
