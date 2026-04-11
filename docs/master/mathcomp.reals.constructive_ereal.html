@@ -5836,14 +5836,15 @@ Qed.</div></details>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="sqrte.R" class="id"><a name="sqrte.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numfield.html#Num.RealClosedField.Exports.rcfType">rcfType</a></span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> x</span><span class="id"> y</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#sqrte.R">R</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sqrte" class="id"><div name="sqrte" class=" tooltip">sqrte<span class='tooltip-area'><p>abse : forall {R : numDomainType}, \bar R -> \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sqrte" class="id"><div name="sqrte" class=" tooltip">sqrte<span class='tooltip-area'><p>inve : forall {R : numDomainType}, \bar R -> \bar R
 
-abse is not universe polymorphic
-Arguments abse {R} x%_ereal_scope
-abse is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.abse
+inve is not universe polymorphic
+Arguments inve {R} x%_ereal_scope : simpl never
+The reduction tactics never unfold inve
+inve is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.inve
 Declared in
-library mathcomp.reals.constructive_ereal, line 558, characters 11-15
+library mathcomp.reals.constructive_ereal, line 560, characters 11-15
 </p></span></div></span><span class="id"> </span><span id="x:2055" class="id"><a name="x:2055" class="">x</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">if</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2055">x</a></span><span class="id"> is</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span><span class="gallina-kwd"> then</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span><span class="gallina-kwd"> else</span><span class="gallina-kwd"> if</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2055">x</a></span><span class="id"> is</span><span class="id"> r</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="gallina-kwd"> then</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numfield.html#Num.sqrt">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numfield.html#Num.sqrt">sqrt</a></span><span class="id"> r</span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="gallina-kwd"> else</span><span class="id"> 0</span>.<br/>
 <br/>
@@ -5922,14 +5923,14 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> Itv</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Itv.R" class="id"><a name="Itv.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="ext_num_sem" class="id"><div name="ext_num_sem" class=" tooltip">ext_num_sem<span class='tooltip-area'><p>fin_num : forall {R : numDomainType}, qualifier 1 \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="ext_num_sem" class="id"><div name="ext_num_sem" class=" tooltip">ext_num_sem<span class='tooltip-area'><p>adde_def : forall {R : numDomainType}, \bar R -> \bar R -> bool
 
-fin_num is not universe polymorphic
-Arguments fin_num {R}
-fin_num is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.fin_num
+adde_def is not universe polymorphic
+Arguments adde_def {R} (x y)%_ereal_scope
+adde_def is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.adde_def
 Declared in
-library mathcomp.reals.constructive_ereal, line 878, characters 11-18
+library mathcomp.reals.constructive_ereal, line 959, characters 11-19
 </p></span></div></span> (<span id="i:2067" class="id"><a name="i:2067" class="">i</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#interval">interval</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#int">int</a></span>) (<span id="x:2068" class="id"><a name="x:2068" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#Itv.R">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;(<span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.preorder.html#be90acc7b8ec20a5cb3bf2d74dc2120c"> &gt;=&lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.preorder.html#be90acc7b8ec20a5cb3bf2d74dc2120c"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2068">x</a></span>)<span class="id">%O</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2068">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#map_itv">map_itv</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#EFin">EFin</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#intr">intr</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#i:2067">i</a></span>).<br/>
 <br/>
@@ -6011,14 +6012,14 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> case:</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> x</span><span class="id"> /=</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#d18bf1e242aa8006719f115a8f44092e">[swap]</a></span><span class="id"> /</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ext_num_spec_sub">ext_num_spec_sub</a></span><span class="id">;</span><span class="id"> apply</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="ext_widen_itv" class="id"><div name="ext_widen_itv" class=" tooltip">ext_widen_itv<span class='tooltip-area'><p>adde_def : forall {R : numDomainType}, \bar R -> \bar R -> bool
+<span class="vernacular">Definition</span><span class="id"> </span><span id="ext_widen_itv" class="id"><div name="ext_widen_itv" class=" tooltip">ext_widen_itv<span class='tooltip-area'><p>mule_def : forall {R : numDomainType}, \bar R -> \bar R -> bool
 
-adde_def is not universe polymorphic
-Arguments adde_def {R} (x y)%_ereal_scope
-adde_def is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.adde_def
+mule_def is not universe polymorphic
+Arguments mule_def {R} (x y)%_ereal_scope
+mule_def is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.mule_def
 Declared in
-library mathcomp.reals.constructive_ereal, line 959, characters 11-19
+library mathcomp.reals.constructive_ereal, line 1088, characters 11-19
 </p></span></div></span><span class="id"> </span><span id="x:2087" class="id"><a name="x:2087" class="">x</a></span><span class="id"> </span><span id="i':2088" class="id"><a name="i':2088" class="">i'</a></span> (<span id="uni:2089" class="id"><a name="uni:2089" class="">uni</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#unify_itv">unify_itv</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#Itv.ItvTheory.i">i</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#i':2088">i'</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#ext_widen_itv_subproof">ext_widen_itv_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2087">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#uni:2089">uni</a></span>).<br/>
 <br/>
@@ -6082,18 +6083,7 @@ Qed.</div></details>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#neqe0">neqe0</a></span><span class="id"> {R</span><span class="id"> i}</span><span class="id"> _</span><span class="id"> {_}</span>.<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ext_widen_itv">ext_widen_itv</a></span><span class="id"> {R</span><span class="id"> i}</span><span class="id"> _</span><span class="id"> {_</span><span class="id"> _}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="posnume" class="id"><div name="posnume" class=" tooltip">posnume<span class='tooltip-area'><p>mule_def : forall {R : numDomainType}, \bar R -> \bar R -> bool
-
-mule_def is not universe polymorphic
-Arguments mule_def {R} (x y)%_ereal_scope
-mule_def is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.mule_def
-Declared in
-library mathcomp.reals.constructive_ereal, line 1088, characters 11-19
-</p></span></div></span> (<span id="R:2098" class="id"><a name="R:2098" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span>)<span class="id"> &amp;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#phant">phant</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#R:2098">R</a></span><span class="id"> :=</span><br/>
-&nbsp;&nbsp;<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.def">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.def">def</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ext_num_sem">ext_num_sem</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#R:2098">R</a></span>) (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.Real">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.Real">Real</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#1133a1612ce44fa1571c2c531aeb13a2">`]</a></span><span class="id">0%Z</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#1133a1612ce44fa1571c2c531aeb13a2">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#1133a1612ce44fa1571c2c531aeb13a2"> +oo[</a></span>).<br/>
-<span class="vernacular">Notation</span> <span id="417a0a2e802c9fba533727530ab763cd" class="id"><a name="417a0a2e802c9fba533727530ab763cd" class="">&quot;{ 'posnum' '\bar' R }&quot;</a></span><span class="id"> :=</span> (<span class="id">@</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#posnume">posnume</a></span><span class="id"> _</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#Phant">Phant</a></span><span class="id"> R</span>))<span class="id"> :</span><span class="id"> type_scope</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="nonnege" class="id"><div name="nonnege" class=" tooltip">nonnege<span class='tooltip-area'><p>mule_defE :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="posnume" class="id"><div name="posnume" class=" tooltip">posnume<span class='tooltip-area'><p>mule_defE :
 forall {R : numDomainType} (x y : \bar R),
 (x *? y)%E =
 ~~ ((x == 0%R) && (`|y|%E == +oo%E) || (y == 0%R) && (`|x|%E == +oo%E))
@@ -6104,7 +6094,10 @@ mule_defE is opaque
 Expands to: Constant mathcomp.reals.constructive_ereal.mule_defE
 Declared in
 library mathcomp.reals.constructive_ereal, line 1096, characters 11-20
-</p></span></div></span> (<span id="R:2099" class="id"><a name="R:2099" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span>)<span class="id"> &amp;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#phant">phant</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#R:2099">R</a></span><span class="id"> :=</span><br/>
+</p></span></div></span> (<span id="R:2098" class="id"><a name="R:2098" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span>)<span class="id"> &amp;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#phant">phant</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#R:2098">R</a></span><span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.def">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.def">def</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ext_num_sem">ext_num_sem</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#R:2098">R</a></span>) (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.Real">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.Real">Real</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#1133a1612ce44fa1571c2c531aeb13a2">`]</a></span><span class="id">0%Z</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#1133a1612ce44fa1571c2c531aeb13a2">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#1133a1612ce44fa1571c2c531aeb13a2"> +oo[</a></span>).<br/>
+<span class="vernacular">Notation</span> <span id="417a0a2e802c9fba533727530ab763cd" class="id"><a name="417a0a2e802c9fba533727530ab763cd" class="">&quot;{ 'posnum' '\bar' R }&quot;</a></span><span class="id"> :=</span> (<span class="id">@</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#posnume">posnume</a></span><span class="id"> _</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#Phant">Phant</a></span><span class="id"> R</span>))<span class="id"> :</span><span class="id"> type_scope</span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="nonnege" class="id"><div name="nonnege" class=" tooltip">nonnege<span class='tooltip-area'></span></div></span> (<span id="R:2099" class="id"><a name="R:2099" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span>)<span class="id"> &amp;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#phant">phant</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#R:2099">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.def">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.def">def</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ext_num_sem">ext_num_sem</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#R:2099">R</a></span>) (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.Real">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.Real">Real</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#c5d1424554ae4f6d783beb7e2b68e8c1">`[</a></span><span class="id">0%Z</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#c5d1424554ae4f6d783beb7e2b68e8c1">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#c5d1424554ae4f6d783beb7e2b68e8c1"> +oo[</a></span>).<br/>
 <span class="vernacular">Notation</span> <span id="552dc2a46c60863b613f58ee1ef290fa" class="id"><a name="552dc2a46c60863b613f58ee1ef290fa" class="">&quot;{ 'nonneg' '\bar' R }&quot;</a></span><span class="id"> :=</span> (<span class="id">@</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#nonnege">nonnege</a></span><span class="id"> _</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#Phant">Phant</a></span><span class="id"> R</span>))<span class="id"> :</span><span class="id"> type_scope</span>.<br/>
 <span class="vernacular">Notation</span> <span id="2a43e7617dbcd7ed6f15df77f9e80a9e" class="id"><a name="2a43e7617dbcd7ed6f15df77f9e80a9e" class="">&quot;x %:pos&quot;</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#ext_widen_itv">ext_widen_itv</a></span><span class="id"> x</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#b84269638614c7fd70bf11da0c8952ec">%:itv</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#417a0a2e802c9fba533727530ab763cd">{posnum</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#417a0a2e802c9fba533727530ab763cd"> \bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#417a0a2e802c9fba533727530ab763cd"> </a></span><span class="id">_</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#417a0a2e802c9fba533727530ab763cd">}</a></span>) (<span class="id">only</span><span class="id"> parsing</span>)<br/>
@@ -6157,19 +6150,14 @@ library mathcomp.reals.constructive_ereal, line 1096, characters 11-20
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> apply/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#and3P">and3P</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> /=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#cmp0y">cmp0y</a></span><span class="id"> !</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#bnd_simp">bnd_simp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#real_ltry">real_ltry</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.pinfty_inum" class="id"><div name="ItvInstances.pinfty_inum" class=" tooltip">pinfty_inum<span class='tooltip-area'><p>mulr_infty :
-forall {R : realDomainType},
-(forall r : R, (r%:E * +oo)%E = ((Num.sg r)%:E * +oo)%E) *
-(forall r : R, (+oo * r%:E)%E = ((Num.sg r)%:E * +oo)%E) *
-(forall r : R, (r%:E * -oo)%E = ((Num.sg r)%:E * -oo)%E) *
-(forall r : R, (-oo * r%:E)%E = ((Num.sg r)%:E * -oo)%E)
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.pinfty_inum" class="id"><div name="ItvInstances.pinfty_inum" class=" tooltip">pinfty_inum<span class='tooltip-area'><p>inveM_def : forall [R : realFieldType], \bar R -> \bar R -> bool
 
-mulr_infty is not universe polymorphic
-Arguments mulr_infty {R}
-mulr_infty is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.mulr_infty
+inveM_def is not universe polymorphic
+Arguments inveM_def [R] (x y)%_ereal_scope
+inveM_def is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.inveM_def
 Declared in
-library mathcomp.reals.constructive_ereal, line 1942, characters 11-21
+library mathcomp.reals.constructive_ereal, line 3438, characters 11-20
 </p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_spec_pinfty">ext_num_spec_pinfty</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ItvInstances.ext_num_spec_ninfty" class="id"><a name="ItvInstances.ext_num_spec_ninfty" class="">ext_num_spec_ninfty</a></span><span class="id"> :</span><br/>
@@ -6179,25 +6167,7 @@ library mathcomp.reals.constructive_ereal, line 1942, characters 11-21
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> apply/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#and3P">and3P</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> /=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#cmp0Ny">cmp0Ny</a></span><span class="id"> !</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#bnd_simp">bnd_simp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#real_ltNyr">real_ltNyr</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.ninfty_snum" class="id"><div name="ItvInstances.ninfty_snum" class=" tooltip">ninfty_snum<span class='tooltip-area'><p>inveM_def : forall [R : realFieldType], \bar R -> \bar R -> bool
-
-inveM_def is not universe polymorphic
-Arguments inveM_def [R] (x y)%_ereal_scope
-inveM_def is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.inveM_def
-Declared in
-library mathcomp.reals.constructive_ereal, line 3438, characters 11-20
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_spec_ninfty">ext_num_spec_ninfty</a></span>).<br/>
-<br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="ItvInstances.ext_num_spec_EFin" class="id"><a name="ItvInstances.ext_num_spec_EFin" class="">ext_num_spec_EFin</a></span><span class="id"> </span><span id="i:2101" class="id"><a name="i:2101" class="">i</a></span> (<span id="x:2102" class="id"><a name="x:2102" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.num_def">num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.Itv.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#i:2101">i</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_spec">ext_num_spec</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#i:2101">i</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2102">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>.<br/>
-<details>
-<summary class="toggleproof">Proof.</summary>
-<div class="proofscript">
-<span class="id">case:</span><span class="id"> i</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> [//|</span><span class="id"> [l</span><span class="id"> u]</span><span class="id"> [x</span><span class="id"> /=/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#and3P">and3P</a></span><span class="id">[xr</span><span class="id"> /=</span><span class="id"> lx</span><span class="id"> xu]]]</span>.<br/>
-<span class="gallina-kwd">by</span><span class="id"> apply/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#and3P">and3P</a></span><span class="id">;</span><span class="id"> split=&gt;</span><span class="id"> [//||];</span><span class="id"> [case:</span><span class="id"> l</span><span class="id"> lx</span><span class="id"> |</span><span class="id"> case:</span><span class="id"> u</span><span class="id"> xu]</span>.<br/>
-Qed.</div></details>
-<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.EFin_inum" class="id"><div name="ItvInstances.EFin_inum" class=" tooltip">EFin_inum<span class='tooltip-area'><p>ltee_pV2 :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.ninfty_snum" class="id"><div name="ItvInstances.ninfty_snum" class=" tooltip">ninfty_snum<span class='tooltip-area'><p>ltee_pV2 :
 forall R : realFieldType,
 {in [pred x | (0%R <= x)%E] &, {mono inve : y x / (x <= y)%E >-> (y <= x)%E}} *
 {in [pred x | (0%R <= x)%E] &, {mono inve : y x / (x < y)%E >-> (y < x)%E}}
@@ -6208,6 +6178,28 @@ ltee_pV2 is transparent
 Expands to: Constant mathcomp.reals.constructive_ereal.ltee_pV2
 Declared in
 library mathcomp.reals.constructive_ereal, line 3514, characters 11-19
+</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_spec_ninfty">ext_num_spec_ninfty</a></span>).<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="ItvInstances.ext_num_spec_EFin" class="id"><a name="ItvInstances.ext_num_spec_EFin" class="">ext_num_spec_EFin</a></span><span class="id"> </span><span id="i:2101" class="id"><a name="i:2101" class="">i</a></span> (<span id="x:2102" class="id"><a name="x:2102" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.num_def">num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.Itv.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#i:2101">i</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_spec">ext_num_spec</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#i:2101">i</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2102">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">case:</span><span class="id"> i</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> [//|</span><span class="id"> [l</span><span class="id"> u]</span><span class="id"> [x</span><span class="id"> /=/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#and3P">and3P</a></span><span class="id">[xr</span><span class="id"> /=</span><span class="id"> lx</span><span class="id"> xu]]]</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> apply/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#and3P">and3P</a></span><span class="id">;</span><span class="id"> split=&gt;</span><span class="id"> [//||];</span><span class="id"> [case:</span><span class="id"> l</span><span class="id"> lx</span><span class="id"> |</span><span class="id"> case:</span><span class="id"> u</span><span class="id"> xu]</span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.EFin_inum" class="id"><div name="ItvInstances.EFin_inum" class=" tooltip">EFin_inum<span class='tooltip-area'><p>sqrte :
+forall [R : rcfType],
+\bar R ->
+\bar (join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
+        R)
+
+sqrte is not universe polymorphic
+Arguments sqrte [R] x%_ereal_scope
+sqrte is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.sqrte
+Declared in
+library mathcomp.reals.constructive_ereal, line 3752, characters 11-16
 </p></span></div></span><span class="id"> </span><span id="i:2103" class="id"><a name="i:2103" class="">i</a></span> (<span id="x:2104" class="id"><a name="x:2104" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.num_def">num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.Itv.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#i:2103">i</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_spec_EFin">ext_num_spec_EFin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2104">x</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ItvInstances.num_spec_fine" class="id"><a name="ItvInstances.num_spec_fine" class="">num_spec_fine</a></span><span class="id"> </span><span id="i:2105" class="id"><a name="i:2105" class="">i</a></span> (<span id="x:2106" class="id"><a name="x:2106" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_def">ext_num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#i:2105">i</a></span>) (<span id="r:2107" class="id"><a name="r:2107" class="">r</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.real1">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.real1">real1</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#IntItv.keep_sign">keep_sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#i:2105">i</a></span>)<span class="id"> :</span><br/>
@@ -6225,18 +6217,14 @@ library mathcomp.reals.constructive_ereal, line 3514, characters 11-19
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id">//</span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.le_trans">le_trans</a></span><span class="id">;</span><span class="id"> apply;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#lerz0">lerz0</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.fine_inum" class="id"><div name="ItvInstances.fine_inum" class=" tooltip">fine_inum<span class='tooltip-area'><p>sqrte :
-forall [R : rcfType],
-\bar R ->
-\bar (join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
-        R)
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.fine_inum" class="id"><div name="ItvInstances.fine_inum" class=" tooltip">fine_inum<span class='tooltip-area'><p>ext_num_sem : forall {R : numDomainType}, interval int -> \bar R -> bool
 
-sqrte is not universe polymorphic
-Arguments sqrte [R] x%_ereal_scope
-sqrte is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.sqrte
+ext_num_sem is not universe polymorphic
+Arguments ext_num_sem {R} i x%_ereal_scope
+ext_num_sem is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.ext_num_sem
 Declared in
-library mathcomp.reals.constructive_ereal, line 3752, characters 11-16
+library mathcomp.reals.constructive_ereal, line 3812, characters 11-22
 </p></span></div></span><span class="id"> </span><span id="i:2108" class="id"><a name="i:2108" class="">i</a></span> (<span id="x:2109" class="id"><a name="x:2109" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_def">ext_num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#i:2108">i</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.num_spec_fine">num_spec_fine</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2109">x</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ItvInstances.ext_num_sem_y" class="id"><a name="ItvInstances.ext_num_sem_y" class="">ext_num_sem_y</a></span><span class="id"> </span><span id="l:2110" class="id"><a name="l:2110" class="">l</a></span><span class="id"> </span><span id="u:2111" class="id"><a name="u:2111" class="">u</a></span><span class="id"> :</span><br/>
@@ -6297,14 +6285,17 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> -[x]/</span>(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span><span class="id"> Px</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#ee0be1be6b88be01b7713452edbcc8cc">%:inum</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Instances.num_spec_opp">num_spec_opp</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.oppe_inum" class="id"><div name="ItvInstances.oppe_inum" class=" tooltip">oppe_inum<span class='tooltip-area'><p>ext_num_sem : forall {R : numDomainType}, interval int -> \bar R -> bool
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.oppe_inum" class="id"><div name="ItvInstances.oppe_inum" class=" tooltip">oppe_inum<span class='tooltip-area'><p>ext_widen_itv :
+forall {R : numDomainType} {i : Itv.t},
+Itv.def ext_num_sem i ->
+forall {i' : Itv.t}, unify_itv i i' -> Itv.def ext_num_sem i'
 
-ext_num_sem is not universe polymorphic
-Arguments ext_num_sem {R} i x%_ereal_scope
-ext_num_sem is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.ext_num_sem
+ext_widen_itv is not universe polymorphic
+Arguments ext_widen_itv {R i} x {i' uni}
+ext_widen_itv is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.ext_widen_itv
 Declared in
-library mathcomp.reals.constructive_ereal, line 3812, characters 11-22
+library mathcomp.reals.constructive_ereal, line 3873, characters 11-24
 </p></span></div></span><span class="id"> </span><span id="i:2121" class="id"><a name="i:2121" class="">i</a></span> (<span id="x:2122" class="id"><a name="x:2122" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_def">ext_num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#i:2121">i</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_spec_opp">ext_num_spec_opp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2122">x</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ItvInstances.ext_num_spec_add" class="id"><a name="ItvInstances.ext_num_spec_add" class="">ext_num_spec_add</a></span><span class="id"> </span><span id="xi:2123" class="id"><a name="xi:2123" class="">xi</a></span><span class="id"> </span><span id="yi:2124" class="id"><a name="yi:2124" class="">yi</a></span> (<span id="x:2125" class="id"><a name="x:2125" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_def">ext_num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#xi:2123">xi</a></span>) (<span id="y:2126" class="id"><a name="y:2126" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_def">ext_num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#yi:2124">yi</a></span>)<br/>
@@ -6321,17 +6312,14 @@ library mathcomp.reals.constructive_ereal, line 3812, characters 11-22
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> -[x]/</span>(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span><span class="id"> Px</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#ee0be1be6b88be01b7713452edbcc8cc">%:inum</a></span><span class="id"> -[y]/</span>(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span><span class="id"> Py</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#ee0be1be6b88be01b7713452edbcc8cc">%:inum</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Instances.num_spec_add">num_spec_add</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.adde_inum" class="id"><div name="ItvInstances.adde_inum" class=" tooltip">adde_inum<span class='tooltip-area'><p>ext_widen_itv :
-forall {R : numDomainType} {i : Itv.t},
-Itv.def ext_num_sem i ->
-forall {i' : Itv.t}, unify_itv i i' -> Itv.def ext_num_sem i'
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.adde_inum" class="id"><div name="ItvInstances.adde_inum" class=" tooltip">adde_inum<span class='tooltip-area'><p>posnume : forall [R : numDomainType], phant R -> Type
 
-ext_widen_itv is not universe polymorphic
-Arguments ext_widen_itv {R i} x {i' uni}
-ext_widen_itv is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.ext_widen_itv
+posnume is not universe polymorphic
+Arguments posnume [R] _
+posnume is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.posnume
 Declared in
-library mathcomp.reals.constructive_ereal, line 3873, characters 11-24
+library mathcomp.reals.constructive_ereal, line 3923, characters 11-18
 </p></span></div></span><span class="id"> </span><span id="xi:2128" class="id"><a name="xi:2128" class="">xi</a></span><span class="id"> </span><span id="yi:2129" class="id"><a name="yi:2129" class="">yi</a></span> (<span id="x:2130" class="id"><a name="x:2130" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_def">ext_num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#xi:2128">xi</a></span>) (<span id="y:2131" class="id"><a name="y:2131" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_def">ext_num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#yi:2129">yi</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_spec_add">ext_num_spec_add</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2130">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#y:2131">y</a></span>).<br/>
 <br/>
@@ -6345,14 +6333,16 @@ library mathcomp.reals.constructive_ereal, line 3873, characters 11-24
 <span class="gallina-kwd">by</span><span class="id"> apply/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#and3P">and3P</a></span><span class="id">;</span><span class="id"> split=&gt;</span><span class="id"> [//||];</span><span class="id"> [case:</span><span class="id"> l</span><span class="id"> lx</span><span class="id"> |</span><span class="id"> case:</span><span class="id"> u</span><span class="id"> xu]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.dEFin_inum" class="id"><div name="ItvInstances.dEFin_inum" class=" tooltip">dEFin_inum<span class='tooltip-area'><p>nonnege : forall [R : numDomainType], phant R -> Type
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.dEFin_inum" class="id"><div name="ItvInstances.dEFin_inum" class=" tooltip">dEFin_inum<span class='tooltip-area'><p>ItvInstances.pinfty_inum :
+forall {R : numDomainType}, Itv.def ext_num_sem (Itv.Real `]1%Z, +oo[%R)
 
-nonnege is not universe polymorphic
-Arguments nonnege [R] _
-nonnege is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.nonnege
+ItvInstances.pinfty_inum is not universe polymorphic
+Arguments ItvInstances.pinfty_inum {R}
+ItvInstances.pinfty_inum is transparent
+Expands to: Constant
+            mathcomp.reals.constructive_ereal.ItvInstances.pinfty_inum
 Declared in
-library mathcomp.reals.constructive_ereal, line 3926, characters 11-18
+library mathcomp.reals.constructive_ereal, line 3976, characters 10-21
 </p></span></div></span><span class="id"> </span><span id="i:2134" class="id"><a name="i:2134" class="">i</a></span> (<span id="x:2135" class="id"><a name="x:2135" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.num_def">num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.Itv.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#i:2134">i</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_spec_dEFin">ext_num_spec_dEFin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2135">x</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ItvInstances.ext_num_spec_dadd" class="id"><a name="ItvInstances.ext_num_spec_dadd" class="">ext_num_spec_dadd</a></span><span class="id"> </span><span id="xi:2136" class="id"><a name="xi:2136" class="">xi</a></span><span class="id"> </span><span id="yi:2137" class="id"><a name="yi:2137" class="">yi</a></span> (<span id="x:2138" class="id"><a name="x:2138" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_def">ext_num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#xi:2136">xi</a></span>) (<span id="y:2139" class="id"><a name="y:2139" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_def">ext_num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#yi:2137">yi</a></span>)<br/>
@@ -6369,16 +6359,16 @@ library mathcomp.reals.constructive_ereal, line 3926, characters 11-18
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> -[x]/</span>(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span><span class="id"> Px</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#ee0be1be6b88be01b7713452edbcc8cc">%:inum</a></span><span class="id"> -[y]/</span>(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span><span class="id"> Py</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#ee0be1be6b88be01b7713452edbcc8cc">%:inum</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Instances.num_spec_add">num_spec_add</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.dadde_inum" class="id"><div name="ItvInstances.dadde_inum" class=" tooltip">dadde_inum<span class='tooltip-area'><p>ItvInstances.pinfty_inum :
-forall {R : numDomainType}, Itv.def ext_num_sem (Itv.Real `]1%Z, +oo[%R)
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.dadde_inum" class="id"><div name="ItvInstances.dadde_inum" class=" tooltip">dadde_inum<span class='tooltip-area'><p>ItvInstances.ninfty_snum :
+forall {R : numDomainType}, Itv.def ext_num_sem (Itv.Real `]-oo, (-1)%Z[%R)
 
-ItvInstances.pinfty_inum is not universe polymorphic
-Arguments ItvInstances.pinfty_inum {R}
-ItvInstances.pinfty_inum is transparent
+ItvInstances.ninfty_snum is not universe polymorphic
+Arguments ItvInstances.ninfty_snum {R}
+ItvInstances.ninfty_snum is transparent
 Expands to: Constant
-            mathcomp.reals.constructive_ereal.ItvInstances.pinfty_inum
+            mathcomp.reals.constructive_ereal.ItvInstances.ninfty_snum
 Declared in
-library mathcomp.reals.constructive_ereal, line 3976, characters 10-21
+library mathcomp.reals.constructive_ereal, line 3982, characters 10-21
 </p></span></div></span><span class="id"> </span><span id="xi:2141" class="id"><a name="xi:2141" class="">xi</a></span><span class="id"> </span><span id="yi:2142" class="id"><a name="yi:2142" class="">yi</a></span> (<span id="x:2143" class="id"><a name="x:2143" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_def">ext_num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#xi:2141">xi</a></span>) (<span id="y:2144" class="id"><a name="y:2144" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_def">ext_num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#yi:2142">yi</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_spec_dadd">ext_num_spec_dadd</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2143">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#y:2144">y</a></span>).<br/>
 <br/>
@@ -6646,20 +6636,7 @@ Qed.</div></details>
 &nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#IntItv.opp_bound_gt0">opp_bound_gt0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.ltW">ltW</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.mule_inum" class="id"><div name="ItvInstances.mule_inum" class=" tooltip">mule_inum<span class='tooltip-area'><p>ItvInstances.ninfty_snum :
-forall {R : numDomainType}, Itv.def ext_num_sem (Itv.Real `]-oo, (-1)%Z[%R)
-
-ItvInstances.ninfty_snum is not universe polymorphic
-Arguments ItvInstances.ninfty_snum {R}
-ItvInstances.ninfty_snum is transparent
-Expands to: Constant
-            mathcomp.reals.constructive_ereal.ItvInstances.ninfty_snum
-Declared in
-library mathcomp.reals.constructive_ereal, line 3982, characters 10-21
-</p></span></div></span><span class="id"> </span><span id="xi:2178" class="id"><a name="xi:2178" class="">xi</a></span><span class="id"> </span><span id="yi:2179" class="id"><a name="yi:2179" class="">yi</a></span> (<span id="x:2180" class="id"><a name="x:2180" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_def">ext_num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#xi:2178">xi</a></span>) (<span id="y:2181" class="id"><a name="y:2181" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_def">ext_num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#yi:2179">yi</a></span>)<span class="id"> :=</span><br/>
-&nbsp;&nbsp;<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_spec_mul">ext_num_spec_mul</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2180">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#y:2181">y</a></span>).<br/>
-<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="ItvInstances.abse_itv" class="id"><div name="ItvInstances.abse_itv" class=" tooltip">abse_itv<span class='tooltip-area'><p>ItvInstances.EFin_inum :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.mule_inum" class="id"><div name="ItvInstances.mule_inum" class=" tooltip">mule_inum<span class='tooltip-area'><p>ItvInstances.EFin_inum :
 forall {R : numDomainType} [i : Itv.t],
 Itv.def (Itv.num_sem (R:=R)) i -> Itv.def ext_num_sem i
 
@@ -6669,6 +6646,19 @@ ItvInstances.EFin_inum is transparent
 Expands to: Constant mathcomp.reals.constructive_ereal.ItvInstances.EFin_inum
 Declared in
 library mathcomp.reals.constructive_ereal, line 3990, characters 10-19
+</p></span></div></span><span class="id"> </span><span id="xi:2178" class="id"><a name="xi:2178" class="">xi</a></span><span class="id"> </span><span id="yi:2179" class="id"><a name="yi:2179" class="">yi</a></span> (<span id="x:2180" class="id"><a name="x:2180" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_def">ext_num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#xi:2178">xi</a></span>) (<span id="y:2181" class="id"><a name="y:2181" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_def">ext_num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#yi:2179">yi</a></span>)<span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_spec_mul">ext_num_spec_mul</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2180">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#y:2181">y</a></span>).<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="ItvInstances.abse_itv" class="id"><div name="ItvInstances.abse_itv" class=" tooltip">abse_itv<span class='tooltip-area'><p>ItvInstances.fine_inum :
+forall {R : numDomainType} [i : Itv.t],
+Itv.def ext_num_sem i -> Itv.def (Itv.num_sem (R:=R)) (Itv.real1 keep_sign i)
+
+ItvInstances.fine_inum is not universe polymorphic
+Arguments ItvInstances.fine_inum {R} [i] x
+ItvInstances.fine_inum is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.ItvInstances.fine_inum
+Declared in
+library mathcomp.reals.constructive_ereal, line 4005, characters 10-19
 </p></span></div></span> (<span id="i:2182" class="id"><a name="i:2182" class="">i</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.t">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.t">t</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.t">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.t">t</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#i:2182">i</a></span><span class="gallina-kwd"> with</span><br/>
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.Top">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.Top">Top</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.Real">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.Real">Real</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#c5d1424554ae4f6d783beb7e2b68e8c1">`[</a></span><span class="id">0%Z</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#c5d1424554ae4f6d783beb7e2b68e8c1">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#c5d1424554ae4f6d783beb7e2b68e8c1"> +oo[</a></span><br/>
@@ -6700,16 +6690,16 @@ library mathcomp.reals.constructive_ereal, line 3990, characters 10-19
 <span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.lt_trans">lt_trans</a></span><span class="id"> lx;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#lte_fin">lte_fin</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#ltr0z">ltr0z</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.abse_inum" class="id"><div name="ItvInstances.abse_inum" class=" tooltip">abse_inum<span class='tooltip-area'><p>ItvInstances.fine_inum :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.abse_inum" class="id"><div name="ItvInstances.abse_inum" class=" tooltip">abse_inum<span class='tooltip-area'><p>ItvInstances.oppe_inum :
 forall {R : numDomainType} [i : Itv.t],
-Itv.def ext_num_sem i -> Itv.def (Itv.num_sem (R:=R)) (Itv.real1 keep_sign i)
+Itv.def ext_num_sem i -> Itv.def ext_num_sem (Itv.real1 opp i)
 
-ItvInstances.fine_inum is not universe polymorphic
-Arguments ItvInstances.fine_inum {R} [i] x
-ItvInstances.fine_inum is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.ItvInstances.fine_inum
+ItvInstances.oppe_inum is not universe polymorphic
+Arguments ItvInstances.oppe_inum {R} [i] x
+ItvInstances.oppe_inum is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.ItvInstances.oppe_inum
 Declared in
-library mathcomp.reals.constructive_ereal, line 4005, characters 10-19
+library mathcomp.reals.constructive_ereal, line 4055, characters 10-19
 </p></span></div></span><span class="id"> </span><span id="i:2188" class="id"><a name="i:2188" class="">i</a></span> (<span id="x:2189" class="id"><a name="x:2189" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_def">ext_num_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#i:2188">i</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_spec_abse">ext_num_spec_abse</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2189">x</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ItvInstances.ext_min_itv_boundl_spec" class="id"><a name="ItvInstances.ext_min_itv_boundl_spec" class="">ext_min_itv_boundl_spec</a></span><span class="id"> </span><span id="x1:2190" class="id"><a name="x1:2190" class="">x1</a></span><span class="id"> </span><span id="x2:2191" class="id"><a name="x2:2191" class="">x2</a></span><span class="id"> </span><span id="b1:2192" class="id"><a name="b1:2192" class="">b1</a></span><span class="id"> </span><span id="b2:2193" class="id"><a name="b2:2193" class="">b2</a></span><span class="id"> :</span><br/>
@@ -6805,16 +6795,17 @@ Qed.</div></details>
 <span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_max_itv_boundr_spec">ext_max_itv_boundr_spec</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.ext_min_max_typ" class="id"><div name="ItvInstances.ext_min_max_typ" class=" tooltip">ext_min_max_typ<span class='tooltip-area'><p>ItvInstances.oppe_inum :
-forall {R : numDomainType} [i : Itv.t],
-Itv.def ext_num_sem i -> Itv.def ext_num_sem (Itv.real1 opp i)
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="ItvInstances.ext_min_max_typ" class="id"><div name="ItvInstances.ext_min_max_typ" class=" tooltip">ext_min_max_typ<span class='tooltip-area'><p>ItvInstances.adde_inum :
+forall {R : numDomainType} [xi yi : Itv.t],
+Itv.def ext_num_sem xi ->
+Itv.def ext_num_sem yi -> Itv.def ext_num_sem (Itv.real2 add xi yi)
 
-ItvInstances.oppe_inum is not universe polymorphic
-Arguments ItvInstances.oppe_inum {R} [i] x
-ItvInstances.oppe_inum is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.ItvInstances.oppe_inum
+ItvInstances.adde_inum is not universe polymorphic
+Arguments ItvInstances.adde_inum {R} [xi yi] x y
+ItvInstances.adde_inum is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.ItvInstances.adde_inum
 Declared in
-library mathcomp.reals.constructive_ereal, line 4055, characters 10-19
+library mathcomp.reals.constructive_ereal, line 4069, characters 10-19
 </p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Instances.MinMaxTyp">MinMaxTyp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_spec_min">ext_num_spec_min</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ItvInstances.ext_num_spec_max">ext_num_spec_max</a></span>.<br/>
 <br/>
 <span class="vernacular">End</span><span class="id"> Itv</span>.<br/>
@@ -6934,17 +6925,18 @@ Qed.</div></details>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="contract_expand.R" class="id"><a name="contract_expand.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numfield.html#Num.RealField.Exports.realFieldType">realFieldType</a></span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">x</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#contract_expand.R">R</a></span>) (<span class="id">r</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#contract_expand.R">R</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="contract" class="id"><div name="contract" class=" tooltip">contract<span class='tooltip-area'><p>ItvInstances.dEFin_inum :
-forall {R : numDomainType} [i : Itv.t],
-Itv.def (Itv.num_sem (R:=R)) i -> Itv.def ext_num_sem i
+<span class="vernacular">Definition</span><span class="id"> </span><span id="contract" class="id"><div name="contract" class=" tooltip">contract<span class='tooltip-area'><p>ItvInstances.dadde_inum :
+forall {R : numDomainType} [xi yi : Itv.t],
+Itv.def ext_num_sem xi ->
+Itv.def ext_num_sem yi -> Itv.def ext_num_sem (Itv.real2 add xi yi)
 
-ItvInstances.dEFin_inum is not universe polymorphic
-Arguments ItvInstances.dEFin_inum {R} [i] x
-ItvInstances.dEFin_inum is transparent
+ItvInstances.dadde_inum is not universe polymorphic
+Arguments ItvInstances.dadde_inum {R} [xi yi] x y
+ItvInstances.dadde_inum is transparent
 Expands to: Constant
-            mathcomp.reals.constructive_ereal.ItvInstances.dEFin_inum
+            mathcomp.reals.constructive_ereal.ItvInstances.dadde_inum
 Declared in
-library mathcomp.reals.constructive_ereal, line 4080, characters 10-20
+library mathcomp.reals.constructive_ereal, line 4094, characters 10-20
 </p></span></div></span><span class="id"> </span><span id="x:2262" class="id"><a name="x:2262" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#contract_expand.R">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2262">x</a></span><span class="gallina-kwd"> with</span><br/>
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> r</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"> =&gt;</span><span class="id"> r</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span> (<span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id">r</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span>)<span class="id"> |</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span><span class="id"> =&gt;</span><span class="id"> 1</span><span class="id"> |</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-oo'">-oo</a></span><span class="id"> =&gt;</span><span class="id"> -1</span><br/>
@@ -6977,18 +6969,17 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> case:</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> //=</span><span class="id"> [r|];</span><span class="id"> [</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.normrN">normrN</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulNr">mulNr</a></span><span class="id"> |</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.opprK">opprK</a></span><span class="id">]</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="expand" class="id"><div name="expand" class=" tooltip">expand<span class='tooltip-area'><p>ItvInstances.dadde_inum :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="expand" class="id"><div name="expand" class=" tooltip">expand<span class='tooltip-area'><p>ItvInstances.mule_inum :
 forall {R : numDomainType} [xi yi : Itv.t],
 Itv.def ext_num_sem xi ->
-Itv.def ext_num_sem yi -> Itv.def ext_num_sem (Itv.real2 add xi yi)
+Itv.def ext_num_sem yi -> Itv.def ext_num_sem (Itv.real2 mul xi yi)
 
-ItvInstances.dadde_inum is not universe polymorphic
-Arguments ItvInstances.dadde_inum {R} [xi yi] x y
-ItvInstances.dadde_inum is transparent
-Expands to: Constant
-            mathcomp.reals.constructive_ereal.ItvInstances.dadde_inum
+ItvInstances.mule_inum is not universe polymorphic
+Arguments ItvInstances.mule_inum {R} [xi yi] x y
+ItvInstances.mule_inum is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.ItvInstances.mule_inum
 Declared in
-library mathcomp.reals.constructive_ereal, line 4094, characters 10-20
+library mathcomp.reals.constructive_ereal, line 4345, characters 10-19
 </p></span></div></span><span class="id"> </span><span id="r:2267" class="id"><a name="r:2267" class="">r</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#contract_expand.R">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#r:2267">r</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#a3446a989be902579d41cbac1597f4cf"> &gt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#a3446a989be902579d41cbac1597f4cf"> </a></span><span class="id">1</span>)<span class="id">%R</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#r:2267">r</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id">-1</span>)<span class="id">%R</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-oo'">-oo</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#r:2267">r</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span> (<span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#r:2267">r</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span>))<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>.<br/>
 <br/>
@@ -7067,19 +7058,7 @@ Qed.</div></details>
 &nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ltrNl">ltrNl</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ltr_pwDl">ltr_pwDl</a></span><span class="id"> //</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ler_normr">ler_normr</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.lexx">lexx</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#orbT">orbT</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="lt_contract" class="id"><div name="lt_contract" class=" tooltip">lt_contract<span class='tooltip-area'><p>ItvInstances.mule_inum :
-forall {R : numDomainType} [xi yi : Itv.t],
-Itv.def ext_num_sem xi ->
-Itv.def ext_num_sem yi -> Itv.def ext_num_sem (Itv.real2 mul xi yi)
-
-ItvInstances.mule_inum is not universe polymorphic
-Arguments ItvInstances.mule_inum {R} [xi yi] x y
-ItvInstances.mule_inum is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.ItvInstances.mule_inum
-Declared in
-library mathcomp.reals.constructive_ereal, line 4345, characters 10-19
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.leW_mono">leW_mono</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#le_contract">le_contract</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="contract_inj" class="id"><div name="contract_inj" class=" tooltip">contract_inj<span class='tooltip-area'><p>ItvInstances.abse_itv : Itv.t -> Itv.t
+<span class="vernacular">Definition</span><span class="id"> </span><span id="lt_contract" class="id"><div name="lt_contract" class=" tooltip">lt_contract<span class='tooltip-area'><p>ItvInstances.abse_itv : Itv.t -> Itv.t
 
 ItvInstances.abse_itv is not universe polymorphic
 Arguments ItvInstances.abse_itv i
@@ -7087,16 +7066,8 @@ ItvInstances.abse_itv is transparent
 Expands to: Constant mathcomp.reals.constructive_ereal.ItvInstances.abse_itv
 Declared in
 library mathcomp.reals.constructive_ereal, line 4348, characters 11-19
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#mono_inj">mono_inj</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.lexx">lexx</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.le_anti">le_anti</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#le_contract">le_contract</a></span>.<br/>
-<br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="le_expand_in" class="id"><a name="le_expand_in" class="">le_expand_in</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#10dd1f0b03819efd5777bd139f7faec4">[pred</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#10dd1f0b03819efd5777bd139f7faec4"> </a></span><span id="r:2279" class="id"><a name="r:2279" class="">r</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#10dd1f0b03819efd5777bd139f7faec4"> |</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#10dd1f0b03819efd5777bd139f7faec4"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#r:2279">r</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id">1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#10dd1f0b03819efd5777bd139f7faec4">]</a></span><span class="id">%R</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> &amp;,</a></span><br/>
-&nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088">{mono</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#expand">expand</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> </a></span><span id="x:2282" class="id"><span id="x:2280" class="id"><a name="x:2282" class="">x</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> </a></span><span id="y:2283" class="id"><span id="y:2281" class="id"><a name="y:2283" class="">y</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> /</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2280">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.preorder.html#4a718365fe6d60a4322f996a7adbd575"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.preorder.html#4a718365fe6d60a4322f996a7adbd575"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#y:2281">y</a></span>)<span class="id">%O</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">}</a></span>.<br/>
-<details>
-<summary class="toggleproof">Proof.</summary>
-<div class="proofscript">
-<span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#can_mono_in">can_mono_in</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#onW_can_in">onW_can_in</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#predT">predT</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#expandK">expandK</a></span>)<span class="id"> _</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#in2W">in2W</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#le_contract">le_contract</a></span>). Qed.</div></details>
-<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="lt_expand" class="id"><div name="lt_expand" class=" tooltip">lt_expand<span class='tooltip-area'><p>ItvInstances.abse_inum :
+</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.leW_mono">leW_mono</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#le_contract">le_contract</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="contract_inj" class="id"><div name="contract_inj" class=" tooltip">contract_inj<span class='tooltip-area'><p>ItvInstances.abse_inum :
 forall {R : numDomainType} [i : Itv.t],
 Itv.def ext_num_sem i -> Itv.def ext_num_sem (ItvInstances.abse_itv i)
 
@@ -7106,8 +7077,16 @@ ItvInstances.abse_inum is transparent
 Expands to: Constant mathcomp.reals.constructive_ereal.ItvInstances.abse_inum
 Declared in
 library mathcomp.reals.constructive_ereal, line 4377, characters 10-19
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.leW_mono_in">leW_mono_in</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#le_expand_in">le_expand_in</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="expand_inj" class="id"><div name="expand_inj" class=" tooltip">expand_inj<span class='tooltip-area'><p>ItvInstances.ext_min_max_typ : numDomainType -> min_max_typ ereal_display
+</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#mono_inj">mono_inj</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.lexx">lexx</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.le_anti">le_anti</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#le_contract">le_contract</a></span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="le_expand_in" class="id"><a name="le_expand_in" class="">le_expand_in</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">{in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#10dd1f0b03819efd5777bd139f7faec4">[pred</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#10dd1f0b03819efd5777bd139f7faec4"> </a></span><span id="r:2279" class="id"><a name="r:2279" class="">r</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#10dd1f0b03819efd5777bd139f7faec4"> |</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#10dd1f0b03819efd5777bd139f7faec4"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#r:2279">r</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id">1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#10dd1f0b03819efd5777bd139f7faec4">]</a></span><span class="id">%R</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3"> &amp;,</a></span><br/>
+&nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088">{mono</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#expand">expand</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> </a></span><span id="x:2282" class="id"><span id="x:2280" class="id"><a name="x:2282" class="">x</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> </a></span><span id="y:2283" class="id"><span id="y:2281" class="id"><a name="y:2283" class="">y</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> /</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2280">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.preorder.html#4a718365fe6d60a4322f996a7adbd575"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.preorder.html#4a718365fe6d60a4322f996a7adbd575"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#y:2281">y</a></span>)<span class="id">%O</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088">}</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b4f176550f5b849a7fbba2ee164934d3">}</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#can_mono_in">can_mono_in</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#onW_can_in">onW_can_in</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#predT">predT</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#expandK">expandK</a></span>)<span class="id"> _</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#in2W">in2W</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#le_contract">le_contract</a></span>). Qed.</div></details>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="lt_expand" class="id"><div name="lt_expand" class=" tooltip">lt_expand<span class='tooltip-area'><p>ItvInstances.ext_min_max_typ : numDomainType -> min_max_typ ereal_display
 
 ItvInstances.ext_min_max_typ is not universe polymorphic
 Arguments ItvInstances.ext_min_max_typ {R}
@@ -7116,6 +7095,15 @@ Expands to: Constant
             mathcomp.reals.constructive_ereal.ItvInstances.ext_min_max_typ
 Declared in
 library mathcomp.reals.constructive_ereal, line 4460, characters 10-25
+</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.leW_mono_in">leW_mono_in</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#le_expand_in">le_expand_in</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="expand_inj" class="id"><div name="expand_inj" class=" tooltip">expand_inj<span class='tooltip-area'><p>contract : forall [R : realFieldType], \bar R -> R
+
+contract is not universe polymorphic
+Arguments contract [R] x%_ereal_scope
+contract is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.contract
+Declared in
+library mathcomp.reals.constructive_ereal, line 4548, characters 11-19
 </p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#mono_inj_in">mono_inj_in</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.lexx">lexx</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.le_anti">le_anti</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#le_expand_in">le_expand_in</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="fine_expand" class="id"><a name="fine_expand" class="">fine_expand</a></span><span class="id"> </span><span id="r:2284" class="id"><a name="r:2284" class="">r</a></span><span class="id"> :</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#r:2284">r</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id">1</span>)<span class="id">%R</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
@@ -7159,14 +7147,14 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="ereal_PseudoMetric.R" class="id"><a name="ereal_PseudoMetric.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numfield.html#Num.RealField.Exports.realFieldType">realFieldType</a></span><span class="id">}</span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">x</span><span class="id"> y</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ereal_PseudoMetric.R">R</a></span>) (<span class="id">r</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ereal_PseudoMetric.R">R</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="ereal_ball" class="id"><div name="ereal_ball" class=" tooltip">ereal_ball<span class='tooltip-area'><p>contract : forall [R : realFieldType], \bar R -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="ereal_ball" class="id"><div name="ereal_ball" class=" tooltip">ereal_ball<span class='tooltip-area'><p>expand : forall [R : realFieldType], R -> \bar R
 
-contract is not universe polymorphic
-Arguments contract [R] x%_ereal_scope
-contract is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.contract
+expand is not universe polymorphic
+Arguments expand [R] r%_ring_scope
+expand is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.expand
 Declared in
-library mathcomp.reals.constructive_ereal, line 4548, characters 11-19
+library mathcomp.reals.constructive_ereal, line 4573, characters 11-17
 </p></span></div></span><span class="id"> </span><span id="x:2292" class="id"><a name="x:2292" class="">x</a></span><span class="id"> </span><span id="r:2293" class="id"><a name="r:2293" class="">r</a></span><span class="id"> </span><span id="y:2294" class="id"><a name="y:2294" class="">y</a></span><span class="id"> :=</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#contract">contract</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2292">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#contract">contract</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#y:2294">y</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#r:2293">r</a></span>)<span class="id">%R</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ereal_ball_center" class="id"><a name="ereal_ball_center" class="">ereal_ball_center</a></span><span class="id"> </span><span id="x:2295" class="id"><a name="x:2295" class="">x</a></span><span class="id"> </span><span id="r:2296" class="id"><a name="r:2296" class="">r</a></span><span class="id"> :</span> (<span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#r:2296">r</a></span>)<span class="id">%R</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#ereal_ball">ereal_ball</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2295">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#r:2296">r</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#x:2295">x</a></span>.<br/>
