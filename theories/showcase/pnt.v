@@ -288,8 +288,7 @@ have eqseq : forall n k, n < k ->
     apply: (@sub_sorted _ ltn); last exact: iota_ltn_sorted.
     by rewrite ltEnat => i j /=; rewrite (leqW_mono leq_prime_seq).
   - exact: sorted_primes.
-  rewrite mem_filter. apply: andb_idr.
-  rewrite mem_primes -mem_prime_seq => /andP[].
+  rewrite mem_filter andb_idr// mem_primes -mem_prime_seq => /andP[].
   rewrite inE => -[] i _ <- /andP[] _ /dvdn_leq/wrap[]// idn.
   apply: map_f; rewrite mem_iota leq0n/= add0n subn0.
   exact/(leq_ltn_trans _ nlek)/(leq_trans _ idn)/mono_leq_infl/leq_prime_seq.
