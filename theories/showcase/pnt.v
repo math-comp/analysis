@@ -1,8 +1,12 @@
 From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval.
 #[warning="-warn-library-file-internal-analysis"]
-From mathcomp Require Import unstable.
-From mathcomp Require Import classical_sets boolp topology.
-From mathcomp Require Import ereal sequences reals.
+From mathcomp Require Import archimedean mathcomp_extra unstable.
+From mathcomp Require Import classical_sets boolp topology measure_function.
+From mathcomp Require Import set_interval normed_module.
+From mathcomp Require Import pseudometric_normed_Zmodule measurable_function.
+From mathcomp Require Import measurable_realfun measurable_structure .
+From mathcomp Require Import derive lebesgue_measure lebesgue_integral ftc.
+From mathcomp Require Import ereal sequences reals realfun real_interval.
 Import Order.POrderTheory GRing.Theory Num.Theory.
 
 (**md**************************************************************************)
@@ -23,6 +27,10 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
+Import Num.Def.
+Local Open Scope ring_scope.
+Local Open Scope ereal_scope.
+Local Open Scope order_scope.
 Local Open Scope classical_set_scope.
 Local Open Scope set_scope.
 Local Open Scope nat_scope.
@@ -424,3 +432,217 @@ by apply: (@cardG R) => //; rewrite /N expn_gt0.
 Qed.
 
 End dvg_sum_inv_prime_seq.
+
+Lemma Abel_discrete (R : comPzRingType) (a b : nat -> R) (n p : nat) :
+  p < n -> let A n := (\sum_(0 <= k < n.+1) a k)%R in
+  (\sum_(p.+1 <= k < n.+1) (a k) * (b k) = A n * b n - A p * b p.+1
+    + \sum_(p.+1 <= k < n) A k * (b k - b k.+1))%R.
+Proof.
+move=> ngtp A.
+rewrite big_nat_cond.
+under eq_bigr => k /andP [] /andP [] pk _ _.
+  rewrite (_ : a k = (A k - A k.-1)%R) ?mulrBl.
+    by rewrite /A (ltn_predK pk) // big_nat_recr //= [RHS]addrC addKr.
+  over.
+rewrite -big_nat_cond.
+under [in RHS]eq_bigr do rewrite mulrBr.
+rewrite !big_split !sumrN /= [X in (_ - X)%R]big_add1 -pred_Sn.
+under [X in (_ - X)%R]eq_bigr do rewrite -pred_Sn.
+by rewrite [RHS](AC (2*2) ((3*1)*(2*4)))/= -big_nat_recr//= -opprD -big_ltn.
+Qed.
+
+Local Notation "\int_( x 'in' D ) F" := (\int[lebesgue_measure]_(x in D) F)%R
+  (at level 36, F at level 36, x, D at level 50).
+
+Lemma Abel_continuous (R : realType) (x y : R^o) (f : R^o -> R^o)
+    (a : nat -> R) : (0 <= y <= x)%R -> derivable_oo_LRcontinuous f y x ->
+  {within `[y, x] : set R^o, continuous f^`()} ->
+  let A := fun x : R => (\sum_(0 <= n < `|floor x|.+1) a n)%R in
+  (\sum_(`|floor y|.+1 <= n < `|floor x|.+1) a n * f n%:R =
+  A x * f x - A y * f y - \int_(t in `[y, x]) (A t * f^`() t))%R.
+Proof.
+move=> /andP [] y0 /[dup] /(le_trans y0) x0 /[dup] yx.
+rewrite le_eqVlt => /orP[/eqP <-|yx'] fderivable fC1 A.
+  by rewrite big_geq// subrr set_itv1 Rintegral_set1 subr0.
+have x0' := le_lt_trans y0 yx'. 
+set p := `|floor y|; set q := `|floor x|.
+have floory0: (0 <= floor y)%R by rewrite floor_ge0.
+have floorx0: (0 <= floor x)%R by rewrite floor_ge0.
+have py : (p%:R <= y)%R.
+  by rewrite -mulrz_nat natz gez0_abs ?floor_ge0// floor_le. 
+have yp : (y < p.+1%:R)%R.
+  by rewrite -natr1 -mulrz_nat natz -intrD1 gez0_abs// floorD1_gt.
+have qx : (q%:R <= x)%R.
+  by rewrite -mulrz_nat natz gez0_abs ?floor_ge0// floor_le. 
+have xq : (x < q.+1%:R)%R.
+  by rewrite -natr1 -mulrz_nat natz -intrD1 gez0_abs// floorD1_gt.
+have AteqAn: forall n t, (n%:R <= t < n.+1%:R)%R -> A t = A n%:R.
+  move=> n t /andP [] tb1 tb2.
+  have: floor t = n.
+    apply /floor_def /andP. split=> //.
+    by rewrite -natz natr1 mulrz_nat.
+  suff: @floor R n%:R = n by rewrite /A => -> ->.
+  by apply /(@intr_inj R) /eqP; rewrite -[_ == _]intrEfloor.
+have pleq: p <= q by apply: lez_abs2 => //; apply: le_floor.
+have fi:  lebesgue_measure.-integrable `[y, x] (EFin \o f^`()).
+  by apply: continuous_compact_integrable => //; apply: segment_compact.
+have fcontinuous: {in `]y, x[ : set R^o, continuous f}.
+  rewrite -continuous_open_subspace //. apply: derivable_within_continuous.
+  by case: fderivable.
+have tfct1t2 : forall t1 t2, (y <= t1)%R -> (t1 <= t2)%R -> (t2 <= x)%R ->
+    \int_(x in `[t1, t2]) f^`() x = (f t2 - f t1)%R.
+  move=> t1 t2 ylet1.
+  rewrite /Rintegral le_eqVlt => /orP [/eqP ->|t1ltt2 t2lex].
+    by rewrite subrr set_itv1 (integral_Sset1 t2).
+  rewrite (@continuous_FTC2 _ _ f)//.
+    by apply/(continuous_subspaceW _ fC1)/subset_itv; rewrite bnd_simp.
+  split.
+  - apply: (@in1_subset_itv _ _ _ `]y, x[%R); last first.
+      by case: fderivable.
+    by apply: subset_itv; rewrite bnd_simp.
+  - move: ylet1. rewrite le_eqVlt => /orP [/eqP <-|yltn].
+      by case: fderivable.
+    apply/cvg_at_right_filter/fcontinuous.
+    rewrite inE/= in_itv/=. apply/andP. split=> //.
+    exact: (lt_le_trans t1ltt2).
+  - move: t2lex. rewrite le_eqVlt => /orP [/eqP ->|t2ltx].
+      by case: fderivable.
+    apply: cvg_at_left_filter. apply: fcontinuous.
+    rewrite inE/= in_itv/=. apply/andP. split=> //.
+    exact: (le_lt_trans ylet1).
+move: pleq. rewrite leq_eqVlt => /orP [/eqP|] pq.
+  rewrite pq big_geq; first exact: ltnSn.
+  suff AteqAx t : t \in `[y, x] -> A t = A x.
+    rewrite (AteqAx y); first by rewrite set_itvcc inE/= lexx.
+    under eq_Rintegral => t tyx do rewrite AteqAx//.
+    by rewrite RintegralZl//= -!mulrBr tfct1t2// subrr// mulr0.
+  rewrite inE/= in_itv/= => /andP[] yt tx.
+  rewrite !(AteqAn p)// ?[X in X.+1]pq; apply/andP; split=> //.
+  - exact: (le_trans py yt).
+  - exact: (le_lt_trans tx xq).
+  - exact: (le_trans py yx).
+have ->: ((\sum_(p.+1 <= n < q.+1) a n * f n%:R)%R =
+    (A q%:R * f q%:R - A p%:R * f p.+1%:R)%R -
+    (\sum_(p.+1 <= n < q)  A n%:R * (f n.+1%:R - f n%:R)))%R.
+  rewrite -sumrN /A !floor_nat Abel_discrete//. congr (_ + _)%R.
+  by under [RHS]eq_bigr do rewrite floor_nat -mulrN opprB.
+rewrite big_nat.
+under eq_bigr => i /andP [] plti iltq.
+  have yi : (y <= i%:R)%R by apply/(le_trans (ltW yp)); rewrite ler_nat.
+  have ix : (i.+1%:R <= x)%R by apply: (le_trans _ qx); rewrite ler_nat.
+  rewrite -tfct1t2// ?ler_nat//.
+  have {}fi: lebesgue_measure.-integrable `[i%:R, i.+1%:R] (EFin \o f^`()).
+    apply: (integrableS _ _ _ fi) => //.
+    by apply: subset_itv => //=; rewrite bnd_simp.
+  rewrite -RintegralZl// -Rintegral_itv_bndo_bndc.
+    apply: eq_integrable; first exact: measurable_itv.
+      by move=> t _ /=; rewrite EFinM.
+    apply: integrableZl; first exact: measurable_itv.
+    apply: (integrableS _ _ _ fi) => //.
+    by apply: subset_itv => //=; rewrite bnd_simp.
+  under eq_Rintegral => t.
+    rewrite set_itvco inE/= => /AteqAn <-.
+    over.
+  over.
+rewrite -big_nat => /=.
+have Afi: lebesgue_measure.-integrable (`[y, x] : set R^o)
+    (EFin \o (fun x0 : R^o => A x0 * f^`() x0)%R).
+  have /setIidl <-: `[y, x] `<=` `[p%:R, q.+1%:R[.
+    by apply: subset_itv; rewrite bnd_simp/=.
+  rewrite -[p%:R]mulrz_nat -[q.+1%:R]mulrz_nat itvzz_bnd_bigcupD1.
+    by rewrite ler_nat; apply/ltnW/(ltn_trans pq).
+  rewrite setI_bigcupr bigcup_mkord.
+  apply: integrable_bigsetU => i _; first exact: measurableI.
+  apply: eq_integrable; first exact: measurableI.
+    move=> t; rewrite inE/= => -[_]; rewrite in_itv/=.
+    by rewrite -!natrD !mulrz_nat addnS EFinM => /AteqAn ->.
+  apply: integrableZl; first exact: measurableI.
+  by apply: (integrableS _ _ _ fi) => //; apply: measurableI.
+rewrite /Rintegral big_nat sum_fine => [i /andP[] pi iq//|].
+  apply: integrable_fin_num => //.
+  apply: (integrableS _ _ _ Afi) => //.
+  apply: subset_itv; rewrite bnd_simp.
+    by apply/ltW/(lt_le_trans yp); rewrite ler_nat.
+  by apply: (le_trans _ qx); rewrite ler_nat.
+rewrite -big_nat -integral_bigsetU_EFin //=; first exact: iota_uniq.
+- apply /trivIsetP => i j _ _ /eqP ineqj. rewrite -subset0 => z/=.
+  rewrite !in_itv/= => -[] /andP[] iz zi /andP[] jz zj.
+  move: (le_lt_trans iz zj) (le_lt_trans jz zi).
+  by rewrite !ltr_nat => ij ji; apply/ineqj/anti_leq/andP; split.
+- apply: measurable_int.
+  apply: (integrableS _ _ _ Afi) => //.
+    exact: bigsetU_measurable.
+  rewrite (big_addn 0) big_mkord.
+  rewrite -(bigcup_mkord _ (fun i => `[(i + p.+1)%:R, (i + p.+1).+1%:R[)).
+  apply: bigcup_sub => i/=; rewrite ltn_subRL addnC => ipq.
+  apply: subset_itv; rewrite bnd_simp.
+    by apply/ltW/(lt_le_trans yp); rewrite ler_nat leq_addl.
+  by apply: (le_trans _ qx); rewrite ler_nat.
+rewrite (big_addn 0) big_mkord.
+rewrite -(bigcup_mkord _ (fun i => `[(i + p.+1)%:R, (i + p.+1).+1%:R[)).
+under eq_bigcupr do
+  rewrite addnC -addnS -mulrz_nat -[(_ + _.+1)%:R]mulrz_nat !natrD.
+rewrite -(absz_nat (q - p.+1)) -natz natrB//.
+rewrite -itvzz_bnd_bigcupD1; first by rewrite ler_nat.
+rewrite !mulrz_nat -![fine _]/(Rintegral _ _ _).
+have itvyq: `[y, p.+1%:R[ `|` `[p.+1%:R, q%:R[ = `[y, q%:R[.
+  by rewrite -itv_bndbnd_setU// bnd_simp// ?ler_nat// ltW.
+have itvyx: `[y, x[ = `[y, p.+1%:R[ `|` `[p.+1%:R, q%:R[ `|` `[q%:R, x[.
+  rewrite itvyq -itv_bndbnd_setU// bnd_simp.
+  by apply/ltW/(lt_le_trans yp); rewrite ler_nat.
+have ->:
+  (\int_(t in `[y, x]) (A t * f^`() t) =
+    \int_(t in `[y, p.+1%:R[) (A t * f^`() t) +
+    \int_(t in `[p.+1%:R, q%:R[) (A t * f^`() t) +
+    \int_(t in `[q%:R, x[) (A t * f^`() t))%R.
+  rewrite /Rintegral -integral_itv_bndo_bndc.
+    apply: (measurable_int (@lebesgue_measure R)).
+    apply: (integrableS _ _ _ Afi) => //.
+    by apply: subset_itv; rewrite bnd_simp//.
+  rewrite itvyx -![fine _]/(Rintegral _ _ _) !Rintegral_setU //=.
+  - exact: measurableU.
+  - rewrite -itvyx.
+    apply: (integrableS _ _ _ Afi) => //.
+    by apply: subset_itv; rewrite bnd_simp//.
+  - apply /disj_setPS => z.
+    rewrite itvyq => /= -[] /andP [] _ zq /andP [] qz _.
+    suff: (z < z)%R by rewrite ltxx.
+    exact: (lt_le_trans zq qz).
+  - rewrite itvyq.
+    apply: (integrableS _ _ _ Afi) => //.
+    by apply: subset_itv; rewrite bnd_simp//.
+  - apply /disj_setPS => z /= [] /andP [] _ zp /andP [] pz _.
+    suff: (z < z)%R by rewrite ltxx.
+    exact: (lt_le_trans zp pz).
+under [in RHS]eq_Rintegral => t.
+  rewrite inE/= in_itv/= => /andP [] /(le_trans py) pt tp.
+  rewrite (AteqAn p) ?pt//.
+  over.
+under [X in (_ = _ - (_ + _ + X))%R]eq_Rintegral => t.
+  rewrite inE/= in_itv/= => /andP [] qt tx.
+  rewrite (AteqAn q); first by rewrite qt; apply: (lt_trans tx).
+  over.
+rewrite !RintegralZl //=.
+- apply: (integrableS _ _ _ fi) => //.
+  apply: subset_itv; rewrite bnd_simp//=.
+  by apply: (le_trans _ qx); rewrite ler_nat.
+- apply: (integrableS _ _ _ fi) => //.
+  apply: subset_itv; rewrite bnd_simp//=.
+  by apply: (le_trans (ltW yp)); rewrite ler_nat.
+rewrite /Rintegral [in RHS]integral_itv_bndo_bndc.
+  apply: (measurable_int (@lebesgue_measure R)).
+  apply: (integrableS _ _ _ fi) => //.
+  apply: subset_itv; rewrite bnd_simp//=.
+  by apply: (le_trans _ qx); rewrite ler_nat.
+rewrite [X in (A q%:R * fine X)%R]integral_itv_bndo_bndc.
+  apply: (measurable_int (@lebesgue_measure R)).
+  apply: (integrableS _ _ _ fi) => //.
+  apply: subset_itv; rewrite bnd_simp//=.
+  by apply: (le_trans (ltW yp)); rewrite ler_nat.
+rewrite -![fine _]/(Rintegral _ _ _) !tfct1t2 //.
+- exact: ltW.
+- by apply: (le_trans _ qx); rewrite ler_nat.
+- by apply: (le_trans (ltW yp)); rewrite ler_nat.
+rewrite (AteqAn q x) ?qx// (AteqAn p y) ?py// !opprD !mulrBr !opprB !addrA.
+by rewrite (AC 7 ((1*7)*(3*2)*6*4*5))/= !subrr !add0r.
+Qed.
