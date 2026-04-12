@@ -179,7 +179,7 @@ have: finset.trivIset (Parts i).
       exact: (Hw x y).
     by rewrite eq_sym disjoint_sym; apply: (Hw y x).
   rewrite -[x <= y]/(x <= y)%O.
-  rewrite le_eqVlt => /orP[/eqP ->|xy _]; first by rewrite eqxx.
+  rewrite le_eqVlt => /predU1P[->|xy _]; first by rewrite eqxx.
   rewrite -setI_eq0 -finset.subset0.
   apply /fintype.subsetP => x0.
   rewrite finset.in_setI !inE => /andP[] /mapP[]/= x1 x1x -> /mapP[]/= x2 x2y.
