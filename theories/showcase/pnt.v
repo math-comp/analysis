@@ -157,7 +157,6 @@ suff cardEi : forall i, k <= i ->
   rewrite -lte_fin.
   apply: (@le_lt_trans _ _ (N%:R%:E * \sum_(k <= i <oo) (prime_seq i)%:R^-1%:E)%E).
     rewrite EFinM lee_pmul ?lee_fin//; first by rewrite sumr_ge0.
-      by apply: sumr_ge0 => i _; rewrite invr_ge0.
     rewrite raddf_sum; apply: nneseries_lim_ge => n _ _.
     by rewrite lee_fin invr_ge0.
   rewrite EFinM -lte_pdivrMl ?ltr0n// muleA -EFinM mulVf ?mul1e//.
