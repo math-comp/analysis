@@ -186,7 +186,7 @@ have: finset.trivIset (Parts i).
   move=> /(congr1 val); rewrite !val_insubd; move: x1x x2y.
   rewrite !mem_iota !addnCB (Eigtpi x) // (Eigtpi y) // !addn0 !ltnS.
   have xiN (a : 'I_N.+1) (b : nat) : b <= a -> b <= N.
-  by rewrite -![b <= _]ltnS; move=> /leq_trans; apply.
+    by move/leq_trans; apply; rewrite -ltnS.
   move=> /andP [] _ /[dup] + /xiN -> /andP [] + /xiN -> x1eqx2.
   rewrite -x1eqx2 => /(leq_trans _)/[apply].
   rewrite -(leq_add2r (prime_seq i)) addnCB Eigtpi// addn0.
