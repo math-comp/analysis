@@ -181,7 +181,7 @@ have: finset.trivIset (Parts i).
   rewrite -[x <= y]/(x <= y)%O.
   rewrite le_eqVlt => /predU1P[->|xy _]; first by rewrite eqxx.
   rewrite -setI_eq0 -finset.subset0.
-  apply /fintype.subsetP => x0.
+  apply/fintype.subsetP => x0.
   rewrite finset.in_setI !inE => /andP[] /mapP[]/= x1 x1x -> /mapP[]/= x2 x2y.
   move=> /(congr1 val). rewrite !val_insubd. move: x1x x2y.
   rewrite !mem_iota !addnCB (Eigtpi x) // (Eigtpi y) // !addn0 !ltnS.
