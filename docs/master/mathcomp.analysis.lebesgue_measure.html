@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.lebesgue_measure</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 903b60a" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 8c72fe8" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -791,7 +791,16 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> elebesgue_measure</span>.<br/>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="elebesgue_measure.R" class="id"><a name="elebesgue_measure.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="elebesgue_measure" class="id"><div name="elebesgue_measure" class=" tooltip">elebesgue_measure<span class='tooltip-area'></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#elebesgue_measure.R">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#elebesgue_measure.R">R</a></span><span class="id"> :=</span><br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="elebesgue_measure" class="id"><div name="elebesgue_measure" class=" tooltip">elebesgue_measure<span class='tooltip-area'><p>ess_sup :
+forall [d : measure_display] {T : semiRingOfSetsType d} {R : realType},
+measure T R -> (T -> \bar R) -> \bar R
+
+ess_sup is not universe polymorphic
+Arguments ess_sup [d]%_measure_display_scope {T R} mu f%_function_scope
+ess_sup is transparent
+Expands to: Constant mathcomp.analysis.ess_sup_inf.ess_sup
+Declared in library mathcomp.analysis.ess_sup_inf, line 36, characters 11-18
+</p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#elebesgue_measure.R">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#elebesgue_measure.R">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="S:107" class="id"><a name="S:107" class="">S</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#lebesgue_measure">lebesgue_measure</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#fine">fine</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#S:107">S</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#cf50465a73dc8072abef3845b643e512"> `\`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#cf50465a73dc8072abef3845b643e512"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#5a7092a84ffebb249d94ea1f3b2cd778">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#5a7092a84ffebb249d94ea1f3b2cd778"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-oo'">-oo</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#5a7092a84ffebb249d94ea1f3b2cd778">;</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#5a7092a84ffebb249d94ea1f3b2cd778"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#5a7092a84ffebb249d94ea1f3b2cd778">]</a></span><span class="id">%E</span>)).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="elebesgue_measure0" class="id"><a name="elebesgue_measure0" class="">elebesgue_measure0</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#elebesgue_measure">elebesgue_measure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0%E</span>.<br/>
@@ -1412,16 +1421,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> lebesgue_regularity</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="vitali_cover" class="id"><div name="vitali_cover" class=" tooltip">vitali_cover<span class='tooltip-area'><p>ess_sup :
-forall [d : measure_display] {T : semiRingOfSetsType d} {R : realType},
-measure T R -> (T -> \bar R) -> \bar R
-
-ess_sup is not universe polymorphic
-Arguments ess_sup [d]%_measure_display_scope {T R} mu f%_function_scope
-ess_sup is transparent
-Expands to: Constant mathcomp.analysis.ess_sup_inf.ess_sup
-Declared in library mathcomp.analysis.ess_sup_inf, line 36, characters 11-18
-ess_inf :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="vitali_cover" class="id"><div name="vitali_cover" class=" tooltip">vitali_cover<span class='tooltip-area'><p>ess_inf :
 forall [d : measure_display] {T : semiRingOfSetsType d} {R : realType},
 measure T R ->
 (T -> \bar R) -> constructive_ereal_extended__canonical__Order_POrder
