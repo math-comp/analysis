@@ -190,8 +190,7 @@ have: finset.trivIset (Parts i).
   move=> /andP [] _ /[dup] + /xiN -> /andP [] + /xiN -> x1eqx2.
   rewrite -x1eqx2 => /(leq_trans _)/[apply].
   rewrite -(leq_add2r (prime_seq i)) addnCB Eigtpi// addn0.
-  rewrite -(@leq_sub2rE x) ?leq_addr// subDnCA// subnn addn0 subSn.
-    exact: ltnW.
+  rewrite -(@leq_sub2rE x) ?leq_addr// subDnCA// subnn addn0 (subSn (ltW xy)).
   rewrite ltnNge dvdn_leq// ?subn_gt0//.
   have dvdni z : z \in E i -> prime_seq i %| z.
     by rewrite inE mem_primes => /andP[] _ /andP[].
