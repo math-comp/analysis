@@ -317,7 +317,7 @@ have binB (n : 'I_N.+1) :
   rewrite (bigID (mem (primes n))) /=.
   rewrite [X in _ * X]big1 => [[//|][//|] i ip|].
     apply/eqP; rewrite -(expn0 i.+2) eqn_exp2l//.
-    by apply/eqP; move: ip; rewrite -logn_gt0 lt0n => /negPn /eqP.
+    by move: ip; rewrite -logn_gt0 lt0n negbK.
   rewrite muln1 -big_filter.
   have [nltk|klen] := ltnP n k; first by rewrite (eqseq n).
   rewrite -[in X in _ <= X](eqseq n n.+1); first exact: ltnSn.
