@@ -419,7 +419,7 @@ have Neq : N./2 + (2 ^ (k.*2 + 1)).+1 = N.+1.
 rewrite -[X in _ < X]Neq -addSn.
 apply: leq_add; last exact: cardP.
 rewrite -(ltr_nat R).
-have ->: (N./2%:R = N%:R / 2 :> R)%R.
+have -> : (N./2%:R = N%:R / 2 :> R)%R.
   by rewrite /N addnS expnS [in LHS]mul2n doubleK natrM mulrC mulKf.
 by apply: (@cardG R) => //; rewrite /N expn_gt0.
 Qed.
