@@ -937,6 +937,13 @@ Arguments KnownSign.wider_sign (xs ys)%_snum_sign_scope
 KnownSign.wider_sign is transparent
 Expands to: Constant mathcomp.reals.signed.KnownSign.wider_sign
 Declared in library mathcomp.reals.signed, line 221, characters 11-21
+KnownSign.wider_real : KnownSign.real -> KnownSign.real -> bool
+
+KnownSign.wider_real is not universe polymorphic
+Arguments KnownSign.wider_real xr yr
+KnownSign.wider_real is transparent
+Expands to: Constant mathcomp.reals.signed.KnownSign.wider_real
+Declared in library mathcomp.reals.signed, line 229, characters 11-21
 </p></span></div></span> (<span id="xnz:173" class="id"><a name="xnz:173" class="">xnz</a></span><span class="id"> </span><span id="ynz:174" class="id"><a name="ynz:174" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:175" class="id"><a name="xr:175" class="">xr</a></span><span class="id"> </span><span id="yr:176" class="id"><a name="yr:176" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#nz_of_bool">nz_of_bool</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="mathcomp.reals.signed.html#xnz:173">xnz</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:174">ynz</a></span><br/>
@@ -944,13 +951,13 @@ Declared in library mathcomp.reals.signed, line 221, characters 11-21
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185">||</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:174">ynz</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> </a></span><span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#yr:176">yr</a></span><span class="gallina-kwd"> with</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#7a2442f26cc812c3d31340abc9c9fb22">&lt;=0</a></span>)<span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="id"> |</span><span class="id"> _</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="gallina-kwd"> end</span>).<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#min_nonzero_subdef">min_nonzero_subdef</a></span><span class="id"> /</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="min_reality_subdef" class="id"><div name="min_reality_subdef" class=" tooltip">min_reality_subdef<span class='tooltip-area'><p>KnownSign.wider_real : KnownSign.real -> KnownSign.real -> bool
+<span class="vernacular">Definition</span><span class="id"> </span><span id="min_reality_subdef" class="id"><div name="min_reality_subdef" class=" tooltip">min_reality_subdef<span class='tooltip-area'><p>KnownSign.wider_reality : KnownSign.reality -> KnownSign.reality -> bool
 
-KnownSign.wider_real is not universe polymorphic
-Arguments KnownSign.wider_real xr yr
-KnownSign.wider_real is transparent
-Expands to: Constant mathcomp.reals.signed.KnownSign.wider_real
-Declared in library mathcomp.reals.signed, line 229, characters 11-21
+KnownSign.wider_reality is not universe polymorphic
+Arguments KnownSign.wider_reality (xr yr)%_snum_sign_scope
+KnownSign.wider_reality is transparent
+Expands to: Constant mathcomp.reals.signed.KnownSign.wider_reality
+Declared in library mathcomp.reals.signed, line 235, characters 11-24
 </p></span></div></span> (<span id="xnz:179" class="id"><a name="xnz:179" class="">xnz</a></span><span class="id"> </span><span id="ynz:180" class="id"><a name="ynz:180" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:181" class="id"><a name="xr:181" class="">xr</a></span><span class="id"> </span><span id="yr:182" class="id"><a name="yr:182" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#xr:181">xr</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#yr:182">yr</a></span><span class="gallina-kwd"> with</span><br/>
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span>)<span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span>)<br/>
@@ -998,26 +1005,12 @@ Declared in library mathcomp.reals.signed, line 229, characters 11-21
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">|rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.minEle">minEle</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifP">ifP</a></span><span class="id"> =&gt;</span><span class="id"> //;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.le_trans">le_trans</a></span><span class="id">]]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="min_snum" class="id"><div name="min_snum" class=" tooltip">min_snum<span class='tooltip-area'><p>KnownSign.wider_reality : KnownSign.reality -> KnownSign.reality -> bool
-
-KnownSign.wider_reality is not universe polymorphic
-Arguments KnownSign.wider_reality (xr yr)%_snum_sign_scope
-KnownSign.wider_reality is transparent
-Expands to: Constant mathcomp.reals.signed.KnownSign.wider_reality
-Declared in library mathcomp.reals.signed, line 235, characters 11-24
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="min_snum" class="id"><div name="min_snum" class=" tooltip">min_snum<span class='tooltip-area'><p>Signed.is_real not a defined object.
 </p></span></div></span> (<span id="xnz:193" class="id"><a name="xnz:193" class="">xnz</a></span><span class="id"> </span><span id="ynz:194" class="id"><a name="ynz:194" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:195" class="id"><a name="xr:195" class="">xr</a></span><span class="id"> </span><span id="yr:196" class="id"><a name="yr:196" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="x:197" class="id"><a name="x:197" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#POrderStability.x0">x0</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:193">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:195">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>) (<span id="y:198" class="id"><a name="y:198" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#POrderStability.x0">x0</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:194">ynz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#yr:196">yr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#min_snum_subproof">min_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:197">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#y:198">y</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="max_nonzero_subdef" class="id"><div name="max_nonzero_subdef" class=" tooltip">max_nonzero_subdef<span class='tooltip-area'><p>Signed.is_real not a defined object.
-</p></span></div></span> (<span id="xnz:199" class="id"><a name="xnz:199" class="">xnz</a></span><span class="id"> </span><span id="ynz:200" class="id"><a name="ynz:200" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:201" class="id"><a name="xr:201" class="">xr</a></span><span class="id"> </span><span id="yr:202" class="id"><a name="yr:202" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :=</span><br/>
-&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#nz_of_bool">nz_of_bool</a></span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="mathcomp.reals.signed.html#xnz:199">xnz</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:200">ynz</a></span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185">||</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:199">xnz</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> </a></span><span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#xr:201">xr</a></span><span class="gallina-kwd"> with</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#f1caef69e1bef41a6b6764969723a144">&gt;=0</a></span>)<span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="id"> |</span><span class="id"> _</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="id"> end</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185">||</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:200">ynz</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:201">xr</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> </a></span><span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#yr:202">yr</a></span><span class="gallina-kwd"> with</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#f1caef69e1bef41a6b6764969723a144">&gt;=0</a></span>)<span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="id"> |</span><span class="id"> _</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="gallina-kwd"> end</span>).<br/>
-<span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#max_nonzero_subdef">max_nonzero_subdef</a></span><span class="id"> /</span>.<br/>
-<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="max_reality_subdef" class="id"><div name="max_reality_subdef" class=" tooltip">max_reality_subdef<span class='tooltip-area'><p>Signed.reality_cond :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="max_nonzero_subdef" class="id"><div name="max_nonzero_subdef" class=" tooltip">max_nonzero_subdef<span class='tooltip-area'><p>Signed.reality_cond :
 forall [disp : disp_t] [T : porderType disp],
 T -> KnownSign.reality -> T -> bool
 
@@ -1026,6 +1019,24 @@ Arguments Signed.reality_cond [disp T] x0 n%_snum_sign_scope x
 Signed.reality_cond is transparent
 Expands to: Constant mathcomp.reals.signed.Signed.reality_cond
 Declared in library mathcomp.reals.signed, line 248, characters 11-23
+</p></span></div></span> (<span id="xnz:199" class="id"><a name="xnz:199" class="">xnz</a></span><span class="id"> </span><span id="ynz:200" class="id"><a name="ynz:200" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:201" class="id"><a name="xr:201" class="">xr</a></span><span class="id"> </span><span id="yr:202" class="id"><a name="yr:202" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#nz_of_bool">nz_of_bool</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="mathcomp.reals.signed.html#xnz:199">xnz</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:200">ynz</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185">||</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:199">xnz</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> </a></span><span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#xr:201">xr</a></span><span class="gallina-kwd"> with</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#f1caef69e1bef41a6b6764969723a144">&gt;=0</a></span>)<span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="id"> |</span><span class="id"> _</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="id"> end</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185">||</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:200">ynz</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:201">xr</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> </a></span><span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#yr:202">yr</a></span><span class="gallina-kwd"> with</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#f1caef69e1bef41a6b6764969723a144">&gt;=0</a></span>)<span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="id"> |</span><span class="id"> _</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="gallina-kwd"> end</span>).<br/>
+<span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#max_nonzero_subdef">max_nonzero_subdef</a></span><span class="id"> /</span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="max_reality_subdef" class="id"><div name="max_reality_subdef" class=" tooltip">max_reality_subdef<span class='tooltip-area'><p>Signed.mk :
+forall {d : disp_t} {T : porderType d} [x0 : T] [nz : KnownSign.nullity]
+  [cond : KnownSign.reality] [r : T],
+Signed.spec x0 nz cond r -> {compare x0 & nz & cond}
+
+Signed.mk is not universe polymorphic
+Arguments Signed.mk {d T} [x0] [nz]%_snum_nullity_scope
+  [cond]%_snum_sign_scope [r] P
+Signed.mk is transparent
+Expands to: Constant mathcomp.reals.signed.Signed.mk
+Declared in library mathcomp.reals.signed, line 277, characters 11-13
 </p></span></div></span> (<span id="xnz:205" class="id"><a name="xnz:205" class="">xnz</a></span><span class="id"> </span><span id="ynz:206" class="id"><a name="ynz:206" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:207" class="id"><a name="xr:207" class="">xr</a></span><span class="id"> </span><span id="yr:208" class="id"><a name="yr:208" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#xr:207">xr</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#yr:208">yr</a></span><span class="gallina-kwd"> with</span><br/>
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span>)<span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span>)<br/>
@@ -1073,17 +1084,17 @@ Declared in library mathcomp.reals.signed, line 248, characters 11-23
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">|rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.maxEle">maxEle</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ifT">ifT</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.reals.signed.html#ge0">ge0</a></span><span class="id">//;</span><span class="id"> apply:</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.le_trans">le_trans</a></span><span class="id"> xlex0</span>)<span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#ge0">ge0</a></span><span class="id">]]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="max_snum" class="id"><div name="max_snum" class=" tooltip">max_snum<span class='tooltip-area'><p>Signed.mk :
-forall {d : disp_t} {T : porderType d} [x0 : T] [nz : KnownSign.nullity]
-  [cond : KnownSign.reality] [r : T],
-Signed.spec x0 nz cond r -> {compare x0 & nz & cond}
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="max_snum" class="id"><div name="max_snum" class=" tooltip">max_snum<span class='tooltip-area'><p>Signed.from :
+forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
+  {cond : KnownSign.reality} {x : {compare x0 & nz & cond}},
+phantom T x%:num%R -> {compare x0 & nz & cond}
 
-Signed.mk is not universe polymorphic
-Arguments Signed.mk {d T} [x0] [nz]%_snum_nullity_scope
-  [cond]%_snum_sign_scope [r] P
-Signed.mk is transparent
-Expands to: Constant mathcomp.reals.signed.Signed.mk
-Declared in library mathcomp.reals.signed, line 277, characters 11-13
+Signed.from is not universe polymorphic
+Arguments Signed.from {d T x0} {nz}%_snum_nullity_scope
+  {cond}%_snum_sign_scope {x} phx
+Signed.from is transparent
+Expands to: Constant mathcomp.reals.signed.Signed.from
+Declared in library mathcomp.reals.signed, line 280, characters 11-15
 </p></span></div></span> (<span id="xnz:219" class="id"><a name="xnz:219" class="">xnz</a></span><span class="id"> </span><span id="ynz:220" class="id"><a name="ynz:220" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:221" class="id"><a name="xr:221" class="">xr</a></span><span class="id"> </span><span id="yr:222" class="id"><a name="yr:222" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="x:223" class="id"><a name="x:223" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#POrderStability.x0">x0</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:219">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:221">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>) (<span id="y:224" class="id"><a name="y:224" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#POrderStability.x0">x0</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:220">ynz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#yr:222">yr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#max_snum_subproof">max_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:223">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#y:224">y</a></span>).<br/>
@@ -1099,26 +1110,7 @@ Declared in library mathcomp.reals.signed, line 277, characters 11-13
 <div class="proofscript">
 <span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqxx">eqxx</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="zero_snum" class="id"><div name="zero_snum" class=" tooltip">zero_snum<span class='tooltip-area'><p>Signed.from :
-forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
-  {cond : KnownSign.reality} {x : {compare x0 & nz & cond}},
-phantom T x%:num%R -> {compare x0 & nz & cond}
-
-Signed.from is not universe polymorphic
-Arguments Signed.from {d T x0} {nz}%_snum_nullity_scope
-  {cond}%_snum_sign_scope {x} phx
-Signed.from is transparent
-Expands to: Constant mathcomp.reals.signed.Signed.from
-Declared in library mathcomp.reals.signed, line 280, characters 11-15
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#zero_snum_subproof">zero_snum_subproof</a></span>.<br/>
-<br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="one_snum_subproof" class="id"><a name="one_snum_subproof" class="">one_snum_subproof</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#spec">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#spec">spec</a></span><span class="id"> 0</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#5e27fe60fda0a7fe6124229ec9350cb6">!=0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#f1caef69e1bef41a6b6764969723a144">&gt;=0</a></span> (<span class="id">1</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#NumDomainStability.R">R</a></span>).<br/>
-<details>
-<summary class="toggleproof">Proof.</summary>
-<div class="proofscript">
-<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.oner_eq0">oner_eq0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ler01">ler01</a></span>. Qed.</div></details>
-<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="one_snum" class="id"><div name="one_snum" class=" tooltip">one_snum<span class='tooltip-area'><p>Signed.fromP :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="zero_snum" class="id"><div name="zero_snum" class=" tooltip">zero_snum<span class='tooltip-area'><p>Signed.fromP :
 forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
   {cond : KnownSign.reality} {x : {compare x0 & nz & cond}},
 phantom T x%:num%R -> Signed.spec x0 nz cond x%:num%R
@@ -1129,15 +1121,30 @@ Arguments Signed.fromP {d T x0} {nz}%_snum_nullity_scope
 Signed.fromP is transparent
 Expands to: Constant mathcomp.reals.signed.Signed.fromP
 Declared in library mathcomp.reals.signed, line 283, characters 11-16
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#one_snum_subproof">one_snum_subproof</a></span>.<br/>
+</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#zero_snum_subproof">zero_snum_subproof</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="opp_reality_subdef" class="id"><div name="opp_reality_subdef" class=" tooltip">opp_reality_subdef<span class='tooltip-area'><p>posnum : forall [R : numDomainType], phant R -> Type
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="one_snum_subproof" class="id"><a name="one_snum_subproof" class="">one_snum_subproof</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#spec">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#spec">spec</a></span><span class="id"> 0</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#5e27fe60fda0a7fe6124229ec9350cb6">!=0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#f1caef69e1bef41a6b6764969723a144">&gt;=0</a></span> (<span class="id">1</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#NumDomainStability.R">R</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.oner_eq0">oner_eq0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ler01">ler01</a></span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="one_snum" class="id"><div name="one_snum" class=" tooltip">one_snum<span class='tooltip-area'><p>posnum : forall [R : numDomainType], phant R -> Type
 
 posnum is not universe polymorphic
 Arguments posnum [R] _
 posnum is transparent
 Expands to: Constant mathcomp.reals.signed.Signed.Exports.posnum
 Declared in library mathcomp.reals.signed, line 324, characters 11-17
+</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#one_snum_subproof">one_snum_subproof</a></span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="opp_reality_subdef" class="id"><div name="opp_reality_subdef" class=" tooltip">opp_reality_subdef<span class='tooltip-area'><p>nonneg : forall [R : numDomainType], phant R -> Type
+
+nonneg is not universe polymorphic
+Arguments nonneg [R] _
+nonneg is transparent
+Expands to: Constant mathcomp.reals.signed.Signed.Exports.nonneg
+Declared in library mathcomp.reals.signed, line 327, characters 11-17
 </p></span></div></span> (<span id="xnz:226" class="id"><a name="xnz:226" class="">xnz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:227" class="id"><a name="xr:227" class="">xr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#xr:227">xr</a></span><span class="gallina-kwd"> with</span><br/>
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span>)<span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span><br/>
@@ -1157,23 +1164,23 @@ Declared in library mathcomp.reals.signed, line 324, characters 11-17
 &nbsp;&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.oppr_eq0">oppr_eq0</a></span><span class="id"> ?</span>(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.oppr_ge0">oppr_ge0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.oppr_le0">oppr_le0</a></span>)<span class="id">//</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#orbC">orbC</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="opp_snum" class="id"><div name="opp_snum" class=" tooltip">opp_snum<span class='tooltip-area'><p>nonneg : forall [R : numDomainType], phant R -> Type
-
-nonneg is not universe polymorphic
-Arguments nonneg [R] _
-nonneg is transparent
-Expands to: Constant mathcomp.reals.signed.Signed.Exports.nonneg
-Declared in library mathcomp.reals.signed, line 327, characters 11-17
-</p></span></div></span> (<span id="xnz:233" class="id"><a name="xnz:233" class="">xnz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:234" class="id"><a name="xr:234" class="">xr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>) (<span id="x:235" class="id"><a name="x:235" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#NumDomainStability.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:233">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:234">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>)<span class="id"> :=</span><br/>
-&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#opp_snum_subproof">opp_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:235">x</a></span>).<br/>
-<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="add_samesign_subdef" class="id"><div name="add_samesign_subdef" class=" tooltip">add_samesign_subdef<span class='tooltip-area'><p>top_typ : forall [d : disp_t] [T : porderType d], T -> Signed.typ d ?=0 >?<0
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="opp_snum" class="id"><div name="opp_snum" class=" tooltip">opp_snum<span class='tooltip-area'><p>top_typ : forall [d : disp_t] [T : porderType d], T -> Signed.typ d ?=0 >?<0
 
 top_typ is not universe polymorphic
 Arguments top_typ [d T] x0
 top_typ is transparent
 Expands to: Constant mathcomp.reals.signed.top_typ
 Declared in library mathcomp.reals.signed, line 347, characters 10-17
+</p></span></div></span> (<span id="xnz:233" class="id"><a name="xnz:233" class="">xnz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:234" class="id"><a name="xr:234" class="">xr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>) (<span id="x:235" class="id"><a name="x:235" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#NumDomainStability.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:233">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:234">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>)<span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#opp_snum_subproof">opp_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:235">x</a></span>).<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="add_samesign_subdef" class="id"><div name="add_samesign_subdef" class=" tooltip">add_samesign_subdef<span class='tooltip-area'><p>real_domain_typ : realDomainType -> Signed.typ ring_display ?=0 >=<0
+
+real_domain_typ is not universe polymorphic
+Arguments real_domain_typ R
+real_domain_typ is transparent
+Expands to: Constant mathcomp.reals.signed.real_domain_typ
+Declared in library mathcomp.reals.signed, line 354, characters 10-25
 </p></span></div></span> (<span id="xnz:236" class="id"><a name="xnz:236" class="">xnz</a></span><span class="id"> </span><span id="ynz:237" class="id"><a name="ynz:237" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:238" class="id"><a name="xr:238" class="">xr</a></span><span class="id"> </span><span id="yr:239" class="id"><a name="yr:239" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#xr:238">xr</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#yr:239">yr</a></span><span class="gallina-kwd"> with</span><br/>
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#f1caef69e1bef41a6b6764969723a144">&gt;=0</a></span>)<span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span>)<br/>
@@ -1186,24 +1193,23 @@ Declared in library mathcomp.reals.signed, line 347, characters 10-17
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> _,</span><span class="id"> _</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">end</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="add_nonzero_subdef" class="id"><div name="add_nonzero_subdef" class=" tooltip">add_nonzero_subdef<span class='tooltip-area'><p>real_domain_typ : realDomainType -> Signed.typ ring_display ?=0 >=<0
-
-real_domain_typ is not universe polymorphic
-Arguments real_domain_typ R
-real_domain_typ is transparent
-Expands to: Constant mathcomp.reals.signed.real_domain_typ
-Declared in library mathcomp.reals.signed, line 354, characters 10-25
-</p></span></div></span> (<span id="xnz:242" class="id"><a name="xnz:242" class="">xnz</a></span><span class="id"> </span><span id="ynz:243" class="id"><a name="ynz:243" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:244" class="id"><a name="xr:244" class="">xr</a></span><span class="id"> </span><span id="yr:245" class="id"><a name="yr:245" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :=</span><br/>
-&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#nz_of_bool">nz_of_bool</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#add_samesign_subdef">add_samesign_subdef</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#xnz:242">xnz</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#ynz:243">ynz</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#xr:244">xr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#yr:245">yr</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#xnz:242">xnz</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185"> ||</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:243">ynz</a></span>)).<br/>
-<span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#add_nonzero_subdef">add_nonzero_subdef</a></span><span class="id"> /</span>.<br/>
-<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="add_reality_subdef" class="id"><div name="add_reality_subdef" class=" tooltip">add_reality_subdef<span class='tooltip-area'><p>real_field_typ : realFieldType -> Signed.typ ring_display ?=0 >=<0
+<span class="vernacular">Definition</span><span class="id"> </span><span id="add_nonzero_subdef" class="id"><div name="add_nonzero_subdef" class=" tooltip">add_nonzero_subdef<span class='tooltip-area'><p>real_field_typ : realFieldType -> Signed.typ ring_display ?=0 >=<0
 
 real_field_typ is not universe polymorphic
 Arguments real_field_typ R
 real_field_typ is transparent
 Expands to: Constant mathcomp.reals.signed.real_field_typ
 Declared in library mathcomp.reals.signed, line 361, characters 10-24
+</p></span></div></span> (<span id="xnz:242" class="id"><a name="xnz:242" class="">xnz</a></span><span class="id"> </span><span id="ynz:243" class="id"><a name="ynz:243" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:244" class="id"><a name="xr:244" class="">xr</a></span><span class="id"> </span><span id="yr:245" class="id"><a name="yr:245" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#nz_of_bool">nz_of_bool</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#add_samesign_subdef">add_samesign_subdef</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#xnz:242">xnz</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#ynz:243">ynz</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#xr:244">xr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#yr:245">yr</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#xnz:242">xnz</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185"> ||</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:243">ynz</a></span>)).<br/>
+<span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#add_nonzero_subdef">add_nonzero_subdef</a></span><span class="id"> /</span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="add_reality_subdef" class="id"><div name="add_reality_subdef" class=" tooltip">add_reality_subdef<span class='tooltip-area'><p>nat_typ : Signed.typ NatOrder.nat_display ?=0 >=0
+
+nat_typ is not universe polymorphic
+nat_typ is transparent
+Expands to: Constant mathcomp.reals.signed.nat_typ
+Declared in library mathcomp.reals.signed, line 367, characters 10-17
 </p></span></div></span> (<span id="xnz:246" class="id"><a name="xnz:246" class="">xnz</a></span><span class="id"> </span><span id="ynz:247" class="id"><a name="ynz:247" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:248" class="id"><a name="xr:248" class="">xr</a></span><span class="id"> </span><span id="yr:249" class="id"><a name="yr:249" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#xr:248">xr</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#yr:249">yr</a></span><span class="gallina-kwd"> with</span><br/>
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span>)<span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span>)<span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span><br/>
@@ -1236,17 +1242,7 @@ Declared in library mathcomp.reals.signed, line 361, characters 10-24
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">|by</span><span class="id"> case:</span> (<span class="id"><a href="mathcomp.reals.signed.html#bottom">bottom</a></span><span class="id"> x</span>)<span class="id">|by</span><span class="id"> case:</span> (<span class="id"><a href="mathcomp.reals.signed.html#bottom">bottom</a></span><span class="id"> y</span>)<span class="id">|by</span><span class="id"> rewrite</span><span class="id"> !</span><span class="id"><a href="mathcomp.reals.signed.html#eq0">eq0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.addr0">addr0</a></span><span class="id">]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="add_snum" class="id"><div name="add_snum" class=" tooltip">add_snum<span class='tooltip-area'><p>nat_typ : Signed.typ NatOrder.nat_display ?=0 >=0
-
-nat_typ is not universe polymorphic
-nat_typ is transparent
-Expands to: Constant mathcomp.reals.signed.nat_typ
-Declared in library mathcomp.reals.signed, line 367, characters 10-17
-</p></span></div></span> (<span id="xnz:262" class="id"><a name="xnz:262" class="">xnz</a></span><span class="id"> </span><span id="ynz:263" class="id"><a name="ynz:263" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:264" class="id"><a name="xr:264" class="">xr</a></span><span class="id"> </span><span id="yr:265" class="id"><a name="yr:265" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;(<span id="x:266" class="id"><a name="x:266" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#NumDomainStability.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:262">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:264">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>) (<span id="y:267" class="id"><a name="y:267" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#NumDomainStability.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:263">ynz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#yr:265">yr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>)<span class="id"> :=</span><br/>
-&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#add_snum_subproof">add_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:266">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#y:267">y</a></span>).<br/>
-<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="mul_nonzero_subdef" class="id"><div name="mul_nonzero_subdef" class=" tooltip">mul_nonzero_subdef<span class='tooltip-area'><p>typ_snum :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="add_snum" class="id"><div name="add_snum" class=" tooltip">add_snum<span class='tooltip-area'><p>typ_snum :
 forall [d : disp_t] [nz : KnownSign.nullity] [cond : KnownSign.reality]
   [xt : Signed.typ d nz cond],
 Signed.sort xt -> {compare Signed.sort_x0 xt & nz & cond}
@@ -1257,11 +1253,11 @@ Arguments typ_snum [d] [nz]%_snum_nullity_scope [cond]%_snum_sign_scope
 typ_snum is transparent
 Expands to: Constant mathcomp.reals.signed.typ_snum
 Declared in library mathcomp.reals.signed, line 379, characters 10-18
-</p></span></div></span> (<span id="xnz:268" class="id"><a name="xnz:268" class="">xnz</a></span><span class="id"> </span><span id="ynz:269" class="id"><a name="ynz:269" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:270" class="id"><a name="xr:270" class="">xr</a></span><span class="id"> </span><span id="yr:271" class="id"><a name="yr:271" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :=</span><br/>
-&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#nz_of_bool">nz_of_bool</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#xnz:268">xnz</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:269">ynz</a></span>).<br/>
-<span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#mul_nonzero_subdef">mul_nonzero_subdef</a></span><span class="id"> /</span>.<br/>
+</p></span></div></span> (<span id="xnz:262" class="id"><a name="xnz:262" class="">xnz</a></span><span class="id"> </span><span id="ynz:263" class="id"><a name="ynz:263" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:264" class="id"><a name="xr:264" class="">xr</a></span><span class="id"> </span><span id="yr:265" class="id"><a name="yr:265" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span id="x:266" class="id"><a name="x:266" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#NumDomainStability.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:262">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:264">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>) (<span id="y:267" class="id"><a name="y:267" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#NumDomainStability.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:263">ynz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#yr:265">yr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>)<span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#add_snum_subproof">add_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:266">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#y:267">y</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="mul_reality_subdef" class="id"><div name="mul_reality_subdef" class=" tooltip">mul_reality_subdef<span class='tooltip-area'><p>widen_signed :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="mul_nonzero_subdef" class="id"><div name="mul_nonzero_subdef" class=" tooltip">mul_nonzero_subdef<span class='tooltip-area'><p>widen_signed :
 forall {d : disp_t} {T : porderType d} {x0 : T} {nz : KnownSign.nullity}
   {cond : KnownSign.reality},
 {compare x0 & nz & cond} ->
@@ -1275,6 +1271,21 @@ Arguments widen_signed {d T x0} {nz}%_snum_nullity_scope
 widen_signed is transparent
 Expands to: Constant mathcomp.reals.signed.widen_signed
 Declared in library mathcomp.reals.signed, line 489, characters 11-23
+</p></span></div></span> (<span id="xnz:268" class="id"><a name="xnz:268" class="">xnz</a></span><span class="id"> </span><span id="ynz:269" class="id"><a name="ynz:269" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:270" class="id"><a name="xr:270" class="">xr</a></span><span class="id"> </span><span id="yr:271" class="id"><a name="yr:271" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#nz_of_bool">nz_of_bool</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#xnz:268">xnz</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:269">ynz</a></span>).<br/>
+<span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#mul_nonzero_subdef">mul_nonzero_subdef</a></span><span class="id"> /</span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="mul_reality_subdef" class="id"><div name="mul_reality_subdef" class=" tooltip">mul_reality_subdef<span class='tooltip-area'><p>min_nonzero_subdef :
+KnownSign.nullity ->
+KnownSign.nullity ->
+KnownSign.reality -> KnownSign.reality -> KnownSign.nullity
+
+min_nonzero_subdef is not universe polymorphic
+Arguments min_nonzero_subdef (xnz ynz)%_snum_nullity_scope
+  (xr yr)%_snum_sign_scope
+min_nonzero_subdef is transparent
+Expands to: Constant mathcomp.reals.signed.min_nonzero_subdef
+Declared in library mathcomp.reals.signed, line 568, characters 11-29
 </p></span></div></span> (<span id="xnz:272" class="id"><a name="xnz:272" class="">xnz</a></span><span class="id"> </span><span id="ynz:273" class="id"><a name="ynz:273" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:274" class="id"><a name="xr:274" class="">xr</a></span><span class="id"> </span><span id="yr:275" class="id"><a name="yr:275" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#xr:274">xr</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#yr:275">yr</a></span><span class="gallina-kwd"> with</span><br/>
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span>)<span class="id">,</span><span class="id"> _</span><span class="id"> |</span><span class="id"> _,</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span>)<span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span><br/>
@@ -1304,17 +1315,17 @@ Declared in library mathcomp.reals.signed, line 489, characters 11-23
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">|by</span><span class="id"> case:</span> (<span class="id"><a href="mathcomp.reals.signed.html#bottom">bottom</a></span><span class="id"> x</span>)<span class="id">|by</span><span class="id"> case:</span> (<span class="id"><a href="mathcomp.reals.signed.html#bottom">bottom</a></span><span class="id"> y</span>)<span class="id">|by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#eq0">eq0</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr0">mulr0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.mul0r">mul0r</a></span><span class="id">]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="mul_snum" class="id"><div name="mul_snum" class=" tooltip">mul_snum<span class='tooltip-area'><p>min_nonzero_subdef :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="mul_snum" class="id"><div name="mul_snum" class=" tooltip">mul_snum<span class='tooltip-area'><p>min_reality_subdef :
 KnownSign.nullity ->
 KnownSign.nullity ->
-KnownSign.reality -> KnownSign.reality -> KnownSign.nullity
+KnownSign.reality -> KnownSign.reality -> KnownSign.reality
 
-min_nonzero_subdef is not universe polymorphic
-Arguments min_nonzero_subdef (xnz ynz)%_snum_nullity_scope
+min_reality_subdef is not universe polymorphic
+Arguments min_reality_subdef (xnz ynz)%_snum_nullity_scope
   (xr yr)%_snum_sign_scope
-min_nonzero_subdef is transparent
-Expands to: Constant mathcomp.reals.signed.min_nonzero_subdef
-Declared in library mathcomp.reals.signed, line 568, characters 11-29
+min_reality_subdef is transparent
+Expands to: Constant mathcomp.reals.signed.min_reality_subdef
+Declared in library mathcomp.reals.signed, line 575, characters 11-29
 </p></span></div></span> (<span id="xnz:286" class="id"><a name="xnz:286" class="">xnz</a></span><span class="id"> </span><span id="ynz:287" class="id"><a name="ynz:287" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:288" class="id"><a name="xr:288" class="">xr</a></span><span class="id"> </span><span id="yr:289" class="id"><a name="yr:289" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="x:290" class="id"><a name="x:290" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#NumDomainStability.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:286">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:288">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>) (<span id="y:291" class="id"><a name="y:291" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#NumDomainStability.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:287">ynz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#yr:289">yr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#mul_snum_subproof">mul_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:290">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#y:291">y</a></span>).<br/>
@@ -1336,17 +1347,20 @@ Declared in library mathcomp.reals.signed, line 568, characters 11-29
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">|by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.real_comparable">real_comparable</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.real0">real0</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.realrMn">realrMn</a></span><span class="id">]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="natmul_snum" class="id"><div name="natmul_snum" class=" tooltip">natmul_snum<span class='tooltip-area'><p>min_reality_subdef :
-KnownSign.nullity ->
-KnownSign.nullity ->
-KnownSign.reality -> KnownSign.reality -> KnownSign.reality
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="natmul_snum" class="id"><div name="natmul_snum" class=" tooltip">natmul_snum<span class='tooltip-area'><p>min_snum :
+forall {disp : disp_t} {T : porderType disp} {x0 : T}
+  [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality],
+{compare x0 & xnz & xr} ->
+{compare x0 & ynz & yr} ->
+{compare x0 & min_nonzero_subdef xnz ynz xr yr & min_reality_subdef xnz ynz
+                                                 xr yr}
 
-min_reality_subdef is not universe polymorphic
-Arguments min_reality_subdef (xnz ynz)%_snum_nullity_scope
-  (xr yr)%_snum_sign_scope
-min_reality_subdef is transparent
-Expands to: Constant mathcomp.reals.signed.min_reality_subdef
-Declared in library mathcomp.reals.signed, line 575, characters 11-29
+min_snum is not universe polymorphic
+Arguments min_snum {disp T x0} [xnz ynz]%_snum_nullity_scope
+  [xr yr]%_snum_sign_scope x y
+min_snum is transparent
+Expands to: Constant mathcomp.reals.signed.min_snum
+Declared in library mathcomp.reals.signed, line 620, characters 10-18
 </p></span></div></span> (<span id="xnz:300" class="id"><a name="xnz:300" class="">xnz</a></span><span class="id"> </span><span id="nnz:301" class="id"><a name="nnz:301" class="">nnz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:302" class="id"><a name="xr:302" class="">xr</a></span><span class="id"> </span><span id="nr:303" class="id"><a name="nr:303" class="">nr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="x:304" class="id"><a name="x:304" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#NumDomainStability.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:300">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:302">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>) (<span id="n:305" class="id"><a name="n:305" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id">0%N</span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#nnz:301">nnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#nr:303">nr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#natmul_snum_subproof">natmul_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:304">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#n:305">n</a></span>).<br/>
@@ -1369,20 +1383,17 @@ Declared in library mathcomp.reals.signed, line 575, characters 11-29
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">|by</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.realE">realE</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#rpredMz">rpredMz</a></span><span class="id">//;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#cmp0">cmp0</a></span><span class="id">]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="intmul_snum" class="id"><div name="intmul_snum" class=" tooltip">intmul_snum<span class='tooltip-area'><p>min_snum :
-forall {disp : disp_t} {T : porderType disp} {x0 : T}
-  [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality],
-{compare x0 & xnz & xr} ->
-{compare x0 & ynz & yr} ->
-{compare x0 & min_nonzero_subdef xnz ynz xr yr & min_reality_subdef xnz ynz
-                                                 xr yr}
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="intmul_snum" class="id"><div name="intmul_snum" class=" tooltip">intmul_snum<span class='tooltip-area'><p>max_nonzero_subdef :
+KnownSign.nullity ->
+KnownSign.nullity ->
+KnownSign.reality -> KnownSign.reality -> KnownSign.nullity
 
-min_snum is not universe polymorphic
-Arguments min_snum {disp T x0} [xnz ynz]%_snum_nullity_scope
-  [xr yr]%_snum_sign_scope x y
-min_snum is transparent
-Expands to: Constant mathcomp.reals.signed.min_snum
-Declared in library mathcomp.reals.signed, line 620, characters 10-18
+max_nonzero_subdef is not universe polymorphic
+Arguments max_nonzero_subdef (xnz ynz)%_snum_nullity_scope
+  (xr yr)%_snum_sign_scope
+max_nonzero_subdef is transparent
+Expands to: Constant mathcomp.reals.signed.max_nonzero_subdef
+Declared in library mathcomp.reals.signed, line 624, characters 11-29
 </p></span></div></span> (<span id="xnz:314" class="id"><a name="xnz:314" class="">xnz</a></span><span class="id"> </span><span id="nnz:315" class="id"><a name="nnz:315" class="">nnz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:316" class="id"><a name="xr:316" class="">xr</a></span><span class="id"> </span><span id="nr:317" class="id"><a name="nr:317" class="">nr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="x:318" class="id"><a name="x:318" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#NumDomainStability.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:314">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:316">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>) (<span id="n:319" class="id"><a name="n:319" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#int">int</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#nnz:315">nnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#nr:317">nr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#intmul_snum_subproof">intmul_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:318">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#n:319">n</a></span>).<br/>
@@ -1397,21 +1408,7 @@ Declared in library mathcomp.reals.signed, line 620, characters 10-18
 &nbsp;&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.invr_eq0">invr_eq0</a></span><span class="id"> ?</span>(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.invr_ge0">invr_ge0</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.invr_le0">invr_le0</a></span>)<span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.realV">realV</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="inv_snum" class="id"><div name="inv_snum" class=" tooltip">inv_snum<span class='tooltip-area'><p>max_nonzero_subdef :
-KnownSign.nullity ->
-KnownSign.nullity ->
-KnownSign.reality -> KnownSign.reality -> KnownSign.nullity
-
-max_nonzero_subdef is not universe polymorphic
-Arguments max_nonzero_subdef (xnz ynz)%_snum_nullity_scope
-  (xr yr)%_snum_sign_scope
-max_nonzero_subdef is transparent
-Expands to: Constant mathcomp.reals.signed.max_nonzero_subdef
-Declared in library mathcomp.reals.signed, line 624, characters 11-29
-</p></span></div></span> (<span id="xnz:323" class="id"><a name="xnz:323" class="">xnz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:324" class="id"><a name="xr:324" class="">xr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>) (<span id="x:325" class="id"><a name="x:325" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#NumDomainStability.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:323">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:324">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>)<span class="id"> :=</span><br/>
-&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#inv_snum_subproof">inv_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:325">x</a></span>).<br/>
-<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="exprn_nonzero_subdef" class="id"><div name="exprn_nonzero_subdef" class=" tooltip">exprn_nonzero_subdef<span class='tooltip-area'><p>max_reality_subdef :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="inv_snum" class="id"><div name="inv_snum" class=" tooltip">inv_snum<span class='tooltip-area'><p>max_reality_subdef :
 KnownSign.nullity ->
 KnownSign.nullity ->
 KnownSign.reality -> KnownSign.reality -> KnownSign.reality
@@ -1422,12 +1419,10 @@ Arguments max_reality_subdef (xnz ynz)%_snum_nullity_scope
 max_reality_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.max_reality_subdef
 Declared in library mathcomp.reals.signed, line 631, characters 11-29
-</p></span></div></span> (<span id="xnz:326" class="id"><a name="xnz:326" class="">xnz</a></span><span class="id"> </span><span id="nnz:327" class="id"><a name="nnz:327" class="">nnz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;(<span id="xr:328" class="id"><a name="xr:328" class="">xr</a></span><span class="id"> </span><span id="nr:329" class="id"><a name="nr:329" class="">nr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span><span class="id"> :=</span><br/>
-&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#nz_of_bool">nz_of_bool</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#xnz:326">xnz</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185"> ||</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185"> </a></span><span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nr:329">nr</a></span><span class="gallina-kwd"> with</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span>)<span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="id"> |</span><span class="id"> _</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="gallina-kwd"> end</span>).<br/>
-<span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#exprn_nonzero_subdef">exprn_nonzero_subdef</a></span><span class="id"> /</span>.<br/>
+</p></span></div></span> (<span id="xnz:323" class="id"><a name="xnz:323" class="">xnz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:324" class="id"><a name="xr:324" class="">xr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>) (<span id="x:325" class="id"><a name="x:325" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#NumDomainStability.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:323">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:324">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>)<span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#inv_snum_subproof">inv_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:325">x</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="exprn_reality_subdef" class="id"><div name="exprn_reality_subdef" class=" tooltip">exprn_reality_subdef<span class='tooltip-area'><p>max_snum :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="exprn_nonzero_subdef" class="id"><div name="exprn_nonzero_subdef" class=" tooltip">exprn_nonzero_subdef<span class='tooltip-area'><p>max_snum :
 forall {disp : disp_t} {T : porderType disp} {x0 : T}
   [xnz ynz : KnownSign.nullity] [xr yr : KnownSign.reality],
 {compare x0 & xnz & xr} ->
@@ -1441,6 +1436,18 @@ Arguments max_snum {disp T x0} [xnz ynz]%_snum_nullity_scope
 max_snum is transparent
 Expands to: Constant mathcomp.reals.signed.max_snum
 Declared in library mathcomp.reals.signed, line 676, characters 10-18
+</p></span></div></span> (<span id="xnz:326" class="id"><a name="xnz:326" class="">xnz</a></span><span class="id"> </span><span id="nnz:327" class="id"><a name="nnz:327" class="">nnz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span id="xr:328" class="id"><a name="xr:328" class="">xr</a></span><span class="id"> </span><span id="nr:329" class="id"><a name="nr:329" class="">nr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span><span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#nz_of_bool">nz_of_bool</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#xnz:326">xnz</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185"> ||</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185"> </a></span><span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nr:329">nr</a></span><span class="gallina-kwd"> with</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span>)<span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="id"> |</span><span class="id"> _</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="gallina-kwd"> end</span>).<br/>
+<span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#exprn_nonzero_subdef">exprn_nonzero_subdef</a></span><span class="id"> /</span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="exprn_reality_subdef" class="id"><div name="exprn_reality_subdef" class=" tooltip">exprn_reality_subdef<span class='tooltip-area'><p>zero_snum : forall {R : numDomainType}, {compare 0%R & ?=0 & =0}
+
+zero_snum is not universe polymorphic
+Arguments zero_snum {R}
+zero_snum is transparent
+Expands to: Constant mathcomp.reals.signed.zero_snum
+Declared in library mathcomp.reals.signed, line 688, characters 10-19
 </p></span></div></span> (<span id="xnz:331" class="id"><a name="xnz:331" class="">xnz</a></span><span class="id"> </span><span id="nnz:332" class="id"><a name="nnz:332" class="">nnz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="xr:333" class="id"><a name="xr:333" class="">xr</a></span><span class="id"> </span><span id="nr:334" class="id"><a name="nr:334" class="">nr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#xr:333">xr</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nr:334">nr</a></span><span class="gallina-kwd"> with</span><br/>
@@ -1469,13 +1476,13 @@ Declared in library mathcomp.reals.signed, line 676, characters 10-18
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">|by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#eq0">eq0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.expr0n">expr0n</a></span><span class="id">|exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.exprn_ge0">exprn_ge0</a></span><span class="id">|by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.expr0">expr0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ler01">ler01</a></span><span class="id">]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="exprn_snum" class="id"><div name="exprn_snum" class=" tooltip">exprn_snum<span class='tooltip-area'><p>zero_snum : forall {R : numDomainType}, {compare 0%R & ?=0 & =0}
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="exprn_snum" class="id"><div name="exprn_snum" class=" tooltip">exprn_snum<span class='tooltip-area'><p>one_snum : forall {R : numDomainType}, {compare 0%R & !=0 & >=0}
 
-zero_snum is not universe polymorphic
-Arguments zero_snum {R}
-zero_snum is transparent
-Expands to: Constant mathcomp.reals.signed.zero_snum
-Declared in library mathcomp.reals.signed, line 688, characters 10-19
+one_snum is not universe polymorphic
+Arguments one_snum {R}
+one_snum is transparent
+Expands to: Constant mathcomp.reals.signed.one_snum
+Declared in library mathcomp.reals.signed, line 693, characters 10-18
 </p></span></div></span> (<span id="xnz:345" class="id"><a name="xnz:345" class="">xnz</a></span><span class="id"> </span><span id="nnz:346" class="id"><a name="nnz:346" class="">nnz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:347" class="id"><a name="xr:347" class="">xr</a></span><span class="id"> </span><span id="nr:348" class="id"><a name="nr:348" class="">nr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="x:349" class="id"><a name="x:349" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#NumDomainStability.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:345">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:347">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>) (<span id="n:350" class="id"><a name="n:350" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id">0%N</span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#nnz:346">nnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#nr:348">nr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#exprn_snum_subproof">exprn_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:349">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#n:350">n</a></span>).<br/>
@@ -1487,13 +1494,14 @@ Declared in library mathcomp.reals.signed, line 688, characters 10-19
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /=</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="norm_snum" class="id"><div name="norm_snum" class=" tooltip">norm_snum<span class='tooltip-area'><p>one_snum : forall {R : numDomainType}, {compare 0%R & !=0 & >=0}
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="norm_snum" class="id"><div name="norm_snum" class=" tooltip">norm_snum<span class='tooltip-area'><p>opp_reality_subdef :
+KnownSign.nullity -> KnownSign.reality -> KnownSign.reality
 
-one_snum is not universe polymorphic
-Arguments one_snum {R}
-one_snum is transparent
-Expands to: Constant mathcomp.reals.signed.one_snum
-Declared in library mathcomp.reals.signed, line 693, characters 10-18
+opp_reality_subdef is not universe polymorphic
+Arguments opp_reality_subdef xnz%_snum_nullity_scope xr%_snum_sign_scope
+opp_reality_subdef is transparent
+Expands to: Constant mathcomp.reals.signed.opp_reality_subdef
+Declared in library mathcomp.reals.signed, line 695, characters 11-29
 </p></span></div></span><span class="id"> {</span><span id="V:353" class="id"><a name="V:353" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.NormedZmodule.Exports.normedZmodType">normedZmodType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#NumDomainStability.R">R</a></span><span class="id">}</span> (<span id="x:354" class="id"><a name="x:354" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#V:353">V</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#norm_snum_subproof">norm_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:354">x</a></span>).<br/>
 <br/>
@@ -1502,14 +1510,15 @@ Declared in library mathcomp.reals.signed, line 693, characters 10-18
 <span class="vernacular">Section</span><span class="id"> RcfStability</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="RcfStability.R" class="id"><a name="RcfStability.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numfield.html#Num.RealClosedField.Exports.rcfType">rcfType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sqrt_nonzero_subdef" class="id"><div name="sqrt_nonzero_subdef" class=" tooltip">sqrt_nonzero_subdef<span class='tooltip-area'><p>opp_reality_subdef :
-KnownSign.nullity -> KnownSign.reality -> KnownSign.reality
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sqrt_nonzero_subdef" class="id"><div name="sqrt_nonzero_subdef" class=" tooltip">sqrt_nonzero_subdef<span class='tooltip-area'><p>opp_snum :
+forall {R : numDomainType} [xnz : KnownSign.nullity] [xr : KnownSign.reality],
+{num R & xnz & xr}%R -> {compare 0%R & xnz & opp_reality_subdef xnz xr}
 
-opp_reality_subdef is not universe polymorphic
-Arguments opp_reality_subdef xnz%_snum_nullity_scope xr%_snum_sign_scope
-opp_reality_subdef is transparent
-Expands to: Constant mathcomp.reals.signed.opp_reality_subdef
-Declared in library mathcomp.reals.signed, line 695, characters 11-29
+opp_snum is not universe polymorphic
+Arguments opp_snum {R} [xnz]%_snum_nullity_scope [xr]%_snum_sign_scope x
+opp_snum is transparent
+Expands to: Constant mathcomp.reals.signed.opp_snum
+Declared in library mathcomp.reals.signed, line 712, characters 10-18
 </p></span></div></span> (<span id="xnz:356" class="id"><a name="xnz:356" class="">xnz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:357" class="id"><a name="xr:357" class="">xr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">if</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#xr:357">xr</a></span><span class="id"> is</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#f1caef69e1bef41a6b6764969723a144">&gt;=0</a></span>)<span class="gallina-kwd"> then</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#xnz:356">xnz</a></span><span class="gallina-kwd"> else</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#MaybeZero">MaybeZero</a></span>.<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#sqrt_nonzero_subdef">sqrt_nonzero_subdef</a></span><span class="id"> /</span>.<br/>
@@ -1524,24 +1533,7 @@ Declared in library mathcomp.reals.signed, line 695, characters 11-29
 &nbsp;&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> /=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numfield.html#Num.Theory.sqrtr_ge0">sqrtr_ge0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#andbT">andbT</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numfield.html#Num.Theory.sqrtr_eq0">sqrtr_eq0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#le0F">le0F</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="sqrt_snum" class="id"><div name="sqrt_snum" class=" tooltip">sqrt_snum<span class='tooltip-area'><p>opp_snum :
-forall {R : numDomainType} [xnz : KnownSign.nullity] [xr : KnownSign.reality],
-{num R & xnz & xr}%R -> {compare 0%R & xnz & opp_reality_subdef xnz xr}
-
-opp_snum is not universe polymorphic
-Arguments opp_snum {R} [xnz]%_snum_nullity_scope [xr]%_snum_sign_scope x
-opp_snum is transparent
-Expands to: Constant mathcomp.reals.signed.opp_snum
-Declared in library mathcomp.reals.signed, line 712, characters 10-18
-</p></span></div></span><span class="id"> </span><span id="xnz:363" class="id"><a name="xnz:363" class="">xnz</a></span><span class="id"> </span><span id="xr:364" class="id"><a name="xr:364" class="">xr</a></span> (<span id="x:365" class="id"><a name="x:365" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#RcfStability.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:363">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:364">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>)<span class="id"> :=</span><br/>
-&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#sqrt_snum_subproof">sqrt_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:365">x</a></span>).<br/>
-<br/>
-<span class="vernacular">End</span><span class="id"> RcfStability</span>.<br/>
-<br/>
-<span class="vernacular">Section</span><span class="id"> NumClosedStability</span>.<br/>
-<span class="vernacular">Context</span><span class="id"> {</span><span id="NumClosedStability.R" class="id"><a name="NumClosedStability.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numfield.html#Num.ClosedField.Exports.numClosedFieldType">numClosedFieldType</a></span><span class="id">}</span>.<br/>
-<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sqrtC_reality_subdef" class="id"><div name="sqrtC_reality_subdef" class=" tooltip">sqrtC_reality_subdef<span class='tooltip-area'><p>add_samesign_subdef :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="sqrt_snum" class="id"><div name="sqrt_snum" class=" tooltip">sqrt_snum<span class='tooltip-area'><p>add_samesign_subdef :
 KnownSign.nullity ->
 KnownSign.nullity -> KnownSign.reality -> KnownSign.reality -> bool
 
@@ -1551,6 +1543,25 @@ Arguments add_samesign_subdef (xnz ynz)%_snum_nullity_scope
 add_samesign_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.add_samesign_subdef
 Declared in library mathcomp.reals.signed, line 715, characters 11-30
+</p></span></div></span><span class="id"> </span><span id="xnz:363" class="id"><a name="xnz:363" class="">xnz</a></span><span class="id"> </span><span id="xr:364" class="id"><a name="xr:364" class="">xr</a></span> (<span id="x:365" class="id"><a name="x:365" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#RcfStability.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:363">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:364">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>)<span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#sqrt_snum_subproof">sqrt_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:365">x</a></span>).<br/>
+<br/>
+<span class="vernacular">End</span><span class="id"> RcfStability</span>.<br/>
+<br/>
+<span class="vernacular">Section</span><span class="id"> NumClosedStability</span>.<br/>
+<span class="vernacular">Context</span><span class="id"> {</span><span id="NumClosedStability.R" class="id"><a name="NumClosedStability.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numfield.html#Num.ClosedField.Exports.numClosedFieldType">numClosedFieldType</a></span><span class="id">}</span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sqrtC_reality_subdef" class="id"><div name="sqrtC_reality_subdef" class=" tooltip">sqrtC_reality_subdef<span class='tooltip-area'><p>add_nonzero_subdef :
+KnownSign.nullity ->
+KnownSign.nullity ->
+KnownSign.reality -> KnownSign.reality -> KnownSign.nullity
+
+add_nonzero_subdef is not universe polymorphic
+Arguments add_nonzero_subdef (xnz ynz)%_snum_nullity_scope
+  (xr yr)%_snum_sign_scope
+add_nonzero_subdef is transparent
+Expands to: Constant mathcomp.reals.signed.add_nonzero_subdef
+Declared in library mathcomp.reals.signed, line 727, characters 11-29
 </p></span></div></span> (<span id="xnz:367" class="id"><a name="xnz:367" class="">xnz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:368" class="id"><a name="xr:368" class="">xr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#xr:368">xr</a></span><span class="gallina-kwd"> with</span><br/>
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#Real">Real</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Sign">Sign</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span>)<span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dc6bc0b0388e7cb19d15aedb2a85d85b">=0</a></span><br/>
@@ -1570,17 +1581,17 @@ Declared in library mathcomp.reals.signed, line 715, characters 11-30
 <span class="gallina-kwd">by</span><span class="id"> case:</span><span class="id"> xr</span><span class="id"> xnz</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> [[[]|]|]</span><span class="id"> []//=</span><span class="id"> x;</span><span class="id"> rewrite</span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numfield.html#Num.Theory.sqrtC_ge0">sqrtC_ge0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numfield.html#Num.Theory.sqrtC_eq0">sqrtC_eq0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#eq0">eq0</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="sqrtC_snum" class="id"><div name="sqrtC_snum" class=" tooltip">sqrtC_snum<span class='tooltip-area'><p>add_nonzero_subdef :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="sqrtC_snum" class="id"><div name="sqrtC_snum" class=" tooltip">sqrtC_snum<span class='tooltip-area'><p>add_reality_subdef :
 KnownSign.nullity ->
 KnownSign.nullity ->
-KnownSign.reality -> KnownSign.reality -> KnownSign.nullity
+KnownSign.reality -> KnownSign.reality -> KnownSign.reality
 
-add_nonzero_subdef is not universe polymorphic
-Arguments add_nonzero_subdef (xnz ynz)%_snum_nullity_scope
+add_reality_subdef is not universe polymorphic
+Arguments add_reality_subdef (xnz ynz)%_snum_nullity_scope
   (xr yr)%_snum_sign_scope
-add_nonzero_subdef is transparent
-Expands to: Constant mathcomp.reals.signed.add_nonzero_subdef
-Declared in library mathcomp.reals.signed, line 727, characters 11-29
+add_reality_subdef is transparent
+Expands to: Constant mathcomp.reals.signed.add_reality_subdef
+Declared in library mathcomp.reals.signed, line 731, characters 11-29
 </p></span></div></span><span class="id"> </span><span id="xnz:374" class="id"><a name="xnz:374" class="">xnz</a></span><span class="id"> </span><span id="xr:375" class="id"><a name="xr:375" class="">xr</a></span> (<span id="x:376" class="id"><a name="x:376" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">{num</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#NumClosedStability.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:374">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:375">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#663e939f1e348eca7b61ea0de82c91b4">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#sqrtC_snum_subproof">sqrtC_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:376">x</a></span>).<br/>
 <br/>
@@ -1596,26 +1607,7 @@ Declared in library mathcomp.reals.signed, line 727, characters 11-29
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="zeron_snum" class="id"><div name="zeron_snum" class=" tooltip">zeron_snum<span class='tooltip-area'><p>add_reality_subdef :
-KnownSign.nullity ->
-KnownSign.nullity ->
-KnownSign.reality -> KnownSign.reality -> KnownSign.reality
-
-add_reality_subdef is not universe polymorphic
-Arguments add_reality_subdef (xnz ynz)%_snum_nullity_scope
-  (xr yr)%_snum_sign_scope
-add_reality_subdef is transparent
-Expands to: Constant mathcomp.reals.signed.add_reality_subdef
-Declared in library mathcomp.reals.signed, line 731, characters 11-29
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#zeron_snum_subproof">zeron_snum_subproof</a></span>.<br/>
-<br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="succn_snum_subproof" class="id"><a name="succn_snum_subproof" class="">succn_snum_subproof</a></span><span class="id"> </span><span id="n:377" class="id"><a name="n:377" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#spec">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#spec">spec</a></span><span class="id"> 0</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#5e27fe60fda0a7fe6124229ec9350cb6">!=0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#f1caef69e1bef41a6b6764969723a144">&gt;=0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#n:377">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span>.<br/>
-<details>
-<summary class="toggleproof">Proof.</summary>
-<div class="proofscript">
-<span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
-<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="succn_snum" class="id"><div name="succn_snum" class=" tooltip">succn_snum<span class='tooltip-area'><p>add_snum :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="zeron_snum" class="id"><div name="zeron_snum" class=" tooltip">zeron_snum<span class='tooltip-area'><p>add_snum :
 forall {R : numDomainType} [xnz ynz : KnownSign.nullity]
   [xr yr : KnownSign.reality],
 {num R & xnz & xr}%R ->
@@ -1629,16 +1621,15 @@ Arguments add_snum {R} [xnz ynz]%_snum_nullity_scope
 add_snum is transparent
 Expands to: Constant mathcomp.reals.signed.add_snum
 Declared in library mathcomp.reals.signed, line 761, characters 10-18
-</p></span></div></span><span class="id"> </span><span id="n:378" class="id"><a name="n:378" class="">n</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#succn_snum_subproof">succn_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#n:378">n</a></span>).<br/>
+</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#zeron_snum_subproof">zeron_snum_subproof</a></span>.<br/>
 <br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="double_snum_subproof" class="id"><a name="double_snum_subproof" class="">double_snum_subproof</a></span><span class="id"> </span><span id="nz:379" class="id"><a name="nz:379" class="">nz</a></span><span class="id"> </span><span id="r:380" class="id"><a name="r:380" class="">r</a></span> (<span id="x:381" class="id"><a name="x:381" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#nz:379">nz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#r:380">r</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>)<span class="id"> :</span><br/>
-&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#spec">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#spec">spec</a></span><span class="id"> 0</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nz:379">nz</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#r:380">r</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:381">x</a></span><span class="id"><a href="mathcomp.reals.signed.html#20b994ad55d82706ad5e372c6977614b">%:num</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bff172cdafaf4b86cefb300b16285e42">*2</a></span>.<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="succn_snum_subproof" class="id"><a name="succn_snum_subproof" class="">succn_snum_subproof</a></span><span class="id"> </span><span id="n:377" class="id"><a name="n:377" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#spec">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#spec">spec</a></span><span class="id"> 0</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#5e27fe60fda0a7fe6124229ec9350cb6">!=0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#f1caef69e1bef41a6b6764969723a144">&gt;=0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#n:377">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
-<span class="gallina-kwd"> by</span> <span class="id"> move:</span><span class="id"> nz</span><span class="id"> r</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> []</span><span class="id"> [[[]|]|]</span><span class="id"> [[|n]]</span>. Qed.</div></details>
+<span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="double_snum" class="id"><div name="double_snum" class=" tooltip">double_snum<span class='tooltip-area'><p>mul_nonzero_subdef :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="succn_snum" class="id"><div name="succn_snum" class=" tooltip">succn_snum<span class='tooltip-area'><p>mul_nonzero_subdef :
 KnownSign.nullity ->
 KnownSign.nullity ->
 KnownSign.reality -> KnownSign.reality -> KnownSign.nullity
@@ -1649,6 +1640,26 @@ Arguments mul_nonzero_subdef (xnz ynz)%_snum_nullity_scope
 mul_nonzero_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.mul_nonzero_subdef
 Declared in library mathcomp.reals.signed, line 765, characters 11-29
+</p></span></div></span><span class="id"> </span><span id="n:378" class="id"><a name="n:378" class="">n</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#succn_snum_subproof">succn_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#n:378">n</a></span>).<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="double_snum_subproof" class="id"><a name="double_snum_subproof" class="">double_snum_subproof</a></span><span class="id"> </span><span id="nz:379" class="id"><a name="nz:379" class="">nz</a></span><span class="id"> </span><span id="r:380" class="id"><a name="r:380" class="">r</a></span> (<span id="x:381" class="id"><a name="x:381" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#nz:379">nz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#r:380">r</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>)<span class="id"> :</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#spec">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#spec">spec</a></span><span class="id"> 0</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nz:379">nz</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#r:380">r</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:381">x</a></span><span class="id"><a href="mathcomp.reals.signed.html#20b994ad55d82706ad5e372c6977614b">%:num</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bff172cdafaf4b86cefb300b16285e42">*2</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span> <span class="id"> move:</span><span class="id"> nz</span><span class="id"> r</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> []</span><span class="id"> [[[]|]|]</span><span class="id"> [[|n]]</span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="double_snum" class="id"><div name="double_snum" class=" tooltip">double_snum<span class='tooltip-area'><p>mul_reality_subdef :
+KnownSign.nullity ->
+KnownSign.nullity ->
+KnownSign.reality -> KnownSign.reality -> KnownSign.reality
+
+mul_reality_subdef is not universe polymorphic
+Arguments mul_reality_subdef (xnz ynz)%_snum_nullity_scope
+  (xr yr)%_snum_sign_scope
+mul_reality_subdef is transparent
+Expands to: Constant mathcomp.reals.signed.mul_reality_subdef
+Declared in library mathcomp.reals.signed, line 769, characters 11-29
 </p></span></div></span><span class="id"> </span><span id="nz:382" class="id"><a name="nz:382" class="">nz</a></span><span class="id"> </span><span id="r:383" class="id"><a name="r:383" class="">r</a></span><span class="id"> </span><span id="x:384" class="id"><a name="x:384" class="">x</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.reals.signed.html#double_snum_subproof">double_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nz:382">nz</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#r:383">r</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:384">x</a></span>).<br/>
 <br/>
@@ -1664,17 +1675,20 @@ Declared in library mathcomp.reals.signed, line 765, characters 11-29
 <span class="gallina-kwd">by</span><span class="id"> move:</span><span class="id"> xr</span><span class="id"> yr</span><span class="id"> xnz</span><span class="id"> ynz</span><span class="id"> x</span><span class="id"> y</span><span class="id"> =&gt;</span><span class="id"> [[[]|]|]</span><span class="id"> [[[]|]|]</span><span class="id"> []</span><span class="id"> []//=</span><span class="id"> [[|x]//=</span><span class="id"> _]</span><span class="id"> [[|y]]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="addn_snum" class="id"><div name="addn_snum" class=" tooltip">addn_snum<span class='tooltip-area'><p>mul_reality_subdef :
-KnownSign.nullity ->
-KnownSign.nullity ->
-KnownSign.reality -> KnownSign.reality -> KnownSign.reality
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="addn_snum" class="id"><div name="addn_snum" class=" tooltip">addn_snum<span class='tooltip-area'><p>mul_snum :
+forall {R : numDomainType} [xnz ynz : KnownSign.nullity]
+  [xr yr : KnownSign.reality],
+{num R & xnz & xr}%R ->
+{num R & ynz & yr}%R ->
+{compare 0%R & mul_nonzero_subdef xnz ynz xr yr & 
+mul_reality_subdef xnz ynz xr yr}
 
-mul_reality_subdef is not universe polymorphic
-Arguments mul_reality_subdef (xnz ynz)%_snum_nullity_scope
-  (xr yr)%_snum_sign_scope
-mul_reality_subdef is transparent
-Expands to: Constant mathcomp.reals.signed.mul_reality_subdef
-Declared in library mathcomp.reals.signed, line 769, characters 11-29
+mul_snum is not universe polymorphic
+Arguments mul_snum {R} [xnz ynz]%_snum_nullity_scope 
+  [xr yr]%_snum_sign_scope x y
+mul_snum is transparent
+Expands to: Constant mathcomp.reals.signed.mul_snum
+Declared in library mathcomp.reals.signed, line 796, characters 10-18
 </p></span></div></span> (<span id="xnz:393" class="id"><a name="xnz:393" class="">xnz</a></span><span class="id"> </span><span id="ynz:394" class="id"><a name="ynz:394" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:395" class="id"><a name="xr:395" class="">xr</a></span><span class="id"> </span><span id="yr:396" class="id"><a name="yr:396" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="x:397" class="id"><a name="x:397" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:393">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:395">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>) (<span id="y:398" class="id"><a name="y:398" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:394">ynz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#yr:396">yr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#addn_snum_subproof">addn_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:397">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#y:398">y</a></span>).<br/>
@@ -1692,20 +1706,20 @@ Declared in library mathcomp.reals.signed, line 769, characters 11-29
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> [[|x]//=</span><span class="id"> _]</span><span class="id"> [[|y]//=</span><span class="id"> _];</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#muln0">muln0</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="muln_snum" class="id"><div name="muln_snum" class=" tooltip">muln_snum<span class='tooltip-area'><p>mul_snum :
-forall {R : numDomainType} [xnz ynz : KnownSign.nullity]
-  [xr yr : KnownSign.reality],
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="muln_snum" class="id"><div name="muln_snum" class=" tooltip">muln_snum<span class='tooltip-area'><p>natmul_snum :
+forall {R : numDomainType} [xnz nnz : KnownSign.nullity]
+  [xr nr : KnownSign.reality],
 {num R & xnz & xr}%R ->
-{num R & ynz & yr}%R ->
-{compare 0%R & mul_nonzero_subdef xnz ynz xr yr & 
-mul_reality_subdef xnz ynz xr yr}
+{compare 0 & nnz & nr} ->
+{compare 0%R & mul_nonzero_subdef xnz nnz xr nr & 
+mul_reality_subdef xnz nnz xr nr}
 
-mul_snum is not universe polymorphic
-Arguments mul_snum {R} [xnz ynz]%_snum_nullity_scope 
-  [xr yr]%_snum_sign_scope x y
-mul_snum is transparent
-Expands to: Constant mathcomp.reals.signed.mul_snum
-Declared in library mathcomp.reals.signed, line 796, characters 10-18
+natmul_snum is not universe polymorphic
+Arguments natmul_snum {R} [xnz nnz]%_snum_nullity_scope
+  [xr nr]%_snum_sign_scope x n
+natmul_snum is transparent
+Expands to: Constant mathcomp.reals.signed.natmul_snum
+Declared in library mathcomp.reals.signed, line 815, characters 10-21
 </p></span></div></span> (<span id="xnz:407" class="id"><a name="xnz:407" class="">xnz</a></span><span class="id"> </span><span id="ynz:408" class="id"><a name="ynz:408" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:409" class="id"><a name="xr:409" class="">xr</a></span><span class="id"> </span><span id="yr:410" class="id"><a name="yr:410" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="x:411" class="id"><a name="x:411" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:407">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:409">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>) (<span id="y:412" class="id"><a name="y:412" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:408">ynz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#yr:410">yr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#muln_snum_subproof">muln_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:411">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#y:412">y</a></span>).<br/>
@@ -1726,20 +1740,20 @@ Declared in library mathcomp.reals.signed, line 796, characters 10-18
 &nbsp;&nbsp;<span class="id">do</span><span class="id"> ?[by</span><span class="id"> case:</span> (<span class="id"><a href="mathcomp.reals.signed.html#bottom">bottom</a></span><span class="id"> x</span>)<span class="id">|by</span><span class="id"> case:</span> (<span class="id"><a href="mathcomp.reals.signed.html#bottom">bottom</a></span><span class="id"> n</span>)<span class="id">|by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#eq0">eq0</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#exp0n">exp0n</a></span><span class="id">]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="expn_snum" class="id"><div name="expn_snum" class=" tooltip">expn_snum<span class='tooltip-area'><p>natmul_snum :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="expn_snum" class="id"><div name="expn_snum" class=" tooltip">expn_snum<span class='tooltip-area'><p>intmul_snum :
 forall {R : numDomainType} [xnz nnz : KnownSign.nullity]
   [xr nr : KnownSign.reality],
 {num R & xnz & xr}%R ->
-{compare 0 & nnz & nr} ->
+{num int & nnz & nr}%R ->
 {compare 0%R & mul_nonzero_subdef xnz nnz xr nr & 
 mul_reality_subdef xnz nnz xr nr}
 
-natmul_snum is not universe polymorphic
-Arguments natmul_snum {R} [xnz nnz]%_snum_nullity_scope
+intmul_snum is not universe polymorphic
+Arguments intmul_snum {R} [xnz nnz]%_snum_nullity_scope
   [xr nr]%_snum_sign_scope x n
-natmul_snum is transparent
-Expands to: Constant mathcomp.reals.signed.natmul_snum
-Declared in library mathcomp.reals.signed, line 815, characters 10-21
+intmul_snum is transparent
+Expands to: Constant mathcomp.reals.signed.intmul_snum
+Declared in library mathcomp.reals.signed, line 835, characters 10-21
 </p></span></div></span> (<span id="xnz:421" class="id"><a name="xnz:421" class="">xnz</a></span><span class="id"> </span><span id="nnz:422" class="id"><a name="nnz:422" class="">nnz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:423" class="id"><a name="xr:423" class="">xr</a></span><span class="id"> </span><span id="nr:424" class="id"><a name="nr:424" class="">nr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="x:425" class="id"><a name="x:425" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:421">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:423">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>) (<span id="n:426" class="id"><a name="n:426" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#nnz:422">nnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#nr:424">nr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#expn_snum_subproof">expn_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:425">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#n:426">n</a></span>).<br/>
@@ -1756,20 +1770,15 @@ Declared in library mathcomp.reals.signed, line 815, characters 10-21
 <span class="gallina-kwd">by</span><span class="id"> move:</span><span class="id"> xr</span><span class="id"> yr</span><span class="id"> xnz</span><span class="id"> ynz</span><span class="id"> x</span><span class="id"> y</span><span class="id"> =&gt;</span><span class="id"> [[[]|]|]</span><span class="id"> [[[]|]|]</span><span class="id"> []</span><span class="id"> []//=</span><span class="id"> [[|x]//=</span><span class="id"> _]</span><span class="id"> [[|y]]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="minn_snum" class="id"><div name="minn_snum" class=" tooltip">minn_snum<span class='tooltip-area'><p>intmul_snum :
-forall {R : numDomainType} [xnz nnz : KnownSign.nullity]
-  [xr nr : KnownSign.reality],
-{num R & xnz & xr}%R ->
-{num int & nnz & nr}%R ->
-{compare 0%R & mul_nonzero_subdef xnz nnz xr nr & 
-mul_reality_subdef xnz nnz xr nr}
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="minn_snum" class="id"><div name="minn_snum" class=" tooltip">minn_snum<span class='tooltip-area'><p>inv_snum :
+forall {R : numDomainType} [xnz : KnownSign.nullity] [xr : KnownSign.reality],
+{num R & xnz & xr}%R -> {compare 0%R & xnz & xr}
 
-intmul_snum is not universe polymorphic
-Arguments intmul_snum {R} [xnz nnz]%_snum_nullity_scope
-  [xr nr]%_snum_sign_scope x n
-intmul_snum is transparent
-Expands to: Constant mathcomp.reals.signed.intmul_snum
-Declared in library mathcomp.reals.signed, line 835, characters 10-21
+inv_snum is not universe polymorphic
+Arguments inv_snum {R} [xnz]%_snum_nullity_scope [xr]%_snum_sign_scope x
+inv_snum is transparent
+Expands to: Constant mathcomp.reals.signed.inv_snum
+Declared in library mathcomp.reals.signed, line 847, characters 10-18
 </p></span></div></span> (<span id="xnz:435" class="id"><a name="xnz:435" class="">xnz</a></span><span class="id"> </span><span id="ynz:436" class="id"><a name="ynz:436" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:437" class="id"><a name="xr:437" class="">xr</a></span><span class="id"> </span><span id="yr:438" class="id"><a name="yr:438" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="x:439" class="id"><a name="x:439" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:435">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:437">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>) (<span id="y:440" class="id"><a name="y:440" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:436">ynz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#yr:438">yr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#minn_snum_subproof">minn_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:439">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#y:440">y</a></span>).<br/>
@@ -1787,15 +1796,17 @@ Declared in library mathcomp.reals.signed, line 835, characters 10-21
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> [[|x]//=</span><span class="id"> _]</span><span class="id"> [[|y]//=</span><span class="id"> _];</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#maxnSS">maxnSS</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="maxn_snum" class="id"><div name="maxn_snum" class=" tooltip">maxn_snum<span class='tooltip-area'><p>inv_snum :
-forall {R : numDomainType} [xnz : KnownSign.nullity] [xr : KnownSign.reality],
-{num R & xnz & xr}%R -> {compare 0%R & xnz & xr}
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="maxn_snum" class="id"><div name="maxn_snum" class=" tooltip">maxn_snum<span class='tooltip-area'><p>exprn_nonzero_subdef :
+KnownSign.nullity ->
+KnownSign.nullity ->
+KnownSign.reality -> KnownSign.reality -> KnownSign.nullity
 
-inv_snum is not universe polymorphic
-Arguments inv_snum {R} [xnz]%_snum_nullity_scope [xr]%_snum_sign_scope x
-inv_snum is transparent
-Expands to: Constant mathcomp.reals.signed.inv_snum
-Declared in library mathcomp.reals.signed, line 847, characters 10-18
+exprn_nonzero_subdef is not universe polymorphic
+Arguments exprn_nonzero_subdef (xnz nnz)%_snum_nullity_scope
+  (xr nr)%_snum_sign_scope
+exprn_nonzero_subdef is transparent
+Expands to: Constant mathcomp.reals.signed.exprn_nonzero_subdef
+Declared in library mathcomp.reals.signed, line 850, characters 11-31
 </p></span></div></span> (<span id="xnz:449" class="id"><a name="xnz:449" class="">xnz</a></span><span class="id"> </span><span id="ynz:450" class="id"><a name="ynz:450" class="">ynz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:451" class="id"><a name="xr:451" class="">xr</a></span><span class="id"> </span><span id="yr:452" class="id"><a name="yr:452" class="">yr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="x:453" class="id"><a name="x:453" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:449">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:451">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>) (<span id="y:454" class="id"><a name="y:454" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#ynz:450">ynz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#yr:452">yr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#maxn_snum_subproof">maxn_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:453">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#y:454">y</a></span>).<br/>
@@ -1813,28 +1824,7 @@ Declared in library mathcomp.reals.signed, line 847, characters 10-18
 <span class="gallina-kwd">by</span><span class="id"> apply/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#andP">andP</a></span><span class="id">;</span><span class="id"> split;</span><span class="id"> move:</span><span class="id"> xr</span><span class="id"> xnz</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> [[[]|]|]</span><span class="id"> []//=;</span><span class="id"> move=&gt;</span><span class="id"> [[|x]//=</span><span class="id"> _]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Posz_snum" class="id"><div name="Posz_snum" class=" tooltip">Posz_snum<span class='tooltip-area'><p>exprn_nonzero_subdef :
-KnownSign.nullity ->
-KnownSign.nullity ->
-KnownSign.reality -> KnownSign.reality -> KnownSign.nullity
-
-exprn_nonzero_subdef is not universe polymorphic
-Arguments exprn_nonzero_subdef (xnz nnz)%_snum_nullity_scope
-  (xr nr)%_snum_sign_scope
-exprn_nonzero_subdef is transparent
-Expands to: Constant mathcomp.reals.signed.exprn_nonzero_subdef
-Declared in library mathcomp.reals.signed, line 850, characters 11-31
-</p></span></div></span> (<span id="xnz:458" class="id"><a name="xnz:458" class="">xnz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:459" class="id"><a name="xr:459" class="">xr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;(<span id="x:460" class="id"><a name="x:460" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id">0%N</span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:458">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:459">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>)<span class="id"> :=</span><br/>
-&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Posz_snum_subproof">Posz_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:460">x</a></span>).<br/>
-<br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="Negz_snum_subproof" class="id"><a name="Negz_snum_subproof" class="">Negz_snum_subproof</a></span> (<span id="n:461" class="id"><a name="n:461" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#spec">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#spec">spec</a></span><span class="id"> 0%Z</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#5e27fe60fda0a7fe6124229ec9350cb6">!=0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#7a2442f26cc812c3d31340abc9c9fb22">&lt;=0</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#Negz">Negz</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#n:461">n</a></span>).<br/>
-<details>
-<summary class="toggleproof">Proof.</summary>
-<div class="proofscript">
-<span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
-<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Negz_snum" class="id"><div name="Negz_snum" class=" tooltip">Negz_snum<span class='tooltip-area'><p>exprn_reality_subdef :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Posz_snum" class="id"><div name="Posz_snum" class=" tooltip">Posz_snum<span class='tooltip-area'><p>exprn_reality_subdef :
 KnownSign.nullity ->
 KnownSign.nullity ->
 KnownSign.reality -> KnownSign.reality -> KnownSign.reality
@@ -1845,6 +1835,30 @@ Arguments exprn_reality_subdef (xnz nnz)%_snum_nullity_scope
 exprn_reality_subdef is transparent
 Expands to: Constant mathcomp.reals.signed.exprn_reality_subdef
 Declared in library mathcomp.reals.signed, line 855, characters 11-31
+</p></span></div></span> (<span id="xnz:458" class="id"><a name="xnz:458" class="">xnz</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#nullity">nullity</a></span>) (<span id="xr:459" class="id"><a name="xr:459" class="">xr</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#reality">reality</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span id="x:460" class="id"><a name="x:460" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">{compare</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id">0%N</span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xnz:458">xnz</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> &amp;</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#xr:459">xr</a></span><span class="id"><a href="mathcomp.reals.signed.html#b004ccaed0b973a368231e97e9374f9e">}</a></span>)<span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Posz_snum_subproof">Posz_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:460">x</a></span>).<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="Negz_snum_subproof" class="id"><a name="Negz_snum_subproof" class="">Negz_snum_subproof</a></span> (<span id="n:461" class="id"><a name="n:461" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#spec">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#spec">spec</a></span><span class="id"> 0%Z</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#5e27fe60fda0a7fe6124229ec9350cb6">!=0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#7a2442f26cc812c3d31340abc9c9fb22">&lt;=0</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#Negz">Negz</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#n:461">n</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
+<br/>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Negz_snum" class="id"><div name="Negz_snum" class=" tooltip">Negz_snum<span class='tooltip-area'><p>exprn_snum :
+forall {R : numDomainType} [xnz nnz : KnownSign.nullity]
+  [xr nr : KnownSign.reality],
+{num R & xnz & xr}%R ->
+{compare 0 & nnz & nr} ->
+{compare 0%R & exprn_nonzero_subdef xnz nnz xr nr & 
+exprn_reality_subdef xnz nnz xr nr}
+
+exprn_snum is not universe polymorphic
+Arguments exprn_snum {R} [xnz nnz]%_snum_nullity_scope
+  [xr nr]%_snum_sign_scope x n
+exprn_snum is transparent
+Expands to: Constant mathcomp.reals.signed.exprn_snum
+Declared in library mathcomp.reals.signed, line 881, characters 10-20
 </p></span></div></span><span class="id"> </span><span id="n:462" class="id"><a name="n:462" class="">n</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#Negz_snum_subproof">Negz_snum_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#n:462">n</a></span>).<br/>
 <br/>
 <span class="vernacular">End</span><span class="id"> IntStability</span>.<br/>
@@ -2002,23 +2016,7 @@ Declared in library mathcomp.reals.signed, line 855, characters 11-31
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.lt_def">lt_def</a></span>. Qed.</div></details>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="PosNum" class="id"><div name="PosNum" class=" tooltip">PosNum<span class='tooltip-area'><p>exprn_snum :
-forall {R : numDomainType} [xnz nnz : KnownSign.nullity]
-  [xr nr : KnownSign.reality],
-{num R & xnz & xr}%R ->
-{compare 0 & nnz & nr} ->
-{compare 0%R & exprn_nonzero_subdef xnz nnz xr nr & 
-exprn_reality_subdef xnz nnz xr nr}
-
-exprn_snum is not universe polymorphic
-Arguments exprn_snum {R} [xnz nnz]%_snum_nullity_scope
-  [xr nr]%_snum_sign_scope x n
-exprn_snum is transparent
-Expands to: Constant mathcomp.reals.signed.exprn_snum
-Declared in library mathcomp.reals.signed, line 881, characters 10-20
-</p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dbe4e9c6d047a7b9bacd3b6dee92ccb8">{posnum</a></span><span class="id"><a href="mathcomp.reals.signed.html#dbe4e9c6d047a7b9bacd3b6dee92ccb8"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#Posnum.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#dbe4e9c6d047a7b9bacd3b6dee92ccb8">}</a></span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> 0</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#5e27fe60fda0a7fe6124229ec9350cb6">!=0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#f1caef69e1bef41a6b6764969723a144">&gt;=0</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#posnum_subdef">posnum_subdef</a></span>.<br/>
-<span class="vernacular">End</span><span class="id"> Posnum</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="NngNum" class="id"><div name="NngNum" class=" tooltip">NngNum<span class='tooltip-area'><p>norm_snum :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="PosNum" class="id"><div name="PosNum" class=" tooltip">PosNum<span class='tooltip-area'><p>norm_snum :
 forall {R : numDomainType} {V : normedZmodType R},
 V -> {compare 0%R & ?=0 & >=0}
 
@@ -2027,6 +2025,16 @@ Arguments norm_snum {R V} x%_ring_scope
 norm_snum is transparent
 Expands to: Constant mathcomp.reals.signed.norm_snum
 Declared in library mathcomp.reals.signed, line 889, characters 10-19
+</p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#dbe4e9c6d047a7b9bacd3b6dee92ccb8">{posnum</a></span><span class="id"><a href="mathcomp.reals.signed.html#dbe4e9c6d047a7b9bacd3b6dee92ccb8"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#Posnum.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#dbe4e9c6d047a7b9bacd3b6dee92ccb8">}</a></span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> 0</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#5e27fe60fda0a7fe6124229ec9350cb6">!=0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#f1caef69e1bef41a6b6764969723a144">&gt;=0</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#posnum_subdef">posnum_subdef</a></span>.<br/>
+<span class="vernacular">End</span><span class="id"> Posnum</span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="NngNum" class="id"><div name="NngNum" class=" tooltip">NngNum<span class='tooltip-area'><p>sqrt_nonzero_subdef :
+KnownSign.nullity -> KnownSign.reality -> KnownSign.nullity
+
+sqrt_nonzero_subdef is not universe polymorphic
+Arguments sqrt_nonzero_subdef xnz%_snum_nullity_scope xr%_snum_sign_scope
+sqrt_nonzero_subdef is transparent
+Expands to: Constant mathcomp.reals.signed.sqrt_nonzero_subdef
+Declared in library mathcomp.reals.signed, line 897, characters 11-30
 </p></span></div></span> (<span id="R:531" class="id"><a name="R:531" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span>) (<span id="x:532" class="id"><a name="x:532" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#R:531">R</a></span>) (<span id="x_ge0:533" class="id"><a name="x_ge0:533" class="">x_ge0</a></span><span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#x:532">x</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#3c7df47245b1421bbe9c31d0c8ed78f3">{nonneg</a></span><span class="id"><a href="mathcomp.reals.signed.html#3c7df47245b1421bbe9c31d0c8ed78f3"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#R:531">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#3c7df47245b1421bbe9c31d0c8ed78f3">}</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;(<span class="id">@</span><span class="id"><a href="mathcomp.reals.signed.html#mk">Signed</a></span>.<span class="id"><a href="mathcomp.reals.signed.html#mk">mk</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> 0</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#bc1ebd4038e9d7afd4fc6aff32c3dd9a">?</a></span><span class="id">=0</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#f1caef69e1bef41a6b6764969723a144">&gt;=0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x:532">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#x_ge0:533">x_ge0</a></span>).<br/>
 <br/>
@@ -2087,14 +2095,15 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.unstable.html#onem">onem</a></span><span class="id">/=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.subr_ge0">subr_ge0</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="onem_nonneg" class="id"><div name="onem_nonneg" class=" tooltip">onem_nonneg<span class='tooltip-area'><p>sqrt_nonzero_subdef :
-KnownSign.nullity -> KnownSign.reality -> KnownSign.nullity
+<span class="vernacular">Definition</span><span class="id"> </span><span id="onem_nonneg" class="id"><div name="onem_nonneg" class=" tooltip">onem_nonneg<span class='tooltip-area'><p>sqrt_snum :
+forall {R : rcfType} [xnz : KnownSign.nullity] [xr : KnownSign.reality],
+{num R & xnz & xr}%R -> {compare 0%R & sqrt_nonzero_subdef xnz xr & >=0}
 
-sqrt_nonzero_subdef is not universe polymorphic
-Arguments sqrt_nonzero_subdef xnz%_snum_nullity_scope xr%_snum_sign_scope
-sqrt_nonzero_subdef is transparent
-Expands to: Constant mathcomp.reals.signed.sqrt_nonzero_subdef
-Declared in library mathcomp.reals.signed, line 897, characters 11-30
+sqrt_snum is not universe polymorphic
+Arguments sqrt_snum {R} [xnz]%_snum_nullity_scope [xr]%_snum_sign_scope x
+sqrt_snum is transparent
+Expands to: Constant mathcomp.reals.signed.sqrt_snum
+Declared in library mathcomp.reals.signed, line 909, characters 10-19
 </p></span></div></span> (<span id="p:557" class="id"><a name="p:557" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#3c7df47245b1421bbe9c31d0c8ed78f3">{nonneg</a></span><span class="id"><a href="mathcomp.reals.signed.html#3c7df47245b1421bbe9c31d0c8ed78f3"> </a></span><span class="id"><a href="mathcomp.reals.signed.html#onem_signed.R">R</a></span><span class="id"><a href="mathcomp.reals.signed.html#3c7df47245b1421bbe9c31d0c8ed78f3">}</a></span>) (<span id="p1:558" class="id"><a name="p1:558" class="">p1</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#p:557">p</a></span><span class="id"><a href="mathcomp.reals.signed.html#20b994ad55d82706ad5e372c6977614b">%:num</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id">1</span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals.signed.html#NngNum">NngNum</a></span> (<span class="id"><a href="mathcomp.reals.signed.html#onem_nonneg_proof">onem_nonneg_proof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.signed.html#p1:558">p1</a></span>).<br/>
 <br/>
