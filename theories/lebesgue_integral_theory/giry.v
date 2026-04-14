@@ -51,52 +51,6 @@ Global Hint Extern 0 (_ ≡μ _) => reflexivity : core.
 Local Open Scope classical_set_scope.
 Local Open Scope ereal_scope.
 
-Lemma preimage_set_systemS {T1 T2} (A B : set_system T2) (f : T1 -> T2) :
-  A `<=` B ->
-  preimage_set_system [set: _] f A `<=` preimage_set_system [set: _] f B.
-Proof. by move=> AB _ [C ? <-]; exists C => //; exact: AB. Qed.
-
-Section rectangle.
-Context {T1 T2 : Type}.
-Implicit Types (X : set_system T1) (Y : set_system T2).
-
-Definition rectangle X Y : set_system (T1 * T2):= [set U `*` V | U in X & V in Y].
-
-Lemma rectangle_setX X Y A B : X A -> Y B -> rectangle X Y (A `*` B).
-Proof. by move=> XA YB; exists A => //; exists B. Qed.
-
-Lemma setI_closed_rectangle X Y :
-  setI_closed X -> setI_closed Y ->
-  setI_closed (rectangle X Y).
-Proof.
-move=> IG IH _ _ [A mA [B mB] <-] [A' mA' [B' mB'] <-].
-by rewrite -setXI; apply: rectangle_setX; [exact: IG|exact: IH].
-Qed.
-
-End rectangle.
-
-Reserved Notation "A `x` B"  (at level 46, left associativity).
-Section cross.
-Context {T1 T2 : Type}.
-Implicit Types (X : set_system T1) (Y : set_system T2).
-
-Definition cross X Y :=
-  preimage_set_system [set: T1 * T2] fst X
-  `|` preimage_set_system [set: T1 * T2] snd Y.
-
-End cross.
-Notation "A `x` B" := (cross A B) : classical_set_scope.
-
-(* yoneda *)
-Lemma forall_subset_eq {T} (A B : set_system T) :
-  sigma_algebra [set: T] A -> sigma_algebra [set: T] B ->
-  (forall Z, sigma_algebra [set: T] Z -> A `<=` Z <-> B `<=` Z)
-  <-> A = B.
-Proof.
-move=> sA sB; split=> [AB|AB]; last by rewrite AB.
-by apply/seteqP; split; exact/AB.
-Qed.
-
 Lemma g_sigma_algebraSP {T : Type} (X Y : set_system T) :
   sigma_algebra [set: T] Y ->
   <<s X >> `<=` Y <-> X `<=` Y.
@@ -115,7 +69,7 @@ Proof.
 apply/seteqP; split; last first.
   apply/(g_sigma_algebraSP _ _).2.
     set RY := @g_sigma_algebraType _ Y.
-    exact: (sigma_algebra_measurable (g_sigma_algebra_preimageType (@snd T1 RY))).
+    exact: sigma_algebra_preimage.
   apply: preimage_set_systemS.
   exact: sub_sigma_algebra.
 move=> _ [Z RYZ <-] /= G [sigG HG].
@@ -127,45 +81,6 @@ split.
 move=> A YA.
 apply: HG => //.
 by exists A.
-Qed.
-
-Lemma g_sigma_algebra_cross (X : set_system T1) (Y : set_system T2) :
-  <<s X `x` <<s Y >> >> = <<s X `x` Y >>.
-Proof.
-apply/forall_subset_eq; [exact: smallest_sigma_algebra..|].
-move => /= Z mZ.
-rewrite g_sigma_algebraSP//=.
-rewrite {1}/cross/=.
-rewrite subUset.
-rewrite preimage_smallest_sigma_algebra//.
-rewrite g_sigma_algebraSP//=.
-rewrite -subUset.
-by rewrite -g_sigma_algebraSP.
-Qed.
-
-Lemma g_sigma_algebra_rectangle (X : set_system T1) (Y : set_system T2) :
-  X [set: T1] -> Y [set: T2] ->
-  <<s rectangle X Y >> = <<s X `x` Y >>.
-Proof.
-move=> sX sY; apply/seteqP; split; last first.
-  apply: sub_sigma_algebra2.
-  move=> A [|].
-    rewrite /preimage_set_system/= => -[A1 XA1 <-{A}].
-    rewrite -setXT setTI.
-    rewrite /rectangle/=. (* TODO: lemma *)
-    exists A1 =>//.
-    by exists setT.
-  rewrite /preimage_set_system/= => -[A1 XA1 <-{A}].
-  rewrite -setTX setTI.
-  exact: rectangle_setX.
-  (*  apply: sub_sigma_algebra2. (* TODO: rename that thing!! *) *)
-rewrite g_sigma_algebraSP// => _ [A1 X1] [A2 X2] <-.
-rewrite (_ : _ `*` _ = fst @^-1` A1 `&` snd @^-1` A2)//.
-apply: (@measurableI _ (@g_sigma_algebraType _ (X `x` Y))).
-- apply: sub_sigma_algebra; left.
-  by exists A1 => //; rewrite setTI.
-- apply: sub_sigma_algebra; right.
-  by exists A2 => //; rewrite setTI.
 Qed.
 
 End rect_cross_prop.
@@ -633,9 +548,9 @@ Let measurable_giry_prod :
   measurable_fun [set: giry T1 R * giry T2 R] giry_prod.
 Proof.
 apply: measurable_giry_codensity => //=.
-rewrite measurable_prod_measurableType.
+rewrite /measurable/= /g_sigma_preimageU -g_sigma_algebra_rectangle//.
 apply: dynkin_induction => /=.
-- by rewrite measurable_prod_measurableType.
+- by rewrite g_sigma_algebra_rectangle.
 - move=> _ _ [A1 mA1 [A2 mA2 <-]] [B1 mB1 [B2 mB2 <-]].
   exists (A1 `&` B1); first exact: measurableI.
   exists (A2 `&` B2); first exact: measurableI.
