@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+- in `set_interval.v`:
+  + lemmas `setU_itvob1`, `setU_1itvob`
 
 - in `realfun.v`:
   + lemma `derivable_sqrt`

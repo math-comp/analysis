@@ -657,8 +657,8 @@ suff : (lebesgue_measure (`]a - 1, a]%classic%R : set R) =
   rewrite wlength_itv lte_fin ltrBlDr ltrDl ltr01.
   rewrite [in X in X == _]/= EFinN EFinB fin_num_oppeB// addeA subee// add0e.
   by rewrite addeC -sube_eq ?fin_num_adde_defl// subee// => /eqP.
-rewrite -(setUitv1 true) ?bnd_simp; first by rewrite ltrBlDr ltrDl.
-by rewrite measureU// -(setDitv1r _ a true) setDKI.
+rewrite -setU_itvob1; first by rewrite bnd_simp ltrBlDr ltrDl.
+by rewrite measureU// -setDidPl setDitv1r.
 Qed.
 
 Lemma countable_lebesgue_measure0 (A : set R) :
@@ -686,7 +686,7 @@ Let lebesgue_measure_itvoo (a b : R) :
 Proof.
 have [ab|ba] := ltP a b; last by rewrite set_itv_ge ?measure0// -leNgt.
 have := lebesgue_measure_itvoc a b.
-rewrite 2!wlength_itv => <-; rewrite -(setUitv1 true)// measureU//.
+rewrite 2!wlength_itv => <-; rewrite -setU_itvob1// measureU//.
 - by apply/seteqP; split => // x [/= + xb]; rewrite in_itv/= xb ltxx andbF.
 - by have /= -> := lebesgue_measure_set1 b; rewrite adde0.
 Qed.
@@ -696,7 +696,7 @@ Let lebesgue_measure_itvcc (a b : R) :
 Proof.
 have [ab|ba] := leP a b; last by rewrite set_itv_ge ?measure0// -leNgt.
 have := lebesgue_measure_itvoc a b.
-rewrite 2!wlength_itv => <-; rewrite -(setU1itv false)// measureU//.
+rewrite 2!wlength_itv => <-; rewrite -setU_1itvob// measureU//.
 - by apply/seteqP; split => // x [/= ->]; rewrite in_itv/= ltxx.
 - by have /= -> := lebesgue_measure_set1 a; rewrite add0e.
 Qed.
@@ -706,7 +706,7 @@ Let lebesgue_measure_itvco (a b : R) :
 Proof.
 have [ab|ba] := ltP a b; last by rewrite set_itv_ge ?measure0// -leNgt.
 have := lebesgue_measure_itvoo a b.
-rewrite 2!wlength_itv => <-; rewrite -(setU1itv false)// measureU//.
+rewrite 2!wlength_itv => <-; rewrite -setU_1itvob// measureU//.
 - by apply/seteqP; split => // x [/= ->]; rewrite in_itv/= ltxx.
 - by have /= -> := lebesgue_measure_set1 a; rewrite add0e.
 Qed.

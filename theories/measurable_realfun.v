@@ -1419,7 +1419,7 @@ Lemma emeasurable_fun_itv_obnd_cbndP (a : R) (b : itv_bound R) (f : R -> \bar R)
 Proof.
 have [ab|ba] := leP (BRight a) b; last first.
   by rewrite !set_itv_ge// -leNgt ?(ltW ba)// -ltBRight_leBLeft.
-rewrite -(setU1itv false)// measurable_funU// (propT (measurable_fun_set1 _)).
+rewrite -setU_1itvob// measurable_funU// (propT (measurable_fun_set1 _)).
 by split => // -[].
 Qed.
 
@@ -1436,7 +1436,7 @@ Lemma emeasurable_fun_itv_bndo_bndcP (a : itv_bound R) (b : R) (f : R -> \bar R)
 Proof.
 have [ab|ba] := leP a (BLeft b); last first.
   by rewrite !set_itv_ge// -leNgt// ltW.
-rewrite -(setUitv1 true)// measurable_funU// (propT (measurable_fun_set1 _)).
+rewrite -setU_itvob1// measurable_funU// (propT (measurable_fun_set1 _)).
 by split => // -[].
 Qed.
 

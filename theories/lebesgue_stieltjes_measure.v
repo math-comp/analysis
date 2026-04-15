@@ -582,14 +582,14 @@ have moo (a b : R) : measurable `]a, b[.
   by rewrite ooE; exact: measurableD.
 have mcc (a b : R) : measurable `[a, b].
   case: (boolP (a <= b)) => ab; last by rewrite set_itv_ge.
-  by rewrite -(setU1itv false)//; apply/measurableU.
+  by rewrite -setU_1itvob//; apply/measurableU.
 have mco (a b : R) : measurable `[a, b[.
   case: (boolP (a < b)) => ab; last by rewrite set_itv_ge.
-  by rewrite -(setU1itv false)//; apply/measurableU.
+  by rewrite -setU_1itvob//; apply/measurableU.
 have oooE (b : R) : `]-oo, b[%classic = `]-oo, b] `\ b.
   by rewrite setDitv1r.
 case: i => [[[] a|[]] [[] b|[]]] => //; do ?by rewrite set_itv_ge.
-- by rewrite -(setU1itv false)//; exact/measurableU.
+- by rewrite -setU_1itvob//; exact/measurableU.
 - by rewrite oooE; exact/measurableD.
 - by rewrite set_itvNyy.
 Qed.
