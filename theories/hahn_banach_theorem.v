@@ -6,35 +6,31 @@ From mathcomp Require Import filter reals normedtype convex.
 Import numFieldNormedType.Exports.
 Local Open Scope classical_set_scope.
 
-
-
-
 (**md**************************************************************************)
+(* # The Hahn-Banach theorem                                                  *)
 (*                                                                            *)
-(*                                                                            *)
-(* This files proves the Hahn-Banach theorem thanks to Zorn's lemma.  Theorem *)
-(* `Hahnbanach` states that, considering `V` a Lmodtype on a realtype, a      *)
-(* linear function on a subLmotdype of V, that is bounded by a convex         *)
+(* This files proves the Hahn-Banach theorem thanks to Zorn's lemma. Theorem  *)
+(* `Hahnbanach` states that, considering `V` an lmodtype on a realtype, a     *)
+(* linear function on a subLmodype of V, that is bounded by a convex          *)
 (* function, can be extended to a linear map on V boundeby the same convex    *)
-(* function.  Theorem `HBgeom` specifies this to the extention of a linear    *)
-(* continuous function on a subspace to the whole NormedModule.               *)
+(* function.  Theorem `HB_geom_normed` specifies this to the extention of a   *)
+(* linear continuous function on a subspace to the whole NormedModule.        *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*        Module Lingraph == definitions on linear relations, thought of as   *)
 (*                           graph of functions                               *)
 (*   Module HBPreparation == defintion of the type Zorntype of linear         *)
 (*                           functional graphs, bounded by a convex function  *)
 (*                           and extending to the whole space a given linear  *)
 (*                           graph.                                           *)
+(* ```                                                                        *)
+(*                                                                            *)
 (******************************************************************************)
-
-
-
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
-
 
 Local Open Scope ring_scope.
 Local Open Scope convex_scope.
@@ -42,43 +38,40 @@ Local Open Scope real_scope.
 Import GRing.Theory.
 Import Num.Theory.
 
-
 Section pos_quotient.
 
 (* auxiliary lemmas that could be moved elsewhere *)
-(* TBD once merged in mathcomp *)
 
+(* NB: to appear in MathComp 2.6.0 *)
 Lemma divDl_ge0 (R: numDomainType) (s t : R) (s0 : 0 <= s) (t0 : 0 <= t) : 0 <= s / (s + t).
 Proof.
 by apply: divr_ge0 => //; apply: addr_ge0.
 Qed.
 
+(* NB: to appear in MathComp 2.6.0 *)
 Lemma divDl_le1 (R: numFieldType) (s t : R) (s0 : 0 <= s) (t0 : 0 <= t) :  s / (s + t) <= 1.
 Proof.
 move: s0; rewrite le0r => /predU1P [->|s0]; first by rewrite mul0r.
 by rewrite ler_pdivrMr ?mul1r ?lerDl // ltr_wpDr.
 Qed.
 
-Lemma divD_onem (R: realType) (s t : R) (s0 : 0 < s) (t0 : 0 < t): (s / (s + t)).~ = t / (s + t).
+Lemma divD_onem (R: realType) (s t : R) (s0 : 0 < s) (t0 : 0 < t) :
+  (s / (s + t)).~ = t / (s + t).
 Proof.
-rewrite /(_).~.
-suff -> : 1 = (s + t)/(s + t) by rewrite -mulrBl -addrAC subrr add0r.
-rewrite divff // /eqP addr_eq0; apply/negbT/eqP => H.
-by move: s0; rewrite H oppr_gt0 ltNge; move/negP; apply; rewrite ltW.
+rewrite /onem.
+by rewrite -(@divff _ (s + t)) ?gt_eqF ?addr_gt0// -mulrBl (addrC s) addrK.
 Qed.
 
 End pos_quotient.
 
-
 Module Lingraph.
 Section Lingraphsec.
-
 Variables (R : numDomainType) (V : lmodType R).
 
 Definition graph := V -> R -> Prop.
 
 Definition linear_graph (f : graph) :=
-   forall v1 v2 l r1 r2,  f v1 r1 -> f v2 r2 -> f (v1 + l *: v2) (r1 + l * r2).
+  forall v1 v2 l r1 r2, f v1 r1 -> f v2 r2 -> f (v1 + l *: v2) (r1 + l * r2).
 
 Variable f : graph.
 Hypothesis lrf : linear_graph f.
@@ -96,20 +89,18 @@ have -> : f (l *: x) (l * r) = f (0 + l *: x) (0 + l * r) by rewrite !add0r.
 by apply: lrf=> //; exact: lingraph_00 fxr.
 Qed.
 
-Lemma lingraph_add x1 x2 r1 r2 : f x1 r1 -> f x2 r2 -> f (x1 - x2)(r1 - r2).
+Lemma lingraph_add x1 x2 r1 r2 : f x1 r1 -> f x2 r2 -> f (x1 - x2) (r1 - r2).
 Proof.
 have -> : x1 - x2 = x1 + (-1) *: x2 by rewrite scaleNr scale1r.
 have -> : r1 - r2 = r1 + (-1) * r2 by rewrite mulNr mul1r.
-by exact: lrf.
+exact: lrf.
 Qed.
 
-
-Definition add_line f w a := fun v r =>  exists v' : V, exists r' : R, exists lambda : R,
-         [/\ f v' r', v = v' + lambda *: w & r = r' + lambda * a].
+Definition add_line f w a := fun v r => exists (v' : V) (r' : R) (lambda : R),
+  [/\ f v' r', v = v' + lambda *: w & r = r' + lambda * a].
 
 End Lingraphsec.
 End Lingraph.
-
 
 Module HBPreparation.
 Section HBPreparation.
@@ -133,66 +124,69 @@ Definition linear_graph f :=
    forall v1 v2 l r1 r2,  f v1 r1 -> f v2 r2 -> f (v1 + l *: v2) (r1 + l * r2).
 
 Definition le_extend_graph f :=
-   [/\ functional_graph f, linear_graph f, le_graph p f &  extend_graph f].
+  [/\ functional_graph f, linear_graph f, le_graph p f &  extend_graph f].
 
 Record zorn_type : Type := ZornType
-   {carrier : graph V; specP : le_extend_graph carrier}.
+  {carrier : graph V; specP : le_extend_graph carrier}.
 
-Let spec_phi : le_extend_graph (fun v r =>  exists2 y : F', v = val y & r = phi y).
+Let spec_phi : le_extend_graph (fun v r => exists2 y : F', v = val y & r = phi y).
 Proof.
 split.
 - by move=> v r1 r2 [y1 ->  ->] [y2 + ->] => /val_inj ->.
 - move => v1 v2 l r1 r2 [y1 -> ->] [y2 ->  ->].
-  by exists (y1 + l *: y2); rewrite !linearD !linearZ //.
-- by move => r v [y -> ->].
-- by move => v; exists v.
+  by exists (y1 + l *: y2); rewrite !linearD !linearZ.
+- by move=> r v [y -> ->].
+- by move=> v; exists v.
 Qed.
 
 Definition zphi := ZornType spec_phi.
 
 Lemma zorn_type_eq z1 z2 : carrier z1 = carrier z2 -> z1 = z2.
 Proof.
-case: z1 => m1 pm1; case: z2 => m2 pm2 /= e; move: pm1 pm2; rewrite e => pm1 pm2.
-by congr ZornType; apply: Prop_irrelevance.
+case: z1 => m1 pm1; case: z2 => m2 pm2 /= e; rewrite e in pm1 pm2 *.
+by congr ZornType; exact: Prop_irrelevance.
 Qed.
 
 Definition zornS (z1 z2 : zorn_type):=
-   forall x y, (carrier z1 x y) ->  (carrier z2 x y ).
+  forall x y, (carrier z1 x y) ->  (carrier z2 x y ).
 
-(* Zorn applied to the relation of extending the graph of the first function *)
+(* Zorn applied to the relation of extending the graph of the first function: *)
 Lemma zornS_ex : exists g : zorn_type, forall z, zornS g z -> z = g.
 Proof.
-pose Rbool := (fun x y => `[< zornS x y >]).
-have RboolP : forall z t, Rbool z t <-> zornS z t by split; move => /asboolP //=.
-suff [t st]:  exists t : zorn_type, forall s : zorn_type, Rbool t s -> s = t.
-  by exists t;  move => z /RboolP tz; apply: st.
-apply: (@Zorn zorn_type Rbool); first by move => t; apply/RboolP.
-- by move => r s t /RboolP  a /RboolP  b; apply/RboolP => x y /a /b.
-- move => r s /RboolP a /RboolP b; apply: zorn_type_eq.
-  by apply: funext => z; apply: funext => h;apply: propext; split => [/a | /b].
+pose Rbool x y := `[< zornS x y >].
+have RboolP z t : Rbool z t <-> zornS z t by split => /asboolP.
+suff [t st] : exists t : zorn_type, forall s : zorn_type, Rbool t s -> s = t.
+  by exists t; move => z /RboolP tz; exact: st.
+apply: (@Zorn zorn_type Rbool); first by move=> t; exact/RboolP.
+- by move=> r s t /RboolP a /RboolP b; apply/RboolP => x y /a /b.
+- move=> r s /RboolP a /RboolP b; apply: zorn_type_eq.
+  by apply: funext => z; apply: funext => h; apply: propext; split => [/a | /b].
 - move => A Amax.
-  case: (lem (exists a, A a)) => [[w Aw] | eA]; last by exists zphi => a Aa; elim: eA; exists a.
- (* g is the union of the graphs indexed by elements in a *)
-  pose g v r := exists a, A a /\ (carrier a v r).
+  have [[w Aw] | eA] := lem (exists a, A a); last first.
+    by exists zphi => a Aa; elim: eA; exists a.
+  (* g is the union of the graphs indexed by elements in a *)
+  pose g v r := exists2 a, A a & (carrier a v r).
   have g_fun : functional_graph g.
-    move=> v r1 r2 [a [Aa avr1]] [b [Ab bvr2]].
+    move=> v r1 r2 [a Aa avr1] [b Ab bvr2].
     have [] : Rbool a b \/ Rbool b a by exact: Amax.
       rewrite /Rbool /RboolP /zornS; case: b Ab bvr2 {Aa}.
       move => s2 [fs2 _ _ _] /= _ s2vr2 /asboolP ecas2.
-   by move/ecas2: avr1 => /fs2 /(_ s2vr2).
-   rewrite /Rbool /RboolP  /zornS; case: a Aa avr1 {Ab} => s1 [fs1 _ _ _] /= _ s1vr1 /asboolP ecbs1.
-  by move/ecbs1: bvr2; apply: fs1.
+     by move/ecas2: avr1 => /fs2 /(_ s2vr2).
+   rewrite /Rbool /RboolP /zornS.
+   case: a Aa avr1 {Ab} => s1 [fs1 _ _ _] /= _ s1vr1 /asboolP ecbs1.
+   by move/ecbs1: bvr2; apply: fs1.
 have g_lin : linear_graph g.
-   move=> v1 v2 l r1 r2 [a1 [Aa1 c1]] [a2 [Aa2 c2]].
-   have [/RboolP sc12 | /RboolP sc21] := Amax _ _ Aa1 Aa2.
-   - have {c1 sc12 Aa1 a1} c1 :  carrier a2 v1 r1 by apply: sc12.
-     exists a2; split=> //; case: a2 {Aa2} c2 c1 => c /= [_ hl _ _] *; exact: hl.
-   - have {c2 sc21 Aa2 a2} c2 :  carrier a1 v2 r2 by apply: sc21.
-     exists a1; split=> //; case: a1 {Aa1} c2 c1 => c /= [_ hl _ _] *; exact: hl.
-have g_majp : le_graph p g by move=> v r [[c [fs1 ls1 ms1 ps1]]] /= [_ /ms1].
+  move=> v1 v2 l r1 r2 [a1 Aa1 c1] [a2 Aa2 c2].
+  have [/RboolP sc12 | /RboolP sc21] := Amax _ _ Aa1 Aa2.
+  - have {c1 sc12 Aa1 a1} c1 :  carrier a2 v1 r1 by apply: sc12.
+    by exists a2 => //; case: a2 {Aa2} c2 c1 => c /= [_ hl _ _] *; exact: hl.
+  - have {c2 sc21 Aa2 a2} c2 :  carrier a1 v2 r2 by apply: sc21.
+    by exists a1 => //; case: a1 {Aa1} c2 c1 => c /= [_ hl _ _] *; exact: hl.
+have g_majp : le_graph p g.
+  by move=> v r [[c/= [fs1 ls1 ms1 ps1]]]/= _ => /ms1.
 have g_prol : extend_graph g.
-   move=> *; exists w; split=> //; case: w Aw => [c [_ _ _ hp]] _ //=; exact: hp.
- have spec_g : le_extend_graph g by split.
+   by move=> *; exists w=> //; case: w Aw => [c [_ _ _ hp]] _ //=; exact: hp.
+have spec_g : le_extend_graph g by split.
 pose zg := ZornType spec_g.
 by exists zg => [a Aa]; apply/RboolP; rewrite /zornS => v r cvr; exists a.
 Qed.
@@ -205,7 +199,7 @@ Hypothesis gP : forall z, zornS g z -> z = g.
 real line directed by an arbitrary vector v *)
 
 Lemma domain_extend  (z : zorn_type) v :
-     exists2 ze : zorn_type, (zornS z ze) & (exists r, (carrier ze)  v r).
+ exists2 ze : zorn_type, zornS z ze & exists r, (carrier ze) v r.
 Proof.
 case: (lem (exists r, (carrier z v r))).
   by case=> r rP; exists z => //; exists r.
@@ -213,8 +207,9 @@ case: z => [c [fs1 ls1 ms1 ps1]] /= nzv.
 have c00 : c 0 0.
   have <- : phi 0 = 0 by rewrite linear0.
   by move: ps1; rewrite /extend_graph /= => /(_ 0) /=; rewrite GRing.val0; apply.
-have [a aP] : exists a,  forall (x : V) (r lambda : R), c x r -> r + lambda * a <= p (x + lambda *: v).
-  suff [a aP] : exists a,  forall (x : V) (r lambda : R), c x r -> 0 < lambda ->
+have [a aP] : exists a, forall (x : V) (r lambda : R), c x r ->
+    r + lambda * a <= p (x + lambda *: v).
+  suff [a aP] : exists a, forall (x : V) (r lambda : R), c x r -> 0 < lambda ->
     r + lambda * a <= p (x + lambda *: v) /\ r - lambda * a <= p (x - lambda *: v).
      exists a=> x r lambda cxr.
      have {aP} aP := aP _ _ _ cxr.
@@ -321,7 +316,6 @@ have [z /gP sgz [r zr]]:= domain_extend g v.
 by exists r; rewrite -sgz.
 Qed.
 
-
 Lemma hb_witness : exists h : V -> R, forall v r, carrier g v r <-> (h v = r).
 Proof.
 move: (choice tot_g) => [h hP]; exists h => v r; split; last by move<-.
@@ -329,13 +323,12 @@ case: g gP tot_g hP => c /= [fg lg mg pg] => gP' tot_g' hP cvr.
 by have -> // := fg v r (h v).
 Qed.
 
-
 End HBPreparation.
 End HBPreparation.
 
 Section HahnBanach.
 Import Lingraph.
-Import HBPreparation.  
+Import HBPreparation.
 (* Now we prove HahnBanach on functions*)
 (* We consider R a real (=ordered) field with supremum, and V a (left) module
    on R. We do not make use of the 'vector' interface as the latter enforces
@@ -350,7 +343,7 @@ Hypothesis p_cvx : (@convex_function R V [set: V] p).
 Hypothesis f_bounded_by_p : forall (z : F'), (f z  <= p (\val z)).
 
 Theorem HahnBanach : exists g : {scalar V},
-(forall x,  g x <= p x) /\ (forall (z : F'), g (\val z) = f z).
+  (forall x,  g x <= p x) /\ (forall (z : F'), g (\val z) = f z).
 Proof.
 pose graphF (v : V) r := exists2 z : F', v = \val z & r = f z.
 have [z zmax]:= zornS_ex f_bounded_by_p.
@@ -397,7 +390,7 @@ Proof.
  rewrite /convex_function /conv => l v1 v2 _ _ /=.
  rewrite [X in (_ <= X)]/conv /= /p.
  apply: le_trans.
-   have H  :  `|l%:num *: v1 + (l%:num).~ *: v2|  <=  `|l%:num *: v1|  + `|(l%:num).~ *: v2|.
+   have H : `|l%:num *: v1 + (l%:num).~ *: v2| <= `|l%:num *: v1|  + `|(l%:num).~ *: v2|.
      by apply: ler_normD.
    by apply: (@ler_pM _ _ _ r r _ _ H) => //; apply: ltW.
    rewrite mulrDl !normrZ -![_ *: _]/(_ * _).
@@ -407,19 +400,19 @@ Proof.
    have majfp : forall z : F', f z <= p (\val z).
    move => z; rewrite /(p _) ; apply : le_trans; last by [].
    by apply : ler_norm.
-   move: (HahnBanach convp majfp) => [g] [majgp  F_eqgf] {majfp}.
-have ling :(linear (g : V -> R)) by exact:linearP.
-have contg: (continuous (g : V -> R)).
-  move=> x; rewrite /cvgP; apply: (continuousfor0_continuous).
+move: (HahnBanach convp majfp) => [g] [majgp  F_eqgf] {majfp}.
+have ling : linear (g : V -> R) by exact: linearP.
+have contg : (continuous (g : V -> R)).
+  move=> x; rewrite /cvgP; apply: continuousfor0_continuous.
   apply: bounded_linear_continuous.
-  exists r; split; first by exact: gtr0_real.
+  exists r; split; first exact: gtr0_real.
   move => M m1; rewrite nbhs_ballP;  exists 1 => /=; first by [].
   move => y; rewrite -ball_normE //= sub0r => y1.
-  rewrite ler_norml; apply/andP. split.
-  - rewrite lerNl  -linearN; apply: (le_trans (majgp (-y))).
-    by rewrite /p -[X in _ <= X]mul1r; apply: ler_pM; rewrite ?normr_ge0 ?ltW //=.
+  rewrite ler_norml; apply/andP; split.
+  - rewrite lerNl  -linearN; apply: (le_trans (majgp (- y))).
+    by rewrite /p -[X in _ <= X]mul1r; apply: ler_pM; rewrite ?normr_ge0 ?ltW.
   - apply: (le_trans (majgp (y))); rewrite /p -[X in _ <= X]mul1r -normrN.
-    apply: ler_pM; rewrite ?normr_ge0 ?ltW //=.
+    by apply: ler_pM; rewrite ?normr_ge0 ?ltW.
 pose Hg := isLinearContinuous.Build _ _ _ _ g ling contg.
 pose g': {linear_continuous V -> R | *%R} := HB.pack (g : V -> R) Hg.
 by exists g'.
