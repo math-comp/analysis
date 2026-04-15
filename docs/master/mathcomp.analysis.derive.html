@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.derive</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 8c72fe8" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 6bc95eb" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -302,9 +302,7 @@ Naming convention in this file:
 <span class="vernacular">Definition</span><span class="id"> </span><span id="diff" class="id"><div name="diff" class=" tooltip">diff<span class='tooltip-area'><p>diff :
 forall {K : numDomainType} {V W : normedModType K} [F : filter_on V],
 phantom (set (set V)) F ->
-(V -> W) ->
-Linear_type__canonical__classical_sets_Pointed V (V:=W)
-  (GRing.GRing_scale__canonical__Scale_Law W)
+(V -> W) -> Linear_type__canonical__classical_sets_Pointed (R:=K) V W
 
 diff is not universe polymorphic
 Arguments diff {K V W} [F] _ f%_function_scope
@@ -1200,7 +1198,7 @@ Qed.</div></details>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
-<span class="id">move=&gt;</span><span class="id"> df</span><span class="id"> dg;</span><span class="id"> split;</span><span class="id"> first</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> ?;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#continuous_comp">continuous_comp</a></span>.<br/>
+<span class="id">move=&gt;</span><span class="id"> df</span><span class="id"> dg;</span><span class="id"> split;</span><span class="id"> first</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> ?;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#continuous_comp">continuous_comp</a></span>.<br/>
 <span class="id">apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.landau.html#eqaddoEx">eqaddoEx</a></span><span class="id"> =&gt;</span><span class="id"> y;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.derive.html#diff_locallyx">diff_locallyx</a></span><span class="id">//</span><span class="id"> -</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.addrA">addrA</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.derive.html#diff_locallyxC">diff_locallyxC</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.linearD">linearD</a></span>.<br/>
 <span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.addrA">addrA</a></span><span class="id"> -[</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssrmatching.ssrmatching.html#SsrMatchingSyntax.LHS">LHS</a></span><span class="id">]</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.addrA">addrA</a></span><span class="id">;</span><span class="id"> congr</span> (_<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span>_<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span>_).<br/>
 <span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.derive.html#diff_eqO">diff_eqO</a></span><span class="id"> //</span><span class="id"> [</span><span class="id"><a href="mathcomp.analysis.derive.html#:::'''d'_x_x">'d</a></span><span class="id"><a href="mathcomp.analysis.derive.html#:::'''d'_x_x"> </a></span><span class="id">f</span><span class="id"><a href="mathcomp.analysis.derive.html#:::'''d'_x_x"> </a></span><span class="id">x</span><span class="id"> :</span><span class="id"> _</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">_]</span><span class="id"><a href="mathcomp.analysis.derive.html#diff_eqO">diff_eqO</a></span><span class="id"> //</span>.<br/>
