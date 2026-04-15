@@ -401,6 +401,10 @@ Qed.
 End hahn_banach.
 
 (*TODO : define on convextvstype once issue #1927 solved*)
+(* OR *)
+(* TODO : to define on tvs, characterize the topology of a tvs via its pseudonorms,
+and the continuity of linear continuous functions via the pseudonorms. *)
+
 Section hahn_banach_normed.
 Variable (R : realType) (V : normedModType R) (F : pred V)
   (F' : subNormedModType F) (f : {linear_continuous F' -> R}).
