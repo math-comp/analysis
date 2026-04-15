@@ -64,6 +64,41 @@ Qed.
 
 End pos_quotient.
 
+HB.mixin Record Zmodule_isSubSemiNormed (R : numDomainType)
+    (M : semiNormedZmodType R) (S : pred M) T & SubType M S T
+    & Num.NormedZmodule R T := {
+  norm_valE : forall x, @Num.norm _ M ((val : T -> M) x) = @Num.norm _ T x
+}.
+
+(* TODO: should go to MathComp in numdomain.v *)
+#[short(type="subNormedZmodType")]
+HB.structure Definition SubNormedZmodule (R : numDomainType)
+    (V : normedZmodType R) (S : pred V) :=
+  { U of SubChoice V S U & Num.NormedZmodule R U & GRing.SubZmodule V S U
+       & Zmodule_isSubSemiNormed R V S U & Num.SemiNormedZmodule R U
+       & Num.SemiNormedZmodule_isPositiveDefinite R U }.
+
+(* TODO: moved to normed_module.v *)
+#[short(type="subNormedModType")]
+HB.structure Definition SubNormedModule (R : numDomainType)
+  (V : normedModType R) (S : pred V) :=
+  { U of SubChoice V S U & NormedModule R U & @GRing.SubLmodule R V S U
+       & @SubNormedZmodule(*Zmodule_isSubSemiNormed*) R V S U}.
+
+Section test.
+Context {R : numDomainType} {V : normedModType R} {F : pred V}
+  {S' : subNormedModType F}.
+
+Check S' : normedModType R.
+Check S' : subLmodType F.
+Check S' : subNormedZmodType F.
+Check S' : normedZmodType R.
+
+End test.
+
+(* TODO: defined a factory that takes a sub vector space S of a normed module V
+   and construct a sub normed module with the induced norm *)
+
 Module Lingraph.
 Section Lingraphsec.
 Variables (R : numDomainType) (V : lmodType R).
@@ -326,24 +361,24 @@ Qed.
 End HBPreparation.
 End HBPreparation.
 
-Section HahnBanach.
+(* NB: could go to convex.v *)
+Section hahn_banach.
 Import Lingraph.
 Import HBPreparation.
 (* Now we prove HahnBanach on functions*)
 (* We consider R a real (=ordered) field with supremum, and V a (left) module
    on R. We do not make use of the 'vector' interface as the latter enforces
    finite dimension. *)
-
 Variables (R : realType) (V : lmodType R) (F : pred V).
 
 Variables (F' : subLmodType F) (f : {linear F' -> R}) (p : V -> R).
 
-Hypothesis p_cvx : (@convex_function R V [set: V] p).
+Hypothesis p_cvx : @convex_function R V [set: V] p.
 
 Hypothesis f_bounded_by_p : forall (z : F'), (f z  <= p (\val z)).
 
-Theorem HahnBanach : exists g : {scalar V},
-  (forall x,  g x <= p x) /\ (forall (z : F'), g (\val z) = f z).
+Theorem hahn_banach_extension : exists g : {scalar V},
+  (forall x, g x <= p x) /\ (forall z : F', g (\val z) = f z).
 Proof.
 pose graphF (v : V) r := exists2 z : F', v = \val z & r = f z.
 have [z zmax]:= zornS_ex f_bounded_by_p.
@@ -363,44 +398,38 @@ split; last first.
 by case: z {zmax} gP => [c [_ _ bp _]] /= gP => x; apply: bp; apply/gP.
 Qed.
 
-End HahnBanach.
+End hahn_banach.
 
-Section HBGeom.
 (*TODO : define on convextvstype once issue #1927 solved*)
-
+Section hahn_banach_normed.
 Variable (R : realType) (V : normedModType R) (F : pred V)
-(F' : subLmodType F) (f : {linear F' -> R}).
+  (F' : subNormedModType F) (f : {linear_continuous F' -> R}).
 
-(* once subnormedspaces are correctly defined replace by
-Variable (R : realType) (V : normedModType R) (F : pred V)
-(f : {linear_continuous F' -> R}).
-*)
-
-Let setF := [set x : V  | exists (z : F'), val z = x].
-
-Theorem HB_geom_normed :
-  (exists  r , (r > 0 ) /\ (forall (z : F'), (`|f z| ) <=  `|(val z)| * r)) ->
-(* hypothesis to delete once f is of type {linear_continuous _ -> _ }
-  and obtain through continuous_linear_bounded  *)
-  exists g: {linear_continuous V -> R}, (forall x, (g (val x) = f x)).
+Theorem hahn_banach_extension_normed :
+  exists g : {linear_continuous V -> R}, (forall x, (g (val x) = f x)).
 Proof.
-  move=> [r [ltr0 fxrx]].
-  pose p:= fun x : V => `|x|*r.
- have convp: (@convex_function _ _ [set: V] p).
- rewrite /convex_function /conv => l v1 v2 _ _ /=.
- rewrite [X in (_ <= X)]/conv /= /p.
- apply: le_trans.
-   have H : `|l%:num *: v1 + (l%:num).~ *: v2| <= `|l%:num *: v1|  + `|(l%:num).~ *: v2|.
-     by apply: ler_normD.
-   by apply: (@ler_pM _ _ _ r r _ _ H) => //; apply: ltW.
+have [r [ltr0 fxrx]] : exists2 r, r > 0 & forall (z : F'), `|f z| <= `|val z| * r.
+  suff: \forall r \near +oo, forall x : F', `|f x| <= r * `|x|.
+    move=> [t [_ tf]].
+    exists (`|t| + 1); first by rewrite ltr_wpDl.
+    by move=> z; rewrite mulrC norm_valE tf// (le_lt_trans (ler_norm _))// ltrDl.
+  exact/linear_boundedP/continuous_linear_bounded/cts_fun.
+pose p := fun x : V => `|x| * r.
+have convp : @convex_function _ _ [set: V] p.
+  rewrite /convex_function /conv => l v1 v2 _ _ /=.
+  rewrite [X in (_ <= X)]/conv /= /p.
+  apply: le_trans.
+    have H : `|l%:num *: v1 + (l%:num).~ *: v2| <= `|l%:num *: v1|  + `|l%:num.~ *: v2|.
+      exact: ler_normD.
+    by apply: (@ler_pM _ _ _ r r _ _ H) => //; apply: ltW.
    rewrite mulrDl !normrZ -![_ *: _]/(_ * _).
    have -> : `|l%:num| = l%:num by apply/normr_idP.
-   have -> : `|(l%:num).~| = (l%:num).~ by apply/normr_idP; apply: onem_ge0.
+   have -> : `|l%:num.~| = l%:num.~ by apply/normr_idP; apply: onem_ge0.
    by rewrite !mulrA.
-   have majfp : forall z : F', f z <= p (\val z).
-   move => z; rewrite /(p _) ; apply : le_trans; last by [].
-   by apply : ler_norm.
-move: (HahnBanach convp majfp) => [g] [majgp  F_eqgf] {majfp}.
+have majfp : forall z : F', f z <= p (\val z).
+  move => z; rewrite /(p _) ; apply : le_trans; last by [].
+  exact: ler_norm.
+have [g [majgp F_eqgf {majfp}]] := hahn_banach_extension convp majfp.
 have ling : linear (g : V -> R) by exact: linearP.
 have contg : (continuous (g : V -> R)).
   move=> x; rewrite /cvgP; apply: continuousfor0_continuous.
@@ -411,11 +440,11 @@ have contg : (continuous (g : V -> R)).
   rewrite ler_norml; apply/andP; split.
   - rewrite lerNl  -linearN; apply: (le_trans (majgp (- y))).
     by rewrite /p -[X in _ <= X]mul1r; apply: ler_pM; rewrite ?normr_ge0 ?ltW.
-  - apply: (le_trans (majgp (y))); rewrite /p -[X in _ <= X]mul1r -normrN.
+  - apply: (le_trans (majgp y)); rewrite /p -[X in _ <= X]mul1r -normrN.
     by apply: ler_pM; rewrite ?normr_ge0 ?ltW.
 pose Hg := isLinearContinuous.Build _ _ _ _ g ling contg.
 pose g': {linear_continuous V -> R | *%R} := HB.pack (g : V -> R) Hg.
 by exists g'.
 Qed.
 
-End HBGeom.
+End hahn_banach_normed.
