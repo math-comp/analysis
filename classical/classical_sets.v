@@ -28,7 +28,7 @@ From mathcomp Require Import mathcomp_extra boolp wochoice.
 (* - indexed sets are rather named F                                          *)
 (*                                                                            *)
 (* Examples of notations:                                                     *)
-(* | Coq notations                |   | Meaning                             | *)
+(* | Rocq notatons                |   | Meaning                             | *)
 (* |-----------------------------:|---|:------------------------------------  *)
 (* |                         set0 |==| $\emptyset$                            *)
 (* |                     [set: A] |==| the full set of elements of type A     *)
