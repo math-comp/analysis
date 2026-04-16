@@ -1720,7 +1720,7 @@ have badn' k : exists n, mu (E k n) < ((eps / 2) / (2 ^ k.+1)%:R)%:E.
 pose badn k := projT1 (cid (badn' k)); exists (\bigcup_k E k (badn k)); split.
 - exact: bigcup_measurable.
 - apply: (@le_lt_trans _ _ (eps / 2)%:E); first last.
-    by rewrite lte_fin ltr_pdivrMr // ltr_pMr // Rint_ltr_addr1 // Rint1.
+    by rewrite lte_fin ltr_pdivrMr // ltr_pMr // ltr1n.
   apply: le_trans.
     apply: (measure_sigma_subadditive _ (fun k => mE k (badn k)) _ _) => //.
     exact: bigcup_measurable.

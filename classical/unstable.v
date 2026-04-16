@@ -552,6 +552,10 @@ Proof.
 by move=> eqP; split=> -[x p q]; exists x; move: p q; rewrite ?eqP.
 Qed.
 
+Lemma ex_eqP {T : choiceType} {vT : eqType} (lhs rhs : T -> vT) :
+  (exists x, lhs x = rhs x) -> exists x, lhs x == rhs x.
+Proof. by move=> [t ?]; exists t; exact/eqP. Qed.
+
 Declare Scope signature_scope.
 Delimit Scope signature_scope with signature.
 

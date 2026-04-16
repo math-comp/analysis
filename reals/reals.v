@@ -27,10 +27,8 @@
 (*   sup A - eps < x for any 0 < eps (lemma sup_adherent)                     *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*         Rint == the set of real numbers that can be written as z%:~R,      *)
-(*                 i.e., as an integer                                        *)
 (*     Rtoint r == r when r is an integer, 0 otherwise                        *)
-(*  floor_set x := [set y | Rtoint y /\ y <= x]                               *)
+(*  floor_set x := [set y | (y \is a Num.int) && (y <= x)]                    *)
 (*     Rfloor x == the floor of x as a real number                            *)
 (*     range1 x := [set y |x <= y < x + 1]                                    *)
 (*      Rceil x == the ceil of x as a real number, i.e., - Rfloor (- x)       *)
@@ -149,70 +147,83 @@ Proof. exact: sup_adherent_subdef. Qed.
 Section IsInt.
 Context {R : realFieldType}.
 
+#[deprecated(since="mathcomp-analysis 1.17.0", note="use `Num.int` instead")]
 Definition Rint_pred := fun x : R => `[< exists z, x == z%:~R >].
-Arguments Rint_pred _ /.
-Definition Rint := [qualify a x | Rint_pred x].
+#[warning="-deprecated"] Arguments Rint_pred _ /.
 
+#[deprecated(since="mathcomp-analysis 1.17.0", note="use `Num.int` instead")]
+#[warning="-deprecated"] Definition Rint := [qualify a x | Rint_pred x].
+
+#[deprecated(since="mathcomp-analysis 1.17.0", note="use `Num.int` instead")]
+#[warning="-deprecated"]
 Lemma Rint_def x : (x \is a Rint) = (`[< exists z, x == z%:~R >]).
 Proof. by []. Qed.
 
+#[deprecated(since="mathcomp-analysis 1.17.0", note="use `intrP` instead")]
+#[warning="-deprecated"]
 Lemma RintP x : reflect (exists z, x = z%:~R) (x \in Rint).
 Proof.
 by apply/(iffP idP) => [/asboolP[z /eqP]|[z]] ->; [|apply/asboolP]; exists z.
 Qed.
 
-Lemma RintC z : z%:~R \is a Rint.
-Proof. by apply/RintP; exists z. Qed.
+#[deprecated(since="mathcomp-analysis 1.17.0", note="use `intr_int` instead")]
+#[warning="-deprecated"] Lemma RintC z : z%:~R \is a Rint.
+Proof. #[warning="-deprecated"] by apply/RintP; exists z. Qed.
 
-Lemma Rint0 : 0 \is a Rint.
-Proof. by rewrite -[0](mulr0z 1) RintC. Qed.
+#[deprecated(since="mathcomp-analysis 1.17.0", note="use `int_num0` instead")]
+#[warning="-deprecated"] Lemma Rint0 : 0 \is a Rint.
+Proof. #[warning="-deprecated"] by rewrite -[0](mulr0z 1) RintC. Qed.
 
-Lemma Rint1 : 1 \is a Rint.
-Proof. by rewrite -[1]mulr1z RintC. Qed.
+#[deprecated(since="mathcomp-analysis 1.17.0", note="use `int_num1` instead")]
+#[warning="-deprecated"] Lemma Rint1 : 1 \is a Rint.
+Proof. #[warning="-deprecated"] by rewrite -[1]mulr1z RintC. Qed.
 
-Hint Resolve Rint0 Rint1 RintC : core.
+#[warning="-deprecated"] Hint Resolve Rint0 Rint1 RintC : core.
 
-Lemma Rint_subring_closed : subring_closed Rint.
+#[deprecated(since="mathcomp-analysis 1.17.0", note="use `int_num_subring` instead")]
+#[warning="-deprecated"] Lemma Rint_subring_closed : subring_closed Rint.
 Proof.
-split=> // _ _ /RintP[x ->] /RintP[y ->]; apply/RintP.
+#[warning="-deprecated"] split=> // _ _ /RintP[x ->] /RintP[y ->]; apply/RintP.
 by exists (x - y); rewrite rmorphB. by exists (x * y); rewrite rmorphM.
 Qed.
 
-HB.instance Definition _ := GRing.isSubringClosed.Build R Rint_pred
+#[warning="-deprecated"] HB.instance Definition _ := GRing.isSubringClosed.Build R Rint_pred
   Rint_subring_closed.
 
-Lemma Rint_ler_addr1 (x y : R) : x \is a Rint -> y \is a Rint ->
+#[deprecated(since="mathcomp-analysis 1.17.0", note="use `lezD1` instead")]
+#[warning="-deprecated"] Lemma Rint_ler_addr1 (x y : R) : x \is a Rint -> y \is a Rint ->
   (x + 1 <= y) = (x < y).
 Proof.
-move=> /RintP[xi ->] /RintP[yi ->]; rewrite -{2}[1]mulr1z.
+#[warning="-deprecated"] move=> /RintP[xi ->] /RintP[yi ->]; rewrite -{2}[1]mulr1z.
 by rewrite -intrD !(ltr_int, ler_int) lezD1.
 Qed.
 
-Lemma Rint_ltr_addr1 (x y : R) : x \is a Rint -> y \is a Rint ->
+#[deprecated(since="mathcomp-analysis 1.17.0", note="use `ltzD1` instead")]
+#[warning="-deprecated"] Lemma Rint_ltr_addr1 (x y : R) : x \is a Rint -> y \is a Rint ->
   (x < y + 1) = (x <= y).
 Proof.
-move=> /RintP[xi ->] /RintP[yi ->]; rewrite -{3}[1]mulr1z.
+#[warning="-deprecated"] move=> /RintP[xi ->] /RintP[yi ->]; rewrite -{3}[1]mulr1z.
 by rewrite -intrD !(ltr_int, ler_int) ltzD1.
 Qed.
 
 End IsInt.
-Arguments Rint_pred _ _ /.
+#[warning="-deprecated"] Arguments Rint_pred _ _ /.
 
 (* -------------------------------------------------------------------- *)
+
 Section ToInt.
 Context {R : realType}.
-
 Implicit Types x y : R.
 
 Definition Rtoint (x : R) : int :=
-  if insub x : {? x | x \is a Rint} is Some Px then
-    xchoose (asboolP _ (tagged Px))
+  if insub x : {? x | x \is a Num.int} is Some Px then
+    xchoose (ex_eqP (elimT intrP (tagged Px)))
   else 0.
 
-Lemma RtointK (x : R): x \is a Rint -> (Rtoint x)%:~R = x.
+Lemma RtointK (x : R): x \is a Num.int -> (Rtoint x)%:~R = x.
 Proof.
-move=> Ix; rewrite /Rtoint insubT /= [RHS](eqP (xchooseP (asboolP _ Ix))).
-by congr _%:~R; apply/eq_xchoose.
+move=> Ix; rewrite /Rtoint insubT//=; case: ex_eqP => //= i xi.
+by rewrite -(eqP (xchooseP (ex_intro (fun i => x == i%:~R) i xi))).
 Qed.
 
 Lemma Rtointz (z : int): Rtoint z%:~R = z.
@@ -221,10 +232,10 @@ Proof. by apply/eqP; rewrite -(@eqr_int R) RtointK ?rpred_int. Qed.
 Lemma Rtointn (n : nat): Rtoint n%:R = n%:~R.
 Proof. by rewrite -{1}mulrz_nat Rtointz. Qed.
 
-Lemma inj_Rtoint : {in Rint &, injective Rtoint}.
+Lemma inj_Rtoint : {in Num.int &, injective Rtoint}.
 Proof. by move=> x y Ix Iy /= /(congr1 (@intmul R 1)); rewrite !RtointK. Qed.
 
-Lemma RtointN x : x \is a Rint -> Rtoint (- x) = - Rtoint x.
+Lemma RtointN x : x \is a Num.int -> Rtoint (- x) = - Rtoint x.
 Proof.
 move=> Ir; apply/eqP.
 by rewrite -(@eqr_int R) RtointK // ?rpredN // mulrNz RtointK.
@@ -238,7 +249,7 @@ Section RealDerivedOps.
 Variable R : realType.
 
 Implicit Types x y : R.
-Definition floor_set x := [set y : R | (y \is a Rint) && (y <= x)].
+Definition floor_set x := [set y : R | (y \is a Num.int) && (y <= x)].
 
 Definition Rfloor x : R := (Num.floor x)%:~R.
 
@@ -456,15 +467,15 @@ move/sup_adherent=> -/(_ e) []; first by rewrite subr_gt0.
 move=> z Fz; rewrite /= subKr => lt_yz.
 have /sup_upper_bound /ubP /(_ _ Fz) := has_sup_floor_set x.
 rewrite -(lerD2r (-y)) => /le_lt_trans /(_ lt1_FxBy).
-case/andP: Fy Fz lt_yz=> /RintP[yi -> _].
-case/andP=> /RintP[zi -> _]; rewrite -rmorphB /= ltrz1 ltr_int.
+case/andP: Fy Fz lt_yz => /intrP[yi -> _].
+case/andP => /intrP[zi -> _]; rewrite -rmorphB /= ltrz1 ltr_int.
 rewrite lt_neqAle => /andP[ne_yz le_yz].
 rewrite -[_-_]gez0_abs ?subr_ge0 // ltz_nat ltnS leqn0.
 by rewrite absz_eq0 subr_eq0 eq_sym (negbTE ne_yz).
 Qed.
 
-Lemma isint_Rfloor x : Rfloor x \is a Rint.
-Proof. by rewrite inE; exists (Num.floor x). Qed.
+Lemma isint_Rfloor x : Rfloor x \is a Num.int.
+Proof. by apply/intrP; exists (Num.floor x). Qed.
 
 Lemma RfloorE x : Rfloor x = (Num.floor x)%:~R.
 Proof. by []. Qed.
@@ -534,8 +545,8 @@ Variable R : realType.
 
 Implicit Types x y : R.
 
-Lemma isint_Rceil x : Rceil x \is a Rint.
-Proof. by rewrite /Rceil RintC. Qed.
+Lemma isint_Rceil x : Rceil x \is a Num.int.
+Proof. by rewrite /Rceil intr_int. Qed.
 
 Lemma Rceil0 : Rceil 0 = 0 :> R.
 Proof. by rewrite /Rceil ceil0. Qed.
