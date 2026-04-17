@@ -1,4 +1,4 @@
-From HB Require Import structures.
+From HB Require Import structures. 
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp Require Import interval_inference.
 From mathcomp Require Import unstable wochoice boolp classical_sets topology reals.
@@ -75,25 +75,117 @@ HB.mixin Record Zmodule_isSubNormed (R : numDomainType)
 HB.structure Definition SubNormedZmodule (R : numDomainType)
     (V : normedZmodType R) (S : pred V) :=
   { U of SubChoice V S U & Num.NormedZmodule R U & GRing.SubZmodule V S U
-       & Zmodule_isSubNormed R V S U }.
+    & Zmodule_isSubNormed R V S U }.
+
+
+
+HB.mixin Record isSubConvexTvs (R : numDomainType)
+  (V : convexTvsType R) (S : pred V) U &  SubType V S U
+& @GRing.SubLmodule R V S U
+    & ConvexTvs R U := {
+  continuous_valE : continuous (val : U -> V)
+}.
+
+#[short(type="subConvexTvsType")]
+HB.structure Definition SubConvexTvs (R : numDomainType)
+  (V : convexTvsType R) (S : pred V) :=
+  { U of SubChoice V S U & ConvexTvs R U & @GRing.SubLmodule R V S U
+       & isSubConvexTvs R V S U}.
+
+HB.factory Record SubLmodule_isSubConvexTvs (R : numFieldType)
+  (V : convexTvsType R) (S : pred V) U &  SubChoice V S U & @GRing.SubLmodule R V S U  := {
+}.
+
+HB.builders Context (R : numFieldType) (V : convexTvsType R) (S : pred V) U
+            & SubLmodule_isSubConvexTvs R V S U. 
+
+#[local] Definition topU : Type := (initial_topology (\val : U -> V)).
+
+(*Because there is a new identificator, we need to redefine Topological.
+When unifying, if it does not work immedialty, initial_topology will be unfolded *)
+(*HB.instance Definition _ := Topological.on topU.*)
+HB.instance Definition _ := SubChoice.on topU.
+HB.instance Definition _ := Uniform.on topU.
+HB.instance Definition _ := GRing.Lmodule.on topU.
+Check (topU : SubChoice.type S). 
+Check (topU : uniformType).
+Check (topU : topologicalType). 
+Check (topU : lmodType R).
+Check (topU : preTopologicalLmodType R).
+Check (topU : subLmodType S).
+
+#[local] Lemma add_sub: continuous (fun x : topU * topU => x.1 + x.2). Admitted.
+
+HB.instance Definition _ := @PreTopologicalNmodule_isTopologicalNmodule.Build topU add_sub. 
+
+Check (topU : TopologicalNmodule.type). 
+
+#[local] Lemma opp_sub : continuous (-%R : topU -> topU). Admitted.
+
+HB.instance Definition _ :=   TopologicalNmodule_isTopologicalZmodule.Build topU opp_sub.
+
+Check (topU : TopologicalZmodule.type).
+
+#[local] Lemma scale_sub : continuous (fun z : R^o * topU => z.1 *: z.2). Admitted.
+
+HB.instance Definition _ := TopologicalZmodule_isTopologicalLmodule.Build R topU scale_sub.
+
+Check (topU : TopologicalLmodule.type R).
+
+#[local] Lemma add_unif_sub: unif_continuous (fun x : topU * topU => x.1 + x.2). Admitted.
+
+HB.instance Definition _ := @PreUniformNmodule_isUniformNmodule.Build topU add_unif_sub. 
+
+Check (topU : UniformNmodule.type). 
+
+#[local] Lemma opp_unif_sub : unif_continuous (-%R : topU -> topU). Admitted.
+
+HB.instance Definition _ :=   UniformNmodule_isUniformZmodule.Build topU opp_unif_sub.
+
+Check (topU : UniformZmodule.type).
+
+#[local] Lemma scale_unif_sub : unif_continuous (fun z : R^o * topU => z.1 *: z.2). Admitted.
+
+HB.instance Definition _ := @UniformNmodule_isUniformLmodule.Build R topU scale_unif_sub.
+
+Check (topU : UniformLmodule.type R).
+
+#[local] Lemma locally_convex_sub : exists2 B : set_system topU,
+      (forall b, b \in B -> convex_set b) & basis B. Admitted.
+ 
+HB.instance Definition _ := @Uniform_isConvexTvs.Build R topU locally_convex_sub.
+
+
+(*Can't use that ? Maybe because we already have a uniform structure defined by initial_topology *)
+(*HB.instance Definition _ := @PreTopologicalLmod_isConvexTvs.Build R topU
+                              add_sub scale_sub locally_convex_sub.
+
+ *)
+(* Maybe this is enough instead of all the Top/Unif N/Z/Mlomd *)
+
+#[loca] Lemma continuous_valE : continuous (val : topU -> V). Admitted.
+
+HB.instance Definition _ := isSubConvexTvs.Build R V S topU continuous_valE.
+
+Check (topU : SubType.type S).
+Check (topU : @GRing.SubLmodule.type R V S).
+Check (topU : NbhsZmodule.type). 
+Check (topU : ConvexTvs.type R).
+Check (topU : SubChoice.type S).
+Check (topU : PreUniformLmodule.type R).
+Check (topU : UniformLmodule.type R).
+Check (topU : topologicalZmodType). 
+HB.about subConvexTvsType.
+
+Fail Check (topU : subConvexTvsType S).
+HB.end.
 
 (* TODO: moved to normed_module.v *)
 #[short(type="subNormedModType")]
 HB.structure Definition SubNormedModule (R : numDomainType)
   (V : normedModType R) (S : pred V) :=
   { U of SubChoice V S U & NormedModule R U & @GRing.SubLmodule R V S U
-       & @SubNormedZmodule(*Zmodule_isSubSemiNormed*) R V S U}.
-
-Section test.
-Context {R : numDomainType} {V : normedModType R} {F : pred V}
-  {S' : subNormedModType F}.
-
-Check S' : normedModType R.
-Check S' : subLmodType F.
-Check S' : subNormedZmodType F.
-Check S' : normedZmodType R.
-
-End test.
+       & @SubNormedZmodule(*Zmodule_isSubSemiNormed*) R V S U & @SubConvexTvs R V S U}. 
 
 HB.factory Record SubLmodule_isSubNormedmodule (R : numFieldType)
   (V : normedModType R) (S : pred V) U &  SubChoice V S U & @GRing.SubLmodule R V S U  := {
@@ -144,13 +236,13 @@ Check (U : normedModType R).
 
 #[local] Lemma normu_valE : forall x, @Num.norm _ V ((val : U -> V) x) = @Num.norm _ U x.
 Proof. by []. Qed.
-
+ 
 HB.instance Definition _ :=  Zmodule_isSubNormed.Build _ _ _ U normu_valE.
 (* TODO : why is the U necessary ?*)
 
 Check (U : subNormedZmodType S).
 Check (U : subNormedModType S). 
-
+(* TODO : to a lightweight factory to put an instanec of subNormedModType on every subLmodtype *)
 HB.end.
 
 
