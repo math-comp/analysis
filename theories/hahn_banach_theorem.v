@@ -64,10 +64,10 @@ Qed.
 
 End pos_quotient.
 
-HB.mixin Record Zmodule_isSubSemiNormed (R : numDomainType)
-    (M : semiNormedZmodType R) (S : pred M) T & SubType M S T
+HB.mixin Record Zmodule_isSubNormed (R : numDomainType)
+    (M : normedZmodType R) (S : pred M) T & SubType M S T
     & Num.NormedZmodule R T := {
-  norm_valE : forall x, @Num.norm _ M ((val : T -> M) x) = @Num.norm _ T x
+  norm_valE : forall x , @Num.norm _ M ((val : T -> M) x) = @Num.norm _ T x
 }.
 
 (* TODO: should go to MathComp in numdomain.v *)
@@ -75,8 +75,7 @@ HB.mixin Record Zmodule_isSubSemiNormed (R : numDomainType)
 HB.structure Definition SubNormedZmodule (R : numDomainType)
     (V : normedZmodType R) (S : pred V) :=
   { U of SubChoice V S U & Num.NormedZmodule R U & GRing.SubZmodule V S U
-       & Zmodule_isSubSemiNormed R V S U & Num.SemiNormedZmodule R U
-       & Num.SemiNormedZmodule_isPositiveDefinite R U }.
+       & Zmodule_isSubNormed R V S U }.
 
 (* TODO: moved to normed_module.v *)
 #[short(type="subNormedModType")]
@@ -96,8 +95,53 @@ Check S' : normedZmodType R.
 
 End test.
 
-(* TODO: defined a factory that takes a sub vector space S of a normed module V
-   and construct a sub normed module with the induced norm *)
+HB.factory Record SubLmodule_isSubNormedmodule (R : numFieldType)
+  (V : normedModType R) (S : pred V) U &  SubChoice V S U & @GRing.SubLmodule R V S U  := {
+}.
+
+HB.builders Context R V S U & SubLmodule_isSubNormedmodule R V S U.
+
+Local Definition normu := fun (u : U)=> `|\val u|.
+
+#[local] Lemma ler_normuD (x y :U): normu (x + y) <= normu x + normu y.
+Proof.
+by rewrite /normu GRing.valD; exact: ler_normD.
+Qed.
+
+#[local] Lemma normru0_eq0 x: normu x = 0 -> x = 0.
+Proof.
+move/eqP; rewrite normr_eq0 /normu -(@GRing.val0 V S U) =>/eqP. 
+by exact: val_inj.
+Qed.
+
+#[local] Lemma normruMn x n: normu (x *+ n) = normu x *+ n.
+Proof.
+by rewrite /normu raddfMn /=; exact: normrMn.
+Qed. 
+
+#[local] Lemma normruN x: normu (- x) = normu x.
+Proof.
+by rewrite /normu raddfN /=; exact: normrN.
+Qed.
+
+#[local] Lemma normruZ (l : R) (x : U): normu (l *: x) = `|l| * normu x.
+Proof.
+by rewrite /normu GRing.valZ; exact: normrZ.
+Qed.
+
+HB.instance Definition _ :=
+  @Lmodule_isNormed.Build R U normu ler_normuD normruZ normru0_eq0.
+
+HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R U erefl.
+
+
+HB.instance Definition _ :=
+  @Lmodule_isNormed.Build R U normu ler_normuD normruZ normru0_eq0.
+(* NB : when defining intermediate instances first, via
+Zmodule_isSubNormed.Build and @Num.Zmodule_isNormed.Build, this command check
+but then we have Fail Check (U : pseudometricnormedzmodtype R) and Fail Check (U
+: normedModtype R) *). 
+HB.end.
 
 Module Lingraph.
 Section Lingraphsec.
