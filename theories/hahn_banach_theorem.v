@@ -134,14 +134,25 @@ HB.instance Definition _ :=
 
 HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R U erefl.
 
-
 HB.instance Definition _ :=
   @Lmodule_isNormed.Build R U normu ler_normuD normruZ normru0_eq0.
-(* NB : when defining intermediate instances first, via
-Zmodule_isSubNormed.Build and @Num.Zmodule_isNormed.Build, this command check
+(* NB : when defining intermediate instances first, via @Num.Zmodule_isNormed.Build, this command check
 but then we have Fail Check (U : pseudometricnormedzmodtype R) and Fail Check (U
-: normedModtype R) *). 
+: normedModtype R).
+ *)
+Check (U : normedModType R).
+
+#[local] Lemma normu_valE : forall x, @Num.norm _ V ((val : U -> V) x) = @Num.norm _ U x.
+Proof. by []. Qed.
+
+HB.instance Definition _ :=  Zmodule_isSubNormed.Build _ _ _ U normu_valE.
+(* TODO : why is the U necessary ?*)
+
+Check (U : subNormedZmodType S).
+Check (U : subNormedModType S). 
+
 HB.end.
+
 
 Module Lingraph.
 Section Lingraphsec.
@@ -444,8 +455,6 @@ Qed.
 
 End hahn_banach.
 
-(*TODO : define on convextvstype once issue #1927 solved*)
-(* OR *)
 (* TODO : to define on tvs, characterize the topology of a tvs via its pseudonorms,
 and the continuity of linear continuous functions via the pseudonorms. *)
 
@@ -453,6 +462,9 @@ Section hahn_banach_normed.
 Variable (R : realType) (V : normedModType R) (F : pred V)
   (F' : subNormedModType F) (f : {linear_continuous F' -> R}).
 
+
+(*To use the thm on a F': subLmodType F, use @SubLmodule_isSubNormedmodule.Build.
+TODO : a lightweight factory  *)
 Theorem hahn_banach_extension_normed :
   exists g : {linear_continuous V -> R}, (forall x, (g (val x) = f x)).
 Proof.
