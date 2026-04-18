@@ -109,6 +109,8 @@
   + `Rintegral_itv_bndo_bndc` -> `Rintegral_itvbo_itvbc`
   + `Rintegral_itv_obnd_cbnd` -> `Rintegral_itvob_itvcb`
 
+- in `topology_structure.v`:
+  + `cts_fun` -> `continuous_fun`
 
 ### Generalized
 

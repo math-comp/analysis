@@ -701,10 +701,10 @@ Section continuous_fun_comp.
 Context {X Y Z : topologicalType} (A : set X) (B : set Y) (C : set Z).
 Context {f : continuousSubspaceType A B} {g : continuousSubspaceType B C}.
 
-Local Lemma continuous_comp_subproof : continuous (g \o f : subspace A -> Z).
+#[local] Lemma continuous_comp_subproof : continuous (g \o f : subspace A -> Z).
 Proof.
-move=> x; apply: continuous_comp; last exact: cts_fun.
-exact/subspaceT_continuous/cts_fun.
+move=> x; apply: continuous_comp; last exact: continuous_fun.
+exact/subspaceT_continuous/continuous_fun.
 Qed.
 
 HB.instance Definition _ :=

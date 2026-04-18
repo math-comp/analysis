@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat ssralg ssrnum vector.
 From mathcomp Require Import interval_inference.
@@ -779,11 +779,11 @@ Context {R : numDomainType} {E F : NbhsLmodule.type R}
   {S : NbhsZmodule.type} {s : GRing.Scale.law R S}
   (f : {linear_continuous E -> F}) (g : {linear_continuous F -> S | s}).
 
-Let lcfun_comp_subproof1 : linear_for s (g \o f).
+#[local] Lemma lcfun_comp_subproof1 : linear_for s (g \o f).
 Proof. by move=> *; move=> *; rewrite !linearP. Qed.
 
-Let lcfun_comp_subproof2 : continuous (g \o f).
-Proof. by move=> x; apply: continuous_comp; exact/cts_fun. Qed.
+#[local] Lemma lcfun_comp_subproof2 : continuous (g \o f).
+Proof. by move=> x; apply: continuous_comp; exact/continuous_fun. Qed.
 
 HB.instance Definition _ := @isLinearContinuous.Build R E S s (g \o f)
   lcfun_comp_subproof1 lcfun_comp_subproof2.
@@ -800,25 +800,25 @@ Proof. by apply: cst_continuous. Qed.
 
 HB.instance Definition _ := isContinuous.Build E F \0 null_fun_continuous.
 
-Let lcfun_continuousD f g : continuous (f \+ g).
-Proof. by move=> /= x; apply: fun_cvgD; exact: cts_fun. Qed.
+#[local] Lemma lcfun_continuousD f g : continuous (f \+ g).
+Proof. by move=> /= x; apply: fun_cvgD; exact: continuous_fun. Qed.
 
 HB.instance Definition _ f g :=
   isContinuous.Build E F (f \+ g) (@lcfun_continuousD f g).
 
-Let lcfun_continuousN f : continuous (\- f).
-Proof. by move=> /= x; apply: fun_cvgN; exact: cts_fun. Qed.
+#[local] Lemma lcfun_continuousN f : continuous (\- f).
+Proof. by move=> /= x; apply: fun_cvgN; exact: continuous_fun. Qed.
 
 HB.instance Definition _ f :=
   isContinuous.Build E F (\- f) (@lcfun_continuousN f).
 
-Let lcfun_continuousM r g : continuous (r \*: g).
-Proof. by move=> /= x; apply: fun_cvgZr; exact: cts_fun. Qed.
+#[local] Lemma lcfun_continuousM r g : continuous (r \*: g).
+Proof. by move=> /= x; apply: fun_cvgZr; exact: continuous_fun. Qed.
 
 HB.instance Definition _ r g :=
   isContinuous.Build E F (r \*: g) (@lcfun_continuousM r g).
 
-Let lcfun_submod_closed : submod_closed (@lcfun R E F *:%R).
+#[local] Lemma lcfun_submod_closed : submod_closed (@lcfun R E F *:%R).
 Proof.
 split; first by rewrite inE; split; first apply/linearP; exact: cst_continuous.
 move=> r /= _ _  /lcfunP[f] /lcfunP[g].
@@ -837,9 +837,9 @@ Section lcfunproperties.
 Context {R : numDomainType} {E F : NbhsLmodule.type R}
   (f : {linear_continuous E -> F}).
 
-#[warn(note="Consider using `cts_fun` instead.",cats="discoverability")]
+#[warn(note="Consider using `continuous_fun` instead.",cats="discoverability")]
 Lemma lcfun_continuous : continuous f.
-Proof. exact: cts_fun. Qed.
+Proof. exact: continuous_fun. Qed.
 
 #[warn(note="Consider using `linearP` instead.",cats="discoverability")]
 Lemma lcfun_linear : linear f.

@@ -1031,13 +1031,17 @@ End ClopenSets.
 Notation clopen_comp := preimage_clopen (only parsing).
 
 HB.mixin Record isContinuous {X Y : nbhsType} (f : X -> Y):= {
-  cts_fun : continuous f
+  continuous_fun : continuous f
 }.
 
 #[short(type = "continuousType")]
 HB.structure Definition Continuous {X Y : nbhsType} := {
   f of @isContinuous X Y f
 }.
+
+#[deprecated(since="mathcomp-analysis 1.17.0",
+             note="use `continuous_fun` instead")]
+Notation cts_fun := (continuous_fun) (only parsing).
 
 HB.instance Definition _ {X Y : topologicalType} :=
   gen_eqMixin (continuousType X Y).
@@ -1050,7 +1054,7 @@ Proof.
 case: f g => [f [[ffun]]] [g [[gfun]]]/=; split=> [[->//]|/funext eqfg].
 rewrite eqfg in ffun *; congr {| Continuous.sort := _; Continuous.class := {|
   Continuous.topology_structure_isContinuous_mixin :=
-    {|isContinuous.cts_fun := _|}|}|}.
+    {|isContinuous.continuous_fun := _|}|}|}.
 exact: Prop_irrelevance.
 Qed.
 
@@ -1063,8 +1067,8 @@ Section continuous_comp.
 Context {X Y Z : topologicalType}.
 Context (f : continuousType X Y) (g : continuousType Y Z).
 
-Local Lemma cts_fun_comp : continuous (g \o f).
-Proof. move=> x; apply: continuous_comp; exact: cts_fun. Qed.
+#[local] Lemma cts_fun_comp : continuous (g \o f).
+Proof. move=> x; apply: continuous_comp; exact: continuous_fun. Qed.
 
 HB.instance Definition _ := @isContinuous.Build X Z (g \o f) cts_fun_comp.
 
@@ -1073,7 +1077,7 @@ End continuous_comp.
 Section continuous_id.
 Context {X : topologicalType}.
 
-Local Lemma cts_id : continuous (@idfun X).
+#[local] Lemma cts_id : continuous (@idfun X).
 Proof. by move=> ?. Qed.
 
 HB.instance Definition _ := @isContinuous.Build X X (@idfun X) cts_id.
@@ -1083,7 +1087,7 @@ End continuous_id.
 Section continuous_const.
 Context {X Y : topologicalType} (y : Y).
 
-Local Lemma cts_const : continuous (@cst X Y y).
+#[local] Lemma cts_const : continuous (@cst X Y y).
 Proof. by move=> ?; exact: cvg_cst. Qed.
 
 HB.instance Definition _ := @isContinuous.Build X Y (cst y) cts_const.
