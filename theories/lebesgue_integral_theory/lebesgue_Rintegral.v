@@ -199,21 +199,21 @@ Context {R : realType}.
 Notation mu := (@lebesgue_measure R).
 Implicit Type f : R -> R.
 
-Lemma Rintegral_itv_bndo_bndc (a : itv_bound R) (r : R) f :
+Lemma Rintegral_itvbo_itvbc (a : itv_bound R) (r : R) f :
   mu.-integrable [set` Interval a (BLeft r)] (EFin \o f) ->
    \int[mu]_(x in [set` Interval a (BLeft r)]) (f x) =
    \int[mu]_(x in [set` Interval a (BRight r)]) (f x).
 Proof.
-move=> mf; rewrite /Rintegral integral_itv_bndo_bndc//.
+move=> mf; rewrite /Rintegral integral_itvbo_itvbc//.
 exact: (measurable_int mu).
 Qed.
 
-Lemma Rintegral_itv_obnd_cbnd (r : R) (b : itv_bound R) f :
+Lemma Rintegral_itvob_itvcb (r : R) (b : itv_bound R) f :
   mu.-integrable [set` Interval (BRight r) b] (EFin \o f) ->
   \int[mu]_(x in [set` Interval (BRight r) b]) (f x) =
   \int[mu]_(x in [set` Interval (BLeft r) b]) (f x).
 Proof.
-move=> mf; rewrite /Rintegral integral_itv_obnd_cbnd//.
+move=> mf; rewrite /Rintegral integral_itvob_itvcb//.
 exact: (measurable_int mu).
 Qed.
 
@@ -237,11 +237,15 @@ rewrite Rintegral_setU//=.
 - by rewrite -itv_bndbnd_setU -?ltBRight_leBLeft// ltW.
 - apply/disj_setPS => y [/=]; rewrite 2!in_itv/= => /andP[_ yx] /andP[].
   by rewrite leNgt yx.
-rewrite Rintegral_itv_bndo_bndc//.
+rewrite Rintegral_itvbo_itvbc//.
   apply: integrableS itf => //; apply: subset_itvl.
   by rewrite (le_trans _ xb)// bnd_simp.
-rewrite addrC addKr Rintegral_itv_obnd_cbnd//.
+rewrite addrC addKr Rintegral_itvob_itvcb//.
 by apply: integrableS itf => //; exact/subset_itvr/ltW.
 Qed.
 
 End Rintegral_lebesgue_measure.
+#[deprecated(since="mathcomp-analysis 1.17.0", use=Rintegral_itvbo_itvbc)]
+Notation Rintegral_itv_bndo_bndc := Rintegral_itvbo_itvbc (only parsing).
+#[deprecated(since="mathcomp-analysis 1.17.0", use=Rintegral_itvob_itvcb)]
+Notation Rintegral_itv_obnd_cbnd := Rintegral_itvob_itvcb (only parsing).

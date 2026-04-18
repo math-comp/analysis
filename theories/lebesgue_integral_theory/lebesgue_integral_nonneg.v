@@ -1542,7 +1542,7 @@ rewrite -[in RHS](@setD1K _ r D)// integral_setU//=.
 - by rewrite integral_set1// add0e.
 Qed.
 
-Lemma integral_itv_bndo_bndc (a : itv_bound R) (r : R) (f : R -> \bar R) :
+Lemma integral_itvbo_itvbc (a : itv_bound R) (r : R) (f : R -> \bar R) :
   measurable_fun [set` Interval a (BLeft r)] f ->
    \int[mu]_(x in [set` Interval a (BLeft r)]) f x =
    \int[mu]_(x in [set` Interval a (BRight r)]) f x.
@@ -1552,7 +1552,7 @@ move=> mf; have [ar|ar] := leP a (BLeft r).
 - by rewrite !set_itv_ge// -leNgt// ltW.
 Qed.
 
-Lemma integral_itv_obnd_cbnd (r : R) (b : itv_bound R) (f : R -> \bar R) :
+Lemma integral_itvob_itvcb (r : R) (b : itv_bound R) (f : R -> \bar R) :
   measurable_fun [set` Interval (BRight r) b] f ->
    \int[mu]_(x in [set` Interval (BRight r) b]) f x =
    \int[mu]_(x in [set` Interval (BLeft r) b]) f x.
@@ -1562,7 +1562,7 @@ move=> mf; have [rb|rb] := leP (BRight r) b.
 - by rewrite !set_itv_ge// -leNgt -?ltBRight_leBLeft// ltW.
 Qed.
 
-Lemma integral_itv_bndoo (x y : R) (f : R -> \bar R) (b0 b1 : bool) :
+Lemma integral_itvbb_itvoo (x y : R) (f : R -> \bar R) (b0 b1 : bool) :
   measurable_fun `]x, y[ f ->
   \int[mu]_(z in [set` Interval (BSide b0 x) (BSide b1 y)]) f z =
   \int[mu]_(z in `]x, y[) f z.
@@ -1574,9 +1574,9 @@ have [xy|yx _|-> _] := ltgtP x y; first last.
   + by rewrite bnd_simp le_gtF// ltW.
 move=> mf.
 transitivity (\int[mu]_(z in [set` Interval (BSide b0 x) (BLeft y)]) f z).
-  case: b1 => //; rewrite -integral_itv_bndo_bndc//.
-  by case: b0 => //; exact/emeasurable_fun_itv_obnd_cbndP.
-by case: b0 => //; rewrite -integral_itv_obnd_cbnd.
+  case: b1 => //; rewrite -integral_itvbo_itvbc//.
+  by case: b0 => //; exact/emeasurable_fun_itvob_itvcbP.
+by case: b0 => //; rewrite -integral_itvob_itvcb.
 Qed.
 
 Lemma eq_integral_itv_bounded (x y : R) (g f : R -> R) (b0 b1 : bool) :
@@ -1586,8 +1586,8 @@ Lemma eq_integral_itv_bounded (x y : R) (g f : R -> R) (b0 b1 : bool) :
   \int[mu]_(z in [set` Interval (BSide b0 x) (BSide b1 y)]) (g z)%:E.
 Proof.
 move=> mf mg fg.
-rewrite integral_itv_bndoo//; first exact/measurable_EFinP.
-rewrite (@integral_itv_bndoo _ _ (EFin \o g))//; first exact/measurable_EFinP.
+rewrite integral_itvbb_itvoo//; first exact/measurable_EFinP.
+rewrite (@integral_itvbb_itvoo _ _ (EFin \o g))//; first exact/measurable_EFinP.
 by apply: eq_integral => z; rewrite inE/= => zxy; congr EFin; exact: fg.
 Qed.
 
@@ -1595,6 +1595,12 @@ End lebesgue_measure_integral.
 Arguments integral_Sset1 {R f A} r.
 #[deprecated(since="mathcomp-analysis 1.16.0", note="renamed_to `integral_setD1`")]
 Notation integral_setD1_EFin := integral_setD1 (only parsing).
+#[deprecated(since="mathcomp-analysis 1.17.0", use=integral_itvbo_itvbc)]
+Notation integral_itv_bndo_bndc := integral_itvbo_itvbc (only parsing).
+#[deprecated(since="mathcomp-analysis 1.17.0", use=integral_itvob_itvcb)]
+Notation integral_itv_obnd_cbnd := integral_itvob_itvcb (only parsing).
+#[deprecated(since="mathcomp-analysis 1.17.0", use=integral_itvbb_itvoo)]
+Notation integral_itv_bndoo := integral_itvbb_itvoo (only parsing).
 
 Section ge0_nondecreasing_set_cvg_integral.
 Context {d : measure_display} {T : measurableType d} {R : realType}.

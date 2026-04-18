@@ -77,6 +77,25 @@
 
 - in `measurable_structure.v`:
   + `measurable_prod_measurableType` -> `prod_measurable_rectangle`
+- in `measurable_realfun.v`:
+  + `measurable_fun_itv_co` -> `measurable_fun_itvbb_itvco`
+  + `measurable_fun_itv_oc` -> `measurable_fun_itvbb_itvoc`
+  + `emeasurable_fun_itv_cc` -> `emeasurable_fun_itvbb_itvcc`
+  + `measurable_fun_itv_cc` -> `measurable_fun_itvbb_itvcc`
+  + `measurable_fun_itv_bndo_bndcP` -> `measurable_fun_itvbo_itvbcP`
+  + `emeasurable_fun_itv_bndo_bndcP` -> `emeasurable_fun_itvbo_itvbcP`
+  + `measurable_fun_itv_obnd_cbndP` -> `measurable_fun_itvob_itvcbP`
+  + `emeasurable_fun_itv_obnd_cbndP` -> `emeasurable_fun_itvob_itvcbP`
+
+- in `lebesgue_integral_nonneg.v`:
+  + `integral_itv_bndo_bndc` -> `integral_itvbo_itvbc`
+  + `integral_itv_obnd_cbnd` -> `integral_itvob_itvcb`
+  + `integral_itv_bndoo` -> `integral_itvbb_itvoo`
+
+- in `lebesgue_Rintegral.v`:
+  + `Rintegral_itv_bndo_bndc` -> `Rintegral_itvbo_itvbc`
+  + `Rintegral_itv_obnd_cbnd` -> `Rintegral_itvob_itvcb`
+
 
 ### Generalized
 
