@@ -128,8 +128,8 @@ Lemma Rintegral_setU (A B : set T) (f : T -> R) :
     mu.-integrable (A `|` B) (EFin \o f) -> [disjoint A & B] ->
   \int[mu]_(x in (A `|` B)) f x = \int[mu]_(x in A) f x + \int[mu]_(x in B) f x.
 Proof.
-move=> mA mB mf AB; rewrite /Rintegral integral_setU_EFin//.
-  exact/measurable_EFinP/(measurable_int mu).
+move=> mA mB mf AB; rewrite /Rintegral integral_setU//.
+  exact/(measurable_int mu).
 have mAf :  mu.-integrable A (EFin \o f).
   by  apply: integrableS mf => //; exact: measurableU.
 have mBf :  mu.-integrable B (EFin \o f).

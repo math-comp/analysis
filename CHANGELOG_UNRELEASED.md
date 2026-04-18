@@ -69,6 +69,9 @@
   + mixin ` PseudoMetricNormedZmod_Tvs_isNormedModule` ->
     ` PseudoMetricNormedZmod_ConvexTvs_isNormedModule`
 
+- in `measurable_structure.v`:
+  + `measurable_prod_measurableType` -> `prod_measurable_rectangle`
+
 ### Generalized
 
 - in `measurable_structure.v`:

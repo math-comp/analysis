@@ -1648,12 +1648,13 @@ Context d1 d2 (T1 : algebraOfSetsType d1) (T2 : algebraOfSetsType d2).
 Let M1 := @measurable _ T1.
 Let M2 := @measurable _ T2.
 
-#[deprecated(since="mathcomp-analysis 1.17.0", note="use `g_sigma_algebra_rectangle` instead")]
-Lemma measurable_prod_measurableType :
+Lemma prod_measurable_rectangle :
   (d1, d2).-prod.-measurable = <<s rectangle M1 M2 >>.
 Proof. by rewrite g_sigma_algebra_rectangle//; exact: measurableT. Qed.
 
 End product_salgebra_algebraOfSetsType.
+#[deprecated(since="mathcomp-analysis 1.17.0", use=prod_measurable_rectangle)]
+Notation measurable_prod_measurableType := prod_measurable_rectangle (only parsing).
 
 Section product_salgebra_g_measurableTypeR.
 Context d1 (T1 : algebraOfSetsType d1) (T2 : pointedType) (C2 : set (set T2)).
@@ -1664,7 +1665,7 @@ Lemma __deprecated__measurable_prod_g_measurableTypeR :
   @measurable _ (T1 * g_sigma_algebraType C2)%type
   = <<s rectangle (@measurable _ T1) C2 >>.
 Proof.
-rewrite measurable_prod_measurableType //; congr (<<s _ >>).
+rewrite prod_measurable_rectangle//; congr (<<s _ >>).
 rewrite predeqE => X; split=> [[A mA] [B mB] <-{X}|[A C1A] [B C2B] <-{X}].
   by exists A => //; exists B => //; exact: setTC2.
 by exists A => //; exists B => //; exact: sub_sigma_algebra.
@@ -1681,7 +1682,7 @@ Lemma __deprecated__measurable_prod_g_measurableType :
   @measurable _ (g_sigma_algebraType C1 * g_sigma_algebraType C2)%type =
   <<s rectangle C1 C2 >>.
 Proof.
-rewrite -[LHS]g_sigma_algebra_rectangle//; congr (<<s _ >>).
+rewrite prod_measurable_rectangle//; congr (<<s _ >>).
 rewrite predeqE => X; split=> [[A mA] [B mB] <-{X}|[A C1A] [B C2B] <-{X}].
   by exists A; [exact: setTC1|exists B => //; exact: setTC2].
 by exists A; [exact: sub_sigma_algebra|exists B => //; exact: sub_sigma_algebra].

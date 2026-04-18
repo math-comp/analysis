@@ -412,9 +412,9 @@ Lemma measurable_giry_prod :
   measurable_fun [set: giry T1 R * giry T2 R] giry_prod.
 Proof.
 apply: measurable_giry_codensity => //=.
-rewrite measurable_prod_measurableType.
+rewrite prod_measurable_rectangle.
 apply: dynkin_induction => /=.
-- by rewrite measurable_prod_measurableType.
+- by rewrite prod_measurable_rectangle.
 - move=> _ _ [A1 mA1 [A2 mA2 <-]] [B1 mB1 [B2 mB2 <-]].
   exists (A1 `&` B1); first exact: measurableI.
   exists (A2 `&` B2); first exact: measurableI.

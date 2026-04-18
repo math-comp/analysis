@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval.
 From mathcomp Require Import interval_inference archimedean finmap.
@@ -600,10 +600,9 @@ Lemma measurable_prod_subset_xsection_kernel :
     (forall x, exists M, forall X, measurable X -> kD x X < M%:E) ->
   measurable `<=` XY.
 Proof.
-move=> kD_ub; rewrite measurable_prod_measurableType.
-set C := rectangle (@measurable _ X) (@measurable _ Y).
-have CI : setI_closed C.
-  by apply: setI_closed_rectangle => E F mE MF; exact: measurableI.
+move=> kD_ub.
+rewrite prod_measurable_rectangle; set C := rectangle _ _.
+have CI : setI_closed C by apply: setI_closed_rectangle=> *; exact: measurableI.
 have CT : C setT by rewrite -setXTT; exact: rectangle_setX.
 have CXY : C `<=` XY.
   move=> _ [A mA [B mB <-]]; split; first exact: measurableX.
@@ -615,7 +614,7 @@ split => //; [exact: CXY| |exact: xsection_ndseq_closed].
 move=> A B BA [mA mphiA] [mB mphiB]; split; first exact: measurableD.
 suff : phi (A `\` B) = (fun x => phi A x - phi B x).
   by move=> ->; exact: emeasurable_funB.
-rewrite funeqE => x; rewrite /phi/= xsectionD// measureD.
+rewrite funeqE => x; rewrite /phi/= xsectionD// measureD/=.
 - exact: measurable_xsection.
 - exact: measurable_xsection.
 - have [M kM] := kD_ub x.
@@ -1387,13 +1386,12 @@ apply: (emeasurable_fun_cvg (fun n => K (EFin \o f_ n))); last first.
 move=> m.
 have DE : D = @measurable _ (T1 * T2)%type.
   apply/seteqP; split => [/= A []//|].
-  rewrite measurable_prod_measurableType.
+  rewrite prod_measurable_rectangle.
   apply: lambda_system_subset => //=.
-    by apply: setI_closed_rectangle => ? ? ? ?; exact: measurableI.
+    by apply: setI_closed_rectangle => *; exact: measurableI.
   move=> C [A mA [B mB] <-].
   split; [exact: measurableX|rewrite /K kfcompkg//].
-  apply: emeasurable_funM; first exact/measurable_EFinP.
-  exact: measurable_kernel.
+  by apply: emeasurable_funM; [exact/measurable_EFinP|exact: measurable_kernel].
 have mK1 (A : set (T1 * T2)) : measurable A ->
     measurable_fun setT (K (EFin \o \1_A)).
   by rewrite -DE => -[].
@@ -1409,8 +1407,7 @@ rewrite /I/= [X in measurable_fun _ X](_ : _ = (fun x =>
   rewrite /= ge0_integral_fsum//=.
     move=> r.
     under eq_fun do rewrite EFinM.
-    apply: emeasurable_funM => //.
-    by apply/measurable_EFinP; exact: measurableT_comp.
+    by apply: emeasurable_funM => //; exact/measurable_EFinP/measurableT_comp.
   by move=> r y _; rewrite EFinM nnfun_muleindic_ge0.
 apply: emeasurable_fsum => // r.
 rewrite [X in measurable_fun _ X](_ : _ = (fun x =>
@@ -1425,7 +1422,7 @@ rewrite [X in measurable_fun _ X](_ : _ = (fun x =>
   pose H3 := isSigmaFinite.Build _ _ _ _ (finite_measure_sigma_finite
     (@kernel_finite_transition _ _ _ _ R k x)).
   pose kx' := HB.pack_for (FiniteMeasure.type T2 R) (Measure.sort kx) H1 H2 H3.
-  have kxE : kx = kx' by apply: eq_measure.
+  have kxE : kx = kx' by exact: eq_measure.
   rewrite -/kx kxE; apply: integrable_indic => //.
   by rewrite -[X in measurable X]xsectionE; exact: measurable_xsection.
 by apply: emeasurable_funM => //; exact: mK1.
@@ -1540,17 +1537,17 @@ Context d0 d1 d2 (T0 : measurableType d0)
   (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
   (k1 : R.-ftker T0 ~> T1) (k2 : R.-ftker (T0 * T1) ~> T2).
 
-Let kproduct0 x : kproduct k1 k2 x set0 = 0.
+#[local] Lemma kproduct0 x : kproduct k1 k2 x set0 = 0.
 Proof.
 by apply: integral0_eq => y _; apply: integral0_eq => z _; rewrite indic0.
 Qed.
 
-Let kproduct_ge0 x A : 0 <= kproduct k1 k2 x A.
+#[local] Lemma kproduct_ge0 x A : 0 <= kproduct k1 k2 x A.
 Proof.
 by apply: integral_ge0 => y _; apply: integral_ge0 => z _; rewrite lee_fin.
 Qed.
 
-Let kproduct_additive x : semi_sigma_additive (kproduct k1 k2 x).
+#[local] Lemma kproduct_additive x : semi_sigma_additive (kproduct k1 k2 x).
 Proof. exact: semi_sigma_additive_kproduct. Qed.
 
 HB.instance Definition _ x := isMeasure.Build
@@ -1641,7 +1638,7 @@ Context d0 d1 d2 (T0 : measurableType d0)
 Local Definition kernel_snd : (T0 * T1)%type -> {measure set T2 -> \bar R} :=
   k \o snd.
 
-Let measurable_kernel U : measurable U ->
+#[local] Lemma measurable_kernel_snd U : measurable U ->
   measurable_fun [set: _] (kernel_snd ^~ U).
 Proof.
 move=> mU; have /= mk1 := measurable_kernel k _ mU.
@@ -1653,9 +1650,9 @@ exact: measurableX.
 Qed.
 
 HB.instance Definition _ :=
-  @isKernel.Build _ _ _ _ _ kernel_snd measurable_kernel.
+  @isKernel.Build _ _ _ _ _ kernel_snd measurable_kernel_snd.
 
-Let measure_uub : measure_fam_uub kernel_snd.
+#[local] Lemma measure_uub_kernel_snd : measure_fam_uub kernel_snd.
 Proof.
 exists 2%R => /= -[x y].
 rewrite /kernel_snd/= (@le_lt_trans _ _ 1%:E) ?lte1n//.
@@ -1663,18 +1660,18 @@ exact: sprob_kernel_le1.
 Qed.
 
 HB.instance Definition _ :=
-  @Kernel_isFinite.Build _ _ _ _ _ kernel_snd measure_uub.
+  @Kernel_isFinite.Build _ _ _ _ _ kernel_snd measure_uub_kernel_snd.
 
-Let sprob_kernel :
+#[local] Lemma sprob_kernel_kernel_snd :
   ereal_sup [set kernel_snd z [set: _] | z in [set: _]] <= 1.
 Proof.
 by apply: (sprob_kernelP kernel_snd).2 => -[x y]; exact: sprob_kernel_le1.
 Qed.
 
 HB.instance Definition _ := isSubProbabilityKernel.Build _ _ _ _ _
-  kernel_snd sprob_kernel.
+  kernel_snd sprob_kernel_kernel_snd.
 
-Local Lemma intker_indic_snd (A : set T2) x y : measurable A ->
+#[local] Lemma intker_indic_snd (A : set T2) x y : measurable A ->
   intker_indic kernel_snd ([set: _] `*` A) (x, y) = k y A.
 Proof.
 move=> mA; rewrite intker_indicE//=; first exact: measurableX.
@@ -1701,13 +1698,14 @@ Context d0 d1 d2 (T0 : measurableType d0)
   (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
   (k1 : R.-spker T0 ~> T1) (k2 : R.-spker T1 ~> T2).
 
-Let kcomp_noparam0 x : kcomp_noparam k1 k2 x set0 = 0.
+#[local] Lemma kcomp_noparam0 x : kcomp_noparam k1 k2 x set0 = 0.
 Proof. by apply: integral0_eq => y _; rewrite measure0. Qed.
 
-Let kcomp_noparam_ge0 x A : 0 <= kcomp_noparam k1 k2 x A.
+#[local] Lemma kcomp_noparam_ge0 x A : 0 <= kcomp_noparam k1 k2 x A.
 Proof. by apply: integral_ge0 => y _; exact: measure_ge0. Qed.
 
-Let kcomp_noparam_additive x : semi_sigma_additive (kcomp_noparam k1 k2 x).
+#[local] Lemma kcomp_noparam_additive x :
+  semi_sigma_additive (kcomp_noparam k1 k2 x).
 Proof.
 move=> F mF tF mUF.
 rewrite kcomp_noparamE// (_ : (fun _ => _) = (fun n =>
@@ -1738,7 +1736,7 @@ HB.instance Definition _ x := isMeasure.Build d2 T2 R (kcomp_noparam k1 k2 x)
 Definition mkcomp_noparam :=
   (kcomp_noparam k1 k2 : T0 -> {measure set T2 -> \bar R}).
 
-Let measurable_kernel U :
+#[local] Lemma measurable_kernel_mkcomp_noparam U :
   measurable U -> measurable_fun [set: _] (mkcomp_noparam ^~ U).
 Proof.
 move=> mU.
@@ -1750,7 +1748,7 @@ by apply: measurable_kproduct; exact: measurableX.
 Qed.
 
 HB.instance Definition _ := @isKernel.Build _ _ _ _ R
-  mkcomp_noparam measurable_kernel.
+  mkcomp_noparam measurable_kernel_mkcomp_noparam.
 
 End kcomp_noparam_measure.
 
@@ -1778,11 +1776,11 @@ apply: ge0_le_integral => //; first exact: measurable_kernel.
 by move=> y _; exact: sprob_kernel_le1.
 Qed.
 
-Let sprob_kernel :
+#[local] Lemma sprob_kernel_kcomp_noparam :
   ereal_sup [set (kcomp_noparam k1 k2) x setT | x in [set: T0]] <= 1.
 Proof. by apply/sprob_kernelP => x; exact: sprob_mkcomp_noparam. Qed.
 
 HB.instance Definition _ := Kernel_isSubProbability.Build
-  _ _ _ _ R (mkcomp_noparam k1 k2) sprob_kernel.
+  _ _ _ _ R (mkcomp_noparam k1 k2) sprob_kernel_kcomp_noparam.
 
 End subprobability_kcomp_noparam.

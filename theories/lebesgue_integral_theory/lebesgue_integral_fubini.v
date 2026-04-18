@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval.
 From mathcomp Require Import interval_inference archimedean finmap.
@@ -116,10 +116,8 @@ Lemma measurable_prod_subset_xsection
     (m2D_bounded : exists M, forall X, measurable X -> (m2D X < M%:E)%E) :
   measurable `<=` B.
 Proof.
-rewrite measurable_prod_measurableType.
-set C := rectangle (@measurable _ T1) (@measurable _ T2).
-have CI : setI_closed C.
-  by apply: setI_closed_rectangle => E F mE MF; exact: measurableI.
+rewrite prod_measurable_rectangle; set C := rectangle _ _.
+have CI : setI_closed C by apply: setI_closed_rectangle=> *; exact: measurableI.
 have CT : C setT by rewrite -setXTT; exact: rectangle_setX.
 have CB : C `<=` B.
   move=> X [X1 mX1 [X2 mX2 <-{X}]]; split; first exact: measurableX.
@@ -133,7 +131,7 @@ split => //; [exact: CB| |exact: xsection_ndseq_closed].
 move=> X Y XY [mX mphiX] [mY mphiY]; split; first exact: measurableD.
 suff -> : phi (X `\` Y) = (fun x => phi X x - phi Y x)%E.
   exact: emeasurable_funB.
-rewrite funeqE => x; rewrite /phi/= xsectionD// /m2D measureD.
+rewrite funeqE => x; rewrite /phi/= xsectionD// /m2D measureD/=.
 - exact: measurable_xsection.
 - exact: measurable_xsection.
 - move: m2D_bounded => [M m2M].
@@ -155,10 +153,8 @@ Lemma measurable_prod_subset_ysection
     (m1_bounded : exists M, forall X, measurable X -> (m1D X < M%:E)%E) :
   measurable `<=` B.
 Proof.
-rewrite measurable_prod_measurableType.
-set C := rectangle (@measurable _ T1) (@measurable _ T2).
-have CI : setI_closed C.
-  by apply: setI_closed_rectangle => E F mE MF; exact: measurableI.
+rewrite prod_measurable_rectangle; set C := rectangle _ _.
+have CI : setI_closed C by apply: setI_closed_rectangle=> *; exact: measurableI.
 have CT : C setT by rewrite -setXTT; exact: rectangle_setX.
 have CB : C `<=` B.
   move=> X [X1 mX1 [X2 mX2 <-{X}]]; split; first exact: measurableX.
@@ -171,7 +167,7 @@ suff lsystemB : lambda_system setT B by exact: lambda_system_subset.
 split => //; [exact: CB| |exact: ysection_ndseq_closed].
 move=> X Y XY [mX mphiX] [mY mphiY]; split; first exact: measurableD.
 rewrite (_ : psi _ = (psi X \- psi Y)%E); last exact: emeasurable_funB.
-rewrite funeqE => y; rewrite /psi/= ysectionD// /m1D measureD.
+rewrite funeqE => y; rewrite /psi/= ysectionD// /m1D measureD/=.
 - exact: measurable_ysection.
 - exact: measurable_ysection.
 - have [M m1M] := m1_bounded.
@@ -401,7 +397,7 @@ have CI : setI_closed C.
   rewrite -setXI; exists (X1 `&` Y1); split; first exact: measurableI.
   by exists (X2 `&` Y2); split => //; exact: measurableI.
 move=> X mX; apply: (measure_unique C (fun n => F n `*` G n)) => //.
-- rewrite measurable_prod_measurableType //; congr (<<s _ >>).
+- rewrite prod_measurable_rectangle//; congr (<<s _ >>).
   rewrite predeqE; split => [[A mA [B mB <-]]|[A [mA [B [mB ->]]]]].
     by exists A; split => //; exists B.
   by exists A => //; exists B.
