@@ -21,9 +21,6 @@
 - in `measurable_function.v`:
   + lemma `preimage_measurability`
 
-- in `realfun.v`:
-  + lemma `derivable_sqrt`
-
 - in `pseudometric_normed_Zmodule.v`:
   + lemma `itv_center_shift`
 
