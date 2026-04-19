@@ -91,7 +91,7 @@ HB.structure Definition SubConvexTvs (R : numDomainType)
   (V : convexTvsType R) (S : pred V) :=
   { U of SubChoice V S U & ConvexTvs R U & @GRing.SubLmodule R V S U
        & isSubConvexTvs R V S U}.
-
+(*
 HB.factory Record SubLmodule_isSubConvexTvs (R : numFieldType)
   (V : convexTvsType R) (S : pred V) U &  SubChoice V S U & @GRing.SubLmodule R V S U  := {
 }.
@@ -153,7 +153,7 @@ Check (topU : UniformLmodule.type R).
 #[local] Lemma locally_convex_sub : exists2 B : set_system topU,
       (forall b, b \in B -> convex_set b) & basis B. Admitted.
  
-HB.instance Definition _ := @Uniform_isConvexTvs.Build R topU locally_convex_sub.
+HB.instance Definition _ := @Uniform_isConvexTvs.Build R topU locally_convex_sub. 
 
 
 (*Can't use that ? Maybe because we already have a uniform structure defined by initial_topology *)
@@ -176,9 +176,8 @@ Check (topU : PreUniformLmodule.type R).
 Check (topU : UniformLmodule.type R).
 Check (topU : topologicalZmodType). 
 HB.about subConvexTvsType.
-
 Fail Check (topU : subConvexTvsType S).
-HB.end.
+HB.end.*) 
 
 (* TODO: moved to normed_module.v *)
 #[short(type="subNormedModType")]
@@ -236,15 +235,24 @@ Check (U : normedModType R).
 
 #[local] Lemma normu_valE : forall x, @Num.norm _ V ((val : U -> V) x) = @Num.norm _ U x.
 Proof. by []. Qed.
- 
+
 HB.instance Definition _ :=  Zmodule_isSubNormed.Build _ _ _ U normu_valE.
 (* TODO : why is the U necessary ?*)
 
 Check (U : subNormedZmodType S).
+
+#[local] Lemma continuous_valE : continuous (val : U -> V). Admitted.
+
+HB.instance Definition _ :=  isSubConvexTvs.Build _ _ _ U continuous_valE.
+
+Check (U : subConvexTvsType S).
+
 Check (U : subNormedModType S). 
-(* TODO : to a lightweight factory to put an instanec of subNormedModType on every subLmodtype *)
+
+HB.instance Definition _ := SubLmodule_isSubNormedmodule.Build _ _ _ U.
 HB.end.
 
+(* TODO : use a lightweight factory to make every subLmodType a subnormedmodtype *)
 
 Module Lingraph.
 Section Lingraphsec.
