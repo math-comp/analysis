@@ -64,7 +64,7 @@
 
 - in `reals.v` (use `Num.int` instead of `Rint` which is deprecated)
   + definition `Rtoint`
-  + lemmas `RtointK`, `inj_Rtoint`, `RtointN`
+  + lemmas `RtointK`, `inj_Rtoint`, `RtointN`, `isint_Rfloor`, `isint_Rceil`
 
 ### Renamed
 
