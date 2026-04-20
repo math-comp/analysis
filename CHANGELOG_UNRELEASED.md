@@ -26,6 +26,8 @@
 
 - in `normed_module.v`:
   + lemmas `closure_itvoo`
+- in `unstable.v`:
+  + lemma `ex_eqP`
 
 ### Changed
 
@@ -60,6 +62,10 @@
 - moved from `topology_structure.v` to `filter.v`:
   + lemma `continuous_comp` (and generalized)
 
+- in `reals.v` (use `Num.int` instead of `Rint` which is deprecated)
+  + definition `Rtoint`
+  + lemmas `RtointK`, `inj_Rtoint`, `RtointN`, `isint_Rfloor`, `isint_Rceil`
+
 ### Renamed
 
 - in `tvs.v`:
@@ -84,6 +90,14 @@
   + lemma `sigma_algebra_measurable` (not specialized to `setT` anymore)
 
 ### Deprecated
+
+- in `reals.v`:
+  + definitions `Rint_pred`, `Rint`
+  + lemmas `Rint_def`, `RintP`, `RintC`, `Rint0`, `Rint1`, `Rint_subring_closed`,
+    `Rint_ler_addr1`, `Rint_ltr_addr1`
+  + definition `Rtoint`
+  + lemmas `RtointK`, `Rtointz`, `Rtointn`, `inj_Rtoint`
+
 
 ### Removed
 
