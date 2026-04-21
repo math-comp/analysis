@@ -91,12 +91,47 @@ HB.structure Definition SubConvexTvs (R : numDomainType)
   (V : convexTvsType R) (S : pred V) :=
   { U of SubChoice V S U & ConvexTvs R U & @GRing.SubLmodule R V S U
        & isSubConvexTvs R V S U}.
-(*
-HB.factory Record SubLmodule_isSubConvexTvs (R : numFieldType)
+
+Lemma myfilter {R : realFieldType} (U : normedZmodType R) x : Filter
+    [set P | (exists2 i : set (pseudoMetric_normed U * pseudoMetric_normed U),
+                pseudoMetric_from_normedZmodType.ent i & xsection i x `<=` P)].
+Proof.
+apply: Build_Filter => /=.
+- exists setT.
+    have := @entourageT (pseudoMetric_normed U).
+    exact.
+  by [].
+- move=> A B/= [A' entA' A'A] [B' entB' B'B].
+  exists (A' `&` B') => //.
+  Import pseudoMetric_from_normedZmodType.
+  rewrite entourageE.
+  rewrite /entourage_.
+  case: entA' => r/= r0 HA'.
+  case: entB' => d/= d0 HB'.
+  exists (Num.min r d) => /=.
+    by rewrite lt_min r0.
+    move=> z/= Hz.
+  split.
+    apply: HA' => /=.
+    do 3 red.
+    rewrite (lt_le_trans Hz)//.
+    by rewrite ge_min lexx.
+  apply: HB' => /=.
+  do 3 red.
+  rewrite (lt_le_trans Hz)//.
+  by rewrite ge_min lexx orbT.
+  by rewrite xsectionI; apply: setISS.
+- move=> P Q PQ [A entA AP].
+  exists A => //.
+  exact: (subset_trans AP).
+Qed.
+
+HB.factory Record SubLmodule_isSubConvexTvs (R : realFieldType)
   (V : convexTvsType R) (S : pred V) U &  SubChoice V S U & @GRing.SubLmodule R V S U  := {
 }.
 
-HB.builders Context (R : numFieldType) (V : convexTvsType R) (S : pred V) U
+(*
+HB.builders Context (R : realFieldType) (V : convexTvsType R) (S : pred V) U
             & SubLmodule_isSubConvexTvs R V S U. 
 
 #[local] Definition topU : Type := (initial_topology (\val : U -> V)).
@@ -106,6 +141,8 @@ When unifying, if it does not work immedialty, initial_topology will be unfolded
 (*HB.instance Definition _ := Topological.on topU.*)
 HB.instance Definition _ := SubChoice.on topU.
 HB.instance Definition _ := Uniform.on topU.
+HB.instance Definition _ := Topological.on topU.
+HB.instance Definition _ := Nbhs.on topU.
 HB.instance Definition _ := GRing.Lmodule.on topU.
 Check (topU : SubChoice.type S). 
 Check (topU : uniformType).
@@ -114,7 +151,8 @@ Check (topU : lmodType R).
 Check (topU : preTopologicalLmodType R).
 Check (topU : subLmodType S).
 
-#[local] Lemma add_sub: continuous (fun x : topU * topU => x.1 + x.2). Admitted.
+#[local] Lemma add_sub: continuous (fun x : topU * topU => x.1 + x.2).
+Proof. Admitted.
 
 HB.instance Definition _ := @PreTopologicalNmodule_isTopologicalNmodule.Build topU add_sub. 
 
@@ -163,7 +201,8 @@ HB.instance Definition _ := @Uniform_isConvexTvs.Build R topU locally_convex_sub
  *)
 (* Maybe this is enough instead of all the Top/Unif N/Z/Mlomd *)
 
-#[loca] Lemma continuous_valE : continuous (val : topU -> V). Admitted.
+#[local] Lemma continuous_valE : continuous (val : topU -> V).
+Proof. exact: initial_continuous. Qed.
 
 HB.instance Definition _ := isSubConvexTvs.Build R V S topU continuous_valE.
 
@@ -175,9 +214,15 @@ Check (topU : SubChoice.type S).
 Check (topU : PreUniformLmodule.type R).
 Check (topU : UniformLmodule.type R).
 Check (topU : topologicalZmodType). 
+Check (topU : uniformType).
 HB.about subConvexTvsType.
 Fail Check (topU : subConvexTvsType S).
-HB.end.*) 
+
+
+Fail HB.end.
+*)
+
+
 
 (* TODO: moved to normed_module.v *)
 #[short(type="subNormedModType")]
@@ -186,7 +231,7 @@ HB.structure Definition SubNormedModule (R : numDomainType)
   { U of SubChoice V S U & NormedModule R U & @GRing.SubLmodule R V S U
        & @SubNormedZmodule(*Zmodule_isSubSemiNormed*) R V S U & @SubConvexTvs R V S U}. 
 
-HB.factory Record SubLmodule_isSubNormedmodule (R : numFieldType)
+HB.factory Record SubLmodule_isSubNormedmodule (R : realFieldType)
   (V : normedModType R) (S : pred V) U &  SubChoice V S U & @GRing.SubLmodule R V S U  := {
 }.
 
@@ -241,7 +286,22 @@ HB.instance Definition _ :=  Zmodule_isSubNormed.Build _ _ _ U normu_valE.
 
 Check (U : subNormedZmodType S).
 
-#[local] Lemma continuous_valE : continuous (val : U -> V). Admitted.
+#[local] Lemma continuous_valE : continuous (val : U -> V).
+Proof.
+move=> /= x.
+red.
+set rhs := (X in _ --> X).
+apply/cvgrPdist_le => //=.
+  by apply: myfilter.
+move=> e e0.
+near=> t.
+rewrite -GRing.valN.
+rewrite -GRing.valD.
+rewrite norm_valE.
+near: t.
+move: e e0.
+by apply/cvgrPdist_le.
+Unshelve. all: by end_near. Qed.
 
 HB.instance Definition _ :=  isSubConvexTvs.Build _ _ _ U continuous_valE.
 
