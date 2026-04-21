@@ -78,59 +78,106 @@ HB.structure Definition SubNormedZmodule (R : numDomainType)
     & Zmodule_isSubNormed R V S U }.
 
 
-
-HB.mixin Record isSubConvexTvs (R : numDomainType)
-  (V : convexTvsType R) (S : pred V) U &  SubType V S U
-& @GRing.SubLmodule R V S U
-    & ConvexTvs R U := {
+HB.mixin Record isSubNbhs
+  (V : nbhsType) (S : pred V) U &  SubType V S U & Nbhs U := {
   continuous_valE : continuous (val : U -> V)
 }.
+
+#[short(type="subNbhsType")]
+HB.structure Definition SubNbhs
+  (V : nbhsType) (S : pred V) :=
+  { U of SubChoice V S U & Nbhs U &
+      isSubNbhs V S U}.
+
+
+
+#[short(type="subTopologicalType")]
+HB.structure Definition SubTopological
+  (V : topologicalType) (S : pred V) :=
+  { U of SubNbhs V S U & Topological U}.
+
+
+Definition topU (V : Type) (S : pred V) (U : subType S) : Type
+  := (initial_topology (\val : U -> V)).
+
+Section SubType_isSubTopological.
+Context (V : topologicalType) (S : pred V) (U : subChoiceType S).
+
+Notation topU := (topU U).
+HB.instance Definition _ := SubChoice.on topU.
+HB.instance Definition _ := Nbhs.on topU.
+HB.instance Definition _ := Topological.on topU.
+
+#[local] Lemma top_continuous_valE : continuous (val : topU -> V).
+Proof. exact: initial_continuous. Qed.
+
+HB.instance Definition _ := @isSubNbhs.Build V S topU top_continuous_valE.
+
+Check (topU : topologicalType).
+Check (topU : subNbhsType S).
+Check (topU : subTopologicalType S).
+
+End SubType_isSubTopological.
 
 #[short(type="subConvexTvsType")]
 HB.structure Definition SubConvexTvs (R : numDomainType)
   (V : convexTvsType R) (S : pred V) :=
-  { U of SubChoice V S U & ConvexTvs R U & @GRing.SubLmodule R V S U
-       & isSubConvexTvs R V S U}.
+  { U of SubTopological V S U & ConvexTvs R U & @GRing.SubLmodule R V S U
+  }.
 
-Lemma myfilter {R : realFieldType} (U : normedZmodType R) x : Filter
-    [set P | (exists2 i : set (pseudoMetric_normed U * pseudoMetric_normed U),
-                pseudoMetric_from_normedZmodType.ent i & xsection i x `<=` P)].
-Proof.
-apply: Build_Filter => /=.
-- exists setT.
-    have := @entourageT (pseudoMetric_normed U).
-    exact.
-  by [].
-- move=> A B/= [A' entA' A'A] [B' entB' B'B].
-  exists (A' `&` B') => //.
-  Import pseudoMetric_from_normedZmodType.
-  rewrite entourageE.
-  rewrite /entourage_.
-  case: entA' => r/= r0 HA'.
-  case: entB' => d/= d0 HB'.
-  exists (Num.min r d) => /=.
-    by rewrite lt_min r0.
-    move=> z/= Hz.
-  split.
-    apply: HA' => /=.
-    do 3 red.
-    rewrite (lt_le_trans Hz)//.
-    by rewrite ge_min lexx.
-  apply: HB' => /=.
-  do 3 red.
-  rewrite (lt_le_trans Hz)//.
-  by rewrite ge_min lexx orbT.
-  by rewrite xsectionI; apply: setISS.
-- move=> P Q PQ [A entA AP].
-  exists A => //.
-  exact: (subset_trans AP).
-Qed.
 
+Section lmodule_isSubTvs.
+Context (R : numFieldType) (V : convexTvsType R) (S : pred V) (U: subLmodType S).
+
+Notation topU := (topU U).
+HB.instance Definition _ := SubChoice.on topU.
+HB.instance Definition _ := Nbhs.on topU.
+HB.instance Definition _ := Topological.on topU.
+HB.instance Definition _ := Uniform.on topU.
+HB.instance Definition _ := GRing.Lmodule.on topU.
+
+Check (topU : subLmodType S). 
+
+#[local] Lemma add_sub: continuous (fun x : topU * topU => x.1 + x.2).
+Proof. Admitted.
+
+HB.instance Definition _ := @PreTopologicalNmodule_isTopologicalNmodule.Build topU add_sub. 
+
+Check (topU : TopologicalNmodule.type). 
+
+#[local] Lemma opp_sub : continuous (-%R : topU -> topU). Admitted.
+
+HB.instance Definition _ :=   TopologicalNmodule_isTopologicalZmodule.Build topU opp_sub.
+
+Check (topU : TopologicalZmodule.type).
+
+#[local] Lemma scale_sub : continuous (fun z : R^o * topU => z.1 *: z.2). Admitted.
+
+HB.instance Definition _ := TopologicalZmodule_isTopologicalLmodule.Build R topU scale_sub.
+
+Check (topU : TopologicalLmodule.type R).
+
+#[local] Lemma locally_convex_sub : exists2 B : set_system topU,
+      (forall b, b \in B -> convex_set b) & basis B. Admitted.
+ 
+HB.instance Definition _ := @Uniform_isConvexTvs.Build R topU locally_convex_sub.
+
+
+(*HB.instance Definition _ := @PreTopologicalLmod_isConvexTvs.Build R topU
+                              add_sub scale_sub locally_convex_sub. *)
+(* Does not work. why ?*)
+
+Check (topU : convexTvsType R).
+Check (topU : subTopologicalType S). 
+Check (topU : subLmodType S). 
+Fail Check (topU :  subConvexTvsType S).
+End lmodule_isSubTvs.
+(*
 HB.factory Record SubLmodule_isSubConvexTvs (R : realFieldType)
   (V : convexTvsType R) (S : pred V) U &  SubChoice V S U & @GRing.SubLmodule R V S U  := {
 }.
 
-(*
+
 HB.builders Context (R : realFieldType) (V : convexTvsType R) (S : pred V) U
             & SubLmodule_isSubConvexTvs R V S U. 
 
@@ -144,7 +191,8 @@ HB.instance Definition _ := Uniform.on topU.
 HB.instance Definition _ := Topological.on topU.
 HB.instance Definition _ := Nbhs.on topU.
 HB.instance Definition _ := GRing.Lmodule.on topU.
-Check (topU : SubChoice.type S). 
+Check (topU : SubChoice.type S).
+Check (topU : pointedType). 
 Check (topU : uniformType).
 Check (topU : topologicalType). 
 Check (topU : lmodType R).
@@ -231,6 +279,44 @@ HB.structure Definition SubNormedModule (R : numDomainType)
   { U of SubChoice V S U & NormedModule R U & @GRing.SubLmodule R V S U
        & @SubNormedZmodule(*Zmodule_isSubSemiNormed*) R V S U & @SubConvexTvs R V S U}. 
 
+
+
+Lemma myfilter {R : realFieldType} (U : normedZmodType R) x : Filter
+    [set P | (exists2 i : set (pseudoMetric_normed U * pseudoMetric_normed U),
+                pseudoMetric_from_normedZmodType.ent i & xsection i x `<=` P)].
+Proof.
+apply: Build_Filter => /=.
+- exists setT.
+    have := @entourageT (pseudoMetric_normed U).
+    exact.
+  by [].
+- move=> A B/= [A' entA' A'A] [B' entB' B'B].
+  exists (A' `&` B') => //.
+  Import pseudoMetric_from_normedZmodType.
+  rewrite entourageE.
+  rewrite /entourage_.
+  case: entA' => r/= r0 HA'.
+  case: entB' => d/= d0 HB'.
+  exists (Num.min r d) => /=.
+    by rewrite lt_min r0.
+    move=> z/= Hz.
+  split.
+    apply: HA' => /=.
+    do 3 red.
+    rewrite (lt_le_trans Hz)//.
+    by rewrite ge_min lexx.
+  apply: HB' => /=.
+  do 3 red.
+  rewrite (lt_le_trans Hz)//.
+  by rewrite ge_min lexx orbT.
+  by rewrite xsectionI; apply: setISS.
+- move=> P Q PQ [A entA AP].
+  exists A => //.
+  exact: (subset_trans AP).
+Qed.
+
+
+
 HB.factory Record SubLmodule_isSubNormedmodule (R : realFieldType)
   (V : normedModType R) (S : pred V) U &  SubChoice V S U & @GRing.SubLmodule R V S U  := {
 }.
@@ -303,7 +389,7 @@ move: e e0.
 by apply/cvgrPdist_le.
 Unshelve. all: by end_near. Qed.
 
-HB.instance Definition _ :=  isSubConvexTvs.Build _ _ _ U continuous_valE.
+HB.instance Definition _ :=  isSubNbhs.Build _ _ U continuous_valE.
 
 Check (U : subConvexTvsType S).
 
