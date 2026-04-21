@@ -94,10 +94,10 @@ HB.structure Definition SubTopological (V : topologicalType) (S : pred V) :=
 HB.structure Definition SubUniform (V : uniformType) (S : pred V) :=
   { U of SubTopological V S U & Uniform U}.*)
 
-#[short(type="subConvexTvsType")]
-HB.structure Definition SubConvexTvs (R : numDomainType) (V : convexTvsType R)
+#[short(type="subTopologicalType")]
+HB.structure Definition SubTopological (V : topologicalType)
   (S : pred V) := {
-  U of SubNbhs V S U & ConvexTvs R U & @GRing.SubLmodule R V S U
+  U of SubNbhs V S U & Topological U
   }.
 
 Definition topU (V : Type) (S : pred V) (U : subChoiceType S) : Type
@@ -109,14 +109,15 @@ Context (V : topologicalType) (S : pred V) (U : subChoiceType S).
 Notation topU := (topU U).
 HB.instance Definition _ := SubChoice.on topU.
 HB.instance Definition _ := Nbhs.on topU.
+HB.instance Definition _ := Topological.on topU.
 
 #[local] Lemma top_continuous_valE : continuous (val : topU -> V).
 Proof. exact: initial_continuous. Qed.
 
 HB.instance Definition _ := @isSubNbhs.Build V S topU top_continuous_valE.
 
-Check (topU : topologicalType).
 Check (topU : subNbhsType S).
+Check (topU : subTopologicalType S).
 
 End SubType_isSubTopological.
 
@@ -156,7 +157,7 @@ pose h := fun x1x2 : U * U => (\val x1x2.1, \val x1x2.2).
 pose g := fun xy : V * V => xy.1 + xy.2.
 rewrite (_ : _ \o _ = g \o h)//.
 apply: continuous_comp; last by exact: add_continuous. 
-Check cvg_prod. 
+Check cvg_prod. move => /= A [] /= [] a1 a2 [ /= na1 na2].
 admit.
 by apply/funext => i/=; rewrite /g /h /= GRing.valD. 
 Admitted. 
