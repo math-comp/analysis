@@ -27,14 +27,18 @@
 - in `normed_module.v`:
   + lemmas `closure_itvoo`
 - in `unstable.v`:
-  + structure `Norm`
+  + structures `SemiNorm`, `Norm`
   + lemmas `normMn`, `normN`, `ler_norm_sum`
 
 - in `normed_module.v`:
   + structure `NormedVector`
-  + definition `normedVectType`
+  + notation `normedVectType`
+  + definition `max_space`
   + lemmas `sup_closed_ball_compact`, `equivalence_norms`,
     `linear_findim_continuous`
+
+- in `tvs.v`:
+  + lemmas `cvg_sum`, `sum_continuous`
 
 ### Changed
 

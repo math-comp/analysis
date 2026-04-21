@@ -24,6 +24,14 @@ From mathcomp Require Import vector archimedean interval.
 (*                           the dependent sum                                *)
 (*                prodA x := sends (X * Y) * Z to X * (Y * Z)                 *)
 (*               prodAr x := sends X * (Y * Z) to (X * Y) * Z                 *)
+(*           isSemiNorm f == f : K -> L is a seminorm                         *)
+(*                           K is a numDomainType.                            *)
+(*                           L is a lmodType K.                               *)
+(*                           The HB class is SemiNorm.                        *)
+(*               isNorm f == f : K -> L is a norm                             *)
+(*                           K is a numDomainType.                            *)
+(*                           L is a lmodType K.                               *)
+(*                           The HB class is Norm.                            *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -599,20 +607,26 @@ Proof. exact: real_ltrNbound. Qed.
    its scalar field. *)
 Module Norm.
 
-HB.mixin Record isNorm (K : numDomainType) (L : lmodType K) (norm : L -> K) := {
-  norm0 : norm 0 = 0;
-  norm_ge0 : forall x, 0 <= norm x;
-  norm0_eq0 : forall x, norm x = 0 -> x = 0;
-  ler_normD : forall x y, norm (x + y) <= norm x + norm y;
-  normZ : forall r x, norm (r *: x) = `|r| * norm x;
+HB.mixin Record isSemiNorm (K : numDomainType) (L : lmodType K) (norm : L -> K) := {
+  norm0 : norm 0 = 0 ;
+  norm_ge0 : forall x, 0 <= norm x ;
+  ler_normD : forall x y, norm (x + y) <= norm x + norm y ;
+  normZ : forall r x, norm (r *: x) = `|r| * norm x
 }.
 
 #[export]
-HB.structure Definition Norm K L := { norm of @isNorm K L norm }.
+HB.structure Definition SemiNorm K L := { norm of @isSemiNorm K L norm }.
+
+HB.mixin Record SemiNorm_isNorm (K : numDomainType) (L : lmodType K)
+  (norm : L -> K) := { norm0_eq0 : forall x, norm x = 0 -> x = 0 }.
+
+#[export]
+HB.structure Definition Norm K L :=
+  { norm of @SemiNorm_isNorm K L norm & @SemiNorm K L norm }.
 
 Module Import Theory.
 Section Theory.
-Variables (K : numDomainType) (L : lmodType K) (norm : Norm.type L).
+Variables (K : numDomainType) (L : lmodType K) (norm : SemiNorm.type L).
 
 Lemma normMn x n : norm (x *+ n) = norm x *+ n.
 Proof. by rewrite -scaler_nat normZ normr_nat mulr_natl. Qed.

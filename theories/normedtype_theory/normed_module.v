@@ -88,15 +88,16 @@ HB.structure Definition NormedModule (K : numDomainType) :=
   {T of PseudoMetricNormedZmod K T & ConvexTvs K T
    & PseudoMetricNormedZmod_ConvexTvs_isNormedModule K T}.
 
-HB.factory Record PseudoMetricNormedZmod_Lmodule_isNormedModule (K : numFieldType) V
-    & PseudoMetricNormedZmod K V & GRing.Lmodule K V := {
+HB.factory Record PseudoMetricNormedZmod_Lmodule_isNormedModule
+  (K : numFieldType) V & PseudoMetricNormedZmod K V & GRing.Lmodule K V := {
  normrZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
 
 HB.builders Context K V & PseudoMetricNormedZmod_Lmodule_isNormedModule K V.
 
-(* add_continuous has been moved to pseudometric_normed_Zmodule.v,
-  scale_continuous is proved but is not proved again anymore later in this file *)
+(**md `add_continuous` has been moved to `pseudometric_normed_Zmodule.v`,
+  `scale_continuous` is proved but is not proved again anymore later in this
+  file. *)
 Let add_continuous : continuous (fun x : V * V => x.1 + x.2).
 Proof. exact: add_continuous. Qed.
 
@@ -372,8 +373,11 @@ Lemma normrZV (K : numDomainType) (V : normedModType K) (x : V) :
 Proof. by move=> nxu; rewrite normrZ normrV// normr_id mulVr. Qed.
 
 HB.instance Definition _ (K : numDomainType) (V : normedModType K) :=
-  Norm.isNorm.Build K V (@Num.norm K V) (normr0 V)
-    (@normr_ge0 _ V) (@normr0_eq0 _ V) (@ler_normD _ V) (@normrZ _ V).
+  Norm.isSemiNorm.Build K V (@Num.norm K V) (normr0 V)
+    (@normr_ge0 _ V) (@ler_normD _ V) (@normrZ _ V).
+
+HB.instance Definition _ (K : numDomainType) (V : normedModType K) :=
+  Norm.SemiNorm_isNorm.Build K V (@Num.norm K V) (@normr0_eq0 _ V).
 
 Definition self_sub (K : numDomainType) (V W : normedModType K)
   (f : V -> W) (x : V * V) : W := f x.1 - f x.2.
@@ -2480,7 +2484,8 @@ Variables (R : realType).
 (* FIXME: Specialize to vector space with basis and expose this definition
    (see https://github.com/math-comp/analysis/issues/1911).
    It will also be possible to generalize to `numFieldType`. *)
-Let max_norm (V : vectType R) x : R := \big[Order.max/0]_(i < \dim (@fullv _ V)) `|coord (vbasis fullv) i x|.
+Let max_norm (V : vectType R) x : R :=
+  \big[Order.max/0]_(i < \dim (@fullv _ V)) `|coord (vbasis fullv) i x|.
 
 Definition max_space (V : vectType R) : Type := V.
 
@@ -2494,15 +2499,17 @@ rewrite /max_norm.
 by elim/big_ind : _ => //= ? ? ? ?; rewrite /Order.max; case: ifP.
 Qed.
 
-(* FIXME: expose. *)
-Let le_coord_max_norm (V : vectType R) (x : V) i : `|coord (vbasis fullv) i x| <= max_norm x :> R.
+(* FIXME: expose *)
+Let le_coord_max_norm (V : vectType R) (x : V) i :
+  `|coord (vbasis fullv) i x| <= max_norm x :> R.
 Proof.
 rewrite /max_norm; elim: (index_enum _) (mem_index_enum i) => //= j l IHl.
 rewrite inE big_cons [X in _ <= X _ _]/Order.max/= => /predU1P[<-|/IHl {}IHl];
   case: ifP => [/ltW|]// /negbT.
 set b := (X in _ < X).
 have bR : b \is Num.real by apply: bigmax_real => // a _; apply: normr_real.
-have /comparable_leNgt <- := real_comparable bR (normr_real (coord (vbasis fullv) j x)).
+have /comparable_leNgt <- :=
+  real_comparable bR (normr_real (coord (vbasis fullv) j x)).
 by move=> /(le_trans IHl).
 Qed.
 
@@ -2516,7 +2523,8 @@ have <-: \sum_(i < \dim (@fullv _ V)) 0 *: (vbasis (@fullv _ V))`_i = 0.
 by rewrite coord_sum_free ?normr0// (basis_free (vbasisP _)).
 Qed.
 
-Let ler_max_normD (V : vectType R) (x y : V) : max_norm (x + y) <= max_norm x + max_norm y.
+Let ler_max_normD (V : vectType R) (x y : V) :
+  max_norm (x + y) <= max_norm x + max_norm y.
 Proof.
 apply: bigmax_le => [|/= i _]; first by rewrite addr_ge0// max_norm_ge0.
 by rewrite raddfD/= (le_trans (ler_normD _ _))// lerD// le_coord_max_norm.
@@ -2538,29 +2546,40 @@ elim: (index_enum _) => [|i l IHl]; first by rewrite !big_nil mulr0.
 by rewrite !big_cons IHl maxr_pMr.
 Qed.
 
-HB.instance Definition _ (V : vectType R) := Norm.isNorm.Build R V (@max_norm V)
-  (max_norm0 V) (@max_norm_ge0 V) (@max_norm0_eq0 V) (@ler_max_normD V) (@max_normZ V).
+HB.instance Definition _ (V : vectType R) := Norm.isSemiNorm.Build R V
+  (@max_norm V) (max_norm0 V) (@max_norm_ge0 V) (@ler_max_normD V)
+  (@max_normZ V).
+
+HB.instance Definition _ (V : vectType R) := Norm.SemiNorm_isNorm.Build R V
+  (@max_norm V) (@max_norm0_eq0 V).
 
 Let max_normMn (V : vectType R) (x : V) n : max_norm (x *+ n) = max_norm x *+ n.
-Proof. exact: (Norm.Theory.normMn (@normed_module_max_norm__canonical__Norm_Norm  V)). Qed.
+Proof.
+exact: (Norm.Theory.normMn (@normed_module_max_norm__canonical__Norm_Norm V)).
+Qed.
 
 Let max_normN (V : vectType R) (x : V) : max_norm (- x) = max_norm x.
-Proof. exact: (Norm.Theory.normN (@normed_module_max_norm__canonical__Norm_Norm  V)). Qed.
+Proof.
+exact: (Norm.Theory.normN (@normed_module_max_norm__canonical__Norm_Norm V)).
+Qed.
 
 HB.instance Definition _ (V : vectType R) := Num.Zmodule_isNormed.Build R
-  (max_space V) (@ler_max_normD V) (@max_norm0_eq0 V) (@max_normMn V) (@max_normN V).
+  (max_space V) (@ler_max_normD V) (@max_norm0_eq0 V) (@max_normMn V)
+  (@max_normN V).
 
 HB.instance Definition _ (V : vectType R) :=
   PseudoMetric.copy (max_space V) (pseudoMetric_normed (max_space V)).
 
-HB.instance Definition _ (V : vectType R) := NormedZmod_PseudoMetric_eq.Build R (max_space V) erefl.
+HB.instance Definition _ (V : vectType R) :=
+  NormedZmod_PseudoMetric_eq.Build R (max_space V) erefl.
 
 HB.instance Definition _ (V : vectType R) :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R (max_space V)
     (@Norm.normZ _ _ (@max_norm V)).
 
-(* N.B. Get Trocq to prove the continuity part automatically. *)
-Lemma sup_closed_ball_compact (V : vectType R) : compact (closed_ball (0 : max_space V) 1).
+(* NB: Get Trocq to prove the continuity part automatically. *)
+Lemma sup_closed_ball_compact (V : vectType R) :
+  compact (closed_ball (0 : max_space V) 1).
 Proof.
 rewrite closed_ballE// /closed_ball_.
 under eq_set do rewrite sub0r normrN.
@@ -2574,29 +2593,30 @@ have -> : [set x : max_space V | `|x| <= 1] =
      with its eta-expansion. *)
   - exists (coord (vbasis fullv) ^~ (x : V)); last first.
       exact/esym/coord_vbasis/memvf.
-    by move=> i; rewrite in_itv/= -ler_norml (le_trans _ x1)// le_coord_max_norm.
+    by move=> i; rewrite in_itv/= -ler_norml (le_trans _ x1) ?le_coord_max_norm.
   - rewrite /normr/= /max_norm bigmax_le => //= i _.
-     rewrite coord_sum_free ?ler_norml; [exact/basis_free/vbasisP|exact: X1].
-apply (@continuous_compact _ _ (f : _ -> max_space V)).
+    by rewrite coord_sum_free ?ler_norml; [exact/basis_free/vbasisP|exact: X1].
+apply: (@continuous_compact _ _ (f : _ -> max_space V)).
 - apply/continuous_subspaceT/sum_continuous => /= i _ x.
   exact/continuousZr_tmp/proj_continuous.
-- apply: (@tychonoff 'I_(\dim (@fullv _ V)) (fun=> R^o) (fun=> `[-1, 1]%classic)) => _.
+- apply: (@tychonoff 'I_(\dim (@fullv _ V)) (fun=> R^o)
+    (fun=> `[-1, 1]%classic)) => _.
   exact: segment_compact.
 Qed.
 
 Lemma equivalence_norms (V : vectType R) (N N' : Norm.Norm.type V) :
   exists2 M, 0 < M & forall x : max_space V, N' x <= M * N x /\ N x <= M * N' x.
 Proof.
-suff: forall (N : Norm.Norm.type V),
-    exists2 M, 0 < M & forall x : max_space V, `|x| <= M * N x /\ N x <= M * `|x|.
+suff: forall (N : Norm.Norm.type V), exists2 M,
+    0 < M & forall x : max_space V, `|x| <= M * N x /\ N x <= M * `|x|.
   move=> /[dup] /(_ N) []/= M M0 Noo /(_ N') []/= M' M'0 N'oo.
   exists (M * M') => [|x]; first exact: mulr_gt0.
   move: Noo N'oo => /(_ x) [] Nge Nle /(_ x) [] N'ge N'le.
   split; first by apply: (le_trans N'le); rewrite mulrAC mulrC ler_pM2r.
-  by apply: (le_trans Nle); rewrite -mulrA ler_pM2l.
+  by rewrite (le_trans Nle)// -mulrA ler_pM2l.
 move=> {N'}N.
 set M0 := 1 + \sum_(i < \dim (@fullv _ V)) N (vbasis fullv)`_i.
-have M00 : 0 < M0 by rewrite ltr_pwDl// sumr_ge0// => ? _; apply: Norm.norm_ge0.
+have M00 : 0 < M0 by rewrite ltr_pwDl// sumr_ge0// => ? _; exact: Norm.norm_ge0.
 have leNoo (x : max_space V) : N x <= M0 * `|x|.
   rewrite [in leLHS](coord_vbasis (memvf (x : V))).
   rewrite (le_trans (Norm.Theory.ler_norm_sum _ _ _))//.
@@ -2648,7 +2668,8 @@ rewrite ler_pdivrMr// => /le_trans; apply.
 by rewrite ler_pM2r// le_max lexx orbT.
 Unshelve. all: by end_near. Qed.
 
-Lemma linear_findim_continuous (V : normedVectType R) (W : normedModType R) (f : {linear V -> W}) : continuous f.
+Lemma linear_findim_continuous (V : normedVectType R) (W : normedModType R)
+  (f : {linear V -> W}) : continuous f.
 Proof.
 set V' := @fullv _ V.
 set B := vbasis V'.
