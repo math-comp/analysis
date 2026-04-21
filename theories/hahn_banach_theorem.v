@@ -120,6 +120,16 @@ Check (topU : subNbhsType S).
 
 End SubType_isSubTopological.
 
+#[short(type="subConvexTvsType")]
+HB.structure Definition SubConvexTvs (R : numDomainType)
+  (V : convexTvsType R) (S : pred V) :=
+  { U of SubTopological V S U & ConvexTvs R U & @GRing.SubLmodule R V S U
+  }.
+
+(* For lisibility, to be added to tvs.v *)
+Lemma add_continuous (K : numDomainType) (E : convexTvsType K) : continuous (fun x : E * E => x.1 + x.2).
+Proof. exact: add_continuous. Qed.
+
 Section lmodule_isSubTvs.
 Context (R : numFieldType) (V : convexTvsType R) (S : pred V) (U: subLmodType S).
 
@@ -136,12 +146,20 @@ Check topU : uniformType.
 HB.instance Definition _ := Uniform.on topU.
 Check topU : lmodType R.
 HB.instance Definition _ := GRing.Lmodule.on topU.
-
 Check (topU : uniformType).
 Check (topU : subLmodType S).
 
 #[local] Lemma add_sub: continuous (fun x : topU * topU => x.1 + x.2).
-Proof. Admitted.
+Proof. 
+apply: continuous_comp_initial => xy.
+pose h := fun x1x2 : U * U => (\val x1x2.1, \val x1x2.2).
+pose g := fun xy : V * V => xy.1 + xy.2.
+rewrite (_ : _ \o _ = g \o h)//.
+apply: continuous_comp; last by exact: add_continuous. 
+Check cvg_prod. 
+admit.
+by apply/funext => i/=; rewrite /g /h /= GRing.valD. 
+Admitted. 
 
 HB.instance Definition _ := @PreTopologicalNmodule_isTopologicalNmodule.Build topU add_sub. 
 
