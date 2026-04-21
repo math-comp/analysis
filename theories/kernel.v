@@ -1332,7 +1332,7 @@ suff KE : kfcomp k (EFin \o \1_(B `\` A)) =
   by split; [exact: measurableD|rewrite KE; exact: emeasurable_funB].
 apply/funext => x/=.
 pose kx : {measure set T2 -> \bar R} := k x.
-pose H1 := isFinite.Build _ _ _ _ (@kernel_finite_transition _ _ _ _ R k x).
+pose H1 := isFinNumFun.Build _ _ _ _ (@kernel_finite_transition _ _ _ _ R k x).
 pose H2 := isSFinite.Build _ _ _ _ (finite_measure_sfinite
   (@kernel_finite_transition _ _ _ _ R k x)).
 pose H3 := isSigmaFinite.Build _ _ _ _ (finite_measure_sigma_finite
@@ -1416,7 +1416,7 @@ rewrite [X in measurable_fun _ X](_ : _ = (fun x =>
   under eq_integral do rewrite EFinM.
   rewrite integralZl//.
   pose kx : {measure set T2 -> \bar R} := k x.
-  pose H1 := isFinite.Build _ _ _ _ (@kernel_finite_transition _ _ _ _ R k x).
+  pose H1 := isFinNumFun.Build _ _ _ _ (@kernel_finite_transition _ _ _ _ R k x).
   pose H2 := isSFinite.Build _ _ _ _ (finite_measure_sfinite
     (@kernel_finite_transition _ _ _ _ R k x)).
   pose H3 := isSigmaFinite.Build _ _ _ _ (finite_measure_sigma_finite

@@ -109,6 +109,8 @@
   + `Rintegral_itv_bndo_bndc` -> `Rintegral_itvbo_itvbc`
   + `Rintegral_itv_obnd_cbnd` -> `Rintegral_itvob_itvcb`
 
+- in `measure_function.v`:
+  + `isFinite` -> `isFinNumFun`
 
 ### Generalized
 
