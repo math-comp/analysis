@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.derive</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 2221690" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis e043b2a" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -300,8 +300,8 @@ Naming convention in this file:
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Differential.K" class="id"><a name="Differential.K" class="">K</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span><span class="id">}</span><span class="id"> {</span><span id="Differential.V" class="id"><a name="Differential.V" class="">V</a></span><span class="id"> </span><span id="Differential.W" class="id"><a name="Differential.W" class="">W</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.normed_module.html#NormedModule.Exports.normedModType">normedModType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.derive.html#K:1">K</a></span><span class="id">}</span>.<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="diff" class="id"><div name="diff" class=" tooltip">diff<span class='tooltip-area'><p>diff :
-forall {K : numDomainType} {V W : normedModType K} [F : filter_on V],
-phantom (set (set V)) F ->
+forall {K : numDomainType} {V W : normedModType K} [F : filter.filter_on V],
+phantom (set (set V)) (filter.filter F) ->
 (V -> W) -> Linear_type__canonical__classical_sets_Pointed (R:=K) V W
 
 diff is not universe polymorphic
@@ -450,7 +450,10 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="jacobian" class="id"><div name="jacobian" class=" tooltip">jacobian<span class='tooltip-area'><p>jacobian :
 forall [n m : nat] [R : numFieldType],
 ('rV_n -> 'rV_m) ->
-matrix_matrix__canonical__normed_module_NormedModule R 1 n -> 'M_(n, m)
+filter.Filtered.sort
+  (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
+     (matrix_matrix__canonical__normed_module_NormedModule R 1 n)) ->
+'M_(n, m)
 
 jacobian is not universe polymorphic
 Arguments jacobian [n m]%_nat_scope [R] f%_function_scope p
@@ -520,8 +523,10 @@ forall {R : numFieldType} {V W : normedModType R},
 (V -> W) ->
 V ->
 V ->
-join_normed_module_NormedModule_between_GRing_LSemiModule_and_filter_PointedNbhs
-  W
+filter.PointedFiltered.Exports.filter_PointedFiltered__to__classical_sets_Pointed
+  (filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_PointedFiltered
+     (join_normed_module_NormedModule_between_GRing_LSemiModule_and_filter_PointedNbhs
+        W))
 
 derive is not universe polymorphic
 Arguments derive {R V W} f%_function_scope (a v)%_ring_scope
@@ -699,8 +704,10 @@ Qed.</div></details>
 forall [R : numFieldType] [V : normedModType R],
 (R -> V) ->
 R ->
-join_normed_module_NormedModule_between_GRing_LSemiModule_and_filter_PointedNbhs
-  V
+filter.PointedFiltered.Exports.filter_PointedFiltered__to__classical_sets_Pointed
+  (filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_PointedFiltered
+     (join_normed_module_NormedModule_between_GRing_LSemiModule_and_filter_PointedNbhs
+        V))
 
 derive1 is not universe polymorphic
 Arguments derive1 [R V] f%_function_scope a%_ring_scope

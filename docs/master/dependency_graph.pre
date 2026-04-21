@@ -480,6 +480,7 @@ subgraph cluster_normedtype { "theories/normedtype_theory/normed_module"[label="
   "classical/classical_sets" -> "theories/normedtype_theory/normed_module";
   "classical/filter" -> "theories/normedtype_theory/normed_module";
   "classical/functions" -> "theories/normedtype_theory/normed_module";
+  "classical/mathcomp_extra" -> "theories/normedtype_theory/normed_module";
   "classical/set_interval" -> "theories/normedtype_theory/normed_module";
   "classical/unstable" -> "theories/normedtype_theory/normed_module";
   "reals/prodnormedzmodule" -> "theories/normedtype_theory/normed_module";
