@@ -65,7 +65,7 @@ Qed.
 End pos_quotient.
 
 HB.mixin Record Zmodule_isSubNormed (R : numDomainType)
-    (M : normedZmodType R) (S : pred M) T & SubType M S T
+    (M : normedZmodType R) (S : pred M) T & SubChoice M S T
     & Num.NormedZmodule R T := {
   norm_valE : forall x , @Num.norm _ M ((val : T -> M) x) = @Num.norm _ T x
 }.
@@ -77,27 +77,30 @@ HB.structure Definition SubNormedZmodule (R : numDomainType)
   { U of SubChoice V S U & Num.NormedZmodule R U & GRing.SubZmodule V S U
     & Zmodule_isSubNormed R V S U }.
 
-
 HB.mixin Record isSubNbhs
-  (V : nbhsType) (S : pred V) U &  SubType V S U & Nbhs U := {
+  (V : nbhsType) (S : pred V) U & SubChoice V S U & Nbhs U := {
   continuous_valE : continuous (val : U -> V)
 }.
 
 #[short(type="subNbhsType")]
-HB.structure Definition SubNbhs
-  (V : nbhsType) (S : pred V) :=
-  { U of SubChoice V S U & Nbhs U &
-      isSubNbhs V S U}.
+HB.structure Definition SubNbhs (V : nbhsType) (S : pred V) :=
+  { U of SubChoice V S U & Nbhs U & isSubNbhs V S U}.
 
-
-
-#[short(type="subTopologicalType")]
-HB.structure Definition SubTopological
-  (V : topologicalType) (S : pred V) :=
+(*#[short(type="subTopologicalType")]
+HB.structure Definition SubTopological (V : topologicalType) (S : pred V) :=
   { U of SubNbhs V S U & Topological U}.
 
+#[short(type="subUniformType")]
+HB.structure Definition SubUniform (V : uniformType) (S : pred V) :=
+  { U of SubTopological V S U & Uniform U}.*)
 
-Definition topU (V : Type) (S : pred V) (U : subType S) : Type
+#[short(type="subConvexTvsType")]
+HB.structure Definition SubConvexTvs (R : numDomainType) (V : convexTvsType R)
+  (S : pred V) := {
+  U of SubNbhs V S U & ConvexTvs R U & @GRing.SubLmodule R V S U
+  }.
+
+Definition topU (V : Type) (S : pred V) (U : subChoiceType S) : Type
   := (initial_topology (\val : U -> V)).
 
 Section SubType_isSubTopological.
@@ -106,7 +109,6 @@ Context (V : topologicalType) (S : pred V) (U : subChoiceType S).
 Notation topU := (topU U).
 HB.instance Definition _ := SubChoice.on topU.
 HB.instance Definition _ := Nbhs.on topU.
-HB.instance Definition _ := Topological.on topU.
 
 #[local] Lemma top_continuous_valE : continuous (val : topU -> V).
 Proof. exact: initial_continuous. Qed.
@@ -115,28 +117,28 @@ HB.instance Definition _ := @isSubNbhs.Build V S topU top_continuous_valE.
 
 Check (topU : topologicalType).
 Check (topU : subNbhsType S).
-Check (topU : subTopologicalType S).
 
 End SubType_isSubTopological.
-
-#[short(type="subConvexTvsType")]
-HB.structure Definition SubConvexTvs (R : numDomainType)
-  (V : convexTvsType R) (S : pred V) :=
-  { U of SubTopological V S U & ConvexTvs R U & @GRing.SubLmodule R V S U
-  }.
-
 
 Section lmodule_isSubTvs.
 Context (R : numFieldType) (V : convexTvsType R) (S : pred V) (U: subLmodType S).
 
 Notation topU := (topU U).
-HB.instance Definition _ := SubChoice.on topU.
+Check topU : nbhsType.
 HB.instance Definition _ := Nbhs.on topU.
+Check topU : subChoiceType S.
+HB.instance Definition _ := SubChoice.on topU.
+Check topU : topologicalType.
 HB.instance Definition _ := Topological.on topU.
+Check topU : subNbhsType S.
+HB.instance Definition _ := SubNbhs.on topU.
+Check topU : uniformType.
 HB.instance Definition _ := Uniform.on topU.
+Check topU : lmodType R.
 HB.instance Definition _ := GRing.Lmodule.on topU.
 
-Check (topU : subLmodType S). 
+Check (topU : uniformType).
+Check (topU : subLmodType S).
 
 #[local] Lemma add_sub: continuous (fun x : topU * topU => x.1 + x.2).
 Proof. Admitted.
@@ -147,7 +149,7 @@ Check (topU : TopologicalNmodule.type).
 
 #[local] Lemma opp_sub : continuous (-%R : topU -> topU). Admitted.
 
-HB.instance Definition _ :=   TopologicalNmodule_isTopologicalZmodule.Build topU opp_sub.
+HB.instance Definition _ := TopologicalNmodule_isTopologicalZmodule.Build topU opp_sub.
 
 Check (topU : TopologicalZmodule.type).
 
@@ -162,15 +164,19 @@ Check (topU : TopologicalLmodule.type R).
  
 HB.instance Definition _ := @Uniform_isConvexTvs.Build R topU locally_convex_sub.
 
-
-(*HB.instance Definition _ := @PreTopologicalLmod_isConvexTvs.Build R topU
-                              add_sub scale_sub locally_convex_sub. *)
+HB.instance Definition _ := @PreTopologicalLmod_isConvexTvs.Build R topU
+                              add_sub scale_sub locally_convex_sub.
 (* Does not work. why ?*)
 
 Check (topU : convexTvsType R).
-Check (topU : subTopologicalType S). 
+
+HB.instance Definition _ := ConvexTvs.on topU.
+HB.instance Definition _ := GRing.SubLmodule.on topU.
+
+Check (topU : convexTvsType R).
 Check (topU : subLmodType S). 
-Fail Check (topU :  subConvexTvsType S).
+Check (topU :  subConvexTvsType S).
+
 End lmodule_isSubTvs.
 (*
 HB.factory Record SubLmodule_isSubConvexTvs (R : realFieldType)
