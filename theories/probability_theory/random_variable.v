@@ -679,7 +679,7 @@ transitivity (- \int[mu]_(s in `]-oo, 0%R]) P (Y @^-1` `[(- s)%R, +oo[)).
   move/measurable_EFinP : mfPleY; apply: eq_measurable_fun => r /= _.
   by rewrite fineK// fin_num_measure.
 transitivity (- \int[mu]_(s in `]-oo, 0%R] `\ 0%R) P (Y @^-1` `[(- s)%R, +oo[)).
-  congr -%E; rewrite setDitv1r integral_itv_bndo_bndc//=.
+  congr -%E; rewrite setDitv1r integral_itvbo_itvbc//=.
   apply/measurable_funTS => /=.
   under eq_fun => s
     do rewrite -(@fineK _ (P (Y @^-1` `[(- s)%R, +oo[))) ?fin_num_measure//.

@@ -111,6 +111,8 @@
 
 - in `topology_structure.v`:
   + `cts_fun` -> `continuous_fun`
+- in `measure_function.v`:
+  + `isFinite` -> `isFinNumFun`
 
 ### Generalized
 

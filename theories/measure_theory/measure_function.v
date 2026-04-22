@@ -76,7 +76,7 @@ From mathcomp Require Import measurable_structure measurable_function.
 (*         Measure_isSFinite == interface that extends a measure to an        *)
 (*                              s-finite measure using a sequence of finite   *)
 (*                              measures                                      *)
-(*                  isFinite == interface for functions that satisfy the      *)
+(*               isFinNumFun == interface for functions that satisfy the      *)
 (*                              fin_num_fun predicate                         *)
 (*            FinNumFun.type == type of functions over semiring of sets       *)
 (*                              returning a fin_num                           *)
@@ -1400,14 +1400,22 @@ Proof. exact/sfinite_measure_sigma_finite/sigma_finite_mzero. Qed.
 HB.instance Definition _ d (T : measurableType d) (R : realType) :=
   @isSFinite.Build d T R mzero (@sfinite_mzero d T R).
 
-HB.mixin Record isFinite d (T : semiRingOfSetsType d) (R : numDomainType)
+HB.mixin Record isFinNumFun d (T : semiRingOfSetsType d) (R : numDomainType)
   (k : set T -> \bar R) := { fin_num_measure : fin_num_fun k }.
 
+#[deprecated(since="mathcomp-analysis 1.17.0", use=isFinNumFun)]
+Notation isFinite x1 x2 x3 x4 := (isFinNumFun x1 x2 x3 x4).
+
+Module isFinite.
+#[deprecated(since="mathcomp-analysis 1.117.0", use=isFinNumFun)]
+Notation Build x1 x2 x3 x4 := (isFinNumFun.Build x1 x2 x3 x4) (only parsing).
+End isFinite.
+
 HB.structure Definition FinNumFun d (T : semiRingOfSetsType d)
-  (R : numFieldType) := { k of isFinite _ T R k }.
+  (R : numFieldType) := { k of isFinNumFun _ T R k }.
 
 HB.structure Definition FiniteMeasure d (T : sigmaRingType d) (R : realType) :=
-  { k of @SigmaFiniteMeasure _ _ _ k & isFinite _ T R k }.
+  { k of @SigmaFiniteMeasure _ _ _ k & isFinNumFun _ T R k }.
 Arguments fin_num_measure {d T R} _.
 
 Notation "{ 'finite_measure' 'set' T '->' '\bar' R }" :=
@@ -1437,7 +1445,7 @@ HB.instance Definition _ := @isSigmaFinite.Build d T R k sigma_finite.
 
 Let finite : fin_num_fun k. Proof. exact: fin_num_measure. Qed.
 
-HB.instance Definition _ := @isFinite.Build d T R k finite.
+HB.instance Definition _ := @isFinNumFun.Build d T R k finite.
 
 HB.end.
 
