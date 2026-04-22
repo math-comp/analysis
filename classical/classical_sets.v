@@ -1651,6 +1651,22 @@ Definition setU_closed := forall A B, G A -> G B -> G (A `|` B).
 
 End set_systems.
 
+Lemma setI_closed_setT T (F : set_system T) :
+  setI_closed F -> setI_closed (F `|` [set setT]).
+Proof.
+move=> IF=> C D [FC|/= ->{C}].
+- by move=> [FD|/= ->{D}]; [left; exact: IF|rewrite setIT; left].
+- by move=> [FD|->{D}]; [rewrite setTI; left|rewrite !setTI; right].
+Qed.
+
+Lemma setI_closed_set0 T (F : set_system T) :
+  setI_closed F -> setI_closed (F `|` [set set0]).
+Proof.
+move=> IF=> C D [FC|/= ->{C}].
+- by move=> [FD|/= ->{D}]; [left; exact: IF|rewrite setI0; right].
+- by move=> [FD|->{D}]; [rewrite set0I; right|rewrite !set0I; right].
+Qed.
+
 Section rectangle.
 Context {T1 T2 : Type}.
 Implicit Types (X : set_system T1) (Y : set_system T2).

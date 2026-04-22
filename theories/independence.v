@@ -6,15 +6,12 @@ From mathcomp Require Import cardinality fsbigop interval_inference.
 From HB Require Import structures.
 From mathcomp Require Import exp numfun lebesgue_measure lebesgue_integral.
 From mathcomp Require Import reals ereal topology normedtype sequences.
-From mathcomp Require Import esum measure exp numfun lebesgue_measure.
-From mathcomp Require Import measurable_realfun.
-From mathcomp Require Import lebesgue_integral kernel probability.
-From mathcomp Require Import hoelder.
+From mathcomp Require Import esum measure exp numfun measure lebesgue_measure.
+From mathcomp Require Import measurable_realfun lebesgue_integral kernel.
+From mathcomp Require Import hoelder probability.
 
 (**md**************************************************************************)
 (* # Independence                                                             *)
-(*                                                                            *)
-(* The status of this file is experimental.                                   *)
 (*                                                                            *)
 (* ```                                                                        *)
 (*   independent_events I E == the events E indexed by the set I are          *)
@@ -29,6 +26,7 @@ From mathcomp Require Import hoelder.
 (*                                                                            *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -89,10 +87,10 @@ split=> indeF.
   - rewrite setT_bool => /eqP {}Jbool.
     rewrite -bigcap_fset Jbool bigcap_setU1 bigcap_set1.
     rewrite indeF.
-    + rewrite -(set_fsetK J) Jbool fset_setU1//= fset_set1 big_fsetU1 ?inE//=.
-      by rewrite big_seq_fset1.
     + by rewrite EF// -(set_fsetK J) Jbool in_fset_set// !inE/=; left.
     + by rewrite EF// -(set_fsetK J) Jbool in_fset_set// !inE/=; right.
+    + rewrite -(set_fsetK J) Jbool fset_setU1//= fset_set1 big_fsetU1 ?inE//=.
+      by rewrite big_seq_fset1.
 move=> A B AF BG.
 move: indeF => /(_ [fset true; false]%fset _ (fun b => if b then A else B)).
 do 2 rewrite big_fsetU1/= ?inE//= big_seq_fset1.
@@ -100,52 +98,6 @@ by apply => // -[].
 Qed.
 
 End independence.
-
-Lemma setI_closed_setT T (F : set_system T) :
-  setI_closed F -> setI_closed (F `|` [set setT]).
-Proof.
-move=> IF=> C D [FC|/= ->{C}].
-- move=> [FD|/= ->{D}].
-    by left; exact: IF.
-  by rewrite setIT; left.
-- move=> [FD|->{D}].
-    by rewrite setTI; left.
-  by rewrite !setTI; right.
-Qed.
-
-Lemma setI_closed_set0 T (F : set_system T) :
-  setI_closed F -> setI_closed (F `|` [set set0]).
-Proof.
-move=> IF=> C D [FC|/= ->{C}].
-- move=> [FD|/= ->{D}].
-    by left; exact: IF.
-  by rewrite setI0; right.
-- move=> [FD|->{D}].
-    by rewrite set0I; right.
-  by rewrite !set0I; right.
-Qed.
-
-Lemma g_sigma_algebra_finite_measure_unique {d} {T : measurableType d}
-    {R : realType} (G : set_system T) :
-  G `<=` d.-measurable ->
-  setI_closed G ->
-  forall m1 m2 : {finite_measure set T -> \bar R},
-    m1 [set: T] = m2 [set: T] ->
-    (forall A : set T, G A -> m1 A = m2 A) ->
-    forall E : set T, <<s G >> E -> m1 E = m2 E.
-Proof.
-move=> Gm IG m1 m2 m1m2T m1m2 E sGE.
-apply: (@g_sigma_algebra_measure_unique _ _ _
-    (G `|` [set setT]) _ (fun=> setT)) => //.
-- by move=> A [/Gm//|/= ->//].
-- by right.
-- by rewrite bigcup_const.
-- exact: setI_closed_setT.
-- by move=> B [/m1m2 //|/= ->].
-- by move=> n; apply: fin_num_fun_lty; exact: fin_num_measure.
-- move: E sGE; apply: smallest_sub => // C GC.
-  by apply: sub_gen_smallest; left.
-Qed.
 
 Section mutual_independence_properties.
 Context {R : realType} d {T : measurableType d} (P : probability T R).
@@ -165,11 +117,11 @@ pose E' i := if i \in J then E i else [set: T].
 have /indeF : forall i, i \in I -> E' i \in F i.
   move=> i iI; rewrite /E'; case: ifPn => [|iJ]; first exact: EF.
   by rewrite inE; apply mF.
-move/fsubsetP : (JI) => /(big_fset_incl _) <- /=; last first.
+move/fsubsetP : (JI) => /(big_fset_incl _) <- /=.
   by move=> j jI jJ; rewrite /E' (negbTE jJ).
-move/fsubsetP : (JI) => /(big_fset_incl _) <- /=; last first.
+move/fsubsetP : (JI) => /(big_fset_incl _) <- /=.
   by move=> j jI jJ; rewrite /E' (negbTE jJ); rewrite probability_setT.
-rewrite big_seq [in X in X = _ -> _](eq_bigr E); last first.
+rewrite big_seq [in X in X = _ -> _](eq_bigr E).
   by move=> i iJ; rewrite /E' iJ.
 rewrite -big_seq => ->.
 by rewrite !big_seq; apply: eq_bigr => i iJ; rewrite /E' iJ.
@@ -182,8 +134,7 @@ Lemma mutual_independence_finiteS {I0 : choiceType} (I : set I0)
   (forall J : {fset I0}%fset, [set` J] `<=` I ->
     mutual_independence P [set` J] F).
 Proof.
-split=> [indeF J JI K KJ E EF|indeF].
-  by apply: indeF => // i /KJ /JI.
+split=> [indeF J JI K KJ E EF|indeF]; first by apply: indeF => // i /KJ /JI.
 by move=> J JI E EF; exact: (indeF _ JI).
 Qed.
 
@@ -195,8 +146,7 @@ Theorem mutual_independence_finite_g_sigma {I0 : choiceType} (I : set I0)
   mutual_independence P I F <-> mutual_independence P I (fun i => <<s F i>>).
 Proof.
 move=> mF IF0; split=> indeF; last first.
-  move=> J JI E EF.
-  apply: indeF => // i iJ; rewrite inE.
+  move=> J JI E EF; apply: indeF => // i iJ; rewrite inE.
   by apply: sub_gen_smallest; exact/set_mem/EF.
 move=> K KI E EF.
 suff: forall J J' : {fset I0}%fset, (J `<=` J')%fset -> [set` J'] `<=` I ->
@@ -267,7 +217,7 @@ have Fjmunu A : (F j `|` [set set0; setT]) A -> mu A = nu A.
       rewrite ![in X in X -> _]inE /= ![in X in X -> _]inE => -[] iJ' /negP.
       rewrite negb_and negbK => /predU1P[ij|iK].
         by rewrite /E' ij eqxx inE.
-      rewrite /E' ifF//; last first.
+      rewrite /E' ifF//.
         apply/negP => /eqP ij.
         by rewrite ij jK in iK.
       by rewrite EF// !inE/=; split => //; exact/negP.
@@ -308,7 +258,7 @@ by rewrite /mu/= /mrestr/= nuEj.
 Qed.
 
 (* pick an i from I_ k s.t. E k \in F (f k) *)
-Local Definition f (K0 : choiceType) (K : {fset K0})
+#[local] Definition f (K0 : choiceType) (K : {fset K0})
   (I0 : pointedType) (F : I0 -> set_system T) E I_
   (EF : forall k, k \in K -> E k \in \bigcup_(i in I_ k) F i) k :=
   if pselect (k \in K) is left kK then
@@ -316,7 +266,7 @@ Local Definition f (K0 : choiceType) (K : {fset K0})
    else
      point.
 
-Local Lemma f_prop (K0 : choiceType) (K : {fset K0})
+#[local] Lemma f_prop (K0 : choiceType) (K : {fset K0})
     (I0 : pointedType) (F : I0 -> set_system T) E I_
     (EF : forall k, k \in K -> E k \in \bigcup_(i in I_ k) F i) k :
   k \in K -> E k \in F (f EF k).
@@ -325,7 +275,7 @@ move=> kK; rewrite /f; case: pselect => [kK_/=|//].
 by case: cid2 => // i/= ? /mem_set.
 Qed.
 
-Local Lemma f_inj (K0 : choiceType) (K K' : {fset K0})
+#[local] Lemma f_inj (K0 : choiceType) (K K' : {fset K0})
   (K'K : [set` K'] `<=` [set` K]) (I0 : pointedType) (F : I0 -> set_system T)
   E I_ (EF : forall k, k \in K' -> E k \in \bigcup_(i in I_ k) F i)
   (KI : trivIset [set` K] I_) k1 k2 :
@@ -343,14 +293,14 @@ move/trivIsetP : KI => /(_ _ _ (K'K _ k1K') (K'K _ k2K') k1k2).
 by move/seteqP => [+ _] => /(_ i')/=; rewrite -falseE; exact.
 Qed.
 
-Local Definition g (K0 : pointedType) (K' : {fset K0})
+#[local] Definition g (K0 : pointedType) (K' : {fset K0})
     (I0 : Type) (I_ : K0 -> set I0) (i : I0) : K0 :=
   if pselect (exists2 k, k \in K' & i \in I_ k) is left e then
     sval (cid2 e)
   else
     point.
 
-Local Lemma gf (K0 I0 : pointedType) (F : I0 -> set_system T)
+#[local] Lemma gf (K0 I0 : pointedType) (F : I0 -> set_system T)
   (K K' : {fset K0}) (K'K : [set` K'] `<=` [set` K])
   E I_ (EF : forall k, k \in K' -> E k \in \bigcup_(i in I_ k) F i)
   (KI : trivIset [set` K] (fun i => I_ i)) i : i \in K' -> g K I_ (f EF i) = i.
@@ -375,8 +325,7 @@ Lemma mutual_independence_bigcup (K0 I0 : pointedType) (K : {fset K0})
   mutual_independence P I F ->
   mutual_independence P [set` K] (fun k => \bigcup_(i in I_ k) F i).
 Proof.
-move=> KI I_I PIF.
-move=> K' K'K E EF.
+move=> KI I_I PIF K' K'K E EF.
 pose f' := f EF.
 pose g' := g K I_.
 pose J' := (\bigcup_(k <- K') [fset f' k])%fset.
@@ -396,10 +345,10 @@ suff: P (\big[setI/[set: T]]_(j <- J') E' j) = \prod_(j <- J') P (E' j).
     rewrite /E' /g' /f'/= gf//.
     by apply; apply/bigfcupP; exists j;[rewrite jK'|rewrite inE].
   rewrite suf partition_disjoint_bigfcup//=.
-    rewrite [LHS]big_seq [RHS]big_seq; apply: eq_big => // k kK'.
-    by rewrite big_seq_fset1 /E' /g' /f' /= gf.
-  move=> k1 k2 k1K' k2K' k1k2 /=.
-  by rewrite -fsetI_eq0 -fsubset0 (f_inj K'K).
+    move=> k1 k2 k1K' k2K' k1k2 /=.
+    by rewrite -fsetI_eq0 -fsubset0 (f_inj K'K).
+  rewrite [LHS]big_seq [RHS]big_seq; apply: eq_big => // k kK'.
+  by rewrite big_seq_fset1 /E' /g' /f' /= gf.
 apply: PIF.
 - move=> i/= /bigfcupP[k] /[!andbT] kK' /[!inE] /eqP ->.
   apply: (I_I k) => /=; first exact: K'K.
@@ -409,31 +358,6 @@ apply: PIF.
 Qed.
 
 End mutual_independence_properties.
-
-(* f.-mapping.-measurable A == A is measurable for g_sigma_algebra_mapping f  *)
-
-Section g_sigma_algebra_preimage_lemmas.
-Context d {T : measurableType d} {R : realType}.
-
-Lemma g_sigma_algebra_preimage_comp (X : {mfun T >-> R}) (f : R -> R) :
-  measurable_fun setT f ->
-  g_sigma_algebra_preimage (f \o X)%R `<=` g_sigma_algebra_preimage X.
-Proof. exact: preimage_set_system_compS. Qed.
-
-Lemma g_sigma_algebra_preimage_funrpos (X : {mfun T >-> R}) :
-  g_sigma_algebra_preimage X^\+%R `<=` d.-measurable.
-Proof.
-by move=> A/= -[B mB] <-; have := measurable_funrpos (measurable_funP X); exact.
-Qed.
-
-Lemma g_sigma_algebra_preimage_funrneg (X : {mfun T >-> R}) :
-  g_sigma_algebra_preimage X^\-%R `<=` d.-measurable.
-Proof.
-by move=> A/= -[B mB] <-; have := measurable_funrneg (measurable_funP X); exact.
-Qed.
-
-End g_sigma_algebra_preimage_lemmas.
-Arguments g_sigma_algebra_preimage_comp {d T R X} f.
 
 Section independent_RVs.
 Context {R : realType} d (T : measurableType d).
@@ -467,8 +391,8 @@ Context {d' : I0 -> _} (T' : forall i : I0, measurableType (d' i)).
 Variable P : probability T R.
 
 (**md see Achim Klenke's Probability Theory, Ch.2, sec.2.1, thm.2.16 *)
-Theorem independent_generators (I : set I0) (F : forall i : I0, set_system (T' i))
-    (X : forall i, {RV P >-> T' i}) :
+Theorem independent_generators (I : set I0)
+    (F : forall i : I0, set_system (T' i)) (X : forall i, {RV P >-> T' i}) :
   (forall i, i \in I -> setI_closed (F i)) ->
   (forall i, i \in I -> F i `<=` @measurable _ (T' i)) ->
   (forall i, i \in I -> @measurable _ (T' i) = <<s F i>>) ->
@@ -476,52 +400,31 @@ Theorem independent_generators (I : set I0) (F : forall i : I0, set_system (T' i
   independent_RVs P I X.
 Proof.
 move=> IF FA AsF indeX1.
-have closed_preimage i : I i -> setI_closed (preimage_set_system setT (X i) (F i)).
+have closed_preimage i : I i ->
+    setI_closed (preimage_set_system setT (X i) (F i)).
   move=> Ii A B [A' FiA']; rewrite setTI => <-{A}.
   move=> [B' FiB']; rewrite setTI => <-{B}.
   rewrite /preimage_set_system/=; exists (A' `&` B').
-  apply: IF => //.
-  - exact/mem_set.
-  - by rewrite setTI.
+    by apply: IF => //; exact/mem_set.
+  by rewrite setTI.
 have gen_preimage i : I i ->
     <<s preimage_set_system setT (X i) (F i) >> =
     g_sigma_algebra_preimage (X i).
   move=> Ii.
-  rewrite /g_sigma_algebra_preimage AsF; last exact/mem_set.
+  rewrite /g_sigma_algebra_preimage AsF; first exact/mem_set.
   by rewrite -g_sigma_preimageE.
 rewrite /independent_RVs.
 suff: mutual_independence P I
     (fun i => <<s preimage_set_system setT (X i) (F i) >>).
   exact: eq_mutual_independence.
 apply: (mutual_independence_finite_g_sigma _ _ _).1 indeX1.
-- move=> i iI. (* TODO: lemma *)
-  move=> A [B FiB <-].
-  rewrite setTI.
-  apply: measurable_funPTI.
+- move=> i iI _ [B FiB <-]; apply: measurable_funPT => //.
   by apply: FA FiB.
 - move=> i Ii; apply: setI_closed_set0.
   exact/closed_preimage/set_mem.
 Qed.
 
 End independent_generators.
-
-(* TODO: move earlier *)
-Section mfun_measurable_realType.
-Context {d} {aT : measurableType d} {rT : realType}.
-
-HB.instance Definition _ (f : {mfun aT >-> rT}) :=
-  @isMeasurableFun.Build d _ _ _ f^\+
-    (measurable_funrpos (@measurable_funPT _ _ _ _ f)).
-
-HB.instance Definition _ (f : {mfun aT >-> rT}) :=
-  @isMeasurableFun.Build d _ _ _ f^\-
-    (measurable_funrneg (@measurable_funPT _ _ _ _ f)).
-
-HB.instance Definition _ (f : {mfun aT >-> rT}) :=
-  @isMeasurableFun.Build d _ _ _ (@normr _ _ \o f)
-    (measurableT_comp (@normr_measurable _ _) (@measurable_funPT _ _ _ _ f)).
-
-End mfun_measurable_realType.
 
 Section independent_RVs2.
 Context {R : realType} d d' (T : measurableType d) (T' : measurableType d').
@@ -540,66 +443,53 @@ Local Open Scope ring_scope.
 Lemma independent_RVs2_comp (X Y : {RV P >-> R}) (f g : {mfun R >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P (f \o X) (g \o Y).
 Proof.
-move=> indeXY.
-(*- move=> [] _ /= A.
-  + by rewrite /g_sigma_algebra_preimage/= /preimage_set_system/= => -[B mB <-];
-      exact/measurableT_comp.
-  + by rewrite /g_sigma_algebra_preimage/= /preimage_set_system/= => -[B mB <-];
-      exact/measurableT_comp.*)
-- move=> J _ E JE.
-  apply indeXY => //= i iJ; have := JE _ iJ.
-  by move: i {iJ} =>[|]//=; rewrite !inE => Eg;
-    exact: g_sigma_algebra_preimage_comp Eg.
+move=> + J _ E JE; apply => //= i iJ; have := JE _ iJ.
+by move: i {iJ} =>[|]//=; rewrite !inE => Eg;
+  exact: g_sigma_algebra_preimage_comp Eg.
 Qed.
 
 Lemma independent_RVs2_funrposneg (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P X^\+ Y^\-.
 Proof.
-move=> indeXY; move=> J J2 E JE.
-(*- exact: g_sigma_algebra_preimage_funrneg.*)
-(*- exact: g_sigma_algebra_preimage_funrpos.*)
-- apply indeXY => //= i iJ; have := JE _ iJ.
-  move/J2 : iJ; move: i => [|]// _; rewrite !inE.
-  + apply: (g_sigma_algebra_preimage_comp (fun x => maxr (- x) 0)%R).
-    exact: measurable_funrneg.
-  + apply: (g_sigma_algebra_preimage_comp (fun x => maxr x 0)%R) => //.
-    exact: measurable_funrpos.
+move=> + J J2 E JE; apply => //= i iJ; have := JE _ iJ.
+move/J2 : iJ; move: i => [|] _; rewrite !inE .
+- apply: (g_sigma_algebra_preimage_comp (fun x : R => maxr (- x) 0)%R).
+  exact: measurable_funrneg.
+- apply: (g_sigma_algebra_preimage_comp (fun x : R => maxr x 0)%R) => //.
+  exact: measurable_funrpos.
 Qed.
 
 Lemma independent_RVs2_funrnegpos (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P X^\- Y^\+.
 Proof.
-move=> indeXY; move=> J J2 E JE.
-- apply indeXY => //= i iJ; have := JE _ iJ.
-  move/J2 : iJ; move: i => [|]// _; rewrite !inE.
-  + apply: (g_sigma_algebra_preimage_comp (fun x => maxr x 0)%R).
-    exact: measurable_funrpos.
-  + apply: (g_sigma_algebra_preimage_comp (fun x => maxr (- x) 0)%R).
-    exact: measurable_funrneg.
+move=> + J J2 E JE; apply => //= i iJ; have := JE _ iJ.
+move/J2 : iJ; move: i => [|]// _; rewrite !inE.
+- apply: (g_sigma_algebra_preimage_comp (fun x : R => maxr x 0)%R).
+  exact: measurable_funrpos.
+- apply: (g_sigma_algebra_preimage_comp (fun x : R => maxr (- x) 0)%R).
+  exact: measurable_funrneg.
 Qed.
 
 Lemma independent_RVs2_funrnegneg (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P X^\- Y^\-.
 Proof.
-move=> indeXY; move=> J J2 E JE.
-- apply indeXY => //= i iJ; have := JE _ iJ.
-  move/J2 : iJ; move: i => [|]// _; rewrite !inE.
-  + apply: (g_sigma_algebra_preimage_comp (fun x => maxr (- x) 0)%R).
-    exact: measurable_funrneg.
-  + apply: (g_sigma_algebra_preimage_comp (fun x => maxr (- x) 0)%R).
-    exact: measurable_funrneg.
+move=> + J J2 E JE; apply => //= i iJ; have := JE _ iJ.
+move/J2 : iJ; move: i => [|]// _; rewrite !inE.
+- apply: (g_sigma_algebra_preimage_comp (fun x : R => maxr (- x) 0)%R).
+  exact: measurable_funrneg.
+- apply: (g_sigma_algebra_preimage_comp (fun x : R => maxr (- x) 0)%R).
+  exact: measurable_funrneg.
 Qed.
 
 Lemma independent_RVs2_funrpospos (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P X^\+ Y^\+.
 Proof.
-move=> indeXY; move=> J J2 E JE.
-- apply indeXY => //= i iJ; have := JE _ iJ.
-  move/J2 : iJ; move: i => [|]// _; rewrite !inE.
-  + apply: (g_sigma_algebra_preimage_comp (fun x => maxr x 0)%R).
-    exact: measurable_funrpos.
-  + apply: (g_sigma_algebra_preimage_comp (fun x => maxr x 0)%R).
-    exact: measurable_funrpos.
+move=> + J J2 E JE; apply => //= i iJ; have := JE _ iJ.
+move/J2 : iJ; move: i => [|]// _; rewrite !inE.
+- apply: (g_sigma_algebra_preimage_comp (fun x : R => maxr x 0)%R).
+  exact: measurable_funrpos.
+- apply: (g_sigma_algebra_preimage_comp (fun x : R => maxr x 0)%R).
+  exact: measurable_funrpos.
 Qed.
 
 End independent_RVs2_properties.
@@ -611,7 +501,7 @@ Context d d' {T : measurableType d} {T' : measurableType d'} {R : realType}
 Definition pairRV (X Y : {RV P >-> T'}) : T * T -> T' * T' :=
   (fun x => (X x.1, Y x.2)).
 
-Lemma measurable_pairM (X Y : {RV P >-> T'}) : measurable_fun setT (pairRV X Y).
+Let measurable_pairM (X Y : {RV P >-> T'}) : measurable_fun setT (pairRV X Y).
 Proof.
 rewrite /pairRV.
 apply/measurable_fun_pairP; split => //=.
@@ -652,13 +542,10 @@ Lemma independent_RVs2_product_measure1 (X Y : {RV P >-> R}) (A1 A2 : set R) :
   (P \x P) (pairRV X Y @^-1` (A1 `*` A2)) = P (X @^-1` A1 `&` Y @^-1` A2).
 Proof.
 move=> mA1 mA2 iPXY.
-rewrite (_ : (pairRV X Y @^-1` (A1 `*` A2)) =
-           (X @^-1` A1) `*` (Y @^-1` A2)); last first.
+rewrite (_ : (pairRV X Y @^-1` _) = (X @^-1` A1) `*` (Y @^-1` A2)).
   by apply/seteqP; split => [[x1 x2]|[x1 x2]].
-rewrite product_measure1E.
-- by rewrite independent_RVs2_setI_preimage.
-- by rewrite -[_ @^-1` _]setTI; exact: (measurable_funP X).
-- by rewrite -[_ @^-1` _]setTI; exact: (measurable_funP Y).
+rewrite product_measure1E; [exact: measurable_funPTI..|].
+by rewrite independent_RVs2_setI_preimage.
 Qed.
 
 End independent_RVs2_properties_realType.
@@ -674,33 +561,32 @@ Lemma independent_Lfun1_expectation_product_measure_lty (X Y : {RV P >-> R}) :
   'E_(P \x P) [(fun x => `|X x.1 * Y x.2|)%R] < +oo.
 Proof.
 move=> indeXY iX iY.
-rewrite unlock.
+rewrite unlock [ltLHS](_ : _ =
+    \int[distribution (P \x P) (pairRV X Y)%R]_x `|x.1 * x.2|%:E).
+  rewrite ge0_integral_distribution//=.
+  apply/measurable_EFinP => //=.
+  by apply/measurableT_comp => //=; exact/measurable_funM.
 rewrite [ltLHS](_ : _ =
-    \int[distribution (P \x P) (pairRV X Y)%R]_x `|x.1 * x.2|%:E); last first.
-  rewrite ge0_integral_distribution//=; last first.
-    apply/measurable_EFinP => //=.
-    by apply/measurableT_comp => //=; exact/measurable_funM.
-rewrite [ltLHS](_ : _ =
-    \int[distribution P X \x distribution P Y]_x `|x.1 * x.2|%:E); last first.
+    \int[distribution P X \x distribution P Y]_x `|x.1 * x.2|%:E).
   apply: eq_measure_integral => // A mA _.
   apply/esym. (* NB: don't simpl here! *)
   apply: product_measure_unique => //= A1 A2 mA1 mA2.
   by rewrite independent_RVs2_product_measure1// independent_RVs2_setI_preimage.
-rewrite fubini_tonelli1//=; last first.
+rewrite fubini_tonelli1//=.
   apply/measurable_EFinP => /=; apply/measurableT_comp => //=.
   exact/measurable_funM.
 rewrite /fubini_F/=.
 rewrite [ltLHS](_ : _ = \int[distribution P X]_x `|x|%:E *
-                        \int[distribution P Y]_y `|y|%:E); last first.
-  rewrite -ge0_integralZr//=; last 2 first.
+                        \int[distribution P Y]_y `|y|%:E).
+  rewrite -ge0_integralZr//=.
     exact/measurable_EFinP.
     exact: integral_ge0.
   apply: eq_integral => x _.
   rewrite -ge0_integralZl//=.
-    by under eq_integral do rewrite normrM.
-  exact/measurable_EFinP.
-rewrite ge0_integral_distribution//=; last exact/measurable_EFinP.
-rewrite ge0_integral_distribution//=; last exact/measurable_EFinP.
+    exact/measurable_EFinP.
+  by under eq_integral do rewrite normrM.
+rewrite ge0_integral_distribution//=; first exact/measurable_EFinP.
+rewrite ge0_integral_distribution//=; first exact/measurable_EFinP.
 rewrite lte_mul_pinfty//.
 - exact: integral_ge0.
 - apply: integrable_fin_num => //=.
@@ -711,14 +597,14 @@ Qed.
 
 End product_expectation_over_product_measure.
 
-Section product_expectation.
+Section expectationM.
 Context {R : realType} d (T : measurableType d).
 Variable P : probability T R.
 Local Open Scope ereal_scope.
 
 Import HBNNSimple.
 
-Lemma expectationM_nnsfun (f g : {nnsfun T >-> R}) :
+#[local] Lemma expectationM_nnsfun (f g : {nnsfun T >-> R}) :
   (forall y y', y \in range f -> y' \in range g ->
     P (f @^-1` [set y] `&` g @^-1` [set y']) =
     P (f @^-1` [set y]) * P (g @^-1` [set y'])) ->
@@ -731,14 +617,13 @@ move=> fg; transitivity
 transitivity ('E_P [(fun x => (\sum_(y \in range f) \sum_(y' \in range g) y * y'
                     * \1_(f @^-1` [set y] `&` g @^-1` [set y']) x)%R)]).
   congr ('E_P [_]); apply/funext => t/=.
-  rewrite mulrC; rewrite fsbig_distrr//=. (* TODO: lemma fsbig_distrl *)
-  apply: eq_fsbigr => y yf; rewrite mulrC; rewrite fsbig_distrr//=.
+  rewrite mulr_fsuml; apply: eq_fsbigr => y yf; rewrite mulr_fsumr.
   by apply: eq_fsbigr => y' y'g; rewrite indicI mulrCA !mulrA (mulrC y').
 rewrite unlock.
 under eq_integral do rewrite -fsumEFin//.
 transitivity (\sum_(y \in range f) (\sum_(y' \in range g)
   ((y * y')%:E * \int[P]_w (\1_(f @^-1` [set y] `&` g @^-1` [set y']) w)%:E))).
-  rewrite ge0_integral_fsum//=; last 2 first.
+  rewrite ge0_integral_fsum//=.
   - move=> r; under eq_fun do rewrite -fsumEFin//.
     apply: emeasurable_fsum => // s.
     apply/measurable_EFinP/measurable_funM => //.
@@ -747,7 +632,7 @@ transitivity (\sum_(y \in range f) (\sum_(y' \in range g)
     by rewrite indicI/= indicE -mulrACA EFinM mule_ge0// nnfun_muleindic_ge0.
   apply: eq_fsbigr => y yf.
   under eq_integral do rewrite -fsumEFin//.
-  rewrite ge0_integral_fsum//=; last 2 first.
+  rewrite ge0_integral_fsum//=.
   - move=> r; apply/measurable_EFinP; apply: measurable_funM => //.
     exact/measurable_indic/measurableI.
   - move=> r t _.
@@ -763,21 +648,21 @@ transitivity (\sum_(y \in range f) (\sum_(y' \in range g)
     by rewrite unlock.
   transitivity ('E_P[\1_(f @^-1` [set y])] * 'E_P[\1_(g @^-1` [set y'])]);
     last by rewrite unlock.
-  rewrite expectation_indic//; last exact: measurableI.
+  rewrite expectation_indic//; first exact: measurableI.
   by rewrite !expectation_indic// fg.
 transitivity (
     (\sum_(y \in range f) (y%:E * (\int[P]_w (\1_(f @^-1` [set y]) w)%:E))) *
     (\sum_(y' \in range g) (y'%:E * \int[P]_w (\1_(g @^-1` [set y']) w)%:E))).
   transitivity (\sum_(y \in range f) (\sum_(y' \in range g)
-      (y'%:E * \int[P]_w (\1_(g @^-1` [set y']) w)%:E)%E)%R *
-        (y%:E * \int[P]_w (\1_(f @^-1` [set y]) w)%:E)%E%R); last first.
-    rewrite !fsbig_finite//= ge0_sume_distrl//; last first.
-      move=> r _; rewrite -integralZl//; last exact: integrable_indic.
+      (y'%:E * \int[P]_w (\1_(g @^-1` [set y']) w)%:E)) *
+        (y%:E * \int[P]_w (\1_(f @^-1` [set y]) w)%:E)); last first.
+    rewrite !fsbig_finite//= ge0_sume_distrl//.
+      move=> r _; rewrite -integralZl//; first exact: integrable_indic.
       by apply: integral_ge0 => t _; rewrite nnfun_muleindic_ge0.
     by apply: eq_bigr => r _; rewrite muleC.
   apply: eq_fsbigr => y fy.
-  rewrite !fsbig_finite//= ge0_sume_distrl//; last first.
-    move=> r _; rewrite -integralZl//; last exact: integrable_indic.
+  rewrite !fsbig_finite//= ge0_sume_distrl//.
+    move=> r _; rewrite -integralZl//; first exact: integrable_indic.
     by apply: integral_ge0 => t _; rewrite nnfun_muleindic_ge0.
   apply: eq_bigr => r _; rewrite (mulrC y) EFinM.
   by rewrite [X in _ * X]muleC muleACA.
@@ -787,9 +672,8 @@ suff: forall h : {nnsfun T >-> R},
   by move=> suf; congr *%E; rewrite suf.
 move=> h.
 apply/esym.
-under eq_integral do rewrite (fimfunE h).
-under eq_integral do rewrite -fsumEFin//.
-rewrite ge0_integral_fsum//; last 2 first.
+under eq_integral do rewrite (fimfunE h) -fsumEFin//.
+rewrite ge0_integral_fsum//.
 - by move=> r; exact/measurable_EFinP/measurable_funM.
 - by move=> r t _; rewrite lee_fin -lee_fin nnfun_muleindic_ge0.
 by apply: eq_fsbigr => y fy; rewrite -integralZl//; exact/integrable_indic.
@@ -871,8 +755,7 @@ have m1A (Z : {RV P >-> R}) : forall k, (k < n * 2 ^ n)%N ->
   exact/(@measurable_indicP _ (g_sigma_algebra_preimageType Z))/mA.
 rewrite !inE => /orP[|]/eqP->{i} //=.
 - have : @measurable_fun _ _ (g_sigma_algebra_preimageType X) _ setT (X_ n).
-    rewrite nnsfun_approxE//.
-    apply: measurable_funD => //=.
+    rewrite nnsfun_approxE//; apply: measurable_funD => //=.
       apply: measurable_sum => //= k'; apply: measurable_funM => //.
       by apply: measurable_indic; exact: mA.
     apply: measurable_funM => //.
@@ -880,15 +763,21 @@ rewrite !inE => /orP[|]/eqP->{i} //=.
   rewrite /measurable_fun => /(_ measurableT _ (measurable_set1 x)).
   by rewrite setTI.
 - have : @measurable_fun _ _ (g_sigma_algebra_preimageType Y) _ setT (Y_ n).
-    rewrite nnsfun_approxE//.
-    apply: measurable_funD => //=.
+    rewrite nnsfun_approxE//; apply: measurable_funD => //=.
       apply: measurable_sum => //= k'; apply: measurable_funM => //.
       by apply: measurable_indic; exact: mA.
-    apply: measurable_funM => //.
-    by apply: measurable_indic; exact: mB.
-  move=> /(_ measurableT [set y] (measurable_set1 y)).
-  by rewrite setTI.
+    by apply: measurable_funM => //; apply: measurable_indic; exact: mB.
+  by move=> /(_ measurableT [set y] (measurable_set1 y)); rewrite setTI.
 Qed.
+
+End expectationM.
+
+Section product_expectation.
+Context {R : realType} d (T : measurableType d).
+Variable P : probability T R.
+Local Open Scope ereal_scope.
+
+Import HBNNSimple.
 
 Lemma independent_Lfun1_expectationM_lty (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y ->
@@ -906,16 +795,16 @@ apply: (@le_lt_trans _ _ 'E_P[(@normr _ _ \o X) * (@normr _ _ \o Y)]).
   - by apply/measurable_EFinP; apply/measurable_funM; exact/measurableT_comp.
   - by move=> t _; rewrite lee_fin/= normrM.
 rewrite ge0_independent_expectationM//=.
+- exact: independent_RVs2_comp.
+- apply: mule_def_fin; rewrite unlock integrable_fin_num//.
+  + by move/Lfun_norm : iX => /Lfun1_integrable.
+  + by move/Lfun_norm : iY => /Lfun1_integrable.
 - rewrite lte_mul_pinfty//.
   + by rewrite expectation_ge0/=.
   + rewrite expectation_fin_num//=.
     by move: iX => /Lfun_norm.
   + move : iY => /Lfun1_integrable/integrableP[_].
     by rewrite unlock.
-- exact: independent_RVs2_comp.
-- apply: mule_def_fin; rewrite unlock integrable_fin_num//.
-  + by move/Lfun_norm : iX => /Lfun1_integrable.
-  + by move/Lfun_norm : iY => /Lfun1_integrable.
 Qed.
 
 Lemma independent_Lfun1M (X Y : {RV P >-> R}) :
@@ -941,9 +830,7 @@ Lemma independent_expectationM (X Y : {RV P >-> R}) :
 Proof.
 move=> XY iX iY.
 transitivity ('E_P[(X^\+ - X^\-) * (Y^\+ - Y^\-)]).
-  congr ('E_P[_]).
-  apply/funext => /=t.
-  by rewrite !funrposBneg.
+  by congr ('E_P[_]); apply/funext => /= t; rewrite !funrposBneg.
 have ? : X^\-%R \in Lfun P 1.
   apply/Lfun1_integrable; rewrite -funerneg; apply/integrable_funeneg => //.
   exact/Lfun1_integrable.
@@ -969,36 +856,36 @@ have ? : (X^\- \* Y^\-)%R \in Lfun P 1.
   by apply: independent_Lfun1M => //=; exact: independent_RVs2_funrnegneg.
 transitivity ('E_P[X^\+ * Y^\+] - 'E_P[X^\- * Y^\+]
               - 'E_P[X^\+ * Y^\-] + 'E_P[X^\- * Y^\-]).
-  rewrite mulrDr !mulrDl -!expectationB//=; last by rewrite rpredB.
-  rewrite -expectationD//=; last by rewrite !rpredB.
+  rewrite mulrDr !mulrDl -!expectationB//=; first by rewrite rpredB.
+  rewrite -expectationD//=; first by rewrite !rpredB.
   congr ('E_P[_]); apply/funext => t/=.
   by rewrite !fctE !(mulNr,mulrN,opprK,addrA).
-rewrite [in LHS]ge0_independent_expectationM//=; last 2 first.
+rewrite [in LHS]ge0_independent_expectationM//=.
   exact: independent_RVs2_funrpospos.
   by rewrite mule_def_fin// expectation_fin_num.
-rewrite [in LHS]ge0_independent_expectationM//=; last 2 first.
+rewrite [in LHS]ge0_independent_expectationM//=.
   exact: independent_RVs2_funrnegpos.
   by rewrite mule_def_fin// expectation_fin_num.
-rewrite [in LHS]ge0_independent_expectationM//=; last 2 first.
+rewrite [in LHS]ge0_independent_expectationM//=.
   exact: independent_RVs2_funrposneg.
   by rewrite mule_def_fin// expectation_fin_num.
-rewrite [in LHS]ge0_independent_expectationM//=; last 2 first.
+rewrite [in LHS]ge0_independent_expectationM//=.
   exact: independent_RVs2_funrnegneg.
   by rewrite mule_def_fin// expectation_fin_num.
-transitivity ('E_P[X^\+ - X^\-] * 'E_P[Y^\+ - Y^\-]).
-  rewrite -addeA -addeACA -muleBr; last 2 first.
-    by rewrite expectation_fin_num.
-    by rewrite fin_num_adde_defr// expectation_fin_num.
-  rewrite -oppeB; last first.
-    by rewrite fin_num_adde_defr// fin_numM// expectation_fin_num.
-  rewrite -muleBr; last 2 first.
-    by rewrite expectation_fin_num.
-    by rewrite fin_num_adde_defr// expectation_fin_num.
-  rewrite -muleBl.
-  - by rewrite -!expectationB.
-  - by rewrite fin_numB// !expectation_fin_num.
-  - by rewrite fin_num_adde_defr// expectation_fin_num.
-by rewrite !funrposBneg.
+transitivity ('E_P[X^\+ - X^\-] * 'E_P[Y^\+ - Y^\-]); last first.
+  by rewrite !funrposBneg.
+rewrite -addeA -addeACA -muleBr.
+  by rewrite expectation_fin_num.
+  by rewrite fin_num_adde_defr// expectation_fin_num.
+rewrite -oppeB.
+  by rewrite fin_num_adde_defr// fin_numM// expectation_fin_num.
+rewrite -muleBr.
+  by rewrite expectation_fin_num.
+  by rewrite fin_num_adde_defr// expectation_fin_num.
+rewrite -muleBl.
+- by rewrite fin_numB// !expectation_fin_num.
+- by rewrite fin_num_adde_defr// expectation_fin_num.
+- by rewrite -!expectationB.
 Qed.
 
 End product_expectation.

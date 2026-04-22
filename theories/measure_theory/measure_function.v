@@ -1717,7 +1717,6 @@ Qed.
 
 End measure_continuity.
 
-
 Section g_sigma_algebra_measure_unique_trace.
 Context d (R : realType) (T : measurableType d).
 Variables (G : set (set T)) (D : set T) (mD : measurable D).
@@ -1942,6 +1941,27 @@ Qed.
 
 End g_sigma_algebra_measure_unique.
 Arguments g_sigma_algebra_measure_unique {d R T} G.
+
+Lemma g_sigma_algebra_finite_measure_unique {d} {T : measurableType d}
+    {R : realType} (G : set_system T) :
+  G `<=` d.-measurable ->
+  setI_closed G ->
+  forall m1 m2 : {finite_measure set T -> \bar R},
+    m1 [set: T] = m2 [set: T] ->
+    (forall A : set T, G A -> m1 A = m2 A) ->
+    forall E : set T, <<s G >> E -> m1 E = m2 E.
+Proof.
+move=> Gm IG m1 m2 m1m2T m1m2 E sGE.
+apply: (@g_sigma_algebra_measure_unique _ _ _
+    (G `|` [set setT]) _ (fun=> setT)) => //.
+- by move=> A [/Gm//|/= ->].
+- by right.
+- by rewrite bigcup_const.
+- exact: setI_closed_setT.
+- by move=> B [/m1m2|/= ->].
+- by move=> n; apply: fin_num_fun_lty; exact: fin_num_measure.
+- by move: E sGE; apply: smallest_sub => // C GC; apply: sub_gen_smallest; left.
+Qed.
 
 Section measure_unique.
 Context d (R : realType) (T : measurableType d).

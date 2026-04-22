@@ -935,7 +935,7 @@ Proof. by rewrite funeposBneg. Qed.
 
 Lemma funeDB f g : (f^\+ \+ g^\+) \- (f^\- \+ g^\-) = f \+ g.
 Proof.
-rewrite ge0_addBefctE//; [by move=> x; rewrite funeneg_ge0..|].
+rewrite ge0_addBefctE//; [by move=> x; rewrite funeneg_ge0..]|].
 by rewrite -[in RHS](funeposBneg f) -[in RHS](funeposBneg g).
 Qed.
 

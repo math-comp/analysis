@@ -111,19 +111,24 @@
 - in `measurable_realfun.v`:
   + lemmas `measurable_funrpos`, `measurable_funrneg`
 
+- in `classical_sets.v`:
+  + lemmas `setI_closed_setT`, `setI_closed_set0`
+
+- in `measurable_function.v`:
+  + lemma `g_sigma_algebra_preimage_comp`
+
+- in `measure_function.v`:
+  + lemma `g_sigma_algebra_finite_measure_unique`
+
 - new file `independence.v`:
   + definition `independent_events`
   + definition `mutual_independence`
   + lemma `eq_mutual_independence`
   + definition `independence2`, `independence2P`
-  + lemmas `setI_closed_setT`, `setI_closed_set0`
-  + lemma `g_sigma_algebra_finite_measure_unique`
   + lemma `mutual_independence_fset`
   + lemma `mutual_independence_finiteS`
   + theorem `mutual_independence_finite_g_sigma`
   + lemma `mutual_dependence_bigcup`
-  + lemmas `g_sigma_algebra_preimage_comp`, `g_sigma_algebra_preimage_funrpos`,
-    `g_sigma_algebra_preimage_funrneg`
   + definition `independent_RVs`
   + lemma `independent_RVsD1`
   + theorem `independent_generators`
@@ -135,9 +140,9 @@
   + lemmas `independent_RVs2_product_measure1`
   + lemmas `independent_RVs2_setI_preimage`,
     `independent_Lfun1_expectation_product_measure_lty`
-  + lemmas `expectationM_nnsfun`, `expectationM_ge0`,
-    `ge0_independent_expectationM`, `independent_Lfun1_expectationM_lty`,
-    `independent_Lfun1M`, `independent_expectationM`
+  + lemma `ge0_independent_expectationM`
+  + lemmas `independent_Lfun1_expectationM_lty`, `independent_Lfun1M`,
+    `independent_expectationM`
 
 - in `ereal.v`:
   + lemma `ge0_addBefctE`

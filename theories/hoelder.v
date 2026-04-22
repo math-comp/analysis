@@ -538,7 +538,7 @@ Lemma convex_powR p : 1 <= p ->
   convex_function (`[0, +oo[%classic : set R) (@powR R ^~ p).
 Proof.
 move=> p1 t x y /[!inE] /= /[!in_itv] /= /[!andbT] x_ge0 y_ge0.
-have p0 : 0 < p by rewrite (lt_le_trans _ p1).  
+have p0 : 0 < p by rewrite (lt_le_trans _ p1).
 rewrite convRE [X in X `^ _ <= _]convRE; set w1 := t%:num; set w2 := t%:inum.~.
 have [->|w20] := eqVneq w2 0.
   rewrite !mul0r !addr0; have [->|w10] := eqVneq w1 0.
