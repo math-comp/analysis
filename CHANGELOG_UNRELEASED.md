@@ -78,10 +78,82 @@
 
 ### Changed
 
+- moved from `measurable_structure.v` to `classical_sets.v`:
+  + definition `preimage_set_system`
+  + lemmas `preimage_set_system0`, `preimage_set_systemU`, `preimage_set_system_comp`,
+    `preimage_set_system_id`
+- in `functions.v`:
+  + lemmas `linfunP`, `linfun_eqP`
+  + instances of `SubLmodule` and `pointedType` on `{linear _->_ | _ }`
+
+- in `tvs.v`:
+  + structure `LinearContinuous`
+  + factory `isLinearContinuous`
+  + instance of `ChoiceType` on `{linear_continuous _ -> _ }`
+  + instance of `LinearContinuous` with the composition of two functions of type `LinearContinuous`
+  + instance of `LinearContinuous` with the sum of two functions of type `LinearContinuous`
+  + instance of `LinearContinuous` with the scalar multiplication of a function of type
+    `LinearContinuous`
+  + instance of `Continuous` on \-f when f is of type `LinearContinuous`
+  + instance of `SubModClosed` on `{linear_continuous _ -> _}`
+  + instance of `SubLModule` on  `{linear_continuous _ -> _ }`
+  + instance of `LinearContinuous` on the null function
+  + notations `{linear_continuous _ -> _ | _ }` and `{linear_continuous _ -> _ }`
+  + definitions `lcfun`, `lcfun_key, `lcfunP`
+  + lemmas `lcfun_eqP`, `null_fun_continuous`, `fun_cvgD`,
+   `fun_cvgN`, `fun_cvgZ`, `fun_cvgZr`
+  + lemmas `lcfun_continuous` and `lcfun_linear`
+  
+### Changed
+
+- moved from `topology_structure.v` to `filter.v`:
+  + lemma `continuous_comp` (and generalized)
+
 - in `numfun.v`:
   + `fune_abse` renamed to `funeposDneg` and direction of the equality changed
   + `funeposneg` renamed to `funeposBneg` and direction of the equality changed
   + `funeD_posD` renamed to `funeDB` and direction of the equality changed
+
+### Renamed
+
+- in `tvs.v`:
+  + definition `tvsType` -> `convexTvsType`
+  + class `Tvs` -> `ConvexTvs`
+  + mixin `Uniform_isTvs` -> `Uniform_isConvexTvs`
+  + factory `PreTopologicalLmod_isTvs` -> `PreTopologicalLmod_isConvexTvs`
+  + section `Tvs_numDomain` -> `ConvexTvs_numDomain`
+  + section `Tvs_numField` -> `ConvexTvs_numField`
+  + section `prod_Tvs` -> `prod_ConvexTvs`
+
+- in `normed_module.v`
+  + mixin ` PseudoMetricNormedZmod_Tvs_isNormedModule` ->
+    ` PseudoMetricNormedZmod_ConvexTvs_isNormedModule`
+
+- in `measurable_structure.v`:
+  + `measurable_prod_measurableType` -> `prod_measurable_rectangle`
+- in `measurable_realfun.v`:
+  + `measurable_fun_itv_co` -> `measurable_fun_itvbb_itvco`
+  + `measurable_fun_itv_oc` -> `measurable_fun_itvbb_itvoc`
+  + `emeasurable_fun_itv_cc` -> `emeasurable_fun_itvbb_itvcc`
+  + `measurable_fun_itv_cc` -> `measurable_fun_itvbb_itvcc`
+  + `measurable_fun_itv_bndo_bndcP` -> `measurable_fun_itvbo_itvbcP`
+  + `emeasurable_fun_itv_bndo_bndcP` -> `emeasurable_fun_itvbo_itvbcP`
+  + `measurable_fun_itv_obnd_cbndP` -> `measurable_fun_itvob_itvcbP`
+  + `emeasurable_fun_itv_obnd_cbndP` -> `emeasurable_fun_itvob_itvcbP`
+
+- in `lebesgue_integral_nonneg.v`:
+  + `integral_itv_bndo_bndc` -> `integral_itvbo_itvbc`
+  + `integral_itv_obnd_cbnd` -> `integral_itvob_itvcb`
+  + `integral_itv_bndoo` -> `integral_itvbb_itvoo`
+
+- in `lebesgue_Rintegral.v`:
+  + `Rintegral_itv_bndo_bndc` -> `Rintegral_itvbo_itvbc`
+  + `Rintegral_itv_obnd_cbnd` -> `Rintegral_itvob_itvcb`
+
+- in `topology_structure.v`:
+  + `cts_fun` -> `continuous_fun`
+- in `measure_function.v`:
+  + `isFinite` -> `isFinNumFun`
 
 ### Generalized
 
