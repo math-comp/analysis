@@ -4,7 +4,7 @@ From mathcomp Require Import interval_inference.
 From mathcomp Require Import unstable wochoice boolp classical_sets topology reals.
 From mathcomp Require Import filter reals normedtype convex.
 Import numFieldNormedType.Exports.
-Local Open Scope classical_set_scope.
+Local Open Scope classical_set_scope. 
 
 (**md**************************************************************************)
 (* # The Hahn-Banach theorem                                                  *)
@@ -149,46 +149,72 @@ Check topU : lmodType R.
 HB.instance Definition _ := GRing.Lmodule.on topU.
 Check (topU : uniformType).
 Check (topU : subLmodType S).
-
+ 
 #[local] Lemma add_sub: continuous (fun x : topU * topU => x.1 + x.2).
 Proof. 
 apply: continuous_comp_initial => - [] /= x /= y.
 pose h := fun x1x2 : U * U => (\val x1x2.1, \val x1x2.2).
-pose g := fun xy : V * V => xy.1 + xy.2.
+pose g := fun xy : V * V => xy.1 + xy.2. 
 rewrite (_ : _ \o _ = g \o h)//.
-apply: continuous_comp; last by exact: add_continuous. 
-move => /= A [] /= [] a1 a2 [/=].
-move/(continuous_valE (x : topU)) =>  [na1 /= [] wo1 nax1 val1].
-move/(continuous_valE (y : topU)) =>  [na2 /= [] wo2 nay2 val2] A12.
-apply: filterS; first by exact: A12.
-exists (na1, na2); split => //=;
-admit.
+apply: continuous_comp; last by exact: add_continuous.  
+  move => /= A [] /= [] a1 a2 [/=]. 
+  move/(continuous_valE (x : topU)) => /= [na1 /= [] wo1 nax1 val1].
+  move/(continuous_valE (y : topU)) =>  /= [na2 /= [] wo2 nay2 val2] A12.
+  apply: filterS; first by exact: A12.
+  exists (na1, na2); split => //=; first by exists na1; split => //=. 
+  exists na2; split => //=.                                
+  - by move: H => /= [H _]; apply: val1.
+  - by move: H => /= [_ H]; apply: val2.
 by apply/funext => i/=; rewrite /g /h /= GRing.valD. 
-Admitted. 
+Qed.
 
 HB.instance Definition _ := @PreTopologicalNmodule_isTopologicalNmodule.Build topU add_sub. 
 
 Check (topU : TopologicalNmodule.type). 
 
-#[local] Lemma opp_sub : continuous (-%R : topU -> topU). Admitted.
+#[local] Lemma opp_sub : continuous (-%R : topU -> topU).
+Proof.
+apply: continuous_comp_initial => x. 
+rewrite (_ : _ \o _ = (-%R \o \val))//. 
+apply: continuous_comp; first by exact: continuous_valE.
+by exact: opp_continuous.
+by apply/funext => i/=; rewrite GRing.valN.
+Qed.
 
 HB.instance Definition _ := TopologicalNmodule_isTopologicalZmodule.Build topU opp_sub.
 
 Check (topU : TopologicalZmodule.type).
 
-#[local] Lemma scale_sub : continuous (fun z : R^o * topU => z.1 *: z.2). Admitted.
+#[local] Lemma scale_sub : continuous (fun z : R^o * topU => z.1 *: z.2).
+Proof.
+apply: continuous_comp_initial => - [] /= x /= y.
+pose h := fun x1x2 : R * U => (x1x2.1, \val x1x2.2).
+pose g := fun xy : R * V => xy.1 *: xy.2. 
+rewrite (_ : _ \o _ = g \o h)//.
+apply: continuous_comp; last by exact: scale_continuous.  
+  move => /= A [] /= [] a1 a2 [/=].
+  move=> - [] /= r  /= - [] r0 /= br1. 
+  move/(continuous_valE (y : topU)) =>  /= [na2 /= [] wo2 nay2 val2] A12.
+  apply: filterS; first by exact: A12.
+  exists ( ball_ [eta normr] x r ,na2) => //=; split; first by exists r.
+  exists na2; split => //.
+  - by apply: br1; move: H => /= [H _].  
+  - by move: H => /= [_ H]; apply: val2.
+by apply/funext => i/=; rewrite /g /h /= GRing.valZ. 
+Qed.
 
 HB.instance Definition _ := TopologicalZmodule_isTopologicalLmodule.Build R topU scale_sub.
 
 Check (topU : TopologicalLmodule.type R).
 
 #[local] Lemma locally_convex_sub : exists2 B : set_system topU,
-      (forall b, b \in B -> convex_set b) & basis B. Admitted.
+      (forall b, b \in B -> convex_set b) & basis B.
+Admitted.
  
 HB.instance Definition _ := @Uniform_isConvexTvs.Build R topU locally_convex_sub.
 
-HB.instance Definition _ := @PreTopologicalLmod_isConvexTvs.Build R topU
-                              add_sub scale_sub locally_convex_sub.
+(*HB.instance Definition _ := @PreTopologicalLmod_isConvexTvs.Build R topU
+                              add_sub scale_sub locally_convex_sub.*)
 (* Does not work. why ?*)
 
 Check (topU : convexTvsType R).
