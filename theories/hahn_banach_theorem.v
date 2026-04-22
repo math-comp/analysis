@@ -209,6 +209,18 @@ Check (topU : TopologicalLmodule.type R).
 
 #[local] Lemma locally_convex_sub : exists2 B : set_system topU,
       (forall b, b \in B -> convex_set b) & basis B.
+Proof.
+move : (@locally_convex R V) => - [] B convexB [] openB /= genB.
+exists [set a | B(\val @` a)].
+  move=> /= a; rewrite inE /=; rewrite -inE => H /= r s l ra sa.
+  suff :  \val(r <|l|> s) \in \val @` a by rewrite !inE /= => -[] x ax /val_inj <-.
+  have valr : \val r \in [set \val x | x in a] by rewrite inE => /=; exists r; first by rewrite -inE.
+  have vals : \val s \in [set \val x | x in a] by rewrite inE => /=; exists s; first by rewrite -inE.
+  move: (convexB ( [set \val x | x in a] ) H (\val r) (\val s) l valr vals) => /=.
+  by rewrite !GRing.valD !GRing.valZ //. 
+split.
+  move=> /= a. admit.
+move => /=. 
 Admitted.
  
 HB.instance Definition _ := @Uniform_isConvexTvs.Build R topU locally_convex_sub.
