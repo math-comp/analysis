@@ -17,7 +17,10 @@ From mathcomp Require Import hoelder.
 (* The status of this file is experimental.                                   *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*   independent_events I F == the events F indexed by I are independent      *)
+(*   independent_events I E == the events E indexed by the set I are          *)
+(*                             independent                                    *)
+(*                             The measurability of events is not assumed by  *)
+(*                             the definition.                                *)
 (*  mutual_independence I F == the set systems F indexed by I are independent *)
 (*      independent_RVs I X == the random variables X indexed by I are        *)
 (*                             independent                                    *)
@@ -42,7 +45,6 @@ Context {R : realType} d {T : measurableType d} (P : probability T R)
 Local Open Scope ereal_scope.
 
 Definition independent_events (I : set I0) (E : I0 -> set T) :=
-  (forall i, I i -> measurable (E i)) /\
   forall J : {fset I0}, [set` J] `<=` I ->
     P (\bigcap_(i in [set` J]) E i) = \prod_(i <- J) P (E i).
 
@@ -54,7 +56,6 @@ Context {R : realType} d {T : measurableType d} (P : probability T R)
 Local Open Scope ereal_scope.
 
 Definition mutual_independence (I : set I0) (F : I0 -> set_system T) :=
-  (forall i, I i -> F i `<=` measurable) /\
   forall J : {fset I0}, [set` J] `<=` I ->
     forall E, (forall i, i \in J -> E i \in F i) ->
       P (\big[setI/setT]_(j <- J) E j) = \prod_(j <- J) P (E j).
@@ -63,9 +64,7 @@ Lemma eq_mutual_independence (I : set I0) (F F' : I0 -> set_system T) :
   (forall i, I i -> F i = F' i) ->
   mutual_independence I F -> mutual_independence I F'.
 Proof.
-move=> FF' IF; split => [i Ii|J JI E EF'].
-  by rewrite -FF'//; apply IF.
-apply IF => // i iJ.
+move=> FF' + J JI E EF'; apply => // i iJ.
 by rewrite FF' ?EF'//; exact: JI.
 Qed.
 
@@ -76,41 +75,28 @@ Context {R : realType} d {T : measurableType d} (P : probability T R).
 Local Open Scope ereal_scope.
 
 Definition independence2 (F G : set_system T) :=
-  [/\ F `<=` measurable , G `<=` measurable &
-      forall A B, A \in F -> B \in G -> P (A `&` B) = P A * P B].
+  forall A B, A \in F -> B \in G -> P (A `&` B) = P A * P B.
 
 Lemma independence2P (F G : set_system T) : independence2 F G <->
   mutual_independence P [set: bool] (fun b => if b then F else G).
 Proof.
-split=> [[mF mG FG]|/= indeF].
-  split=> [/= [|]//|/= J Jbool E EF].
+split=> indeF.
+  move=> J Jbool E EF.
   have [/eqP Jtrue|/eqP Jfalse| |] := set_bool [set` J].
-  - rewrite -bigcap_fset Jtrue bigcap_set1.
-    by rewrite fsbig_seq ?Jtrue ?fsbig_set1.
-  - rewrite -bigcap_fset Jfalse bigcap_set1.
-    by rewrite fsbig_seq// ?Jfalse fsbig_set1.
-  - rewrite set_seq_eq0 => /eqP ->.
-    by rewrite !big_nil probability_setT.
+  - by rewrite -bigcap_fset Jtrue bigcap_set1 fsbig_seq ?Jtrue ?fsbig_set1.
+  - by rewrite -bigcap_fset Jfalse bigcap_set1 fsbig_seq// ?Jfalse fsbig_set1.
+  - by rewrite set_seq_eq0 => /eqP ->; rewrite !big_nil probability_setT.
   - rewrite setT_bool => /eqP {}Jbool.
     rewrite -bigcap_fset Jbool bigcap_setU1 bigcap_set1.
-    rewrite FG//.
-    + rewrite -(set_fsetK J) Jbool.
-      rewrite fset_setU1//= fset_set1.
-      rewrite big_fsetU1 ?inE//=.
+    rewrite indeF.
+    + rewrite -(set_fsetK J) Jbool fset_setU1//= fset_set1 big_fsetU1 ?inE//=.
       by rewrite big_seq_fset1.
-    + rewrite EF//.
-      rewrite -(set_fsetK J) Jbool.
-      by rewrite in_fset_set// !inE/=; left.
-    + rewrite EF//.
-      rewrite -(set_fsetK J) Jbool.
-      by rewrite in_fset_set// !inE/=; right.
-split.
-- by case: indeF => /= [+ _] => /(_ true); exact.
-- by case: indeF => /= [+ _] => /(_ false); exact.
-- move=> A B AF BG.
-  case: indeF => _ /= /(_ [fset true; false]%fset _ (fun b => if b then A else B)).
-  do 2 rewrite big_fsetU1/= ?inE//= big_seq_fset1.
-  by apply => // -[].
+    + by rewrite EF// -(set_fsetK J) Jbool in_fset_set// !inE/=; left.
+    + by rewrite EF// -(set_fsetK J) Jbool in_fset_set// !inE/=; right.
+move=> A B AF BG.
+move: indeF => /(_ [fset true; false]%fset _ (fun b => if b then A else B)).
+do 2 rewrite big_fsetU1/= ?inE//= big_seq_fset1.
+by apply => // -[].
 Qed.
 
 End independence.
@@ -168,13 +154,13 @@ Local Open Scope ereal_scope.
 (**md see Achim Klenke's Probability Theory, Ch.2, sec.2.1, thm.2.13(i) *)
 Lemma mutual_independence_fset {I0 : choiceType} (I : {fset I0})
     (F : I0 -> set_system T) :
-  (forall i, i \in I -> F i `<=` measurable /\ (F i) [set: T]) ->
+  (forall i, i \in I -> (F i) [set: T]) ->
   mutual_independence P [set` I] F <->
   forall E, (forall i, i \in I -> E i \in F i) ->
       P (\big[setI/setT]_(j <- I) E j) = \prod_(j <- I) P (E j).
 Proof.
-move=> mF; split=> [indeF E EF|indeF]; first by apply indeF.
-split=> [i /mF[]//|J JI E EF].
+move=> mF; split=> [indeF E EF|indeF]; first exact: indeF.
+move=> J JI E EF.
 pose E' i := if i \in J then E i else [set: T].
 have /indeF : forall i, i \in I -> E' i \in F i.
   move=> i iI; rewrite /E'; case: ifPn => [|iJ]; first exact: EF.
@@ -196,32 +182,23 @@ Lemma mutual_independence_finiteS {I0 : choiceType} (I : set I0)
   (forall J : {fset I0}%fset, [set` J] `<=` I ->
     mutual_independence P [set` J] F).
 Proof.
-split=> [indeF J JI|indeF].
-  split=> [i /JI Ii|K KJ E EF].
-    by apply indeF.
-  by apply indeF => // i /KJ /JI.
-split=> [i Ii|J JI E EF].
-  have : [set` [fset i]%fset] `<=` I.
-    by move=> j; rewrite /= inE => /eqP ->.
-  by move/indeF => [+ _]; apply; rewrite /= inE.
-by have [_] := indeF _ JI; exact.
+split=> [indeF J JI K KJ E EF|indeF].
+  by apply: indeF => // i /KJ /JI.
+by move=> J JI E EF; exact: (indeF _ JI).
 Qed.
 
 (**md see Achim Klenke's Probability Theory, Ch.2, sec.2.1, thm.2.13(iii) *)
 Theorem mutual_independence_finite_g_sigma {I0 : choiceType} (I : set I0)
     (F : I0 -> set_system T) :
+  (forall i, i \in I -> F i `<=` d.-measurable) ->
   (forall i, i \in I -> setI_closed (F i `|` [set set0])) ->
   mutual_independence P I F <-> mutual_independence P I (fun i => <<s F i>>).
 Proof.
-split=> indeF; last first.
-  split=> [i Ii|J JI E EF].
-    case: indeF => /(_ _ Ii) + _.
-    by apply: subset_trans; exact: sub_gen_smallest.
-  apply indeF => // i iJ; rewrite inE.
+move=> mF IF0; split=> indeF; last first.
+  move=> J JI E EF.
+  apply: indeF => // i iJ; rewrite inE.
   by apply: sub_gen_smallest; exact/set_mem/EF.
-split=> [i Ii|K KI E EF].
-  case: indeF => + _ => /(_ _ Ii).
-  by apply: smallest_sub; exact: sigma_algebra_measurable.
+move=> K KI E EF.
 suff: forall J J' : {fset I0}%fset, (J `<=` J')%fset -> [set` J'] `<=` I ->
   forall E, (forall i, i \in J -> E i \in <<s F i >>) ->
             (forall i, i \in [set` J'] `\` [set` J] -> E i \in F i) ->
@@ -241,14 +218,16 @@ have JjJ' : (j |` J `<=` J')%fset by apply: fsubset_trans KJ'; rewrite fsetD1K.
 have JJ' : (J `<=` J')%fset by apply: fsubset_trans JjJ'; exact: fsubsetU1.
 have J'mE i : i \in J' -> d.-measurable (E i).
   move=> iJ'.
-  case: indeF => + _ => /(_ i (J'I _ iJ')) Fim.
   suff: <<s F i>> (E i).
-    by apply: smallest_sub => //; exact: sigma_algebra_measurable.
-  apply/set_mem.
-  have [iK|iK] := boolP (i \in K); first by rewrite EsF.
+    apply: smallest_sub => //.
+      exact: sigma_algebra_measurable.
+    apply: mF.
+    by apply/mem_set/J'I => /=.
+  have [iK|iK] := boolP (i \in K).
+    by apply/set_mem; rewrite EsF.
   have /set_mem : E i \in F i.
     by rewrite EF// !inE/=; split => //; exact/negP.
-  by move/sub_sigma_algebra => /(_ setT)/mem_set.
+  by move/sub_sigma_algebra => /(_ setT).
 have mmu : measurable (\big[setI/[set: T]]_(j0 <- (J' `\ j)%fset) (E j0)).
   rewrite big_seq; apply: bigsetI_measurable => i /[!inE] /andP[_ iJ'].
   exact: J'mE.
@@ -307,9 +286,8 @@ have sFjmunu A : <<s F j >> A -> mu A = nu A.
   apply: (@g_sigma_algebra_finite_measure_unique _ _ _ (F j `|` [set set0])).
   - move=> B /= [|->//].
     move: B.
-    case: indeF => + _.
-    by apply; exact/set_mem.
-  - exact: H.
+    exact: mF.
+  - exact: IF0.
   - rewrite /mu/= /mrestr/= nuEj setTI probability_setT mul1e.
     apply: (ih _ JK _ JJ'j J'jI).
     + move=> i iJ.
@@ -398,9 +376,7 @@ Lemma mutual_independence_bigcup (K0 I0 : pointedType) (K : {fset K0})
   mutual_independence P [set` K] (fun k => \bigcup_(i in I_ k) F i).
 Proof.
 move=> KI I_I PIF.
-split=> [i Ki A [j ij FjA]|K' K'K E EF].
-  by case: PIF => + _ => /(_ j); apply => //; exact: (I_I _ Ki).
-case: PIF => Fm PIF.
+move=> K' K'K E EF.
 pose f' := f EF.
 pose g' := g K I_.
 pose J' := (\bigcup_(k <- K') [fset f' k])%fset.
@@ -478,9 +454,8 @@ Variable P : probability T R.
 Lemma independent_RVsD1 (I : {fset nat}) i0 (X : {RV P >-> T'}^nat) :
   independent_RVs P [set` I] X -> independent_RVs P [set` (I `\ i0)%fset] X.
 Proof.
-move=> PIX; split => [/= i|/= J JIi0 E EK].
-  by rewrite !inE => /andP[ii0 iI]; exact: PIX.1.
-by apply: PIX.2 => //= x /JIi0 /=; rewrite !inE => /andP[].
+move=> PIX; move=> /= J JIi0 E EK.
+by apply: PIX => //= x /JIi0 /=; rewrite !inE => /andP[].
 Qed.
 
 End independent_RVs_properties.
@@ -518,11 +493,14 @@ rewrite /independent_RVs.
 suff: mutual_independence P I
     (fun i => <<s preimage_set_system setT (X i) (F i) >>).
   exact: eq_mutual_independence.
-apply: (mutual_independence_finite_g_sigma _ _).1.
-- by move=> i Ii; apply: setI_closed_set0; exact/closed_preimage/set_mem.
-- split => [i Ii A [A' mA'] <-{A}|J JI E EF].
-    by apply/measurable_funP => //; apply: FA => //; exact/mem_set.
-  by apply indeX1.
+apply: (mutual_independence_finite_g_sigma _ _ _).1 indeX1.
+- move=> i iI. (* TODO: lemma *)
+  move=> A [B FiB <-].
+  rewrite setTI.
+  apply: measurable_funPTI.
+  by apply: FA FiB.
+- move=> i Ii; apply: setI_closed_set0.
+  exact/closed_preimage/set_mem.
 Qed.
 
 End independent_generators.
@@ -562,12 +540,12 @@ Local Open Scope ring_scope.
 Lemma independent_RVs2_comp (X Y : {RV P >-> R}) (f g : {mfun R >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P (f \o X) (g \o Y).
 Proof.
-move=> indeXY; split => /=.
-- move=> [] _ /= A.
+move=> indeXY.
+(*- move=> [] _ /= A.
   + by rewrite /g_sigma_algebra_preimage/= /preimage_set_system/= => -[B mB <-];
       exact/measurableT_comp.
   + by rewrite /g_sigma_algebra_preimage/= /preimage_set_system/= => -[B mB <-];
-      exact/measurableT_comp.
+      exact/measurableT_comp.*)
 - move=> J _ E JE.
   apply indeXY => //= i iJ; have := JE _ iJ.
   by move: i {iJ} =>[|]//=; rewrite !inE => Eg;
@@ -577,9 +555,9 @@ Qed.
 Lemma independent_RVs2_funrposneg (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P X^\+ Y^\-.
 Proof.
-move=> indeXY; split=> [[|]/= _|J J2 E JE].
-- exact: g_sigma_algebra_preimage_funrneg.
-- exact: g_sigma_algebra_preimage_funrpos.
+move=> indeXY; move=> J J2 E JE.
+(*- exact: g_sigma_algebra_preimage_funrneg.*)
+(*- exact: g_sigma_algebra_preimage_funrpos.*)
 - apply indeXY => //= i iJ; have := JE _ iJ.
   move/J2 : iJ; move: i => [|]// _; rewrite !inE.
   + apply: (g_sigma_algebra_preimage_comp (fun x => maxr (- x) 0)%R).
@@ -591,9 +569,7 @@ Qed.
 Lemma independent_RVs2_funrnegpos (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P X^\- Y^\+.
 Proof.
-move=> indeXY; split=> [/= [|]// _ |J J2 E JE].
-- exact: g_sigma_algebra_preimage_funrpos.
-- exact: g_sigma_algebra_preimage_funrneg.
+move=> indeXY; move=> J J2 E JE.
 - apply indeXY => //= i iJ; have := JE _ iJ.
   move/J2 : iJ; move: i => [|]// _; rewrite !inE.
   + apply: (g_sigma_algebra_preimage_comp (fun x => maxr x 0)%R).
@@ -605,9 +581,7 @@ Qed.
 Lemma independent_RVs2_funrnegneg (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P X^\- Y^\-.
 Proof.
-move=> indeXY; split=> [/= [|]// _ |J J2 E JE].
-- exact: g_sigma_algebra_preimage_funrneg.
-- exact: g_sigma_algebra_preimage_funrneg.
+move=> indeXY; move=> J J2 E JE.
 - apply indeXY => //= i iJ; have := JE _ iJ.
   move/J2 : iJ; move: i => [|]// _; rewrite !inE.
   + apply: (g_sigma_algebra_preimage_comp (fun x => maxr (- x) 0)%R).
@@ -619,9 +593,7 @@ Qed.
 Lemma independent_RVs2_funrpospos (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P X^\+ Y^\+.
 Proof.
-move=> indeXY; split=> [/= [|]//= _ |J J2 E JE].
-- exact: g_sigma_algebra_preimage_funrpos.
-- exact: g_sigma_algebra_preimage_funrpos.
+move=> indeXY; move=> J J2 E JE.
 - apply indeXY => //= i iJ; have := JE _ iJ.
   move/J2 : iJ; move: i => [|]// _; rewrite !inE.
   + apply: (g_sigma_algebra_preimage_comp (fun x => maxr x 0)%R).
@@ -665,7 +637,7 @@ Lemma independent_RVs2_setI_preimage (X Y : {mfun T >-> R}) (A1 A2 : set R) :
   P (X @^-1` A1 `&` Y @^-1` A2) = P (X @^-1` A1) * P (Y @^-1` A2).
 Proof.
 move=> mA1 mA2.
-rewrite /independent_RVs2 /independent_RVs /mutual_independence /= => -[_].
+rewrite /independent_RVs2 /independent_RVs /mutual_independence /=.
 move/(_ [fset false; true]%fset (@subsetT _ _)
   (fun b => if b then Y @^-1` A2 else X @^-1` A1)).
 rewrite !big_fsetU1 ?inE//= !big_seq_fset1/=.
@@ -876,7 +848,7 @@ suff : P (\big[setI/setT]_(j <- [fset false; true]%fset)
       P ([eta fun=> set0 with 0%N |-> X_ n @^-1` [set x],
                             1%N |-> Y_ n @^-1` [set y]] j).
   by rewrite !big_fsetU1/= ?inE//= !big_seq_fset1/=.
-move: indeXY => [/= _]; apply => // i.
+move: indeXY; apply => // i.
 pose AX := dyadic_approx setT (EFin \o X).
 pose AY := dyadic_approx setT (EFin \o Y).
 pose BX := integer_approx setT (EFin \o X).
