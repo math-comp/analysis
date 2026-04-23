@@ -12,6 +12,5 @@
 constructive_ereal.v
 reals.v
 real_interval.v
-signed.v
 prodnormedzmodule.v
 all_reals.v

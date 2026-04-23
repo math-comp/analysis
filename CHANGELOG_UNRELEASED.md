@@ -123,6 +123,8 @@
 
 ### Removed
 
+- file `signed.v`
+
 - in `measurable_structure.v`:
   + lemmas `measurable_prod_g_measurableType`, `measurable_prod_g_measurableTypeR`
 
