@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.topology_theory.supremum_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 28faf88" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 26cf7ba" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -205,7 +205,6 @@
 <li><a href="mathcomp.reals.prodnormedzmodule.html">prodnormedzmodule</a></li>
 <li><a href="mathcomp.reals.real_interval.html">real_interval</a></li>
 <li><a href="mathcomp.reals.reals.html">reals</a></li>
-<li><a href="mathcomp.reals.signed.html">signed</a></li>
           </ul>
           </details>
           </li>
@@ -318,6 +317,17 @@ Expands to: Constant
             mathcomp.analysis.topology_theory.supremum_topology.sup_topology
 Declared in
 library mathcomp.analysis.topology_theory.supremum_topology, line 25, characters 11-23
+sup_subbase :
+forall [T : choiceType] [I : Type],
+(I -> Topological.axioms_ T) -> set (set T)
+
+sup_subbase is not universe polymorphic
+Arguments sup_subbase [T] [I]%_type_scope Tc%_function_scope _
+sup_subbase is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.supremum_topology.sup_subbase
+Declared in
+library mathcomp.analysis.topology_theory.supremum_topology, line 34, characters 11-22
 </p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set_system">set_system</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_uniform.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_uniform.T">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#filter_from">filter_from</a></span> (<span class="id"><a href="mathcomp.classical.filter.html#finI_from">finI_from</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_uniform.IEnt">IEnt</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="p:28" class="id"><a name="p:28" class="">p</a></span><span class="id"> =&gt;</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#projT1">projT1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#p:28">p</a></span>).<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span>))<span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#id">id</a></span>.<br/>
 <br/>

@@ -101,8 +101,6 @@ subgraph cluster_reals { "reals/real_interval"[label="real_interval",URL="mathco
   "classical/unstable" -> "reals/real_interval";
   "reals/constructive_ereal" -> "reals/real_interval";
   "reals/reals" -> "reals/real_interval";
-subgraph cluster_reals { "reals/signed"[label="signed",URL="mathcomp.reals.signed.html",fillcolor=2,fontcolor=white]}  "classical/mathcomp_extra" -> "reals/signed";
-  "classical/unstable" -> "reals/signed";
 subgraph cluster_reals { "reals/prodnormedzmodule"[label="prodnormedzmodule",URL="mathcomp.reals.prodnormedzmodule.html",fillcolor=2,fontcolor=white]}  "classical/all_classical" -> "reals/prodnormedzmodule";
   "classical/all_ssreflect_compat" -> "reals/prodnormedzmodule";
 subgraph cluster_reals { "reals/all_reals"[label="all_reals",URL="mathcomp.reals.all_reals.html",fillcolor=2,fontcolor=white]}  "reals/constructive_ereal" -> "reals/all_reals";

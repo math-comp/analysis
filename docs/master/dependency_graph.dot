@@ -158,10 +158,6 @@ digraph depend {
 			fillcolor=2,
 			fontcolor=white,
 			label=real_interval];
-		"reals/signed"	[URL="mathcomp.reals.signed.html",
-			fillcolor=2,
-			fontcolor=white,
-			label=signed];
 		"reals/prodnormedzmodule"	[URL="mathcomp.reals.prodnormedzmodule.html",
 			fillcolor=2,
 			fontcolor=white,
@@ -462,7 +458,6 @@ digraph depend {
 	"classical/functions" -> "classical/set_interval";
 	"classical/mathcomp_extra" -> "classical/boolp";
 	"classical/mathcomp_extra" -> "reals/constructive_ereal";
-	"classical/mathcomp_extra" -> "reals/signed";
 	"classical/set_interval" -> "classical/classical_orders";
 	"classical/set_interval" -> "classical/filter";
 	"classical/set_interval" -> "reals/reals";
@@ -472,7 +467,6 @@ digraph depend {
 	"classical/all_ssreflect_compat" -> "experimental_reals/xfinmap";
 	"classical/wochoice" -> "classical/classical_sets";
 	"classical/unstable" -> "classical/functions";
-	"classical/unstable" -> "reals/signed";
 	"reals/constructive_ereal" -> "reals/real_interval";
 	"reals/constructive_ereal" -> "experimental_reals/realseq";
 	"reals/constructive_ereal" -> "reals_stdlib/nsatz_realtype";
