@@ -77,6 +77,9 @@ digraph depend {
 		"theories/gauss_integral"	[URL="mathcomp.analysis.gauss_integral.html",
 			fillcolor=5,
 			label=gauss_integral];
+		"theories/independence"	[URL="mathcomp.analysis.independence.html",
+			fillcolor=5,
+			label=independence];
 		"theories/pi_irrational"	[URL="mathcomp.analysis.pi_irrational.html",
 			fillcolor=5,
 			label=pi_irrational];
@@ -611,6 +614,7 @@ digraph depend {
 	"theories/probability_theory/exponential_distribution" -> "theories/probability_theory/probability";
 	"theories/probability_theory/poisson_distribution" -> "theories/probability_theory/probability";
 	"theories/probability_theory/beta_distribution" -> "theories/probability_theory/probability";
+	"theories/probability_theory/probability" -> "theories/independence";
 	"theories/probability_theory/probability" -> "theories/all_analysis";
 	"theories/pi_irrational" -> "theories/all_analysis";
 	"analysis_stdlib/Rstruct_topology" -> "analysis_stdlib/showcase/uniform_bigO";
