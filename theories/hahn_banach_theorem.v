@@ -226,9 +226,9 @@ move=> /= x A nxA.
 pose t:= nxA.
 move: t => -[] /= /= b; rewrite /wopen => -[] /= [] c openc cA bx bA. 
 have H: nbhs (val x) (val @` A). rewrite nbhsE /=.
-exists (val @` b); last by move => z //= [] z0 bz valz; exists z0; first by apply: bA.
-split => //=; last by exists x.
-Print wopen.  admit. (*maybe ?*)
+exists (val @` (b: set topU)); last by move => z //= [] z0 bz valz; exists z0; first by apply: bA.
+split => //=; last by exists x. have ob: open (b : set topU). (*should be true as val_continuous*)  admit.
+Fail apply: (@initial_subspace_open V ( (initial_topology \val)) (\val)  b ob). (*why ??*)  admit.              
 move: (genB (\val x) _ H).
 rewrite /filter_from /=.
 move => [] d [] Bd dx dC /=.
