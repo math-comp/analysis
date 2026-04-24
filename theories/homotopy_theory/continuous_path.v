@@ -116,7 +116,7 @@ Definition reparameterize := f \o phi.
 #[local] Lemma fphi_zero : reparameterize zero = x.
 Proof. by rewrite /reparameterize /= ?path_zero. Qed.
 
-#[loca] Lemma fphi_one : reparameterize one = y.
+#[local] Lemma fphi_one : reparameterize one = y.
 Proof. by rewrite /reparameterize /= ?path_one. Qed.
 
 #[local] Lemma fphi_cts : continuous reparameterize.
