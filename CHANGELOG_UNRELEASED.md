@@ -78,6 +78,8 @@
 
 - in `measure_extension.v`:
   + definition `caratheodory_measure`
+- in `measurable_structure.v`:
+  + structure `PMeasurable`, notation `pmeasurableType`
 
 ### Changed
 
@@ -162,6 +164,29 @@
 
 - in `measurable_structure.v`:
   + lemma `sigma_algebra_measurable` (not specialized to `setT` anymore)
+
+- in `measurable_function.v`:
+  + lemma `preimage_set_system_measurable_fun`
+
+- in `measurable_structure.v`
+  + structure `SemiRingOfSets`, mixin `isSigmaRing`, factories `isRingOfSets`,
+    `isRingOfSets_setY`, `isAlgebraOfSets`, `isAlgebraOfSets_setD`, `isMeasurable`
+    are not required to be pointed anymore
+  + lemmas `measurable_g_measurableTypeE`, `g_sigma_algebra_preimageType`,
+    `g_sigma_algebra_preimage`, `g_sigma_preimageE`, `g_sigma_preimageE`,
+    `g_sigma_algebra_rectangle` are  generalized from `pointedType` to `choiceType`
+    (the list might not be exhaustive)
+
+- in `ereal.v`:
+  + lemma `funID` generalized from `pointedType` to `Type`
+
+- in `numfun.v`:
+  + lemma `indic_restrict` generalized from `pointedType` to `Type`
+  + factory `FiniteDecomp` generalized from `pointedType`/`nzRingType` to
+    `Type/pzRingType`
+
+- in `simple_functions.v`:
+  + lemmas `fctD`, `fctN`, `fctM`, `fctZ`
 
 ### Deprecated
 

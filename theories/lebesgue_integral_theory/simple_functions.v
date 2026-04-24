@@ -29,6 +29,7 @@ From mathcomp Require Import lebesgue_measure numfun realfun measurable_realfun.
 (* Detailed contents:                                                         *)
 (* ````                                                                       *)
 (*         {sfun T >-> R} == type of simple functions                         *)
+(*                           They form a (potentially zero) ring.             *)
 (*       {nnsfun T >-> R} == type of non-negative simple functions            *)
 (*          indic_sfun mD := mindic _ mD                                      *)
 (*             cst_sfun r == constant simple function                         *)
