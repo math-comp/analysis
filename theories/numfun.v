@@ -1117,7 +1117,7 @@ Proof.
 by exists 1; split => // r r1 t At/=; rewrite indicE mem_set//= normr1 ltW.
 Qed.
 
-Lemma indic_restrict {T : pointedType} {R : numFieldType} (A : set T) :
+Lemma indic_restrict {T : Type} {R : numFieldType} (A : set T) :
   \1_A = (1 : T -> R) \_ A.
 Proof. by apply/funext => x; rewrite indicE /patch; case: ifP. Qed.
 
@@ -1144,9 +1144,14 @@ rewrite -ltrBrDr distrC (lt_le_trans h)//.
 by rewrite ler_pdivrMr//= ler_pMr// ?subr_gt0// ler1n.
 Unshelve. all: by end_near. Qed.
 
+(* NB: should appear in MathComp 2.6.0 (PR #1586) *)
+Notation "[ 'SubZmodule_isSubPzRing' 'of' U 'by' <: ]" :=
+  (GRing.SubZmodule_isSubPzRing.Build _ _ U (subringClosedP _))
+  (format "[ 'SubZmodule_isSubPzRing'  'of'  U  'by'  <: ]")
+  : form_scope.
+
 Section ring.
-(* TODO: generalize to the potentially-zero case? *)
-Context (aT : pointedType) (rT : nzRingType).
+Context (aT : Type) (rT : pzRingType).
 
 Lemma fimfun_mulr_closed : mulr_closed (@fimfun aT rT).
 Proof.
@@ -1156,7 +1161,7 @@ Qed.
 
 HB.instance Definition _ :=
    @GRing.isMulClosed.Build _ (@fimfun aT rT) fimfun_mulr_closed.
-HB.instance Definition _ := [SubZmodule_isSubNzRing of {fimfun aT >-> rT} by <:].
+HB.instance Definition _ := [SubZmodule_isSubPzRing of {fimfun aT >-> rT} by <:].
 
 Implicit Types f g : {fimfun aT >-> rT}.
 
@@ -1190,16 +1195,23 @@ Definition scale_fimfun k f : {fimfun aT >-> rT} := k \o* f.
 End ring.
 Arguments indic_fimfun {aT rT} _.
 
+(* NB: this notation will be taken by MathComp 2.6.0,
+   will become [SubSemiRing_isSubComSemiRing of U by <: ] but might require more  *)
+Notation "[ 'SubPzRing_isSubComPzRing' 'of' U 'by' <: ]" :=
+  (GRing.SubPzRing_isSubComPzRing.Build _ _ U)
+  (format "[ 'SubPzRing_isSubComPzRing'  'of'  U  'by'  <: ]")
+  : form_scope.
+
 Section comring.
-Context (aT : pointedType) (rT : comNzRingType).
+Context (aT : Type) (rT : comPzRingType).
 HB.instance Definition _ :=
-  [SubNzRing_isSubComNzRing of {fimfun aT >-> rT} by <:].
+  [SubPzRing_isSubComPzRing of {fimfun aT >-> rT} by <:].
 
 Implicit Types (f g : {fimfun aT >-> rT}).
 HB.instance Definition _ f g := FImFun.copy (f \* g) (f * g).
 End comring.
 
-HB.factory Record FiniteDecomp (T : pointedType) (R : nzRingType) (f : T -> R) :=
+HB.factory Record FiniteDecomp (T : Type) (R : pzRingType) (f : T -> R) :=
   { fimfunE : exists (r : seq R) (A_ : R -> set T),
       forall x, f x = \sum_(y <- r) (y * \1_(A_ y) x) }.
 HB.builders Context T R f & @FiniteDecomp T R f.

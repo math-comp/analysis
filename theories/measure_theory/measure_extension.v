@@ -407,9 +407,9 @@ Proof. exact. Qed.
 Notation "mu .-cara" := (caratheodory_display mu) : measure_display_scope.
 
 Section caratheodory_sigma_algebra.
-Variables (R : realType) (T : pointedType) (mu : {outer_measure set T -> \bar R}).
+Variables (R : realType) (T : choiceType) (mu : {outer_measure set T -> \bar R}).
 
-HB.instance Definition _ := Pointed.on (caratheodory_type mu).
+HB.instance Definition _ := Choice.on (caratheodory_type mu).
 HB.instance Definition _ := @isMeasurable.Build (caratheodory_display mu)
   (caratheodory_type mu) mu.-caratheodory
     (caratheodory_measurable_set0 mu)
@@ -425,7 +425,7 @@ Arguments caratheodory_measure {R T} mu.
 
 Section caratheodory_measure.
 Local Open Scope ereal_scope.
-Variables (R : realType) (T : pointedType).
+Variables (R : realType) (T : choiceType).
 Variable mu : {outer_measure set T -> \bar R}.
 
 Let caratheodory_measure0 : caratheodory_measure mu set0 = 0.

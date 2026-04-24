@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat all_algebra.
 From mathcomp Require Import boolp classical_sets functions cardinality reals.
@@ -189,7 +189,7 @@ apply/funext => x; rewrite /mnormalize/= probability_setT.
 by rewrite onee_eq0/= invr1 mule1.
 Qed.
 
-HB.instance Definition _ d (T : measurableType d) (R : realType) :=
+HB.instance Definition _ d (T : pmeasurableType d) (R : realType) :=
   isPointed.Build (probability T R) (dirac point).
 
 Section dist_sigma_algebra_instance.

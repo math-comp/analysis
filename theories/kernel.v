@@ -195,8 +195,10 @@ Lemma measure_fam_uubP : measure_fam_uub <->
   exists r : {posnum R}, forall x, k x [set: Y] < r%:num%:E.
 Proof.
 split => [|] [r kr]; last by exists r%:num.
-suff r_gt0 : (0 < r)%R by exists (PosNum r_gt0).
-by rewrite -lte_fin; exact: le_lt_trans (kr point).
+have [[point _]|/forallNP empty] := pselect (exists r : X, True).
+  suff r_gt0 : (0 < r)%R by exists (PosNum r_gt0).
+  rewrite -lte_fin; exact: le_lt_trans (kr point).
+by exists (PosNum ltr01) => x; have := empty x.
 Qed.
 
 End measure_fam_uub.
@@ -925,7 +927,7 @@ HB.instance Definition _ (P : probability Y R):=
 End knormalize.
 
 Lemma measurable_fun_mnormalize d d' (X : measurableType d)
-    (Y : measurableType d') (R : realType) (k : R.-ker X ~> Y) :
+    (Y : pmeasurableType d') (R : realType) (k : R.-ker X ~> Y) :
   measurable_fun [set: X] (fun x => mnormalize (k x) point : pprobability Y R).
 Proof.
 apply: (measurability (@pset _ _ _ : set (set (pprobability Y R)))) => //.
@@ -1123,9 +1125,11 @@ HB.instance Definition _ n := @isMeasurableFun.Build _ _ _ _ _ (mk_2 n).
 
 Let fk_2 n : finite_set (range (k_2 n)).
 Proof.
-have := fimfunP (k_ n).
-suff : range (k_ n) = range (k_2 n) by move=> <-.
-by apply/seteqP; split => r [y ?] <-; [exists (point, y)|exists y.2].
+have [[point _]|/forallNP empty] := pselect (exists point : X, True).
+  have := fimfunP (k_ n).
+  suff : range (k_ n) = range (k_2 n) by move=> <-.
+  by apply/seteqP; split => r [y ?] <-; [exists (point, y)|exists y.2].
+by rewrite (_ : range _ = set0)// -subset0 => r [[x]]; have := empty x.
 Qed.
 
 HB.instance Definition _ n := @FiniteImage.Build _ _ _ (fk_2 n).

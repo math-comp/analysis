@@ -353,7 +353,7 @@ End DualAddTheory.
 
 HB.instance Definition _ (R : numDomainType) := isPointed.Build (\bar R) 0%E.
 
-Lemma funID {aT : pointedType} (D : set aT) {R : numDomainType}
+Lemma funID {aT : Type} (D : set aT) {R : numDomainType}
   (f : aT -> \bar R) : f = (f \_ (~` D)) \+ (f \_ D).
 Proof.
 by apply/funext => x; rewrite !patchE in_setC; case: ifPn => [xD|/negPn ->];

@@ -1071,6 +1071,12 @@ HB.instance Definition _ :=
 
 End mfun_realType.
 
+(* NB: should appear in MathComp 2.6.0 (PR #1586) *)
+Notation "[ 'SubChoice_isSubComPzRing' 'of' U 'by' <: ]" :=
+  (GRing.SubChoice_isSubComPzRing.Build _ _ U (subringClosedP _))
+  (format "[ 'SubChoice_isSubComPzRing'  'of'  U  'by'  <: ]")
+  : form_scope.
+
 Section ring.
 Context d (aT : measurableType d) (rT : realType).
 
@@ -1083,7 +1089,8 @@ split=> [|f g|f g]; rewrite !inE/=.
 Qed.
 HB.instance Definition _ := GRing.isSubringClosed.Build _
   (@mfun d default_measure_display aT rT) mfun_subring_closed.
-HB.instance Definition _ := [SubChoice_isSubComNzRing of {mfun aT >-> rT} by <:].
+
+HB.instance Definition _ := [SubChoice_isSubComPzRing of {mfun aT >-> rT} by <:].
 
 Implicit Types (f g : {mfun aT >-> rT}).
 

@@ -35,6 +35,8 @@ From mathcomp Require Import ereal topology normedtype sequences.
 (*                            The HB class is AlgebraOfsets.                  *)
 (*          measurableType == the type of sigma-algebras                      *)
 (*                            The HB class is Measurable.                     *)
+(*         pmeasurableType == the type of pointed sigma-algebras              *)
+(*                            The HB class is PMeasurable.                    *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## Instances of mathematical structures                                    *)
@@ -856,7 +858,7 @@ HB.mixin Record isSemiRingOfSets (d : measure_display) T := {
 
 #[short(type="semiRingOfSetsType")]
 HB.structure Definition SemiRingOfSets d :=
-  {T of Pointed T & isSemiRingOfSets d T}.
+  {T of Choice T & isSemiRingOfSets d T}.
 
 Arguments measurable {d}%_measure_display_scope {s} _%_classical_set_scope.
 
@@ -906,7 +908,7 @@ HB.end.
 HB.structure Definition SigmaRing d :=
   {T of SemiRingOfSets d T & hasMeasurableCountableUnion d T}.
 
-HB.factory Record isSigmaRing (d : measure_display) T & Pointed T := {
+HB.factory Record isSigmaRing (d : measure_display) T & Choice T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableD : setD_closed measurable ;
@@ -934,7 +936,10 @@ HB.end.
 HB.structure Definition Measurable d :=
   {T of AlgebraOfSets d T & hasMeasurableCountableUnion d T }.
 
-HB.factory Record isRingOfSets (d : measure_display) T & Pointed T := {
+#[short(type="pmeasurableType")]
+HB.structure Definition PMeasurable d := {T of Pointed T & Measurable d T}.
+
+HB.factory Record isRingOfSets (d : measure_display) T & Choice T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableU : setU_closed measurable;
@@ -958,7 +963,7 @@ HB.instance Definition _ := SemiRingOfSets_isRingOfSets.Build d T measurableU.
 HB.end.
 
 HB.factory Record isRingOfSets_setY (d : measure_display) T
-    & Pointed T := {
+    & Choice T := {
   measurable : set (set T) ;
   measurable_nonempty : measurable !=set0 ;
   measurable_setY : setY_closed measurable ;
@@ -989,7 +994,7 @@ HB.instance Definition _ := isRingOfSets.Build d T m0 mU mD.
 
 HB.end.
 
-HB.factory Record isAlgebraOfSets (d : measure_display) T & Pointed T := {
+HB.factory Record isAlgebraOfSets (d : measure_display) T & Choice T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableU : setU_closed measurable;
@@ -1014,7 +1019,7 @@ HB.instance Definition _ := RingOfSets_isAlgebraOfSets.Build d T measurableT.
 
 HB.end.
 
-HB.factory Record isAlgebraOfSets_setD (d : measure_display) T & Pointed T := {
+HB.factory Record isAlgebraOfSets_setD (d : measure_display) T & Choice T := {
   measurable : set (set T) ;
   measurableT : measurable [set: T] ;
   measurableD : setD_closed measurable
@@ -1038,7 +1043,7 @@ HB.instance Definition _ := RingOfSets_isAlgebraOfSets.Build d T measurableT.
 
 HB.end.
 
-HB.factory Record isMeasurable (d : measure_display) T & Pointed T := {
+HB.factory Record isMeasurable (d : measure_display) T & Choice T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableC : forall A, measurable A -> measurable (~` A) ;
@@ -1282,12 +1287,12 @@ Proof. exact. Qed.
 Definition g_sigma_algebraType {T} (G : set (set T)) := T.
 
 Section g_salgebra_instance.
-Variables (T : pointedType) (G : set (set T)).
+Variables (T : choiceType) (G : set (set T)).
 
 Lemma sigma_algebraC (A : set T) : <<s G >> A -> <<s G >> (~` A).
 Proof. by move=> sGA; rewrite -setTD; exact: sigma_algebraCD. Qed.
 
-HB.instance Definition _ := Pointed.on (g_sigma_algebraType G).
+HB.instance Definition _ := Choice.on (g_sigma_algebraType G).
 HB.instance Definition _ := @isMeasurable.Build (sigma_display G)
   (g_sigma_algebraType G)
   <<s G >> (@sigma_algebra0 _ setT G) (@sigma_algebraC)
@@ -1299,7 +1304,7 @@ Notation "G .-sigma" := (sigma_display G) : measure_display_scope.
 Notation "G .-sigma.-measurable" :=
   (measurable : set (set (g_sigma_algebraType G))) : classical_set_scope.
 
-Lemma measurable_g_measurableTypeE (T : pointedType) (G : set (set T)) :
+Lemma measurable_g_measurableTypeE (T : choiceType) (G : set (set T)) :
   sigma_algebra setT G -> G.-sigma.-measurable = G.
 Proof. exact: sigma_algebra_id. Qed.
 
@@ -1326,15 +1331,15 @@ Qed.
 Definition preimage_display {T T'} : (T -> T') -> measure_display.
 Proof. exact. Qed.
 
-Definition g_sigma_algebra_preimageType d' (T : pointedType)
+Definition g_sigma_algebra_preimageType d' (T : choiceType)
   (T' : measurableType d') (f : T -> T') : Type := T.
 
-Definition g_sigma_algebra_preimage d' (T : pointedType)
+Definition g_sigma_algebra_preimage d' (T : choiceType)
     (T' : measurableType d') (f : T -> T') :=
   preimage_set_system setT f (@measurable _ T').
 
 Section preimage_generated_sigma_algebra.
-Context {d'} (T : pointedType) (T' : measurableType d').
+Context {d'} (T : choiceType) (T' : measurableType d').
 Variable f : T -> T'.
 
 Let preimage_set0 : g_sigma_algebra_preimage f set0.
@@ -1363,7 +1368,7 @@ rewrite setTI /g preimage_bigcup; apply: eq_bigcupr => k _.
 by case: (mg k) => _; rewrite setTI.
 Qed.
 
-HB.instance Definition _ := Pointed.on (g_sigma_algebra_preimageType f).
+HB.instance Definition _ := Choice.on (g_sigma_algebra_preimageType f).
 
 HB.instance Definition _ := @isMeasurable.Build (preimage_display f)
   (g_sigma_algebra_preimageType f) (g_sigma_algebra_preimage f)
@@ -1393,7 +1398,7 @@ move=> [G0 GC GU]; split; rewrite /image_set_system.
 - by move=> F /= mF; rewrite preimage_bigcup setI_bigcupr; exact: GU.
 Qed.
 
-Lemma g_sigma_preimageE aT (rT : pointedType) (D : set aT)
+Lemma g_sigma_preimageE aT (rT : choiceType) (D : set aT)
     (f : aT -> rT) (G' : set (set rT)) :
   <<s D, preimage_set_system D f G' >> =
     preimage_set_system D f (G'.-sigma.-measurable).
@@ -1539,7 +1544,7 @@ move=> sA sB; split=> [AB|AB]; last by rewrite AB.
 by apply/seteqP; split; exact/AB.
 Qed.
 
-Lemma g_sigma_algebra_cross {T1 T2 : pointedType} (X : set_system T1)
+Lemma g_sigma_algebra_cross {T1 T2 : choiceType} (X : set_system T1)
     (Y : set_system T2) :
   <<s X `x` <<s Y >> >> = <<s X `x` Y >>.
 Proof.
@@ -1562,7 +1567,7 @@ Notation preimage_classes := g_sigma_preimageU (only parsing).
 
 Section product_lemma.
 Context d1 d2 (T1 : semiRingOfSetsType d1) (T2 : semiRingOfSetsType d2).
-Variables (T : pointedType) (f1 : T -> T1) (f2 : T -> T2).
+Variables (T : choiceType) (f1 : T -> T1) (f2 : T -> T2).
 Variables (T3 : Type) (g : T3 -> T).
 
 Lemma g_sigma_preimageU_comp : g_sigma_preimageU (f1 \o g) (f2 \o g) =
@@ -1604,7 +1609,7 @@ Let prod_salgebra_bigcup (F : _^nat) :
   g_sigma_preimageU f1 f2 (\bigcup_i (F i)).
 Proof. exact: sigma_algebra_bigcup. Qed.
 
-HB.instance Definition _ := Pointed.on (T1 * T2)%type.
+HB.instance Definition _ := Choice.on (T1 * T2)%type.
 HB.instance Definition prod_salgebra_mixin :=
   @isMeasurable.Build (measure_prod_display (d1, d2))
     (T1 * T2)%type (g_sigma_preimageU f1 f2)
@@ -1626,7 +1631,7 @@ rewrite -(setIT A) -(setTI B) setXI setXT setTX; apply: measurableI.
 - by apply: sub_sigma_algebra; right; exists B => //; rewrite setTI.
 Qed.
 
-Lemma g_sigma_algebra_rectangle {T1 T2 : pointedType} (X : set_system T1)
+Lemma g_sigma_algebra_rectangle {T1 T2 : choiceType} (X : set_system T1)
     (Y : set_system T2) : X [set: T1] -> Y [set: T2] ->
   <<s rectangle X Y >> = <<s X `x` Y >>.
 Proof.
@@ -1657,7 +1662,7 @@ End product_salgebra_algebraOfSetsType.
 Notation measurable_prod_measurableType := prod_measurable_rectangle (only parsing).
 
 Section product_salgebra_g_measurableTypeR.
-Context d1 (T1 : algebraOfSetsType d1) (T2 : pointedType) (C2 : set (set T2)).
+Context d1 (T1 : algebraOfSetsType d1) (T2 : choiceType) (C2 : set (set T2)).
 Hypothesis setTC2 : setT `<=` C2.
 
 #[deprecated(since="mathcomp-analysis 1.17.0")]
@@ -1674,7 +1679,7 @@ Qed.
 End product_salgebra_g_measurableTypeR.
 
 Section product_salgebra_g_measurableType.
-Variables (T1 T2 : pointedType) (C1 : set (set T1)) (C2 : set (set T2)).
+Variables (T1 T2 : choiceType) (C1 : set (set T1)) (C2 : set (set T2)).
 Hypotheses (setTC1 : setT `<=` C1) (setTC2 : setT `<=` C2).
 
 #[deprecated(since="mathcomp-analysis 1.17.0")]
@@ -1695,7 +1700,7 @@ Definition g_sigma_preimage d (rT : semiRingOfSetsType d) (aT : Type)
   <<s \big[setU/set0]_(i < n) preimage_set_system setT (f i) measurable >>.
 
 Lemma g_sigma_preimage_comp d1 {T1 : semiRingOfSetsType d1} n
-    {T : pointedType} (f : 'I_n -> T -> T1) {T2 : Type} (g : T2 -> T) :
+    {T : choiceType} (f : 'I_n -> T -> T1) {T2 : Type} (g : T2 -> T) :
   g_sigma_preimage (fun i => f i \o g) =
   preimage_set_system [set: T2] g (g_sigma_preimage f).
 Proof.

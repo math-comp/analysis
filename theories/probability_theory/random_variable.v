@@ -1160,7 +1160,7 @@ Notation "{ 'dRV' P >-> T }" :=
   (@discrete_random_variable _ _ _ T _ P) : form_scope.
 
 Section dRV_definitions.
-Context {d} {d'} {T : measurableType d} {T' : measurableType d'} {R : realType}
+Context {d} {d'} {T : pmeasurableType d} {T' : pmeasurableType d'} {R : realType}
   (P : probability T R).
 
 Lemma dRV_dom_enum (X : {dRV P >-> T'}) :
@@ -1183,7 +1183,7 @@ End dRV_definitions.
 
 Section distribution_dRV.
 Local Open Scope ereal_scope.
-Context d d' (T : measurableType d) (T' : measurableType d') (R : realType)
+Context d d' (T : pmeasurableType d) (T' : pmeasurableType d') (R : realType)
   (P : probability T R).
 Variable X : {dRV P >-> T'}.
 
@@ -1242,7 +1242,7 @@ End distribution_dRV.
 
 Section discrete_distribution.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType) (P : probability T R).
+Context d (T : pmeasurableType d) (R : realType) (P : probability T R).
 
 Lemma dRV_expectation (X : {dRV P >-> R}) :
   P.-integrable [set: T] (EFin \o X) ->

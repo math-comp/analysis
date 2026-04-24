@@ -696,7 +696,7 @@ Context d {T : semiRingOfSetsType d}.
 
 Notation rT := (type T).
 #[export]
-HB.instance Definition _ := Pointed.on rT.
+HB.instance Definition _ := Choice.on rT.
 #[export]
 HB.instance Definition _ := isRingOfSets.Build (display d) rT
   (@setring0 T measurable) (@setringU T measurable) (@setringD T measurable).
