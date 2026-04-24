@@ -207,7 +207,39 @@ Check (topU : TopologicalLmodule.type R).
       (forall b, b \in B -> convex_set b) & basis B.
 Proof.
 move : (@locally_convex R V) => - [] B convexB [] openB /= genB.
-exists [set a | B(\val @` a)].
+exists  [set a | B(\val @` a)].
+  move=> /= a; rewrite inE /=; rewrite -inE => H /= r s l ra sa.
+  suff :  \val(r <|l|> s) \in \val @` a by rewrite !inE /= => -[] x ax /val_inj <-.
+  have valr : \val r \in \val @` a by rewrite inE => /=; exists r; first by rewrite -inE.
+  have vals : \val s \in \val @` a by rewrite inE => /=; exists s; first by rewrite -inE.
+  move: (convexB (\val @` a) H (\val r) (\val s) l valr vals) => /=.
+  by rewrite !GRing.valD !GRing.valZ //. 
+split.
+  move => A /= H. 
+  have -> : A = \val @^-1`(\val @` A ).
+    apply/seteqP; split => x /=; first by exists x.
+    by move => -[y Ay] /val_inj <-. 
+  apply:  open_comp; first by move => x _ ;apply: continuous_valE.
+  by apply: openB.
+(* the following should be simpler *)   
+move=> /= x A nxA.
+pose t:= nxA.
+move: t => -[] /= /= b; rewrite /wopen => -[] /= [] c openc cA bx bA. 
+have H: nbhs (val x) (val @` A). rewrite nbhsE /=.
+exists (val @` b); last by move => z //= [] z0 bz valz; exists z0; first by apply: bA.
+split => //=; last by exists x.
+Print wopen.  admit. (*maybe ?*)
+move: (genB (\val x) _ H).
+rewrite /filter_from /=.
+move => [] d [] Bd dx dC /=.
+exists  (\val @^-1` d); last by move => y /= Cy; move: (dC (\val y) Cy) => /= [] t + /val_inj <-.  
+split => //=. 
+suff -> : [set \val (x : topU) | x in \val @^-1` d] = d by [].
+rewrite eqEsubset; split => y; first by move=> [z + <-].
+move=> dy /=. 
+by move: (dC y dy) => /= [] t At valt; exists t; rewrite valt.
+
+(*exists [set a | B(\val @` a)].
   move=> /= a; rewrite inE /=; rewrite -inE => H /= r s l ra sa.
   suff :  \val(r <|l|> s) \in \val @` a by rewrite !inE /= => -[] x ax /val_inj <-.
   have valr : \val r \in \val @` a by rewrite inE => /=; exists r; first by rewrite -inE.
@@ -230,7 +262,7 @@ exists  (\val @^-1` c); last by move => y Cy; apply: AA'; rewrite -CA /=; apply:
 split => //=. 
 suff -> : [set \val x | x in \val @^-1` c] = c by [].
 move=> P T /=; rewrite eqEsubset; split => y; first by move=> [z + <-].
-move=> cy /=.
+move=> cy /=.*)
 (*nope*)
 Admitted.
  
