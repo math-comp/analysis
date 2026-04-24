@@ -157,7 +157,7 @@ pose h := fun xy : U * U => (\val xy.1, \val xy.2).
 pose g := fun xy : V * V => xy.1 + xy.2.
 rewrite (_ : _ \o _ = g \o h); last first.
   by apply/funext => i /=; rewrite GRing.valD.
-apply: continuous_comp; last exact: add_continuous.
+apply: continuous_comp; last exact: add_continuous. 
 apply: cvg_pair => //=.
 - apply: (cvg_comp _ _ cvg_fst).
   exact: (continuous_valE (x : topU)).
@@ -190,7 +190,7 @@ pose g := fun xy : R * V => xy.1 *: xy.2.
 rewrite (_ : _ \o _ = g \o h); last by apply/funext=> i /=; rewrite GRing.valZ.
 apply: continuous_comp; last exact: scale_continuous.
   move => /= A [] /= [] a1 a2 [/=].
-  move=> - [] /= r  /= - [] r0 /= br1. 
+  move=> - [] /= r  /= - [] r0 /= br1.  
   move/(continuous_valE (y : topU)) =>  /= [na2 /= [] wo2 nay2 val2] A12.
   apply: filterS; first by exact: A12.
   exists ( ball_ [eta normr] x r ,na2) => //=; split; first by exists r.
@@ -215,8 +215,23 @@ exists [set a | B(\val @` a)].
   move: (convexB (\val @` a) H (\val r) (\val s) l valr vals) => /=.
   by rewrite !GRing.valD !GRing.valZ //. 
 split.
-  move=> /= a. admit.
-move => /=. 
+  move => A /= H. 
+  have -> : A = \val @^-1`(\val @` A ).
+    apply/seteqP; split => x /=; first by exists x.
+    by move => -[y Ay] /val_inj <-. 
+  apply:  open_comp; first by move => x _ ;apply: continuous_valE.
+  by apply: openB.
+(* the following should be simpler *)   
+move=> /= x A [] A' []; rewrite /wopen => -[]/= C openC CA Ax AA'.
+have H : nbhs (\val x) C by rewrite nbhsE /=; exists C =>//; split => //=; move: Ax; rewrite -CA /=. 
+move: (genB (\val x) C H); rewrite /filter_from /=.
+move => [] c [] Bc cx cC /=.
+exists  (\val @^-1` c); last by move => y Cy; apply: AA'; rewrite -CA /=; apply:cC.
+split => //=. 
+suff -> : [set \val x | x in \val @^-1` c] = c by [].
+move=> P T /=; rewrite eqEsubset; split => y; first by move=> [z + <-].
+move=> cy /=.
+(*nope*)
 Admitted.
  
 HB.instance Definition _ := @Uniform_isConvexTvs.Build R topU locally_convex_sub.
@@ -234,7 +249,7 @@ Check (topU : convexTvsType R).
 Check (topU : subLmodType S). 
 Check (topU :  subConvexTvsType S).
 
-End lmodule_isSubTvs.
+End lmodule_isSubTvs. 
 (*
 HB.factory Record SubLmodule_isSubConvexTvs (R : realFieldType)
   (V : convexTvsType R) (S : pred V) U &  SubChoice V S U & @GRing.SubLmodule R V S U  := {
