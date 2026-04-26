@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect_compat all_algebra.
 From mathcomp Require Import interval_inference.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
@@ -6,7 +6,7 @@ From mathcomp Require Import functions cardinality fsbigop.
 From mathcomp Require Import reals ereal topology normedtype sequences.
 From mathcomp Require Import real_interval esum measure measurable_realfun.
 From mathcomp Require Import numfun realfun lebesgue_measure lebesgue_integral.
-From mathcomp Require Import derive charge ftc trigo.
+From mathcomp Require Import derive ftc trigo.
 
 (**md**************************************************************************)
 (* # Formalisation of A simple proof that pi is irrational by Ivan Niven      *)

@@ -470,7 +470,7 @@ Lemma RfloorE x : Rfloor x = (Num.floor x)%:~R.
 Proof. by []. Qed.
 
 Lemma mem_rg1_floor x : (range1 (Num.floor x)%:~R) x.
-Proof. by rewrite /range1 /mkset -intrD1 floor_le_tmp floorD1_gt. Qed.
+Proof. by rewrite /range1 /mkset -intrD1 floor_le floorD1_gt. Qed.
 
 Lemma mem_rg1_Rfloor x : (range1 (Rfloor x)) x.
 Proof. exact: mem_rg1_floor. Qed.
@@ -510,7 +510,7 @@ Lemma le_Rfloor : {homo (@Rfloor R) : x y / x <= y}.
 Proof. by move=> x y /Num.Theory.le_floor; rewrite ler_int. Qed.
 
 Lemma Rfloor_ge_int x (i : int) : (i%:~R <= x)= (i%:~R <= Rfloor x).
-Proof. by rewrite ler_int floor_ge_int_tmp. Qed.
+Proof. by rewrite ler_int floor_ge_int. Qed.
 
 Lemma Rfloor_lt_int x (i : int) : (x < i%:~R) = (Rfloor x < i%:~R).
 Proof. by rewrite ltr_int -floor_lt_int. Qed.
@@ -544,10 +544,10 @@ Lemma Rceil_ge x : x <= Rceil x.
 Proof. by rewrite Num.Theory.ceil_ge ?num_real. Qed.
 
 Lemma le_Rceil : {homo (@Rceil R) : x y / x <= y}.
-Proof. by move=> x y ?; rewrite /Rceil ler_int le_ceil_tmp. Qed.
+Proof. by move=> x y ?; rewrite /Rceil ler_int le_ceil. Qed.
 
 Lemma Rceil_ge0 x : 0 <= x -> 0 <= Rceil x.
-Proof. by move=> x0; rewrite /Rceil ler0z -(ceil0 R) le_ceil_tmp. Qed.
+Proof. by move=> x0; rewrite /Rceil ler0z -(ceil0 R) le_ceil. Qed.
 
 Lemma RceilE x : Rceil x = (Num.ceil x)%:~R.
 Proof. by []. Qed.

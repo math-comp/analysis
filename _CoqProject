@@ -104,6 +104,7 @@ theories/measure_theory/probability_measure.v
 theories/measure_theory/measure_negligible.v
 theories/measure_theory/measure_extension.v
 theories/measure_theory/measurable_function.v
+theories/measure_theory/signed_measure.v
 theories/measure_theory/measure.v
 
 theories/measurable_realfun.v
@@ -123,6 +124,7 @@ theories/lebesgue_integral_theory/lebesgue_Rintegral.v
 theories/lebesgue_integral_theory/lebesgue_integral_fubini.v
 theories/lebesgue_integral_theory/lebesgue_integral_differentiation.v
 theories/lebesgue_integral_theory/lebesgue_integral.v
+theories/lebesgue_integral_theory/radon_nikodym.v
 theories/lebesgue_integral_theory/giry.v
 
 theories/ftc.v

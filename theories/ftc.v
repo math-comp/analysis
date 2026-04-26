@@ -9,7 +9,7 @@ From mathcomp Require Import cardinality fsbigop reals ereal topology tvs.
 From mathcomp Require Import normedtype sequences real_interval esum measure.
 From mathcomp Require Import lebesgue_measure numfun realfun measurable_realfun.
 From mathcomp Require Import interval_inference real_interval lebesgue_integral.
-From mathcomp Require Import derive charge.
+From mathcomp Require Import derive.
 
 (**md**************************************************************************)
 (* # Fundamental Theorem of Calculus and Consequences                         *)

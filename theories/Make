@@ -71,6 +71,7 @@ measure_theory/probability_measure.v
 measure_theory/measure_negligible.v
 measure_theory/measure_extension.v
 measure_theory/measurable_function.v
+measure_theory/signed_measure.v
 measure_theory/measure.v
 
 measurable_realfun.v
@@ -89,6 +90,7 @@ lebesgue_integral_theory/lebesgue_integral_under.v
 lebesgue_integral_theory/lebesgue_Rintegral.v
 lebesgue_integral_theory/lebesgue_integral_fubini.v
 lebesgue_integral_theory/lebesgue_integral_differentiation.v
+lebesgue_integral_theory/radon_nikodym.v
 lebesgue_integral_theory/lebesgue_integral.v
 lebesgue_integral_theory/giry.v
 

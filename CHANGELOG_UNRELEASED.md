@@ -111,8 +111,16 @@
   + lemmas `lcfun_eqP`, `null_fun_continuous`, `fun_cvgD`,
    `fun_cvgN`, `fun_cvgZ`, `fun_cvgZr`
   + lemmas `lcfun_continuous` and `lcfun_linear`
+
+- new files `signed_measure.v` and `radon_nikodym.v`
+  + with the contents of `charge.v` (deprecated)
   
 ### Changed
+
+- moved from `measurable_structure.v` to `classical_sets.v`:
+  + definition `preimage_set_system`
+  + lemmas `preimage_set_system0`, `preimage_set_systemU`, `preimage_set_system_comp`,
+    `preimage_set_system_id`
 
 - moved from `topology_structure.v` to `filter.v`:
   + lemma `continuous_comp` (and generalized)
@@ -121,6 +129,50 @@
   + `fune_abse` renamed to `funeposDneg` and direction of the equality changed
   + `funeposneg` renamed to `funeposBneg` and direction of the equality changed
   + `funeD_posD` renamed to `funeDB` and direction of the equality changed
+
+- in `constructive_ereal.v`:
+  + lemmas `EFin_semi_additive` and `dEFin_semi_additive` turned into `Let`s
+
+- moved from `charge.v` to `signed_measure.v`:
+  + mixin `isAdditiveCharge`, structure `AdditiveCharge`
+  + mixin `isSemiSigmaAdditive`, structure `Charge`
+  + factory `isCharge`
+  + lemmas `charge0`, `charge_semi_additiveW`, `charge_semi_additive2E`,
+    `charge_semi_additive2`, `chargeU`, `chargeDI`, `charge_partition`
+  + definitions `measure_of_charge`, `charge_of_finite_measure`
+  + lemma `chargeD`
+  + definitions `crestr`, `crestr0`, `czero`, `cscale`
+  + lemmas `dominates_cscalel`, `dominates_cscaler`
+  + definition `copp`
+  + lemma `cscaleN1`
+  + definition `cadd`
+  + lemmas `dominates_cadd`, `dominates_pushforward`
+  + definitions `positive_set`, `negative_set`
+  + lemmas `negative_set_charge_le0`, `negative_set0`,
+    `positive_negative0`, `bigcup_negative_set`, `negative_setU`,
+    `hahn_decomposition_lemma`
+  + definition `hahn_decomposition`
+  + theorem `Hahn_decomposition`
+  + lemmas `Hahn_decomposition_uniq`, `cjordan_posE`, `cjordan_negE`
+  + definitions `jordan_pos`, `jordan_neg`
+  + lemmas `jordan_posE`, `jordan_negE`, `jordan_decomp`, `jordan_pos_dominates`,
+    `jordan_neg_dominates`
+  + definition `charge_variation`, `charge_dominates`
+  + lemmas `abse_charge_variation`, `null_charge_dominatesP`,
+    `content_charge_dominatesP`, `charge_variation_continuous`
+
+- moved from `charge.v` to `radon_nikodym.v`:
+  + definition `induced_charge`
+  + lemmas `semi_sigma_additive_nng_induced`, `dominates_induced`,
+    `integral_normr_continuous`
+  + definitions `approxRN`, `int_approxRN`, `sup_int_approxRN`
+  + lemmas `sup_int_approxRN_ge0`, `radon_nikodym_finite`,
+    `radon_nikodym_sigma_finite`, `change_of_variables`, `integrableM`,
+    `chain_rule`
+  + definition `Radon_Nikodym`
+  + lemmas `Radon_NikodymE`, `Radon_Nikodym_fin_num`, `Radon_Nikodym_integrable`,
+    `ae_eq_Radon_Nikodym_SigmaFinite`, `Radon_Nikodym_change_of_variables`,
+    `Radon_Nikodym_cscale`, `Radon_Nikodym_cadd`, `Radon_Nikodym_chain_rule`
 
 ### Renamed
 
@@ -192,6 +244,8 @@
   + lemmas `fctD`, `fctN`, `fctM`, `fctZ`
 
 ### Deprecated
+
+- file `charge.v` (use `measure.v` and/or `lebesgue_integral.v`)
 
 ### Removed
 

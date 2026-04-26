@@ -1613,7 +1613,7 @@ Lemma eval_continuous {X Y : topologicalType} :
 Proof.
 move=> lcX rsX; apply: continuous_uncurry_regular => //.
   exact: initial_continuous.
-by move=> ?; exact: cts_fun.
+by move=> ?; exact: continuous_fun.
 Qed.
 
 Lemma compose_continuous {X Y Z : topologicalType} :

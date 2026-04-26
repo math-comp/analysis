@@ -931,8 +931,9 @@ Proof. by case: x => //=; rewrite oppr0. Qed.
 
 Lemma EFinD r r' : (r + r')%:E = r%:E + r'%:E. Proof. by []. Qed.
 
-Lemma EFin_semi_additive : @semi_additive _ (\bar R) EFin. Proof. by split. Qed.
-HB.instance Definition _ := GRing.isSemiAdditive.Build R (\bar R) EFin
+Let EFin_semi_additive : @nmod_morphism _ (\bar R) EFin. Proof. by split. Qed.
+
+HB.instance Definition _ := GRing.isNmodMorphism.Build R (\bar R) EFin
   EFin_semi_additive.
 
 Lemma EFinB r r' : (r - r')%:E = r%:E - r'%:E. Proof. by []. Qed.
@@ -1583,10 +1584,11 @@ Proof. by []. Qed.
 
 Lemma dEFinE (r : R) : dEFin r = r%:E. Proof. by []. Qed.
 
-Lemma dEFin_semi_additive : @semi_additive _ (\bar^d R) dEFin.
+Let dEFin_semi_additive : @nmod_morphism _ (\bar^d R) dEFin.
 Proof. by split. Qed.
+
 #[export]
-HB.instance Definition _ := GRing.isSemiAdditive.Build R (\bar^d R) dEFin
+HB.instance Definition _ := GRing.isNmodMorphism.Build R (\bar^d R) dEFin
   dEFin_semi_additive.
 
 Lemma dEFinB (r r' : R) : (r - r')%R%:E = r%:E - r'%:E.
