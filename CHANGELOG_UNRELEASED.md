@@ -160,6 +160,19 @@
     * definition `zornS`
     * lemmas `zornS_ex`, `domain_extend`, `hahn_banach_witness`
   + theorems `hahn_banach_extension`, `hahn_banach_extension_normed`
+- in `normal_distribution.v`:
+  + lemma `normal_funN`
+  + lemma `normal_fun_sym`
+  + lemma `normal_fun0abs`
+  + lemma `normal_pdf_sym`
+  + lemma `normal_fun_center_new`
+  + lemma `normal_fun_shift`
+  + lemma `normal_pdf_uniq_ae`
+  + lemma `normal_prob_continuous`
+  + lemma `integral_normal_prob`
+  + lemma `measurable_normal_prob`
+  + lemma `emeasurable_bounded_integrable`
+  + lemmas `integrable_normal_probD1`, `normal_probD1`, `normal_probD2`, `normal_probD`
 
 - in `lebesgue_stieltjes_measure.v`:
   + definition `lebesgue_display`
@@ -302,6 +315,8 @@
 - moved from `pseudometric_normed_Zmodule.v` to `metric_structure.v`
   + lemmas `real_cvgr_lt`, `real_cvgr_le`, `real_cvgr_le`, `real_cvgr_gt`
   + lemmas `cvgr_lt`, `cvgr_gt`, `cvgr_ge`, `cvgr_le`
+- in `normal_distribution.v:
+  + `normal_fun_center` -> `normal_fun_center0`
 
 ### Renamed
 
