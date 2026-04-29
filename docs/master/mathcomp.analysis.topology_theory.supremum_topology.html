@@ -252,17 +252,7 @@
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sup_topology" class="id"><div name="sup_topology" class=" tooltip">sup_topology<span class='tooltip-area'><p>sup_topology :
-forall {T I : Type}, (I -> topology_structure.Topological.axioms_ T) -> Type
-
-sup_topology is not universe polymorphic
-Arguments sup_topology {T I}%_type_scope Tc%_function_scope
-sup_topology is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.supremum_topology.sup_topology
-Declared in
-library mathcomp.analysis.topology_theory.supremum_topology, line 25, characters 11-23
-</p></span></div></span><span class="id"> {</span><span id="T:1" class="id"><a name="T:1" class="">T</a></span><span class="id"> :</span><span class="id"> Type}</span><span class="id"> {</span><span id="I:2" class="id"><a name="I:2" class="">I</a></span><span class="id"> :</span><span class="id"> Type}</span><br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sup_topology" class="id"><div name="sup_topology" class=" tooltip">sup_topology<span class='tooltip-area'></span></div></span><span class="id"> {</span><span id="T:1" class="id"><a name="T:1" class="">T</a></span><span class="id"> :</span><span class="id"> Type}</span><span class="id"> {</span><span id="I:2" class="id"><a name="I:2" class="">I</a></span><span class="id"> :</span><span class="id"> Type}</span><br/>
 &nbsp;&nbsp;(<span id="Tc:3" class="id"><a name="Tc:3" class="">Tc</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#I:2">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological">Topological</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#T:1">T</a></span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#T:1">T</a></span>.<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> Sup_Topology</span>.<br/>
@@ -271,17 +261,15 @@ library mathcomp.analysis.topology_theory.supremum_topology, line 25, characters
 <br/>
 <span class="vernacular">Let</span><span class="id"> </span><span id="Sup_Topology.TS" class="id"><a name="Sup_Topology.TS" class="">TS</a></span><span class="id"> :=</span><span class="gallina-kwd"> fun</span><span class="id"> </span><span id="i:10" class="id"><a name="i:10" class="">i</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Pack">Topological</a></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Pack">Pack</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#Sup_Topology.Tc">Tc</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#i:10">i</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sup_subbase" class="id"><div name="sup_subbase" class=" tooltip">sup_subbase<span class='tooltip-area'><p>sup_subbase :
-forall [T : choiceType] [I : Type],
-(I -> topology_structure.Topological.axioms_ T) -> set (set T)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sup_subbase" class="id"><div name="sup_subbase" class=" tooltip">sup_subbase<span class='tooltip-area'><p>sup_topology : forall {T I : Type}, (I -> Topological.axioms_ T) -> Type
 
-sup_subbase is not universe polymorphic
-Arguments sup_subbase [T] [I]%_type_scope Tc%_function_scope _
-sup_subbase is transparent
+sup_topology is not universe polymorphic
+Arguments sup_topology {T I}%_type_scope Tc%_function_scope
+sup_topology is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.supremum_topology.sup_subbase
+            mathcomp.analysis.topology_theory.supremum_topology.sup_topology
 Declared in
-library mathcomp.analysis.topology_theory.supremum_topology, line 34, characters 11-22
+library mathcomp.analysis.topology_theory.supremum_topology, line 25, characters 11-23
 </p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#4652af423267d4923a164c1104e1273f">\bigcup_</a></span><span id="i:11" class="id"><a name="i:11" class="">i</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#Sup_Topology.TS">TS</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#i:11">i</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#Sup_Topology.T">T</a></span>).<br/>
 <br/>
 <span id="supremum_topology_sup_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="supremum_topology_sup_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="supremum_topology_sup_topology__canonical__choice_Choice" class="">HB</a></span></span></span></span></span></span></span>.<span id="supremum_topology_sup_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="supremum_topology_sup_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="supremum_topology_sup_topology__canonical__choice_Choice" class="">instance</a></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="supremum_topology_sup_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="supremum_topology_sup_topology__canonical__choice_Choice" class=""> Definition</a></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="supremum_topology_sup_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="supremum_topology_sup_topology__canonical__choice_Choice" class=""> _</a></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="supremum_topology_sup_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="supremum_topology_sup_topology__canonical__choice_Choice" class=""> :=</a></span></span></span></span></span></span></span><span id="supremum_topology_sup_topology__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_5" class="id"><span id="supremum_topology_sup_topology__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_4" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_1" class="id"><a name="supremum_topology_sup_topology__canonical__choice_Choice" class=""> Choice</a></span></span></span></span></span></span></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.on">on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#S">S</a></span>.<br/>
@@ -330,17 +318,17 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#asboolP">asboolP</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourageT">entourageT</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sup_ent" class="id"><div name="sup_ent" class=" tooltip">sup_ent<span class='tooltip-area'><p>sup_ent :
-forall [T : choiceType] [Ii : Type],
-(Ii -> Uniform.axioms_ T) -> set_system (T * T)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sup_ent" class="id"><div name="sup_ent" class=" tooltip">sup_ent<span class='tooltip-area'><p>sup_subbase :
+forall [T : choiceType] [I : Type],
+(I -> Topological.axioms_ T) -> set (set T)
 
-sup_ent is not universe polymorphic
-Arguments sup_ent [T] [Ii]%_type_scope Tc%_function_scope _
-sup_ent is transparent
+sup_subbase is not universe polymorphic
+Arguments sup_subbase [T] [I]%_type_scope Tc%_function_scope _
+sup_subbase is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.supremum_topology.sup_ent
+            mathcomp.analysis.topology_theory.supremum_topology.sup_subbase
 Declared in
-library mathcomp.analysis.topology_theory.supremum_topology, line 77, characters 11-18
+library mathcomp.analysis.topology_theory.supremum_topology, line 34, characters 11-22
 </p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set_system">set_system</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_uniform.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_uniform.T">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#filter_from">filter_from</a></span> (<span class="id"><a href="mathcomp.classical.filter.html#finI_from">finI_from</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#sup_uniform.IEnt">IEnt</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="p:28" class="id"><a name="p:28" class="">p</a></span><span class="id"> =&gt;</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#projT1">projT1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.supremum_topology.html#p:28">p</a></span>).<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span>))<span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#id">id</a></span>.<br/>
 <br/>

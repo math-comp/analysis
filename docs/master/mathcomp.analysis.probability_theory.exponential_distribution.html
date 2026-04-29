@@ -265,19 +265,17 @@
 <span class="vernacular">Hypothesis</span><span class="id"> </span><span id="exponential_pdf.rate_ge0" class="id"><a name="exponential_pdf.rate_ge0" class="">rate_ge0</a></span><span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#exponential_pdf.rate">rate</a></span>.<br/>
 <br/>
 <span class="vernacular">Let</span><span class="id"> </span><span id="exponential_pdf.exponential_pdfT" class="id"><a name="exponential_pdf.exponential_pdfT" class="">exponential_pdfT</a></span><span class="id"> </span><span id="x:6" class="id"><a name="x:6" class="">x</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#exponential_pdf.rate">rate</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#expR">expR</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#exponential_pdf.rate">rate</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#x:6">x</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="exponential_pdf" class="id"><div name="exponential_pdf" class=" tooltip">exponential_pdf<span class='tooltip-area'><p>exponential_pdf :
-forall {R : realType},
-R ->
-join_Num_POrderedZmodule_between_Algebra_BaseAddUMagma_and_Order_POrder R ->
-numFieldTopology.Real_sort__canonical__classical_sets_Pointed R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="exponential_pdf" class="id"><div name="exponential_pdf" class=" tooltip">exponential_pdf<span class='tooltip-area'><p>variance :
+forall [d : measure_display] [T : measurableType d] [R : realType],
+probability T R -> (T -> R) -> GRing.BaseAddMagma.sort \bar R
 
-exponential_pdf is not universe polymorphic
-Arguments exponential_pdf {R} rate%_ring_scope u
-exponential_pdf is transparent
+variance is not universe polymorphic
+Arguments variance [d]%_measure_display_scope [T R] P X%_function_scope
+variance is transparent
 Expands to: Constant
-            mathcomp.analysis.probability_theory.exponential_distribution.exponential_pdf
+            mathcomp.analysis.probability_theory.random_variable.variance
 Declared in
-library mathcomp.analysis.probability_theory.exponential_distribution, line 38, characters 11-26
+library mathcomp.analysis.probability_theory.random_variable, line 877, characters 11-19
 </p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#exponential_pdf.exponential_pdfT">exponential_pdfT</a></span><span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> \_</a></span><span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#15b7e1a0c6e4df0db66b48da271129e4">`[</a></span><span class="id">0</span><span class="id"><a href="mathcomp.classical.classical_sets.html#15b7e1a0c6e4df0db66b48da271129e4">,</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#15b7e1a0c6e4df0db66b48da271129e4"> +oo[</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="exponential_pdf_ge0" class="id"><a name="exponential_pdf_ge0" class="">exponential_pdf_ge0</a></span><span class="id"> </span><span id="x:7" class="id"><a name="x:7" class="">x</a></span><span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#exponential_pdf">exponential_pdf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#x:7">x</a></span>.<br/>
@@ -347,23 +345,18 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> exponential_pdf</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="exponential_prob" class="id"><div name="exponential_prob" class=" tooltip">exponential_prob<span class='tooltip-area'><p>exponential_prob :
-forall {R : realType},
-R ->
-set
-  (measurable_structure_g_sigma_algebraType__canonical__measurable_structure_Measurable
-     (T:=lebesgue_stieltjes_measure_ocitv_type__canonical__classical_sets_Pointed
-           R)
-     (R.-ocitv).-measurable) ->
-GRing.BaseAddMagma.sort \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="exponential_prob" class="id"><div name="exponential_prob" class=" tooltip">exponential_prob<span class='tooltip-area'><p>mmt_gen_fun :
+forall [d : measure_display] [T : measurableType d] [R : realType],
+probability T R -> (T -> R) -> R -> GRing.BaseAddMagma.sort \bar R
 
-exponential_prob is not universe polymorphic
-Arguments exponential_prob {R} rate%_ring_scope V%_classical_set_scope
-exponential_prob is transparent
+mmt_gen_fun is not universe polymorphic
+Arguments mmt_gen_fun [d]%_measure_display_scope [T R] 
+  P X%_function_scope t%_ring_scope
+mmt_gen_fun is transparent
 Expands to: Constant
-            mathcomp.analysis.probability_theory.exponential_distribution.exponential_prob
+            mathcomp.analysis.probability_theory.random_variable.mmt_gen_fun
 Declared in
-library mathcomp.analysis.probability_theory.exponential_distribution, line 92, characters 11-27
+library mathcomp.analysis.probability_theory.random_variable, line 1012, characters 11-22
 </p></span></div></span><span class="id"> {</span><span id="R:12" class="id"><a name="R:12" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="rate:13" class="id"><a name="rate:13" class="">rate</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#R:12">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="V:14" class="id"><a name="V:14" class="">V</a></span><span class="id"> =&gt;</span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#lebesgue_measure">lebesgue_measure</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">]_</a></span>(<span id="x:15" class="id"><a name="x:15" class="">x</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> in</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#V:14">V</a></span>) (<span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#exponential_pdf">exponential_pdf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#rate:13">rate</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#x:15">x</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>)<span class="id">%E</span>.<br/>
 <br/>

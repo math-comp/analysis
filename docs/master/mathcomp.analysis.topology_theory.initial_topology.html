@@ -268,33 +268,14 @@ vector space by its dual.
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="initial_topology" class="id"><div name="initial_topology" class=" tooltip">initial_topology<span class='tooltip-area'><p>initial_topology : forall {S T : Type}, (S -> T) -> Type
-
-initial_topology is not universe polymorphic
-Arguments initial_topology {S T}%_type_scope f%_function_scope
-initial_topology is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.initial_topology.initial_topology
-Declared in
-library mathcomp.analysis.topology_theory.initial_topology, line 41, characters 11-27
-</p></span></div></span><span class="id"> {</span><span id="S:1" class="id"><a name="S:1" class="">S</a></span><span class="id"> :</span><span class="id"> Type}</span><span class="id"> {</span><span id="T:2" class="id"><a name="T:2" class="">T</a></span><span class="id"> :</span><span class="id"> Type}</span><br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="initial_topology" class="id"><div name="initial_topology" class=" tooltip">initial_topology<span class='tooltip-area'></span></div></span><span class="id"> {</span><span id="S:1" class="id"><a name="S:1" class="">S</a></span><span class="id"> :</span><span class="id"> Type}</span><span class="id"> {</span><span id="T:2" class="id"><a name="T:2" class="">T</a></span><span class="id"> :</span><span class="id"> Type}</span><br/>
 &nbsp;&nbsp;(<span id="f:3" class="id"><a name="f:3" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#S:1">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#T:2">T</a></span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#S:1">S</a></span>.<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> Initial_Topology</span>.<br/>
 <span class="vernacular">Variable</span> (<span id="Initial_Topology.S" class="id"><a name="Initial_Topology.S" class="">S</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span>) (<span id="Initial_Topology.T" class="id"><a name="Initial_Topology.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span>) (<span id="Initial_Topology.f" class="id"><a name="Initial_Topology.f" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#S:5">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#T:7">T</a></span>).<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="W" class="id"><a name="W" class="">W</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_topology">initial_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#Initial_Topology.f">f</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="wopen" class="id"><div name="wopen" class=" tooltip">wopen<span class='tooltip-area'><p>wopen :
-forall [S : choiceType] [T : topology_structure.Topological.type],
-(S -> topology_structure.Topological.sort T) -> set (set S)
-
-wopen is not universe polymorphic
-Arguments wopen [S T] f%_function_scope _
-wopen is transparent
-Expands to: Constant mathcomp.analysis.topology_theory.initial_topology.wopen
-Declared in
-library mathcomp.analysis.topology_theory.initial_topology, line 48, characters 11-16
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#Initial_Topology.f">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#A:10">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span id="A:10" class="id"><a name="A:10" class="">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> in</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">]</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="wopen" class="id"><div name="wopen" class=" tooltip">wopen<span class='tooltip-area'></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#Initial_Topology.f">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#A:10">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span id="A:10" class="id"><a name="A:10" class="">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> in</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">]</a></span>.<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Lemma</span><span class="id"> </span><span id="wopT" class="id"><a name="wopT" class="">wopT</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#wopen">wopen</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#W">W</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>.<br/>
 <details>
@@ -363,17 +344,15 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Let</span><span class="id"> </span><span id="initial_uniform.S" class="id"><a name="initial_uniform.S" class="">S</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_topology">initial_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_uniform.f">f</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="initial_ent" class="id"><div name="initial_ent" class=" tooltip">initial_ent<span class='tooltip-area'><p>initial_ent :
-forall [pS : choiceType] [U : uniformType] [f : pS -> U],
-set_system (initial_topology f * initial_topology f)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="initial_ent" class="id"><div name="initial_ent" class=" tooltip">initial_ent<span class='tooltip-area'><p>initial_topology : forall {S T : Type}, (S -> T) -> Type
 
-initial_ent is not universe polymorphic
-Arguments initial_ent [pS U] [f]%_function_scope _
-initial_ent is transparent
+initial_topology is not universe polymorphic
+Arguments initial_topology {S T}%_type_scope f%_function_scope
+initial_topology is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.initial_topology.initial_ent
+            mathcomp.analysis.topology_theory.initial_topology.initial_topology
 Declared in
-library mathcomp.analysis.topology_theory.initial_topology, line 105, characters 11-22
+library mathcomp.analysis.topology_theory.initial_topology, line 41, characters 11-27
 </p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set_system">set_system</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_uniform.S">S</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_uniform.S">S</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#filter_from">filter_from</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_uniform.U">U</a></span>) (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="V:38" class="id"><a name="V:38" class="">V</a></span><span class="id"> =&gt;</span> (<span class="id"><a href="mathcomp.classical.unstable.html#map_pair">map_pair</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_uniform.f">f</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c">@^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#V:38">V</a></span>).<br/>
 <br/>
@@ -440,18 +419,15 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Notation</span><span class="id"> </span><span id="S" class="id"><a name="S" class="">S</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_topology">initial_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_pseudoMetric.f">f</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="initial_ball" class="id"><div name="initial_ball" class=" tooltip">initial_ball<span class='tooltip-area'><p>initial_ball :
-forall {R : realType} [pS : choiceType] [U : pseudoMetricType R]
-  [f : pS -> U],
-initial_topology f -> R -> initial_topology f -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="initial_ball" class="id"><div name="initial_ball" class=" tooltip">initial_ball<span class='tooltip-area'><p>wopen :
+forall [S : choiceType] [T : topologicalType], (S -> T) -> set (set S)
 
-initial_ball is not universe polymorphic
-Arguments initial_ball {R} [pS U] [f]%_function_scope x r%_ring_scope y
-initial_ball is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.initial_topology.initial_ball
+wopen is not universe polymorphic
+Arguments wopen [S T] f%_function_scope _
+wopen is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.initial_topology.wopen
 Declared in
-library mathcomp.analysis.topology_theory.initial_topology, line 161, characters 11-23
+library mathcomp.analysis.topology_theory.initial_topology, line 48, characters 11-16
 </p></span></div></span> (<span id="x:53" class="id"><a name="x:53" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#S">S</a></span>) (<span id="r:54" class="id"><a name="r:54" class="">r</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_pseudoMetric.R">R</a></span>) (<span id="y:55" class="id"><a name="y:55" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#S">S</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#ball">ball</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_pseudoMetric.f">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#x:53">x</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#r:54">r</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_pseudoMetric.f">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#y:55">y</a></span>).<br/>
 <br/>
 <span class="vernacular">Let</span><span class="id"> </span><span id="initial_pseudoMetric.initial_pseudo_metric_ball_center" class="id"><a name="initial_pseudoMetric.initial_pseudo_metric_ball_center" class="">initial_pseudo_metric_ball_center</a></span> (<span id="x:56" class="id"><a name="x:56" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#S">S</a></span>) (<span id="e:57" class="id"><a name="e:57" class="">e</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#initial_pseudoMetric.R">R</a></span>)<span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.initial_topology.html#e:57">e</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>

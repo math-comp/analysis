@@ -274,7 +274,7 @@ library mathcomp.classical.classical_orders, line 29, characters 11-25
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="same_prefix" class="id"><div name="same_prefix" class=" tooltip">same_prefix<span class='tooltip-area'><p>same_prefix :
 forall {K : nat -> eqType},
-NatOrder.Datatypes_nat__canonical__Order_Preorder ->
+Order.NatOrder.Datatypes_nat__canonical__Order_Preorder ->
 (forall n : nat, K n) -> (forall n : nat, K n) -> Prop
 
 same_prefix is not universe polymorphic
@@ -492,7 +492,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="start_with" class="id"><div name="start_with" class=" tooltip">start_with<span class='tooltip-area'><p>start_with :
 forall {K : nat -> eqType},
-NatOrder.Datatypes_nat__canonical__Order_Preorder ->
+Order.NatOrder.Datatypes_nat__canonical__Order_Preorder ->
 (forall n : nat, K n) -> (forall n : nat, K n) -> forall i : nat, K i
 
 start_with is not universe polymorphic

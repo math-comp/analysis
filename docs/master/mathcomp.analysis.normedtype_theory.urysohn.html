@@ -647,10 +647,7 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> topological_urysohn_separator</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="topological_urysohn_separator.T" class="id"><a name="topological_urysohn_separator.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span><span class="id"> {</span><span id="topological_urysohn_separator.R" class="id"><a name="topological_urysohn_separator.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="uniform_separator" class="id"><div name="uniform_separator" class=" tooltip">uniform_separator<span class='tooltip-area'><p>uniform_separator :
-forall {T : topology_structure.Topological.type},
-set (topology_structure.Topological.sort T) ->
-set (topology_structure.Topological.sort T) -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="uniform_separator" class="id"><div name="uniform_separator" class=" tooltip">uniform_separator<span class='tooltip-area'><p>uniform_separator : forall {T : topologicalType}, set T -> set T -> Prop
 
 uniform_separator is not universe polymorphic
 Arguments uniform_separator {T} (A B)%_classical_set_scope
@@ -681,10 +678,7 @@ library mathcomp.analysis.normedtype_theory.urysohn, line 355, characters 11-28
 Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="Urysohn" class="id"><div name="Urysohn" class=" tooltip">Urysohn<span class='tooltip-area'><p>Urysohn :
-forall {T : topology_structure.Topological.type} {R : realType},
-set (topology_structure.Topological.sort T) ->
-set (topology_structure.Topological.sort T) ->
-topology_structure.Topological.sort T -> R
+forall {T : topologicalType} {R : realType}, set T -> set T -> T -> R
 
 Urysohn is not universe polymorphic
 Arguments Urysohn {T R} (A B)%_classical_set_scope _
@@ -874,7 +868,7 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> n</span><span class="id"> IH</span><span class="id"> G</span><span class="id"> [R]</span><span class="id"> /IH</span><span class="id"> AAR</span><span class="id"> [M]</span><span class="id"> /IH</span><span class="id"> AAM</span><span class="id"> &lt;-</span><span class="id"> z;</span><span class="id"> split;</span><span class="id"> [exact:</span><span class="id"> AAR</span><span class="id"> |</span><span class="id"> exact:</span><span class="id"> AAM]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="urysohnType" class="id"><div name="urysohnType" class=" tooltip">urysohnType<span class='tooltip-area'><p>urysohnType : topology_structure.Topological.type -> Type
+<span class="vernacular">Definition</span><span class="id"> </span><span id="urysohnType" class="id"><div name="urysohnType" class=" tooltip">urysohnType<span class='tooltip-area'><p>urysohnType : topologicalType -> Type
 
 urysohnType is not universe polymorphic
 Arguments urysohnType {T}
@@ -1019,7 +1013,7 @@ Qed.</div></details>
    If you don't care, you can use the `completely_regular_uniformity.type`
    which builds the uniformity.
 </div>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="completely_regular_space" class="id"><div name="completely_regular_space" class=" tooltip">completely_regular_space<span class='tooltip-area'><p>completely_regular_space : topology_structure.Topological.type -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="completely_regular_space" class="id"><div name="completely_regular_space" class=" tooltip">completely_regular_space<span class='tooltip-area'><p>completely_regular_space : topologicalType -> Prop
 
 completely_regular_space is not universe polymorphic
 Arguments completely_regular_space T
@@ -1111,9 +1105,7 @@ Qed.</div></details>
 Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="completely_regular_uniformity.type" class="id"><div name="completely_regular_uniformity.type" class=" tooltip">type<span class='tooltip-area'><p>completely_regular_uniformity.type :
-realType ->
-forall {X : topology_structure.Topological.type},
-completely_regular_space X -> Type
+realType -> forall {X : topologicalType}, completely_regular_space X -> Type
 
 completely_regular_uniformity.type is not universe polymorphic
 Arguments completely_regular_uniformity.type {R X} crs

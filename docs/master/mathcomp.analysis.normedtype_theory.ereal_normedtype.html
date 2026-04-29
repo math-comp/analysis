@@ -276,9 +276,8 @@ of normed modules in this directory.
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="limf_esup" class="id"><div name="limf_esup" class=" tooltip">limf_esup<span class='tooltip-area'><p>limf_esup :
-forall [T : choiceType] [X : filter.Filtered.type T] [R : realFieldType],
-(filter.Filtered.sort X -> \bar R) ->
-set (set (filter.Filtered.sort X)) -> \bar R
+forall [T : choiceType] [X : filteredType T] [R : realFieldType],
+(X -> \bar R) -> set (set X) -> \bar R
 
 limf_esup is not universe polymorphic
 Arguments limf_esup [T X R] f%_function_scope F%_classical_set_scope
@@ -290,9 +289,8 @@ library mathcomp.analysis.normedtype_theory.ereal_normedtype, line 48, character
 </p></span></div></span><span class="id"> </span><span id="f:7" class="id"><a name="f:7" class="">f</a></span><span class="id"> </span><span id="F:8" class="id"><a name="F:8" class="">F</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.ereal.html#ereal_inf">ereal_inf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span class="id"><a href="mathcomp.analysis.ereal.html#ereal_sup">ereal_sup</a></span> (<span class="id"><a href="mathcomp.analysis.normedtype_theory.ereal_normedtype.html#f:7">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.ereal_normedtype.html#V:9">V</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span id="V:9" class="id"><a name="V:9" class="">V</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> in</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.ereal_normedtype.html#F:8">F</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">]</a></span>.<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="limf_einf" class="id"><div name="limf_einf" class=" tooltip">limf_einf<span class='tooltip-area'><p>limf_einf :
-forall [T : choiceType] [X : filter.Filtered.type T] [R : realFieldType],
-(filter.Filtered.sort X -> \bar R) ->
-set (set (filter.Filtered.sort X)) -> \bar R
+forall [T : choiceType] [X : filteredType T] [R : realFieldType],
+(X -> \bar R) -> set (set X) -> \bar R
 
 limf_einf is not universe polymorphic
 Arguments limf_einf [T X R] f%_function_scope F%_classical_set_scope
@@ -357,8 +355,7 @@ Qed.</div></details>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="lower_semicontinuous" class="id"><div name="lower_semicontinuous" class=" tooltip">lower_semicontinuous<span class='tooltip-area'><p>lower_semicontinuous :
-forall {X : topology_structure.Topological.type} {R : numFieldType},
-(topology_structure.Topological.sort X -> \bar R) -> Prop
+forall {X : topologicalType} {R : numFieldType}, (X -> \bar R) -> Prop
 
 lower_semicontinuous is not universe polymorphic
 Arguments lower_semicontinuous {X R} f%_function_scope

@@ -1446,15 +1446,12 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="interior_itv" class="id"><div name="interior_itv" class=" tooltip">interior_itv<span class='tooltip-area'><p>interior_itv :
 forall R : realType,
 (forall (x y : R) (a b : bool),
- topology_structure.interior [set` Interval (BSide a x) (BSide b y)] =
- `]x, y[%classic) *
+ [set` Interval (BSide a x) (BSide b y)]°%classic = `]x, y[%classic) *
 (forall (x : R) (b : bool),
- topology_structure.interior [set` Interval (BSide b x) +oo%O] =
- `]x, +oo[%classic) *
+ [set` Interval (BSide b x) +oo%O]°%classic = `]x, +oo[%classic) *
 (forall (y : R) (b : bool),
- topology_structure.interior [set` Interval -oo%O (BSide b y)] =
- `]-oo, y[%classic) *
-(topology_structure.interior `]-oo, +oo[ = `]-oo, +oo[%classic)
+ [set` Interval -oo%O (BSide b y)]°%classic = `]-oo, y[%classic) *
+(`]-oo, +oo[°%classic = `]-oo, +oo[%classic)
 
 interior_itv is not universe polymorphic
 Arguments interior_itv R

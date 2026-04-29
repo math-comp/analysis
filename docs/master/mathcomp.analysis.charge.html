@@ -2274,10 +2274,7 @@ Qed.</div></details>
 forall [d : measure_display] [T : measurableType d] [R : realType],
 {finite_measure set T -> \bar R}%R ->
 {finite_measure set T -> \bar R}%R ->
-T ->
-filter.PointedFiltered.Exports.filter_PointedFiltered__to__classical_sets_Pointed
-  (filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_PointedFiltered
-     ereal.constructive_ereal_extended__canonical__filter_PointedNbhs)
+T -> constructive_ereal_extended__canonical__filter_PointedNbhs
 
 lim_max_approxRN_seq.fRN is not universe polymorphic
 Arguments lim_max_approxRN_seq.fRN [d]%_measure_display_scope [T R] mu nu x

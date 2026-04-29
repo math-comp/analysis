@@ -377,50 +377,35 @@ Declared in library mathcomp.analysis.trigo, line 111, characters 11-20
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">[sequence</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#odd">odd</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#n:52">n</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span> (<span class="id">-1</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:52">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'.-1'">-1</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#1ecb2ec20b22101a31d2177b576c9a81">/2</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#x:51">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:52">n</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:52">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#fb85b56582e20c3ab47a4e55b1f6f111">`!</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">]_</a></span><span id="n:52" class="id"><a name="n:52" class="">n</a></span>.<br/>
 <br/>
 <span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><div name="sin_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>sin_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   filter.lim
-     (filter.fmap (series (sin_coeff x)) (filter.nbhs filter.eventually)))
+unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
 
 sin_unlock_subterm is not universe polymorphic
 sin_unlock_subterm is transparent
 Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 114, characters 0-80
 </p></span></div></span></span></span></span></span></span></span></span>.<span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><div name="sin_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>sin_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   filter.lim
-     (filter.fmap (series (sin_coeff x)) (filter.nbhs filter.eventually)))
+unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
 
 sin_unlock_subterm is not universe polymorphic
 sin_unlock_subterm is transparent
 Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 114, characters 0-80
 </p></span></div></span></span></span></span></span></span></span></span><span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><div name="sin_unlock_subterm" class=" tooltip"> Definition<span class='tooltip-area'><p>sin_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   filter.lim
-     (filter.fmap (series (sin_coeff x)) (filter.nbhs filter.eventually)))
+unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
 
 sin_unlock_subterm is not universe polymorphic
 sin_unlock_subterm is transparent
 Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 114, characters 0-80
 </p></span></div></span></span></span></span></span></span></span></span><span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><div name="sin_unlock_subterm" class=" tooltip"> sin<span class='tooltip-area'><p>sin_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   filter.lim
-     (filter.fmap (series (sin_coeff x)) (filter.nbhs filter.eventually)))
+unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
 
 sin_unlock_subterm is not universe polymorphic
 sin_unlock_subterm is transparent
 Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 114, characters 0-80
 </p></span></div></span></span></span></span></span></span></span></span><span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><div name="sin_unlock_subterm" class=" tooltip"> {R<span class='tooltip-area'><p>sin_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   filter.lim
-     (filter.fmap (series (sin_coeff x)) (filter.nbhs filter.eventually)))
+unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
 
 sin_unlock_subterm is not universe polymorphic
 sin_unlock_subterm is transparent
@@ -428,10 +413,7 @@ Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 114, characters 0-80
 </p></span></div></span></span></span></span></span></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> </span><span id="x:54" class="id"><a name="x:54" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:53">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#lim">lim</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#series">series</a></span> (<span class="id"><a href="mathcomp.analysis.trigo.html#sin_coeff">sin_coeff</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:54">x</a></span>)<span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#228a5fbd8d7ef28f21231bccff88d0b0">\oo</a></span>).<br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_sin" class="id"><div name="locked_sin" class=" tooltip">locked_sin<span class='tooltip-area'><p>locked_sin :
-unlockable
-  (fun (R : realType) (x : R) =>
-   filter.lim
-     (filter.fmap (series (sin_coeff x)) (filter.nbhs filter.eventually)))
+unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
 
 locked_sin is not universe polymorphic
 locked_sin is transparent
@@ -450,50 +432,35 @@ Declared in library mathcomp.analysis.trigo, line 117, characters 11-20
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">[sequence</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b3ebd0deddd84fd60e149cb5ef719351">~~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b3ebd0deddd84fd60e149cb5ef719351"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#odd">odd</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#n:59">n</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span> (<span class="id">-1</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#11a706273cccd094dd42b3c7d6457ef8">^</a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:59">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#1ecb2ec20b22101a31d2177b576c9a81">/2</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#x:58">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:59">n</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:59">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#fb85b56582e20c3ab47a4e55b1f6f111">`!</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">]_</a></span><span id="n:59" class="id"><a name="n:59" class="">n</a></span>.<br/>
 <br/>
 <span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><div name="cos_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>cos_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   filter.lim
-     (filter.fmap (series (cos_coeff x)) (filter.nbhs filter.eventually)))
+unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
 
 cos_unlock_subterm is not universe polymorphic
 cos_unlock_subterm is transparent
 Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 120, characters 0-80
 </p></span></div></span></span></span></span></span></span></span></span>.<span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><div name="cos_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>cos_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   filter.lim
-     (filter.fmap (series (cos_coeff x)) (filter.nbhs filter.eventually)))
+unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
 
 cos_unlock_subterm is not universe polymorphic
 cos_unlock_subterm is transparent
 Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 120, characters 0-80
 </p></span></div></span></span></span></span></span></span></span></span><span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><div name="cos_unlock_subterm" class=" tooltip"> Definition<span class='tooltip-area'><p>cos_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   filter.lim
-     (filter.fmap (series (cos_coeff x)) (filter.nbhs filter.eventually)))
+unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
 
 cos_unlock_subterm is not universe polymorphic
 cos_unlock_subterm is transparent
 Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 120, characters 0-80
 </p></span></div></span></span></span></span></span></span></span></span><span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><div name="cos_unlock_subterm" class=" tooltip"> cos<span class='tooltip-area'><p>cos_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   filter.lim
-     (filter.fmap (series (cos_coeff x)) (filter.nbhs filter.eventually)))
+unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
 
 cos_unlock_subterm is not universe polymorphic
 cos_unlock_subterm is transparent
 Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 120, characters 0-80
 </p></span></div></span></span></span></span></span></span></span></span><span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><div name="cos_unlock_subterm" class=" tooltip"> {R<span class='tooltip-area'><p>cos_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   filter.lim
-     (filter.fmap (series (cos_coeff x)) (filter.nbhs filter.eventually)))
+unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
 
 cos_unlock_subterm is not universe polymorphic
 cos_unlock_subterm is transparent
@@ -501,10 +468,7 @@ Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
 Declared in library mathcomp.analysis.trigo, line 120, characters 0-80
 </p></span></div></span></span></span></span></span></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> </span><span id="x:61" class="id"><a name="x:61" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:60">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#lim">lim</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#series">series</a></span> (<span class="id"><a href="mathcomp.analysis.trigo.html#cos_coeff">cos_coeff</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:61">x</a></span>)<span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#228a5fbd8d7ef28f21231bccff88d0b0">\oo</a></span>).<br/>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_cos" class="id"><div name="locked_cos" class=" tooltip">locked_cos<span class='tooltip-area'><p>locked_cos :
-unlockable
-  (fun (R : realType) (x : R) =>
-   filter.lim
-     (filter.fmap (series (cos_coeff x)) (filter.nbhs filter.eventually)))
+unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
 
 locked_cos is not universe polymorphic
 locked_cos is transparent

@@ -272,15 +272,7 @@
 &nbsp;&nbsp;_ <span class="id"> :</span> <span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#psum">psum</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:7">mu</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id">1</span><br/>
 <span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="distr_of" class="id"><div name="distr_of" class=" tooltip">distr_of<span class='tooltip-area'><p>distr_of : forall [R : realType] [T : choiceType], phant R -> phant T -> Type
-
-distr_of is not universe polymorphic
-Arguments distr_of [R T] _ _
-distr_of is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.distr_of
-Declared in
-library mathcomp.experimental_reals.distr, line 52, characters 11-19
-</p></span></div></span><span class="id"> &amp;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#phant">phant</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Distribution.R">R</a></span><span class="id"> &amp;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#phant">phant</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Distribution.T">T</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#distr">distr</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="distr_of" class="id"><div name="distr_of" class=" tooltip">distr_of<span class='tooltip-area'></span></div></span><span class="id"> &amp;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#phant">phant</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Distribution.R">R</a></span><span class="id"> &amp;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#phant">phant</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Distribution.T">T</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#distr">distr</a></span>.<br/>
 <span class="vernacular">End</span><span class="id"> Distribution</span>.<br/>
 <br/>
 <span class="vernacular">Notation</span> <span id="32b977dfdad0dd6a09acba6cc5915277" class="id"><a name="32b977dfdad0dd6a09acba6cc5915277" class="">&quot;{ 'distr' T / R }&quot;</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#distr_of">distr_of</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#Phant">Phant</a></span><span class="id"> R</span>) (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#Phant">Phant</a></span><span class="id"> T</span>))<br/>
@@ -315,15 +307,7 @@ library mathcomp.experimental_reals.distr, line 52, characters 11-19
 <span class="vernacular">Section</span><span class="id"> Clamp</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Clamp.R" class="id"><a name="Clamp.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="clamp" class="id"><div name="clamp" class=" tooltip">clamp<span class='tooltip-area'><p>clamp : forall {R : realType}, R -> R
-
-clamp is not universe polymorphic
-Arguments clamp {R} x%_ring_scope
-clamp is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.clamp
-Declared in
-library mathcomp.experimental_reals.distr, line 80, characters 11-16
-</p></span></div></span> (<span id="x:14" class="id"><a name="x:14" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Clamp.R">R</a></span>)<span class="id"> :=</span><br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="clamp" class="id"><div name="clamp" class=" tooltip">clamp<span class='tooltip-area'></span></div></span> (<span id="x:14" class="id"><a name="x:14" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Clamp.R">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.max">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.max">max</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.min">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.min">min</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:14">x</a></span><span class="id"> 1</span>)<span class="id"> 0</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ge0_clamp" class="id"><a name="ge0_clamp" class="">ge0_clamp</a></span><span class="id"> </span><span id="x:15" class="id"><a name="x:15" class="">x</a></span><span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#clamp">clamp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:15">x</a></span>.<br/>
@@ -338,17 +322,7 @@ library mathcomp.experimental_reals.distr, line 80, characters 11-16
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.TotalTheory.ge_max">ge_max</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.TotalTheory.ge_min">ge_min</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.lexx">lexx</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ler01">ler01</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#orbT">orbT</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="cp01_clamp" class="id"><div name="cp01_clamp" class=" tooltip">cp01_clamp<span class='tooltip-area'><p>cp01_clamp :
-forall {R : realType},
-(forall x : R, (0 <= clamp x)%R) * (forall x : R, (clamp x <= 1)%R)
-
-cp01_clamp is not universe polymorphic
-Arguments cp01_clamp {R}
-cp01_clamp is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.cp01_clamp
-Declared in
-library mathcomp.experimental_reals.distr, line 89, characters 11-21
-</p></span></div></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#ge0_clamp">ge0_clamp</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#le1_clamp">le1_clamp</a></span>).<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="cp01_clamp" class="id"><div name="cp01_clamp" class=" tooltip">cp01_clamp<span class='tooltip-area'></span></div></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#ge0_clamp">ge0_clamp</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#le1_clamp">le1_clamp</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="clamp_in01" class="id"><a name="clamp_in01" class="">clamp_in01</a></span><span class="id"> </span><span id="x:17" class="id"><a name="x:17" class="">x</a></span><span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:17">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id">1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#clamp">clamp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:17">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:17">x</a></span>.<br/>
 <details>
@@ -380,14 +354,15 @@ library mathcomp.experimental_reals.distr, line 89, characters 11-21
 <br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">mu</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#StdDefs.T">T</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#StdDefs.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>) (<span class="id">A</span><span class="id"> B</span><span class="id"> E</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred">pred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#StdDefs.T">T</a></span>) (<span class="id">f</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#StdDefs.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#StdDefs.R">R</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="dinsupp" class="id"><div name="dinsupp" class=" tooltip">dinsupp<span class='tooltip-area'><p>dinsupp : forall {R : realType} [T : choiceType], {distr T / R} -> T -> bool
+<span class="vernacular">Definition</span><span class="id"> </span><span id="dinsupp" class="id"><div name="dinsupp" class=" tooltip">dinsupp<span class='tooltip-area'><p>pred_of_nbh : forall {R : realType} [l : \bar R], nbh l -> simpl_pred R
 
-dinsupp is not universe polymorphic
-Arguments dinsupp {R} [T] mu x
-dinsupp is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.dinsupp
+pred_of_nbh is not universe polymorphic
+Arguments pred_of_nbh {R} [l]%_ereal_scope v
+pred_of_nbh is a coercion
+pred_of_nbh is transparent
+Expands to: Constant mathcomp.experimental_reals.realseq.pred_of_nbh
 Declared in
-library mathcomp.experimental_reals.distr, line 110, characters 11-18
+library mathcomp.experimental_reals.realseq, line 51, characters 9-20
 </p></span></div></span><span class="id"> </span><span id="mu:21" class="id"><a name="mu:21" class="">mu</a></span><span class="id"> :=</span><span class="gallina-kwd"> fun</span><span class="id"> </span><span id="x:22" class="id"><a name="x:22" class="">x</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:21">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:22">x</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#228e85e3c31a939cba019f255574c875"> !=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#228e85e3c31a939cba019f255574c875"> </a></span><span class="id">0</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#228e85e3c31a939cba019f255574c875"> :&gt;</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#228e85e3c31a939cba019f255574c875"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#StdDefs.R">R</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="in_dinsupp" class="id"><a name="in_dinsupp" class="">in_dinsupp</a></span><span class="id"> </span><span id="x:23" class="id"><a name="x:23" class="">x</a></span> (<span id="mu:24" class="id"><a name="mu:24" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#StdDefs.T">T</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#StdDefs.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>)<span class="id"> :</span><br/>
@@ -409,56 +384,51 @@ library mathcomp.experimental_reals.distr, line 110, characters 11-18
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#topredE">topredE</a></span><span class="id"> /</span><span class="id"><a href="mathcomp.experimental_reals.distr.html#dinsupp">dinsupp</a></span><span class="id"> /=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#negbK">negbK</a></span><span class="id">;</span><span class="id"> apply/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="pr" class="id"><div name="pr" class=" tooltip">pr<span class='tooltip-area'><p>pr : forall {R : realType} [T : choiceType], {distr T / R} -> pred T -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="pr" class="id"><div name="pr" class=" tooltip">pr<span class='tooltip-area'><p>eclamp : forall {R : realType}, R -> R
 
-pr is not universe polymorphic
-Arguments pr {R} [T] mu E
-pr is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.pr
+eclamp is not universe polymorphic
+Arguments eclamp {R} e%_ring_scope
+eclamp is transparent
+Expands to: Constant mathcomp.experimental_reals.realseq.eclamp
 Declared in
-library mathcomp.experimental_reals.distr, line 122, characters 11-13
+library mathcomp.experimental_reals.realseq, line 91, characters 11-17
 </p></span></div></span>  <span class="id"> </span><span id="mu:29" class="id"><a name="mu:29" class="">mu</a></span><span class="id"> </span><span id="E:30" class="id"><a name="E:30" class="">E</a></span>  <span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#psum">psum</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:31" class="id"><a name="x:31" class="">x</a></span><span class="id"> =&gt;</span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#E:30">E</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:31">x</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:29">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:31">x</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="prc" class="id"><div name="prc" class=" tooltip">prc<span class='tooltip-area'><p>prc :
-forall {R : realType} [T : choiceType],
-{distr T / R} -> pred T -> pred T -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="prc" class="id"><div name="prc" class=" tooltip">prc<span class='tooltip-area'><p>B1 : forall {R : realType} (x : R), nbh x%:E
 
-prc is not universe polymorphic
-Arguments prc {R} [T] mu E A
-prc is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.prc
+B1 is not universe polymorphic
+Arguments B1 {R} x%_ring_scope
+B1 is transparent
+Expands to: Constant mathcomp.experimental_reals.realseq.B1
 Declared in
-library mathcomp.experimental_reals.distr, line 123, characters 11-14
+library mathcomp.experimental_reals.realseq, line 100, characters 11-13
 </p></span></div></span> <span class="id"> </span><span id="mu:32" class="id"><a name="mu:32" class="">mu</a></span><span class="id"> </span><span id="E:33" class="id"><a name="E:33" class="">E</a></span><span class="id"> </span><span id="A:34" class="id"><a name="A:34" class="">A</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#pr">pr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:32">mu</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#974a48c83c527c4d69902f6dad4644e3">[predI</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#974a48c83c527c4d69902f6dad4644e3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#E:33">E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#974a48c83c527c4d69902f6dad4644e3"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#974a48c83c527c4d69902f6dad4644e3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#A:34">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#974a48c83c527c4d69902f6dad4644e3">]</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#pr">pr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:32">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#A:34">A</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="esp" class="id"><div name="esp" class=" tooltip">esp<span class='tooltip-area'><p>esp : forall {R : realType} [T : choiceType], {distr T / R} -> (T -> R) -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="esp" class="id"><div name="esp" class=" tooltip">esp<span class='tooltip-area'><p>B : forall {R : realType} (x : R), R -> nbh x%:E
 
-esp is not universe polymorphic
-Arguments esp {R} [T] mu f%_function_scope
-esp is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.esp
+B is not universe polymorphic
+Arguments B {R} (x e)%_ring_scope
+B is transparent
+Expands to: Constant mathcomp.experimental_reals.realseq.B
 Declared in
-library mathcomp.experimental_reals.distr, line 124, characters 11-14
+library mathcomp.experimental_reals.realseq, line 103, characters 11-12
 </p></span></div></span> <span class="id"> </span><span id="mu:35" class="id"><a name="mu:35" class="">mu</a></span><span class="id"> </span><span id="f:36" class="id"><a name="f:36" class="">f</a></span>  <span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#sum">sum</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:37" class="id"><a name="x:37" class="">x</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:36">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:37">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:35">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:37">x</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="espc" class="id"><div name="espc" class=" tooltip">espc<span class='tooltip-area'><p>espc :
-forall {R : realType} [T : choiceType],
-{distr T / R} -> (T -> R) -> pred T -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="espc" class="id"><div name="espc" class=" tooltip">espc<span class='tooltip-area'><p>ncvg : forall [R : realType], (nat -> R) -> \bar R -> Prop
 
-espc is not universe polymorphic
-Arguments espc {R} [T] mu f%_function_scope A
-espc is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.espc
+ncvg is not universe polymorphic
+Arguments ncvg [R] u%_function_scope l%_ereal_scope
+ncvg is transparent
+Expands to: Constant mathcomp.experimental_reals.realseq.ncvg
 Declared in
-library mathcomp.experimental_reals.distr, line 125, characters 11-15
+library mathcomp.experimental_reals.realseq, line 148, characters 11-15
 </p></span></div></span><span class="id"> </span><span id="mu:38" class="id"><a name="mu:38" class="">mu</a></span><span class="id"> </span><span id="f:39" class="id"><a name="f:39" class="">f</a></span><span class="id"> </span><span id="A:40" class="id"><a name="A:40" class="">A</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#sum">sum</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:41" class="id"><a name="x:41" class="">x</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:39">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:41">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#prc">prc</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:38">mu</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#pred1">pred1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:41">x</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#A:40">A</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="has_esp" class="id"><div name="has_esp" class=" tooltip">has_esp<span class='tooltip-area'><p>has_esp :
-forall {R : realType} [T : choiceType], {distr T / R} -> (T -> R) -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="has_esp" class="id"><div name="has_esp" class=" tooltip">has_esp<span class='tooltip-area'><p>iscvg : forall [R : realType], (nat -> R) -> Prop
 
-has_esp is not universe polymorphic
-Arguments has_esp {R} [T] mu f%_function_scope
-has_esp is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.has_esp
+iscvg is not universe polymorphic
+Arguments iscvg [R] u%_function_scope
+iscvg is transparent
+Expands to: Constant mathcomp.experimental_reals.realseq.iscvg
 Declared in
-library mathcomp.experimental_reals.distr, line 127, characters 11-18
+library mathcomp.experimental_reals.realseq, line 151, characters 11-16
 </p></span></div></span><span class="id"> </span><span id="mu:42" class="id"><a name="mu:42" class="">mu</a></span><span class="id"> </span><span id="f:43" class="id"><a name="f:43" class="">f</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#summable">summable</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:44" class="id"><a name="x:44" class="">x</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:43">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:44">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:42">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:44">x</a></span>).<br/>
 <span class="vernacular">End</span><span class="id"> StdDefs</span>.<br/>
 <br/>
@@ -472,14 +442,14 @@ library mathcomp.experimental_reals.distr, line 127, characters 11-18
 <span class="vernacular">Section</span><span class="id"> DistrTheory</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="DistrTheory.R" class="id"><a name="DistrTheory.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> {</span><span id="DistrTheory.T" class="id"><a name="DistrTheory.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span> (<span id="DistrTheory.mu" class="id"><a name="DistrTheory.mu" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#T:46">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#R:45">R</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="isdistr" class="id"><div name="isdistr" class=" tooltip">isdistr<span class='tooltip-area'><p>isdistr : forall {R : realType} {T : choiceType}, (T -> R) -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="isdistr" class="id"><div name="isdistr" class=" tooltip">isdistr<span class='tooltip-area'><p>nbounded : forall [R : realType], (nat -> R) -> Prop
 
-isdistr is not universe polymorphic
-Arguments isdistr {R T} mu%_function_scope
-isdistr is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.isdistr
+nbounded is not universe polymorphic
+Arguments nbounded [R] u%_function_scope
+nbounded is transparent
+Expands to: Constant mathcomp.experimental_reals.realseq.nbounded
 Declared in
-library mathcomp.experimental_reals.distr, line 141, characters 11-18
+library mathcomp.experimental_reals.realseq, line 153, characters 11-19
 </p></span></div></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:48" class="id"><a name="x:48" class="">x</a></span><span class="id">,</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrTheory.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:48">x</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="J:49" class="id"><a name="J:49" class="">J</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#uniq">uniq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#J:49">J</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#706f4f0208bba5d79e26d335c76ea034">\sum_</a></span>(<span id="j:52" class="id"><span id="j:51" class="id"><span id="j:50" class="id"><a name="j:52" class="">j</a></span></span></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#706f4f0208bba5d79e26d335c76ea034"> &lt;-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#706f4f0208bba5d79e26d335c76ea034"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#J:49">J</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#706f4f0208bba5d79e26d335c76ea034"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrTheory.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#j:50">j</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id">1</span>).<br/>
 <br/>
@@ -510,15 +480,14 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrTheory.isd">isd</a></span><span class="id"> =&gt;</span><span class="id"> _;</span><span class="id"> apply;</span><span class="id"> case:</span><span class="id"> x</span><span class="id"> =&gt;</span><span class="id"> x</span><span class="id"> /=</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.finmap.finmap#canonical_uniq">canonical_uniq</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="mkdistr" class="id"><div name="mkdistr" class=" tooltip">mkdistr<span class='tooltip-area'><p>mkdistr :
-forall {R : realType} {T : choiceType} [mu : T -> R], isdistr mu -> distr R T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="mkdistr" class="id"><div name="mkdistr" class=" tooltip">mkdistr<span class='tooltip-area'><p>nlim : forall {R : realType}, (nat -> R) -> \bar R
 
-mkdistr is not universe polymorphic
-Arguments mkdistr {R T} [mu]%_function_scope isd
-mkdistr is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.mkdistr
+nlim is not universe polymorphic
+Arguments nlim {R} u%_function_scope
+nlim is transparent
+Expands to: Constant mathcomp.experimental_reals.realseq.nlim
 Declared in
-library mathcomp.experimental_reals.distr, line 164, characters 11-18
+library mathcomp.experimental_reals.realseq, line 425, characters 11-15
 </p></span></div></span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Distr">Distr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrTheory.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrTheory.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrTheory.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#isd1">isd1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#isd2">isd2</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#isd3">isd3</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="mkdistrE" class="id"><a name="mkdistrE" class="">mkdistrE</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mkdistr">mkdistr</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> =1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrTheory.mu">mu</a></span>.<br/>
@@ -527,15 +496,7 @@ library mathcomp.experimental_reals.distr, line 164, characters 11-18
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="ispredistr" class="id"><div name="ispredistr" class=" tooltip">ispredistr<span class='tooltip-area'><p>ispredistr : forall {R : realType} {T : choiceType}, (T -> R) -> Prop
-
-ispredistr is not universe polymorphic
-Arguments ispredistr {R T} mu%_function_scope
-ispredistr is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.ispredistr
-Declared in
-library mathcomp.experimental_reals.distr, line 169, characters 11-21
-</p></span></div></span><span class="id"> {</span><span id="T:56" class="id"><a name="T:56" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span> (<span id="mu:57" class="id"><a name="mu:57" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#T:56">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrTheory.R">R</a></span>)<span class="id"> :=</span><br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="ispredistr" class="id"><div name="ispredistr" class=" tooltip">ispredistr<span class='tooltip-area'></span></div></span><span class="id"> {</span><span id="T:56" class="id"><a name="T:56" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span> (<span id="mu:57" class="id"><a name="mu:57" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#T:56">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrTheory.R">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#53e4c1e546d9b20e029d981f761726c2">[/\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#53e4c1e546d9b20e029d981f761726c2"> </a></span><span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:58" class="id"><a name="x:58" class="">x</a></span><span class="id">,</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:57">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:58">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#53e4c1e546d9b20e029d981f761726c2"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#53e4c1e546d9b20e029d981f761726c2"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#summable">summable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:57">mu</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#53e4c1e546d9b20e029d981f761726c2">]</a></span>.<br/>
 <span class="vernacular">End</span><span class="id"> DistrTheory</span>.<br/>
 <br/>
@@ -562,15 +523,7 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> DistrD</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="DistrD.R" class="id"><a name="DistrD.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> {</span><span id="DistrD.T" class="id"><a name="DistrD.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span> (<span id="DistrD.mu" class="id"><a name="DistrD.mu" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#T:72">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#R:71">R</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="mnull" class="id"><div name="mnull" class=" tooltip">mnull<span class='tooltip-area'><p>mnull : forall {R : realType} {T : choiceType}, T -> R
-
-mnull is not universe polymorphic
-Arguments mnull {R T} x
-mnull is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.mnull
-Declared in
-library mathcomp.experimental_reals.distr, line 192, characters 11-16
-</p></span></div></span><span class="id"> :=</span><span class="gallina-kwd"> fun</span><span class="id"> </span><span id="x:74" class="id"><a name="x:74" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrD.T">T</a></span><span class="id"> =&gt;</span> (<span class="id">0</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrD.R">R</a></span>).<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="mnull" class="id"><div name="mnull" class=" tooltip">mnull<span class='tooltip-area'></span></div></span><span class="id"> :=</span><span class="gallina-kwd"> fun</span><span class="id"> </span><span id="x:74" class="id"><a name="x:74" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrD.T">T</a></span><span class="id"> =&gt;</span> (<span class="id">0</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrD.R">R</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="isd_mnull" class="id"><a name="isd_mnull" class="">isd_mnull</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#isdistr">isdistr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mnull">mnull</a></span>.<br/>
 <details>
@@ -578,15 +531,7 @@ library mathcomp.experimental_reals.distr, line 192, characters 11-16
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> split=&gt;</span><span class="id"> //</span><span class="id"> J</span><span class="id"> _;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#big1">big1</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ler01">ler01</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="dnull" class="id"><div name="dnull" class=" tooltip">dnull<span class='tooltip-area'><p>dnull : forall {R : realType} {T : choiceType}, distr R T
-
-dnull is not universe polymorphic
-Arguments dnull {R T}
-dnull is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.dnull
-Declared in
-library mathcomp.experimental_reals.distr, line 197, characters 11-16
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#locked">locked</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#mkdistr">mkdistr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#isd_mnull">isd_mnull</a></span>).<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="dnull" class="id"><div name="dnull" class=" tooltip">dnull<span class='tooltip-area'></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#locked">locked</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#mkdistr">mkdistr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#isd_mnull">isd_mnull</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="dnullE" class="id"><a name="dnullE" class="">dnullE</a></span><span class="id"> </span><span id="x:75" class="id"><a name="x:75" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#dnull">dnull</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:75">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span>.<br/>
 <details>
@@ -594,15 +539,7 @@ library mathcomp.experimental_reals.distr, line 197, characters 11-16
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> unlock</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#dnull">dnull</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="mkdistrd" class="id"><div name="mkdistrd" class=" tooltip">mkdistrd<span class='tooltip-area'><p>mkdistrd : forall {R : realType} {T : choiceType}, (T -> R) -> {distr T / R}
-
-mkdistrd is not universe polymorphic
-Arguments mkdistrd {R T} mu%_function_scope
-mkdistrd is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.mkdistrd
-Declared in
-library mathcomp.experimental_reals.distr, line 202, characters 11-19
-</p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrD.T">T</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrD.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span><span class="id"> :=</span><br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="mkdistrd" class="id"><div name="mkdistrd" class=" tooltip">mkdistrd<span class='tooltip-area'></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrD.T">T</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrD.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">if</span><span class="id"> @</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#idP">idP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#isdistr">isdistr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DistrD.mu">mu</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> &gt;]</a></span><span class="id"> is</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#ReflectT">ReflectT</a></span><span class="id"> Px</span><span class="gallina-kwd"> then</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.experimental_reals.distr.html#mkdistr">mkdistr</a></span> (<span class="id"><a href="mathcomp.classical.boolp.html#asboolW">asboolW</a></span><span class="id"> Px</span>)<br/>
 &nbsp;&nbsp;<span class="gallina-kwd">else</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#dnull">dnull</a></span>.<br/>
@@ -618,16 +555,7 @@ library mathcomp.experimental_reals.distr, line 202, characters 11-19
 <span class="vernacular">Section</span><span class="id"> Restr</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Restr.R" class="id"><a name="Restr.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> {</span><span id="Restr.T" class="id"><a name="Restr.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span> (<span id="Restr.p" class="id"><a name="Restr.p" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred">pred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#T:80">T</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="mrestr" class="id"><div name="mrestr" class=" tooltip">mrestr<span class='tooltip-area'><p>mrestr :
-forall {R : realType} {T : choiceType}, pred T -> {distr T / R} -> T -> R
-
-mrestr is not universe polymorphic
-Arguments mrestr {R T} p mu x
-mrestr is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.mrestr
-Declared in
-library mathcomp.experimental_reals.distr, line 217, characters 11-17
-</p></span></div></span> (<span id="mu:82" class="id"><a name="mu:82" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Restr.T">T</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Restr.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>)<span class="id"> :=</span><br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="mrestr" class="id"><div name="mrestr" class=" tooltip">mrestr<span class='tooltip-area'></span></div></span> (<span id="mu:82" class="id"><a name="mu:82" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Restr.T">T</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Restr.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:83" class="id"><a name="x:83" class="">x</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Restr.p">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:83">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:82">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:83">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">0</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="isd_mrestr" class="id"><a name="isd_mrestr" class="">isd_mrestr</a></span> (<span id="mu:84" class="id"><a name="mu:84" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Restr.T">T</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Restr.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#isdistr">isdistr</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#mrestr">mrestr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:84">mu</a></span>).<br/>
@@ -641,16 +569,7 @@ library mathcomp.experimental_reals.distr, line 217, characters 11-17
 <span class="id">+</span><span class="gallina-kwd"> by</span><span class="id"> apply/</span>(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.le_trans">le_trans</a></span><span class="id"> _</span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#le1_mu">le1_mu</a></span><span class="id"> mu</span>))<span class="id">/</span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#gerfinseq_psum">gerfinseq_psum</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="drestr" class="id"><div name="drestr" class=" tooltip">drestr<span class='tooltip-area'><p>drestr :
-forall {R : realType} {T : choiceType}, pred T -> {distr T / R} -> distr R T
-
-drestr is not universe polymorphic
-Arguments drestr {R T} p mu
-drestr is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.drestr
-Declared in
-library mathcomp.experimental_reals.distr, line 229, characters 11-17
-</p></span></div></span> (<span id="mu:91" class="id"><a name="mu:91" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Restr.T">T</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Restr.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#locked">locked</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#mkdistr">mkdistr</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#isd_mrestr">isd_mrestr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:91">mu</a></span>)).<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="drestr" class="id"><div name="drestr" class=" tooltip">drestr<span class='tooltip-area'></span></div></span> (<span id="mu:91" class="id"><a name="mu:91" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Restr.T">T</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Restr.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#locked">locked</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#mkdistr">mkdistr</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#isd_mrestr">isd_mrestr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:91">mu</a></span>)).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="drestrE" class="id"><a name="drestrE" class="">drestrE</a></span> (<span id="mu:92" class="id"><a name="mu:92" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Restr.T">T</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Restr.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>)<span class="id"> </span><span id="x:93" class="id"><a name="x:93" class="">x</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.experimental_reals.distr.html#drestr">drestr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:92">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:93">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Restr.p">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:93">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:92">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:93">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">0</span>.<br/>
@@ -688,14 +607,14 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">s</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#seq">seq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DRat.T">T</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="mrat" class="id"><div name="mrat" class=" tooltip">mrat<span class='tooltip-area'><p>mrat : forall {R : realType} [T : choiceType], seq T -> T -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="mrat" class="id"><div name="mrat" class=" tooltip">mrat<span class='tooltip-area'><p>distr_of : forall [R : realType] [T : choiceType], phant R -> phant T -> Type
 
-mrat is not universe polymorphic
-Arguments mrat {R} [T] s%_seq_scope _
-mrat is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.mrat
+distr_of is not universe polymorphic
+Arguments distr_of [R T] _ _
+distr_of is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.distr_of
 Declared in
-library mathcomp.experimental_reals.distr, line 261, characters 11-15
+library mathcomp.experimental_reals.distr, line 52, characters 11-19
 </p></span></div></span> (<span id="s:104" class="id"><a name="s:104" class="">s</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#seq">seq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DRat.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DRat.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DRat.R">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:105" class="id"><a name="x:105" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DRat.T">T</a></span><span class="id"> =&gt;</span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#count">count</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#pred1">pred1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:105">x</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#s:104">s</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#size">size</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#s:104">s</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span>.<br/>
 <br/>
@@ -751,14 +670,14 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> split;</span><span class="id"> [apply/</span><span class="id"><a href="mathcomp.experimental_reals.distr.html#ge0_mrat">ge0_mrat</a></span><span class="id"> |</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.experimental_reals.distr.html#has_sup_mrat">has_sup_mrat</a></span><span class="id">]</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="drat" class="id"><div name="drat" class=" tooltip">drat<span class='tooltip-area'><p>drat : forall {R : realType} [T : choiceType], seq T -> distr R T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="drat" class="id"><div name="drat" class=" tooltip">drat<span class='tooltip-area'><p>clamp : forall {R : realType}, R -> R
 
-drat is not universe polymorphic
-Arguments drat {R} [T] s%_seq_scope
-drat is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.drat
+clamp is not universe polymorphic
+Arguments clamp {R} x%_ring_scope
+clamp is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.clamp
 Declared in
-library mathcomp.experimental_reals.distr, line 304, characters 11-15
+library mathcomp.experimental_reals.distr, line 80, characters 11-16
 </p></span></div></span><span class="id"> </span><span id="s:125" class="id"><a name="s:125" class="">s</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#locked">locked</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#mkdistr">mkdistr</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#isd_mrat">isd_mrat</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#s:125">s</a></span>)).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="drat1E" class="id"><a name="drat1E" class="">drat1E</a></span><span class="id"> </span><span id="s:126" class="id"><a name="s:126" class="">s</a></span><span class="id"> </span><span id="x:127" class="id"><a name="x:127" class="">x</a></span><span class="id"> :</span><br/>
@@ -768,23 +687,25 @@ library mathcomp.experimental_reals.distr, line 304, characters 11-15
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> unlock</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#drat">drat</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mkdistrE">mkdistrE</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="dunit" class="id"><div name="dunit" class=" tooltip">dunit<span class='tooltip-area'><p>dunit : forall {R : realType} [T : choiceType], T -> distr R T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="dunit" class="id"><div name="dunit" class=" tooltip">dunit<span class='tooltip-area'><p>cp01_clamp :
+forall {R : realType},
+(forall x : R, (0 <= clamp x)%R) * (forall x : R, (clamp x <= 1)%R)
 
-dunit is not universe polymorphic
-Arguments dunit {R} [T] x
-dunit is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.dunit
+cp01_clamp is not universe polymorphic
+Arguments cp01_clamp {R}
+cp01_clamp is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.cp01_clamp
 Declared in
-library mathcomp.experimental_reals.distr, line 310, characters 11-16
+library mathcomp.experimental_reals.distr, line 89, characters 11-21
 </p></span></div></span><span class="id"> </span><span id="x:128" class="id"><a name="x:128" class="">x</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#locked">locked</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#drat">drat</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#506674b18256ef8f50efed43fa1dfd7d">[::</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#506674b18256ef8f50efed43fa1dfd7d"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:128">x</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#506674b18256ef8f50efed43fa1dfd7d">]</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="duni" class="id"><div name="duni" class=" tooltip">duni<span class='tooltip-area'><p>duni : forall {R : realType} [T : choiceType], seq T -> distr R T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="duni" class="id"><div name="duni" class=" tooltip">duni<span class='tooltip-area'><p>dinsupp : forall {R : realType} [T : choiceType], {distr T / R} -> T -> bool
 
-duni is not universe polymorphic
-Arguments duni {R} [T] s%_seq_scope
-duni is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.duni
+dinsupp is not universe polymorphic
+Arguments dinsupp {R} [T] mu x
+dinsupp is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.dinsupp
 Declared in
-library mathcomp.experimental_reals.distr, line 311, characters 11-15
+library mathcomp.experimental_reals.distr, line 110, characters 11-18
 </p></span></div></span> <span class="id"> </span><span id="s:129" class="id"><a name="s:129" class="">s</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#locked">locked</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#drat">drat</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.seq#undup">undup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#s:129">s</a></span>)).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="dunit1E" class="id"><a name="dunit1E" class="">dunit1E</a></span><span class="id"> </span><span id="x:130" class="id"><a name="x:130" class="">x</a></span><span class="id"> </span><span id="y:131" class="id"><a name="y:131" class="">y</a></span><span class="id"> :</span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#dunit">dunit</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:130">x</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#y:131">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#x:130">x</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> ==</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#y:131">y</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span>.<br/>
@@ -812,14 +733,14 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> Flip</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Flip.R" class="id"><a name="Flip.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="mflip" class="id"><div name="mflip" class=" tooltip">mflip<span class='tooltip-area'><p>mflip : forall {R : realType}, R -> bool -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="mflip" class="id"><div name="mflip" class=" tooltip">mflip<span class='tooltip-area'><p>pr : forall {R : realType} [T : choiceType], {distr T / R} -> pred T -> R
 
-mflip is not universe polymorphic
-Arguments mflip {R} xt%_ring_scope b%_bool_scope
-mflip is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.mflip
+pr is not universe polymorphic
+Arguments pr {R} [T] mu E
+pr is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.pr
 Declared in
-library mathcomp.experimental_reals.distr, line 332, characters 11-16
+library mathcomp.experimental_reals.distr, line 122, characters 11-13
 </p></span></div></span> (<span id="xt:137" class="id"><a name="xt:137" class="">xt</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Flip.R">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="b:138" class="id"><a name="b:138" class="">b</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#b:138">b</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#clamp">clamp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#xt:137">xt</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#clamp">clamp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#xt:137">xt</a></span>.<br/>
 <br/>
@@ -832,15 +753,16 @@ library mathcomp.experimental_reals.distr, line 332, characters 11-16
 <span class="id">+</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.bigop#index_enum">index_enum</a></span><span class="id"> !</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#unlock">unlock</a></span><span class="id"> /=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.addr0">addr0</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.addrC">addrC</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.subrK">subrK</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="dflip" class="id"><div name="dflip" class=" tooltip">dflip<span class='tooltip-area'><p>dflip :
-forall {R : realType}, R -> distr R Datatypes_bool__canonical__choice_Choice
+<span class="vernacular">Definition</span><span class="id"> </span><span id="dflip" class="id"><div name="dflip" class=" tooltip">dflip<span class='tooltip-area'><p>prc :
+forall {R : realType} [T : choiceType],
+{distr T / R} -> pred T -> pred T -> R
 
-dflip is not universe polymorphic
-Arguments dflip {R} xt%_ring_scope
-dflip is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.dflip
+prc is not universe polymorphic
+Arguments prc {R} [T] mu E A
+prc is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.prc
 Declared in
-library mathcomp.experimental_reals.distr, line 341, characters 11-16
+library mathcomp.experimental_reals.distr, line 123, characters 11-14
 </p></span></div></span> (<span id="xt:140" class="id"><a name="xt:140" class="">xt</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Flip.R">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#locked">locked</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#mkdistr">mkdistr</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#isd_mflip">isd_mflip</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#xt:140">xt</a></span>)).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="dflip1E" class="id"><a name="dflip1E" class="">dflip1E</a></span><span class="id"> </span><span id="xt:141" class="id"><a name="xt:141" class="">xt</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#dflip">dflip</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#xt:141">xt</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> =1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mflip">mflip</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#xt:141">xt</a></span>.<br/>
@@ -860,16 +782,14 @@ library mathcomp.experimental_reals.distr, line 341, characters 11-16
 <span class="vernacular">Section</span><span class="vernacular"> Bind</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Std.Bind.T" class="id"><a name="Std.Bind.T" class="">T</a></span><span class="id"> </span><span id="Std.Bind.U" class="id"><a name="Std.Bind.U" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span> (<span id="Std.Bind.f" class="id"><a name="Std.Bind.f" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#T:143">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#distr">distr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#U:144">U</a></span>) (<span id="Std.Bind.mu" class="id"><a name="Std.Bind.mu" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#distr">distr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#T:143">T</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="mlet" class="id"><div name="mlet" class=" tooltip">mlet<span class='tooltip-area'><p>mlet :
-forall {R : realType} {T U : choiceType},
-(T -> {distr U / R}) -> {distr T / R} -> U -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="mlet" class="id"><div name="mlet" class=" tooltip">mlet<span class='tooltip-area'><p>esp : forall {R : realType} [T : choiceType], {distr T / R} -> (T -> R) -> R
 
-mlet is not universe polymorphic
-Arguments mlet {R T U} f%_function_scope mu y
-mlet is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.mlet
+esp is not universe polymorphic
+Arguments esp {R} [T] mu f%_function_scope
+esp is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.esp
 Declared in
-library mathcomp.experimental_reals.distr, line 359, characters 11-15
+library mathcomp.experimental_reals.distr, line 124, characters 11-14
 </p></span></div></span><span class="id"> :=</span><span class="gallina-kwd"> fun</span><span class="id"> </span><span id="y:147" class="id"><a name="y:147" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.Bind.U">U</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#psum">psum</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:148" class="id"><a name="x:148" class="">x</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.Bind.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:148">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.Bind.f">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:148">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#y:147">y</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="isd_mlet" class="id"><a name="isd_mlet" class="">isd_mlet</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#isdistr">isdistr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mlet">mlet</a></span>.<br/>
@@ -887,16 +807,16 @@ library mathcomp.experimental_reals.distr, line 359, characters 11-15
 <span class="gallina-kwd">by</span><span class="id"> apply/</span>(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.le_trans">le_trans</a></span><span class="id"> _</span>)<span class="id">/</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ler_sum">ler_sum</a></span><span class="id">=&gt;</span><span class="id"> y</span><span class="id"> _;</span><span class="id"> apply/</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ler_norm">ler_norm</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="dlet" class="id"><div name="dlet" class=" tooltip">dlet<span class='tooltip-area'><p>dlet :
-forall {R : realType} {T U : choiceType},
-(T -> {distr U / R}) -> {distr T / R} -> distr R U
+<span class="vernacular">Definition</span><span class="id"> </span><span id="dlet" class="id"><div name="dlet" class=" tooltip">dlet<span class='tooltip-area'><p>espc :
+forall {R : realType} [T : choiceType],
+{distr T / R} -> (T -> R) -> pred T -> R
 
-dlet is not universe polymorphic
-Arguments dlet {R T U} f%_function_scope mu
-dlet is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.dlet
+espc is not universe polymorphic
+Arguments espc {R} [T] mu f%_function_scope A
+espc is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.espc
 Declared in
-library mathcomp.experimental_reals.distr, line 374, characters 11-15
+library mathcomp.experimental_reals.distr, line 125, characters 11-15
 </p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#locked">locked</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#mkdistr">mkdistr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#isd_mlet">isd_mlet</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="dletE" class="id"><a name="dletE" class="">dletE</a></span><span class="id"> </span><span id="y:149" class="id"><a name="y:149" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#dlet">dlet</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#y:149">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realsum.html#psum">psum</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:150" class="id"><a name="x:150" class="">x</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.Bind.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:150">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.Bind.f">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:150">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#y:149">y</a></span>).<br/>
@@ -908,29 +828,26 @@ library mathcomp.experimental_reals.distr, line 374, characters 11-15
 <br/>
 <span class="vernacular">Notation</span> <span id="f5f8664a628c17b1ce9ad892e99eadd3" class="id"><a name="f5f8664a628c17b1ce9ad892e99eadd3" class="">&quot;\dlet_ ( i &lt;- d ) E&quot;</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#dlet">dlet</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="i:151" class="id"><a name="i:151" class="">i</a></span><span class="id"> =&gt;</span><span class="id"> E</span>)<span class="id"> d</span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="dlift" class="id"><div name="dlift" class=" tooltip">dlift<span class='tooltip-area'><p>dlift :
-forall {R : realType} {A : choiceType},
-(A -> {distr A / R}) -> {distr A / R} -> distr R A
+<span class="vernacular">Definition</span><span class="id"> </span><span id="dlift" class="id"><div name="dlift" class=" tooltip">dlift<span class='tooltip-area'><p>has_esp :
+forall {R : realType} [T : choiceType], {distr T / R} -> (T -> R) -> Prop
 
-dlift is not universe polymorphic
-Arguments dlift {R A} f%_function_scope d
-dlift is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.dlift
+has_esp is not universe polymorphic
+Arguments has_esp {R} [T] mu f%_function_scope
+has_esp is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.has_esp
 Declared in
-library mathcomp.experimental_reals.distr, line 382, characters 11-16
+library mathcomp.experimental_reals.distr, line 127, characters 11-18
 </p></span></div></span><span class="id"> {</span><span id="A:152" class="id"><a name="A:152" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span> (<span id="f:153" class="id"><a name="f:153" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#A:152">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#A:152">A</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="d:154" class="id"><a name="d:154" class="">d</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3">\dlet_</a></span>(<span id="x:155" class="id"><a name="x:155" class="">x</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3"> &lt;-</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#d:154">d</a></span>)<span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:153">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:155">x</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="diter" class="id"><div name="diter" class=" tooltip">diter<span class='tooltip-area'><p>diter :
-forall {R : realType} {A : choiceType},
-nat -> (A -> {distr A / R}) -> A -> {distr A / R}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="diter" class="id"><div name="diter" class=" tooltip">diter<span class='tooltip-area'><p>isdistr : forall {R : realType} {T : choiceType}, (T -> R) -> Prop
 
-diter is not universe polymorphic
-Arguments diter {R A} n%_nat_scope f%_function_scope a
-diter is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.diter
+isdistr is not universe polymorphic
+Arguments isdistr {R T} mu%_function_scope
+isdistr is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.isdistr
 Declared in
-library mathcomp.experimental_reals.distr, line 385, characters 11-16
+library mathcomp.experimental_reals.distr, line 141, characters 11-18
 </p></span></div></span><span class="id"> {</span><span id="A:156" class="id"><a name="A:156" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span><span class="id"> </span><span id="n:157" class="id"><a name="n:157" class="">n</a></span> (<span id="f:158" class="id"><a name="f:158" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#A:156">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#A:156">A</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="a:159" class="id"><a name="a:159" class="">a</a></span><span class="id"> =&gt;</span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#iter">iter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#n:157">n</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#dlift">dlift</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:158">f</a></span>) (<span class="id"><a href="mathcomp.experimental_reals.distr.html#dunit">dunit</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#a:159">a</a></span>)).<br/>
 <br/>
@@ -1119,15 +1036,15 @@ Qed.</div></details>
 Qed.</div></details>
 <span class="vernacular">End</span><span class="id"> DLetAlg</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="mlim" class="id"><div name="mlim" class=" tooltip">mlim<span class='tooltip-area'><p>mlim :
-forall {R : realType} [T : choiceType], (nat -> {distr T / R}) -> T -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="mlim" class="id"><div name="mlim" class=" tooltip">mlim<span class='tooltip-area'><p>mkdistr :
+forall {R : realType} {T : choiceType} [mu : T -> R], isdistr mu -> distr R T
 
-mlim is not universe polymorphic
-Arguments mlim {R} [T] f%_function_scope _
-mlim is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.mlim
+mkdistr is not universe polymorphic
+Arguments mkdistr {R T} [mu]%_function_scope isd
+mkdistr is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.mkdistr
 Declared in
-library mathcomp.experimental_reals.distr, line 543, characters 11-15
+library mathcomp.experimental_reals.distr, line 164, characters 11-18
 </p></span></div></span><span class="id"> </span><span id="T:245" class="id"><a name="T:245" class="">T</a></span> (<span id="f:246" class="id"><a name="f:246" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#distr">distr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#T:245">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#T:245">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.R">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:247" class="id"><a name="x:247" class="">x</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#fine">fine</a></span> (<span class="id"><a href="mathcomp.experimental_reals.realseq.html#nlim">nlim</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="n:248" class="id"><a name="n:248" class="">n</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:246">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#n:248">n</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:247">x</a></span>)).<br/>
 <br/>
@@ -1160,15 +1077,14 @@ library mathcomp.experimental_reals.distr, line 543, characters 11-15
 <span class="gallina-kwd">by</span><span class="id"> apply/</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ler_sum">ler_sum</a></span><span class="id">=&gt;</span><span class="id"> j</span><span class="id"> _;</span><span class="id"> rewrite</span><span class="id"> /F;</span><span class="id"> case/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#boolP">boolP</a></span><span class="id">:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> </a></span>_<span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> &gt;]</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="dlim" class="id"><div name="dlim" class=" tooltip">dlim<span class='tooltip-area'><p>dlim :
-forall {R : realType} [T : choiceType], (nat -> {distr T / R}) -> distr R T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="dlim" class="id"><div name="dlim" class=" tooltip">dlim<span class='tooltip-area'><p>ispredistr : forall {R : realType} {T : choiceType}, (T -> R) -> Prop
 
-dlim is not universe polymorphic
-Arguments dlim {R} [T] f%_function_scope
-dlim is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.dlim
+ispredistr is not universe polymorphic
+Arguments ispredistr {R T} mu%_function_scope
+ispredistr is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.ispredistr
 Declared in
-library mathcomp.experimental_reals.distr, line 573, characters 11-15
+library mathcomp.experimental_reals.distr, line 169, characters 11-21
 </p></span></div></span><span class="id"> </span><span id="T:270" class="id"><a name="T:270" class="">T</a></span> (<span id="f:271" class="id"><a name="f:271" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#distr">distr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#T:270">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#locked">locked</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#mkdistr">mkdistr</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#isd_mlim">isd_mlim</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:271">f</a></span>)).<br/>
 <br/>
@@ -1210,16 +1126,14 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> apply/</span>(<span class="id"><a href="mathcomp.experimental_reals.realseq.html#eq_from_nlim">eq_from_nlim</a></span> (<span class="id">K</span><span class="id"> :=</span><span class="id"> K</span>))<span class="id">;</span><span class="id"> move=&gt;</span><span class="id"> n</span><span class="id"> /eq_fg</span><span class="id"> /</span>(_<span class="id"> x</span>).<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="dlim_bump" class="id"><div name="dlim_bump" class=" tooltip">dlim_bump<span class='tooltip-area'><p>dlim_bump :
-forall {R : realType} [T : choiceType] (mu0 : nat -> {distr T / R}),
-\dlim_(n) mu0 n.+1 =1 \dlim_(n) mu0 n
+<span class="vernacular">Definition</span><span class="id"> </span><span id="dlim_bump" class="id"><div name="dlim_bump" class=" tooltip">dlim_bump<span class='tooltip-area'><p>mnull : forall {R : realType} {T : choiceType}, T -> R
 
-dlim_bump is not universe polymorphic
-Arguments dlim_bump {R} [T] mu%_function_scope x
-dlim_bump is opaque
-Expands to: Constant mathcomp.experimental_reals.distr.dlim_bump
+mnull is not universe polymorphic
+Arguments mnull {R T} x
+mnull is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.mnull
 Declared in
-library mathcomp.experimental_reals.distr, line 605, characters 11-20
+library mathcomp.experimental_reals.distr, line 192, characters 11-16
 </p></span></div></span> (<span id="mu:290" class="id"><a name="mu:290" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.DLimTheory.T">T</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.experimental_reals.distr.html#dlim">dlim</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="n:291" class="id"><a name="n:291" class="">n</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:290">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#n:291">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> =1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#dlim">dlim</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:290">mu</a></span>.<br/>
 <details>
@@ -1227,16 +1141,14 @@ library mathcomp.experimental_reals.distr, line 605, characters 11-20
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> x;</span><span class="id"> rewrite</span><span class="id"> !</span><span class="id"><a href="mathcomp.experimental_reals.distr.html#dlimE">dlimE</a></span><span class="id"> -[in</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssrmatching.ssrmatching.html#SsrMatchingSyntax.RHS">RHS</a></span><span class="id">]</span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#nlim_bump">nlim_bump</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="dlim_lift" class="id"><div name="dlim_lift" class=" tooltip">dlim_lift<span class='tooltip-area'><p>dlim_lift :
-forall {R : realType} [T : choiceType] (mu0 : nat -> {distr T / R}) (p : nat),
-\dlim_(n) mu0 (n + p)%N =1 \dlim_(n) mu0 n
+<span class="vernacular">Definition</span><span class="id"> </span><span id="dlim_lift" class="id"><div name="dlim_lift" class=" tooltip">dlim_lift<span class='tooltip-area'><p>dnull : forall {R : realType} {T : choiceType}, distr R T
 
-dlim_lift is not universe polymorphic
-Arguments dlim_lift {R} [T] mu%_function_scope p%_nat_scope x
-dlim_lift is opaque
-Expands to: Constant mathcomp.experimental_reals.distr.dlim_lift
+dnull is not universe polymorphic
+Arguments dnull {R T}
+dnull is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.dnull
 Declared in
-library mathcomp.experimental_reals.distr, line 609, characters 11-20
+library mathcomp.experimental_reals.distr, line 197, characters 11-16
 </p></span></div></span> (<span id="mu:292" class="id"><a name="mu:292" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.DLimTheory.T">T</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>)<span class="id"> </span><span id="p:293" class="id"><a name="p:293" class="">p</a></span><span class="id"> :</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.experimental_reals.distr.html#dlim">dlim</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="n:294" class="id"><a name="n:294" class="">n</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:292">mu</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#n:294">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#0dacc1786c5ba797d47dd85006231633"> +</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#0dacc1786c5ba797d47dd85006231633"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#p:293">p</a></span>)<span class="id">%N</span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> =1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#dlim">dlim</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#mu:292">mu</a></span>.<br/>
 <details>
@@ -1244,26 +1156,26 @@ library mathcomp.experimental_reals.distr, line 609, characters 11-20
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> x;</span><span class="id"> rewrite</span><span class="id"> !</span><span class="id"><a href="mathcomp.experimental_reals.distr.html#dlimE">dlimE</a></span> (<span class="id"><a href="mathcomp.experimental_reals.realseq.html#nlim_lift">nlim_lift</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="n:297" class="id"><span id="n:296" class="id"><span id="n:295" class="id"><a name="n:297" class="">n</a></span></span></span><span class="id"> =&gt;</span> (<span class="id">mu</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#n:295">n</a></span>)<span class="id"> x</span>)). Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="dcvg" class="id"><div name="dcvg" class=" tooltip">dcvg<span class='tooltip-area'><p>dcvg : forall {R : realType} {T : choiceType}, (nat -> {distr T / R}) -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="dcvg" class="id"><div name="dcvg" class=" tooltip">dcvg<span class='tooltip-area'><p>mkdistrd : forall {R : realType} {T : choiceType}, (T -> R) -> {distr T / R}
 
-dcvg is not universe polymorphic
-Arguments dcvg {R T} f%_function_scope
-dcvg is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.dcvg
+mkdistrd is not universe polymorphic
+Arguments mkdistrd {R T} mu%_function_scope
+mkdistrd is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.mkdistrd
 Declared in
-library mathcomp.experimental_reals.distr, line 613, characters 11-15
+library mathcomp.experimental_reals.distr, line 202, characters 11-19
 </p></span></div></span><span class="id"> {</span><span id="T:298" class="id"><a name="T:298" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span> (<span id="f:299" class="id"><a name="f:299" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#T:298">T</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:300" class="id"><a name="x:300" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">exists</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="l:301" class="id"><a name="l:301" class="">l</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#ncvg">ncvg</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="n:302" class="id"><a name="n:302" class="">n</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:299">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#n:302">n</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:300">x</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#l:301">l</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="ducvg" class="id"><div name="ducvg" class=" tooltip">ducvg<span class='tooltip-area'><p>ducvg :
-forall {R : realType} {T : choiceType}, (nat -> {distr T / R}) -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="ducvg" class="id"><div name="ducvg" class=" tooltip">ducvg<span class='tooltip-area'><p>mrestr :
+forall {R : realType} {T : choiceType}, pred T -> {distr T / R} -> T -> R
 
-ducvg is not universe polymorphic
-Arguments ducvg {R T} f%_function_scope
-ducvg is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.ducvg
+mrestr is not universe polymorphic
+Arguments mrestr {R T} p mu x
+mrestr is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.mrestr
 Declared in
-library mathcomp.experimental_reals.distr, line 616, characters 11-16
+library mathcomp.experimental_reals.distr, line 217, characters 11-17
 </p></span></div></span><span class="id"> {</span><span id="T:303" class="id"><a name="T:303" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span> (<span id="f:304" class="id"><a name="f:304" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#T:303">T</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">exists</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="l:305" class="id"><a name="l:305" class="">l</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:306" class="id"><a name="x:306" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.realseq.html#ncvg">ncvg</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="n:307" class="id"><a name="n:307" class="">n</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f:304">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#n:307">n</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:306">x</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#l:305">l</a></span>.<br/>
 <br/>
@@ -1372,16 +1284,15 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> Marginals</span>.<br/>
 <span class="vernacular">Variable</span> (<span id="Std.Marginals.T" class="id"><a name="Std.Marginals.T" class="">T</a></span><span class="id"> </span><span id="Std.Marginals.U" class="id"><a name="Std.Marginals.U" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span>) (<span id="Std.Marginals.h" class="id"><a name="Std.Marginals.h" class="">h</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#T:362">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#U:363">U</a></span>) (<span id="Std.Marginals.mu" class="id"><a name="Std.Marginals.mu" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#distr">distr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#T:362">T</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="dmargin" class="id"><div name="dmargin" class=" tooltip">dmargin<span class='tooltip-area'><p>dmargin :
-forall {R : realType} [T U : choiceType],
-(T -> U) -> {distr T / R} -> distr R U
+<span class="vernacular">Definition</span><span class="id"> </span><span id="dmargin" class="id"><div name="dmargin" class=" tooltip">dmargin<span class='tooltip-area'><p>drestr :
+forall {R : realType} {T : choiceType}, pred T -> {distr T / R} -> distr R T
 
-dmargin is not universe polymorphic
-Arguments dmargin {R} [T U] h%_function_scope mu
-dmargin is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.dmargin
+drestr is not universe polymorphic
+Arguments drestr {R T} p mu
+drestr is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.drestr
 Declared in
-library mathcomp.experimental_reals.distr, line 705, characters 11-18
+library mathcomp.experimental_reals.distr, line 229, characters 11-17
 </p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3">\dlet_</a></span>(<span id="x:368" class="id"><a name="x:368" class="">x</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3"> &lt;-</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.Marginals.mu">mu</a></span>) (<span class="id"><a href="mathcomp.experimental_reals.distr.html#dunit">dunit</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.Marginals.h">h</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:368">x</a></span>)).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="dmarginE" class="id"><a name="dmarginE" class="">dmarginE</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#dmargin">dmargin</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3">\dlet_</a></span>(<span id="y:369" class="id"><a name="y:369" class="">y</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3"> &lt;-</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#f5f8664a628c17b1ce9ad892e99eadd3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.Marginals.mu">mu</a></span>) (<span class="id"><a href="mathcomp.experimental_reals.distr.html#dunit">dunit</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#Std.Marginals.h">h</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#y:369">y</a></span>)).<br/>
@@ -1447,16 +1358,14 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> DSwap</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="DSwap.R" class="id"><a name="DSwap.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> {</span><span id="DSwap.A" class="id"><a name="DSwap.A" class="">A</a></span><span class="id"> </span><span id="DSwap.B" class="id"><a name="DSwap.B" class="">B</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span> (<span id="DSwap.mu" class="id"><a name="DSwap.mu" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#A:395">A</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#B:396">B</a></span>)<span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#R:394">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="dswap" class="id"><div name="dswap" class=" tooltip">dswap<span class='tooltip-area'><p>dswap :
-forall {R : realType} {A B : choiceType},
-{distr (A * B) / R} -> {distr (B * A) / R}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="dswap" class="id"><div name="dswap" class=" tooltip">dswap<span class='tooltip-area'><p>mrat : forall {R : realType} [T : choiceType], seq T -> T -> R
 
-dswap is not universe polymorphic
-Arguments dswap {R A B} mu
-dswap is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.dswap
+mrat is not universe polymorphic
+Arguments mrat {R} [T] s%_seq_scope _
+mrat is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.mrat
 Declared in
-library mathcomp.experimental_reals.distr, line 760, characters 11-16
+library mathcomp.experimental_reals.distr, line 261, characters 11-15
 </p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">{distr</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#DSwap.B">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DSwap.A">A</a></span>)<span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> /</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DSwap.R">R</a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#32b977dfdad0dd6a09acba6cc5915277">}</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.experimental_reals.distr.html#dmargin">dmargin</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="xy:398" class="id"><a name="xy:398" class="">xy</a></span><span class="id"> =&gt;</span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#xy:398">xy</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#xy:398">xy</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span>))<span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#DSwap.mu">mu</a></span>.<br/>
 <span class="vernacular">End</span><span class="id"> DSwap</span>.<br/>
@@ -2043,14 +1952,14 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> Jensen</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Jensen.R" class="id"><a name="Jensen.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> {</span><span id="Jensen.I" class="id"><a name="Jensen.I" class="">I</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#Finite.Exports.finType">finType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="convexon" class="id"><div name="convexon" class=" tooltip">convexon<span class='tooltip-area'><p>convexon : forall {R : realType}, \bar R -> \bar R -> (R -> R) -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="convexon" class="id"><div name="convexon" class=" tooltip">convexon<span class='tooltip-area'><p>drat : forall {R : realType} [T : choiceType], seq T -> distr R T
 
-convexon is not universe polymorphic
-Arguments convexon {R} (a b)%_ereal_scope f%_function_scope
-convexon is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.convexon
+drat is not universe polymorphic
+Arguments drat {R} [T] s%_seq_scope
+drat is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.drat
 Declared in
-library mathcomp.experimental_reals.distr, line 1225, characters 11-19
+library mathcomp.experimental_reals.distr, line 304, characters 11-15
 </p></span></div></span> (<span id="a:619" class="id"><a name="a:619" class="">a</a></span><span class="id"> </span><span id="b:620" class="id"><a name="b:620" class="">b</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Jensen.R">R</a></span>) (<span id="f:621" class="id"><a name="f:621" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Jensen.R">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#Jensen.R">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:622" class="id"><a name="x:622" class="">x</a></span><span class="id"> </span><span id="y:623" class="id"><a name="y:623" class="">y</a></span><span class="id">,</span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#a:619">a</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#22a004aef08384828d8c3e3f6ac9fe2e"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#22a004aef08384828d8c3e3f6ac9fe2e"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#x:622">x</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#22a004aef08384828d8c3e3f6ac9fe2e"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#22a004aef08384828d8c3e3f6ac9fe2e"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#b:620">b</a></span>)<span class="id">%E</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span> (<span class="id"><a href="mathcomp.experimental_reals.distr.html#a:619">a</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#22a004aef08384828d8c3e3f6ac9fe2e"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#22a004aef08384828d8c3e3f6ac9fe2e"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#y:623">y</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#22a004aef08384828d8c3e3f6ac9fe2e"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#22a004aef08384828d8c3e3f6ac9fe2e"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#b:620">b</a></span>)<span class="id">%E</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="t:624" class="id"><a name="t:624" class="">t</a></span><span class="id">,</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.experimental_reals.distr.html#t:624">t</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id">1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>

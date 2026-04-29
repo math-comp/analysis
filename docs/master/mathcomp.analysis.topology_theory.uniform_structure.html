@@ -280,15 +280,15 @@ complete spaces, which extends uniform in the hierarchy.
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="nbhs_" class="id"><div name="nbhs_" class=" tooltip">nbhs_<span class='tooltip-area'><p>nbhs_ : forall {T T' : Type}, set_system (T * T') -> T -> set_system T'
+<span class="vernacular">Definition</span><span class="id"> </span><span id="nbhs_" class="id"><div name="nbhs_" class=" tooltip">nbhs_<span class='tooltip-area'><p>near_covering_within : forall {X : topologicalType}, set X -> Prop
 
-nbhs_ is not universe polymorphic
-Arguments nbhs_ {T T'}%_type_scope ent x _
-nbhs_ is transparent
+near_covering_within is not universe polymorphic
+Arguments near_covering_within {X} K%_classical_set_scope
+near_covering_within is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.uniform_structure.nbhs_
+            mathcomp.analysis.topology_theory.compact.near_covering_within
 Declared in
-library mathcomp.analysis.topology_theory.uniform_structure, line 53, characters 11-16
+library mathcomp.analysis.topology_theory.compact, line 198, characters 11-31
 </p></span></div></span><span class="id"> {</span><span id="T:1" class="id"><a name="T:1" class="">T</a></span><span class="id"> </span><span id="T':2" class="id"><a name="T':2" class="">T'</a></span><span class="id">}</span> (<span id="ent:3" class="id"><a name="ent:3" class="">ent</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set_system">set_system</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#T:1">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#T':2">T'</a></span>)) (<span id="x:4" class="id"><a name="x:4" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#T:1">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.filter.html#filter_from">filter_from</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#ent:3">ent</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="A:5" class="id"><a name="A:5" class="">A</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#xsection">xsection</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#A:5">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#x:4">x</a></span>).<br/>
 <br/>
@@ -416,20 +416,14 @@ Qed.</div></details>
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#nbhs_entourageE">nbhs_entourageE</a></span>. Qed.</div></details>
 <br/>
 <span class="vernacular">Module</span><span class="vernacular"> Export</span><span class="id"> </span><span id="NbhsEntourage" class="id"><a name="NbhsEntourage" class="">NbhsEntourage</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="NbhsEntourage.nbhs_simpl" class="id"><div name="NbhsEntourage.nbhs_simpl" class=" tooltip">nbhs_simpl<span class='tooltip-area'><p>nbhs_simpl :
-(forall (T : Type) (F : set_system T), filter.nbhs F = F) *
-(forall (T : Type) (F : filter.filter_on T),
- filter.nbhs F = filter.nbhs (filter.filter F)) *
-(forall (M : uniformType) (x : M),
- filter.filter_from entourage ((xsection (T2:=M))^~ x) = filter.nbhs x) *
-(forall M : uniformType, nbhs_ entourage = filter.nbhs)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="NbhsEntourage.nbhs_simpl" class="id"><div name="NbhsEntourage.nbhs_simpl" class=" tooltip">nbhs_simpl<span class='tooltip-area'><p>compact_near : forall {X : topologicalType}, set_system X -> Prop
 
-nbhs_simpl is not universe polymorphic
-nbhs_simpl is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.uniform_structure.NbhsEntourage.nbhs_simpl
+compact_near is not universe polymorphic
+Arguments compact_near {X} F
+compact_near is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.compact_near
 Declared in
-library mathcomp.analysis.topology_theory.uniform_structure, line 162, characters 11-21
+library mathcomp.analysis.topology_theory.compact, line 255, characters 11-23
 </p></span></div></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="mathcomp.classical.filter.html#nbhs_simpl">nbhs_simpl</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#filter_from_entourageE">filter_from_entourageE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#nbhs_entourageE">nbhs_entourageE</a></span>).<br/>
 <span class="vernacular">End</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#NbhsEntourage">NbhsEntourage</a></span>.<br/>
@@ -489,19 +483,14 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage_split_ex_subproof">entourage_split_ex_subproof</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="split_ent" class="id"><div name="split_ent" class=" tooltip">split_ent<span class='tooltip-area'><p>split_ent :
-forall {M : uniformType},
-set (M * M) ->
-prod__canonical__classical_sets_Pointed
-  (fun=> sort__canonical__classical_sets_Pointed)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="split_ent" class="id"><div name="split_ent" class=" tooltip">split_ent<span class='tooltip-area'><p>precompact : forall {X : topologicalType}, set X -> Prop
 
-split_ent is not universe polymorphic
-Arguments split_ent {M} A%_classical_set_scope t
-split_ent is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.uniform_structure.split_ent
+precompact is not universe polymorphic
+Arguments precompact {X} C%_classical_set_scope
+precompact is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.precompact
 Declared in
-library mathcomp.analysis.topology_theory.uniform_structure, line 202, characters 11-20
+library mathcomp.analysis.topology_theory.compact, line 258, characters 11-21
 </p></span></div></span> (<span id="A:84" class="id"><a name="A:84" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#uniformType1.M">M</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#uniformType1.M">M</a></span>))<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#get">get</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="B:85" class="id"><a name="B:85" class="">B</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#B:85">B</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#81eb8036320f8a2cb60adf38daaca4f6"> \;</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#81eb8036320f8a2cb60adf38daaca4f6"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#B:85">B</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#A:84">A</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>).<br/>
 <br/>
@@ -636,15 +625,15 @@ Qed.</div></details>
 &nbsp;&nbsp;<span class="id">have</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#contra_neq">contra_neq</a></span><span class="id"> /</span>(_<span class="id"> yx</span>)<span class="id"> :=</span><span class="id"> fI</span><span class="id"> y;</span><span class="id"> tauto</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="countable_uniformity" class="id"><div name="countable_uniformity" class=" tooltip">countable_uniformity<span class='tooltip-area'><p>countable_uniformity : uniformType -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="countable_uniformity" class="id"><div name="countable_uniformity" class=" tooltip">countable_uniformity<span class='tooltip-area'><p>locally_compact : forall {X : topologicalType}, set X -> Prop
 
-countable_uniformity is not universe polymorphic
-Arguments countable_uniformity T
-countable_uniformity is transparent
+locally_compact is not universe polymorphic
+Arguments locally_compact {X} A%_classical_set_scope
+locally_compact is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.uniform_structure.countable_uniformity
+            mathcomp.analysis.topology_theory.compact.locally_compact
 Declared in
-library mathcomp.analysis.topology_theory.uniform_structure, line 301, characters 11-31
+library mathcomp.analysis.topology_theory.compact, line 282, characters 11-26
 </p></span></div></span> (<span id="T:128" class="id"><a name="T:128" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#uniformType">uniformType</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">exists</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="R:129" class="id"><a name="R:129" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set_system">set_system</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#T:128">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#T:128">T</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">[/\</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.cardinality.html#countable">countable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#R:129">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">,</a></span><br/>
@@ -676,42 +665,46 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#nbhs_singleton">nbhs_singleton</a></span><span class="id">;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#nbhs_interior">nbhs_interior</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#nbhs_entourage">nbhs_entourage</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="unif_continuous" class="id"><div name="unif_continuous" class=" tooltip">unif_continuous<span class='tooltip-area'><p>unif_continuous : forall [U V : uniformType], (U -> V) -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="unif_continuous" class="id"><div name="unif_continuous" class=" tooltip">unif_continuous<span class='tooltip-area'><p>finite_subset_cover :
+forall [I : choiceType],
+set I -> forall [U : Type], (I -> set U) -> set U -> Prop
 
-unif_continuous is not universe polymorphic
-Arguments unif_continuous [U V] f%_function_scope
-unif_continuous is transparent
+finite_subset_cover is not universe polymorphic
+Arguments finite_subset_cover [I] D%_classical_set_scope 
+  [U]%_type_scope F%_function_scope A%_classical_set_scope
+finite_subset_cover is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.uniform_structure.unif_continuous
+            mathcomp.analysis.topology_theory.compact.finite_subset_cover
 Declared in
-library mathcomp.analysis.topology_theory.uniform_structure, line 328, characters 11-26
+library mathcomp.analysis.topology_theory.compact, line 286, characters 11-30
 </p></span></div></span> (<span id="U:142" class="id"><a name="U:142" class="">U</a></span><span class="id"> </span><span id="V:143" class="id"><a name="V:143" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#uniformType">uniformType</a></span>) (<span id="f:144" class="id"><a name="f:144" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#U:142">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#V:143">V</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">fun</span><span class="id"> </span><span id="xy:145" class="id"><a name="xy:145" class="">xy</a></span><span class="id"> =&gt;</span> (<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#f:144">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#xy:145">xy</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#f:144">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#xy:145">xy</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span>))<span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="entourage_set" class="id"><div name="entourage_set" class=" tooltip">entourage_set<span class='tooltip-area'><p>entourage_set : forall [U : uniformType], set (set U * set U) -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="entourage_set" class="id"><div name="entourage_set" class=" tooltip">entourage_set<span class='tooltip-area'><p>cover_compact : forall [T : topologicalType], set T -> Prop
 
-entourage_set is not universe polymorphic
-Arguments entourage_set [U] A%_classical_set_scope
-entourage_set is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.uniform_structure.entourage_set
+cover_compact is not universe polymorphic
+Arguments cover_compact [T] A%_classical_set_scope
+cover_compact is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.cover_compact
 Declared in
-library mathcomp.analysis.topology_theory.uniform_structure, line 331, characters 11-24
+library mathcomp.analysis.topology_theory.compact, line 293, characters 11-24
 </p></span></div></span> (<span id="U:146" class="id"><a name="U:146" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#uniformType">uniformType</a></span>) (<span id="A:147" class="id"><a name="A:147" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> ((<span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#U:146">U</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#U:146">U</a></span>)))<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">exists2</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span id="B:149" class="id"><span id="B:148" class="id"><a name="B:149" class="">B</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#B:148">B</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="gallina-kwd">forall</span><span class="id"> </span><span id="PQ:150" class="id"><a name="PQ:150" class="">PQ</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#A:147">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#PQ:150">PQ</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="gallina-kwd">forall</span><span class="id"> </span><span id="p:151" class="id"><a name="p:151" class="">p</a></span><span class="id"> </span><span id="q:152" class="id"><a name="q:152" class="">q</a></span><span class="id">,</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#PQ:150">PQ</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'"> p</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#PQ:150">PQ</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'"> q</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#B:149">B</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#p:151">p</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#q:152">q</a></span>).<br/>
 <br/>
 <div class="doc">Complete uniform spaces </div>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="cauchy" class="id"><div name="cauchy" class=" tooltip">cauchy<span class='tooltip-area'><p>cauchy : forall {T : uniformType}, set_system T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="cauchy" class="id"><div name="cauchy" class=" tooltip">cauchy<span class='tooltip-area'><p>open_fam_of :
+forall [T : topologicalType],
+set T -> forall [I : Type], set I -> (I -> set T) -> Prop
 
-cauchy is not universe polymorphic
-Arguments cauchy {T} F
-cauchy is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.uniform_structure.cauchy
+open_fam_of is not universe polymorphic
+Arguments open_fam_of [T] A%_classical_set_scope [I]%_type_scope
+  D%_classical_set_scope f%_function_scope
+open_fam_of is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.open_fam_of
 Declared in
-library mathcomp.analysis.topology_theory.uniform_structure, line 337, characters 11-17
+library mathcomp.analysis.topology_theory.compact, line 298, characters 11-22
 </p></span></div></span><span class="id"> {</span><span id="T:153" class="id"><a name="T:153" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#uniformType">uniformType</a></span><span class="id">}</span> (<span id="F:154" class="id"><a name="F:154" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#T:153">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#F:154">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#F:154">F</a></span>)<span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> --&gt;</a></span><span class="id"><a href="mathcomp.classical.filter.html#::classical_set_scope:x_'--&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cvg_cauchy" class="id"><a name="cvg_cauchy" class="">cvg_cauchy</a></span><span class="id"> {</span><span id="T:155" class="id"><a name="T:155" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#puniformType">puniformType</a></span><span class="id">}</span> (<span id="F:156" class="id"><a name="F:156" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#T:155">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#Filter">Filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#F:156">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
