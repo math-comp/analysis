@@ -112,5 +112,8 @@ charge.v
 kernel.v
 pi_irrational.v
 gauss_integral.v
+
+absolute_continuity.v
+
 all_analysis.v
 showcase/summability.v
