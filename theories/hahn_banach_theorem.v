@@ -206,41 +206,31 @@ Check (topU : TopologicalLmodule.type R).
 #[local] Lemma locally_convex_sub : exists2 B : set_system topU,
       (forall b, b \in B -> convex_set b) & basis B.
 Proof.
-move : (@locally_convex R V) => - [] B convexB [] openB /= genB.
-exists  [set a | B(\val @` a)].
-  move=> /= a; rewrite inE /=; rewrite -inE => H /= r s l ra sa.
-  suff :  \val(r <|l|> s) \in \val @` a by rewrite !inE /= => -[] x ax /val_inj <-.
-  have valr : \val r \in \val @` a by rewrite inE => /=; exists r; first by rewrite -inE.
-  have vals : \val s \in \val @` a by rewrite inE => /=; exists s; first by rewrite -inE.
-  move: (convexB (\val @` a) H (\val r) (\val s) l valr vals) => /=.
-  by rewrite !GRing.valD !GRing.valZ //. 
+move : (@locally_convex R V) => - [] B convexB [] openB /= genB. 
+exists  [set a | exists2 b, B(b) & (\val @^-1` b = a)].
+  move=> /= a; rewrite inE /=; rewrite -inE => H /= r s l ra sa.  
+  move: H => /=; rewrite inE => - [b] Bb ab /=.
+  suff :  \val(r <|l|> s) \in b by rewrite !inE /= -ab. 
+  have valr : \val r \in b by rewrite inE /=; move: ra; rewrite -ab inE //=.  
+  have vals : \val s \in b by by rewrite inE /=; move: sa; rewrite -ab inE //=.
+  rewrite /conv /=; rewrite !raddf/= !GRing.valZ; apply: convexB => //.
+  by apply: mem_set.
 split.
-  move => A /= H. 
-  have -> : A = \val @^-1`(\val @` A ).
-    apply/seteqP; split => x /=; first by exists x.
-    by move => -[y Ay] /val_inj <-. 
-  apply:  open_comp; first by move => x _ ;apply: continuous_valE.
-  by apply: openB.
-(* the following should be simpler *)   
-move=> /= x A [] /= /= b; rewrite /wopen => -[] /= [] c openc cA bx bA. 
-have H: nbhs (val x) (val @` A).
-  rewrite nbhsE /=; exists (val @` (b: set topU)); last first.
-    by move => z //= [] z0 bz valz; exists z0; first by apply: bA.
-  split => //=; last by exists x.
-  have ob: open (b : set topU) by rewrite /open /= /wopen; exists c.
-  move: (@initial_subspace_open V ( (initial_topology \val)) (\val) b ob).
-  Fail exact.  
-  Set Printing Implicit.
- (*why ?? Set Printing Implicit shows that intermediate instances might be missing *)
-  admit.        
-move: (genB (\val x) _ H).
-rewrite /filter_from /= => - [] d [] Bd dx dC /=.
-exists  (\val @^-1` d); last by move => y /= Cy; move: (dC (\val y) Cy) => /= [] t + /val_inj <-.  
-split => //=;suff -> : [set \val (x : topU) | x in \val @^-1` d] = d by [].
-rewrite eqEsubset; split => y; first by move=> [z + <-].
-by move=> dy /=; move: (dC y dy) => /= [] t At valt; exists t; rewrite valt.
-Admitted.
- 
+by move => /= a /=  [b] Bb <-; rewrite /open /= /wopen /=; exists b => //; exact: openB.
+Print basis. 
+move=> /= x a [] /= /= b; rewrite /wopen => -[] /= [] c openc cA bx bA.
+red; simpl.  
+rewrite /filter_from /=.
+have H: nbhs (val x) (c).
+ rewrite nbhsE /=; exists c => //; split => //.
+ have := bx; rewrite -cA //=.
+have:= (genB (\val x) c H); rewrite /filter_from /= => - [] d [] Bd dx dC /=.
+exists  (\val @^-1` d);  last first.
+  by move => y /= dy; apply: bA; rewrite -cA //=; apply: dC.
+split; last by [].
+by exists d. 
+Qed. 
+
 HB.instance Definition _ := @Uniform_isConvexTvs.Build R topU locally_convex_sub.
 
 (*HB.instance Definition _ := @PreTopologicalLmod_isConvexTvs.Build R topU
