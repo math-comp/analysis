@@ -107,7 +107,7 @@
   + instance of `SubLModule` on  `{linear_continuous _ -> _ }`
   + instance of `LinearContinuous` on the null function
   + notations `{linear_continuous _ -> _ | _ }` and `{linear_continuous _ -> _ }`
-  + definitions `lcfun`, `lcfun_key, `lcfunP`
+  + definitions `lcfun`, `lcfun_key`, `lcfunP`
   + lemmas `lcfun_eqP`, `null_fun_continuous`, `fun_cvgD`,
    `fun_cvgN`, `fun_cvgZ`, `fun_cvgZr`
   + lemmas `lcfun_continuous` and `lcfun_linear`
