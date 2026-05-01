@@ -418,7 +418,7 @@ HB.instance Definition _ := @isMeasurable.Build (caratheodory_display mu)
 
 End caratheodory_sigma_algebra.
 
-Definition caratheodory_measure {R : realType} (T : pointedType)
+Definition caratheodory_measure {R : realType} (T : choiceType)
     (mu : {outer_measure set T -> \bar R})
   : set (caratheodory_type mu) -> \bar R := mu.
 Arguments caratheodory_measure {R T} mu.
