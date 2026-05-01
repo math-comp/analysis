@@ -82,7 +82,7 @@
   + structure `PMeasurable`, notation `pmeasurableType`
 
 - in `subspace_topology.v`:
-  + lemma `within_continuous_patch`
+  + lemma `withinU_continuous_patch`
 
 ### Changed
 

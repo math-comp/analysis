@@ -713,25 +713,23 @@ HB.instance Definition _ :=
 End continuous_fun_comp.
 
 Section continuous_patch.
-Context {U : topologicalType} {V : topologicalType}.
-Variables (A : set U) (B : set U) (f : U -> V) (g : U -> V).
-Hypothesis cont1 : {within A, continuous f}.
-Hypothesis cont2 : {within B, continuous g}.
+Context {U V : topologicalType}.
+Variables (A B : set U) (f g : U -> V).
+Hypothesis contf : {within A, continuous f}.
+Hypothesis contg : {within B, continuous g}.
 Hypothesis closedA : closed A.
 Hypothesis closedB : closed B.
-Hypothesis eq_AB : forall x, x \in A `&` B -> f x = g x.  
+Hypothesis AB_fg : forall x, x \in A `&` B -> f x = g x.
 
-Lemma within_continuous_patch : {within A `|` B, continuous (patch g A f)}.
+Lemma withinU_continuous_patch : {within A `|` B, continuous (patch g A f)}.
 Proof.
+pose gAf := patch g A f.
 apply: withinU_continuous => //.
-  have : {in A, f =1 patch g A f } by rewrite /patch => r ->.
-  by move/subspace_eq_continuous; apply.
-have : {in B, g =1 patch g A f }.
-  move=> r rab.
-  rewrite /patch; case: ifPn => [xab | //].
-  apply/esym/eq_AB.
-  by rewrite inE; split; apply set_mem.
-by move/subspace_eq_continuous; apply.
+- suff : {in A, f =1 gAf} by move/subspace_eq_continuous; exact.
+  by rewrite /gAf /patch => r ->.
+- suff : {in B, g =1 gAf} by move/subspace_eq_continuous; exact.
+  move=> r rB; rewrite /gAf /patch; case: ifPn => // rA.
+  by apply/esym/AB_fg; rewrite in_setI rA.
 Qed.
 
 End continuous_patch.
