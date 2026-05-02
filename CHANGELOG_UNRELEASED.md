@@ -233,6 +233,21 @@
 - in `unstable.v`:
   + lemmas `divD_onem`
   
+### Changed
+
+- moved from `measurable_structure.v` to `classical_sets.v`:
+  + definition `preimage_set_system`
+  + lemmas `preimage_set_system0`, `preimage_set_systemU`, `preimage_set_system_comp`,
+    `preimage_set_system_id`
+
+- moved from `topology_structure.v` to `filter.v`:
+  + lemma `continuous_comp` (and generalized)
+
+- in `numfun.v`:
+  + `fune_abse` renamed to `funeposDneg` and direction of the equality changed
+  + `funeposneg` renamed to `funeposBneg` and direction of the equality changed
+  + `funeD_posD` renamed to `funeDB` and direction of the equality changed
+
 ### Renamed
 
 - in `tvs.v`:
