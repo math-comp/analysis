@@ -55,7 +55,7 @@ normedtype_theory/urysohn.v
 normedtype_theory/vitali_lemma.v
 normedtype_theory/normedtype.v
 
-hahn_banach_theorem.v
+functional_analysis/hahn_banach_theorem.v
 
 realfun.v
 sequences.v
