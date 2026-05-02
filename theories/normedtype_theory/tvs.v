@@ -595,7 +595,6 @@ Unshelve. all: by end_near. Qed.
 
 Local Open Scope convex_scope.
 
-
 Let standard_ball_convex_set (x : R^o) (r : R) : convex_set (ball x r).
 Proof.
 apply/convex_setW => z y; rewrite !inE -!ball_normE /= => zx yx l l0 l1.
@@ -688,7 +687,7 @@ HB.instance Definition _ :=
   Uniform_isConvexTvs.Build K (E * F)%type prod_locally_convex.
 
 End prod_ConvexTvs.
- 
+
 HB.structure Definition LinearContinuous (K : numDomainType) (E : NbhsLmodule.type K)
   (F : NbhsZmodule.type) (s : K -> F -> F) :=
   {f of @GRing.Linear K E F s f &  @Continuous E F f }.
