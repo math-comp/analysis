@@ -40,6 +40,27 @@ Local Open Scope ring_scope.
 Local Open Scope convex_scope.
 Local Open Scope real_scope.
 
+HB.mixin Record Zmodule_isSubNormed (R : numDomainType)
+    (M : normedZmodType R) (S : pred M) T & SubChoice M S T
+    & Num.NormedZmodule R T := {
+  norm_valE : forall x , @Num.norm _ M ((val : T -> M) x) = @Num.norm _ T x
+}.
+
+(* couldn't be put in mathcomp_extra.v, error:
+
+Error:
+You must declare the hierarchy bottom-up or add a missing join.
+There are two ways out:
+- declare structure SubNormedZmodule before structure Num.SubNormedZmodule if Num.SubNormedZmodule inherits from it;
+- declare an additional structure that inherits from both Num.SemiNormedZmodule and SubType and from which SubNormedZmodule and/or Num.SubNormedZmodule inherit.
+
+*)
+#[short(type="subNormedZmodType")]
+HB.structure Definition SubNormedZmodule (R : numDomainType)
+    (V : normedZmodType R) (S : pred V) :=
+  { U of SubChoice V S U & Num.NormedZmodule R U & GRing.SubZmodule V S U
+    & Zmodule_isSubNormed R V S U }.
+
 HB.mixin Record isSubNbhs
   (V : nbhsType) (S : pred V) U & SubChoice V S U & Nbhs U := {
   continuous_valE : continuous (val : U -> V)

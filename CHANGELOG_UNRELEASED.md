@@ -228,7 +228,6 @@
 - in `mathcomp_extra.v`:
   + lemmas `divDl_ge0`, `divDl_le1`
   + mixin `Zmodule_isSubNormed`
-  + structure `SubNormedZmodule`, notation `subNormedZmodType`
 
 - in `unstable.v`:
   + lemmas `divD_onem`
