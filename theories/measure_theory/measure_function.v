@@ -1213,8 +1213,7 @@ rewrite esum_bigcup//.
    apply: (@trivIset_seqDU _ B) => //; exists y.
    by split => //; [exact: YBi|exact: YBj].
 rewrite nneseries_esumT//.
-apply: le_esum => /=; first by move=> i _; exact: esum_ge0.
-move=> // i _.
+apply: le_esum  => /= i _.
 rewrite [leLHS](_ : _ = \sum_(j \in decomp (seqDU B i)) mu j).
   by rewrite esum_fset//; exact: decomp_finite_set.
 rewrite -SetRing.Rmu_fin_bigcup//=.
