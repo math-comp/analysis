@@ -65,9 +65,6 @@ digraph depend {
 		"theories/borel_hierarchy"	[URL="mathcomp.analysis.borel_hierarchy.html",
 			fillcolor=5,
 			label=borel_hierarchy];
-		"theories/charge"	[URL="mathcomp.analysis.charge.html",
-			fillcolor=5,
-			label=charge];
 		"theories/hoelder"	[URL="mathcomp.analysis.hoelder.html",
 			fillcolor=5,
 			label=hoelder];
@@ -80,6 +77,9 @@ digraph depend {
 		"theories/independence"	[URL="mathcomp.analysis.independence.html",
 			fillcolor=5,
 			label=independence];
+		"theories/charge"	[URL="mathcomp.analysis.charge.html",
+			fillcolor=5,
+			label=charge];
 		"theories/pi_irrational"	[URL="mathcomp.analysis.pi_irrational.html",
 			fillcolor=5,
 			label=pi_irrational];
@@ -362,6 +362,9 @@ digraph depend {
 		"theories/measure_theory/measure_extension"	[URL="mathcomp.analysis.measure_theory.measure_extension.html",
 			fillcolor=11,
 			label=measure_extension];
+		"theories/measure_theory/signed_measure"	[URL="mathcomp.analysis.measure_theory.signed_measure.html",
+			fillcolor=11,
+			label=signed_measure];
 	}
 	subgraph cluster_lebesgue_integral {
 		graph [label=Lebesgue_integral];
@@ -413,6 +416,10 @@ digraph depend {
 			fillcolor=10,
 			fontcolor=white,
 			label=lebesgue_integral_differentiation];
+		"theories/lebesgue_integral_theory/radon_nikodym"	[URL="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html",
+			fillcolor=10,
+			fontcolor=white,
+			label=radon_nikodym];
 		"theories/lebesgue_integral_theory/giry"	[URL="mathcomp.analysis.lebesgue_integral_theory.giry.html",
 			fillcolor=10,
 			fontcolor=white,
@@ -560,6 +567,7 @@ digraph depend {
 	"theories/realfun" -> "theories/exp";
 	"theories/realfun" -> "theories/lebesgue_stieltjes_measure";
 	"theories/derive" -> "theories/realfun";
+	"theories/derive" -> "theories/measure_theory/signed_measure";
 	"theories/numfun" -> "theories/realfun";
 	"theories/numfun" -> "theories/esum";
 	"theories/exp" -> "theories/measurable_realfun";
@@ -569,12 +577,13 @@ digraph depend {
 	"theories/ftc" -> "theories/trigo";
 	"theories/ftc" -> "theories/probability_theory/exponential_distribution";
 	"theories/ftc" -> "theories/probability_theory/beta_distribution";
+	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/ftc";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/lebesgue_integral_theory/giry";
-	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/charge";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/hoelder";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/kernel";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/uniform_distribution";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/poisson_distribution";
+	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/charge";
 	"theories/esum" -> "theories/measure_theory/measure_function";
 	"theories/measure_theory/measurable_structure" -> "theories/measure_theory/measurable_function";
 	"theories/measure_theory/measure_function" -> "theories/measure_theory/counting_measure";
@@ -585,7 +594,9 @@ digraph depend {
 	"theories/measure_theory/dirac_measure" -> "theories/measure_theory/probability_measure";
 	"theories/measure_theory/probability_measure" -> "theories/measure_theory/measure";
 	"theories/measure_theory/measure_negligible" -> "theories/measure_theory/measure_extension";
+	"theories/measure_theory/measure_negligible" -> "theories/measure_theory/signed_measure";
 	"theories/measure_theory/measure_extension" -> "theories/measure_theory/measure";
+	"theories/measure_theory/signed_measure" -> "theories/measure_theory/measure";
 	"theories/lebesgue_stieltjes_measure" -> "theories/measurable_realfun";
 	"theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
 	"theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/measurable_fun_approximation";
@@ -599,9 +610,10 @@ digraph depend {
 	"theories/lebesgue_integral_theory/lebesgue_integral_under" -> "theories/lebesgue_integral_theory/lebesgue_integral";
 	"theories/lebesgue_integral_theory/lebesgue_Rintegral" -> "theories/lebesgue_integral_theory/lebesgue_integral_under";
 	"theories/lebesgue_integral_theory/lebesgue_Rintegral" -> "theories/lebesgue_integral_theory/lebesgue_integral_differentiation";
+	"theories/lebesgue_integral_theory/lebesgue_Rintegral" -> "theories/lebesgue_integral_theory/radon_nikodym";
 	"theories/lebesgue_integral_theory/lebesgue_integral_fubini" -> "theories/lebesgue_integral_theory/lebesgue_integral";
 	"theories/lebesgue_integral_theory/lebesgue_integral_differentiation" -> "theories/lebesgue_integral_theory/lebesgue_integral";
-	"theories/charge" -> "theories/ftc";
+	"theories/lebesgue_integral_theory/radon_nikodym" -> "theories/lebesgue_integral_theory/lebesgue_integral";
 	"theories/hoelder" -> "theories/probability_theory/random_variable";
 	"theories/probability_theory/random_variable" -> "theories/probability_theory/probability";
 	"theories/probability_theory/bernoulli_distribution" -> "theories/probability_theory/binomial_distribution";

@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.normedtype_theory.num_normedtype</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis b95cbad" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis af08f5e" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -47,6 +47,7 @@
 <li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html">lebesgue_integral_nonneg</a></li>
 <li><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html">lebesgue_integral_under</a></li>
 <li><a href="mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.html">measurable_fun_approximation</a></li>
+<li><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html">radon_nikodym</a></li>
 <li><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html">simple_functions</a></li>
           </ul>
           </details>
@@ -62,6 +63,7 @@
 <li><a href="mathcomp.analysis.measure_theory.measure_function.html">measure_function</a></li>
 <li><a href="mathcomp.analysis.measure_theory.measure_negligible.html">measure_negligible</a></li>
 <li><a href="mathcomp.analysis.measure_theory.probability_measure.html">probability_measure</a></li>
+<li><a href="mathcomp.analysis.measure_theory.signed_measure.html">signed_measure</a></li>
           </ul>
           </details>
           </li>
@@ -890,7 +892,7 @@ Qed.</div></details>
 <span class="id">split=&gt;</span><span class="id"> [/</span><span class="id"><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html#cvgryPge">cvgryPge</a></span><span class="id">|/</span><span class="id"><a href="mathcomp.analysis.topology_theory.nat_topology.html#cvgnyPge">cvgnyPge</a></span><span class="id">]</span><span class="id"> Foo</span>.<br/>
 &nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.analysis.topology_theory.nat_topology.html#cvgnyPge">cvgnyPge</a></span><span class="id"> =&gt;</span><span class="id"> A;</span><span class="id"> near</span><span class="id"> do</span><span class="id"> rewrite</span><span class="id"> -</span>(<span class="id">@</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.ler_nat">ler_nat</a></span><span class="id"> R</span>)<span class="id">;</span><span class="id"> apply:</span><span class="id"> Foo</span>.<br/>
 <span class="id">apply/</span><span class="id"><a href="mathcomp.analysis.normedtype_theory.num_normedtype.html#cvgryPgey">cvgryPgey</a></span><span class="id">;</span><span class="id"> near=&gt;</span><span class="id"> A;</span><span class="id"> near=&gt;</span><span class="id"> n</span>.<br/>
-<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#pmulrn">pmulrn</a></span><span class="id"> -</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.Theory.ceil_le_int_tmp">ceil_le_int_tmp</a></span><span class="id"> [</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.Def.ceil">ceil</a></span><span class="id"> _]</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#intEsign">intEsign</a></span>.<br/>
+<span class="id">rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#pmulrn">pmulrn</a></span><span class="id"> -</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.Theory.ceil_le_int">ceil_le_int</a></span><span class="id"> [</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.Def.ceil">ceil</a></span><span class="id"> _]</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#intEsign">intEsign</a></span>.<br/>
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.le_gtF">le_gtF</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.expr0">expr0</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.mul1r">mul1r</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#lez_nat">lez_nat</a></span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.Theory.ceil_ge0">ceil_ge0</a></span><span class="id">//;</span><span class="id"> near:</span><span class="id"> n;</span><span class="id"> apply:</span><span class="id"> Foo</span>.<br/>
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="gallina-kwd"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <br/>
