@@ -55,10 +55,17 @@ There are two ways out:
 - declare an additional structure that inherits from both Num.SemiNormedZmodule and SubType and from which SubNormedZmodule and/or Num.SubNormedZmodule inherit.
 
 *)
+
+HB.mixin Record isTmp (R : numDomainType) (V : normedZmodType R) (S : pred V)
+    (U : Type) :=
+  {
+    field_tmp : True
+}.
+
 #[short(type="subNormedZmodType")]
-HB.structure Definition SubNormedZmodule (R : numDomainType)
+HB.structure Definition SubNormedZmodule_tmp (R : numDomainType)
     (V : normedZmodType R) (S : pred V) :=
-  { U of SubChoice V S U & Num.NormedZmodule R U & GRing.SubZmodule V S U
+  { U of @isTmp R V S U & SubChoice V S U & Num.NormedZmodule R U & GRing.SubZmodule V S U
     & Zmodule_isSubNormed R V S U }.
 
 HB.mixin Record isSubNbhs
@@ -321,7 +328,7 @@ Fail HB.end.
 HB.structure Definition SubNormedModule (R : numDomainType)
   (V : normedModType R) (S : pred V) :=
   { U of SubChoice V S U & NormedModule R U & @GRing.SubLmodule R V S U
-       & @SubNormedZmodule(*Zmodule_isSubSemiNormed*) R V S U & @SubConvexTvs R V S U}.
+       & @SubNormedZmodule_tmp(*Zmodule_isSubSemiNormed*) R V S U & @SubConvexTvs R V S U}.
 
 Section filter_ent.
 
@@ -387,6 +394,10 @@ but then we have Fail Check (U : pseudometricnormedzmodtype R) and Fail Check (U
 : normedModtype R).
  *)
 Check (U : normedModType R).
+
+Let tmp_tmp : True. Proof. by []. Qed.
+
+HB.instance Definition _ := @isTmp.Build R V S U Logic.I.
 
 Let normu_valE : forall x, @Num.norm _ V ((val : U -> V) x) = @Num.norm _ U x.
 Proof. by []. Qed.
