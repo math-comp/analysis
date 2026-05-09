@@ -133,41 +133,14 @@
   + definition `preimage_set_system`
   + lemmas `preimage_set_system0`, `preimage_set_systemU`, `preimage_set_system_comp`,
     `preimage_set_system_id`
-- in `functions.v`:
-  + lemmas `linfunP`, `linfun_eqP`
-  + instances of `SubLmodule` and `pointedType` on `{linear _->_ | _ }`
 
-- in `tvs.v`:
-  + structure `LinearContinuous`
-  + factory `isLinearContinuous`
-  + instance of `ChoiceType` on `{linear_continuous _ -> _ }`
-  + instance of `LinearContinuous` with the composition of two functions of type `LinearContinuous`
-  + instance of `LinearContinuous` with the sum of two functions of type `LinearContinuous`
-  + instance of `LinearContinuous` with the scalar multiplication of a function of type
-    `LinearContinuous`
-  + instance of `Continuous` on \-f when f is of type `LinearContinuous`
-  + instance of `SubModClosed` on `{linear_continuous _ -> _}`
-  + instance of `SubLModule` on  `{linear_continuous _ -> _ }`
-  + instance of `LinearContinuous` on the null function
-  + notations `{linear_continuous _ -> _ | _ }` and `{linear_continuous _ -> _ }`
-  + definitions `lcfun`, `lcfun_key, `lcfunP`
-  + lemmas `lcfun_eqP`, `null_fun_continuous`, `fun_cvgD`,
-   `fun_cvgN`, `fun_cvgZ`, `fun_cvgZr`
-  + lemmas `lcfun_continuous` and `lcfun_linear`
-  
-  + ...
-- in `derive.v`:
-  + lemmas `derivable_max`, `derive_maxl`, `derive_maxr` `derivable_min`, `derive_minl`, `derive_minr`
-  + lemmas `derivable0`, `derive0`, `is_derive0`
-- in `topology_structure.v`:
-  + lemma `not_limit_pointE`
+- in `mathcomp_extra.v`:
+  + lemmas `divDl_ge0`, `divDl_le1`
+  + mixin `Zmodule_isSubNormed`
+  + mixin `isTmp` and structure `SubNormedZmodule_tmp` (temporary kludge)
 
-- in `separation_axioms.v`:
-  + lemmas `limit_point_closed`
-- in `convex.v`:
-  + lemma `convex_setW`
-- in `convex.v`:
-  + lemma `convexW`
+- in `unstable.v`:
+  + lemmas `divD_onem`
 
 ### Changed
 
@@ -222,31 +195,8 @@
   + lemmas `Radon_NikodymE`, `Radon_Nikodym_fin_num`, `Radon_Nikodym_integrable`,
     `ae_eq_Radon_Nikodym_SigmaFinite`, `Radon_Nikodym_change_of_variables`,
     `Radon_Nikodym_cscale`, `Radon_Nikodym_cadd`, `Radon_Nikodym_chain_rule`
-
-- in set_interval.v
-  + `setUitv1`, `setU1itv`, `setDitv1l`, `setDitv1r` (generalized)
-- in `mathcomp_extra.v`:
-  + lemmas `divDl_ge0`, `divDl_le1`
-  + mixin `Zmodule_isSubNormed`
-  + mixin `isTmp` and structure `SubNormedZmodule_tmp` (temporary kludge)
-
-- in `unstable.v`:
-  + lemmas `divD_onem`
   
 ### Changed
-
-- moved from `measurable_structure.v` to `classical_sets.v`:
-  + definition `preimage_set_system`
-  + lemmas `preimage_set_system0`, `preimage_set_systemU`, `preimage_set_system_comp`,
-    `preimage_set_system_id`
-
-- moved from `topology_structure.v` to `filter.v`:
-  + lemma `continuous_comp` (and generalized)
-
-- in `numfun.v`:
-  + `fune_abse` renamed to `funeposDneg` and direction of the equality changed
-  + `funeposneg` renamed to `funeposBneg` and direction of the equality changed
-  + `funeD_posD` renamed to `funeDB` and direction of the equality changed
 
 ### Renamed
 
