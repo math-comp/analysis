@@ -105,9 +105,6 @@ Proof. exact: initial_continuous. Qed.
 
 HB.instance Definition _ := @isSubNbhs.Build V S T top_continuous_valE.
 
-Check T : subNbhsType S.
-Check T : subTopologicalType S.
-
 End SubType_isSubTopological.
 
 #[short(type="subConvexTvsType")]
@@ -115,26 +112,12 @@ HB.structure Definition SubConvexTvs (R : numDomainType) (V : convexTvsType R)
     (S : pred V) :=
   { U of SubTopological V S U & ConvexTvs R U & @GRing.SubLmodule R V S U }.
 
-(* For lisibility, to be added to tvs.v *)
-(*Lemma add_continuous (K : numDomainType) (E : convexTvsType K) :
-  continuous (fun x : E * E => x.1 + x.2).
-Proof. exact: add_continuous. Qed.*)
-
 Section lmodule_isSubTvs.
 Context (R : numFieldType) (V : convexTvsType R) (S : pred V) (U : subLmodType S).
 
 Local Notation topU := (sub_initial_topology U).
-Check topU : nbhsType.
-Check topU : subChoiceType S.
-Check topU : topologicalType.
-Check topU : subTopologicalType S.
-Check topU : subNbhsType S.
-Check topU : uniformType.
 HB.instance Definition _ := Uniform.on topU.
-Check topU : lmodType R.
 HB.instance Definition _ := GRing.Lmodule.on topU.
-Check topU : uniformType.
-Check topU : subLmodType S.
 
 Let add_sub: continuous (fun x : topU * topU => x.1 + x.2).
 Proof.
@@ -154,7 +137,6 @@ Qed.
 HB.instance Definition _ :=
   @PreTopologicalNmodule_isTopologicalNmodule.Build topU add_sub.
 
-Check topU : TopologicalNmodule.type.
 
 Let opp_sub : continuous (-%R : topU -> topU).
 Proof.
@@ -167,8 +149,6 @@ Qed.
 
 HB.instance Definition _ :=
   TopologicalNmodule_isTopologicalZmodule.Build topU opp_sub.
-
-Check topU : TopologicalZmodule.type.
 
 Let scale_sub : continuous (fun z : R^o * topU => z.1 *: z.2).
 Proof.
@@ -187,8 +167,6 @@ Qed.
 
 HB.instance Definition _ :=
   TopologicalZmodule_isTopologicalLmodule.Build R topU scale_sub.
-
-Check topU : TopologicalLmodule.type R.
 
 Let locally_convex_sub : exists2 B : set_system topU,
   (forall b, b \in B -> convex_set b) & basis B.
@@ -214,19 +192,7 @@ by move=> y dy; apply: ba; rewrite -cb; exact: dc.
 Qed.
 
 HB.instance Definition _ := @Uniform_isConvexTvs.Build R topU locally_convex_sub.
-
-(*HB.instance Definition _ := @PreTopologicalLmod_isConvexTvs.Build R topU
-                              add_sub scale_sub locally_convex_sub.*)
-(* Does not work. why ?*)
-
-Check (topU : convexTvsType R).
-
-(*HB.instance Definition _ := ConvexTvs.on topU.*)
 HB.instance Definition _ := GRing.SubLmodule.on topU.
-
-Check (topU : convexTvsType R).
-Check (topU : subLmodType S).
-Check (topU : subConvexTvsType S).
 
 End lmodule_isSubTvs.
 
@@ -293,13 +259,6 @@ Proof. by rewrite /normu GRing.valZ; exact: normrZ. Qed.
 HB.instance Definition _ :=
   @Lmodule_isNormed.Build R U normu ler_normuD normruZ normru0_eq0.
 
-(* NB : when defining intermediate instances first, via
-   @Num.Zmodule_isNormed.Build, this command check but then we have
-   Fail Check (U : pseudometricnormedzmodtype R) and
-   Fail Check (U : normedModType R).
- *)
-Check U : pseudoMetricNormedZmodType R.
-Check U : normedModType R.
 
 (* hack, produces no instance with MathComp 2.5.0,
    can be remove when supporting MC >= 2.6.0 *)
@@ -309,9 +268,6 @@ Let normu_valE : forall x, @Num.norm _ V ((val : U -> V) x) = @Num.norm _ U x.
 Proof. by []. Qed.
 
 HB.instance Definition _ :=  Zmodule_isSubNormed.Build _ _ _ U normu_valE.
-(* TODO : why is the U necessary ?*)
-
-Check U : subNormedZmodType S.
 
 Let continuous_valE : continuous (val : U -> V).
 Proof.
@@ -325,10 +281,6 @@ by near: t; exact: cvgr_dist_le e e0.
 Unshelve. all: by end_near. Qed.
 
 HB.instance Definition _ :=  isSubNbhs.Build _ _ U continuous_valE.
-
-Check U : subConvexTvsType S.
-
-Check U : subNormedModType S.
 
 HB.instance Definition _ := SubLmodule_isSubNormedmodule.Build _ _ _ U.
 HB.end.
@@ -612,15 +564,11 @@ Qed.
 
 End hahn_banach.
 
-(* TODO: to define on tvs, characterize the topology of a tvs via its pseudonorms,
-and the continuity of linear continuous functions via the pseudonorms. *)
 
 Section hahn_banach_normed.
 Variable (R : realType) (V : normedModType R) (F : pred V)
   (F' : subNormedModType F) (f : {linear_continuous F' -> R}).
 
-(*To use the thm on a F': subLmodType F, use @SubLmodule_isSubNormedmodule.Build.
-TODO : a lightweight factory  *)
 Theorem hahn_banach_extension_normed :
   exists g : {linear_continuous V -> R}, forall x : F', g (val x) = f x.
 Proof.
