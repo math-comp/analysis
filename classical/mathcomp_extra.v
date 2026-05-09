@@ -112,3 +112,23 @@ Proof.
 move: s0; rewrite le0r => /predU1P [->|s0]; first by rewrite mul0r.
 by rewrite ler_pdivrMr ?mul1r ?lerDl // ltr_wpDr.
 Qed.
+
+HB.mixin Record Zmodule_isSubNormed (R : numDomainType)
+    (M : normedZmodType R) (S : pred M) T & SubChoice M S T
+    & Num.NormedZmodule R T := {
+  norm_valE : forall x , @Num.norm _ M ((val : T -> M) x) = @Num.norm _ T x
+}.
+
+(* SubNormedZmodule will appear in MC 2.6.0.
+   However, just duplicating it here causes an HB error in the CI with MC 2.6.0.
+   We therefore reproduce it with a different name and add a dummy
+   mixin to it to satisfy HB.
+   This will be removed when dropping support for MC 2.5.0 *)
+HB.mixin Record isTmp (R : numDomainType) (V : normedZmodType R) (S : pred V)
+    (U : Type) := { field_tmp : True }.
+
+#[short(type="subNormedZmodType")]
+HB.structure Definition SubNormedZmodule_tmp (R : numDomainType)
+    (V : normedZmodType R) (S : pred V) :=
+  { U of @isTmp R V S U & SubChoice V S U & Num.NormedZmodule R U &
+    GRing.SubZmodule V S U & Zmodule_isSubNormed R V S U }.
