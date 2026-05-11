@@ -10,7 +10,7 @@ From mathcomp Require Import unstable.
 From mathcomp.classical Require Import boolp fsbigop.
 From mathcomp Require Import xfinmap constructive_ereal reals discrete realseq.
 From mathcomp.classical Require Import classical_sets functions.
-From mathcomp.analysis Require Import esum ereal.
+From mathcomp.analysis Require Import esum ereal numfun.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -48,83 +48,54 @@ Context {R : realType} {T : choiceType}.
 
 Implicit Types f g : T -> R.
 
-Definition fpos f := fun x => `|Num.max 0 (f x)|.
-Definition fneg f := fun x => `|Num.min 0 (f x)|.
+Lemma eq_fpos f g : f =1 g -> f^\+ =1 g^\+.
+Proof. by move=> eq_fg x; rewrite /funrpos eq_fg. Qed.
 
-Lemma eq_fpos f g : f =1 g -> fpos f =1 fpos g.
-Proof. by move=> eq_fg x; rewrite /fpos eq_fg. Qed.
+Lemma eq_fneg f g : f =1 g -> f^\- =1 g^\-.
+Proof. by move=> eq_fg x; rewrite /funrneg eq_fg. Qed.
 
-Lemma eq_fneg f g : f =1 g -> fneg f =1 fneg g.
-Proof. by move=> eq_fg x; rewrite /fneg eq_fg. Qed.
+Lemma funrpos_cst0 x : (fun _ : T => 0)^\+ x = 0 :> R.
+Proof. by rewrite /funrpos maxxx. Qed.
 
-Lemma fpos0 x : fpos (fun _ : T => 0) x = 0 :> R.
-Proof. by rewrite /fpos maxxx normr0. Qed.
+Lemma funrneg_cst0 x : (fun _ : T => 0)^\- x = 0 :> R.
+Proof. by rewrite /funrneg oppr0 maxxx. Qed.
 
-Lemma fneg0 x : fneg (fun _ : T => 0) x = 0 :> R.
-Proof. by rewrite /fneg minxx normr0. Qed.
+Lemma fposZ f c : 0 <= c -> (c \*o f)^\+ =1 c \*o f^\+.
+Proof. by move=> ge0_c x; rewrite /= ge0_funrposM. Qed.
 
-Lemma fnegN f : fneg (- f) =1 fpos f.
-Proof. by move=> x; rewrite /fpos /fneg -{1}oppr0 -oppr_max normrN. Qed.
-
-Lemma fposN f : fpos (- f) =1 fneg f.
-Proof. by move=> x; rewrite /fpos /fneg -{1}oppr0 -oppr_min normrN. Qed.
-
-Lemma fposZ f c : 0 <= c -> fpos (c \*o f) =1 c \*o fpos f.
+Lemma fnegZ f c : 0 <= c -> (c \*o f)^\- =1 c \*o f^\-.
 Proof.
-move=> ge0_c x; rewrite /fpos /= -{1}(mulr0 c).
-by rewrite -maxr_pMr // normrM ger0_norm.
-Qed.
-
-Lemma fnegZ f c : 0 <= c -> fneg (c \*o f) =1 c \*o fneg f.
-Proof.
-move=> ge0_c x; rewrite /= -!fposN; have /=<- := (fposZ (- f) ge0_c x).
+move=> ge0_c x; rewrite /= -!funrposN; have /= <- := fposZ (- f) ge0_c x.
 by apply/eq_fpos=> y /=; rewrite mulrN.
 Qed.
 
 Lemma fpos_natrM f (n : T -> nat) x :
-  fpos (fun x => (n x)%:R * f x) x = (n x)%:R * fpos f x.
+  (fun x => (n x)%:R * f x)^\+ x = (n x)%:R * f^\+ x.
 Proof.
-rewrite /fpos -[in RHS]normr_nat -normrM.
-by rewrite maxr_pMr ?ler0n // mulr0.
+by rewrite /funrpos -[in RHS]normr_nat maxr_pMr// mulr0 ger0_norm.
 Qed.
 
 Lemma fneg_natrM f (n : T -> nat) x :
-  fneg (fun x => (n x)%:R * f x) x = (n x)%:R * fneg f x.
+  (fun x => (n x)%:R * f x)^\- x = (n x)%:R * f^\- x.
 Proof.
-rewrite -[in RHS]fposN -fpos_natrM -fposN.
+rewrite -[in RHS]funrposN -fpos_natrM -funrposN.
 by apply/eq_fpos=> y; rewrite mulrN.
 Qed.
 
-Lemma fneg_ge0 f x : (forall x, 0 <= f x) -> fneg f x = 0.
-Proof. by move=> ?; rewrite /fneg min_l ?normr0. Qed.
+Lemma fneg_ge0 f x : (forall x, 0 <= f x) -> f^\- x = 0.
+Proof. by move=> ?; rewrite /funrneg max_r// oppr_le0. Qed.
 
-Lemma fpos_ge0 f x : (forall x, 0 <= f x ) -> fpos f x = f x.
-Proof. by move=> ?; rewrite /fpos max_r ?ger0_norm. Qed.
+Lemma fpos_ge0 f x : (forall x, 0 <= f x ) -> f^\+ x = f x.
+Proof. by move=> ?; rewrite /funrpos max_l. Qed.
 
-Lemma ge0_fpos f x : 0 <= fpos f x.
-Proof. by apply/normr_ge0. Qed.
-
-Lemma ge0_fneg f x : 0 <= fneg f x.
-Proof. by apply/normr_ge0. Qed.
-
-Lemma le_fpos_norm f x : fpos f x <= `|f x|.
+Lemma le_fpos_norm f x : f^\+ x <= `|f x|.
 Proof.
-rewrite /fpos ger0_norm ?(le_max, lexx) //.
-by rewrite ge_max normr_ge0 ler_norm.
+by rewrite -/((Num.Def.normr \o f) x) -funrposDneg lerDl funrneg_ge0.
 Qed.
 
-Lemma le_fpos f1 f2 : f1 <=1 f2 -> fpos f1 <=1 fpos f2.
+Lemma le_fpos f1 f2 : f1 <=1 f2 -> f1^\+ <=1 f2^\+.
 Proof.
-move=> le_f x; rewrite /fpos !ger0_norm ?le_max ?lexx //.
-by rewrite ge_max lexx /=; case: ltP => //=; rewrite le_f.
-Qed.
-
-Lemma fposBfneg f x : fpos f x - fneg f x = f x.
-Proof.
-rewrite /fpos /fneg maxC.
-case: (leP (f x) 0); rewrite normr0 (subr0, sub0r) => ?.
-  by rewrite ler0_norm ?opprK.
-by rewrite gtr0_norm.
+by move=> le_f x; rewrite (@funrpos_le _ _ setT)// inE.
 Qed.
 
 Definition psum f : R :=
@@ -132,7 +103,7 @@ Definition psum f : R :=
   let S := [set x | exists J : {fset T}, x = \sum_(x : J) `|f (val x)| ]%classic in
   if `[<summable f>] then sup S else 0.
 
-Definition sum f : R := psum (fpos f) - psum (fneg f).
+Definition sum f : R := psum f^\+ - psum f^\-.
 End Sum.
 
 (* -------------------------------------------------------------------- *)
@@ -689,16 +660,17 @@ Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma summable_fpos (f : T -> R) :
-  summable f -> summable (fpos f).
+  summable f -> summable f^\+.
 Proof.
-move/summable_abs; apply/le_summable=> x.
-by rewrite ge0_fpos /= le_fpos_norm.
+by move/summable_abs; apply/le_summable => x; rewrite funrpos_ge0 le_fpos_norm.
 Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma summable_fneg (f : T -> R) :
-  summable f -> summable (fneg f).
-Proof. by move/summableN/summable_fpos/(eq_summable (fposN _)). Qed.
+  summable f -> summable f^\-.
+Proof.
+by move/summableN/summable_fpos; apply: eq_summable => x; rewrite funrposN.
+Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma summable_condl (S : T -> R) (P : pred T) :
@@ -758,16 +730,12 @@ Section Sum_Sum.
     esum.sum (fun x => (S x)%:E) = (sum S)%:E.
   Proof.
     move => hs. rewrite /esum.sum /sum.
-    rewrite (eq_esum (a:= esum.fpos (fun x => (S x)%:E)) (b:= fun x => (fpos S x)%:E)).
-    - by move => ??; rewrite /esum.fpos /fpos -fine_max.
-      rewrite (eq_esum (a:= esum.fneg (fun x => (S x)%:E)) (b:= fun x => (realsum.fneg S x)%:E)).
-    - by move => ??; rewrite /esum.fneg /fneg -fine_min.
-    rewrite esum_psum //.
-    - move => ?. rewrite /realsum.fpos. exact : normr_ge0.
-    - exact : summable_fpos.
-    rewrite esum_psum //.
-    - move => ?. rewrite /realsum.fneg. exact : normr_ge0.
-    - exact : summable_fneg.
+    rewrite (eq_esum (a:= (fun x => (S x)%:E)^\+%E) (b:= fun x => (S^\+ x)%:E)).
+    - by move => ??; rewrite funeposE -fine_max//=.
+      rewrite (eq_esum (a:= (fun x => (S x)%:E)^\-%E) (b:= fun x => (S^\- x)%:E)).
+    - by move => ??; rewrite funenegE /funrneg EFin_max.
+    rewrite esum_psum //; first exact : summable_fpos.
+    by rewrite esum_psum //; exact : summable_fneg.
   Qed.
 
 End Sum_Sum.
@@ -1219,17 +1187,19 @@ Lemma le_sum S1 S2 :
 Proof.
 move=> smS1 smS2 leS; rewrite /sum lerB //.
   apply/le_psum/summable_fpos => // x.
-  by rewrite ge0_fpos /= le_fpos.
+  by rewrite funrpos_ge0/= le_fpos.
 apply/le_psum/summable_fneg => // x.
-rewrite -!fposN ge0_fpos le_fpos // => y.
+rewrite -!funrposN funrpos_ge0 le_fpos // => y.
 by rewrite lerN2.
 Qed.
 
-Lemma sum0 : sum (fun _ : T => 0) = 0 :> R.
-Proof. by rewrite /sum !(eq_psum fpos0, eq_psum fneg0) !psum0 subr0. Qed.
+Lemma sum0 : sum (@cst T _ 0) = 0 :> R.
+Proof.
+by rewrite /sum !(eq_psum funrpos_cst0, eq_psum funrneg_cst0) !psum0 subr0.
+Qed.
 
 Lemma sumN S : sum (- S) = - sum S.
-Proof. by rewrite /sum (eq_psum (fnegN _)) (eq_psum (fposN _)) opprB. Qed.
+Proof. by rewrite /sum funrnegN funrposN opprB. Qed.
 
 Lemma sumZ S c : sum (c \*o S) = c * sum S.
 Proof.
@@ -1237,7 +1207,7 @@ rewrite (eq_sum (F2 := fun x => Num.sg c * (`|c| * S x))).
   by move=> x; rewrite mulrA -numEsg.
 transitivity (Num.sg c * sum (`|c| \*o S)).
   case: sgrP => [_|gt0_c|lt0_c]; rewrite ?Monoid.simpm.
-  + by rewrite (eq_sum (F2 := fun _ => 0)) ?sum0 // => x; rewrite !mul0r.
+  + by rewrite (eq_sum (F2 := cst 0)) ?sum0 // => x; rewrite !mul0r.
   + by apply/eq_sum=> x; rewrite mul1r.
   by rewrite mulN1r -sumN; apply/eq_sum=> x; rewrite !mulN1r.
 rewrite {1}/sum !(eq_psum (fposZ _ _), eq_psum (fnegZ _ _)) //.
@@ -1261,13 +1231,13 @@ Lemma sum_finseq S (r : seq T) :
 Proof.
 move=> eqr domS; rewrite /sum !(psum_finseq eqr).
 + move=> x; rewrite !inE => xPS; apply/domS; rewrite !inE.
-  move: xPS; rewrite /fpos normr_eq0.
+  move: xPS; rewrite /funrpos.
   by apply: contra => /eqP ->; rewrite maxxx.
 + move=> x; rewrite !inE => xPS; apply/domS; rewrite !inE.
-  move: xPS; rewrite /fneg normr_eq0.
-  by apply: contra => /eqP ->; rewrite minxx.
+  move: xPS; rewrite /funrneg.
+  by apply: contra => /eqP ->; rewrite oppr0 maxxx.
 rewrite -sumrB; apply/eq_bigr=> i _.
-by rewrite !ger0_norm ?(ge0_fpos, ge0_fneg) ?fposBfneg.
+by rewrite !ger0_norm// -[in RHS](funrposBneg S).
 Qed.
 
 Lemma sum_seq1 S x : (forall y, S y != 0 -> x == y) -> sum S = S x.
