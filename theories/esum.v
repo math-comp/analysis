@@ -778,11 +778,6 @@ Section Sum.
 
   Implicit Types f (* g *) : T -> \bar R.
 
-(* Use the following function (numfun.funepos.body f \+ numfun.funeneg.body f)%E *)
-
-  Definition fpos f := fun x => `|maxe 0%E (f x)|%E.
-  Definition fneg f := fun x => `|mine 0%E (f x)|%E.
-
   Lemma min_l (x y : \bar R) : (x <= y -> mine x y = x)%E. Proof. by case: comparableP. Qed.
 
   Lemma min_r (x y : \bar R) : (y <= x -> mine x y = y)%E. Proof. by case: comparableP. Qed.
@@ -791,52 +786,38 @@ Section Sum.
 
   Lemma max_r (x y : \bar R) : (x <= y -> maxe x y = y)%E. Proof. by case: comparableP. Qed.
 
-  Lemma fneg_ge0 f x : (forall x, 0%R <= f x)%E -> fneg f x = 0.
-  Proof. by move => ?; rewrite /fneg  min_l ?abse0. Qed.
+  Lemma ge0_funeneg f x : (forall x, 0 <= f x)%E -> f^\- x = 0.
+  Proof. by move => ?; rewrite funenegE max_r// ?lerN0 oppe_le0. Qed.
 
-  Lemma fpos_ge0 f x : (forall x, 0%R <= f x )%E -> fpos f x = f x.
-  Proof. by move=> ?; rewrite /fpos  max_r ?gee0_abs. Qed.
+  Lemma ge0_funepos f x : (forall x, 0 <= f x)%E -> f^\+ x = f x.
+  Proof. by move=> ?; rewrite funeposE max_l. Qed.
 
-  Lemma fpos0 x : fpos (fun _ : T => 0) x = 0.
-  Proof. by rewrite /fpos /maxe ltxx abse0. Qed.
+  Lemma funepos_cst0 x : (@cst T _ 0)^\+ x = 0 :> \bar R.
+  Proof. by rewrite funeposE maxxx. Qed.
 
-  Lemma fneg0 x : fneg (fun _ : T => 0) x = 0.
-  Proof. by rewrite /fneg /mine ltxx abse0. Qed.
+  Lemma funeneg_cst0 x : (@cst T _ 0)^\- x = 0 :> \bar R.
+  Proof. by rewrite funenegE oppe0 maxxx. Qed.
 
-  Lemma fnegN f : (fneg (\- f ) =1 fpos f)%E.
-  Proof. by move => x; rewrite /fpos /fneg -{1}oppe0  -oppe_max abseN. Qed.
+  Lemma le_funepos f1 f2 : ((forall x, f1 x <= f2 x) -> (forall x, f1^\+ x <= f2^\+ x))%E.
+  Proof. by move=> le_f x; rewrite (@funepos_le _ _ setT)// inE. Qed.
 
-  Lemma fposN f : (fpos (\- f ) =1 fneg f)%E.
-  Proof. by move=> x; rewrite /fpos /fneg -{1}oppe0  -oppe_min abseN. Qed.
-
-  Lemma le_fpos f1 f2 : ((forall x, f1 x  <= f2 x) -> (forall x, fpos f1 x <= fpos f2 x))%E.
-  Proof.
-    move=> le_f x; rewrite /fpos !gee0_abs ?le_max ?lexx //.
-    by rewrite ge_max lexx /=; case: ltP => //=; rewrite le_f.
-  Qed.
-
-  Definition sum f : \bar R := esum [set:T] (fpos f) - esum [set:T] (fneg f).
+  Definition sum f : \bar R := esum [set: T] f^\+ - esum [set: T] f^\-.
 End Sum.
 
 Section SumTheory.
   Context {R : realType} {T : choiceType}.
   Implicit Types (S : T -> \bar R).
 
-  Lemma sum0 : @sum R _ (fun _ : T => 0%E) = 0%E.
-  Proof.
-    rewrite /sum esum1.
-    + by move => ??; rewrite max_l; [| rewrite abse0].
-    by rewrite sube0.
- Qed.
+Lemma sum0 : @sum R _ (@cst T _ 0) = 0.
+Proof.
+by rewrite /sum !esum1 ?subee// => r _; rewrite ?[LHS](funepos_cst0,funeneg_cst0).
+Qed.
 
   Lemma eq_sum S1 S2: S1 =1 S2 -> sum S1 = sum S2.
   Proof.
-    move=> eq_fg; rewrite /sum.
-    rewrite (eq_esum (a:= fpos S2) (b:= fpos S1)).
-    - by move => ??; rewrite /fpos eq_fg.
-    rewrite (eq_esum (a:= fneg S2) (b:= fneg S1)).
-    - by move => ??; rewrite /fneg eq_fg.
-    by idtac.
+    move=> eq_fg; rewrite /sum; congr (_ - _).
+    by apply: eq_esum => t _; rewrite !funeposE eq_fg.
+    by apply: eq_esum => t _; rewrite !funenegE eq_fg.
   Qed.
 
   Lemma esum_unit S x :
@@ -851,76 +832,67 @@ Section SumTheory.
   Lemma sum_unit S x : sum (fun y => if x == y then S y else 0) = S x.
   Proof.
     rewrite /sum.
-    rewrite (@eq_esum _ _ _ (fpos _) (fun y : T => if x == y then fpos S y else 0%R)).
-    + move =>  i ? ; rewrite  /fpos /maxe => //=.
-       case (x == i) => //=.
-       by case (_ < _)%E; rewrite abse0.
-    rewrite (@eq_esum _ _ _ (fneg _) (fun y : T => if x == y then fneg S y else 0%R)).
-    + move =>  i ? ; rewrite  /fneg /mine => //=.
-      case (x == i) => //=.
-      by case (_ < _)%E; rewrite abse0.
+    rewrite (@eq_esum _ _ _ _ (fun y : T => if x == y then S^\+ y else 0%R)).
+    + move=> i ?.
+      by rewrite !funeposE; case: ifPn => //; rewrite maxxx.
+    rewrite [X in _ - X](@eq_esum _ _ _ _ (fun y : T => if x == y then S^\- y else 0%R)).
+    + move =>  i ?.
+      by rewrite !funenegE; case: ifPn => //; rewrite oppe0 maxxx.
     rewrite !esum_unit.
     case (comparable_ltP (comparableT (S x) 0)%E) => h;last first.
-    + rewrite esum_set1.
-      + by rewrite /fpos  max_r ?gee0_abs.
+    + rewrite esum_set1 ?funepos_ge0//.
       rewrite esum1.
-      + by move => i //= ->; rewrite /fneg min_l ?gee0_abs.
-      by rewrite /fpos  max_r ?gee0_abs ?sube0.
+      + by move => i //= ->; rewrite funenegE max_r// oppe_le0.
+      by rewrite funeposE max_l// sube0.
     rewrite esum1.
-    + by move => i //= ->; rewrite /fpos  max_l ?abse0 => //=; apply ltW.
+    + by move => i //= ->; rewrite funeposE max_r// ltW.
     rewrite esum_set1.
-    + by rewrite /fneg  min_r ?lte0_abs ?oppe_ge0 => //=; apply ltW.
-    rewrite /fneg min_r.
-    + by apply ltW.
-    rewrite lte0_abs ?sub0e => //=.
-    by apply (eqe_oppLRP (- (S x))).
+    + by rewrite funeneg_ge0.
+    by rewrite funenegE max_l ?oppeK ?add0e// oppe_ge0 ltW.
   Qed.
 
   Section SumTheoryP.
 
-  Lemma esum_sum' S : (forall x, 0%:E <= S x)%E -> sum S = esum [set:T] S.
+  Lemma esum_sum' S : (forall x, 0 <= S x)%E -> sum S = esum [set:T] S.
   Proof.
-    move=> ge0_S; rewrite /sum.  rewrite (@esum1 R T [set:T] (fneg S)).
-    +  by move => x ?; rewrite fneg_ge0.
-    by rewrite sube0; apply eq_esum => x ?;  rewrite fpos_ge0.
+    move=> ge0_S; rewrite /sum (@esum1 R T [set:T] S^\-) ?sube0.
+      by move=> x ?; rewrite ge0_funeneg.
+    by under eq_esum do rewrite ge0_funepos//.
   Qed.
 
-  Lemma sum_pos S : (forall x, 0%:E <= S x)%E -> (0%R <= sum S)%E.
+  Lemma sum_pos S : (forall x, 0 <= S x)%E -> (0 <= sum S)%E.
   Proof.
     by move=> ge0_S; rewrite esum_sum' // esum_ge0.
   Qed.
 
   Lemma le_sum S1 S2:
-    ((forall x, 0%:E <= S1 x) ->
-    (forall x, 0%:E <= S2 x) ->
+    ((forall x, 0 <= S1 x) ->
+    (forall x, 0 <= S2 x) ->
     (forall x, S1 x <= S2 x) ->
     sum S1 <= sum S2)%E.
   Proof.
-    move=> pS1 pS2 leS. rewrite /sum leeB //.
-    + apply le_esum.
-      by move => ??; rewrite !fpos_ge0.
-    apply le_esum.
-    by  move => ??; rewrite !fneg_ge0.
+    move=> pS1 pS2 leS; rewrite /sum leeB//.
+    - by apply: le_esum => t _; rewrite !ge0_funepos.
+    - by apply: le_esum => t _; rewrite !ge0_funeneg.
   Qed.
 
   Lemma sumN S :
-    (forall x, 0%:E <= S x)%E ->
+    (forall x, 0 <= S x)%E ->
     (sum (\- S ) = - sum S)%E.
   Proof.
     move => h; rewrite /sum.
-    rewrite (eq_esum (a:=fpos _) (b:=fun _ : T => 0%E)).
-    +  by move => ?? ; rewrite fposN fneg_ge0.
-    rewrite (eq_esum (a:= fneg S) (b:= fun _ : T => 0%E)).
-    + by move => ?? ; rewrite fneg_ge0.
-    rewrite (eq_esum (a:=fneg (\- S)%E) (b:=fpos S)).
-    + by move => ?? ; rewrite fnegN.
-    rewrite esum1  => //=.
-    by rewrite sube0 sub0e.
+    rewrite (eq_esum (a:=_^\+) (b:=fun _ : T => 0%E)).
+    +  by move => ?? ; rewrite funeposN ge0_funeneg.
+    rewrite (eq_esum (a:= S^\-) (b:= fun _ : T => 0%E)).
+    + by move => ?? ; rewrite ge0_funeneg.
+    rewrite (eq_esum (a:=(\- S)%E^\-) (b:=S^\+)).
+    + by move => ?? ; rewrite funenegN.
+    by rewrite esum1 // sube0 sub0e.
   Qed.
 
   Lemma sumZ S c :
     (forall x, 0%:E <= S x)%E ->
-    (sum (fun x => mule c (S x)) = mule c (sum S))%E.
+    (sum (fun x => c * (S x)) = c * (sum S))%E.
   Proof.
     move => h.
     rewrite (eq_sum (S2 := fun x => esg c * (`|c| * S x))%E).
@@ -941,12 +913,11 @@ Section SumTheory.
          - by move => ?; rewrite mul0e.
         by rewrite sum0.
    - rewrite {1}/sum.
-     rewrite (eq_esum (a:= fpos _) (b:= (fun x : T => `|c| * S x)%E)).
-     +  by move => ??; rewrite fpos_ge0 // => x; rewrite mule_ge0.
-     rewrite (eq_esum (a:=fneg _) (b:=fun _ : T => 0%E)).
-     + by move => ?? ; rewrite fneg_ge0 // => x; rewrite mule_ge0.
-     rewrite (esum1 (a:= fun _ => 0%E)) // sube0.
-     by rewrite esumZ // muleA -numEsg esum_sum'.
+     rewrite (eq_esum (a:= _^\+) (b:= fun x : T => `|c| * S x)%E).
+     +  by move=> ? _; rewrite ge0_funepos // => x; rewrite mule_ge0.
+     rewrite (eq_esum (a:=_^\-) (b := @cst T _ 0)).
+     + by move => ? _; rewrite ge0_funeneg // => x; rewrite mule_ge0.
+     by rewrite (esum1 (a := @cst T _ 0))// sube0 esumZ// muleA -numEsg esum_sum'.
   Qed.
 
   End SumTheoryP.
@@ -959,9 +930,9 @@ Section SumTheory.
     sum S1 <= sum S2)%E.
   Proof.
     move=> smS1 smS2 leS; rewrite /sum leeB //.
-    + by apply le_esum => ??; apply le_fpos.
+    + by apply le_esum => ??; exact: le_funepos.
     apply le_esum => ??.
-    rewrite -!fposN. apply le_fpos => ?.
+    rewrite -!funeposN; apply: le_funepos => ?.
     by rewrite leeN2.
   Qed.
 
@@ -1103,7 +1074,7 @@ Qed.
     apply: eq_imagel => n S.
     congr ereal_sup.
     apply: eq_imagel  => n' [A _].
-    rewrite fsbig_finite //.
+    by rewrite fsbig_finite.
 Qed.
 
 End mono_esum.
