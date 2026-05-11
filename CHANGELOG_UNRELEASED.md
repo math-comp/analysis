@@ -185,6 +185,20 @@
 - in `ftc.v`:
   + lemma `ge0_integration_by_substitution_shift_itvy`,
     `ge0_integration_by_substitution_shift_itvNy`
+- in `derive.v`:
+  + lemmas `derivable_row_mx`, `derive_row_mx`
+  + instance `is_derive_row_mx`
+
+- in `matrix_normedtype.v`
+  + lemmas `norm_row_mx`, `norm_row_mx0r`, `norm_row_mx0l`
+
+- in `unstable.v`:
+  + lemma `sub_row_mx`
+
+- in `derive.v`:
+  + lemmas `eqo_row_mx`, `cvg_row_mx`, `drow_mx`, `diff_row_mx`,
+    `differentiable_row_mx`
+  + instance `is_diff_row_mx`
 
 ### Changed
 

@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint.
-From mathcomp Require Import vector archimedean interval.
+From mathcomp Require Import vector archimedean interval matrix.
 
 (**md**************************************************************************)
 (* # MathComp extra                                                           *)
@@ -52,6 +52,11 @@ Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
+
+Lemma sub_row_mx {V : zmodType} m n1 n2 (A1 : 'M[V]_(m, n1)) (A2 : 'M[V]_(m, n2))
+    (B1 : 'M[V]_(m, n1)) (B2 : 'M[V]_(m, n2)) :
+  row_mx A1 A2 - row_mx B1 B2 = row_mx (A1 - B1) (A2 - B2).
+Proof. by rewrite opp_row_mx add_row_mx. Qed.
 
 Section IntervalNumDomain.
 Variable R : numDomainType.
