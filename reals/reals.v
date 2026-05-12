@@ -632,7 +632,78 @@ move=> /inf_adherent/(_ hs)[_ [x ->]]; rewrite addrC subrK => ltFxl.
 by exists x => //; rewrite (ge_inf hs.2)//; exists x.
 Qed.
 
+
+Lemma sup_ge0  (A : set R) : (forall x, A x -> 0 <= x) -> 0 <= sup A.
+Proof.
+move=> Ax.
+have [->|/set0P[a Aa]] := eqVneq A set0; first by rewrite sup0.
+have [[A0 Aub]|supA] := pselect (has_sup A).
+  by rewrite (le_trans (Ax _ Aa))// ub_le_sup.
+by rewrite sup_out.
+Qed.
+
+Lemma has_sup_wpZl (A : set R) (a : R) : 0 <= a ->  has_sup A -> has_sup [set a * x  | x in A ]. 
+Proof. 
+move => a0 [[x Ax] [b ub]].
+split;first by exists (a*x); exists x.
+exists (a * b) => _ [y Ay <-].
+by rewrite ler_wpM2l //; apply ub.
+Qed.
+
+Lemma gt0_has_supZl (A : set R) (a : R) : 0 < a -> has_sup [set a * x  | x in A ] -> has_sup A. 
+Proof.
+move => a0 [[_ [x Ax _]]  [b ub]].
+split;first by exists x.
+exists (b/a).
+move => y Ay.
+rewrite ler_pdivlMr // mulrC.
+by apply ub;exists y.
+Qed.
+Lemma ge0_supZl  (A : set R) (a : R) :
+  0 <= a -> sup [set a * x  | x in A ] = a * sup A  .
+Proof.
+move =>a0.
+have [->|an0] := eqVneq a 0.
+  have [->| /negPf Anonempty] := eqVneq A set0;  first by rewrite image_set0 sup0 mulr0.
+  suff -> : [set 0*x | x in A] = [set 0] by rewrite sup1 mul0r.
+  under eq_fun do rewrite mul0r.
+  by rewrite set_cst Anonempty.
+have [->|/set0P Anonempty] := eqVneq A set0;  first by rewrite image_set0 sup0 mulr0.
+have [ex_sup | not_ex_sup] := pselect (has_sup A); last by rewrite !sup_out ?mulr0 // => -h;apply not_ex_sup; apply: gt0_has_supZl h;rewrite lt0r an0.
+have [[x Ax] ub] := ex_sup.
+apply /eqP;rewrite eq_le;apply /andP;split.
+  apply ge_sup; first by exists (a * x), x.
+  move => _ [x0 Axo <-].
+  by rewrite ler_wpM2l// ub_le_sup.
+rewrite -ler_pdivlMl; last by rewrite lt0r an0.
+apply ge_sup; first by apply ex_sup.
+move => x0 Ax0.
+rewrite ler_pdivlMl; last by rewrite lt0r an0.
+rewrite ub_le_sup //; last by exists x0.
+have [x1 ubx1] := ub.
+exists (a * x1) => _ [x2 Ax2 <-].
+by rewrite ler_wpM2l// ubx1.
+Qed.
+
+Lemma has_sup_Mn  (A : set R) n :
+  has_sup A -> has_sup [set x *+n | x in A ].
+Proof.
+move => [-[] x Ax [y uby]].
+split; first by exists (x *+ n), x.
+exists (y *+ n).
+move => _ [y0 Ay0 <-] .
+by rewrite lerMn2r uby// orbT.
+Qed.
+
+Lemma sup_Mn  (A : set R) n :
+   sup [set x *+n | x in A ] = sup A *+ n.
+Proof.
+rewrite -mulr_natl [X in sup X = _](_ : _ = [set n%:R * x | x in A]); first exact: ge0_supZl.
+by under eq_fun do rewrite -mulr_natl.
+Qed.
+
 End Sup.
+
 #[deprecated(since="mathcomp-analysis 1.14.0", note="Renamed `inf_le`.")]
 Notation le_inf := inf_le (only parsing).
 #[deprecated(since="mathcomp-analysis 1.14.0", note="Renamed `sup_le`.")]
