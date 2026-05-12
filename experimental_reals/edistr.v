@@ -97,7 +97,14 @@ Section PrCoreTheory.
      by move => ?; rewrite  mule_ge0 // lee_tofin.
   Qed.
 
-  (* Lemma expZ mu F c : \E_[mu] (c \*o F) = c * \E_[mu] F. *)
-  (* Proof. by rewrite -sumZ; apply/eq_sum=> x /=; rewrite mulrA. Qed. *)
+  Lemma expZ mu F c :
+    (forall x, 0%:E <= F x)%E ->
+    espe mu (fun x => mule c (F x)) = mule c (espe mu F).
+  Proof.
+    move => h.
+    rewrite -sumZ.
+    + by move => x; rewrite mule_ge0 // lee_tofin.
+    by apply/eq_sum=> x; rewrite muleA.
+  Qed.
 
 End PrCoreTheory.
