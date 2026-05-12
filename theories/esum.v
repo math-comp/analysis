@@ -862,7 +862,7 @@ move=> h.
 rewrite (@eq_sum _ (fun x => esg c * (`|c| * S x))).
   by move=> x; rewrite muleA -numEsg.
 transitivity (esg c * sum (fun x => `|c| * S x)).
-  have [hc|hc|->] := comparable_ltgtP (comparableT c 0).
+- have [hc|hc|->] := comparable_ltgtP (comparableT c 0).
   + rewrite {1}lte0_abs// gte0_esg// (@eq_sum _ (fun x => - (- c * S x))).
       by move => ?; rewrite mulN1e.
     rewrite mulN1e -sumN; last by rewrite lte0_abs.
@@ -889,6 +889,17 @@ move=> smS2 leS; rewrite /sum leeB//.
   by apply: le_esum => ? ?; exact: le_funepos.
 apply le_esum => t _.
 by rewrite -!funeposN; apply: le_funepos => ?; rewrite leeN2.
+Qed.
+
+Lemma summable_sumN S : summable [set : T] S -> sum (\- S ) = - sum S.
+Proof.
+  move => hs.
+  rewrite /sum funenegN funeposN addeC oppeB //= adde_defC.
+  apply : fin_num_adde_defl.
+  have := (summable_funepos hs).
+  rewrite summableE.
+  rewrite (@eq_esum _ _ _ (fun y : T => S^\+ y) (fun y : T => `|S^\+ y|)) //=.
+  by move => ??; rewrite gee0_abs.
 Qed.
 
   End SumTheoryS.
