@@ -425,3 +425,32 @@ tauto.
 Qed.
 
 End perfectlynormalspace.
+
+Section completelynormalspace.
+Context (R : realType) (T : topologicalType).
+
+Definition completely_normal_space :=
+  forall S : set T, normal_space (subspace S).
+
+Lemma perfectly_normal_space_completely_normal :
+  @perfectly_normal_space R T 0 -> completely_normal_space.
+Proof.
+move=> pns S.
+apply/(@perfectly_normal_space01_normal R)/Vedenissoff01/Vedenissoff_closed.
+move=> E cE.
+case/closed_subspaceP: (cE) => E' [cE' hE'].
+case: (pns E') => // f [cf hf].
+exists (fun x => if x \in E then 0 else if x \in E' then 1 else f x).
+split.
+- apply/(subspace_eq_continuous (f:=f)).
+    move=> x /set_mem Sx.
+    case/seteqP: hE' => /(_ x) /= E'E /(_ x) /= EE'.
+    case: ifP => [/set_mem|] Ex; first by move: EE'; rewrite hf /=; case.
+    case: ifP => // /set_mem E'x; by case: E'E => // /mem_set; rewrite Ex.
+  exact: continuous_subspaceT.
+apply/seteqP; split => x /=; first by move/mem_set ->.
+case: ifP => [/set_mem // | Ex].
+case: ifP => [_ /eqP | E'x fx]; first by rewrite oner_eq0.
+by case/seteqP: hf => _ /(_ x fx) /mem_set; rewrite E'x.
+Qed.
+End completelynormalspace.
