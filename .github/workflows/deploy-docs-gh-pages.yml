@@ -28,10 +28,7 @@ jobs:
             default: https://github.com/ocaml/opam-repository.git
 
       - name: Build Mathcomp Analysis
-        run: opam install -y --deps-only . && opam exec -- make -j 4
-
-      - name: Install Rocqnavi
-        run: opam install -y rocq-navi.0.3.1
+        run: opam install -y --deps-only . --with-doc && opam exec -- make -j 4
 
       - name: Generate Documents
         run: opam exec -- make html

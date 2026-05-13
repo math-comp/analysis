@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap.
+From mathcomp Require Import all_ssreflect_compat all_algebra finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop reals.
 From mathcomp Require Import interval_inference ereal topology normedtype.
@@ -18,6 +18,7 @@ From mathcomp Require Import measurable_structure measure_function.
 
 Reserved Notation "'\d_' a" (at level 8, a at level 2, format "'\d_' a").
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -47,9 +48,9 @@ move=> F mF tF mUF; rewrite /dirac indicE; have [|aFn] /= := boolP (a \in _).
   apply/cvg_ballP => _/posnumP[e]; near=> m.
   have mn : (n < m)%N by near: m; exists n.+1.
   rewrite big_mkord (bigID (xpred1 (Ordinal mn)))//= big_pred1_eq/= big1/=.
-    by rewrite adde0 indicE mem_set//; exact: ballxx.
-  by move=> j ij; rewrite indicE (negbTE (naF _ _)).
-rewrite [X in X @ \oo --> _](_ : _ = cst 0); first exact: cvg_cst.
+    by move=> j ij; rewrite indicE (negbTE (naF _ _)).
+  by rewrite adde0 indicE mem_set//; exact: ballxx.
+rewrite [X in X @ \oo --> _](_ : _ = cst 0); last exact: cvg_cst.
 apply/funext => n; rewrite big1// => i _; rewrite indicE; apply/eqP.
 by rewrite eqe pnatr_eq0 eqb0; apply: contra aFn => /[!inE] aFn; exists i.
 Unshelve. all: by end_near. Qed.
@@ -92,8 +93,8 @@ Lemma finite_card_dirac (A : set T) : finite_set A ->
   \esum_(i in A) \d_ i A = (#|` fset_set A|%:R)%:E :> \bar R.
 Proof.
 move=> finA; rewrite esum_fset// (eq_fsbigr (cst 1))//.
-  by rewrite card_fset_sum1// natr_sum -sumEFin fsbig_finite.
-by move=> i iA; rewrite diracE iA.
+  by move=> i iA; rewrite diracE iA.
+by rewrite card_fset_sum1// natr_sum -sumEFin fsbig_finite.
 Qed.
 
 Lemma infinite_card_dirac (A : set T) : infinite_set A ->
@@ -106,8 +107,8 @@ apply: (@le_trans _ _ (Num.truncn r).+1%:R%:E).
   by rewrite lee_fin ltW// truncnS_gt.
 move: Br; rewrite -(@ler_nat R) -lee_fin => /le_trans; apply.
 rewrite (eq_fsbigr (cst 1))/=; last first.
-  by move=> i /[!inE] /BA /mem_set iA; rewrite diracE iA.
-by rewrite fsbig_finite//= card_fset_sum1 sumEFin natr_sum// set_fsetK.
+  by rewrite fsbig_finite//= card_fset_sum1 sumEFin natr_sum// set_fsetK.
+by move=> i /[!inE] /BA /mem_set iA; rewrite diracE iA.
 Qed.
 
 End dirac_lemmas.

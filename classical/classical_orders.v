@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect ssralg ssrnum interval.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrnum interval.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From HB Require Import structures.
 From mathcomp Require Import functions set_interval.
@@ -18,6 +18,7 @@ From mathcomp Require Import functions set_interval.
 (*                                                                            *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

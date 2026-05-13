@@ -4,7 +4,7 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 
 (* -------------------------------------------------------------------- *)
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect_compat all_algebra.
 From mathcomp.classical Require Import boolp classical_sets mathcomp_extra.
 From mathcomp Require Import xfinmap constructive_ereal reals discrete.
 From mathcomp Require Import realseq realsum.
@@ -12,7 +12,7 @@ From mathcomp Require Import realseq realsum.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Unset SsrOldRewriteGoalsOrder.
+Unset SsrOldRewriteGoalsOrder.  (* remove this line when requiring MathComp >= 2.6 *)
 
 Import Order.TTheory GRing.Theory Num.Theory.
 

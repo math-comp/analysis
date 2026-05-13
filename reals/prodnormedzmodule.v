@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2020 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect fingroup ssralg poly ssrnum.
+From mathcomp Require Import all_ssreflect_compat fingroup ssralg poly ssrnum.
 From mathcomp Require Import all_classical.
 From mathcomp Require Import interval_inference.
 
@@ -11,6 +11,7 @@ From mathcomp Require Import interval_inference.
 (* The contents is likely to be moved elsewhere.                              *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

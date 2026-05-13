@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect_compat all_algebra.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality reals.
@@ -24,6 +24,7 @@ Reserved Notation "{ 'mfun' aT >-> T }"
 Reserved Notation "[ 'mfun' 'of' f ]"
   (at level 0, format "[ 'mfun'  'of'  f ]").
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -88,7 +89,7 @@ Lemma measurable_comp F (f : T2 -> T3) E (g : T1 -> T2) :
 Proof.
 move=> mF FgE mf mg /= mE A mA.
 rewrite comp_preimage.
-rewrite (_ : _ `&` _ = E `&` g @^-1` (F `&` f @^-1` A)); last first.
+rewrite (_ : _ `&` _ = E `&` g @^-1` (F `&` f @^-1` A)).
   apply/seteqP; split=> [|? [?] []//].
   by move=> x/= [Ex Afgx]; split => //; split => //; exact: FgE.
 by apply/mg => //; exact: mf.
@@ -98,7 +99,7 @@ Lemma eq_measurable_fun D (f g : T1 -> T2) :
   {in D, f =1 g} -> measurable_fun D f -> measurable_fun D g.
 Proof.
 by move=> fg mf mD A mA; rewrite [X in measurable X](_ : _ = D `&` f @^-1` A);
-  [exact: mf|exact/esym/eq_preimage].
+  [exact/esym/eq_preimage|exact: mf].
 Qed.
 
 Lemma measurable_fun_eqP D (f g : T1 -> T2) :
@@ -152,11 +153,11 @@ Proof.
 move=> mx my /= _ B mB; rewrite (_ : _ @^-1` B =
     ((f @^-1` [set true]) `&` (g @^-1` B)) `|`
     ((f @^-1` [set false]) `&` (h @^-1` B))).
-  rewrite setIUr; apply: measurableU.
-  - by rewrite setIA; apply: mx => //; exact: mf.
-  - by rewrite setIA; apply: my => //; exact: mf.
-apply/seteqP; split=> [t /=| t /= [] [] ->//].
-by case: ifPn => ft; [left|right].
+  apply/seteqP; split=> [t /=| t /= [] [] ->//].
+  by case: ifPn => ft; [left|right].
+rewrite setIUr; apply: measurableU.
+- by rewrite setIA; apply: mx => //; exact: mf.
+- by rewrite setIA; apply: my => //; exact: mf.
 Qed.
 
 Lemma measurable_fun_set0 (f : T1 -> T2) : measurable_fun set0 f.
@@ -210,18 +211,10 @@ HB.instance Definition _ x := isMeasurableFun.Build d _ aT rT (cst x)
 
 End mfun.
 
-Section measurable_fun_measurableType.
-Context d1 d2 d3 (T1 : measurableType d1) (T2 : measurableType d2)
-        (T3 : measurableType d3).
+Section measurable_fun_restrict.
+Context d1 d2 d3 (T1 : measurableType d1) (T2 : pmeasurableType d2)
+  (T3 : measurableType d3).
 Implicit Type D E : set T1.
-
-Lemma measurableT_comp (f : T2 -> T3) E (g : T1 -> T2) :
-  measurable_fun [set: T2] f -> measurable_fun E g -> measurable_fun E (f \o g).
-Proof. exact: measurable_comp. Qed.
-
-Lemma measurable_funTS D (f : T1 -> T2) :
-  measurable_fun [set: T1] f -> measurable_fun D f.
-Proof. exact: measurable_funS. Qed.
 
 Lemma measurable_restrict D E (f : T1 -> T2) : measurable D -> measurable E ->
   measurable_fun (E `&` D) f <-> measurable_fun E (f \_ D).
@@ -243,6 +236,21 @@ Lemma measurable_restrictT D (f : T1 -> T2) : measurable D ->
 Proof.
 by move=> mD; have := measurable_restrict f mD measurableT; rewrite setTI.
 Qed.
+
+End measurable_fun_restrict.
+
+Section measurable_fun_measurableType.
+Context d1 d2 d3 (T1 : measurableType d1) (T2 : measurableType d2)
+  (T3 : measurableType d3).
+Implicit Type D E : set T1.
+
+Lemma measurableT_comp (f : T2 -> T3) E (g : T1 -> T2) :
+  measurable_fun [set: T2] f -> measurable_fun E g -> measurable_fun E (f \o g).
+Proof. exact: measurable_comp. Qed.
+
+Lemma measurable_funTS D (f : T1 -> T2) :
+  measurable_fun [set: T1] f -> measurable_fun D f.
+Proof. exact: measurable_funS. Qed.
 
 Lemma measurable_fun_ifT (g h : T1 -> T2) (f : T1 -> bool)
     (mf : measurable_fun [set: T1] f) :
@@ -274,7 +282,7 @@ Lemma measurable_fun_bool D f b :
   measurable (D `&` f @^-1` [set b]) -> measurable_fun D f.
 Proof.
 move=> mb mD; have mDb : measurable (D `&` f @^-1` [set ~~ b]).
-  rewrite (_ : [set ~~ b] = [set~ b]); last first.
+  rewrite (_ : [set ~~ b] = [set~ b]).
     by apply/seteqP; split=> -[] /=; case: b {mb}.
   by rewrite -preimage_setC; exact: measurableID.
 by case: b => /= in mb mDb *; exact: measurable_fun_TF.
@@ -286,7 +294,7 @@ Lemma measurable_and D f g : measurable_fun D f -> measurable_fun D g ->
 Proof.
 move=> mf mg mD; apply: (measurable_fun_bool true) => //.
 rewrite [X in measurable X](_ : _ = D `&` f @^-1` [set true] `&`
-                                    (D `&` g @^-1` [set true])); last first.
+                                    (D `&` g @^-1` [set true])).
   by rewrite setIACA setIid; congr (_ `&` _); apply/seteqP; split => x /andP.
 by apply: measurableI; [exact: mf|exact: mg].
 Qed.
@@ -296,8 +304,8 @@ Lemma measurable_neg D f :
 Proof.
 move=> mf mD; apply: (measurable_fun_bool true) => //.
 rewrite [X in measurable X](_ : _ = (D `&` f @^-1` [set false])).
-  exact: mf.
-by apply/seteqP; split => [x [Dx/= /negbTE]|x [Dx/= ->]].
+  by apply/seteqP; split => [x [Dx/= /negbTE]|x [Dx/= ->]].
+exact: mf.
 Qed.
 
 Lemma measurable_or D f g : measurable_fun D f -> measurable_fun D g ->
@@ -305,8 +313,8 @@ Lemma measurable_or D f g : measurable_fun D f -> measurable_fun D g ->
 Proof.
 move=> mf mg.
 rewrite [X in measurable_fun _ X](_ : _ = (fun x => ~~ (~~ f x && ~~ g x))).
-  by apply: measurable_neg; apply: measurable_and; exact: measurable_neg.
-by apply/funext=> x; rewrite -negb_or negbK.
+  by apply/funext=> x; rewrite -negb_or negbK.
+by apply: measurable_neg; apply: measurable_and; exact: measurable_neg.
 Qed.
 
 End measurable_fun_bool.
@@ -334,29 +342,54 @@ HB.instance Definition _ := isMeasurableFun.Build _ _ _ _ (f \o g)
 
 End mfun_measurableType.
 
+Lemma preimage_set_system_compS (aT : Type)
+    d (rT : measurableType d) d' (T : sigmaRingType d')
+    (g : rT -> T) (f : aT -> rT) (D : set aT) :
+  measurable_fun setT g ->
+  preimage_set_system D (g \o f) measurable `<=`
+    preimage_set_system D f measurable.
+Proof.
+move=> mg A; rewrite /preimage_set_system => -[B GB]; exists (g @^-1` B) => //.
+by rewrite -[X in measurable X]setTI; exact: mg.
+Qed.
+
+Section g_sigma_algebra_preimage_comp.
+Context {d} {T : measurableType d} {d1} {T1 : measurableType d1}
+  {d2} {T2 : measurableType d2}.
+
+Lemma g_sigma_algebra_preimage_comp (X : {mfun T >-> T1}) (f : T1 -> T2) :
+  measurable_fun [set: T1] f ->
+  g_sigma_algebra_preimage (f \o X)%R `<=` g_sigma_algebra_preimage X.
+Proof. exact: preimage_set_system_compS. Qed.
+
+End g_sigma_algebra_preimage_comp.
+Arguments g_sigma_algebra_preimage_comp {d T d1 T1 d2 T2 X} f.
+
 Section measurability.
 
 (* f is measurable on the sigma-algebra generated by itself *)
-Lemma preimage_set_system_measurable_fun d (aT : pointedType)
+Lemma preimage_set_system_measurable_fun d (aT : choiceType)
     (rT : measurableType d) (D : set aT) (f : aT -> rT) :
   measurable_fun
     (D : set (g_sigma_algebraType (preimage_set_system D f measurable))) f.
 Proof. by move=> mD A mA; apply: sub_sigma_algebra; exists A. Qed.
 
+(** The converse hols when `D` is measurable *)
+Lemma preimage_measurability d d' (aT : measurableType d)
+    (rT : measurableType d') (D : set aT) (f : aT -> rT) :
+  preimage_set_system D f (@measurable _ rT) `<=` @measurable _ aT ->
+  measurable_fun D f.
+Proof. by move=> + mD Y mY; apply; exists Y. Qed.
+
 Lemma measurability d d' (aT : measurableType d) (rT : measurableType d')
     (D : set aT) (f : aT -> rT) (G : set (set rT)) :
-  @measurable _ rT = <<s G >> -> preimage_set_system D f G `<=` @measurable _ aT ->
+  @measurable _ rT = <<s G >> ->
+  preimage_set_system D f G `<=` @measurable _ aT ->
   measurable_fun D f.
 Proof.
-move=> sG_rT fG_aT mD.
-suff h : preimage_set_system D f (@measurable _ rT) `<=` @measurable _ aT.
-  by move=> A mA; apply: h; exists A.
-have -> : preimage_set_system D f (@measurable _ rT) =
-         <<s D, preimage_set_system D f G >>.
-  by rewrite [in LHS]sG_rT [in RHS]g_sigma_preimageE.
-apply: smallest_sub => //; split => //.
-- by move=> A mA; exact: measurableD.
-- by move=> F h; exact: bigcupT_measurable.
+move=> sG_rT fG_aT /[dup] mD; apply: preimage_measurability.
+rewrite sG_rT -g_sigma_preimageE smallest_sub_iff//.
+exact: sigma_algebra_measurable.
 Qed.
 
 End measurability.
@@ -459,7 +492,7 @@ move=> mf mg; apply/measurable_fun_tnthP => /= i.
 have [->//|i0] := eqVneq i ord0.
 have i1n : (i.-1 < n)%N by rewrite prednK ?lt0n// -ltnS.
 pose j := Ordinal i1n.
-rewrite (_ : _ \o _ = fun x => tnth (g x) j)//.
+rewrite (_ : _ \o _ = fun x => tnth (g x) j)//; last first.
   apply: (@measurableT_comp _ _ _ _ _ _ (fun x => tnth x j)) => //=.
   exact: measurable_tnth.
 apply/funext => x /=.

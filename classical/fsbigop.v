@@ -1,5 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval finmap.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
@@ -25,6 +25,7 @@ Reserved Notation "\sum_ ( i '\in' A ) F"
   (F at level 41, A at level 60,
     format "'[' \sum_ ( i  '\in'  A ) '/  '  F ']'").
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -114,7 +115,7 @@ elim/Peq: R => R in idx op f *.
 move=> Af; have Afin : finite_set (f @^-1` [set~ idx]).
   by apply: (finite_subfset A) => x; apply: contra_notT => /Af.
 rewrite [in RHS](big_fsetID _ [pred x | f x == idx])/=.
-rewrite [X in _ = op X _]big_fset [X in _ = op X _]big1 ?Monoid.simpm//; last first.
+rewrite [X in _ = op X _]big_fset [X in _ = op X _]big1 ?Monoid.simpm//.
   by move=> i /= /eqP.
 apply eq_fbigl => r.
 rewrite in_finite_support// ?setTI// /preimage/=; apply/idP/idP => /=.
@@ -169,7 +170,7 @@ Lemma bigfs (R : Type) (idx : R) (op : Monoid.com_law idx) (T : choiceType)
   \big[op/idx]_(i <- r | P i) f i = \big[op/idx]_(i \in [set` P]) f i.
 Proof.
 move=> r_uniq fidx; rewrite fsbig_mkcond.
-rewrite (fsbigTE [fset x | x in r]%fset); last first.
+rewrite (fsbigTE [fset x | x in r]%fset).
   by move=> i; rewrite inE/= /patch mem_setE; case: ifP=> // + /fidx->.
 rewrite -big_mkcond; under [RHS]eq_bigl do rewrite mem_setE.
 by apply: perm_big; rewrite uniq_perm// => i; rewrite !inE.
@@ -192,7 +193,7 @@ Lemma fsbig_seq (R : Type) (idx : R) (op : Monoid.com_law idx)
   uniq r ->
   \big[op/idx]_(a <- r) F a = \big[op/idx]_(a \in [set` r]) F a.
 Proof.
-move=> ur; rewrite (fsbigE r)//=; last by move=> + ->.
+move=> ur; rewrite (fsbigE r)//=; first by move=> + ->.
 by rewrite mem_setE big_seq_cond big_mkcondr.
 Qed.
 
@@ -261,9 +262,9 @@ have fsbig_setI C : \big[op/idx]_(i <-
     \big[op/idx]_(i \in A `&` C) F i.
   apply: eq_fbigl => i /=; apply/idP/idP.
     rewrite !inE/= => /andP[+ Bi]; rewrite in_fset_set// inE => -[Ai Fi].
-    rewrite unlock in_fset_set ?inE// setIAC; first by rewrite inE in Bi.
+    rewrite unlock in_fset_set ?inE// setIAC; last by rewrite inE in Bi.
     exact/finite_setIl.
-  rewrite unlock in_fset_set; last by rewrite setIAC; exact/finite_setIl.
+  rewrite unlock in_fset_set; first by rewrite setIAC; exact/finite_setIl.
   by rewrite inE => -[[Ai Bi] Fi0]; rewrite !inE/= in_fset_set// !mem_set.
 rewrite (big_fsetID _ [pred i | i \in B])/= [locked_with _ _]unlock.
 rewrite fsbig_setI; congr (op _ _); rewrite -fsbig_setI.
@@ -288,7 +289,7 @@ Lemma fsbigU (R : Type) (idx : R) (op : Monoid.com_law idx)
   \big[op/idx]_(i \in A `|` B) F i =
      op (\big[op/idx]_(i \in A) F i) (\big[op/idx]_(i \in B) F i).
 Proof.
-move=> Afin Bfin AB0; rewrite (fsbigID A) ?finite_setU; last by split.
+move=> Afin Bfin AB0; rewrite (fsbigID A) ?finite_setU; first by split.
 rewrite setUK -setDE; congr (op _ _); rewrite setDE setIUl setICr set0U.
 by apply: fsbig_widen => //; rewrite -setDE setDD setIC.
 Qed.
@@ -319,13 +320,13 @@ move=> finF; elim/Peq : R => R in zero times plus a F finF *.
 have [->|a0] := eqVneq a zero.
   by rewrite Monoid.mul0m fsbig1//; move=> i _; rewrite Monoid.mul0m.
 #[warning="deprecated"] (* FIXME *)
-rewrite big_distrr [RHS](full_fsbigID (F @^-1` [set zero])); last first.
+rewrite big_distrr [RHS](full_fsbigID (F @^-1` [set zero])).
   apply: sub_finite_set finF => x /= [Px aFN0].
   by split=> //; apply: contra_not aFN0 => ->; rewrite Monoid.simpm.
 set b0 := bigop _ _ _.
 set b1 := bigop _ _ _.
 set b2 := bigop _ _ _.
-rewrite (_ : b1 = zero) ?Monoid.simpm; last first.
+rewrite (_ : b1 = zero) ?Monoid.simpm.
   by rewrite /b1 fsbig1// => i [_ ->]; rewrite Monoid.simpm.
 apply/esym/fsbig_fwiden => //.
   by move=> x [Px Fx0]; rewrite /= in_finite_support// inE.

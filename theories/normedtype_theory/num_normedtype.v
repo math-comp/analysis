@@ -1,12 +1,11 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
-From mathcomp Require Import archimedean rat.
+From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint.
+From mathcomp Require Import interval interval_inference archimedean rat.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality set_interval interval_inference reals.
-From mathcomp Require Import topology function_spaces real_interval.
-From mathcomp Require Import prodnormedzmodule tvs.
+From mathcomp Require Import cardinality set_interval reals real_interval.
+From mathcomp Require Import topology prodnormedzmodule.
 
 (**md**************************************************************************)
 (* # Preliminaries for norm-related notions                                   *)
@@ -46,6 +45,7 @@ Reserved Notation "f @`] a , b [" (format "f  @`] a ,  b [").
 Reserved Notation "+oo_ R" (at level 3, left associativity, format "+oo_ R").
 Reserved Notation "-oo_ R" (at level 3, left associativity, format "-oo_ R").
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -497,7 +497,7 @@ Proof.
 split=> [/cvgryPge|/cvgnyPge] Foo.
   by apply/cvgnyPge => A; near do rewrite -(@ler_nat R); apply: Foo.
 apply/cvgryPgey; near=> A; near=> n.
-rewrite pmulrn -ceil_le_int_tmp [ceil _]intEsign.
+rewrite pmulrn -ceil_le_int [ceil _]intEsign.
 by rewrite le_gtF ?expr0 ?mul1r ?lez_nat ?ceil_ge0//; near: n; apply: Foo.
 Unshelve. all: by end_near. Qed.
 
@@ -632,7 +632,7 @@ Hint Resolve open_gt : core.
 
 Lemma open_neq y : open [set x | x != y].
 Proof.
-rewrite (_ : mkset _ = [set x | x < y] `|` [set x | x > y]); first exact: openU.
+rewrite (_ : mkset _ = [set x | x < y] `|` [set x | x > y]); last exact: openU.
 by rewrite predeqE => x /=; rewrite neq_lt; symmetry; apply: (rwP orP).
 Qed.
 
@@ -646,28 +646,28 @@ move: a b => [[]a|[]] [[]b|[]]// _ _.
 - by under eq_set do rewrite itv_ge// inE.
 - by under eq_set do rewrite in_itv andbT/=; exact: open_gt.
 - exact: open_lt.
-- by rewrite (_ : mkset _ = setT); [exact: openT | rewrite predeqE].
+- by rewrite (_ : mkset _ = setT); [rewrite predeqE | exact: openT].
 Qed.
 
 (* TODO: we can probably extend these results to numFieldType
    by adding a precondition that y \is Num.real *)
 Lemma closed_le y : closed [set x | x <= y].
 Proof.
-rewrite (_ : mkset _ = ~` [set x | x > y]); first exact: open_closedC.
+rewrite (_ : mkset _ = ~` [set x | x > y]); last exact: open_closedC.
 by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
 
 Lemma closed_ge y : closed [set x | y <= x].
 Proof.
-rewrite (_ : mkset _ = ~` [set x | x < y]); first exact: open_closedC.
+rewrite (_ : mkset _ = ~` [set x | x < y]); last exact: open_closedC.
 by rewrite predeqE => x /=; rewrite leNgt; split => /negP.
 Qed.
 
 Lemma closed_eq y : closed [set x | x = y].
 Proof.
 rewrite [X in closed X](_ : (eq^~ _) = ~` (xpredC (eq_op^~ y))).
-  by apply: open_closedC; exact: open_neq.
-by rewrite predeqE /setC => x /=; rewrite (rwP eqP); case: eqP; split.
+  by rewrite predeqE /setC => x /=; rewrite (rwP eqP); case: eqP; split.
+by apply: open_closedC; exact: open_neq.
 Qed.
 
 Lemma interval_closed a b : ~~ bound_side false a -> ~~ bound_side true b ->
@@ -714,28 +714,22 @@ Notation near_in_itv := near_in_itvoo (only parsing).
 Lemma nbhs_infty_gtr {R : archiRealFieldType} (r : R) :
   \forall n \near \oo, r < n%:R.
 Proof.
-exists `|ceil r|.+1 => // n/=; rewrite -(ler_nat R); apply: lt_le_trans.
-rewrite -natr1 -[ltLHS]addr0 ler_ltD//.
-by rewrite (le_trans (ceil_ge _))// natr_absz ler_int ler_norm.
+exists (Num.bound r) => // n /=.
+by rewrite truncn_lt_nat//; apply/le_lt_trans/ler_norm.
 Qed.
 
 Lemma near_infty_natSinv_lt (R : archiRealFieldType) (e : {posnum R}) :
   \forall n \near \oo, n.+1%:R^-1 < e%:num.
 Proof.
-near=> n; rewrite -(@ltr_pM2r _ n.+1%:R) // mulVf.
-rewrite -(@ltr_pM2l _ e%:num^-1) // mulr1 mulrA mulVf// mul1r.
-rewrite (lt_trans (archi_boundP _)) // ltr_nat.
-by near: n; exists (Num.bound e%:num^-1).
+near=> n; rewrite invf_plt ?unfold_in//= -truncn_le_nat.
+by near: n; exists (Num.truncn e%:num^-1).
 Unshelve. all: by end_near. Qed.
 
 Lemma near_infty_natSinv_expn_lt (R : archiRealFieldType) (e : {posnum R}) :
   \forall n \near \oo, 1 / 2 ^+ n < e%:num.
 Proof.
 near=> n.
-rewrite -(@ltr_pM2r _ (2 ^+ n))// -?natrX ?ltr0n ?expn_gt0//.
-rewrite mul1r mulVf ?gt_eqF//.
-rewrite -(@ltr_pM2l _ e%:num^-1)// mulr1 mulrA mulVf// mul1r.
-rewrite (lt_trans (archi_boundP _))// natrX upper_nthrootP//.
+rewrite mul1r invf_plt ?unfold_in//=; apply: upper_nthrootP.
 near: n; eexists; last by move=> m; exact.
 by [].
 Unshelve. all: by end_near. Qed.
@@ -881,7 +875,7 @@ Proof.
 move=> iX bX aX; rewrite eqEsubset; split=> [r Xr|].
   apply/andP; split;
     [exact: left_bounded_interior|exact: right_bounded_interior].
-rewrite -open_subsetE; last exact: (@interval_open _ (BRight _) (BLeft _)).
+rewrite -open_subsetE; first exact: (@interval_open _ (BRight _) (BLeft _)).
 move=> r /andP[iXr rsX].
 have [X0|/set0P X0] := eqVneq X set0.
   by move: (lt_trans iXr rsX); rewrite X0 inf_out ?sup_out ?ltxx // => - [[]].
@@ -895,10 +889,10 @@ Qed.
 
 Lemma interior_set1 (a : R) : [set a]° = set0.
 Proof.
-rewrite interval_bounded_interior; first last.
-- by exists a => [?]/= ->; apply: lexx.
-- by exists a => [?]/= ->; apply: lexx.
+rewrite interval_bounded_interior.
 - by move=> ? ?/= -> -> r; rewrite -eq_le; move/eqP <-.
+- by exists a => [?]/= ->; apply: lexx.
+- by exists a => [?]/= ->; apply: lexx.
 - rewrite inf1 sup1 eqEsubset; split => // => x/=.
   by rewrite ltNge => /andP[/negP + ?]; apply; apply/ltW.
 Qed.
@@ -910,11 +904,11 @@ have [|xy] := leP y x.
   rewrite le_eqVlt => /predU1P[-> |yx].
     by case: a; case: b; rewrite set_itvoo0 ?set_itvE ?interior_set1 ?interior0.
   rewrite !set_itv_ge ?interior0//.
-  - by rewrite bnd_simp -leNgt ltW.
   - by case: a; case: b; rewrite bnd_simp -?leNgt -?ltNge ?ltW.
-rewrite interval_bounded_interior//; last exact: interval_is_interval.
-rewrite inf_itv; last by case: a; case b; rewrite bnd_simp ?ltW.
-rewrite sup_itv; last by case: a; case b; rewrite bnd_simp ?ltW.
+  - by rewrite bnd_simp -leNgt ltW.
+rewrite interval_bounded_interior//; first exact: interval_is_interval.
+rewrite inf_itv; first by case: a; case b; rewrite bnd_simp ?ltW.
+rewrite sup_itv; first by case: a; case b; rewrite bnd_simp ?ltW.
 exact: set_itvoo.
 Qed.
 
@@ -922,20 +916,20 @@ Lemma interior_itv_bndy (x : R) (b : bool) :
   [set` Interval (BSide b x) (BInfty _ false)]° = `]x, +oo[%classic.
 Proof.
 rewrite interval_right_unbounded_interior//.
-- rewrite inf_itv; last by case: b; rewrite bnd_simp ?ltW.
-  by rewrite set_itvoy.
 - exact: interval_is_interval.
 - by apply: hasNubound_itv; rewrite lt_eqF.
+- rewrite inf_itv; first by case: b; rewrite bnd_simp ?ltW.
+  by rewrite set_itvoy.
 Qed.
 
 Lemma interior_itv_Nybnd (y : R) (b : bool) :
   [set` Interval (BInfty _ true) (BSide b y)]° = `]-oo, y[%classic.
 Proof.
 rewrite interval_left_unbounded_interior//.
-- rewrite sup_itv; last by case b; rewrite bnd_simp ?ltW.
-  exact: set_itvNyo.
 - exact: interval_is_interval.
 - by apply: hasNlbound_itv; rewrite gt_eqF.
+- rewrite sup_itv; first by case b; rewrite bnd_simp ?ltW.
+  exact: set_itvNyo.
 Qed.
 
 Lemma interior_itv_Nyy :

@@ -24,13 +24,14 @@ In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the fol
 
 - [Authors](AUTHORS.md)
 - License: [CeCILL-C](LICENSE)
-- Compatible Rocq versions: Coq 8.20, Rocq 9.0 (or dev)
+- Compatible Rocq versions: Rocq 9.0 and 9.1 (or dev)
 - Additional dependencies:
-  - [MathComp ssreflect 2.4.0 or later](https://math-comp.github.io)
-  - [MathComp fingroup 2.4.0 or later](https://math-comp.github.io)
-  - [MathComp algebra 2.4.0 or later](https://math-comp.github.io)
-  - [MathComp solvable 2.4.0 or later](https://math-comp.github.io)
-  - [MathComp field 2.4.0 or later](https://math-comp.github.io)
+  - [MathComp boot 2.5.0 or later](https://math-comp.github.io)
+  - [MathComp fingroup 2.5.0 or later](https://math-comp.github.io)
+  - [MathComp order 2.5.0 or later](https://math-comp.github.io)
+  - [MathComp algebra 2.5.0 or later](https://math-comp.github.io)
+  - [MathComp solvable 2.5.0 or later](https://math-comp.github.io)
+  - [MathComp field 2.5.0 or later](https://math-comp.github.io)
   - [MathComp finmap 2.1.0](https://github.com/math-comp/finmap)
   - [MathComp bigenough 1.0.0](https://github.com/math-comp/bigenough)
   - [Hierarchy Builder 1.8.0 or later](https://github.com/math-comp/hierarchy-builder)
@@ -62,7 +63,7 @@ make install
 
 Each file is documented in its header in ASCII.
 
-[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc/1_15_0/index.html) (using [`rocqnavi`](https://github.com/affeldt-aist/rocqnavi)).
+[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc/1_16_0/index.html) (using [`rocqnavi`](https://github.com/affeldt-aist/rocqnavi)).
 It includes inheritance diagrams for the mathematical structures that MathComp-Analysis adds on top of MathComp's ones.
 
 Overview presentations:
@@ -97,8 +98,8 @@ Other work using MathComp-Analysis:
 - [Semantics of Probabilistic Programs using s-Finite Kernels in Dependent Type Theory](https://dl.acm.org/doi/pdf/10.1145/3732291) (2025)
 - [A Formal Foundation for Equational Reasoning on Probabilistic Programs](https://staff.aist.go.jp/reynald.affeldt/documents/eddy_aplas2025.pdf) (2025)
   doi:[10.1007/978-981-95-3585-9_3](https://doi.org/10.1007/978-981-95-3585-9_3)
-- [Cylindrical Algebraic Decomposition in Coq/Rocq](https://dl.acm.org/doi/epdf/10.1145/3779031.3779100) (2026)
-  doi:[3779031.3779100](https://doi.org/10.1145/3779031.3779100)
+- [Cylindrical Algebraic Decomposition in Coq/Rocq](https://dl.acm.org/doi/pdf/10.1145/3779031.3779100) (2026)
+  doi:[10.1145/3779031.3779100](https://doi.org/10.1145/3779031.3779100)
 
 ## About the stability of this library
 

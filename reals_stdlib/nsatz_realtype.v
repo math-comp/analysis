@@ -1,5 +1,5 @@
-From Coq Require Import Nsatz.
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum.
+From Stdlib Require Import Nsatz.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrint ssrnum.
 From mathcomp Require Import boolp reals constructive_ereal.
 
 (**md**************************************************************************)
@@ -15,6 +15,8 @@ From mathcomp Require Import boolp reals constructive_ereal.
 (******************************************************************************)
 
 Import GRing.Theory Num.Theory.
+
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Local Open Scope ring_scope.
 

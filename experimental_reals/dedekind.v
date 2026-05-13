@@ -7,14 +7,14 @@
 (* SSReflect hierarchy (see reals.v)                                    *)
 
 (* -------------------------------------------------------------------- *)
-From mathcomp Require Import all_ssreflect all_algebra.
-From Coq Require Import Setoid.
+From mathcomp Require Import all_ssreflect_compat all_algebra.
+From Corelib Require Import Setoid.
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-Unset SsrOldRewriteGoalsOrder.
+Unset SsrOldRewriteGoalsOrder.  (* remove this line when requiring MathComp >= 2.6 *)
 
 Import GRing.Theory Num.Theory.
 

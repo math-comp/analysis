@@ -11,9 +11,12 @@
 -arg -w -arg -ambiguous-paths
 -arg -w -arg -redundant-canonical-projection
 -arg -w -arg -projection-no-head-constant
+# introduced in Rocq 9.3
+-arg -w -arg -rewrite-rw
 
 classical/all_classical.v
 classical/internal_Eqdep_dec.v
+classical/all_ssreflect_compat.v
 classical/boolp.v
 classical/contra.v
 classical/wochoice.v
@@ -29,7 +32,6 @@ classical/filter.v
 reals/constructive_ereal.v
 reals/reals.v
 reals/real_interval.v
-reals/signed.v
 reals/prodnormedzmodule.v
 reals/all_reals.v
 experimental_reals/xfinmap.v
@@ -66,20 +68,20 @@ theories/topology_theory/sigT_topology.v
 theories/topology_theory/discrete_topology.v
 theories/topology_theory/separation_axioms.v
 theories/topology_theory/metric_structure.v
+theories/topology_theory/function_spaces.v
 
 theories/homotopy_theory/homotopy.v
 theories/homotopy_theory/wedge_sigT.v
 theories/homotopy_theory/continuous_path.v
 
 theories/ess_sup_inf.v
-theories/function_spaces.v
 theories/cantor.v
-theories/tvs.v
 
 theories/normedtype_theory/num_normedtype.v
 theories/normedtype_theory/matrix_normedtype.v
 theories/normedtype_theory/ereal_normedtype.v
 theories/normedtype_theory/pseudometric_normed_Zmodule.v
+theories/normedtype_theory/tvs.v
 theories/normedtype_theory/normed_module.v
 theories/normedtype_theory/complete_normed_module.v
 theories/normedtype_theory/urysohn.v
@@ -102,6 +104,7 @@ theories/measure_theory/probability_measure.v
 theories/measure_theory/measure_negligible.v
 theories/measure_theory/measure_extension.v
 theories/measure_theory/measurable_function.v
+theories/measure_theory/signed_measure.v
 theories/measure_theory/measure.v
 
 theories/measurable_realfun.v
@@ -121,6 +124,7 @@ theories/lebesgue_integral_theory/lebesgue_Rintegral.v
 theories/lebesgue_integral_theory/lebesgue_integral_fubini.v
 theories/lebesgue_integral_theory/lebesgue_integral_differentiation.v
 theories/lebesgue_integral_theory/lebesgue_integral.v
+theories/lebesgue_integral_theory/radon_nikodym.v
 theories/lebesgue_integral_theory/giry.v
 
 theories/ftc.v
@@ -135,6 +139,8 @@ theories/probability_theory/exponential_distribution.v
 theories/probability_theory/poisson_distribution.v
 theories/probability_theory/beta_distribution.v
 theories/probability_theory/probability.v
+
+theories/independence.v
 
 theories/convex.v
 theories/charge.v

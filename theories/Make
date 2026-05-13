@@ -6,6 +6,8 @@
 -arg -w -arg -ambiguous-paths
 -arg -w -arg -redundant-canonical-projection
 -arg -w -arg -projection-no-head-constant
+# introduced in Rocq 9.3
+-arg -w -arg -rewrite-rw
 
 ereal.v
 landau.v
@@ -33,20 +35,20 @@ topology_theory/sigT_topology.v
 topology_theory/discrete_topology.v
 topology_theory/separation_axioms.v
 topology_theory/metric_structure.v
+topology_theory/function_spaces.v
 
 homotopy_theory/homotopy.v
 homotopy_theory/wedge_sigT.v
 homotopy_theory/continuous_path.v
 
 ess_sup_inf.v
-function_spaces.v
 cantor.v
-tvs.v
 
 normedtype_theory/num_normedtype.v
 normedtype_theory/matrix_normedtype.v
 normedtype_theory/ereal_normedtype.v
 normedtype_theory/pseudometric_normed_Zmodule.v
+normedtype_theory/tvs.v
 normedtype_theory/normed_module.v
 normedtype_theory/complete_normed_module.v
 normedtype_theory/urysohn.v
@@ -69,6 +71,7 @@ measure_theory/probability_measure.v
 measure_theory/measure_negligible.v
 measure_theory/measure_extension.v
 measure_theory/measurable_function.v
+measure_theory/signed_measure.v
 measure_theory/measure.v
 
 measurable_realfun.v
@@ -87,6 +90,7 @@ lebesgue_integral_theory/lebesgue_integral_under.v
 lebesgue_integral_theory/lebesgue_Rintegral.v
 lebesgue_integral_theory/lebesgue_integral_fubini.v
 lebesgue_integral_theory/lebesgue_integral_differentiation.v
+lebesgue_integral_theory/radon_nikodym.v
 lebesgue_integral_theory/lebesgue_integral.v
 lebesgue_integral_theory/giry.v
 
@@ -102,6 +106,8 @@ probability_theory/exponential_distribution.v
 probability_theory/poisson_distribution.v
 probability_theory/beta_distribution.v
 probability_theory/probability.v
+
+independence.v
 
 convex.v
 charge.v

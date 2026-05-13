@@ -1,6 +1,7 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
+From mathcomp Require Import all_ssreflect_compat all_algebra finmap.
+From mathcomp Require Import all_classical.
 From mathcomp Require Import interval_inference reals topology_structure.
 From mathcomp Require Import uniform_structure pseudometric_structure.
 
@@ -33,6 +34,7 @@ From mathcomp Require Import uniform_structure pseudometric_structure.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -234,9 +236,9 @@ Qed.
 Section Precompact.
 Context {X : topologicalType}.
 
-Lemma compactU (A B : set X) : compact A -> compact B -> compact (A `|` B).
+Lemma compactU : setU_closed (@compact X).
 Proof.
-rewrite compact_ultra => cptA cptB F UF FAB; rewrite setIUl.
+move=> A B; rewrite compact_ultra => cptA cptB F UF FAB; rewrite setIUl.
 have [/cptA[x AFx]|] := in_ultra_setVsetC A UF; first by exists x; left.
 move=> /(filterI FAB); rewrite setIUl setICr set0U => FBA.
 have /cptB[x BFx] : F B by apply: filterS FBA; exact: subIsetr.
@@ -261,7 +263,7 @@ rewrite propeqE; split=> [[B CsubB [cptB cB]]|]; last first.
   move=> clC; exists (closure C) => //; first exact: subset_closure.
   by split => //; exact: closed_closure.
 apply: (subclosed_compact _ cptB); first exact: closed_closure.
-by move/closure_id: cB => ->; exact: closure_subset.
+by move/closure_id: cB => ->; exact: closureS.
 Qed.
 
 Lemma precompact_subset (A B : set X) :
@@ -385,7 +387,7 @@ wlog [k D'k] : D' sD sAnfcov / exists i, i \in D'.
   - by move=> p /sAnfcov [i D'i Anfip]; exists i => //=; rewrite !inE D'i.
   - by exists j; rewrite !inE orbC eq_refl.
 exists D' => /(_ sD) [p Ifp].
-have /Ifp := D'k; rewrite feAg; last by have /sD := D'k; rewrite inE.
+have /Ifp := D'k; rewrite feAg; first by have /sD := D'k; rewrite inE.
 by move=> [/sAnfcov [i D'i [_ nfip]] _]; have /Ifp := D'i.
 Qed.
 

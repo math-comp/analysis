@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrnum interval.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrnum interval.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
@@ -36,8 +36,25 @@ From mathcomp Require Import functions.
 (*          open_itv_cover A == the set A can be covered by open intervals    *)
 (* ```                                                                        *)
 (*                                                                            *)
+(* Naming convention for lemmas about intervals:                              *)
+(* ```                                                                        *)
+(*                 itv??                                                      *)
+(*                    ||                                                      *)
+(*    left boundary --+|                                                      *)
+(*   right boundary ---+                                                      *)
+(* ```                                                                        *)
+(* where `?` can be:                                                          *)
+(* | Substring |   | Meaning |                                                *)
+(* |----------:|---|:--------|                                                *)
+(* |         o |==| open                                                      *)
+(* |         c |==| closed                                                    *)
+(* |         y |==| +oo%O                                                     *)
+(* |        Ny |==| -oo%O                                                     *)
+(* |   b, bnd  |==| any of the above                                          *)
+(*                                                                            *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -182,37 +199,67 @@ Definition set_itvE := (set_itv1, set_itvoo0, set_itvoc0, set_itvco0, set_itvoo,
 Lemma set_itvxx a : [set` Interval a a] = set0.
 Proof. by move: a => [[|] a |[|]]; rewrite !set_itvE. Qed.
 
-Lemma setUitv1 a x : (a <= BLeft x)%O ->
+Lemma setU_itvob1 a x : (a <= BLeft x)%O ->
   [set` Interval a (BLeft x)] `|` [set x] = [set` Interval a (BRight x)].
 Proof.
 move=> ax; apply/predeqP => z /=; rewrite itv_splitU1// [in X in _ <-> X]inE.
 by rewrite (rwP eqP) (rwP orP) orbC.
 Qed.
 
-Lemma setU1itv a x : (BRight x <= a)%O ->
+Lemma setU_1itvob a x : (BRight x <= a)%O ->
   x |` [set` Interval (BRight x) a] = [set` Interval (BLeft x) a].
 Proof.
 move=> ax; apply/predeqP => z /=; rewrite itv_split1U// [in X in _ <-> X]inE.
 by rewrite (rwP eqP) (rwP orP) orbC.
 Qed.
 
-Lemma setDitv1r a x :
-  [set` Interval a (BRight x)] `\ x = [set` Interval a (BLeft x)].
+Lemma setUitv1 a x b : (a <= BLeft x)%O ->
+  [set` Interval a (BSide b x)] `|` [set x] = [set` Interval a (BRight x)].
 Proof.
+move=> ax; case: b; [exact: setU_itvob1|].
+by apply: setUidl => ? /= ->; rewrite itv_boundlr ax lexx.
+Qed.
+
+Lemma setU1itv a x b : (BRight x <= a)%O ->
+  x |` [set` Interval (BSide b x) a] = [set` Interval (BLeft x) a].
+Proof.
+move=> ax; case: b; [|exact: setU_1itvob].
+by apply: setUidr => ? /= ->; rewrite itv_boundlr ax lexx.
+Qed.
+
+Lemma setUitv_set2 x y b1 b2 :
+  (x <= y)%O ->
+  [set` Interval (BSide b1 x) (BSide b2 y)] `|` [set x; y] = `[x, y]%classic.
+Proof.
+rewrite le_eqVlt => /orP [/eqP->|xy].
+  by case: b1; case: b2; rewrite !set_itvE !setUid // set0U.
+rewrite setUCA setUitv1; first by case: b1; rewrite bnd_simp// ltW.
+by rewrite setU1itv// bnd_simp ltW.
+Qed.
+
+Lemma setDitv1r a x b :
+  [set` Interval a (BSide b x)] `\ x = [set` Interval a (BLeft x)].
+Proof.
+case: b; first by apply: not_setD1; rewrite /= in_itv/= ltxx andbF.
 apply/seteqP; split => [z|z] /=; rewrite !in_itv/=.
   by move=> [/andP[-> /= zx] /eqP xz]; rewrite lt_neqAle xz.
 by rewrite lt_neqAle => /andP[-> /andP[/eqP ? ->]].
 Qed.
 
-Lemma setDitv1l a x :
-  [set` Interval (BLeft x) a] `\ x = [set` Interval (BRight x) a].
+Lemma setDitv1l a x b :
+  [set` Interval (BSide b x) a] `\ x = [set` Interval (BRight x) a].
 Proof.
+case: b; last by apply: not_setD1; rewrite /= in_itv/= ltxx.
 apply/seteqP; split => [z|z] /=; rewrite !in_itv/=.
   move=> [/andP[xz ->]]; rewrite andbT => /eqP.
   by rewrite lt_neqAle eq_sym => ->.
 move=> /andP[]; rewrite lt_neqAle => /andP[xz zx ->].
 by rewrite andbT; split => //; exact/nesym/eqP.
 Qed.
+
+Lemma setDitv_set2 x y b1 b2 :
+  [set` Interval (BSide b1 x) (BSide b2 y)] `\` [set x; y] = `]x, y[%classic.
+Proof. by rewrite -setDDl setDitv1l setDitv1r. Qed.
 
 End set_itv_porderType.
 Arguments neitv {disp T} _.
@@ -312,6 +359,86 @@ move=> cab; apply/seteqP; split => [x /= [xab /eqP]|x[|]]/=.
   rewrite bnd_simp => cx.
   rewrite xb/= andbT (le_trans ac)/= ?bnd_simp ?(ltW cx)//; split => //.
   by apply/eqP; rewrite gt_eqF.
+Qed.
+
+Lemma setDitvoo (x y : T) (b1 b2 : bool) :
+  neitv (Interval (BSide b1 x) (BSide b2 y)) ->
+  [set` Interval (BSide b1 x) (BSide b2 y)] `\` `]x, y[ =
+  (if b1 then [set x] else set0) `|` (if b2 then set0 else [set y]).
+Proof.
+move=> /neitv_lt_bnd/= xy.
+apply/seteqP; split => z/=; rewrite !in_itv/=; last first.
+  move: b1 b2 xy.
+  by move=> [] [] /[!bnd_simp]/= + []// -> => ->; rewrite ?(lexx,ltxx,andbF).
+case=> /[swap] /negP; rewrite negb_and.
+move: b1 b2 {xy} => [] [] /= + /andP[]; rewrite ?ltNge !negbK.
+- by move=> /orP[*|->//]; left; exact/le_anti/andP.
+- by case/orP => *; [left|right]; exact/le_anti/andP.
+- by case/orP => ->.
+- by move=> /orP[->//|*]; right; exact/le_anti/andP.
+Qed.
+
+Lemma setDccitv (x y : T) (b1 b2 : bool) :
+  neitv `[x, y] ->
+  `[x, y] `\` [set` Interval (BSide b1 x) (BSide b2 y)] =
+  (if b1 then set0 else [set x]) `|` (if b2 then [set y] else set0).
+Proof.
+move=> /neitv_lt_bnd/= xy.
+apply/seteqP; split => z/=; rewrite !in_itv/=; last first.
+  move: b1 b2 xy.
+  by move=> [] [] /[!bnd_simp]/= + []// -> => ->; rewrite ?(lexx,ltxx,andbF).
+case=> /[swap] /negP; rewrite negb_and.
+move: b1 b2 {xy} => [] [] /= + /andP[]; rewrite -?leNgt.
+- by move=> /orP[/negPf ->//|*]; right; exact/le_anti/andP.
+- by case/orP => /negPf ->.
+- by case/orP => *; [left|right]; exact/le_anti/andP.
+- by move=> /orP[*|/negPf ->//]; left; exact/le_anti/andP.
+Qed.
+
+Lemma setDitvoy a (x : T) (b : bool) :
+  neitv (Interval (BSide b x) a) ->
+  [set` Interval (BSide b x) a] `\` `]x, +oo[ = if b then [set x] else set0.
+Proof.
+move/neitv_lt_bnd => /= bxa; apply/seteqP; split => z/=; rewrite !in_itv/=.
+- case: b {bxa}; rewrite /= andbT; last by case=> /andP[->].
+  by case=> /andP[? _] /negP; rewrite -leNgt => ?; exact/le_anti/andP.
+- case: b bxa => //= /[swap] <-.
+  by move: a => [[] ?|[]]; rewrite !bnd_simp.
+Qed.
+
+Lemma setDitvNyo a (x : T) (b : bool) :
+  neitv (Interval a (BSide b x)) ->
+  [set` Interval a (BSide b x)] `\` `]-oo, x[ = if b then set0 else [set x].
+Proof.
+move/neitv_lt_bnd => /= abx; apply/seteqP; split => z/=; rewrite !in_itv/=.
+- case: b {abx} => /=; first by case=> /andP[_ ->].
+  by case=> /andP[_ ?] /negP; rewrite -leNgt => ?; exact/le_anti/andP.
+- case: b abx => //= /[swap] <-.
+  by move: a => [[] ?|[]]; rewrite !bnd_simp// andbT.
+Qed.
+
+Lemma setD_cbnd_bndy a (x : T) (b : bool) :
+  neitv (Interval (BLeft x) a) ->
+  [set` Interval (BLeft x) a] `\` [set` Interval (BSide b x) +oo%O] =
+  (if b then set0 else [set x]).
+Proof.
+move/neitv_lt_bnd => /= xa; apply/seteqP; split => z/=; rewrite !in_itv/=.
+- case: b {xa}; rewrite /= andbT; first by case=> /andP[->].
+  by case=> /andP[? _] /negP; rewrite -leNgt => ?; exact/le_anti/andP.
+- case: b xa => //= /[swap] <-.
+  by move: a => [[] ?|[]]; rewrite /= !bnd_simp.
+Qed.
+
+Lemma setD_bndc_Nybnd a (x : T) (b : bool) :
+  neitv (Interval a (BRight x)) ->
+  [set` Interval a (BRight x)] `\` [set` Interval -oo%O (BSide b x)] =
+  (if b then [set x] else set0).
+Proof.
+move/neitv_lt_bnd => /= ax; apply/seteqP; split => z/=; rewrite !in_itv/=.
+- case: b {ax} => /=; last by case=> /andP[_ ->].
+  by case=> /andP[_ ?] /negP; rewrite -leNgt => ?; exact/le_anti/andP.
+- case: b ax => //= /[swap] <-.
+  by move: a => [[] ?|[]]; rewrite /= !bnd_simp// andbT.
 Qed.
 
 End set_itv_orderType.
@@ -504,6 +631,16 @@ rewrite predeqE => /= r; split => [[{}r + <-]|].
   by rewrite !in_itv/= !ltrN2 andbC.
 by exists (- r); rewrite ?opprK// !in_itv/= ltrNl ltrNr andbC.
 Qed.
+
+Lemma opp_preimage_itvbndy (R : numDomainType) ba (a : R) (bb : bool):
+  -%R @^-1` [set` Interval (BSide ba a) (BInfty _ bb)] =
+  [set` Interval (BInfty _ (~~ bb)) (BSide (~~ ba) (- a))].
+Proof. by apply/seteqP; split => [x/=|x/=]; rewrite oppr_itvy. Qed.
+
+Lemma opp_preimage_itvbndbnd (R : numDomainType) ba (a : R) bb (b : R) :
+  -%R @^-1` [set` Interval (BSide ba a) (BSide bb b)] =
+  [set` Interval (BSide (~~ bb) (- b)) (BSide (~~ ba) (- a))].
+Proof. by apply/seteqP; split => [x/=|x/=]; rewrite oppr_itv. Qed.
 
 (** lemmas between itv and set-theoretic operations *)
 Section set_itv_porderType.

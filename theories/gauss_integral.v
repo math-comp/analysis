@@ -1,17 +1,20 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval.
+From mathcomp Require Import finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop reals interval_inference ereal.
 From mathcomp Require Import topology tvs normedtype sequences real_interval.
-From mathcomp Require Import esum measure lebesgue_measure numfun realfun.
-From mathcomp Require Import exp trigo lebesgue_integral derive charge ftc.
+From mathcomp Require Import esum measure measurable_realfun numfun realfun.
+From mathcomp Require Import exp trigo lebesgue_measure lebesgue_integral.
+From mathcomp Require Import derive ftc.
 
 (**md**************************************************************************)
 (* # Gauss integral                                                           *)
 (*                                                                            *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -147,7 +150,7 @@ near (pinfty_nbhs R) => M.
 exists M => // x y.
 rewrite in_itv/= => /andP[cex xce].
 rewrite partial1_u !mulNr normrN -!mulrA normrM ger0_norm//.
-rewrite -expRD exprMn_comm; last by rewrite /GRing.comm mulrC.
+rewrite -expRD exprMn_comm; first by rewrite /GRing.comm mulrC.
 rewrite -opprD.
 rewrite -{1}(mul1r (x ^+ 2)) -mulrDl.
 rewrite (@le_trans _ _ (2 * `|x * gauss_fun x|))//.
@@ -170,7 +173,7 @@ by rewrite expr0n/= oppr0 expR0 gauss_fun_le1.
 Unshelve. all: end_near. Qed.
 
 Let cvg_dintegral01_u x :
-  h^-1 *: (integral01_u (h + x)%E - integral01_u x) @[h --> 0^'] -->
+  h^-1 *: (integral01_u (h + x) - integral01_u x) @[h --> 0^'] -->
   - 2 * x * gauss_fun x * \int[mu]_(t in `[0, 1]) gauss_fun (t * x).
 Proof.
 have [c [e e0 cex]] : exists c : R, exists2 e : R, 0 < e & ball c e x.
@@ -178,8 +181,8 @@ have [c [e e0 cex]] : exists c : R, exists2 e : R, 0 < e & ball c e x.
   exact: ballxx.
 have [M M0 HM] := partial1_u_local_ub c e0.
 rewrite [X in _ --> X](_ : _ =
-    \int[mu]_(y in `[0, 1]) ('d1 u) x y)//; last first.
-  rewrite /= -RintegralZl//; last first.
+    \int[mu]_(y in `[0, 1]) ('d1 u) x y)//.
+  rewrite /= -RintegralZl//.
     apply: continuous_compact_integrable => /=; first exact: segment_compact.
     by apply/continuous_subspaceT => x0; exact: continuous_gaussM.
   by apply: eq_Rintegral => z z01; rewrite partial1_u.
@@ -224,14 +227,14 @@ Definition h x := integral01_u x + (integral0_gauss x) ^+ 2.
 Let derive_h x : 0 < x -> h^`() x = 0.
 Proof.
 move=> x0.
-rewrite /h derive1E deriveD//=; last first.
+rewrite /h derive1E deriveD//=.
   apply/diff_derivable.
   apply: (@differentiable_comp _ _ _ _ integral0_gauss (fun x => x ^+ 2)).
     apply/derivable1_diffP.
     by have [] := derive_integral0_gauss x0.
   by apply/derivable1_diffP; exact: exprn_derivable.
 rewrite -derive1E derive_integral01_u -derive1E.
-rewrite (@derive1_comp _ integral0_gauss (fun z => z ^+ 2))//; last first.
+rewrite (@derive1_comp _ integral0_gauss (fun z => z ^+ 2))//.
   by have [] := derive_integral0_gauss x0.
 rewrite derive1E exp_derive.
 rewrite (derive_integral0_gauss _).2//.
@@ -245,24 +248,24 @@ have derM : ( *%R^~ x)^`() = cst x.
   by apply/funext => z; rewrite derive1Mr// derive1_id mul1r.
 have := @integration_by_substitution_increasing R (fun t => t * x)
   gauss_fun _ _ ler01.
-rewrite -/mu mul0r mul1r => ->//=; last 6 first.
-  - move=> a b; rewrite !in_itv/= => /andP[a0 a1] /andP[b0 b1] ab.
+rewrite -/mu mul0r mul1r => ->//=.
+- move=> a b; rewrite !in_itv/= => /andP[a0 a1] /andP[b0 b1] ab.
     by rewrite ltr_pM2r.
-  - by rewrite derM => z _; exact: cvg_cst.
-  - by rewrite derM; exact: is_cvg_cst.
-  - by rewrite derM; exact: is_cvg_cst.
-  - split => //.
-    + apply: cvg_at_right_filter.
-      by apply: cvgM => //; exact: cvg_cst.
-    + apply: cvg_at_left_filter.
-      by apply: cvgM => //; exact: cvg_cst.
-  - by apply: continuous_subspaceT; exact: continuous_gauss_fun.
+- by rewrite derM => z _; exact: cvg_cst.
+- by rewrite derM; exact: is_cvg_cst.
+- by rewrite derM; exact: is_cvg_cst.
+- split => //.
+  + apply: cvg_at_right_filter.
+    by apply: cvgM => //; exact: cvg_cst.
+  + apply: cvg_at_left_filter.
+    by apply: cvgM => //; exact: cvg_cst.
+- by apply: continuous_subspaceT; exact: continuous_gauss_fun.
 rewrite derM.
 under eq_integral do rewrite fctE/= EFinM.
 have ? : mu.-integrable `[0, 1] (fun y => (gauss_fun (y * x))%:E).
   apply: continuous_compact_integrable => //; first exact: segment_compact.
   by apply: continuous_subspaceT => z; exact: continuous_gaussM.
-rewrite integralZr//= fineM//=; last exact: integrable_fin_num.
+rewrite integralZr//= fineM//=; first exact: integrable_fin_num.
 by rewrite mulrC.
 Qed.
 
@@ -355,7 +358,7 @@ have cvg_Ig : @integral0_gauss R x @[x --> +oo] --> Num.sqrt pi / 2.
       --> Num.sqrt (pi / 4).
     apply: continuous_cvg => //;
       [exact: sqrt_continuous|exact: cvg_integral0_gauss_sqr].
-  rewrite sqrtrM ?pi_ge0// sqrtrV// (_ : 4 = 2 ^+ 2); last first.
+  rewrite sqrtrM ?pi_ge0// sqrtrV// (_ : 4 = 2 ^+ 2).
     by rewrite expr2 -natrM.
   rewrite sqrtr_sqr ger0_norm//.
   rewrite (_ : (fun _ => Num.sqrt _) = integral0_gauss)//.
@@ -375,15 +378,15 @@ Qed.
 Theorem integralT_gauss : (\int[mu]_x (gauss_fun x)%:E)%E = (Num.sqrt pi)%:E.
 Proof.
 rewrite ge0_symfun_integralT//=.
-- rewrite (_ : [set x | _] = `[0, +oo[%classic); last first.
-    by apply/seteqP; split => x/=; rewrite in_itv/= andbT.
-  by rewrite integral0y_gauss -EFinM mulrCA divff// mulr1.
 - by move=> x; exact: gauss_fun_ge0.
 - exact: continuous_gauss_fun.
 - by move=> x/=; rewrite /gauss_fun sqrrN.
+rewrite (_ : [set x | _] = `[0, +oo[%classic).
+  by apply/seteqP; split => x/=; rewrite in_itv/= andbT.
+by rewrite integral0y_gauss -EFinM mulrCA divff// mulr1.
 Qed.
 
-Lemma integrableT_gauss : mu.-integrable setT (EFin \o gauss_fun).
+Lemma integrableT_gauss : mu.-integrable [set: R] (EFin \o gauss_fun).
 Proof.
 apply/integrableP; split.
   by apply/measurable_EFinP/measurable_funTS; exact: measurable_gauss_fun.

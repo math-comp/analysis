@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect_compat all_algebra.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality reals.
@@ -50,6 +50,7 @@ Reserved Notation "f = g %[ae mu ]"
 Reserved Notation "m .-null_set" (at level 2, format "m .-null_set").
 Reserved Notation "m1 `<< m2" (at level 51).
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -138,17 +139,17 @@ Lemma negligible_bigcup d (T : sigmaRingType d) (R : realFieldType)
 Proof.
 move=> mF; exists (\bigcup_k sval (cid (mF k))); split.
 - by apply: bigcupT_measurable => // k; have [] := svalP (cid (mF k)).
-- rewrite seqDU_bigcup_eq measure_bigcup//; last first.
+- rewrite seqDU_bigcup_eq measure_bigcup//.
     move=> k _; apply: measurableD; first by case: cid => //= A [].
     by apply: bigsetU_measurable => i _; case: cid => //= A [].
   rewrite eseries0// => k _ _.
   have [mFk mFk0 ?] := svalP (cid (mF k)).
   rewrite measureD//=.
-  + rewrite mFk0 sub0e eqe_oppLRP oppe0; apply/eqP; rewrite -measure_le0.
-    rewrite -[leRHS]mFk0 le_measure//= ?inE//; apply: measurableI => //.
-    by apply: bigsetU_measurable => i _; case: cid => // A [].
   + by apply: bigsetU_measurable => i _; case: cid => // A [].
   + by rewrite mFk0.
+  rewrite mFk0 sub0e eqe_oppLRP oppe0; apply/eqP; rewrite -measure_le0.
+  rewrite -[leRHS]mFk0 le_measure//= ?inE//; apply: measurableI => //.
+  by apply: bigsetU_measurable => i _; case: cid => // A [].
 - by apply: subset_bigcup => k _; rewrite /sval/=; by case: cid => //= A [].
 Qed.
 
@@ -275,7 +276,8 @@ Lemma ae_eq_funeposneg (f g : T -> \bar R) :
 Proof.
 split=> [fg|[pfg nfg]].
   by split; near=> x => Dx; rewrite !(funeposE,funenegE) (near fg).
-by near=> x => Dx; rewrite (funeposneg f) (funeposneg g) ?(near pfg, near nfg).
+near=> x => Dx.
+by rewrite -(funeposBneg f) -(funeposBneg g) ?(near pfg, near nfg).
 Unshelve. all: by end_near. Qed.
 Local Close Scope ereal_scope.
 
@@ -285,7 +287,8 @@ Proof. by symmetry. Qed.
 Lemma ae_eq_trans U (f g h : T -> U) : ae_eq f g -> ae_eq g h -> ae_eq f h.
 Proof. by apply transitivity. Qed.
 
-Lemma ae_eq_sub W (f g h i : T -> W) : ae_eq f g -> ae_eq h i -> ae_eq (f \- h) (g \- i).
+Lemma ae_eq_sub W (f g h i : T -> W) : ae_eq f g -> ae_eq h i ->
+  ae_eq (f \- h) (g \- i).
 Proof. by apply: filterS2 => x + + Dx => /= /(_ Dx) -> /(_ Dx) ->. Qed.
 
 Lemma ae_eq_mul2r W (f g h : T -> W) : ae_eq f g -> ae_eq (f \* h) (g \* h).
@@ -297,7 +300,8 @@ Proof. by move=>/(ae_eq_comp2 (fun x y => h x * y)). Qed.
 Lemma ae_eq_mul1l W (f g : T -> W) : ae_eq f (cst 1) -> ae_eq g (g \* f).
 Proof. by apply: filterS => x /= /[apply] ->; rewrite mulr1. Qed.
 
-Lemma ae_eq_abse (f g : T -> \bar R) : ae_eq f g -> ae_eq (abse \o f) (abse \o g).
+Lemma ae_eq_abse (f g : T -> \bar R) : ae_eq f g ->
+  ae_eq (abse \o f) (abse \o g).
 Proof. by apply: filterS => x /[apply] /= ->. Qed.
 
 Lemma ae_foralln (P : nat -> T -> Prop) :
@@ -308,8 +312,8 @@ have seqDUAmeas := seqDU_measurable Ameas.
 exists (\bigcup_n A n); split => //.
 - exact/bigcup_measurable.
 - rewrite seqDU_bigcup_eq measure_bigcup// eseries0// => i _ _.
-  by rewrite (@subset_measure0 _ _ _ _ _ (A i))//=; apply: subset_seqDU.
-- by move=> x /=; rewrite -existsNP => -[n NPnx]; exists n => //; apply: NPA.
+  by rewrite (@subset_measure0 _ _ _ _ _ (A i))//=; exact: subset_seqDU.
+- by move=> x /=; rewrite -existsNP => -[n NPnx]; exists n => //; exact: NPA.
 Qed.
 
 End ae_eq.
@@ -373,7 +377,7 @@ Lemma null_setU m B : measurable B ->
 Proof.
 move=> mB; split=> [nullB A mA|B0 A mA AB].
 - apply/eqP; rewrite eq_le.
-  rewrite (@le_measure _ _ _ _ A) ?inE ?andbT//; last exact: measurableU.
+  rewrite (@le_measure _ _ _ _ A) ?inE ?andbT//; first exact: measurableU.
   by rewrite (le_trans (measureU2 _ _ _))// (nullB B)// adde0.
 - apply/eqP; rewrite eq_le measure_ge0 andbT.
   by rewrite -(measure0 m) -[leRHS]B0// set0U le_measure// inE.

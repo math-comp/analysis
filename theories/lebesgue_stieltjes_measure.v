@@ -1,7 +1,9 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
+From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint interval.
 From mathcomp Require Import archimedean.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions fsbigop cardinality.
 From mathcomp Require Import reals ereal interval_inference topology numfun.
 From mathcomp Require Import normedtype sequences esum real_interval measure.
@@ -42,6 +44,7 @@ From mathcomp Require Import realfun.
 (*                                                                            *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -85,7 +88,7 @@ exists (PosNum [gt0 of (d%:num / 2)]) => //=.
 move: h => /(_ (a + d%:num / 2)) /=.
 rewrite opprD addNKr normrN ger0_norm// ltr_pdivrMr// ltr_pMr// 2!ltrDl.
 rewrite ltr01 divr_gt0// => /(_ erefl erefl).
-rewrite ler0_norm; last first.
+rewrite ler0_norm.
   by rewrite subr_le0 (cumulative_is_nondecreasing f)// lerDl.
 by rewrite opprB ltrBlDl; exact: ltW.
 Qed.
@@ -225,9 +228,9 @@ Lemma finite_wlength_itv i : neitv i -> wlength [set` i] < +oo ->
   wlength [set` i] = (fine (g i.2))%:E - (fine (g i.1))%:E.
 Proof.
 move=> i0 ioo; have [i1f i2f] := wlength_finite_fin_num i0 ioo.
-rewrite fineK; last first.
+rewrite fineK.
   by rewrite /g; move: i2f; case: (ereal_of_itv_bound i.2).
-rewrite fineK; last first.
+rewrite fineK.
   by rewrite /g; move: i1f; case: (ereal_of_itv_bound i.1).
 rewrite wlength_itv; case: ifPn => //; rewrite -leNgt le_eqVlt => /predU1P[->|].
   by rewrite subee// /g; move: i1f; case: (ereal_of_itv_bound i.1).
@@ -354,7 +357,7 @@ have bbi2 j : P j -> (b j).1 < (b j).2 -> (b j).2 <= (b i).2.
 apply/IHp.
 - by rewrite lt_neqAle a1bi/= a1b.
 - rewrite (leq_trans _ cP)// -(cardID (pred1 i) P).
-  rewrite [X in (_ < X + _)%N](@eq_card _ _ (pred1 i)); last first.
+  rewrite [X in (_ < X + _)%N](@eq_card _ _ (pred1 i)).
     by move=> j; rewrite !inE andbC; case: eqVneq => // ->.
   rewrite ?card1 ?ltnS// subset_leq_card//.
   by apply/fintype.subsetP => j; rewrite -topredE/= !inE andbC.
@@ -416,7 +419,7 @@ wlog wlogh : b A AE lebig / forall n, (b n).1 <= (b n).2.
   move=> /= h.
   set A' := fun n => if (b n).1 >= (b n).2 then set0 else A n.
   set b' := fun n => if (b n).1 >= (b n).2 then (0, 0) else b n.
-  rewrite [leRHS](_ : _ = \sum_(n <oo) wlength f (A' n))%E; last first.
+  rewrite [leRHS](_ : _ = \sum_(n <oo) wlength f (A' n))%E.
     apply: (@eq_eseriesr _ (wlength f \o A) (wlength f \o A')) => k.
     rewrite /= /A' AE; case: ifPn => // bn.
     by rewrite set_itv_ge//= bnd_simp -leNgt.
@@ -469,7 +472,7 @@ apply: (@le_trans _ _ (\sum_(i <- X) (wlength f `](b i).1, (b i).2]%classic) +
     by move: x kx; exact: subset_itv_oo_oc.
   rewrite addeC -big_split/=; apply: lee_sum => k _.
   by rewrite !(EFinB, wlength_itv_bnd)// addeA subeK.
-rewrite -big_split/= nneseries_esum//; last by move=> k _; rewrite adde_ge0.
+rewrite -big_split/= nneseries_esum//; first by move=> k _; rewrite adde_ge0.
 rewrite esum_ge//; exists [set` X] => //; rewrite fsbig_finite//= set_fsetK.
 rewrite big_seq [in X in (_ <= X)%E]big_seq; apply: lee_sum => k kX.
 by rewrite AE leeD2l// lee_fin lerBlDl natrX De.
@@ -484,8 +487,7 @@ Lemma wlength_sigma_finite (f : R -> R) :
 Proof.
 exists (fun k => `](- k%:R), k%:R]%classic).
   apply/esym; rewrite -subTset => /= x _ /=.
-  exists (truncn `|x|).+1; rewrite //= in_itv/=.
-  by have := truncnS_gt `|x|; rewrite ltr_norml => /andP[-> /ltW->].
+  by exists (Num.bound x); rewrite //= in_itv/= ltrNl ltrNbound ltW// ltr_bound.
 move=> k; split => //; rewrite wlength_itv /= -EFinB.
 by case: ifP; rewrite ltey.
 Qed.
@@ -510,16 +512,17 @@ Definition measurableTypeR (R : realType) :=
   g_sigma_algebraType R.-ocitv.-measurable.
 
 Section lebesgue_stieltjes_measure.
-Variable R : realType.
+Context {R : realType}.
+Variable f : cumulative R R.
 
-Lemma lebesgue_stieltjes_measure_unique (f : cumulative R R)
+Lemma lebesgue_stieltjes_measure_unique
     (mu : {measure set (measurableTypeR R) -> \bar R}) :
     (forall X, ocitv X -> lebesgue_stieltjes_measure f X = mu X) ->
-  forall X, measurable X -> lebesgue_stieltjes_measure f X = mu X.
+  forall A, measurable A -> lebesgue_stieltjes_measure f A = mu A.
 Proof.
-move=> muE X mX; apply: measure_extension_unique => //=.
+move=> muE A mA; apply: measure_extension_unique => //=.
   exact: wlength_sigma_finite.
-by move=> A mA; rewrite -muE// -measurable_mu_extE.
+by move=> X mX; rewrite -muE// -measurable_mu_extE.
 Qed.
 
 End lebesgue_stieltjes_measure.
@@ -574,20 +577,19 @@ have mopoo (x : R) : measurable `]x, +oo[.
 have mnooc (x : R) : measurable `]-oo, x].
   by rewrite -setCitvr; exact/measurableC.
 have ooE (a b : R) : `]a, b[%classic = `]a, b] `\ b.
-  case: (boolP (a < b)) => ab; last by rewrite !set_itv_ge ?set0D.
-  by rewrite -setUitv1// setUDK// => x [->]; rewrite /= in_itv/= ltxx andbF.
+  by rewrite setDitv1r.
 have moo (a b : R) : measurable `]a, b[.
   by rewrite ooE; exact: measurableD.
 have mcc (a b : R) : measurable `[a, b].
   case: (boolP (a <= b)) => ab; last by rewrite set_itv_ge.
-  by rewrite -setU1itv//; apply/measurableU.
+  by rewrite -setU_1itvob//; apply/measurableU.
 have mco (a b : R) : measurable `[a, b[.
   case: (boolP (a < b)) => ab; last by rewrite set_itv_ge.
-  by rewrite -setU1itv//; apply/measurableU.
+  by rewrite -setU_1itvob//; apply/measurableU.
 have oooE (b : R) : `]-oo, b[%classic = `]-oo, b] `\ b.
-  by rewrite -setUitv1// setUDK// => x [->]; rewrite /= in_itv/= ltxx.
+  by rewrite setDitv1r.
 case: i => [[[] a|[]] [[] b|[]]] => //; do ?by rewrite set_itv_ge.
-- by rewrite -setU1itv//; exact/measurableU.
+- by rewrite -setU_1itvob//; exact/measurableU.
 - by rewrite oooE; exact/measurableD.
 - by rewrite set_itvNyy.
 Qed.
@@ -637,7 +639,7 @@ pose I n : set R := `]- (n%:R), n%:R]%classic.
 have : (lsf \o I) n @[n --> \oo] --> 1%E.
   have -> : lsf \o I = (fun n => (f n%:R)%:E - (f (- n%:R))%:E)%E.
     apply/funext=> n; rewrite /= /lsf/= /lebesgue_stieltjes_measure.
-    rewrite /measure_extension measurable_mu_extE/=; last exact: is_ocitv.
+    rewrite /measure_extension measurable_mu_extE/=; first exact: is_ocitv.
     by rewrite wlength_itv_bnd// ge0_cp.
   rewrite -(sube0 1); apply: cvgeB => //.
   - by apply/cvg_EFin; [near=> F

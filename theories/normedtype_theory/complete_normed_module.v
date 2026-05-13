@@ -1,7 +1,8 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrnum.
-From mathcomp Require Import boolp classical_sets interval_inference reals.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrnum vector.
+From mathcomp Require Import interval_inference.
+From mathcomp Require Import boolp classical_sets reals.
 From mathcomp Require Import topology tvs pseudometric_normed_Zmodule.
 From mathcomp Require Import normed_module.
 
@@ -15,6 +16,7 @@ From mathcomp Require Import normed_module.
 (* ```                                                                        *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -46,18 +48,17 @@ have D_has_sup : has_sup D; first split.
 exists (sup D).
 apply/cvgrPdist_le => /= _ /posnumP[eps]; near=> x.
 rewrite ler_distl; move/ubP: (sup_upper_bound D_has_sup) => -> //=.
-  apply: ge_sup => //; first by case: D_has_sup.
-  have Fxeps : F (ball_ Num.norm x eps%:num).
-    by near: x; apply: nearP_dep; apply: F_cauchy.
-  apply/ubP => y /(_ _ Fxeps) /downP[z].
-  rewrite /ball_/= ltr_distl ltrBlDr.
-  by move=> /andP [/ltW /(le_trans _) le_xeps _ /le_xeps].
-rewrite /D /= => A FA; near F => y.
-apply/downP; exists y.
-  by near: y.
-rewrite lerBlDl -lerBlDr ltW //.
-suff: `|x - y| < eps%:num by rewrite ltr_norml => /andP[_].
-by near: y; near: x; apply: nearP_dep; apply: F_cauchy.
+  rewrite /D /= => A FA; near F => y.
+  apply/downP; exists y; first by near: y.
+  rewrite lerBlDl -lerBlDr ltW //.
+  suff: `|x - y| < eps%:num by rewrite ltr_norml => /andP[_].
+  by near: y; near: x; apply: nearP_dep; apply: F_cauchy.
+apply: ge_sup => //; first by case: D_has_sup.
+have Fxeps : F (ball_ Num.norm x eps%:num).
+  by near: x; apply: nearP_dep; apply: F_cauchy.
+apply/ubP => y /(_ _ Fxeps) /downP[z].
+rewrite /ball_/= ltr_distl ltrBlDr.
+by move=> /andP [/ltW /(le_trans _) le_xeps _ /le_xeps].
 Unshelve. all: by end_near. Qed.
 
 HB.instance Definition _ (R : realType) := Uniform_isComplete.Build R^o

@@ -1,10 +1,9 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum interval rat.
-From mathcomp Require Import finmap.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrint ssrnum interval.
+From mathcomp Require Import rat finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality reals.
-From mathcomp Require Import topology function_spaces.
+From mathcomp Require Import cardinality reals topology.
 
 (**md**************************************************************************)
 (* # The Cantor Space and Applications                                        *)
@@ -34,6 +33,7 @@ From mathcomp Require Import topology function_spaces.
 (*                                                                            *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -196,7 +196,7 @@ Unshelve. all: end_near. Qed.
 Let apx_prefix b c n :
   (forall i, (i < n)%N -> b i = c i) -> branch_apx b n = branch_apx c n.
 Proof.
-elim: n => //= n IH inS; rewrite IH; first by rewrite inS.
+elim: n => //= n IH inS; rewrite IH; last by rewrite inS.
 by move=> ? ?; exact/inS/ltnW.
 Qed.
 
@@ -420,7 +420,7 @@ move=> _; split=> [|A [|]| | |].
 - move=> [z M'z] <-; exists z; split.
   + apply: subset_closure; apply: nbhs_singleton; apply: nbhs_interior.
       by rewrite -nbhs_entourageE; exists (split_ent E) => // t /xsectionP.
-  + by apply: closure_subset; exact: interior_subset.
+  + by apply: closureS; exact: interior_subset.
 - by case => ->; [exists t0 | exists t1]; split => // t ->;
     apply/subset_closure/xsectionP; exact: entourage_refl.
 - exists [set t0], [set t1]; split;[|split].

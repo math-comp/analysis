@@ -6,6 +6,8 @@
 -arg -w -arg -ambiguous-paths
 -arg -w -arg -redundant-canonical-projection
 -arg -w -arg -projection-no-head-constant
+# introduced in Rocq 9.3
+-arg -w -arg -rewrite-rw
 
 Rstruct_topology.v
 showcase/uniform_bigO.v

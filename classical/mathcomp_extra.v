@@ -1,5 +1,5 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
+From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint.
 
 (**md**************************************************************************)
 (* # MathComp extra                                                           *)
@@ -15,6 +15,7 @@ From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
 (*                                                                            *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -83,6 +84,10 @@ Proof. by move=> F0; elim/big_rec : _ => // i x Pi; apply/ler_wnDl/F0. Qed.
 Lemma card_fset_sum1 (T : choiceType) (A : {fset T}) :
   #|` A| = (\sum_(i <- A) 1)%N.
 Proof. by rewrite big_seq_fsetE/= sum1_card cardfE. Qed.
+
+Lemma lteifS {disp : Order.disp_t} {T : porderType disp}
+  [x y : T] (C : bool) : (x < y)%O -> (x < y ?<= if C)%O.
+Proof. by case: C => //= /ltW. Qed.
 
 (**************************)
 (* MathComp 2.6 additions *)

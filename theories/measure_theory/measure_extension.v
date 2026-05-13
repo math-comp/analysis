@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect_compat all_algebra.
 From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
 From mathcomp Require Import reals interval_inference ereal topology normedtype.
 From mathcomp Require Import sequences esum.
@@ -30,17 +30,18 @@ From mathcomp Require Import measure_negligible.
 (* ```                                                                        *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*      mu.-caratheodory == the set of Caratheodory measurable sets for the   *)
-(*                          outer measure mu, i.e., sets A such that          *)
-(*                          forall B, mu A = mu (A `&` B) + mu (A `&` ~` B)   *)
-(*  caratheodory_type mu := T, where mu : {outer_measure set T -> \bar R}     *)
-(*                          It is a canonical measurableType copy of T.       *)
-(*                          The restriction of the outer measure mu to the    *)
-(*                          sigma algebra of Caratheodory measurable sets is  *)
-(*                          a measure.                                        *)
-(*                          Remark: sets that are negligible for              *)
-(*                          this measure are Caratheodory measurable.         *)
-(* mu .-cara.-measurable == sigma-algebra of Caratheodory measurable sets     *)
+(*        mu.-caratheodory == the set of Caratheodory measurable sets for the *)
+(*                            outer measure mu, i.e., sets A such that        *)
+(*                            forall B, mu A = mu (A `&` B) + mu (A `&` ~` B) *)
+(*    caratheodory_type mu := T, where mu : {outer_measure set T -> \bar R}   *)
+(*                            It is a canonical measurableType copy of T.     *)
+(*                            The restriction of the outer measure mu to the  *)
+(*                            sigma algebra of Caratheodory measurable sets   *)
+(*                            is a measure.                                   *)
+(*                            Remark: sets that are negligible for            *)
+(*                            this measure are Caratheodory measurable.       *)
+(* caratheodory_measure mu == measure built out of mu, an outer measure       *)
+(*   mu .-cara.-measurable == sigma-algebra of Caratheodory measurable sets   *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* From a premeasure to an outer measure (Measure Extension Theorem part 1):  *)
@@ -78,6 +79,7 @@ Reserved Notation "mu .-caratheodory" (format "mu .-caratheodory").
 Reserved Notation "mu .-cara" (format "mu .-cara").
 Reserved Notation "mu .-cara.-measurable" (format "mu .-cara.-measurable").
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -107,6 +109,9 @@ Notation "{ 'outer_measure' 'set' T '->' '\bar' R }" := (outer_measure R T)
   : ring_scope.
 
 #[global] Hint Extern 0 (_ set0 = 0%R) => solve [apply: outer_measure0] : core.
+#[global] Hint Extern 0
+  (is_true (0%R <= (_ : {outer_measure set _ -> \bar _}) _)%E) =>
+  solve [apply: outer_measure_ge0] : core.
 #[global] Hint Extern 0 (sigma_subadditive _) =>
   solve [apply: outer_measure_sigma_subadditive] : core.
 
@@ -128,7 +133,7 @@ Lemma le_outer_measure : {homo mu : A B / A `<=` B >-> A <= B}.
 Proof.
 move=> A B AB; pose B_ k := if k is 0%N then B else set0.
 have -> : mu B = \sum_(n <oo) mu (B_ n).
-  rewrite nneseries_recl//; last by move=> *; rewrite outer_measure_ge0.
+  rewrite nneseries_recl//; first by move=> *; rewrite outer_measure_ge0.
   rewrite eseries_cond/= eseries0 ?adde0// => -[|]//= k _ _.
   by rewrite outer_measure0.
 apply: subset_outer_measure_sigma_subadditive => //.
@@ -166,15 +171,15 @@ Lemma outer_measure_subadditive (F : (set T)^nat) n :
   mu (\big[setU/set0]_(i < n) F i) <= \sum_(i < n) mu (F i).
 Proof.
 pose F' := fun k => if (k < n)%N then F k else set0.
-rewrite -(big_mkord xpredT F) big_nat (eq_bigr F')//; last first.
+rewrite -(big_mkord xpredT F) big_nat (eq_bigr F')//.
   by move=> k /= kn; rewrite /F' kn.
 rewrite -big_nat big_mkord.
 have := outer_measure_sigma_subadditive mu F'.
-rewrite (bigcup_splitn n) (_ : bigcup _ _ = set0) ?setU0; last first.
+rewrite (bigcup_splitn n) (_ : bigcup _ _ = set0) ?setU0.
   by rewrite bigcup0 // => k _; rewrite /F' /= ltnNge leq_addr.
 move/le_trans; apply.
-rewrite (nneseries_split _ n); last by move=> ? ?; exact: outer_measure_ge0.
-rewrite [X in _ + X]eseries0 ?adde0; last first.
+rewrite (nneseries_split _ n); first by move=> ? ?; exact: outer_measure_ge0.
+rewrite [X in _ + X]eseries0 ?adde0.
   by move=> k nk _; rewrite /F' ltnNge nk/= outer_measure0.
 by rewrite big_mkord; apply: lee_sum => i _; rewrite /F' ltn_ord.
 Qed.
@@ -195,7 +200,7 @@ Proof.
 pose B : (set T) ^nat := bigcup2 (X `&` A) (X `&` ~` A).
 have cvg_mu : (fun n => \sum_(i < n) mu (B i)) @ \oo --> mu (B 0%N) + mu (B 1%N).
   rewrite -2!cvg_shiftS /=.
-  rewrite [X in X @ \oo --> _](_ : _ = (fun=> mu (B 0%N) + mu (B 1%N))); last first.
+  rewrite [X in X @ \oo --> _](_ : _ = (fun=> mu (B 0%N) + mu (B 1%N))).
     rewrite funeqE => i; rewrite 2!big_ord_recl /= big1 ?adde0 // => j _.
     by rewrite /B /bigcup2 /=.
   exact: cvg_cst.
@@ -313,7 +318,7 @@ Proof.
 rewrite caratheodory_decomp -!addeA; congr (mu _ + _).
   rewrite -!setIA; congr (_ `&` _).
   by rewrite setIC; apply/setIidPl; apply: subIset; left; exact: subsetUl.
-rewrite addeA addeC [X in mu X + _](_ : _ = set0); last first.
+rewrite addeA addeC [X in mu X + _](_ : _ = set0).
   by rewrite -setIA -setCU -setIA setICr setI0.
 rewrite outer_measure0 add0e addeC -!setIA; congr (mu (X `&` _) + mu (X `&` _)).
   by rewrite setIC; apply/setIidPl; apply: subIset; right; exact: subsetUr.
@@ -352,7 +357,7 @@ move=> MA tA X.
 set A' := \bigcup_k A k; set B := fun n => \big[setU/set0]_(k < n) (A k).
 suff : forall n, \sum_(k < n) mu (X `&` A k) + mu (X `&` ~` A') <= mu X.
   move=> XA; rewrite (_ : limn _ = ereal_sup
-      ((fun n => \sum_(k < n) mu (X `&` A k)) @` setT)); last first.
+      ((fun n => \sum_(k < n) mu (X `&` A k)) @` setT)).
     under eq_fun do rewrite big_mkord.
     apply/cvg_lim => //; apply: ereal_nondecreasing_cvgn.
     apply: (lee_sum_nneg_ord (fun n => mu (X `&` A n)) xpredT) => n _.
@@ -402,9 +407,9 @@ Proof. exact. Qed.
 Notation "mu .-cara" := (caratheodory_display mu) : measure_display_scope.
 
 Section caratheodory_sigma_algebra.
-Variables (R : realType) (T : pointedType) (mu : {outer_measure set T -> \bar R}).
+Variables (R : realType) (T : choiceType) (mu : {outer_measure set T -> \bar R}).
 
-HB.instance Definition _ := Pointed.on (caratheodory_type mu).
+HB.instance Definition _ := Choice.on (caratheodory_type mu).
 HB.instance Definition _ := @isMeasurable.Build (caratheodory_display mu)
   (caratheodory_type mu) mu.-caratheodory
     (caratheodory_measurable_set0 mu)
@@ -413,28 +418,32 @@ HB.instance Definition _ := @isMeasurable.Build (caratheodory_display mu)
 
 End caratheodory_sigma_algebra.
 
+Definition caratheodory_measure {R : realType} (T : choiceType)
+    (mu : {outer_measure set T -> \bar R})
+  : set (caratheodory_type mu) -> \bar R := mu.
+Arguments caratheodory_measure {R T} mu.
+
 Section caratheodory_measure.
 Local Open Scope ereal_scope.
-Variables (R : realType) (T : pointedType).
+Variables (R : realType) (T : choiceType).
 Variable mu : {outer_measure set T -> \bar R}.
-Let U := caratheodory_type mu.
 
-Lemma caratheodory_measure0 : mu (set0 : set U) = 0.
+Let caratheodory_measure0 : caratheodory_measure mu set0 = 0.
 Proof. exact: outer_measure0. Qed.
 
-Lemma caratheodory_measure_ge0 (A : set U) : 0 <= mu A.
+Let caratheodory_measure_ge0 A : 0 <= caratheodory_measure mu A.
 Proof. exact: outer_measure_ge0. Qed.
 
-Lemma caratheodory_measure_sigma_additive :
-  semi_sigma_additive (mu : set U -> _).
+Let caratheodory_measure_sigma_additive :
+  semi_sigma_additive (caratheodory_measure mu).
 Proof.
 move=> A mA tA mbigcupA; set B := \bigcup_k A k.
 suff : forall X, mu X = \sum_(k <oo) mu (X `&` A k) + mu (X `&` ~` B).
   move/(_ B); rewrite setICr outer_measure0 adde0.
-  rewrite (_ : (fun n => _) = fun n => \sum_(k < n) mu (A k)); last first.
+  rewrite (_ : (fun n => _) = fun n => \sum_(k < n) mu (A k)).
     rewrite funeqE => n; rewrite big_mkord; apply: eq_bigr => i _; congr (mu _).
     by rewrite setIC; apply/setIidPl; exact: bigcup_sup.
-  move=> ->.
+  rewrite /caratheodory_measure => ->.
   have := fun n (_ : xpredT n) (_ : xpredT n) => outer_measure_ge0 mu (A n).
   move/(@is_cvg_nneseries _ _ _ 0) => /cvg_ex[l] hl.
   under [in X in _ --> X]eq_fun do rewrite -(big_mkord xpredT (mu \o A)).
@@ -447,12 +456,12 @@ by rewrite -le_caratheodory_measurable // => ?; rewrite -mB.
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _
-  (mu : set (caratheodory_type mu) -> _)
+  (caratheodory_measure mu)
   caratheodory_measure0 caratheodory_measure_ge0
   caratheodory_measure_sigma_additive.
 
 Lemma measure_is_complete_caratheodory :
-  measure_is_complete (mu : set (caratheodory_type mu) -> _).
+  measure_is_complete (caratheodory_measure mu).
 Proof.
 move=> B [A [mA muA0 BA]]; apply: le_caratheodory_measurable => X.
 suff -> : mu (X `&` B) = 0.
@@ -508,7 +517,7 @@ Unshelve. all: by end_near. Qed.
 
 Lemma mu_ext0 : mu^* set0 = 0.
 Proof.
-apply/eqP; rewrite eq_le; apply/andP; split; last exact/mu_ext_ge0.
+apply/eqP; rewrite eq_le; apply/andP; split => //; last exact/mu_ext_ge0.
 rewrite /mu_ext; apply: ereal_inf_lbound; exists (fun=> set0); first by split.
 by apply: lim_near_cst => //; near=> n => /=; rewrite big1.
 Unshelve. all: by end_near. Qed.
@@ -549,19 +558,19 @@ apply: (@le_trans _ _ (\esum_(i in setT) (mu \o uncurry G) i)).
     by rewrite invK ?inE.
   rewrite -(esum_pred_image (mu \o uncurry G) _ xpredT) ?[fun=> _]set_true//.
   by rewrite image_eq.
-rewrite (_ : esum _ _ = \sum_(i <oo) \sum_(j <oo ) mu (G i j)); last first.
+rewrite (_ : esum _ _ = \sum_(i <oo) \sum_(j <oo ) mu (G i j)).
   pose J : nat -> set (nat * nat) := fun i => [set (i, j) | j in setT].
-  rewrite (_ : setT = \bigcup_k J k); last first.
+  rewrite (_ : setT = \bigcup_k J k).
     by rewrite predeqE => -[a b]; split => // _; exists a => //; exists b.
-  rewrite esum_bigcupT /=; last 2 first.
+  rewrite esum_bigcupT /=.
     - apply/trivIsetP => i j _ _ ij.
       rewrite predeqE => -[n m] /=; split => //= -[] [_] _ [<-{n} _].
       by move=> [m' _] [] /esym/eqP; rewrite (negbTE ij).
     - by move=> /= [n m]; apply: measure_ge0; exact: (cover_measurable (PG n).1).
-  rewrite -(image_id [set: nat]) -fun_true esum_pred_image//; last first.
+  rewrite -(image_id [set: nat]) -fun_true esum_pred_image//.
     by move=> n _; exact: esum_ge0.
   apply: eq_eseriesr => /= j _.
-  rewrite -(esum_pred_image (mu \o uncurry G) (pair j) predT)//=; last first.
+  rewrite -(esum_pred_image (mu \o uncurry G) (pair j) predT)//=.
     by move=> ? ? _ _; exact: (@can_inj _ _ _ snd).
   by congr esum; rewrite predeqE => -[a b]; split; move=> [i _ <-]; exists i.
 apply: lee_lim.
@@ -583,7 +592,7 @@ Context d (R : realType) (T : semiRingOfSetsType d).
 Variable mu : {content set T -> \bar R}.
 
 HB.instance Definition _ := isOuterMeasure.Build
-  R T _ (@mu_ext0 _ _ _ _ (measure0 mu) (measure_ge0 mu))
+  R T (mu_ext mu) (@mu_ext0 _ _ _ _ (measure0 mu) (measure_ge0 mu))
       (mu_ext_ge0 (measure_ge0 mu))
       (le_mu_ext mu)
       (mu_ext_sigma_subadditive (measure_ge0 mu)).
@@ -599,7 +608,7 @@ Lemma Rmu_ext d (R : realType) (T : semiRingOfSetsType d)
   (measure mu)^* = mu^*.
 Proof.
 apply/funeqP => /= X; rewrite /mu_ext/=; apply/eqP; rewrite eq_le.
-rewrite !le_ereal_inf_tmp// => _ [F [Fm XS] <-]; rewrite ereal_inf_lbound//; last first.
+rewrite !le_ereal_inf_tmp// => _ [F [Fm XS] <-]; rewrite ereal_inf_lbound//.
   exists F; first by split=> // i; exact: sub_gen_smallest.
   by rewrite (eq_eseriesr (fun _ _ => RmuE _ (Fm _))).
 pose K := [set: nat] `*`` fun i => decomp (F i).
@@ -614,7 +623,7 @@ pose g i := (f^-1%FUN i).2; exists g; first split.
 rewrite !nneseries_esumT//= /measure.
 transitivity (\esum_(i in setT) \sum_(X0 \in decomp (F i)) mu X0); last first.
   by apply: eq_esum => /= k _; rewrite fsbig_finite//; exact: decomp_finite_set.
-rewrite -(eq_esum (fun _ _ => esum_fset _ _))//; last first.
+rewrite -(eq_esum (fun _ _ => esum_fset _ _))//.
   by move=> ? _; exact: decomp_finite_set.
 rewrite esum_esum//= (reindex_esum K setT f) => //=.
 by apply: eq_esum => i Ki; rewrite /g funK ?inE.
@@ -631,7 +640,7 @@ move=> mX; apply/eqP; rewrite eq_le; apply/andP; split.
   apply: ereal_inf_lbound; exists (fun n => if n is 0%N then X else set0).
     by split=> [[]// _|t Xt]; exists 0%N.
   apply/cvg_lim => //; rewrite -cvg_shiftS.
-  rewrite (_ : [sequence _]_n = cst (mu X)); first exact: cvg_cst.
+  rewrite (_ : [sequence _]_n = cst (mu X)); last exact: cvg_cst.
   by rewrite funeqE => n /=; rewrite big_nat_recl//= big1 ?adde0.
 apply/le_ereal_inf_tmp => x [A [mA XA] <-{x}].
 have XUA : X = \bigcup_n (X `&` A n).
@@ -672,13 +681,13 @@ have RmB i : measurable (B i : set rT) by exact: sub_gen_smallest.
 set BA := eseries (fun n => Rmu (B n `&` A)).
 set BNA := eseries (fun n => Rmu (B n `&` ~` A)).
 apply: (@le_trans _ _ (limn BA + limn BNA)); [apply: leeD|].
-  - rewrite (_ : BA = eseries (fun n => mu_ext mu (B n `&` A))); last first.
+  - rewrite (_ : BA = eseries (fun n => mu_ext mu (B n `&` A))).
       rewrite funeqE => n; apply: eq_bigr => k _.
       by rewrite /= measurable_Rmu_extE //; exact: measurableI.
     apply: (@le_trans _ _ (mu_ext mu (\bigcup_k (B k `&` A)))).
       by apply: le_mu_ext; rewrite -setI_bigcupl; exact: setISS.
     exact: outer_measure_sigma_subadditive.
-  - rewrite (_ : BNA = eseries (fun n => mu_ext mu (B n `\` A))); last first.
+  - rewrite (_ : BNA = eseries (fun n => mu_ext mu (B n `\` A))).
       rewrite funeqE => n; apply: eq_bigr => k _.
       by rewrite /= measurable_Rmu_extE //; exact: measurableD.
     apply: (@le_trans _ _ (mu_ext mu (\bigcup_k (B k `\` A)))).
@@ -698,17 +707,17 @@ have [def|] := boolP (lim (BA @ \oo) +? lim (BNA @ \oo)); last first.
     by near=> n; apply: lee_sum => m _; rewrite -setDE; apply: le_measure;
        rewrite /mkset ?inE//; apply: measurableD.
 rewrite -(limeD cBA cBNA) // (_ : (fun _ => _) =
-    eseries (fun k => Rmu (B k `&` A) + Rmu (B k `&` ~` A))); last first.
+    eseries (fun k => Rmu (B k `&` A) + Rmu (B k `&` ~` A))).
   by rewrite funeqE => n; rewrite -big_split /=; exact: eq_bigr.
 apply/lee_lim => //.
   by apply/is_cvg_nneseries => // n *; exact: adde_ge0.
 near=> n; apply: lee_sum => i _; rewrite -measure_semi_additive2.
-- apply: le_measure; rewrite /mkset ?inE//; [|by rewrite -setIUr setUCr setIT].
-  by apply: measurableU; [exact:measurableI|rewrite -setDE; exact:measurableD].
 - exact: measurableI.
 - by rewrite -setDE; exact: measurableD.
 - by apply: measurableU; [exact:measurableI|rewrite -setDE; exact:measurableD].
 - by rewrite setIACA setICr setI0.
+- apply: le_measure; rewrite /mkset ?inE//; [|by rewrite -setIUr setUCr setIT].
+  by apply: measurableU; [exact:measurableI|rewrite -setDE; exact:measurableD].
 Unshelve. all: by end_near. Qed.
 
 Let I : measurableType _ := g_sigma_algebraType (@measurable _ T).
@@ -724,9 +733,10 @@ Proof. exact: mu_ext_ge0. Qed.
 Local Lemma measure_extension_semi_sigma_additive :
   semi_sigma_additive measure_extension.
 Proof.
-move=> F mF tF mUF; rewrite /measure_extension.
-apply: caratheodory_measure_sigma_additive => //; last exact: sub_caratheodory.
-by move=> i; exact: (sub_caratheodory (mF i)).
+move=> F mF tF mUF.
+apply: (@measure_semi_sigma_additive _ _ _ (caratheodory_measure mu^*)) => //.
+  by move=> i; exact: (sub_caratheodory (mF i)).
+exact: sub_caratheodory.
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ measure_extension
@@ -739,7 +749,7 @@ Proof.
 move=> -[S setTS mS]; exists S => //; move=> i; split.
   by have := (mS i).1; exact: sub_sigma_algebra.
 by rewrite /measure_extension /= measurable_mu_extE //;
-  [exact: (mS i).2 | exact: (mS i).1].
+  [exact: (mS i).1 | exact: (mS i).2].
 Qed.
 
 Lemma measure_extension_unique : sigma_finite [set: T] mu ->
@@ -787,7 +797,7 @@ Let measure_semi_sigma_additive :
   semi_sigma_additive completed_measure_extension.
 Proof.
 move=> F mF tF mUF; rewrite /completed_measure_extension.
-exact: caratheodory_measure_sigma_additive.
+exact: (@measure_semi_sigma_additive _ _ _ (caratheodory_measure mu^*%mu)).
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ completed_measure_extension
@@ -800,7 +810,7 @@ move=> -[S setTS mS]; exists S => //; move=> i; split.
 - apply: sub_caratheodory; apply: sub_sigma_algebra.
   exact: (mS i).1.
 - by rewrite /completed_measure_extension /= measurable_mu_extE //;
-    [exact: (mS i).2 | exact: (mS i).1].
+    [exact: (mS i).1 | exact: (mS i).2].
 Qed.
 
 End completed_measure_extension.

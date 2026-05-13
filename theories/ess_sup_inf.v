@@ -1,8 +1,9 @@
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect_compat all_algebra.
 From mathcomp Require Import boolp classical_sets functions cardinality.
 From mathcomp Require Import reals ereal topology normedtype sequences.
-From mathcomp Require Import measure lebesgue_measure.
+From mathcomp Require Import measure lebesgue_measure measurable_realfun.
 
 (**md**************************************************************************)
 (* # Essential infimum and essential supremum                                 *)
@@ -15,6 +16,7 @@ From mathcomp Require Import measure lebesgue_measure.
 (*                                                                            *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -217,11 +219,11 @@ Proof. by move=> ?; apply/ess_supP; apply: nearW. Qed.
 Lemma ess_sup_cstr y : 0 < mu [set: T] -> ess_supr (cst y) = y%:E.
 Proof. by move=> muN0; rewrite (ess_sup_ae_cst y%:E)//=; apply: nearW. Qed.
 
-Lemma ess_suprD f g : ess_supr (f \+ g) <= ess_supr f + ess_supr g.
+Lemma ess_suprD f g : ess_supr (f \+ g)%R <= ess_supr f + ess_supr g.
 Proof. by rewrite (le_trans _ (ess_supD _ _ _)). Qed.
 
 Lemma ess_sup_normD f g :
-  ess_supr (normr \o (f \+ g)) <= ess_supr (normr \o f) + ess_supr (normr \o g).
+  ess_supr (normr \o (f \+ g)%R) <= ess_supr (normr \o f) + ess_supr (normr \o g).
 Proof.
 rewrite (le_trans _ (ess_suprD _ _))// le_ess_sup//.
 by apply/nearW => x; apply/ler_normD.

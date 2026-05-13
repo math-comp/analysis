@@ -44,7 +44,7 @@
 (******************************************************************************)
 
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect_compat all_algebra.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets set_interval.
@@ -52,6 +52,7 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets set_interval.
 Declare Scope real_scope.
 
 (* -------------------------------------------------------------------- *)
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set   Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -348,7 +349,7 @@ Lemma inf_sumE (A B : set R) :
 Proof.
 move/has_inf_supN => ? /has_inf_supN ?; rewrite /inf.
 rewrite [X in - sup X = _](_ : _ =
-    [set x + y | x in [set - x | x in A ] & y in [set - x | x in B]]).
+    [set x + y | x in [set - x | x in A ] & y in [set - x | x in B]]); last first.
   by rewrite sup_sumE // -opprD.
 rewrite eqEsubset; split => /= t [] /= x []a Aa.
   case => b Bb <- <-; exists (- a); first by exists a.
@@ -469,7 +470,7 @@ Lemma RfloorE x : Rfloor x = (Num.floor x)%:~R.
 Proof. by []. Qed.
 
 Lemma mem_rg1_floor x : (range1 (Num.floor x)%:~R) x.
-Proof. by rewrite /range1 /mkset -intrD1 floor_le_tmp floorD1_gt. Qed.
+Proof. by rewrite /range1 /mkset -intrD1 floor_le floorD1_gt. Qed.
 
 Lemma mem_rg1_Rfloor x : (range1 (Rfloor x)) x.
 Proof. exact: mem_rg1_floor. Qed.
@@ -509,7 +510,7 @@ Lemma le_Rfloor : {homo (@Rfloor R) : x y / x <= y}.
 Proof. by move=> x y /Num.Theory.le_floor; rewrite ler_int. Qed.
 
 Lemma Rfloor_ge_int x (i : int) : (i%:~R <= x)= (i%:~R <= Rfloor x).
-Proof. by rewrite ler_int floor_ge_int_tmp. Qed.
+Proof. by rewrite ler_int floor_ge_int. Qed.
 
 Lemma Rfloor_lt_int x (i : int) : (x < i%:~R) = (Rfloor x < i%:~R).
 Proof. by rewrite ltr_int -floor_lt_int. Qed.
@@ -543,10 +544,10 @@ Lemma Rceil_ge x : x <= Rceil x.
 Proof. by rewrite Num.Theory.ceil_ge ?num_real. Qed.
 
 Lemma le_Rceil : {homo (@Rceil R) : x y / x <= y}.
-Proof. by move=> x y ?; rewrite /Rceil ler_int le_ceil_tmp. Qed.
+Proof. by move=> x y ?; rewrite /Rceil ler_int le_ceil. Qed.
 
 Lemma Rceil_ge0 x : 0 <= x -> 0 <= Rceil x.
-Proof. by move=> x0; rewrite /Rceil ler0z -(ceil0 R) le_ceil_tmp. Qed.
+Proof. by move=> x0; rewrite /Rceil ler0z -(ceil0 R) le_ceil. Qed.
 
 Lemma RceilE x : Rceil x = (Num.ceil x)%:~R.
 Proof. by []. Qed.
@@ -606,9 +607,9 @@ have [supA|supNA] := pselect (has_sup A); last first.
   by rewrite !sup_out // => /has_sup_down.
 have supDA : has_sup (down A) by apply/has_sup_down.
 apply/eqP; rewrite eq_le !sup_le //.
+- by case: supA => -[x xA] _; exists x; apply/le_down.
 - by rewrite downK; exact: le_down.
 - by case: supA.
-- by case: supA => -[x xA] _; exists x; apply/le_down.
 Qed.
 
 Lemma lt_sup_imfset {T : Type} (F : T -> R) l :

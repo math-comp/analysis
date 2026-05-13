@@ -1,6 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra all_classical.
+From mathcomp Require Import all_ssreflect_compat all_algebra all_classical.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import reals topology_structure uniform_structure.
 From mathcomp Require Import pseudometric_structure order_topology.
 From mathcomp Require Import discrete_topology.
@@ -10,6 +12,8 @@ From mathcomp Require Import discrete_topology.
 (*                                                                            *)
 (* Natural numbers `nat` are endowed with the structure of topology.          *)
 (******************************************************************************)
+
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
@@ -50,8 +54,8 @@ Proof. by exists N. Qed.
 Lemma nbhs_infty_ger {R : realType} (r : R) :
   \forall n \near \oo, (r <= n%:R)%R.
 Proof.
-exists `|Num.ceil r|%N => // n /=; rewrite -(ler_nat R); apply: le_trans.
-by rewrite (le_trans (ceil_ge _))// natr_absz ler_int ler_norm.
+exists (Num.bound r) => // n /=; rewrite -(ler_nat R).
+by apply/le_trans/ltW/ltr_bound.
 Qed.
 
 Lemma cvg_addnl N : addn N @ \oo --> \oo.

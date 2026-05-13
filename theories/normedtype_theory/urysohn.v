@@ -1,13 +1,13 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
-From mathcomp Require Import archimedean.
+From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint.
+From mathcomp Require Import interval interval_inference archimedean.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality.
-From mathcomp Require Import set_interval interval_inference ereal reals.
-From mathcomp Require Import topology function_spaces tvs num_normedtype.
-From mathcomp Require Import pseudometric_normed_Zmodule normed_module.
+From mathcomp Require Import set_interval ereal reals topology tvs.
+From mathcomp Require Import num_normedtype pseudometric_normed_Zmodule.
+From mathcomp Require Import normed_module.
 
 (**md**************************************************************************)
 (* # Urysohn's lemma                                                          *)
@@ -32,6 +32,7 @@ From mathcomp Require Import pseudometric_normed_Zmodule normed_module.
 (*                                                                            *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -129,16 +130,16 @@ have [|] := eqVneq (edist (x, z)) +oo%E.
   exact: (ball_triangle xy).
 rewrite -ltey -ge0_fin_numE// => /[dup] xzfin.
 move/edist_finP => [_/posnumP[del] /= xz].
-rewrite /edist /= ?ereal_inf_EFin; first last.
+rewrite /edist /= ?ereal_inf_EFin.
+- by exists 0 => ? /= [/ltW].
 - by exists (r1%:num + r2%:num); split => //; apply: (ball_triangle xy).
 - by exists 0 => ? /= [/ltW].
 - by exists r1%:num; split.
 - by exists 0 => ? /= [/ltW].
 - by exists r2%:num; split.
-- by exists 0 => ? /= [/ltW].
-rewrite -EFinD lee_fin -inf_sumE //; first last.
-- by split; [exists r2%:num; split| exists 0 => ? /= [/ltW]].
+rewrite -EFinD lee_fin -inf_sumE //.
 - by split; [exists r1%:num; split| exists 0 => ? /= [/ltW]].
+- by split; [exists r2%:num; split| exists 0 => ? /= [/ltW]].
 apply: lb_le_inf.
   by exists (r1%:num + r2%:num); exists r1%:num => //; exists r2%:num.
 move=> ? [+ []] => _/posnumP[p] xpy [+ []] => _/posnumP[q] yqz <-.
@@ -472,7 +473,7 @@ have [R' []] : exists R', [/\ open R', closure L `<=` R' & closure R' `<=` R].
   have := @normalT (closure L) (@closed_closure T L).
   case/(_ R); first by move=> x /cLR ?; apply: open_nbhs_nbhs.
   move=> V /set_nbhsP [U] [? ? ? cVR]; exists U; split => //.
-  by apply: (subset_trans _ cVR); exact: closure_subset.
+  by apply: (subset_trans _ cVR); exact: closureS.
 move=> oR' cLR' cR'R; exists (apxU (L, R')), (apxU (R', R)).
 split; first by exists (L, R').
   exists (R', R) => //; split => //; apply: (subset_trans AL).
@@ -556,7 +557,7 @@ move=> V /set_nbhsP [U [oU AU UV]] cVcb.
 exists (Uniform.class urysohnType), (apxU (U, ~` B)); split => //.
 - move=> ?; apply:sub_gen_smallest; exists (U, ~`B) => //; split => //=.
     exact/closed_openC.
-  by move: UV => /closure_subset/subset_trans; apply.
+  by move: UV => /closureS/subset_trans; apply.
 - rewrite eqEsubset; split; case=> // a b [/=[Aa Bb] [[//]|]].
   by have /subset_closure ? := AU _ Aa; case.
 move=> x ? [E gE] /(@filterS T); apply; move: gE.
@@ -634,10 +635,10 @@ case/(_ _ _ clA (open_closedC oC) AC0) => U [V] [oU oV AU nCV UV0].
 exists (~` closure V).
   apply/set_nbhsP; exists U; split => //.
   apply/subsetCr; have := open_closedC oU; rewrite closure_id => ->.
-  by apply/closure_subset/disjoints_subset; rewrite setIC.
+  by apply/closureS/disjoints_subset; rewrite setIC.
 apply/(subset_trans _ CB)/subsetCP; apply: (subset_trans nCV).
 apply/subsetCr; have := open_closedC oV; rewrite closure_id => ->.
-exact/closure_subset/subsetC/subset_closure.
+exact/closureS/subsetC/subset_closure.
 Qed.
 
 Lemma normal_openP : normal_space T <->
@@ -820,7 +821,7 @@ move=> + A Ax => /(_ (~` A°)) []; [|exact|].
   exact/open_closedC/open_interior.
 move=> U [V] [oU oV Ux /subsetC cAV /disjoints_subset UV]; exists U.
   exact/open_nbhs_nbhs.
-apply: (subset_trans (closure_subset UV)).
+apply: (subset_trans (closureS UV)).
 move/open_closedC/closure_id : oV => <-.
 by apply: (subset_trans cAV); rewrite setCK; exact: interior_subset.
 Qed.

@@ -1,9 +1,9 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
+From mathcomp Require Import all_ssreflect_compat generic_quotient all_algebra.
+From mathcomp Require Import finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop reals topology.
-From mathcomp Require Import function_spaces wedge_sigT.
+From mathcomp Require Import cardinality fsbigop reals topology wedge_sigT.
 
 (**md**************************************************************************)
 (* # Paths                                                                    *)
@@ -23,6 +23,7 @@ From mathcomp Require Import function_spaces wedge_sigT.
 (*                                                                            *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -112,14 +113,14 @@ Context (f : {path i from x to y}) (phi : {path j from zero to one in i}).
 *)
 Definition reparameterize := f \o phi.
 
-Local Lemma fphi_zero : reparameterize zero = x.
+Let fphi_zero : reparameterize zero = x.
 Proof. by rewrite /reparameterize /= ?path_zero. Qed.
 
-Local Lemma fphi_one : reparameterize one = y.
+Let fphi_one : reparameterize one = y.
 Proof. by rewrite /reparameterize /= ?path_one. Qed.
 
-Local Lemma fphi_cts : continuous reparameterize.
-Proof. by move=> ?; apply: continuous_comp; apply: cts_fun. Qed.
+Let fphi_cts : continuous reparameterize.
+Proof. by move=> ?; apply: continuous_comp; exact: continuous_fun. Qed.
 
 HB.instance Definition _ := isContinuous.Build _ _ reparameterize fphi_cts.
 
@@ -155,21 +156,21 @@ Section chain_path.
 Context {T : topologicalType} {i j : bpTopologicalType} (x y z: T).
 Context (p : {path i from x to y}) (q : {path j from y to z}).
 
-Local Lemma chain_path_zero : chain_path p q zero = x.
+Let chain_path_zero : chain_path p q zero = x.
 Proof.
 rewrite /chain_path /= wedge_lift_funE ?path_one ?path_zero //.
 by case => //= [][] //=; rewrite ?path_one ?path_zero.
 Qed.
 
-Local Lemma chain_path_one : chain_path p q one = z.
+Let chain_path_one : chain_path p q one = z.
 Proof.
 rewrite /chain_path /= wedge_lift_funE ?path_zero ?path_one //.
 by case => //= [][] //=; rewrite ?path_one ?path_zero.
 Qed.
 
-Local Lemma chain_path_cts : continuous (chain_path p q).
+Let chain_path_cts : continuous (chain_path p q).
 Proof.
-apply: chain_path_cts_point; [exact: cts_fun..|].
+apply: chain_path_cts_point; [exact: continuous_fun..|].
 by rewrite path_zero path_one.
 Qed.
 

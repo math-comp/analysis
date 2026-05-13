@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap.
+From mathcomp Require Import all_ssreflect_compat all_algebra finmap.
 From mathcomp Require Import boolp classical_sets functions wochoice.
 From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
 
@@ -169,6 +169,7 @@ From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
 (*   variable                                                                 *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -213,9 +214,6 @@ Reserved Notation "f @ F" (at level 60, format "f  @  F").
 Reserved Notation "E `@[ x --> F ]"
   (at level 60, x name, format "E  `@[ x  -->  F ]").
 Reserved Notation "f `@ F" (at level 60, format "f  `@  F").
-
-Definition set_system U := set (set U).
-Identity Coercion set_system_to_set : set_system >-> set.
 
 HB.mixin Record isFiltered U T := {
   nbhs : T -> set_system U
@@ -431,7 +429,7 @@ Qed.
 
 Class Filter {T : Type} (F : set_system T) := {
   filterT : F setT ;
-  filterI : forall P Q : set T, F P -> F Q -> F (P `&` Q) ;
+  filterI : setI_closed F ;
   filterS : forall P Q : set T, P `<=` Q -> F P -> F Q
 }.
 Global Hint Mode Filter - ! : typeclass_instances.
@@ -948,6 +946,11 @@ Definition continuous_at (T U : nbhsType) (x : T) (f : T -> U) :=
   (f%function @ x --> f%function x).
 Notation continuous f := (forall x, continuous_at x f).
 
+Lemma continuous_comp (R S T : nbhsType) (f : R -> S) (g : S -> T) x :
+  {for x, continuous f} -> {for (f x), continuous g} ->
+  {for x, continuous (g \o f)}.
+Proof. exact: cvg_comp. Qed.
+
 Lemma near_fun (T T' : nbhsType) (f : T -> T') (x : T) (P : T' -> Prop) :
     {for x, continuous f} ->
   (\forall y \near f x, P y) -> (\near x, P (f x)).
@@ -1179,7 +1182,7 @@ Global Instance within_filter T D F : Filter F -> Filter (@within T D F).
 Proof.
 move=> FF; rewrite /within; constructor => /=.
 - by apply: filterE.
-- by move=> P Q; apply: filterS2 => x DP DQ Dx; split; [apply: DP|apply: DQ].
+- by move=> P Q/=; apply: filterS2 => x DP DQ Dx; split; [apply: DP|apply: DQ].
 - by move=> P Q subPQ; apply: filterS => x DP /DP /subPQ.
 Qed.
 
@@ -1203,7 +1206,7 @@ Global Instance subset_filter_filter T F (D : set T) :
 Proof.
 move=> FF; constructor; rewrite /subset_filter/=.
 - exact: filterE.
-- by move=> P Q; apply: filterS2=> x PD QD Dx; split.
+- by move=> P Q/=; exact: filterS2.
 - by move=> P Q subPQ; apply: filterS => R PD Dx; apply: subPQ.
 Qed.
 #[global] Typeclasses Opaque subset_filter.
@@ -1421,7 +1424,7 @@ Lemma in_ultra_setVsetC T (F : set_system T) (A : set T) :
 Proof.
 move=> FU; case: (pselect (F (~` A))) => [|nFnA]; first by right.
 left; suff : ProperFilter (filter_from (F `|` [set A `&` B | B in F]) id).
-  move=> /max_filter <-; last by move=> B FB; exists B => //; left.
+  move=> /max_filter <-; first by move=> B FB; exists B => //; left.
   by exists A => //; right; exists setT; [exact: filterT|rewrite setIT].
 apply: filter_from_proper; last first.
   move=> B [|[C FC <-]]; first exact: filter_ex.
@@ -1484,7 +1487,7 @@ Lemma filterI_iterE {T : Type} (F : set (set T)) :
   smallest Filter F = filter_from (\bigcup_n (filterI_iter F n)) id.
 Proof.
 rewrite eqEsubset; split.
-  apply: smallest_sub => //; first last.
+  apply: smallest_sub; first last.
     by move=> A FA; exists A => //; exists O => //; right.
   apply: filter_from_filter; first by exists setT; exists O => //; left.
   move=> P Q [i _ sFP] [j _ sFQ]; exists (P `&` Q) => //.

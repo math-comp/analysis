@@ -1,11 +1,10 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint interval.
-From mathcomp Require Import archimedean.
+From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint.
+From mathcomp Require Import interval interval_inference archimedean.
 From mathcomp Require Import boolp classical_sets functions cardinality.
-From mathcomp Require Import set_interval interval_inference ereal reals.
-From mathcomp Require Import topology function_spaces prodnormedzmodule tvs.
-From mathcomp Require Import num_normedtype.
+From mathcomp Require Import set_interval ereal reals topology.
+From mathcomp Require Import prodnormedzmodule num_normedtype.
 
 (**md**************************************************************************)
 (* # Normed topological abelian groups                                        *)
@@ -64,6 +63,7 @@ From mathcomp Require Import num_normedtype.
 Reserved Notation "[ 'bounded' E | x 'in' A ]"
   (at level 0, x name, format "[ 'bounded'  E  |  x  'in'  A ]").
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -97,6 +97,16 @@ End Shift.
 Arguments shift {R} x / y.
 Notation center c := (shift (- c)).
 
+Lemma itv_center_shift {R : numFieldType} x y (a b : R) : (a < b) ->
+  let c := (a + b) / 2 in let r := (b - a) / 2 in
+  Interval (BSide x a) (BSide y b) =
+  Interval (BSide x (center r c (*c - r*) )) (BSide y (shift r c (*c + r*))).
+Proof.
+move=> ab c r; rewrite /shift /c /r -mulrBl addrKA opprK -mulrDl.
+rewrite [in X in _ = Interval _ X]addrC subrKA -!mulr2n.
+by rewrite -(mulr_natr a) -(mulr_natr b) !mulfK.
+Qed.
+
 Section at_left_right_topologicalType.
 Variables (R : numFieldType) (V : topologicalType) (f : R -> V) (x : R).
 
@@ -123,6 +133,15 @@ by move/predU1P => [->|]; [exact: nbhs_singleton | near: z; exact: fxr].
 Unshelve. all: by end_near. Qed.
 
 End at_left_right_topologicalType.
+
+HB.structure Definition NbhsNmodule := {M of Nbhs M & GRing.Nmodule M}.
+HB.structure Definition NbhsZmodule := {M of Nbhs M & GRing.Zmodule M}.
+HB.structure Definition PreTopologicalNmodule :=
+  {M of Topological M & GRing.Nmodule M}.
+HB.structure Definition PreTopologicalZmodule :=
+  {M of Topological M & GRing.Zmodule M}.
+HB.structure Definition PreUniformNmodule := {M of Uniform M & GRing.Nmodule M}.
+HB.structure Definition PreUniformZmodule := {M of Uniform M & GRing.Zmodule M}.
 
 HB.mixin Record NormedZmod_PseudoMetric_eq (R : numDomainType) T
     & Num.NormedZmodule R T & PseudoPointedMetric R T := {
@@ -161,6 +180,17 @@ Local Notation ball_norm := (ball_ (@Num.norm K V)).
 
 Lemma ball_normE : ball_norm = ball.
 Proof. by rewrite pseudo_metric_ball_norm. Qed.
+
+Lemma ball_open (x : V) (r : K) : open (ball x r).
+Proof.
+rewrite openE/= -ball_normE/= /interior => y /= bxy; rewrite -nbhs_ballE.
+exists (r - `|x - y|) => /=; first by rewrite subr_gt0.
+move=> z; rewrite -ball_normE/= ltrBrDr.
+by apply: le_lt_trans; rewrite [in leRHS]addrC ler_distD.
+Qed.
+
+Lemma ball_open_nbhs (x : V) (r : K) : 0 < r -> open_nbhs x (ball x r).
+Proof. by move=> e0; split; [exact: ball_open|exact: ballxx]. Qed.
 
 (**md Neighborhoods defined by the norm: *)
 Local Notation nbhs_norm := (nbhs_ball_ ball_norm).
@@ -303,6 +333,20 @@ Proof. by rewrite addrC nbhsDl -propeqE; apply: eq_near => ?; rewrite addrC. Qed
 
 Lemma nbhs0P (P : set V) x : (\near x, P x) <-> (\forall e \near 0, P (x + e)).
 Proof. by rewrite -nbhsDr addr0. Qed.
+
+Lemma near_shift (y x : V) (P : set V) :
+  (\near x, P x) = (\forall z \near y, (P \o shift (x - y)) z).
+Proof.
+rewrite propeqE nbhs0P [X in _ <-> X]nbhs0P/= -propeqE.
+by apply: eq_near => e; rewrite [_ + _ + _]addrC subrKA.
+Qed.
+
+Lemma cvg_comp_shift {T : Type} (x y : V) (f : V -> T) :
+  (f \o shift x) @ y = f @ (y + x).
+Proof.
+rewrite funeqE => A; rewrite /= !near_simpl (near_shift (y + x)).
+by rewrite (_ : _ \o _ = A \o f) // funeqE=> z; rewrite /= opprD addNKr addrNK.
+Qed.
 
 End pseudoMetricNormedZmod_numDomainType.
 #[global] Hint Resolve normr_ge0 : core.
@@ -557,14 +601,14 @@ Qed.
 Lemma at_rightN (a : R) : (- a)^'+ = -%R @ a^'-.
 Proof.
 rewrite /at_right withinN [X in within X _](_ : _ = [set u | u < a])//.
-rewrite (@fun_predC _ -%R)/=; last exact: opprK.
+rewrite (@fun_predC _ -%R)/=; first exact: opprK.
 by rewrite image_id; under eq_fun do rewrite ltrNl opprK.
 Qed.
 
 Lemma at_leftN (a : R) : (- a)^'- = -%R @ a^'+.
 Proof.
 rewrite /at_left withinN [X in within X _](_ : _ = [set u | a < u])//.
-rewrite (@fun_predC _ -%R)/=; last exact: opprK.
+rewrite (@fun_predC _ -%R)/=; first exact: opprK.
 by rewrite image_id; under eq_fun do rewrite ltrNl opprK.
 Qed.
 
@@ -962,7 +1006,7 @@ Proof.
 move=> ab eps_gt0 cf.
 move/continuous_withinNx/cvgrPdist_lt/(_ _ eps_gt0) : (cf b).
 rewrite /dnbhs/= near_withinE !near_simpl /prop_near1 /nbhs/=.
-rewrite -nbhs_subspace_in//; last first.
+rewrite -nbhs_subspace_in//.
   rewrite /= in_itv/= lexx andbT.
   by move: a ab {cf} => [[a|a]/=|[|]//]; rewrite bnd_simp// => /ltW.
 rewrite /within/= near_simpl; apply: filter_app.
@@ -981,7 +1025,7 @@ Proof.
 move=> ab eps_gt0 cf.
 move/continuous_withinNx/cvgrPdist_lt/(_ _ eps_gt0) : (cf a).
 rewrite /dnbhs/= near_withinE !near_simpl// /prop_near1 /nbhs/=.
-rewrite -nbhs_subspace_in//; last first.
+rewrite -nbhs_subspace_in//.
   rewrite /= in_itv/= lexx//=.
   by move: b ab {cf} => [[b|b]/=|[|]//]; rewrite bnd_simp// => /ltW.
 rewrite /within/= near_simpl; apply: filter_app.
@@ -999,7 +1043,7 @@ Lemma continuous_within_itvP a b f : a < b ->
 Proof.
 move=> ab; split=> [abf|].
   split; [apply/in_continuous_mksetP|apply/cvgrPdist_lt => eps eps_gt0 /=..].
-  - rewrite -continuous_open_subspace; last exact: interval_open.
+  - rewrite -continuous_open_subspace; first exact: interval_open.
     by move: abf; exact/continuous_subspaceW/subset_itvW.
   - by apply: near_at_right => //; rewrite bnd_simp.
   - by apply: near_at_left => //; rewrite bnd_simp.
@@ -1017,9 +1061,9 @@ rewrite !bnd_simp/= !le_eqVlt => /predU1P[<-{x}|ax] /predU1P[|].
   have : c <= b by move: ac => /andP[].
   by rewrite le_eqVlt => /predU1P[->|/[swap] /[apply]//]; rewrite subrr normr0.
 - move=> xb; have aboox : x \in `]a, b[ by rewrite !in_itv/= ax.
-  rewrite within_interior; first exact: ctsoo.
+  rewrite within_interior; last exact: ctsoo.
   suff : `]a, b[ `<=` interior `[a, b] by exact.
-  by rewrite -open_subsetE; [exact: subset_itvW| exact: interval_open].
+  by rewrite -open_subsetE; [exact: interval_open | exact: subset_itvW].
 Qed.
 
 Lemma continuous_within_itvcyP a f :
@@ -1028,7 +1072,7 @@ Lemma continuous_within_itvcyP a f :
 Proof.
 split=> [cf|].
   split; [apply/in_continuous_mksetP|apply/cvgrPdist_lt => eps eps_gt0 /=].
-  - rewrite -continuous_open_subspace; last exact: interval_open.
+  - rewrite -continuous_open_subspace; first exact: interval_open.
     by apply: continuous_subspaceW cf => ?; rewrite /= !in_itv !andbT/= => /ltW.
   - by apply: near_at_right => //; rewrite bnd_simp.
 move=> [cf fa]; apply/subspace_continuousP => x /andP[].
@@ -1038,9 +1082,9 @@ rewrite bnd_simp/= le_eqVlt => /predU1P[<-{x}|ax] _.
   exists 1%R => //= c c1a /[swap]; rewrite in_itv/= andbT le_eqVlt.
   by move=> /predU1P[->|/[swap]/[apply]//]; rewrite subrr normr0.
 - have xaoo : x \in `]a, +oo[ by rewrite in_itv/= andbT.
-  rewrite within_interior; first exact: cf.
+  rewrite within_interior; last exact: cf.
   suff : `]a, +oo[ `<=` interior `[a, +oo[ by exact.
-  rewrite -open_subsetE; last exact: interval_open.
+  rewrite -open_subsetE; first exact: interval_open.
   by move=> ?/=; rewrite !in_itv/= !andbT; exact: ltW.
 Qed.
 
@@ -1050,7 +1094,7 @@ Lemma continuous_within_itvNycP b f :
 Proof.
 split=> [cf|].
   split; [apply/in_continuous_mksetP|apply/cvgrPdist_lt => eps eps_gt0 /=].
-  - rewrite -continuous_open_subspace; last exact: interval_open.
+  - rewrite -continuous_open_subspace; first exact: interval_open.
     by apply: continuous_subspaceW cf => ?/=; rewrite !in_itv/=; exact: ltW.
   - by apply: near_at_left => //; rewrite bnd_simp.
 move=> [cf fb]; apply/subspace_continuousP => x /andP[_].
@@ -1060,9 +1104,9 @@ rewrite bnd_simp/= le_eqVlt=> /predU1P[->{x}|xb].
   exists 1%R => //= c c1b /[swap]; rewrite in_itv/= le_eqVlt.
   by move=> /predU1P[->|/[swap]/[apply]//]; rewrite subrr normr0.
 - have xb_i : x \in `]-oo, b[ by rewrite in_itv/=.
-  rewrite within_interior; first exact: cf.
+  rewrite within_interior; last exact: cf.
   suff : `]-oo, b[ `<=` interior `]-oo, b] by exact.
-  rewrite -open_subsetE; last exact: interval_open.
+  rewrite -open_subsetE; first exact: interval_open.
   by move=> ?/=; rewrite !in_itv/=; exact: ltW.
 Qed.
 
@@ -1105,7 +1149,9 @@ Lemma is_cvgMn f n : cvg (f @ F) -> cvg (((@GRing.natmul _)^~n \o f) @ F).
 Proof. by move=> /cvgMn /cvgP. Qed.
 
 Lemma cvgD f g a b : f @ F --> a -> g @ F --> b -> (f + g) @ F --> a + b.
-Proof. by move=> ? ?; apply: continuous2_cvg => //; apply add_continuous. Qed.
+Proof.
+by move=> *; apply: continuous2_cvg => //; exact: (@add_continuous _ _ (a, b)).
+Qed.
 
 Lemma is_cvgD f g : cvg (f @ F) -> cvg (g @ F) -> cvg (f + g @ F).
 Proof. by have := cvgP _ (cvgD _ _); apply. Qed.
@@ -1157,6 +1203,18 @@ Proof. by rewrite norm_cvg0P. Qed.
 
 End cvg_composition_pseudometric.
 
+Lemma within_continuousB {T : topologicalType} {K : numFieldType}
+    {V : pseudoMetricNormedZmodType K} (A : set T) (f g : T -> V) :
+  {within A, continuous f} -> {within A, continuous g} ->
+  {within A, continuous (f - g)}.
+Proof. by move=> cf cg x; apply: cvgB; [exact: cf|exact: cg]. Qed.
+
+Lemma within_continuousD {T : topologicalType} {K : numFieldType}
+    {V : pseudoMetricNormedZmodType K} (A : set T) (f g : T -> V) :
+  {within A, continuous f} -> {within A, continuous g} ->
+  {within A, continuous (f + g)}.
+Proof. by move=> cf cg x; apply: cvgD; [exact: cf|exact: cg]. Qed.
+
 Section Closed_Ball.
 
 Definition closed_ball_ (R : numDomainType) (V : zmodType) (norm : V -> R)
@@ -1197,7 +1255,7 @@ Qed.
 
 Lemma le_closed_ball (R : numFieldType) (M : pseudoMetricType R)
   (x : M) (e1 e2 : R) : (e1 <= e2)%O -> closed_ball x e1 `<=` closed_ball x e2.
-Proof. by rewrite /closed_ball => le; apply/closure_subset/le_ball. Qed.
+Proof. by rewrite /closed_ball => le; apply/closureS/le_ball. Qed.
 
 End Closed_Ball.
 #[deprecated(since="mathcomp-analysis 1.14.0", note="renamed to `closure_ballE`")]

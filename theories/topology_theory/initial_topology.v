@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra all_classical.
+From mathcomp Require Import all_ssreflect_compat all_algebra all_classical.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import interval_inference reals topology_structure.
@@ -30,6 +30,7 @@ From mathcomp Require Import pseudometric_structure.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -49,9 +50,9 @@ Definition wopen := [set f @^-1` A | A in open].
 Local Lemma wopT : wopen [set: W].
 Proof. by exists setT => //; apply: openT. Qed.
 
-Local Lemma wopI (A B : set W) : wopen A -> wopen B -> wopen (A `&` B).
+Local Lemma wopI : setI_closed wopen.
 Proof.
-by move=> [C Cop <-] [D Dop <-]; exists (C `&` D) => //; apply: openI.
+by move=> ? ? [C Cop <-] [D Dop <-]; exists (C `&` D) => //; exact: openI.
 Qed.
 
 Local Lemma wop_bigU (I : Type) (g : I -> set W) :

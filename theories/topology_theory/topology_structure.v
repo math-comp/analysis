@@ -1,6 +1,7 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
+From mathcomp Require Import all_ssreflect_compat all_algebra finmap.
+From mathcomp Require Import all_classical.
 From mathcomp Require Export filter.
 
 (**md**************************************************************************)
@@ -82,6 +83,7 @@ Reserved Notation "A °" (format "A °").
 Reserved Notation "[ 'locally' P ]" (format "[ 'locally'  P ]").
 Reserved Notation "x ^'" (format "x ^'").
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -169,9 +171,9 @@ Proof. by rewrite openE. Qed.
 Lemma openT : open (setT : set T).
 Proof. by rewrite openE => ??; apply: filterT. Qed.
 
-Lemma openI (A B : set T) : open A -> open B -> open (A `&` B).
+Lemma openI : setI_closed (@open T).
 Proof.
-rewrite openE => Aop Bop p [Ap Bp].
+move=> A B; rewrite openE => Aop Bop p [Ap Bp].
 by apply: filterI; [apply: Aop|apply: Bop].
 Qed.
 
@@ -182,9 +184,9 @@ rewrite openE => fop p [i Di].
 by have /fop fiop := Di; move/fiop; apply: filterS => ??; exists i.
 Qed.
 
-Lemma openU (A B : set T) : open A -> open B -> open (A `|` B).
+Lemma openU : setU_closed (@open T).
 Proof.
-by rewrite openE => Aop Bop p [/Aop|/Bop]; apply: filterS => ??; [left|right].
+by move=> A B /[!openE] AA BB p [/AA|/BB]; apply: filterS => ? ?; [left|right].
 Qed.
 
 Lemma open_subsetE (A B : set T) : open A -> (A `<=` B) = (A `<=` B°).
@@ -210,9 +212,8 @@ Qed.
 Lemma open_nbhsT (p : T) : open_nbhs p setT.
 Proof. by split=> //; apply: openT. Qed.
 
-Lemma open_nbhsI (p : T) (A B : set T) :
-  open_nbhs p A -> open_nbhs p B -> open_nbhs p (A `&` B).
-Proof. by move=> [Aop Ap] [Bop Bp]; split; [apply: openI|split]. Qed.
+Lemma open_nbhsI (p : T) : setI_closed (open_nbhs p).
+Proof. by move=> A B [Aop Ap] [Bop Bp]; split => //; exact: openI. Qed.
 
 Lemma open_nbhs_nbhs (p : T) (A : set T) : open_nbhs p A -> nbhs p A.
 Proof. by rewrite nbhsE => p_A; exists A. Qed.
@@ -258,11 +259,6 @@ split=> fcont; first by rewrite !openE => A Aop ? /Aop /fcont.
 move=> s A; rewrite nbhs_simpl /= !nbhsE => - [B [Bop Bfs] sBA].
 by exists (f @^-1` B); [split=> //; apply/fcont|move=> ? /sBA].
 Qed.
-
-Lemma continuous_comp (R S T : topologicalType) (f : R -> S) (g : S -> T) x :
-  {for x, continuous f} -> {for (f x), continuous g} ->
-  {for x, continuous (g \o f)}.
-Proof. exact: cvg_comp. Qed.
 
 Lemma open_comp  {T U : topologicalType} (f : T -> U) (D : set U) :
   {in f @^-1` D, continuous f} -> open D -> open (f @^-1` D).
@@ -455,7 +451,7 @@ Definition nbhs_of_open (T : Type) (op : set_system T) (p : T) (A : set T) :=
 HB.factory Record isOpenTopological T & Choice T := {
   op : set_system T ;
   opT : op setT ;
-  opI : forall (A B : set T), op A -> op B -> op (A `&` B) ;
+  opI : setI_closed op ;
   op_bigU : forall (I : Type) (f : I -> set T), (forall i, op (f i)) ->
     op (\bigcup_i f i)
 }.
@@ -688,6 +684,15 @@ Proof. by rewrite limit_pointEnbhs; under eq_fun do rewrite meets_openr. Qed.
 Lemma subset_limit_point E : limit_point E `<=` closure E.
 Proof. by move=> t Et U tU; have [p [? ? ?]] := Et _ tU; exists p. Qed.
 
+Lemma not_limit_pointE A a : (~ limit_point A a) =
+  exists2 X : set T, nbhs a X & A `&` X `<=` [set a].
+Proof.
+rewrite /limit_point/= -existsNE exists2E; apply: eq_exists => X/=.
+rewrite not_implyE -forallNE; congr and; apply: eq_forall => t/=.
+rewrite and3E not_andE (propext (rwP negP)) negbK implyE orC.
+by rewrite -(propext (rwP eqP)).
+Qed.
+
 Definition isolated (A : set T) (x : T) :=
   x \in A /\ exists2 V, nbhs x V & V `&` A = [set x].
 
@@ -739,9 +744,9 @@ move=> fcl t clft i Di; have /fcl := Di; apply.
 by move=> A /clft [s [/(_ i Di)]]; exists s.
 Qed.
 
-Lemma closedI (D E : set T) : closed D -> closed E -> closed (D `&` E).
+Lemma closedI : setI_closed closed.
 Proof.
-by move=> Dcl Ecl p clDEp; split; [apply: Dcl|apply: Ecl];
+by move=> D E Dcl Ecl p clDEp; split; [apply: Dcl|apply: Ecl];
   move=> A /clDEp [q [[]]]; exists q.
 Qed.
 
@@ -781,10 +786,10 @@ Lemma closed_closure (A : set T) : closed (closure A).
 Proof. by move=> p clclAp B /nbhs_interior /clclAp [q [clAq /clAq]]. Qed.
 
 End Closed.
-#[deprecated(since="mathcomp-analysis 1.15.0", note="use `closure_limit_point_isolated` instead")]
+#[deprecated(since="mathcomp-analysis 1.15.0", note="use `closure_isolated_limit_point` instead")]
 Notation closure_limit_point := __deprecated__closure_limit_point (only parsing).
 
-Lemma closed_comp {T U : topologicalType} (f : T -> U) (D : set U) :
+Lemma preimage_closed {T U : topologicalType} (f : T -> U) (D : set U) :
   {in ~` f @^-1` D, continuous f} -> closed D -> closed (f @^-1` D).
 Proof.
 rewrite !closedE=> f_continuous D_cl x /= xDf.
@@ -793,6 +798,8 @@ have NDfx : ~ D (f x).
   by move: fxD; rewrite -nbhs_nearE nbhsE => - [A [? ?]]; exact.
 by apply: f_continuous fxD; rewrite inE.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.16.0", note="renamed to `preimage_closed`")]
+Notation closed_comp := preimage_closed (only parsing).
 
 Lemma closed_cvg {T} {V : topologicalType} {F} {FF : ProperFilter F}
     (u_ : T -> V) (A : V -> Prop) :
@@ -813,9 +820,8 @@ rewrite continuousP; split=> ctsf ? ?.
 by rewrite -closedC preimage_setC; apply: ctsf; rewrite closedC.
 Qed.
 
-Lemma closedU (T : topologicalType) (D E : set T) :
-  closed D -> closed E -> closed (D `|` E).
-Proof. by rewrite -?openC setCU; exact: openI. Qed.
+Lemma closedU (T : topologicalType) : setU_closed (@closed T).
+Proof. by move=> E D; rewrite -?openC setCU; exact: openI. Qed.
 
 Lemma closed_bigsetU (T : topologicalType) (I : eqType) (s : seq I)
     (F : I -> set T) : (forall x, x \in s -> closed (F x)) ->
@@ -838,20 +844,23 @@ Section closure_lemmas.
 Variable T : topologicalType.
 Implicit Types E A B U : set T.
 
-Lemma closure_subset A B : A `<=` B -> closure A `<=` closure B.
+Lemma closureS A B : A `<=` B -> closure A `<=` closure B.
 Proof. by move=> ? ? CAx ?; move/CAx; exact/subsetI_neq0. Qed.
+
+#[deprecated(since="mathcomp-analysis 1.16.0", note="Use `closureS` instead.")]
+Definition closure_subset := closureS.
 
 Lemma closureE A : closure A = smallest closed A.
 Proof.
-rewrite eqEsubset; split=> [x ? B [cB AB]|]; first exact/cB/(closure_subset AB).
-exact: (smallest_sub (@closed_closure _ _) (@subset_closure _ _)).
+rewrite eqEsubset; split=> [x ? B [cB AB]|]; first exact/cB/(closureS AB).
+by apply: smallest_sub; [exact: closed_closure|exact: subset_closure].
 Qed.
 
 (* TODO: the LHS and RHS of the equality should be swapped *)
 Lemma closure_id E : closed E <-> E = closure E.
 Proof.
 split=> [?|->]; last exact: closed_closure.
-rewrite eqEsubset; split => //; exact: subset_closure.
+by rewrite eqEsubset; split => //; exact: subset_closure.
 Qed.
 
 End closure_lemmas.
@@ -883,6 +892,13 @@ Qed.
 (* TODO: rename to closureC after removing the deprecated one *)
 Lemma closure_setC A : closure (~` A) = ~` A°.
 Proof. by apply: setC_inj; rewrite -interiorC !setCK. Qed.
+
+Lemma interiorS A B : A `<=` B -> A° `<=` B°.
+Proof.
+move=> AB x.
+rewrite /interior nbhsE => -[] U oxU UA.
+exists U => //; move: UA AB; exact: subset_trans.
+Qed.
 
 Lemma interior_id A : open A <-> interior A = A.
 Proof.
@@ -991,11 +1007,11 @@ Implicit Type T : topologicalType.
 
 Definition clopen {T} (A : set T) := open A /\ closed A.
 
-Lemma clopenI {T} (A B : set T) : clopen A -> clopen B -> clopen (A `&` B).
-Proof. by case=> ? ? [] ? ?; split; [exact: openI | exact: closedI]. Qed.
+Lemma clopenI {T} : setI_closed (@clopen T).
+Proof. by move=> ? ? [] ? ? [] ? ?; split; [exact: openI|exact: closedI]. Qed.
 
-Lemma clopenU {T} (A B : set T) : clopen A -> clopen B -> clopen (A `|` B).
-Proof. by case=> ? ? [] ? ?; split; [exact: openU | exact: closedU]. Qed.
+Lemma clopenU {T} : setU_closed (@clopen T).
+Proof. by move=> ? ? [] ? ? [] ? ?; split; [exact: openU|exact: closedU]. Qed.
 
 Lemma clopenC {T} (A B : set T) : clopen A -> clopen (~`A).
 Proof. by case=> ? ?; split;[exact: closed_openC | exact: open_closedC ]. Qed.
@@ -1006,20 +1022,26 @@ Proof. by split; [exact: open0 | exact: closed0]. Qed.
 Lemma clopenT {T} : clopen [set: T].
 Proof. by split; [exact: openT | exact: closedT]. Qed.
 
-Lemma clopen_comp {T U : topologicalType} (f : T -> U) (A : set U) :
+Lemma preimage_clopen {T U : topologicalType} (f : T -> U) (A : set U) :
  clopen A -> continuous f -> clopen (f @^-1` A).
-Proof. by case=> ? ?; split; [ exact: open_comp | exact: closed_comp]. Qed.
+Proof. by case=> ? ?; split; [ exact: open_comp | exact: preimage_closed]. Qed.
 
 End ClopenSets.
+#[deprecated(since="mathcomp-analysis 1.16.0", note="renamed to `preimage_clopen`")]
+Notation clopen_comp := preimage_clopen (only parsing).
 
 HB.mixin Record isContinuous {X Y : nbhsType} (f : X -> Y):= {
-  cts_fun : continuous f
+  continuous_fun : continuous f
 }.
 
 #[short(type = "continuousType")]
 HB.structure Definition Continuous {X Y : nbhsType} := {
   f of @isContinuous X Y f
 }.
+
+#[deprecated(since="mathcomp-analysis 1.17.0",
+             note="use `continuous_fun` instead")]
+Notation cts_fun := (continuous_fun) (only parsing).
 
 HB.instance Definition _ {X Y : topologicalType} :=
   gen_eqMixin (continuousType X Y).
@@ -1032,7 +1054,7 @@ Proof.
 case: f g => [f [[ffun]]] [g [[gfun]]]/=; split=> [[->//]|/funext eqfg].
 rewrite eqfg in ffun *; congr {| Continuous.sort := _; Continuous.class := {|
   Continuous.topology_structure_isContinuous_mixin :=
-    {|isContinuous.cts_fun := _|}|}|}.
+    {|isContinuous.continuous_fun := _|}|}|}.
 exact: Prop_irrelevance.
 Qed.
 
@@ -1045,8 +1067,8 @@ Section continuous_comp.
 Context {X Y Z : topologicalType}.
 Context (f : continuousType X Y) (g : continuousType Y Z).
 
-Local Lemma cts_fun_comp : continuous (g \o f).
-Proof. move=> x; apply: continuous_comp; exact: cts_fun. Qed.
+#[local] Lemma cts_fun_comp : continuous (g \o f).
+Proof. move=> x; apply: continuous_comp; exact: continuous_fun. Qed.
 
 HB.instance Definition _ := @isContinuous.Build X Z (g \o f) cts_fun_comp.
 
@@ -1055,7 +1077,7 @@ End continuous_comp.
 Section continuous_id.
 Context {X : topologicalType}.
 
-Local Lemma cts_id : continuous (@idfun X).
+#[local] Lemma cts_id : continuous (@idfun X).
 Proof. by move=> ?. Qed.
 
 HB.instance Definition _ := @isContinuous.Build X X (@idfun X) cts_id.
@@ -1065,7 +1087,7 @@ End continuous_id.
 Section continuous_const.
 Context {X Y : topologicalType} (y : Y).
 
-Local Lemma cts_const : continuous (@cst X Y y).
+#[local] Lemma cts_const : continuous (@cst X Y y).
 Proof. by move=> ?; exact: cvg_cst. Qed.
 
 HB.instance Definition _ := @isContinuous.Build X Y (cst y) cts_const.

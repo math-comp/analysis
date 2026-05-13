@@ -475,25 +475,225 @@
 
 ### Renamed
 - in `set_interval.v`:
-  + `itv_is_ray` -> `itv_is_open_unbounded`
-  + `itv_is_bd_open` -> `itv_is_oo`
+  + lemmas `setU_itvob1`, `setU_1itvob`
 
-- `weak_topology.v` -> `initial_topology.v`
-  + `weak_topology` -> `initial_topology`
-  + `weak_continuous` -> `initial_continuous`
-  + `weak_ent` -> `initial_ent`
-  + `weak_ball` -> `initial_ball`
-  + `weak_ballE` -> `initial_ballE`
-  + `open_order_weak` -> `open_order_initial`
-  + `continuous_comp_weak` -> `continuous_comp_initial`
+- in `realfun.v`:
+  + lemma `derivable_sqrt`
+- in `classical_sets.v`:
+  + definition `rectangle`
+  + lemmas `rectangle_setX`, `setI_closed_rectangle`
+  + definitions `cross`, `cross12`
+  + lemmas `smallest_sub_sub`, `bigcap_closed_smallest`, `smallest_sub_iff`
+  + lemma `preimage_set_systemS`
 
-- in `one_point_compactification.v`:
-  + `one_point_compactification_weak_topology` ->
-    `one_point_compactification_initial_topology`
+- in `measurable_structure.v`:
+  + lemmas `g_sigma_algebra_cross`, `g_sigma_algebra_rectangle`
+
+- in `measurable_function.v`:
+  + lemma `preimage_measurability`
+
+- in `pseudometric_normed_Zmodule.v`:
+  + lemma `itv_center_shift`
+
+- in `normed_module.v`:
+  + lemmas `closure_itvoo`
+- in `unstable.v`:
+  + structures `SemiNorm`, `Norm`
+  + lemmas `normMn`, `normN`, `ler_norm_sum`
+
+- in `normed_module.v`:
+  + structure `NormedVector`
+  + notation `normedVectType`
+  + definition `max_space`
+  + lemmas `sup_closed_ball_compact`, `equivalence_norms`,
+    `linear_findim_continuous`
+
+- in `tvs.v`:
+  + lemmas `cvg_sum`, `sum_continuous`
+
+- in `classical_sets.v`:
+  + lemmas `setI_closed_setT`, `setI_closed_set0`
+
+- in `measurable_function.v`:
+  + lemma `g_sigma_algebra_preimage_comp`
+
+- in `measure_function.v`:
+  + lemma `g_sigma_algebra_finite_measure_unique`
+
+- new file `independence.v`:
+  + definition `independent_events`
+  + definition `mutual_independence`
+  + lemma `eq_mutual_independence`
+  + definition `independence2`, `independence2P`
+  + lemma `mutual_independence_fset`
+  + lemma `mutual_independence_finiteS`
+  + theorem `mutual_independence_finite_g_sigma`
+  + lemma `mutual_dependence_bigcup`
+  + definition `independent_RVs`
+  + lemma `independent_RVsD1`
+  + theorem `independent_generators`
+  + definition `independent_RVs2`
+  + lemmas `independent_RVs2_comp`, `independent_RVs2_funrposneg`,
+    `independent_RVs2_funrnegpos`, `independent_RVs2_funrnegneg`,
+    `independent_RVs2_funrpospos`
+  + definition `pairRV`, lemma `measurable_pairRV`
+  + lemmas `independent_RVs2_product_measure1`
+  + lemmas `independent_RVs2_setI_preimage`,
+    `independent_Lfun1_expectation_product_measure_lty`
+  + lemma `ge0_independent_expectationM`
+  + lemmas `independent_Lfun1_expectationM_lty`, `independent_Lfun1M`,
+    `independent_expectationM`
+
+- in `ereal.v`:
+  + lemma `ge0_addBefctE`
+
+- in `measure_extension.v`:
+  + definition `caratheodory_measure`
+- in `measurable_structure.v`:
+  + structure `PMeasurable`, notation `pmeasurableType`
 
 - in `subspace_topology.v`:
-  + `weak_subspace_open` -> `initial_subspace_open`
+  + lemma `withinU_continuous_patch`
+- in `matrix_normedtype.v`:
+  + lemma `continuous_mx`
 
+- in `derive.v`:
+  + instance `is_derive_mx`
+  + fact `dmx`
+  + lemma `diffmx`
+  + lemma `is_diff_mx`
+  + instance `is_diff_mx`
+
+### Changed
+
+- moved from `measurable_structure.v` to `classical_sets.v`:
+  + definition `preimage_set_system`
+  + lemmas `preimage_set_system0`, `preimage_set_systemU`, `preimage_set_system_comp`,
+    `preimage_set_system_id`
+- in `functions.v`:
+  + lemmas `linfunP`, `linfun_eqP`
+  + instances of `SubLmodule` and `pointedType` on `{linear _->_ | _ }`
+
+- in `tvs.v`:
+  + structure `LinearContinuous`
+  + factory `isLinearContinuous`
+  + instance of `ChoiceType` on `{linear_continuous _ -> _ }`
+  + instance of `LinearContinuous` with the composition of two functions of type `LinearContinuous`
+  + instance of `LinearContinuous` with the sum of two functions of type `LinearContinuous`
+  + instance of `LinearContinuous` with the scalar multiplication of a function of type
+    `LinearContinuous`
+  + instance of `Continuous` on \-f when f is of type `LinearContinuous`
+  + instance of `SubModClosed` on `{linear_continuous _ -> _}`
+  + instance of `SubLModule` on  `{linear_continuous _ -> _ }`
+  + instance of `LinearContinuous` on the null function
+  + notations `{linear_continuous _ -> _ | _ }` and `{linear_continuous _ -> _ }`
+  + definitions `lcfun`, `lcfun_key`, `lcfunP`
+  + lemmas `lcfun_eqP`, `null_fun_continuous`, `fun_cvgD`,
+   `fun_cvgN`, `fun_cvgZ`, `fun_cvgZr`
+  + lemmas `lcfun_continuous` and `lcfun_linear`
+
+- new files `signed_measure.v` and `radon_nikodym.v`
+  + with the contents of `charge.v` (deprecated)
+  
+### Changed
+
+- moved from `measurable_structure.v` to `classical_sets.v`:
+  + definition `preimage_set_system`
+  + lemmas `preimage_set_system0`, `preimage_set_systemU`, `preimage_set_system_comp`,
+    `preimage_set_system_id`
+
+- moved from `topology_structure.v` to `filter.v`:
+  + lemma `continuous_comp` (and generalized)
+
+- in `numfun.v`:
+  + `fune_abse` renamed to `funeposDneg` and direction of the equality changed
+  + `funeposneg` renamed to `funeposBneg` and direction of the equality changed
+  + `funeD_posD` renamed to `funeDB` and direction of the equality changed
+
+- in `constructive_ereal.v`:
+  + lemmas `EFin_semi_additive` and `dEFin_semi_additive` turned into `Let`s
+
+- moved from `charge.v` to `signed_measure.v`:
+  + mixin `isAdditiveCharge`, structure `AdditiveCharge`
+  + mixin `isSemiSigmaAdditive`, structure `Charge`
+  + factory `isCharge`
+  + lemmas `charge0`, `charge_semi_additiveW`, `charge_semi_additive2E`,
+    `charge_semi_additive2`, `chargeU`, `chargeDI`, `charge_partition`
+  + definitions `measure_of_charge`, `charge_of_finite_measure`
+  + lemma `chargeD`
+  + definitions `crestr`, `crestr0`, `czero`, `cscale`
+  + lemmas `dominates_cscalel`, `dominates_cscaler`
+  + definition `copp`
+  + lemma `cscaleN1`
+  + definition `cadd`
+  + lemmas `dominates_cadd`, `dominates_pushforward`
+  + definitions `positive_set`, `negative_set`
+  + lemmas `negative_set_charge_le0`, `negative_set0`,
+    `positive_negative0`, `bigcup_negative_set`, `negative_setU`,
+    `hahn_decomposition_lemma`
+  + definition `hahn_decomposition`
+  + theorem `Hahn_decomposition`
+  + lemmas `Hahn_decomposition_uniq`, `cjordan_posE`, `cjordan_negE`
+  + definitions `jordan_pos`, `jordan_neg`
+  + lemmas `jordan_posE`, `jordan_negE`, `jordan_decomp`, `jordan_pos_dominates`,
+    `jordan_neg_dominates`
+  + definition `charge_variation`, `charge_dominates`
+  + lemmas `abse_charge_variation`, `null_charge_dominatesP`,
+    `content_charge_dominatesP`, `charge_variation_continuous`
+
+- moved from `charge.v` to `radon_nikodym.v`:
+  + definition `induced_charge`
+  + lemmas `semi_sigma_additive_nng_induced`, `dominates_induced`,
+    `integral_normr_continuous`
+  + definitions `approxRN`, `int_approxRN`, `sup_int_approxRN`
+  + lemmas `sup_int_approxRN_ge0`, `radon_nikodym_finite`,
+    `radon_nikodym_sigma_finite`, `change_of_variables`, `integrableM`,
+    `chain_rule`
+  + definition `Radon_Nikodym`
+  + lemmas `Radon_NikodymE`, `Radon_Nikodym_fin_num`, `Radon_Nikodym_integrable`,
+    `ae_eq_Radon_Nikodym_SigmaFinite`, `Radon_Nikodym_change_of_variables`,
+    `Radon_Nikodym_cscale`, `Radon_Nikodym_cadd`, `Radon_Nikodym_chain_rule`
+
+### Renamed
+
+- in `tvs.v`:
+  + definition `tvsType` -> `convexTvsType`
+  + class `Tvs` -> `ConvexTvs`
+  + mixin `Uniform_isTvs` -> `Uniform_isConvexTvs`
+  + factory `PreTopologicalLmod_isTvs` -> `PreTopologicalLmod_isConvexTvs`
+  + section `Tvs_numDomain` -> `ConvexTvs_numDomain`
+  + section `Tvs_numField` -> `ConvexTvs_numField`
+  + section `prod_Tvs` -> `prod_ConvexTvs`
+
+- in `normed_module.v`
+  + mixin ` PseudoMetricNormedZmod_Tvs_isNormedModule` ->
+    ` PseudoMetricNormedZmod_ConvexTvs_isNormedModule`
+
+- in `measurable_structure.v`:
+  + `measurable_prod_measurableType` -> `prod_measurable_rectangle`
+- in `measurable_realfun.v`:
+  + `measurable_fun_itv_co` -> `measurable_fun_itvbb_itvco`
+  + `measurable_fun_itv_oc` -> `measurable_fun_itvbb_itvoc`
+  + `emeasurable_fun_itv_cc` -> `emeasurable_fun_itvbb_itvcc`
+  + `measurable_fun_itv_cc` -> `measurable_fun_itvbb_itvcc`
+  + `measurable_fun_itv_bndo_bndcP` -> `measurable_fun_itvbo_itvbcP`
+  + `emeasurable_fun_itv_bndo_bndcP` -> `emeasurable_fun_itvbo_itvbcP`
+  + `measurable_fun_itv_obnd_cbndP` -> `measurable_fun_itvob_itvcbP`
+  + `emeasurable_fun_itv_obnd_cbndP` -> `emeasurable_fun_itvob_itvcbP`
+
+- in `lebesgue_integral_nonneg.v`:
+  + `integral_itv_bndo_bndc` -> `integral_itvbo_itvbc`
+  + `integral_itv_obnd_cbnd` -> `integral_itvob_itvcb`
+  + `integral_itv_bndoo` -> `integral_itvbb_itvoo`
+
+- in `lebesgue_Rintegral.v`:
+  + `Rintegral_itv_bndo_bndc` -> `Rintegral_itvbo_itvbc`
+  + `Rintegral_itv_obnd_cbnd` -> `Rintegral_itvob_itvcb`
+
+- in `topology_structure.v`:
+  + `cts_fun` -> `continuous_fun`
+- in `measure_function.v`:
+  + `isFinite` -> `isFinNumFun`
 - in `functions_spaces.v`:
   + `weak_sep_cvg` -> `initial_sep_cvg`
   + `weak_sep_nbhsE` -> `initial_sep_nbhsE`
@@ -505,15 +705,42 @@
 
 ### Generalized
 
+- in `measurable_structure.v`:
+  + lemma `sigma_algebra_measurable` (not specialized to `setT` anymore)
+
+- in `measurable_function.v`:
+  + lemma `preimage_set_system_measurable_fun`
+
+- in `measurable_structure.v`
+  + structure `SemiRingOfSets`, mixin `isSigmaRing`, factories `isRingOfSets`,
+    `isRingOfSets_setY`, `isAlgebraOfSets`, `isAlgebraOfSets_setD`, `isMeasurable`
+    are not required to be pointed anymore
+  + lemmas `measurable_g_measurableTypeE`, `g_sigma_algebra_preimageType`,
+    `g_sigma_algebra_preimage`, `g_sigma_preimageE`, `g_sigma_preimageE`,
+    `g_sigma_algebra_rectangle` are  generalized from `pointedType` to `choiceType`
+    (the list might not be exhaustive)
+
+- in `ereal.v`:
+  + lemma `funID` generalized from `pointedType` to `Type`
+
+- in `numfun.v`:
+  + lemma `indic_restrict` generalized from `pointedType` to `Type`
+  + factory `FiniteDecomp` generalized from `pointedType`/`nzRingType` to
+    `Type/pzRingType`
+
+- in `simple_functions.v`:
+  + lemmas `fctD`, `fctN`, `fctM`, `fctZ`
+
 ### Deprecated
+
+- file `charge.v` (use `measure.v` and/or `lebesgue_integral.v`)
 
 ### Removed
 
-- in `weak_topology.v`:
-  + lemmas `weak_ent_filter`, `weak_ent_refl`, `weak_ent_inv`,
-    `weak_ent_split`, `weak_ent_nbhs`, `weak_pseudo_metric_ball_center`,
-    `weak_pseudo_metric_entourageE`
-    (now `Let`'s in `initial_topology.v`)
+- file `signed.v`
+
+- in `measurable_structure.v`:
+  + lemmas `measurable_prod_g_measurableType`, `measurable_prod_g_measurableTypeR`
 
 ### Infrastructure
 

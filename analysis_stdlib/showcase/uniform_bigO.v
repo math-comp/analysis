@@ -1,10 +1,11 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From Coq Require Import Reals.
-From Coq Require Import ssreflect ssrfun ssrbool.
+From Stdlib Require Import Reals.
+From Corelib Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice fintype bigop order ssralg ssrnum.
 From mathcomp Require Import boolp reals Rstruct_topology ereal classical_sets.
 From mathcomp Require Import interval_inference topology normedtype landau.
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

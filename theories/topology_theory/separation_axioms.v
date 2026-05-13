@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap.
+From mathcomp Require Import all_ssreflect_compat all_algebra finmap.
 From mathcomp Require Import boolp classical_sets functions wochoice.
 From mathcomp Require Import cardinality fsbigop.
 From mathcomp Require Import set_interval filter reals interval_inference.
@@ -53,6 +53,7 @@ From mathcomp Require Import connected supremum_topology sigT_topology.
 (* ```                                                                        *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -199,6 +200,31 @@ End point_separation_axioms.
 Arguments hausdorff_space : clear implicits.
 Arguments accessible_space : clear implicits.
 Arguments kolmogorov_space : clear implicits.
+
+Lemma limit_point_closed {T : topologicalType} (A : set T) :
+  accessible_space T -> closed (limit_point A).
+Proof.
+move=> accT; rewrite -openC openE/= => a.
+rewrite /setC/= not_limit_pointE => -[X].
+rewrite nbhsE/= => -[U oaU UX] XAa.
+rewrite /interior nbhsE/=.
+exists U => // x Ux /=.
+rewrite not_limit_pointE.
+have [xa|xneqa] := eqVneq x a.
+  exists U; rewrite xa; first exact: open_nbhs_nbhs.
+  by apply: subset_trans XAa; exact: setIS.
+exists (U `&` [set~ a]).
+  apply: open_nbhs_nbhs; split.
+    apply: openI; first by case: oaU.
+    by rewrite openC; exact: accessible_closed_set1.
+  by split => //; exact/eqP.
+apply: (@subset_trans _ (A `&` (X `&` [set~ a]))).
+  by apply: setIS; exact: setSI.
+apply: (@subset_trans _ ([set a] `&` [set~ a])).
+  by rewrite setIA; exact: setSI.
+by rewrite setICr.
+Qed.
+Arguments limit_point_closed {T} A.
 
 Lemma subspace_hausdorff {T : topologicalType} (A : set T) :
   hausdorff_space T -> hausdorff_space (subspace A).
@@ -477,7 +503,7 @@ split; first by exists A => //; exact: open_nbhs_nbhs.
 apply/not_implyP; split; first exact: open_nbhs_nbhs.
 apply/set0P/negP; rewrite negbK; apply/eqP/disjoints_subset.
 have /closure_id -> : closed (~` B); first by exact: open_closedC.
-by apply/closure_subset/disjoints_subset; rewrite setIC.
+by apply/closureS/disjoints_subset; rewrite setIC.
 Qed.
 
 Lemma compact_normal_local (K : set T) : hausdorff_space T -> compact K ->
@@ -516,7 +542,7 @@ case/(_ _ _ _ _ cvP) : cvA => R /= [RA Rmono [U RU] RBx].
 have [V /set_nbhsP [W [oW cBW WV] clVU]] := RA _ RU; exists (~` W).
   apply/set_nbhsP; exists (~` closure W); split.
   - exact/closed_openC/closed_closure.
-  - by move=> y /(RBx _ RU) + Wy; apply; exact/clVU/(closure_subset WV).
+  - by move=> y /(RBx _ RU) + Wy; apply; exact/clVU/(closureS WV).
   - by apply: subsetC; exact/subset_closure.
 have : closed (~` W) by exact: open_closedC.
 by rewrite closure_id => <-; exact: subsetCl.
@@ -616,10 +642,8 @@ pose V := I `|` `[y, +oo[; have Iy : I y.
 have IU : I `<=` U by move=> ? [? [+ _ _]] => /subset_trans; exact.
 exists V; split; first split.
 - suff -> : V = I `|` `]y,+oo[ by exact: openU.
-  rewrite eqEsubset; split => z; case; first by left.
-  + by rewrite -setU1itv // => -[->|]; [left| right].
-  + by left.
-  + by rewrite /V -setU1itv //; right; right.
+  have /mem_set := Iy; rewrite -sub1set => /setUidl <-.
+  by rewrite -setUA setU1itv.
 - by apply: closedU => //; exact: rray_closed.
 - by left.
 - by move=> [/IU //|]; rewrite set_itvE/= leNgt xy.
@@ -847,7 +871,7 @@ Proof. by move=> e1e2 ? [n P]; exists n; exact: (n_step_ball_le e1e2). Qed.
 
 Local Lemma distN_half (n : nat) : n.+1%:R^-1 / (2:R) <= n.+2%:R^-1.
 Proof.
-rewrite -invrM //; [|exact: unitf_gt0 |exact: unitf_gt0].
+rewrite -invrM //; [exact: unitf_gt0 |exact: unitf_gt0|].
 rewrite lef_pV2 ?posrE // -?natrM ?ler_nat -addn1 -addn1 -addnA mulnDr.
 by rewrite muln1 leq_add2r leq_pmull.
 Qed.
@@ -1081,8 +1105,8 @@ Proof.
 split=> [[cA limA]|[cA isoA]]; have := closure_isolated_limit_point A.
 - move=> /(congr1 (fun x => x `\` limit_point A)).
   rewrite setUDK.
-    by rewrite limA -(closure_id A).1// setDv.
-  by apply/disj_setPS; rewrite disj_set_sym disjoint_isolated_limit_point.
+    by apply/disj_setPS; rewrite disj_set_sym disjoint_isolated_limit_point.
+  by rewrite limA -(closure_id A).1// setDv.
 - by rewrite isoA set0U -(closure_id A).1.
 Qed.
 

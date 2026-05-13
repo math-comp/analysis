@@ -1,9 +1,10 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect finmap ssralg ssrnum matrix interval.
-From mathcomp Require Import boolp classical_sets interval_inference reals.
-From mathcomp Require Import topology function_spaces prodnormedzmodule tvs.
-From mathcomp Require Import pseudometric_normed_Zmodule normed_module.
+From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum matrix.
+From mathcomp Require Import interval interval_inference.
+From mathcomp Require Import boolp classical_sets reals topology.
+From mathcomp Require Import prodnormedzmodule tvs pseudometric_normed_Zmodule.
+From mathcomp Require Import normed_module.
 
 (**md**************************************************************************)
 (* # Normed topological Abelian group of matrices                             *)
@@ -18,6 +19,7 @@ From mathcomp Require Import pseudometric_normed_Zmodule normed_module.
 (* ```                                                                        *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -35,7 +37,7 @@ move=> /= M s /= /(nbhs_ballP (M i j)) [e e0 es].
 by apply/nbhs_ballP; exists e => //= N [_ MN]; exact/es/MN.
 Qed.
 
-#[local]Lemma rV_compact_nondegenerate (T : ptopologicalType) n
+#[local] Lemma rV_compact_nondegenerate (T : ptopologicalType) n
     (A : 'I_n.+1 -> set T) :
   (forall i, compact (A i)) ->
   compact [ set v : 'rV[T]_n.+1 | forall i, A i (v ord0 i)].
@@ -100,7 +102,7 @@ Proof.
 case: n A => [A _ | ]; last exact: rV_compact_nondegenerate.
 have P0 : #|{: 'I_1 * 'I_0}| = 0 by rewrite card_prod/= !card_ord muln0.
 pose v0 := Matrix (ffun0 P0 : {ffun 'I_1 * 'I_0 -> T}).
-rewrite (_ : mkset _ = [set v0]); first exact: compact_set1.
+rewrite (_ : mkset _ = [set v0]); last exact: compact_set1.
 by rewrite predeqE => x /=; split => [ _ | _ []//]; apply/rowP => -[].
 Qed.
 
@@ -131,8 +133,8 @@ Qed.
 Lemma mx_norm0 : mx_norm 0 = 0.
 Proof.
 rewrite /mx_norm (eq_bigr (fun=> 0%R%:nng)) /=.
-  by elim/big_ind : _ => // a b; rewrite num_max => -> ->; rewrite maxxx.
-by move=> i _; apply val_inj => /=; rewrite mxE normr0.
+  by move=> i _; apply val_inj => /=; rewrite mxE normr0.
+by elim/big_ind : _ => // a b; rewrite num_max => -> ->; rewrite maxxx.
 Qed.
 
 Lemma mx_norm_neq0 x : mx_norm x != 0 -> exists i, mx_norm x = `|x i.1 i.2|.
@@ -153,7 +155,7 @@ rewrite !mulrS; apply/eqP; rewrite eq_le; apply/andP; split.
   by rewrite -ih; exact/ler_mx_norm_add.
 have [/mx_norm_eq0->|x0] := eqVneq (mx_norm x) 0.
   by rewrite -/(mx_norm 0) -/(mx_norm 0) !(mul0rn,addr0,mx_norm0).
-rewrite -/(mx_norm x) -num_abs_le; last by rewrite mx_normE.
+rewrite -/(mx_norm x) -num_abs_le; first by rewrite mx_normE.
 apply/bigmax_geP; right => /=.
 have [i Hi] := mx_norm_neq0 x0.
 exists i => //; rewrite Hi -!mulrS -normrMn mulmxnE.
@@ -239,7 +241,7 @@ Lemma mx_normZ (K : numDomainType) m n (l : K) (x : 'M[K]_(m, n)) :
   `| l *: x | = `| l | * `| x |.
 Proof.
 rewrite {1 3}/normr /= !mx_normE
-    (eq_bigr (fun i => (`|l| * `|x i.1 i.2|)%:nng)); last first.
+    (eq_bigr (fun i => (`|l| * `|x i.1 i.2|)%:nng)).
   by move=> i _; rewrite mxE //=; apply/eqP; rewrite -num_eq /= normrM.
 elim/big_ind2 : _ => // [|a b c d bE dE]; first by rewrite mulr0.
 by rewrite !num_max bE dE maxr_pMr.
@@ -250,3 +252,25 @@ HB.instance Definition _ (K : numFieldType) m n :=
     (@mx_normZ K m n).
 
 End matrix_NormedModule.
+
+Lemma continuous_mx {V : topologicalType} {R : realFieldType} {m n : nat}
+    (f : V -> 'M[R]_(m, n)) :
+  (forall i j, continuous (fun x => f x i j)) <->
+  continuous (fun x : V => \matrix_(i < m, j < n) f x i j).
+Proof.
+split => [cf x|cf i j v].
+- apply/cvgrPdist_le => /= e e0; near=> t.
+  rewrite /Num.norm/= mx_normrE/= (bigmax_le _ (ltW e0))// => -[i j] _.
+  rewrite !mxE/=.
+  move: i j; near: t.
+  apply: filter_forall => /= i; apply: filter_forall => /= j.
+  have /(@cvgrPdist_le _ R^o)/(_ _ e0) := cf i j x.
+  exact: filterS.
+- apply/(@cvgrPdist_le _ R^o) => /= e e0.
+  have /cvgrPdist_le/(_ _ e0) := cf v.
+  apply: filterS => w.
+  apply: le_trans.
+  rewrite [in leRHS]/Num.norm/= mx_normrE/=.
+  apply: le_trans (le_bigmax _ _ (i, j)).
+  by rewrite !mxE.
+Unshelve. all: by end_near. Qed.

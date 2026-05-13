@@ -1,6 +1,7 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
-From mathcomp Require Import archimedean interval.
+From HB Require Import structures.
+From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint.
+From mathcomp Require Import vector archimedean interval.
 
 (**md**************************************************************************)
 (* # MathComp extra                                                           *)
@@ -23,6 +24,14 @@ From mathcomp Require Import archimedean interval.
 (*                           the dependent sum                                *)
 (*                prodA x := sends (X * Y) * Z to X * (Y * Z)                 *)
 (*               prodAr x := sends X * (Y * Z) to (X * Y) * Z                 *)
+(*           isSemiNorm f == f : K -> L is a seminorm                         *)
+(*                           K is a numDomainType.                            *)
+(*                           L is a lmodType K.                               *)
+(*                           The HB class is SemiNorm.                        *)
+(*               isNorm f == f : K -> L is a norm                             *)
+(*                           K is a numDomainType.                            *)
+(*                           L is a lmodType K.                               *)
+(*                           The HB class is Norm.                            *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -30,12 +39,34 @@ From mathcomp Require Import archimedean interval.
 Attributes warn(note="The unstable.v file should only be used inside analysis.",
   cats="internal-analysis").
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
+
+Section IntervalNumDomain.
+Variable R : numDomainType.
+Implicit Types x : R.
+
+(* TODO: PR to num_domain.v *)
+Lemma oppr_itvNy ba bb (xa xb x : R) :
+  (- x \in Interval (BInfty _ ba) (BSide bb xb)) =
+  (x \in Interval (BSide (~~ bb) (- xb)) (BInfty _ (~~ ba))).
+Proof.
+by rewrite !itv_boundlr /<=%O /= !implybF if_neg lteifNl andbC.
+Qed.
+
+Lemma oppr_itvy ba bb (xa x : R) :
+  (- x \in Interval (BSide ba xa) (BInfty _ bb)) =
+  (x \in Interval (BInfty _ (~~ bb)) (BSide (~~ ba) (- xa))).
+Proof.
+by rewrite !itv_boundlr /<=%O /= !implybF if_neg lteifNr negbK andbC.
+Qed.
+
+End IntervalNumDomain.
 
 Lemma coprime_prodr (I : Type) (r : seq I) (P : {pred I}) (F : I -> nat) (a : I)
     (l : seq I) :
@@ -61,7 +92,7 @@ rewrite big_cons; case: ifP => [Pa|nPa]; last first.
     by rewrite in_cons => /predU1P[->|]; [rewrite nPa|exact: Fidvdn].
   by apply: Fidvdn; rewrite in_cons il orbT.
 rewrite map_cons pairwise_cons => /andP[allcoprimea pairwisecoprime].
-rewrite Gauss_dvd; last exact: coprime_prodr.
+rewrite Gauss_dvd; first exact: coprime_prodr.
 apply: (equivP (andPP idP (HI pairwisecoprime))).
 split=> [[Fadvdn Fidvdn] i|Fidvdn].
   by rewrite in_cons => /predU1P[->//|]; exact: Fidvdn.
@@ -87,7 +118,7 @@ rewrite mulnC leq_mul//.
   by apply: leq_prod; move=> i _; rewrite leq_addr.
 rewrite subnKC//.
 rewrite -[in leqLHS](add0n m) big_addn.
-rewrite [in leqRHS](_ : y - m = ((y - m + x) - x))%N; last first.
+rewrite [in leqRHS](_ : y - m = ((y - m + x) - x))%N.
   by rewrite -addnBA// subnn addn0.
 rewrite -[X in iota X _](add0n x) big_addn -addnBA// subnn addn0.
 by apply: leq_prod => i _; rewrite leq_add2r leq_addr.
@@ -100,7 +131,7 @@ move=> nx my.
 rewrite (fact_split nx) -!mulnA leq_mul2l; apply/orP; right.
 rewrite (fact_split my) mulnCA -!mulnA leq_mul2l; apply/orP; right.
 rewrite [leqRHS](_ : _ =
-    (n + m).+1`! * \prod_((n + m).+2 <= i < (x + y).+2) i)%N; last first.
+    (n + m).+1`! * \prod_((n + m).+2 <= i < (x + y).+2) i)%N.
   by rewrite -fact_split// ltnS leq_add.
 rewrite mulnA mulnC leq_mul2l; apply/orP; right.
 do 2 rewrite -addSn -addnS.
@@ -469,11 +500,11 @@ have trivP : trivIfset P.
 have -> : (\bigcup_(i <- K) F i)%fset = fcover P.
   apply/esym; rewrite /P fcover_imfset big_mkcond /=; apply eq_bigr => i _.
   by case: ifPn => // /negPn/eqP.
-rewrite big_trivIfset // /rhs big_imfset => [|i j iK /andP[jK notFj0] eqFij] /=.
-  rewrite big_filter big_mkcond; apply eq_bigr => i _.
-  by case: ifPn => // /negPn /eqP ->;  rewrite big_seq_fset0.
-move: iK; rewrite !inE/= => /andP[iK Fi0].
-by apply: contraNeq (disjF _ _ iK jK) _; rewrite -fsetI_eq0 eqFij fsetIid.
+rewrite big_trivIfset // /rhs big_imfset => [i j iK /andP[jK notFj0] eqFij|] /=.
+  move: iK; rewrite !inE/= => /andP[iK Fi0].
+  by apply: contraNeq (disjF _ _ iK jK) _; rewrite -fsetI_eq0 eqFij fsetIid.
+rewrite big_filter big_mkcond; apply eq_bigr => i _.
+by case: ifPn => // /negPn /eqP ->;  rewrite big_seq_fset0.
 Qed.
 
 End FsetPartitions.
@@ -553,3 +584,65 @@ End ProperNotations.
 
 Lemma sqrtK {K : rcfType} : {in Num.nneg, cancel (@Num.sqrt K) (fun x => x ^+ 2)}.
 Proof. by move=> r r0; rewrite sqr_sqrtr. Qed.
+
+Lemma ltr_norm_bound {R : archiNumDomainType} (x : R) : `|x| < (Num.bound x)%:R.
+Proof. by rewrite /Num.bound -[in ltRHS]normr_id archi_boundP. Qed.
+
+Lemma real_ltr_bound {R : archiNumDomainType} (x : R) :
+  x \is Num.real -> x < (Num.bound x)%:R.
+Proof. by move=> /real_ler_norm /le_lt_trans -> //; apply: ltr_norm_bound. Qed.
+
+Lemma real_ltrNbound {R : archiNumDomainType} (x : R) :
+  x \is Num.real -> - x < (Num.bound x)%:R.
+Proof. by rewrite /Num.bound -realN -normrN; exact: real_ltr_bound. Qed.
+
+Lemma ltr_bound {R : archiRealDomainType} (x : R) : x < (Num.bound x)%:R.
+Proof. exact: real_ltr_bound. Qed.
+
+Lemma ltrNbound {R : archiRealDomainType} (x : R) : - x < (Num.bound x)%:R.
+Proof. exact: real_ltrNbound. Qed.
+
+(* normedZmodType provide norms but the subject is not the norm. We define here
+   a structure of norm where the subject is the function from the left-module to
+   its scalar field. *)
+Module Norm.
+
+HB.mixin Record isSemiNorm (K : numDomainType) (L : lmodType K) (norm : L -> K) := {
+  norm0 : norm 0 = 0 ;
+  norm_ge0 : forall x, 0 <= norm x ;
+  ler_normD : forall x y, norm (x + y) <= norm x + norm y ;
+  normZ : forall r x, norm (r *: x) = `|r| * norm x
+}.
+
+#[export]
+HB.structure Definition SemiNorm K L := { norm of @isSemiNorm K L norm }.
+
+HB.mixin Record SemiNorm_isNorm (K : numDomainType) (L : lmodType K)
+  (norm : L -> K) := { norm0_eq0 : forall x, norm x = 0 -> x = 0 }.
+
+#[export]
+HB.structure Definition Norm K L :=
+  { norm of @SemiNorm_isNorm K L norm & @SemiNorm K L norm }.
+
+Module Import Theory.
+Section Theory.
+Variables (K : numDomainType) (L : lmodType K) (norm : SemiNorm.type L).
+
+Lemma normMn x n : norm (x *+ n) = norm x *+ n.
+Proof. by rewrite -scaler_nat normZ normr_nat mulr_natl. Qed.
+
+Lemma normN x : norm (- x) = norm x.
+Proof. by rewrite -scaleN1r normZ normrN1 mul1r. Qed.
+
+Lemma ler_norm_sum (I : Type) (r : seq I) (F : I -> L) :
+  norm (\sum_(i <- r) F i) <= \sum_(i <- r) norm (F i).
+Proof.
+by elim/big_ind2 : _ => *; rewrite ?norm0// (le_trans (ler_normD _ _))// lerD.
+Qed.
+
+End Theory.
+End Theory.
+
+Module Import Exports. HB.reexport. End Exports.
+End Norm.
+Export Norm.Exports.

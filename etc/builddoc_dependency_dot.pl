@@ -9,6 +9,7 @@ print "  subgraph cluster_topology { label=\"Topology\" }\n";
 print "  subgraph cluster_normedtype { label=\"NormedType\" }\n";
 print "  subgraph cluster_measure { label=\"Measure\" }\n";
 print "  subgraph cluster_lebesgue_integral { label=\"Lebesgue_integral\" }\n";
+print "  subgraph cluster_probability { label=\"Probability\" }\n";
 while (<>) {
   if (m/([^\s]*)\.vo.*:(.*)/) {
     $dests = $2 ;
@@ -30,6 +31,9 @@ while (<>) {
     }elsif ($path =~ m/theories\/measure_theory/) {
         $url="mathcomp.analysis.measure_theory.$src.html";
         print "subgraph cluster_measure { \"$path\/$src\"[label=\"$src\",URL=\"$url\",fillcolor=11]}";
+    }elsif ($path =~ m/theories\/probability_theory/) {
+        $url="mathcomp.analysis.probability_theory.$src.html";
+        print "subgraph cluster_probability { \"$path\/$src\"[label=\"$src\",URL=\"$url\",fillcolor=12]}";
     }elsif ($path =~ m/theories/) {
        $url="mathcomp.analysis.$src.html";
        print "subgraph cluster_analysis { \"$path\/$src\"[label=\"$src\",URL=\"$url\",fillcolor=5]}";

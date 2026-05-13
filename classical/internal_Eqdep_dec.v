@@ -75,6 +75,7 @@ exact (fun Streicher_K p P x =>
 Qed.
 End Equivalences.
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 
 Section EqdepDec.

@@ -6,10 +6,11 @@
 -arg -w -arg -ambiguous-paths
 -arg -w -arg -redundant-canonical-projection
 -arg -w -arg -projection-no-head-constant
+# introduced in Rocq 9.3
+-arg -w -arg -rewrite-rw
 
 constructive_ereal.v
 reals.v
 real_interval.v
-signed.v
 prodnormedzmodule.v
 all_reals.v

@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra all_classical.
+From mathcomp Require Import all_ssreflect_compat all_algebra all_classical.
 From mathcomp Require Import topology_structure.
 
 (**md**************************************************************************)
@@ -13,6 +13,7 @@ From mathcomp Require Import topology_structure.
 (* ```                                                                        *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -57,7 +58,7 @@ Lemma repr_comp_continuous (Z : topologicalType) (g : T -> Z) :
   continuous (g \o repr : Q -> Z).
 Proof.
 move=> /continuousP ctsG rgE; apply/continuousP => A oA.
-rewrite /open/= /quotient_open (_ : _ @^-1` _ = g @^-1` A); first exact: ctsG.
+rewrite /open/= /quotient_open (_ : _ @^-1` _ = g @^-1` A); last exact: ctsG.
 have greprE x : g (repr (\pi_Q x)) = g x by apply/eqP; rewrite rgE// reprK.
 by rewrite eqEsubset; split => x /=; rewrite greprE.
 Qed.

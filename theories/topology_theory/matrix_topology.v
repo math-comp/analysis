@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
+From mathcomp Require Import all_ssreflect_compat all_algebra finmap all_classical.
 From mathcomp Require Import interval_inference topology_structure.
 From mathcomp Require Import uniform_structure pseudometric_structure.
 
@@ -19,6 +19,8 @@ From mathcomp Require Import uniform_structure pseudometric_structure.
 (* - complete pseudometric space                                              *)
 (*                                                                            *)
 (******************************************************************************)
+
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Import Order.TTheory GRing.Theory Num.Theory.
 

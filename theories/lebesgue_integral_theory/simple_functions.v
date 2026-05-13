@@ -1,12 +1,11 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
-From mathcomp Require Import archimedean.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval.
+From mathcomp Require Import interval_inference archimedean finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality reals fsbigop interval_inference ereal.
-From mathcomp Require Import topology tvs normedtype sequences real_interval.
-From mathcomp Require Import esum measure lebesgue_measure numfun realfun.
-From mathcomp Require Import function_spaces.
+From mathcomp Require Import cardinality reals fsbigop ereal topology tvs.
+From mathcomp Require Import normedtype sequences real_interval esum measure.
+From mathcomp Require Import lebesgue_measure numfun realfun measurable_realfun.
 
 (**md**************************************************************************)
 (* # Simple functions                                                         *)
@@ -30,10 +29,10 @@ From mathcomp Require Import function_spaces.
 (* Detailed contents:                                                         *)
 (* ````                                                                       *)
 (*         {sfun T >-> R} == type of simple functions                         *)
+(*                           They form a (potentially zero) ring.             *)
 (*       {nnsfun T >-> R} == type of non-negative simple functions            *)
 (*          indic_sfun mD := mindic _ mD                                      *)
 (*             cst_sfun r == constant simple function                         *)
-(*           max_sfun f g := f \max f                                         *)
 (*           cst_nnsfun r == constant simple function                         *)
 (*                nnsfun0 := cst_nnsfun 0                                     *)
 (*         add_nnsfun f g := f \+ g                                           *)
@@ -61,6 +60,7 @@ Reserved Notation "{ 'sfun' aT >-> T }"
 Reserved Notation "[ 'sfun' 'of' f ]"
   (at level 0, format "[ 'sfun'  'of'  f ]").
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -150,13 +150,13 @@ Lemma cst_sfunE x : @cst_sfun x =1 cst x. Proof. by []. Qed.
 End sfun.
 
 (* a better way to refactor function stuffs *)
-Lemma fctD (T : pointedType) (K : pzRingType) (f g : T -> K) : f + g = f \+ g.
+Lemma fctD (T : Type) (K : pzRingType) (f g : T -> K) : f + g = f \+ g.
 Proof. by []. Qed.
-Lemma fctN (T : pointedType) (K : pzRingType) (f : T -> K) : - f = \- f.
+Lemma fctN (T : Type) (K : pzRingType) (f : T -> K) : - f = \- f.
 Proof. by []. Qed.
-Lemma fctM (T : pointedType) (K : pzRingType) (f g : T -> K) : f * g = f \* g.
+Lemma fctM (T : Type) (K : pzRingType) (f g : T -> K) : f * g = f \* g.
 Proof. by []. Qed.
-Lemma fctZ (T : pointedType) (K : pzRingType) (L : lmodType K) k (f : T -> L) :
+Lemma fctZ (T : Type) (K : pzRingType) (L : lmodType K) k (f : T -> L) :
    k *: f = k \*: f.
 Proof. by []. Qed.
 Arguments cst _ _ _ _ /.
@@ -173,7 +173,7 @@ Qed.
 
 HB.instance Definition _ := GRing.isSubringClosed.Build _ sfun
   sfun_subring_closed.
-HB.instance Definition _ := [SubChoice_isSubComNzRing of {sfun aT >-> rT} by <:].
+HB.instance Definition _ := [SubChoice_isSubComPzRing of {sfun aT >-> rT} by <:].
 
 Implicit Types (f g : {sfun aT >-> rT}).
 
@@ -209,10 +209,6 @@ Definition indic_sfun (D : set aT) (mD : measurable D) : {sfun aT >-> rT} :=
 
 HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst_sfun k).
 Definition scale_sfun k f : {sfun aT >-> rT} := k \o* f.
-
-(* NB: already in `measurable_realfun.v` *)
-HB.instance Definition _ f g := max_mfun_subproof f g.
-Definition max_sfun f g : {sfun aT >-> _} := f \max g.
 
 End ring.
 Arguments indic_sfun {d aT rT} _.
@@ -402,9 +398,9 @@ Lemma additive_nnsfunr (g f : {nnsfun T >-> R}) x :
   m (f @^-1` [set x] `&` \big[setU/set0]_(i \in range g) (g @^-1` [set i])).
 Proof.
 rewrite -?measure_fsbig//.
-- by rewrite !fsbig_finite//= big_distrr.
 - by move=> i Ai; apply: measurableI.
 - exact/trivIset_setIl/trivIset_preimage1.
+- by rewrite !fsbig_finite//= big_distrr.
 Qed.
 
 Lemma additive_nnsfunl (g f : {nnsfun T >-> R}) x :

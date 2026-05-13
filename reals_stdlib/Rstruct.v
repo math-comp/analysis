@@ -1,9 +1,9 @@
 (* see below (after doc) for copyright notice *)
-From Coq Require Import ZArith Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
-From Coq Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
-From Coq Require Import Rtrigo1 Reals.
+From Stdlib Require Import ZArith Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
+From Stdlib Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
+From Stdlib Require Import Rtrigo1 Reals.
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg poly ssrnum archimedean.
+From mathcomp Require Import all_ssreflect_compat ssralg poly ssrnum archimedean.
 
 
 (**md**************************************************************************)
@@ -39,6 +39,7 @@ the economic rights, and the successive licensors have only limited
 liability. See the COPYING file for more details.
 *)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -283,7 +284,7 @@ apply/RltbP/Rabs_def1.
   apply: (Rlt_le_trans _ (IZR (up x)))=> //.
   elim/(well_founded_ind (Zwf_well_founded 0)): (up x) => z IHz.
   case: (Z_lt_le_dec 0 z) => [zp | zn].
-    rewrite [z]Hz plus_IZR Zabs_nat_Zplus //; last exact: Zlt_0_le_0_pred.
+    rewrite [z]Hz plus_IZR Zabs_nat_Zplus //; first exact: Zlt_0_le_0_pred.
     rewrite plusE mulrnDr.
     apply/Rplus_le_compat_r/IHz; split; first exact: Zlt_le_weak.
     exact: Zlt_pred.
@@ -295,7 +296,7 @@ apply: (Rlt_le_trans _ (IZR (up x) - 1)).
   elim/(well_founded_ind (Zwf_well_founded 0)): (- up x)%Z => z IHz .
   case: (Z_lt_le_dec 0 z) => [zp | zn].
   rewrite [z]Hz Zabs_nat_Zopp plus_IZR.
-  rewrite Zabs_nat_Zplus //; last exact: Zlt_0_le_0_pred.
+  rewrite Zabs_nat_Zplus //; first exact: Zlt_0_le_0_pred.
     rewrite plusE -Rplus_assoc -addnA [(_ + 2)%N]addnC addnA mulrnDr.
     apply: Rplus_lt_compat_r; rewrite -Zabs_nat_Zopp.
     apply: IHz; split; first exact: Zlt_le_weak.
@@ -502,7 +503,7 @@ Proof. by rewrite -Pos_to_natE INR_IPR. Qed.
 Let ge0_RsqrtE x : 0 <= x -> sqrt x = Num.sqrt x.
 Proof.
 move => x0; apply/eqP; have [t1 t2] := conj (sqrtr_ge0 x) (sqrt_pos x).
-rewrite eq_sym -(eqrXn2 (_: 0 < 2)%N t1) //; last exact/RleP.
+rewrite eq_sym -(eqrXn2 (_: 0 < 2)%N t1) //; first exact/RleP.
 by rewrite sqr_sqrtr // !exprS expr0 mulr1 -RmultE ?sqrt_sqrt //; exact/RleP.
 Qed.
 
@@ -583,10 +584,10 @@ Proof.
 #[warning="-deprecated"]
 rewrite (_ : bigmaxr _ _ = if s isn't h :: t then r else \big[Num.max/h]_(i <- s) i).
   #[warning="-deprecated"]
-  case: s => // ? t; rewrite big_cons /bigmaxr.
-  by elim: t => //= [|? ? <-]; [rewrite big_nil maxxx | rewrite big_cons maxCA].
+  by case: s => //=; rewrite /bigmaxr big_nil.
 #[warning="-deprecated"]
-by case: s => //=; rewrite /bigmaxr big_nil.
+case: s => // ? t; rewrite big_cons /bigmaxr.
+by elim: t => //= [|? ? <-]; [rewrite big_nil maxxx | rewrite big_cons maxCA].
 Qed.
 
 #[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]
@@ -752,7 +753,7 @@ Lemma bmaxrf_index n (f : {ffun 'I_n.+1 -> R}) :
 Proof.
 #[warning="-deprecated"]
 rewrite /bmaxrf.
-rewrite [in X in (_ < X)%N](_ : n.+1 = size (codom f)); last first.
+rewrite [in X in (_ < X)%N](_ : n.+1 = size (codom f)).
   by rewrite size_codom card_ord.
 #[warning="-deprecated"]
 by apply: bigmaxr_index; rewrite size_codom card_ord.
@@ -776,9 +777,9 @@ move: (bmaxrf_index f).
 rewrite -[X in _ (_ < X)%N]card_ord -(size_codom f) index_mem.
 move/(nth_index (f ord0)) => <-; rewrite (nth_map ord0).
   #[warning="-deprecated"]
-  by rewrite (ordnat (bmaxrf_index _)) /index_bmaxrf nth_ord_enum.
+  by rewrite size_enum_ord; apply: bmaxrf_index.
 #[warning="-deprecated"]
-by rewrite size_enum_ord; apply: bmaxrf_index.
+by rewrite (ordnat (bmaxrf_index _)) /index_bmaxrf nth_ord_enum.
 Qed.
 
 #[deprecated(note="To be removed. Use order.v's bigmax/min lemmas instead.")]

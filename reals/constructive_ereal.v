@@ -10,7 +10,7 @@
    incorporate it into mathcomp proper where it could then be used for
    bounds of intervals*)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap.
+From mathcomp Require Import all_ssreflect_compat all_algebra finmap.
 From mathcomp Require Import mathcomp_extra interval_inference.
 
 (**md**************************************************************************)
@@ -118,6 +118,7 @@ From mathcomp Require Import mathcomp_extra interval_inference.
 (* ```                                                                        *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -570,14 +571,63 @@ End ERealArith.
 Arguments mule : simpl never.
 Arguments inve : simpl never.
 
-Notation "+%dE"  := (@GRing.add (\bar^d _)).
-Notation "+%E"   := (@GRing.add (\bar _)).
-Notation "-%E"   := oppe.
-Notation "x + y" := (GRing.add (x%dE : \bar^d _) y%dE) : ereal_dual_scope.
-Notation "x + y" := (GRing.add x%E y%E) : ereal_scope.
-Notation "x - y" := ((x%dE : \bar^d _) + oppe y%dE) : ereal_dual_scope.
-Notation "x - y" := (x%E + (oppe y%E)) : ereal_scope.
-Notation "- x"   := (oppe x%dE : \bar^d _) : ereal_dual_scope.
+
+(* We use elpi to name the canonical nmodule for \bar R and \bar^d R. *)
+(* This used to be called `extended_nmodType` and `dual_extended_nmodType`. *)
+(* HB gives them generated names now, though we should restore naming cf *)
+(* https://github.com/math-comp/hierarchy-builder/issues/328 *)
+Elpi Command canonical_notation_ereal.
+Elpi Accumulate lp:{{ /*(*/
+      main [] :-
+        coq.unify-leq {{\bar lp:_}} {{GRing.Nmodule.sort lp:M}} ok,
+        coq.safe-dest-app M CR _,
+        coq.notation.add-abbreviation "extended_nmodType" 0 CR tt _.
+/*)*/  }}.
+Elpi canonical_notation_ereal.
+Elpi Command canonical_notation_dual_ereal.
+Elpi Accumulate lp:{{ /*(*/
+      main [] :-
+        coq.unify-leq {{dual_extended lp:_}} {{GRing.Nmodule.sort lp:M}} ok,
+        coq.safe-dest-app M CR _,
+        coq.notation.add-abbreviation "dual_extended_nmodType" 0 CR tt _.
+/*)*/  }}.
+Elpi canonical_notation_dual_ereal.
+
+(* We provide local notations for parsing and printing of particular *)
+(* instances of generic notations. *)
+Local Notation add_parsingde := (@GRing.add (\bar^d _)).
+Local Notation add_rcde := (@GRing.add (@reverse_coercion _ _ _ (\bar^d _))).
+Local Notation add_cande := (@GRing.add dual_extended_nmodType).
+Local Notation add_parsinge := (@GRing.add (\bar _)).
+Local Notation add_rce := (@GRing.add (@reverse_coercion _ _ _ (\bar _))).
+Local Notation add_cane := (@GRing.add extended_nmodType).
+
+Notation "+%dE" := add_parsingde (only parsing).
+Notation "+%dE" := add_rcde (only printing).
+Notation "+%dE" := add_cande (only printing).
+Notation "+%E"  := add_parsinge (only parsing).
+Notation "+%E"  := add_rce (only printing).
+Notation "+%E"  := add_cane (only printing).
+Notation "-%E"  := oppe.
+Notation "x + y" := (add_parsingde x%dE y%dE) (only parsing) : ereal_dual_scope.
+Notation "x + y" := (add_rcde x%dE y%dE) (only printing) : ereal_dual_scope.
+Notation "x + y" := (add_cande x%dE y%dE) (only printing) : ereal_dual_scope.
+Notation "x + y" := (add_parsinge x%E y%E) (only parsing) : ereal_scope.
+Notation "x + y" := (add_rce x%E y%E) (only printing) : ereal_scope.
+Notation "x + y" := (add_cane x%E y%E) (only printing) : ereal_scope.
+Notation "x - y" := (add_parsingde x%dE (oppe (y%dE : \bar^d _))%dE)
+  (only parsing) : ereal_dual_scope.
+Notation "x - y" := (add_rcde x%dE (oppe y%dE))
+  (only printing) : ereal_dual_scope.
+Notation "x - y" := (add_cande x%dE (oppe y%dE))
+  (only printing) : ereal_dual_scope.
+Notation "x - y" := (add_parsinge x%E (oppe y%E)) (only parsing) : ereal_scope.
+Notation "x - y" := (add_rce x%E (oppe y%E)) (only printing) : ereal_scope.
+Notation "x - y" := (add_cane x%E (oppe y%E)) (only printing) : ereal_scope.
+(* All previous notations should ideal by generated too, *)
+(* but elpi lacks support for string notations.          *)
+
+Notation "- x"   := (oppe (x%dE : \bar^d _)) : ereal_dual_scope.
 Notation "- x"   := (oppe x%E) : ereal_scope.
 Notation "*%E"   := mule.
 Notation "x * y" := (mule x%dE y%dE : \bar^d _) : ereal_dual_scope.
@@ -643,12 +693,23 @@ Notation "- 1" := (oppe 1) : ereal_scope.
 
 Notation "\- f" := (fun x => - f x)%dE : ereal_dual_scope.
 Notation "\- f" := (fun x => - f x)%E : ereal_scope.
-Notation "f \+ g" := (fun x => f x + g x)%dE : ereal_dual_scope.
-Notation "f \+ g" := (fun x => f x + g x)%E : ereal_scope.
-Notation "f \* g" := (fun x => f x * g x)%dE : ereal_dual_scope.
-Notation "f \* g" := (fun x => f x * g x)%E : ereal_scope.
-Notation "f \- g" := (fun x => f x - g x)%dE : ereal_dual_scope.
-Notation "f \- g" := (fun x => f x - g x)%E : ereal_scope.
+Notation "f \+ g" := (fun x => add_parsingde (f x)%dE (g x)%dE) (only parsing) : ereal_dual_scope.
+Notation "f \+ g" := (fun x => add_rcde (f x)%dE (g x)%dE) (only printing) : ereal_dual_scope.
+Notation "f \+ g" := (fun x => add_cande (f x)%dE (g x)%dE) (only printing) : ereal_dual_scope.
+Notation "f \+ g" := (fun x => add_parsinge (f x)%E (g x)%E) (only parsing) : ereal_scope.
+Notation "f \+ g" := (fun x => add_rce (f x)%E (g x)%E) (only printing) : ereal_scope.
+Notation "f \+ g" := (fun x => add_cane (f x)%E (g x)%E) (only printing) : ereal_scope.
+Notation "f \- g" := (fun x => add_parsingde ((f x)%dE : \bar^d _) (oppe ((g%dE x) : \bar^d _))%dE)
+  (only parsing) : ereal_dual_scope.
+Notation "f \- g" := (fun x => add_rcde (f x)%dE (oppe (g x)%dE))
+  (only printing) : ereal_dual_scope.
+Notation "f \- g" := (fun x => add_cande (f x)%dE (oppe (g x)%dE))
+  (only printing) : ereal_dual_scope.
+Notation "f \- g" := (fun x => add_parsinge ((f x)%E : \bar _) (oppe (g x)%E)) (only parsing) : ereal_scope.
+Notation "f \- g" := (fun x => add_rce (f x)%E (oppe (g x)%E)) (only printing) : ereal_scope.
+Notation "f \- g" := (fun x => add_cane (f x)%E (oppe (g x)%E)) (only printing) : ereal_scope.
+Notation "f \* g" := (fun x => (f x * g x)%dE) : ereal_dual_scope.
+Notation "f \* g" := (fun x => (f x * g x)%E) : ereal_scope.
 
 Notation "\sum_ ( i <- r | P ) F" :=
   (\big[+%dE/0%dE]_(i <- r | P%B) F%dE) : ereal_dual_scope.
@@ -870,8 +931,9 @@ Proof. by case: x => //=; rewrite oppr0. Qed.
 
 Lemma EFinD r r' : (r + r')%:E = r%:E + r'%:E. Proof. by []. Qed.
 
-Lemma EFin_semi_additive : @semi_additive _ (\bar R) EFin. Proof. by split. Qed.
-HB.instance Definition _ := GRing.isSemiAdditive.Build R (\bar R) EFin
+Let EFin_semi_additive : @nmod_morphism _ (\bar R) EFin. Proof. by split. Qed.
+
+HB.instance Definition _ := GRing.isNmodMorphism.Build R (\bar R) EFin
   EFin_semi_additive.
 
 Lemma EFinB r r' : (r - r')%:E = r%:E - r'%:E. Proof. by []. Qed.
@@ -1229,7 +1291,7 @@ Proof.
 split=> [|[i [si Pi fi]]].
   rewrite big_seq_cond; elim/big_ind: _ => // [[?| |] [?| |]//|].
   by move=> i /andP[si Pi] fioo; exists i; rewrite si Pi fioo.
-rewrite big_mkcond (bigID (xpred1 i))/= (eq_bigr (fun _ => -oo)); last first.
+rewrite big_mkcond (bigID (xpred1 i))/= (eq_bigr (fun _ => -oo)).
   by move=> j /eqP ->; rewrite Pi.
 rewrite big_const_seq/= [X in X + _](_ : _ = -oo)//.
 elim: s i Pi fi si => // h t ih i Pi fi.
@@ -1522,10 +1584,11 @@ Proof. by []. Qed.
 
 Lemma dEFinE (r : R) : dEFin r = r%:E. Proof. by []. Qed.
 
-Lemma dEFin_semi_additive : @semi_additive _ (\bar^d R) dEFin.
+Let dEFin_semi_additive : @nmod_morphism _ (\bar^d R) dEFin.
 Proof. by split. Qed.
+
 #[export]
-HB.instance Definition _ := GRing.isSemiAdditive.Build R (\bar^d R) dEFin
+HB.instance Definition _ := GRing.isNmodMorphism.Build R (\bar^d R) dEFin
   dEFin_semi_additive.
 
 Lemma dEFinB (r r' : R) : (r - r')%R%:E = r%:E - r'%:E.
@@ -1656,7 +1719,7 @@ Lemma desum_eqNyP
   \sum_(i <- s | P i) f i = -oo <-> exists i, [/\ i \in s, P i & f i = -oo].
 Proof.
 move=> fioo.
-rewrite dual_sumeE eqe_oppLRP /= esum_eqyP => [|i Pi]; last first.
+rewrite dual_sumeE eqe_oppLRP /= esum_eqyP => [i Pi|].
   by rewrite eqe_oppLR fioo.
 by split=> -[i + /ltac:(exists i)] => [|] []; [|split]; rewrite // eqe_oppLRP.
 Qed.
@@ -1666,7 +1729,7 @@ Lemma desum_eqNy (I : finType) (f : I -> \bar^d R) (P : {pred I}) :
   (\sum_(i | P i) f i == -oo) = [exists i in P, f i == -oo].
 Proof.
 move=> finoo.
-rewrite dual_sumeE eqe_oppLR /= esum_eqy => [|i]; rewrite ?eqe_oppLR //.
+rewrite dual_sumeE eqe_oppLR /= esum_eqy => [i|]; rewrite ?eqe_oppLR //.
 by under eq_existsb => i do rewrite eqe_oppLR.
 Qed.
 
@@ -1785,14 +1848,14 @@ have rPF : {in r, forall i, P i ==> (F i \is a fin_num)}.
   by move=> /(_ PFninfty); rewrite PF0.
 have ? : (\sum_(i <- r | P i) (fine \o F) i == 0)%R.
   apply/eqP/EFin_inj; rewrite big_seq_cond -sumEFin.
-  rewrite (eq_bigr (fun i0 => F i0)); last first.
+  rewrite (eq_bigr (fun i0 => F i0)).
     move=> j /andP[jr Pj] /=; rewrite fineK//.
     by have := rPF _ jr; rewrite Pj implyTb.
   by rewrite -big_seq_cond PF0.
 have /allP/(_ _ ir) : all (fun i => P i ==> ((fine \o F) i == 0))%R r.
   by rewrite -psumr_eq0// => j Pj/=; apply/fine_ge0/F0.
 rewrite Pi implyTb => /= => /eqP Fi0.
-rewrite -(@fineK _ (F i))//; last by have := rPF _ ir; rewrite Pi implyTb.
+rewrite -(@fineK _ (F i))//; first by have := rPF _ ir; rewrite Pi implyTb.
 by rewrite Fi0.
 Qed.
 
@@ -3275,9 +3338,9 @@ Lemma ge0_dsume_distrl (I : Type) (s : seq I) x (P : pred I)
   (forall i, P i -> 0 <= F i) ->
   (\sum_(i <- s | P i) F i) * x = \sum_(i <- s | P i) (F i * x).
 Proof.
-move=> F0; rewrite !dual_sumeE !mulNe le0_sume_distrl => [|i Pi].
-- by under eq_bigr => i _ do rewrite mulNe.
+move=> F0; rewrite !dual_sumeE !mulNe le0_sume_distrl => [i Pi|].
 - by rewrite oppe_le0 F0.
+- by under eq_bigr => i _ do rewrite mulNe.
 Qed.
 
 Lemma ge0_dsume_distrr (I : Type) (s : seq I) x (P : pred I)
@@ -3293,9 +3356,9 @@ Lemma le0_dsume_distrl (I : Type) (s : seq I) x (P : pred I)
   (forall i, P i -> F i <= 0) ->
   (\sum_(i <- s | P i) F i) * x = \sum_(i <- s | P i) (F i * x).
 Proof.
-move=> F0; rewrite !dual_sumeE mulNe ge0_sume_distrl => [|i Pi].
-- by under eq_bigr => i _ do rewrite mulNe.
+move=> F0; rewrite !dual_sumeE mulNe ge0_sume_distrl => [i Pi|].
 - by rewrite oppe_ge0 F0.
+- by under eq_bigr => i _ do rewrite mulNe.
 Qed.
 
 Lemma le0_dsume_distrr (I : Type) (s : seq I) x (P : pred I)
@@ -3495,28 +3558,28 @@ Lemma Nyconjugate x y : x \is a fin_num -> y != -oo ->
 Proof.
 move=> xfin yNy; have [->|x1] := eqVneq x 1.
   rewrite subee// inve0 mul1e inve1 => /eqP.
-  rewrite -addeC eq_sym -sube_eq//; last by rewrite fin_num_adde_defl.
+  rewrite -addeC eq_sym -sube_eq//; first by rewrite fin_num_adde_defl.
   rewrite subee// => /eqP /esym; case: y yNy => // r _.
   rewrite inver; case: ifPn => // r0 [] /(congr1 (fun z => z^-1)%R).
   by rewrite invrK invr0 => /eqP; rewrite (negbTE r0).
 have [->|x0] := eqVneq x 0.
-  rewrite inve0 mul0e => /eqP; rewrite addeC eq_sym -sube_eq//; last first.
+  rewrite inve0 mul0e => /eqP; rewrite addeC eq_sym -sube_eq//.
     rewrite /adde_def eqxx/= andbT negb_and/= orbT/=.
     apply: contra yNy => /eqP /(congr1 inve).
     by rewrite inveK inveNy => ->.
   rewrite eq_sym/= addeC/= => /eqP /(congr1 inve).
   by rewrite inveK// inveNy => /eqP; rewrite (negbTE yNy).
 have xNy : x != -oo by move: xfin; rewrite fin_numE => /andP[].
-move=> /eqP; rewrite eq_sym addeC -sube_eq//; last first.
+move=> /eqP; rewrite eq_sym addeC -sube_eq//.
   by rewrite fin_num_adde_defl// fin_numV.
 move=> /eqP /(congr1 inve) /=; rewrite inveK => <-.
 rewrite -[X in X - _](@divee x)// -[X in _ - X]div1e -muleBl.
-- move: x xfin {xNy} x1 x0 => [x| |]// _; rewrite !eqe => x1 x0.
-  rewrite inver/= (negbTE x0)/= -EFinD -EFinM.
-  rewrite inver mulf_eq0 subr_eq0 (negbTE x1)/= invr_eq0.
-  by rewrite (negbTE x0) invfM// invrK mulrC EFinM inver/= subr_eq0 (negbTE x1).
 - by rewrite fin_numV// ?gt_eqF// ltNye.
 - by rewrite fin_num_adde_defl.
+move: x xfin {xNy} x1 x0 => [x| |]// _; rewrite !eqe => x1 x0.
+rewrite inver/= (negbTE x0)/= -EFinD -EFinM.
+rewrite inver mulf_eq0 subr_eq0 (negbTE x1)/= invr_eq0.
+by rewrite (negbTE x0) invfM// invrK mulrC EFinM inver/= subr_eq0 (negbTE x1).
 Qed.
 
 Lemma lee_addgt0Pr x y :
@@ -4491,7 +4554,7 @@ Definition contract x : R :=
 
 Lemma contract_lt1 r : (`|contract r%:E| < 1)%R.
 Proof.
-rewrite normrM normfV// ltr_pdivrMr // ?mul1r//; last by rewrite gtr0_norm.
+rewrite normrM normfV// ltr_pdivrMr // ?mul1r//; first by rewrite gtr0_norm.
 by rewrite [ltRHS]gtr0_norm ?ltrDr// ltr_pwDl.
 Qed.
 
@@ -4518,7 +4581,7 @@ Proof. by move=> r1; rewrite /expand r1. Qed.
 Lemma expandN r : expand (- r)%R = - expand r.
 Proof.
 rewrite /expand; case: ifPn => [r1|].
-  rewrite ifF; [by rewrite ifT // -lerNr|apply/negbTE].
+  rewrite ifF; [apply/negbTE|by rewrite ifT // -lerNr].
   by rewrite -ltNge -(opprK r) -ltrNl (lt_le_trans _ r1) // -subr_gt0 opprK.
 rewrite -ltNge => r1; case: ifPn; rewrite lerNl opprK; [by move=> ->|].
 by rewrite -ltNge leNgt => ->; rewrite leNgt -ltrNl r1 /= mulNr normrN.
@@ -4539,11 +4602,11 @@ move=> r; rewrite inE le_eqVlt => /orP[|r1].
     by [rewrite expand1|rewrite expandN1].
 rewrite /expand 2!leNgt ltrNl; case/ltr_normlP : (r1) => -> -> /=.
 have r_pneq0 : (1 + r / (1 - r) != 0)%R.
-  rewrite -[X in (X + _)%R](@divff _ (1 - r)%R) -?mulrDl; last first.
+  rewrite -[X in (X + _)%R](@divff _ (1 - r)%R) -?mulrDl.
     by rewrite subr_eq0 eq_sym lt_eqF // ltr_normlW.
   by rewrite subrK mulf_neq0 // invr_eq0 subr_eq0 eq_sym lt_eqF // ltr_normlW.
 have r_nneq0 : (1 - r / (1 + r) != 0)%R.
-  rewrite -[X in (X + _)%R](@divff _ (1 + r)%R) -?mulrBl; last first.
+  rewrite -[X in (X + _)%R](@divff _ (1 + r)%R) -?mulrBl.
     by rewrite addrC addr_eq0 gt_eqF // ltrNnormlW.
   by rewrite addrK mulf_neq0// invr_eq0 addr_eq0 -eqr_oppLR lt_eqF// ltrNnormlW.
 wlog : r r1 r_pneq0 r_nneq0 / (0 <= r)%R => wlog_r0.
@@ -4551,7 +4614,7 @@ wlog : r r1 r_pneq0 r_nneq0 / (0 <= r)%R => wlog_r0.
   move: (wlog_r0 (- r)%R).
   rewrite !(normrN, opprK, mulNr) oppr_ge0 => /(_ r1 r_nneq0 r_pneq0 (ltW r0)).
   by move/oppr_inj.
-rewrite /contract !ger0_norm //; last first.
+rewrite /contract !ger0_norm //.
   by rewrite divr_ge0 // subr_ge0 (le_trans _ (ltW r1)) // ler_norm.
 apply: (@mulIf _ (1 + r / (1 - r))%R); rewrite // divfK//.
 rewrite -[X in (X + _ / _)%R](@divff _ (1 - r)%R) -?mulrDl ?subrK ?div1r //.
@@ -4597,7 +4660,7 @@ move=> x y xy; have [x1|] := lerP `|x| 1.
   by rewrite lerNl (ler_normlP _ _ _).
 rewrite ltr_normr => /orP[|] x1; last first.
   by rewrite expandN1 // ?leNye // lerNr ltW.
-by rewrite expand1; [rewrite expand1 // (le_trans _ xy) // ltW | exact: ltW].
+by rewrite expand1; [exact: ltW | rewrite expand1 // (le_trans _ xy) // ltW].
 Qed.
 
 Lemma expand_eqoo r : (expand r == +oo) = (1 <= r)%R.
@@ -4645,7 +4708,7 @@ Qed.
 Lemma contract_ereal_ball_pinfty r (e : {posnum R}) :
   (1 < contract r%:E + e%:num)%R -> ereal_ball r%:E e%:num +oo.
 Proof.
-move=> re1; rewrite /ereal_ball; rewrite [contract +oo]/= ler0_norm; last first.
+move=> re1; rewrite /ereal_ball; rewrite [contract +oo]/= ler0_norm.
   by rewrite subr_le0; case/ler_normlP: (contract_le1 r%:E).
 by rewrite opprB ltrBlDl.
 Qed.
@@ -4666,9 +4729,9 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
   exists (PosNum m_gt0) => y //=; rewrite lt_min !ltr_distl.
   move=> /andP[/andP[ay _] /andP[_ yb]].
   rewrite 2!lte_fin (lt_trans _ ay) ?(lt_trans yb) //=.
-    rewrite -subr_gt0 opprD addrA {1}[(b - r)%R]splitr addrK.
-    by rewrite divr_gt0 ?subr_gt0.
-  by rewrite -subr_gt0 addrAC {1}[(r - a)%R]splitr addrK divr_gt0 ?subr_gt0.
+    by rewrite -subr_gt0 addrAC {1}[(r - a)%R]splitr addrK divr_gt0 ?subr_gt0.
+  rewrite -subr_gt0 opprD addrA {1}[(b - r)%R]splitr addrK.
+  by rewrite divr_gt0 ?subr_gt0.
 - have [//||d dP] := wlog a (r + 1)%R; rewrite ?lte_fin ?ltrDl //.
   by exists d => y /dP /andP[->] /= /lt_le_trans; apply; rewrite leey.
 - have [//||d dP] := wlog (r - 1)%R b; rewrite ?lte_fin ?gtrDl ?ltrN10 //.

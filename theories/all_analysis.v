@@ -1,7 +1,6 @@
 From mathcomp Require Export ereal.
 From mathcomp Require Export landau.
 From mathcomp Require Export topology.
-From mathcomp Require Export function_spaces.
 From mathcomp Require Export cantor.
 From mathcomp Require Export prodnormedzmodule.
 From mathcomp Require Export normedtype.
@@ -20,7 +19,6 @@ From mathcomp Require Export hoelder.
 From mathcomp Require Export probability.
 From mathcomp Require Export lebesgue_stieltjes_measure.
 From mathcomp Require Export convex.
-From mathcomp Require Export charge.
 From mathcomp Require Export kernel.
 From mathcomp Require Export pi_irrational.
 From mathcomp Require Export gauss_integral.

@@ -5,7 +5,7 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect.
+From mathcomp Require Import all_ssreflect_compat.
 From mathcomp Require Import mathcomp_extra.
 From mathcomp Require internal_Eqdep_dec.
 
@@ -41,6 +41,15 @@ From mathcomp Require internal_Eqdep_dec.
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## Mathematical Components Structures                                      *)
+(*                                                                            *)
+(* - A decidable equality is defined for any type. It is thus possible to     *)
+(*   define an eqType structure for any type using the mixin `gen_eqMixin`.   *)
+(* - This file adds the possibility to define a choiceType structure for      *)
+(*   any type thanks to an axiom `gen_choiceMixin` giving a choice mixin.     *)
+(* - We chose to have generic mixins and no global instances of the eqType    *)
+(*   and choiceType structures to let the user choose which definition of     *)
+(*   equality to use and to avoid conflict with already declared instances.   *)
+(*                                                                            *)
 (* ```                                                                        *)
 (*  {classic T} == Endow T : Type with a canonical eqType/choiceType.         *)
 (*                 This is intended for local use.                            *)
@@ -64,6 +73,7 @@ From mathcomp Require internal_Eqdep_dec.
 (*                                                                            *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set   Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -297,8 +307,6 @@ Qed.
 Lemma eq2_exists T S (U V : forall x : T, S x -> Prop) :
   (forall x y, U x y = V x y) -> (exists x y, U x y) = (exists x y, V x y).
 Proof. by move=> UV; apply/eq_exists => x; exact/eq_exists. Qed.
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `eq2_exists`.")]
-Notation eq_exists2 := eq2_exists (only parsing).
 
 Lemma eq3_exists T S R (U V : forall (x : T) (y : S x), R x y -> Prop) :
   (forall x y z, U x y z = V x y z) ->

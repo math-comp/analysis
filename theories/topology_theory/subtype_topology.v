@@ -1,17 +1,18 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra all_classical.
+From mathcomp Require Import all_ssreflect_compat all_algebra all_classical.
 From mathcomp Require Import reals topology_structure uniform_structure compact.
 From mathcomp Require Import pseudometric_structure connected initial_topology.
 From mathcomp Require Import product_topology subspace_topology.
 
 (**md**************************************************************************)
 (* # Subtypes of topological spaces                                           *)
+(*                                                                            *)
 (* We have two distinct ways of building topologies as subsets of a           *)
 (* topological space `X`. One is the `subspace topology`, which is defined in *)
 (* `subspace_topology.v`. It builds a topology on X which 'isolates' a set A. *)
 (* The other, defined in this file, defines a topology on the sigma type      *)
-(* `set_type` in the weak topology by the inclusion. Note `subspace A` has    *)
+(* `set_type` in the initial topology by the inclusion. Note `subspace A` has *)
 (* the advantage that it preserves all the algebraic structure on X, but only *)
 (* the local behavior A (in particular, continuity). On the other hand        *)
 (* `set_type A` has the right global properties you'd expect for the subset   *)
@@ -25,6 +26,8 @@ From mathcomp Require Import product_topology subspace_topology.
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
+
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -44,7 +47,7 @@ Context {X : topologicalType} (A : set X).
 Lemma subspace_subtypeP (x : A) (U : set A) :
   nbhs x U <-> nbhs (set_val x : subspace A) (set_val @` U).
 Proof.
-rewrite /nbhs /= -nbhs_subspace_in //; first last.
+rewrite /nbhs /= -nbhs_subspace_in //.
   by case: x; rewrite set_valE => //= ? /set_mem.
 split.
   case=> _ /= [] [W oW <- /= Wx sWU]; move: oW; rewrite openE /= /interior.
@@ -69,7 +72,7 @@ split.
 rewrite continuous_subspace_in => + x Ax U nfxU.
 move=> /(_ (@exist _ _ x Ax) U) /= []; first exact: nfxU.
 move=> _ [/= [W + <- /=]] Wx svWU; rewrite nbhs_simpl/=.
-rewrite /nbhs /= -nbhs_subspace_in; last exact/set_mem.
+rewrite /nbhs /= -nbhs_subspace_in; first exact/set_mem.
 rewrite openE /= /interior=> /(_ _ Wx); rewrite {1}set_valE/=.
 apply: filter_app; apply: nearW => w Ww /= /mem_set Aw.
 by have /= := svWU (@exist _ _ w Aw); rewrite ?set_valE /=; exact.
@@ -87,6 +90,17 @@ Lemma subspace_valL_continuousP {Y : ptopologicalType} (f : A -> Y) :
 Proof. exact: (@subspace_valL_continuousP' _ point). Qed.
 
 End subspace_sig.
+
+Lemma within_continuous_comp {U V W : topologicalType}
+  (A : set V) (f : V -> U) (g : U -> W) :
+  {in f @` A, continuous g} ->
+  {within A, continuous f} ->
+  {within A, continuous (g \o f)}.
+Proof.
+move=> cg /subspace_sigL_continuousP cf; apply/subspace_sigL_continuousP.
+rewrite /sigL -compA => /= x; apply: continuous_comp; first exact: cf.
+by apply/cg/image_f; rewrite inE; exact/set_valP.
+Qed.
 
 Section subtype_setX.
 Context {X Y : topologicalType} (A : set X) (B : set Y).

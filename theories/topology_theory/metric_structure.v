@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
+From mathcomp Require Import all_ssreflect_compat ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval_inference rat interval zmodp vector.
 From mathcomp Require Import fieldext falgebra archimedean finmap.
 #[warning="-warn-library-file-internal-analysis"]
@@ -22,6 +22,7 @@ From mathcomp Require Import num_topology product_topology separation_axioms.
 (* ```                                                                        *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -306,10 +307,37 @@ exists (fun n => sval (cid (He n.+1%:R^-1%:pos))).
   rewrite metric_sym (lt_le_trans xpt)//.
   rewrite -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0//.
   near: t; exists (truncn r^-1) => // s /= rs.
-  by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
+  by apply/ltW; rewrite -truncn_le_nat.
 move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
 rewrite /sval/=; case: cid => // x [px xpn].
 by rewrite ltNge metric_sym => /negP.
 Unshelve. all: end_near. Qed.
 
 End cvg_nbhsP.
+
+Section cvg_at_right_left_dnbhs.
+Variables (R : realFieldType) (T : metricType R).
+
+Import metricType_numDomainType.
+
+Lemma cvg_at_right_left_dnbhs (f : R -> T) (p : R) (l : T) :
+  f x @[x --> p^'+] --> l -> f x @[x --> p^'-] --> l ->
+  f x @[x --> p^'] --> l.
+Proof.
+move=> /cvgrPdist_le fppl /cvgrPdist_le fpnl; apply/cvgrPdist_le => e e0.
+have {fppl}[a /= a0 fppl] := fppl (at_right_proper_filter p) _ e0.
+have {fpnl}[b /= b0 fpnl] := fpnl (at_left_proper_filter p) _ e0.
+near=> t.
+have : t != p by near: t; exact: nbhs_dnbhs_neq.
+rewrite neq_lt => /orP[tp|pt].
+- apply: fpnl => //=; near: t.
+  exists (b / 2) => //=; first by rewrite divr_gt0.
+  move=> z/= + _ => /lt_le_trans; apply.
+  by rewrite ler_pdivrMr// ler_pMr// ler1n.
+- apply: fppl =>//=; near: t.
+  exists (a / 2) => //=; first by rewrite divr_gt0.
+  move=> z/= + _ => /lt_le_trans; apply.
+  by rewrite ler_pdivrMr// ler_pMr// ler1n.
+Unshelve. all: by end_near. Qed.
+
+End cvg_at_right_left_dnbhs.

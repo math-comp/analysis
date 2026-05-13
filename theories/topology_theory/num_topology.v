@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra all_classical.
+From mathcomp Require Import all_ssreflect_compat all_algebra all_classical.
 From mathcomp Require Import interval_inference reals topology_structure.
 From mathcomp Require Import uniform_structure pseudometric_structure.
 From mathcomp Require Import order_topology matrix_topology.
@@ -15,6 +15,7 @@ From mathcomp Require Import order_topology matrix_topology.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -170,6 +171,18 @@ apply; last by rewrite gtrBl.
 by rewrite /= opprB addrC subrK ger0_norm// gtr_pMr// invf_lt1// ltr1n.
 Qed.
 
+Lemma cvg_dnbhs_at_right (T : topologicalType) (f : R -> T) (p : R) (l : T) :
+  f x @[x --> p^'] --> l -> f x @[x --> p^'+] --> l.
+Proof.
+by apply: cvg_trans; apply: cvg_app; apply: within_subset=> r ?; rewrite gt_eqF.
+Qed.
+
+Lemma cvg_dnbhs_at_left (T : topologicalType) (f : R -> T) (p : R) (l : T) :
+  f x @[x --> p^'] --> l -> f x @[x --> p^'-] --> l.
+Proof.
+by apply: cvg_trans; apply: cvg_app; apply: within_subset=> r ?; rewrite lt_eqF.
+Qed.
+
 Lemma nbhs_right_gt x : \forall y \near x^'+, x < y.
 Proof. by rewrite near_withinE; apply: nearW. Qed.
 
@@ -238,6 +251,19 @@ Notation "x ^'+" := (at_right x) : classical_set_scope.
 
 #[global] Hint Extern 0 (Filter (nbhs _^'-)) =>
   (apply: at_left_proper_filter) : typeclass_instances.
+
+Lemma left_right_continuousP {R : realFieldType} {T : topologicalType}
+    (f : R -> T) x :
+  f @ x^'- --> f x /\ f @ x^'+ --> f x <-> f @ x --> f x.
+Proof.
+split; last by move=> cts; split; exact: cvg_within_filter.
+move=> [+ +] U /= Uz => /(_ U Uz) + /(_ U Uz); near_simpl.
+rewrite !near_withinE => lf rf; apply: filter_app lf; apply: filter_app rf.
+near=> t => xlt xgt; have := @real_leVge R x t; rewrite !num_real.
+move=> /(_ isT isT) /orP; rewrite !le_eqVlt => -[|] /predU1P[|//].
+- by move=> <-; exact: nbhs_singleton.
+- by move=> ->; exact: nbhs_singleton.
+Unshelve. all: by end_near. Qed.
 
 Lemma closure_sup (R : realType) (A : set R) :
   A !=set0 -> has_ubound A -> closure A (sup A).
@@ -373,13 +399,17 @@ exists x => // z /=; rewrite sub0r normrN.
 by apply: le_lt_trans; rewrite ler_norm.
 Qed.
 
-Lemma lt_nbhsl {R : realType} (x a : R) : x < a ->
+Lemma lt_nbhsl {R : realFieldType} (x a : R) : x < a ->
   \forall y \near nbhs x, y < a.
 Proof.
 move=> xb; exists ((a - x) / 2) => /=; first by rewrite divr_gt0// subr_gt0.
 move=> r/=; rewrite ltr_pdivlMr// ltrBrDr; apply: le_lt_trans.
 by rewrite -lerBlDr -normrN opprB (le_trans (ler_norm _))// ler_peMr// ler1n.
 Qed.
+
+Lemma lt_le_nbhsl {R : realFieldType} (t x : R) :
+  x < t -> \forall y \near nbhs x, y <= t.
+Proof. by move/lt_nbhsl; apply: filterS => y /ltW. Qed.
 
 Lemma Nlt_nbhsl {R : realType} (x a : R) :
   - x < a -> \forall y \near nbhs x, - y < a.
@@ -424,6 +454,10 @@ have [uz|uz] := leP u z.
   by rewrite ger0_norm ?subr_ge0// subrK.
 by rewrite ltr0_norm ?subr_lt0// opprB addrAC -lerBlDr opprK lerD// ?ltW.
 Qed.
+
+Lemma lt_le_nbhsr {R : realFieldType} (t x : R) :
+  t < x -> \forall y \near nbhs x, t <= y.
+Proof. by move/lt_nbhsr; apply: filterS => y /ltW. Qed.
 
 Global Instance Proper_dnbhs_regular_numFieldType (R : numFieldType) (x : R^o) :
   ProperFilter x^'.

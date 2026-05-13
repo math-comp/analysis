@@ -4,9 +4,10 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 
 (* -------------------------------------------------------------------- *)
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect_compat all_algebra.
 From mathcomp Require Export finmap.
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -138,7 +139,7 @@ Lemma big_nat_mkfset (F : nat -> R) n :
 Proof.
 rewrite -(big_map val xpredT) /=; apply/perm_big.
 apply/uniq_perm; rewrite ?iota_uniq //.
-  rewrite map_inj_uniq /=; last apply/val_inj.
+  rewrite map_inj_uniq /=; first apply/val_inj.
   by rewrite /index_enum -enumT enum_uniq.
 by move=> i; rewrite /index_enum -enumT -enum_fsetE in_fset /index_iota subn0.
 Qed.

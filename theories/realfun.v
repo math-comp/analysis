@@ -1,11 +1,11 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint.
-From mathcomp Require Import archimedean interval.
+From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint.
+From mathcomp Require Import archimedean interval interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality contra ereal reals interval_inference.
+From mathcomp Require Import cardinality contra reals convex ereal.
 From mathcomp Require Import topology prodnormedzmodule tvs normedtype derive.
 From mathcomp Require Import sequences real_interval numfun.
 
@@ -43,6 +43,7 @@ From mathcomp Require Import sequences real_interval numfun.
 (* ```                                                                        *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -102,37 +103,6 @@ apply: near_eq_cvg; near do rewrite subrK; exists M.
 by rewrite num_real.
 Unshelve. all: by end_near. Qed.
 
-Lemma left_right_continuousP {T : topologicalType} (f : R -> T) x :
-  f @ x^'- --> f x /\ f @ x^'+ --> f x <-> f @ x --> f x.
-Proof.
-split; last by move=> cts; split; exact: cvg_within_filter.
-move=> [+ +] U /= Uz => /(_ U Uz) + /(_ U Uz); near_simpl.
-rewrite !near_withinE => lf rf; apply: filter_app lf; apply: filter_app rf.
-near=> t => xlt xgt; have := @real_leVge R x t; rewrite !num_real.
-move=> /(_ isT isT) /orP; rewrite !le_eqVlt => -[|] /predU1P[|//].
-- by move=> <-; exact: nbhs_singleton.
-- by move=> ->; exact: nbhs_singleton.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvg_at_right_left_dnbhs (f : R -> R) (p : R) (l : R) :
-  f x @[x --> p^'+] --> l -> f x @[x --> p^'-] --> l ->
-  f x @[x --> p^'] --> l.
-Proof.
-move=> /cvgrPdist_le fppl /cvgrPdist_le fpnl; apply/cvgrPdist_le => e e0.
-have {fppl}[a /= a0 fppl] := fppl _ e0; have {fpnl}[b /= b0 fpnl] := fpnl _ e0.
-near=> t.
-have : t != p by near: t; exact: nbhs_dnbhs_neq.
-rewrite neq_lt => /orP[tp|pt].
-- apply: fpnl => //=; near: t.
-  exists (b / 2) => //=; first by rewrite divr_gt0.
-  move=> z/= + _ => /lt_le_trans; apply.
-  by rewrite ler_pdivrMr// ler_pMr// ler1n.
-- apply: fppl =>//=; near: t.
-  exists (a / 2) => //=; first by rewrite divr_gt0.
-  move=> z/= + _ => /lt_le_trans; apply.
-  by rewrite ler_pdivrMr// ler_pMr// ler1n.
-Unshelve. all: by end_near. Qed.
-
 End fun_cvg_realFieldType.
 
 Section cvgr_fun_cvg_seq.
@@ -169,7 +139,7 @@ exists (fun n => sval (cid (He (PosNum (invn n))))).
   rewrite /sval/=; case: cid => x [px xpt _].
   rewrite distrC (lt_le_trans xpt)// -(@invrK _ r) lef_pV2 ?posrE ?invr_gt0//.
   near: t; exists (truncn r^-1) => // s /= rs.
-  by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
+  by apply/ltW; rewrite -truncn_le_nat.
 move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
 rewrite /sval/=; case: cid => // x [px xpn].
 by rewrite leNgt distrC => /negP.
@@ -196,7 +166,7 @@ split=> [/cvgrPdist_le fpl u [up /cvgrPdist_lt put]|pfl].
   apply/cvgrPdist_le => e /fpl [r /=] /put[n _ {}put] {}fpl.
   near=> t; apply: fpl => //=; apply: put.
   by near: t; exact: nbhs_infty_ge.
-apply: cvg_at_right_left_dnbhs.
+apply: (@cvg_at_right_left_dnbhs _ R^o).
 - by apply/cvg_at_rightP => u [pu ?]; apply: pfl; split => // n; rewrite gt_eqF.
 - by apply/cvg_at_leftP => u [pu ?]; apply: pfl; split => // n; rewrite lt_eqF.
 Unshelve. all: end_near. Qed.
@@ -229,7 +199,7 @@ have y_p : y_ n @[n --> \oo] --> p.
   rewrite -ltrBlDl => /lt_le_trans; apply.
   rewrite -(invrK e) lef_pV2// ?posrE ?invr_gt0//.
   near: t; exists (truncn e^-1) => // s /= es.
-  by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
+  by apply/ltW; rewrite -truncn_le_nat.
 have /fine_cvgP[[m _ mfy_] /= _] := h _ (conj py_ y_p).
 near \oo => n.
 have mn : (m <= n)%N by near: n; exists m.
@@ -244,7 +214,7 @@ Lemma cvge_at_leftP (f : R -> \bar R) (p l : R) :
 Proof.
 apply: (iff_trans (cvg_at_leftNP f p l%:E)).
 apply: (iff_trans (cvge_at_rightP _ _ l)); split=> h u [up pu].
-- rewrite (_ : u = \- (\- u))%R; last by apply/funext => ?/=; rewrite opprK.
+- rewrite (_ : u = \- (\- u))%R; first by apply/funext => ?/=; rewrite opprK.
   by apply: h; split; [by move=> n; rewrite ltrNl opprK|exact: cvgN].
 - by apply: h; split => [n|]; [rewrite ltrNl|move/cvgN : pu; rewrite opprK].
 Qed.
@@ -496,11 +466,11 @@ move=> nif; have ndNf : {in `[a, b] &, nondecreasing_fun (-%R \o f)}.
   by move=> x y xab yab xy /=; rewrite lerNl opprK nif.
 move/nondecreasing_at_left_at_right : (ndNf) => H x.
 rewrite in_itv/= => /andP[ax xb]; rewrite -[leLHS]opprK lerNl -!limN//.
-- by apply: H; rewrite !in_itv/= ax.
-- rewrite -(opprK f); apply: is_cvgN.
-  exact: nondecreasing_at_right_is_cvgrW ndNf.
 - rewrite -(opprK f);apply: is_cvgN.
   exact: nondecreasing_at_left_is_cvgrW ndNf.
+- rewrite -(opprK f); apply: is_cvgN.
+  exact: nondecreasing_at_right_is_cvgrW ndNf.
+- by apply: H; rewrite !in_itv/= ax.
 Qed.
 
 End fun_cvg_realType.
@@ -529,7 +499,7 @@ have [lpoo|lpoo] := eqVneq l +oo.
   exists n; split; first by rewrite num_real.
   by move=> m /= nm; rewrite (le_trans (ltW Mun))// ndf// ltW.
 have [fnoo|fnoo] := pselect (f = cst -oo).
-  rewrite /l (_ : S = [set -oo]).
+  rewrite /l (_ : S = [set -oo]); last first.
     by rewrite ereal_sup1 fnoo; exact: cvg_cst.
   apply/seteqP; split => [_ [n _] <- /[!fnoo]//|_ ->].
   by rewrite /S fnoo; exists 0%R.
@@ -552,7 +522,7 @@ rewrite -(@fineK _ l)//; apply/fine_cvgP; split.
   by move=> r A1r; rewrite f_fin_num //; exact/xB/ltW.
 set g := fun n => if (n < x)%R then fine (f x) else fine (f n).
 have <- : sup (range g) = fine l.
-  apply: EFin_inj; rewrite -ereal_sup_EFin//; last 2 first.
+  apply: EFin_inj; rewrite -ereal_sup_EFin//.
     - exists (fine l) => /= _ [m _ <-]; rewrite /g /=.
       have [mx|xm] := ltP m x.
         by rewrite fine_le// ?f_fin_num//; apply: ereal_sup_ubound; exists x.
@@ -563,7 +533,7 @@ have <- : sup (range g) = fine l.
     apply: ereal_sup_le => _ /= [_ [m _] <-] <-.
     rewrite /g; have [_|xm] := ltP m x.
       by rewrite fineK// ?f_fin_num//; exists x.
-    by rewrite fineK// ?f_fin_num//; [exists m|exact/xB].
+    by rewrite fineK// ?f_fin_num//; [exact/xB|exists m].
   apply: ge_ereal_sup => /= _ [m _] <-.
   have [mx|xm] := ltP m x.
     rewrite (le_trans (ndf _ _ (ltW mx)))//.
@@ -588,7 +558,7 @@ apply: nondecreasing_cvgr.
 - exists (fine l) => /= _ [m _ <-]; rewrite /g /=.
   rewrite -lee_fin (fineK l_fin_num); apply: ereal_sup_ubound.
   have [_|xm] := ltP m x; first by rewrite fineK// ?f_fin_num//; eexists.
-  by rewrite fineK// ?f_fin_num//; [exists m|exact/xB].
+  by rewrite fineK// ?f_fin_num//; [exact/xB|exists m].
 Unshelve. all: by end_near. Qed.
 
 (* NB: see ereal_nondecreasing_is_cvgn in sequences.v *)
@@ -628,19 +598,19 @@ have [lnoo|lnoo] := eqVneq l -oo.
 have [fpoo|fpoo] := pselect {in Interval (BRight a) b, forall x, f x = +oo}.
   rewrite {}/l in lnoo *; rewrite {}/S in Snoo lnoo *.
   rewrite [X in ereal_inf X](_ : _ = [set +oo]).
-    rewrite ereal_inf1; apply/cvgeyPgey; near=> M.
-    move: b ab {ndf lnoo Snoo} fpoo => [[|] b|[//|]] ab fpoo.
-    - near=> x; rewrite fpoo ?leey// in_itv/=.
-      by apply/andP; split; near: x; [exact: nbhs_right_gt|exact: nbhs_right_lt].
-    - near=> x; rewrite fpoo ?leey// in_itv/=.
-      by apply/andP; split; near: x; [exact: nbhs_right_gt|exact: nbhs_right_le].
-    - near=> x; rewrite fpoo ?leey// in_itv/= andbT.
-      by near: x; exact: nbhs_right_gt.
-  apply/seteqP; split => [_ [n _] <- /[!fpoo]//|_ ->].
-  move: b ab ndf lnoo Snoo fpoo => [[|] s|[//|]] ab ndf lnoo Snoo fpoo /=.
-  - by exists ((a + s) / 2)%R; rewrite ?fpoo// in_itv/= !midf_lt.
-  - by exists ((a + s) / 2)%R; rewrite ?fpoo// in_itv/= !(midf_lt, midf_le)// ltW.
-  - by exists (a + 1)%R; rewrite ?fpoo// in_itv/= andbT ltrDl.
+    apply/seteqP; split => [_ [n _] <- /[!fpoo]//|_ ->].
+    move: b ab ndf lnoo Snoo fpoo => [[|] s|[//|]] ab ndf lnoo Snoo fpoo /=.
+    - by exists ((a + s) / 2)%R; rewrite ?fpoo// in_itv/= !midf_lt.
+    - by exists ((a + s) / 2)%R; rewrite ?fpoo// in_itv/= !(midf_lt, midf_le)// ltW.
+    - by exists (a + 1)%R; rewrite ?fpoo// in_itv/= andbT ltrDl.
+  rewrite ereal_inf1; apply/cvgeyPgey; near=> M.
+  move: b ab {ndf lnoo Snoo} fpoo => [[|] b|[//|]] ab fpoo.
+  - near=> x; rewrite fpoo ?leey// in_itv/=.
+    by apply/andP; split; near: x; [exact: nbhs_right_gt|exact: nbhs_right_lt].
+  - near=> x; rewrite fpoo ?leey// in_itv/=.
+    by apply/andP; split; near: x; [exact: nbhs_right_gt|exact: nbhs_right_le].
+  - near=> x; rewrite fpoo ?leey// in_itv/= andbT.
+    by near: x; exact: nbhs_right_gt.
 have [/ereal_inf_pinfty lpoo|lpoo] := eqVneq l +oo.
   by exfalso; apply/fpoo => r rab; rewrite (lpoo (f r))//; exists r.
 have l_fin_num : l \is a fin_num by rewrite fin_numE lpoo lnoo.
@@ -669,39 +639,39 @@ rewrite -(@fineK _ l)//; apply/fine_cvgP; split.
   by rewrite f_fin_num// axA// az/= ltW.
 set g := fun n => if (a < n < x)%R then fine (f n) else fine (f x).
 have <- : inf [set g x | x in [set` Interval (BRight a) b]] = fine l.
-  apply: EFin_inj; rewrite -ereal_inf_EFin//; last 2 first.
-    - exists (fine l) => /= _ [m _ <-]; rewrite /g /=.
-      case: ifPn => [/andP[am mx]|].
-        rewrite fine_le// ?f_fin_num//; first by rewrite axA// am (ltW mx).
-        apply: ereal_inf_lbound; exists m => //=.
-        rewrite in_itv/= -[X in _ && X]/(BLeft m < b)%O am/=.
-        by rewrite (le_lt_trans _ xb) ?ltW.
-      rewrite negb_and -!leNgt => /orP[ma|xm].
-        rewrite fine_le// ?f_fin_num ?inE//.
-        apply: ereal_inf_lbound; exists x => //=.
-        by rewrite in_itv/= -[X in _ && X]/(BLeft x < b)%O ax xb.
+  apply: EFin_inj; rewrite -ereal_inf_EFin//.
+  - exists (fine l) => /= _ [m _ <-]; rewrite /g /=.
+    case: ifPn => [/andP[am mx]|].
+      rewrite fine_le// ?f_fin_num//; first by rewrite axA// am (ltW mx).
+      apply: ereal_inf_lbound; exists m => //=.
+      rewrite in_itv/= -[X in _ && X]/(BLeft m < b)%O am/=.
+      by rewrite (le_lt_trans _ xb) ?ltW.
+    rewrite negb_and -!leNgt => /orP[ma|xm].
       rewrite fine_le// ?f_fin_num ?inE//.
       apply: ereal_inf_lbound; exists x => //=.
       by rewrite in_itv/= -[X in _ && X]/(BLeft x < b)%O ax xb.
-    - rewrite {}/l in lnoo lpoo l_fin_num *.
-      rewrite {}/S in Snoo lnoo lpoo l_fin_num *.
-      rewrite {}/A in f_fin_num axA *.
-      move: b ab {xb ndf lnoo lpoo l_fin_num f_fin_num Snoo fpoo axA} =>
-            [[|] s|[//|]] ab /=.
-      + exists (g ((a + s) / 2))%R, ((a + s) / 2)%R => //=.
-        by rewrite /= in_itv/= !midf_lt.
-      + exists (g ((a + s) / 2))%R, ((a + s) / 2)%R => //=.
-        by rewrite /= in_itv/= !(midf_lt, midf_le)// ltW.
-      + exists (g (a + 1)%R), (a + 1)%R => //=.
-        by rewrite in_itv/= andbT ltrDl.
+    rewrite fine_le// ?f_fin_num ?inE//.
+    apply: ereal_inf_lbound; exists x => //=.
+    by rewrite in_itv/= -[X in _ && X]/(BLeft x < b)%O ax xb.
+  - rewrite {}/l in lnoo lpoo l_fin_num *.
+    rewrite {}/S in Snoo lnoo lpoo l_fin_num *.
+    rewrite {}/A in f_fin_num axA *.
+    move: b ab {xb ndf lnoo lpoo l_fin_num f_fin_num Snoo fpoo axA} =>
+          [[|] s|[//|]] ab /=.
+    + exists (g ((a + s) / 2))%R, ((a + s) / 2)%R => //=.
+      by rewrite /= in_itv/= !midf_lt.
+    + exists (g ((a + s) / 2))%R, ((a + s) / 2)%R => //=.
+      by rewrite /= in_itv/= !(midf_lt, midf_le)// ltW.
+    + exists (g (a + 1)%R), (a + 1)%R => //=.
+      by rewrite in_itv/= andbT ltrDl.
   rewrite fineK//; apply/eqP; rewrite eq_le; apply/andP; split; last first.
     apply: ereal_inf_le_tmp => _ /= [_ [m _] <-] <-.
     rewrite /g; case: ifPn => [/andP[am mx]|].
-      rewrite fineK// ?f_fin_num//; last by rewrite axA// am ltW.
+      rewrite fineK// ?f_fin_num//; first by rewrite axA// am ltW.
       exists m => //=.
       by rewrite in_itv/= -[X in _ && X]/(BLeft m < b)%O am/= (lt_trans _ xb).
     rewrite negb_and -!leNgt => /orP[ma|xm].
-      rewrite fineK//; last by rewrite f_fin_num ?inE.
+      rewrite fineK//; first by rewrite f_fin_num ?inE.
       exists x => //=.
       by rewrite in_itv/= -[X in _ && X]/(BLeft x < b)%O ax xb.
     exists x => /=.
@@ -751,11 +721,11 @@ apply: nondecreasing_at_right_cvgr => //.
 - exists (fine l) => /= _ [m _ <-]; rewrite /g /=.
   rewrite -lee_fin (fineK l_fin_num); apply: ereal_inf_lbound.
   case: ifPn => [/andP[am mn0]|].
-    rewrite fineK//; last by rewrite f_fin_num// axA// am (ltW mn0).
+    rewrite fineK//; first by rewrite f_fin_num// axA// am (ltW mn0).
     exists m => //=.
     by rewrite in_itv/= -[X in _ && X]/(BLeft m < b)%O am (lt_trans _ xb).
   rewrite negb_and -!leNgt => /orP[ma|xm].
-    rewrite fineK//; first by exists x => //=; rewrite in_itv/= ax.
+    rewrite fineK//; last by exists x => //=; rewrite in_itv/= ax.
     by rewrite f_fin_num ?inE.
   by rewrite fineK// ?f_fin_num ?inE//; exists x => //=; rewrite in_itv/= ax.
 Unshelve. all: by end_near. Qed.
@@ -872,7 +842,7 @@ Unshelve. all: by end_near. Qed.
 
 Lemma lime_inf_lim f a : lime_inf f a = lim (inf_ball f a e @[e --> 0^'+]).
 Proof.
-rewrite /lime_inf lime_sup_lim -limeN; last exact: sup_ball_is_cvg.
+rewrite /lime_inf lime_sup_lim -limeN; first exact: sup_ball_is_cvg.
 by rewrite /sup_ball; under eq_fun do rewrite -image_comp.
 Qed.
 
@@ -907,7 +877,7 @@ Unshelve. all: by end_near. Qed.
 Lemma lime_supD f g a : lime_sup f a +? lime_sup g a ->
   lime_sup (f \+ g)%E a <= lime_sup f a + lime_sup g a.
 Proof.
-move=> fg; rewrite !lime_sup_lim -limeD//; last first.
+move=> fg; rewrite !lime_sup_lim -limeD//.
   by rewrite -!lime_sup_lim.
 apply: lee_lim => //.
 - apply: nondecreasing_at_right_is_cvge; near=> e => x y; rewrite !in_itv/=.
@@ -1263,6 +1233,119 @@ Qed.
 
 End derivable_oo_continuousW.
 
+(* ref: http://www.math.wisc.edu/~nagel/convexity.pdf *)
+Section twice_derivable_convex.
+Local Open Scope convex_scope.
+Context {R : realType}.
+Variables (f : R -> R^o) (a b : R^o).
+
+Let Df := 'D_1 f.
+Let DDf := 'D_1 Df.
+
+Hypothesis DDf_ge0 : forall x, a < x < b -> 0 <= DDf x.
+Hypothesis cvg_left : (f @ b^'-) --> f b.
+Hypothesis cvg_right : (f @ a^'+) --> f a.
+
+Let L x := f a + factor a b x * (f b - f a).
+
+Let LE x : a < b -> L x = factor b a x * f a + factor a b x * f b.
+Proof.
+move=> ab; rewrite /L -(@onem_factor _ a) ?lt_eqF//.
+by rewrite mulrBl mul1r mulrBr addrA addrAC.
+Qed.
+
+Let convexf_ptP : a < b -> (forall x, a <= x <= b -> 0 <= L x - f x) ->
+  forall t, f (a <| t |> b) <= f a <| t |> f b.
+Proof.
+move=> ba h t; set x := a <| t |> b; have /h : a <= x <= b.
+  by have:= convR_itv t (ltW ba); rewrite in_itv/=.
+rewrite subr_ge0 => /le_trans; apply.
+by rewrite LE// /x {2}convC 2!convR_line_path !line_pathK//= ?(eq_sym b) lt_eqF.
+Qed.
+
+Hypothesis HDf : {in `]a, b[, forall x, derivable f x 1}.
+Hypothesis HDDf : {in `]a, b[, forall x, derivable Df x 1}.
+
+Let cDf : {within `]a, b[, continuous Df}.
+Proof. by apply: derivable_within_continuous => z zab; exact: HDDf. Qed.
+
+Lemma second_derivative_convex (t : {i01 R}) : a <= b ->
+  f (a <| t |> b) <= f a <| t |> f b.
+Proof.
+rewrite le_eqVlt => /predU1P[<-|/[dup] ab]; first by rewrite !convmm.
+move/convexf_ptP; apply => x /andP[].
+rewrite le_eqVlt => /predU1P[<-|ax].
+  by rewrite /L factorl mul0r addr0 subrr.
+rewrite le_eqVlt => /predU1P[->|xb].
+  by rewrite /L factorr ?lt_eqF// mul1r subrKC subrr.
+have [c2 Ic2 Hc2] : exists2 c2, x < c2 < b & (f b - f x) / (b - x) = 'D_1 f c2.
+  have xbf : {in `]x, b[, forall z, derivable f z 1} :=
+    in1_subset_itv (subset_itvW _ _ (ltW ax) (lexx b)) HDf.
+  have derivef z : z \in `]x, b[ -> is_derive z 1 f ('D_1 f z).
+    by move=> zxb; apply/derivableP/xbf; exact: zxb.
+  have [|z zxb fbfx] := MVT xb derivef.
+    apply/(derivable_oo_LRcontinuous_within (And3 xbf _ cvg_left)).
+    apply/cvg_at_right_filter.
+    have := derivable_within_continuous HDf.
+    rewrite continuous_open_subspace//.
+    by apply; rewrite inE/= in_itv/= ax.
+  by exists z => //; rewrite fbfx mulfK// subr_eq0 gt_eqF.
+have [c1 Ic1 Hc1] : exists2 c1, a < c1 < x & (f x - f a) / (x - a) = 'D_1 f c1.
+  have axf : {in `]a, x[, forall z, derivable f z 1} :=
+    in1_subset_itv (subset_itvW _ _ (lexx a) (ltW xb)) HDf.
+  have derivef z : z \in `]a, x[ -> is_derive z 1 f ('D_1 f z).
+    by move=> zax; apply /derivableP/axf.
+  have [|z zax fxfa] := MVT ax derivef.
+    apply/(derivable_oo_LRcontinuous_within (And3 axf cvg_right _)).
+    apply/cvg_at_left_filter.
+    have := derivable_within_continuous HDf.
+    rewrite continuous_open_subspace//.
+    by apply; rewrite inE/= in_itv/= ax.
+  by exists z; last rewrite fxfa mulfK// subr_eq0 gt_eqF.
+have c1c2 : c1 < c2.
+  by move: Ic2 Ic1 => /andP[+ _] => /[swap] /andP[_] /lt_trans; apply.
+have [d Id h] :
+    exists2 d, c1 < d < c2 & ('D_1 f c2 - 'D_1 f c1) / (c2 - c1) = DDf d.
+  have h : {in `]c1, c2[, forall z, derivable Df z 1}.
+    apply: (in1_subset_itv (subset_itvW _ _ (ltW (andP Ic1).1) (lexx _))).
+    apply: (in1_subset_itv (subset_itvW _ _ (lexx _) (ltW (andP Ic2).2))).
+    exact: HDDf.
+  have derivef z : z \in `]c1, c2[ -> is_derive z 1 Df ('D_1 Df z).
+    by move=> zc1c2; apply/derivableP/h.
+  have [|z zc1c2 {}h] := MVT c1c2 derivef.
+    apply: (derivable_oo_LRcontinuous_within (And3 h _ _)).
+    + apply: cvg_at_right_filter.
+      move: cDf; rewrite continuous_open_subspace//.
+      by apply; rewrite inE/= in_itv/= (andP Ic1).1 (lt_trans _ (andP Ic2).2).
+    + apply: cvg_at_left_filter.
+      move: cDf; rewrite continuous_open_subspace//.
+      by apply; rewrite inE/= in_itv/= (andP Ic2).2 (lt_trans (andP Ic1).1).
+  exists z; first by [].
+  rewrite h -mulrA divff; last exact: mulr1.
+  by rewrite subr_eq0 gt_eqF.
+have LfE : L x - f x =
+    ((x - a) * (b - x)) / (b - a) * ((f b - f x) / (b - x)) -
+    ((b - x) * factor a b x) * ((f x - f a) / (x - a)).
+  rewrite !mulrA 2!(mulrAC _ (b - x)) 2!(mulrAC _ (x - a)).
+  rewrite 2?mulfK ?subr_eq0 ?gt_eqF// 2!mulrBr opprB addrACA -opprD.
+  rewrite -2!mulrDl (addrC (x - a)) subrKA divff ?subr_eq0 ?gt_eqF// mul1r.
+  rewrite -(opprB x b) mulNr -mulrN -invrN opprB -2!/(factor _ _ _).
+  by rewrite -(@onem_factor _ a) ?lt_eqF// /onem mulrBl mul1r addrCA -mulrBr.
+have {Hc1 Hc2} -> : L x - f x = (b - x) * (x - a) * (c2 - c1) / (b - a) *
+                                (('D_1 f c2 - 'D_1 f c1) / (c2 - c1)).
+  rewrite LfE Hc2 Hc1 -(mulrC (b - x)) [in LHS]mulrA -mulrBr.
+  by rewrite mulrA 2![_ * (c2 - c1) * _]mulrAC mulfK// subr_eq0 gt_eqF.
+rewrite {}h mulr_ge0//; last first.
+  rewrite DDf_ge0//; apply/andP; split.
+    by rewrite (lt_trans (andP Ic1).1)//; case/andP : Id.
+  by rewrite (lt_trans (andP Id).2)//; case/andP : Ic2.
+rewrite mulr_ge0// ?invr_ge0 ?subr_ge0 ?(ltW ab)//.
+rewrite mulr_ge0// ?subr_ge0 ?(ltW c1c2)//.
+by rewrite mulr_ge0// subr_ge0 ltW.
+Qed.
+
+End twice_derivable_convex.
+
 Section real_inverse_functions.
 Variable R : realType.
 Implicit Types (a b : R) (f g : R -> R).
@@ -1594,13 +1677,13 @@ have := ax; rewrite le_eqVlt => /orP[/eqP|] {}ax.
   near=> y => /[dup] yab; rewrite /= in_itv => /andP[ay yb]; apply/andP; split.
     by rewrite (@le_trans _ _ (f a)) ?fle// lerBlDr ax ler_wpDr.
   apply: ltW; suff : f y < u by rewrite lt_min => /andP[->].
-  rewrite -?[f y < _]glt// ?fK//; last by rewrite in_itv /= !fle.
+  rewrite -?[f y < _]glt// ?fK//; first by rewrite in_itv /= !fle.
   by near: y; near_simpl; apply: open_lt; rewrite /= -flt ?gK// -ax.
 have := xb; rewrite le_eqVlt => /orP[/eqP {}xb {ax}|{}xb].
   near=> y => /[dup] yab; rewrite /= in_itv /= => /andP[ay yb].
   apply/andP; split; last by rewrite (@le_trans _ _ (f b)) ?fle// xb ler_wpDr.
   apply: ltW; suff : l < f y by rewrite gt_max => /andP[->].
-  rewrite -?[_ < f y]glt// ?fK//; last by rewrite in_itv /= !fle.
+  rewrite -?[_ < f y]glt// ?fK//; first by rewrite in_itv /= !fle.
   by near: y; near_simpl; apply: open_gt; rewrite /= -flt// gK// xb.
 have xoab : x \in `]a, b[ by rewrite in_itv /=; apply/andP; split.
 near=> y; suff: l <= f y <= u.
@@ -1702,7 +1785,7 @@ near: y; apply: (filter_app _ _ nearfx); near_simpl; near=> y => yfe.
 have : {within f @`]x - e, (x + e)[, continuous g}.
   apply: continuous_subspaceW; last exact: (segment_can_continuous _ fwcte _).
   exact: subset_itv_oo_cc.
-rewrite continuous_open_subspace; first by apply; exact: mem_set.
+rewrite continuous_open_subspace; last by apply; exact: mem_set.
 exact: interval_open.
 Unshelve. all: by end_near. Qed.
 
@@ -1737,7 +1820,7 @@ move=> x; case: (ltrgtP x 0) => [xlt0 | xgt0 | ->].
   suff main b : 0 <= b -> {in I b, continuous (@Num.sqrt R)}.
     near +oo_R => M; apply: (main M); rewrite // /I !inE/= in_itv/= expr0n xgt0.
     by rewrite -ltr_sqrt ?exprn_gt0// sqrtr_sqr gtr0_norm/=.
-  move=> b0; rewrite -continuous_open_subspace; last exact: interval_open.
+  move=> b0; rewrite -continuous_open_subspace; first exact: interval_open.
   apply: continuous_subspaceW; first exact: subset_itv_oo_cc.
   apply: (@segment_can_le_continuous _ _ _ (@GRing.exp _^~ _)) => //.
     by apply: continuous_subspaceT; exact: exprn_continuous.
@@ -1768,7 +1851,7 @@ split => [Hd|[g [fxE Cg gxE]]].
     have F1 : g1 @ 0^' --> a by case: Hd => H1 <-.
     apply: cvg_trans F1; apply: near_eq_cvg; rewrite /g1 !fctE.
     near=> i.
-    rewrite ifN; first by rewrite addrK mulrC /= [_%:A]mulr1.
+    rewrite ifN; last by rewrite addrK mulrC /= [_%:A]mulr1.
     rewrite -subr_eq0 addrK.
     by near: i; rewrite near_withinE /= near_simpl; near=> x1.
   by rewrite eqxx.
@@ -1867,9 +1950,12 @@ rewrite -[x]sqrtK//; apply: (@is_derive_inverse _ (fun x => x ^+ 2)).
 - by rewrite mulf_neq0// gt_eqF// sqrtr_gt0 exprn_gt0// sqrtr_gt0.
 Unshelve. all: by end_near. Qed.
 
+Lemma derivable_sqrt {K : realType} (x : K) : 0 < x -> derivable Num.sqrt x 1.
+Proof.  by move=> x0; exact/ex_derive/is_derive1_sqrt. Qed.
+
 Lemma derive_sqrt {K : realType} (r : K) : 0 < r ->
   'D_1 Num.sqrt r = (2 * Num.sqrt r)^-1.
-Proof. by move=> r0; apply: derive_val; exact: is_derive1_sqrt. Qed.
+Proof. by move=> r0; exact/derive_val/is_derive1_sqrt. Qed.
 
 #[global] Hint Extern 0 (is_derive _ _ (fun _ => (_ _)^-1) _) =>
   (eapply is_deriveV; first by []) : typeclass_instances.
@@ -1891,7 +1977,7 @@ Lemma nondecreasing_total_variation a b f : a <= b ->
 Proof.
 rewrite le_eqVlt => /predU1P[<-{b} ?|ab ndf].
   by rewrite total_variationxx subrr.
-rewrite /total_variation [X in ereal_sup X](_ : _ = [set (f b - f a)%:E]).
+rewrite /total_variation [X in ereal_sup X](_ : _ = [set (f b - f a)%:E]); last first.
   by rewrite ereal_sup1.
 apply/seteqP; split => [x/= [s [t abt <-{s} <-{x}]]|x/= ->{x}].
   by rewrite nondecreasing_variation.
@@ -1928,7 +2014,7 @@ Lemma bounded_variationP a b f : a <= b -> BV a b f <-> TV a b f \is a fin_num.
 Proof.
 rewrite le_eqVlt => /predU1P[<-{b}|ab].
   by rewrite total_variationxx; split => // ?; exact: bounded_variationxx.
-rewrite ge0_fin_numE; last exact/total_variation_ge0/ltW.
+rewrite ge0_fin_numE; first exact/total_variation_ge0/ltW.
 split=> [abf|].
   by rewrite /total_variation ereal_sup_EFin ?ltry//; exact: variations_neq0.
 rewrite /total_variation /bounded_variation ltey => /eqP; apply: contra_notP.
@@ -1936,17 +2022,17 @@ by move/hasNub_ereal_sup; apply; exact: variations_neq0.
 Qed.
 
 Lemma total_variation_le a b f g : a <= b ->
-  (TV a b (f \+ g) <= TV a b f + TV a b g)%E.
+  (TV a b (f \+ g)%R <= TV a b f + TV a b g)%E.
 Proof.
 rewrite le_eqVlt => /predU1P[<-{b}|ab].
   by rewrite !total_variationxx adde0.
 have [abf|abf] := pselect (BV a b f); last first.
-  rewrite {2}/total_variation hasNub_ereal_sup//; last first.
+  rewrite {2}/total_variation hasNub_ereal_sup//.
     exact: variations_neq0.
   rewrite addye ?leey// -ltNye (@lt_le_trans _ _ 0%E)//.
   exact/total_variation_ge0/ltW.
 have [abg|abg] := pselect (BV a b g); last first.
-  rewrite {3}/total_variation hasNub_ereal_sup//; last first.
+  rewrite {3}/total_variation hasNub_ereal_sup//.
     exact: variations_neq0.
   rewrite addey ?leey// -ltNye (@lt_le_trans _ _ 0%E)//.
   exact/total_variation_ge0/ltW.
@@ -1976,15 +2062,15 @@ have H s t : itv_partition a c s -> itv_partition c b t ->
     eexists; last reflexivity.
     by exists (s ++ t) => //; exact: itv_partition_cat acs cbt.
   by rewrite -variation_cat// ltW.
-rewrite [leRHS]ereal_sup_EFin//; last first.
+rewrite [leRHS]ereal_sup_EFin//.
   by apply: variations_neq0; rewrite (lt_trans ac).
 have acf : BV a c f := bounded_variationl (ltW ac) (ltW cb) abf.
 have cbf : BV c b f := bounded_variationr (ltW ac) (ltW cb) abf.
-rewrite {1 2}/total_variation ereal_sup_EFin//; last exact: variations_neq0.
-rewrite ereal_sup_EFin//; last exact: variations_neq0.
-rewrite -EFinD -sup_sumE; last 2 first.
-  by split => //; exact: variations_neq0.
-  by split => //; exact: variations_neq0.
+rewrite {1 2}/total_variation ereal_sup_EFin//; first exact: variations_neq0.
+rewrite ereal_sup_EFin//; first exact: variations_neq0.
+rewrite -EFinD -sup_sumE.
+- by split => //; exact: variations_neq0.
+- by split => //; exact: variations_neq0.
 apply: sup_le.
 - move=> r/= [s [l' acl' <-{s}]] [t [l cbl] <-{t} <-{r}].
   exists (variation a b f (l' ++ l)); split; last by rewrite -variation_cat// ltW.
@@ -2015,10 +2101,10 @@ have [|nbdac] := pselect (bounded_variation c b f); first last.
   rewrite addey ?leey // -ltNye (@lt_le_trans _ _ 0%E)//.
   exact/total_variation_ge0/ltW.
 move=> bdAB bdAC.
-rewrite /total_variation [x in (x + _)%E]ereal_sup_EFin //; last first.
+rewrite /total_variation [x in (x + _)%E]ereal_sup_EFin //.
   exact: variations_neq0.
-rewrite [x in (_ + x)%E]ereal_sup_EFin //; last exact: variations_neq0.
-rewrite -EFinD -sup_sumE /has_sup; [|(by split => //; exact: variations_neq0)..].
+rewrite [x in (_ + x)%E]ereal_sup_EFin //; first exact: variations_neq0.
+rewrite -EFinD -sup_sumE /has_sup; [(by split => //; exact: variations_neq0)..|].
 apply: ge_ereal_sup => ? [? [l pacl <- <-]]; rewrite lee_fin.
 apply: (le_trans (variation_itv_partitionLR _ ac _ _)) => //.
 apply: ub_le_sup => /=.
@@ -2065,7 +2151,7 @@ Lemma total_variation_bounded_variation a b (f : R -> R) : a <= b ->
   BV a b (fine \o TV a ^~ f).
 Proof.
 move=> ab BVf; apply/bounded_variationP => //.
-rewrite ge0_fin_numE; last exact: total_variation_ge0.
+rewrite ge0_fin_numE; first exact: total_variation_ge0.
 rewrite nondecreasing_total_variation/= ?ltry//.
 move=> x y; rewrite !in_itv!/= => /andP[ax xb] /andP[ay yb] xy.
 apply: fine_le.
@@ -2096,12 +2182,12 @@ have Nffin : TV a x (\- f) \is a fin_num.
   apply/bounded_variationP => //; apply/bounded_variationN.
   exact: (bounded_variationl ax xb).
 rewrite /pos_tv /neg_tv /= total_variationN -fineB -?muleBl // ?fineM //.
+- by rewrite fin_numM // fin_numD; apply/andP; split.
+- by rewrite fin_numM // fin_numD; apply/andP; split.
+- by apply: fin_num_adde_defl; rewrite fin_numN fin_numD; apply/andP; split.
+- by rewrite fin_numB ?fin_numD ?ffin; apply/andP; split.
 - rewrite addeAC oppeD //= ?fin_num_adde_defl //.
   by rewrite addeA subee // add0e -EFinD //= opprK mulrDl -splitr.
-- by rewrite fin_numB ?fin_numD ?ffin; apply/andP; split.
-- by apply: fin_num_adde_defl; rewrite fin_numN fin_numD; apply/andP; split.
-- by rewrite fin_numM // fin_numD; apply/andP; split.
-- by rewrite fin_numM // fin_numD; apply/andP; split.
 Qed.
 
 Lemma fine_neg_tv_nondecreasing a b f : BV a b f ->
@@ -2145,7 +2231,7 @@ have e20 : 0 < eps%:num / 2 by [].
 move/cvgrPdist_lt/(_ (eps%:num/2) e20) : ctsf; apply: filter_app.
 near=> t => fxt ti xt; have ta : a <= t by exact: (le_trans ax).
 have tb : t <= b by rewrite (le_trans (ltW ti))// -ijb path_lt_le_last.
-rewrite -fineB; last 2 first.
+rewrite -fineB.
   by apply/bounded_variationP => //; exact: bounded_variationl bvf.
   by apply/bounded_variationP => //; exact: bounded_variationl bvf.
 rewrite (total_variationD _ ax xt).
@@ -2154,27 +2240,27 @@ have tbfin : TV t b f \is a fin_num.
 have xtfin : TV x t f \is a fin_num.
   apply/bounded_variationP => //; apply: (@bounded_variationl _ _ _ b) => //.
   exact: (@bounded_variationr _ a).
-rewrite oppeD ?fin_num_adde_defl// addeA subee //; first last.
+rewrite oppeD ?fin_num_adde_defl// addeA subee //.
   by apply/bounded_variationP => //; exact: (@bounded_variationl _ _ _ b).
-rewrite sub0e fineN normrN ger0_norm; last first.
+rewrite sub0e fineN normrN ger0_norm.
   by rewrite fine_ge0// total_variation_ge0.
 move: (tv_eps); rewrite (total_variationD f _ tb) //.
 move: xt; rewrite le_eqVlt => /predU1P[->|xt].
   by rewrite total_variationxx/=.
 have : variation x b f (i :: j) <= variation x t f (t :: nil) +
                                    variation t b f (i :: j).
-  rewrite -variation_cat//; last 2 first.
+  rewrite -variation_cat//.
     exact: itv_partition1.
     by rewrite /itv_partition/= ti ij ijb.
   exact: le_variation.
 rewrite -lee_fin => /lt_le_trans /[apply].
-rewrite {1}variation_prev; last exact: itv_partition1.
-rewrite /= -addeA -lteBrDr; last by rewrite fin_numD; apply/andP.
+rewrite {1}variation_prev; first exact: itv_partition1.
+rewrite /= -addeA -lteBrDr; first by rewrite fin_numD; apply/andP.
 rewrite EFinD -lte_fin ?fineK // oppeD //= ?fin_num_adde_defl // opprK addeA.
 move/lt_trans; apply.
 rewrite [in ltRHS](splitr (eps%:num)) EFinD lteD2rE// -addeA.
 apply: (@le_lt_trans _ _ (variation x t f (t :: nil))%:E).
-  rewrite [in leRHS]variation_prev; last exact: itv_partition1.
+  rewrite [in leRHS]variation_prev; first exact: itv_partition1.
   rewrite geeDl// sube_le0; apply: ereal_sup_ubound => /=.
   exists (variation t b f (i :: j)) => //; apply: variations_variation.
   by rewrite /itv_partition/= ijb ij ti.
@@ -2194,7 +2280,7 @@ under eq_fun => i do rewrite EFinN.
 apply: (@cvg_trans _ (((TV a n f - (f n)%:E) * 2^-1%:E)%E @[n --> x^'+])).
   exact: cvg_id.
 apply: cvgeZr; first by [].
-rewrite fineD; [|by []..].
+rewrite fineD; [by []..|].
 rewrite EFinB; apply: cvgeB; [by []| |].
   apply/ fine_cvgP; split; first exists (b - x).
   - by rewrite /= subr_gt0.
@@ -2202,7 +2288,7 @@ rewrite EFinB; apply: cvgeB; [by []| |].
       by apply: ltW; apply: (le_lt_trans ax).
     apply/bounded_variationP => //.
     apply: bounded_variationl bvf => //.
-    move: xtbx; rewrite distrC ger0_norm ?subr_ge0; last by exact: ltW.
+    move: xtbx; rewrite distrC ger0_norm ?subr_ge0; first by exact: ltW.
     by rewrite ltrBrDr subrK => /ltW.
   by apply: total_variation_right_continuous => //; last exact: bvf.
 apply: cvg_comp; first exact: fcts.
@@ -2229,28 +2315,27 @@ have ? : Filter (nbhs (-x)^'+) by exact: at_right_proper_filter.
 have -> : fine (TV (-x) (-a) (f \o -%R)) =
     fine (TV (-b) (-a) (f \o -%R)) - fine (TV (-b) (-x) (f \o -%R)).
   apply/eqP; rewrite -subr_eq opprK addrC.
-  rewrite -fineD; last 2 first.
+  rewrite -fineD.
     by apply/bounded_variationP => //; exact: bounded_variationl bvNf.
     by apply/bounded_variationP => //; exact: bounded_variationr bvNf.
   by rewrite -total_variationD.
-have /near_eq_cvg/cvg_trans : {near (- x)^'+,
+suff /near_eq_cvg/cvg_trans : {near (- x)^'+,
     (fun t => fine (TV (- b) (- a) (f \o -%R)) - fine (TV (- b) t (f \o -%R))) =1
     (fine \o (TV a)^~ f) \o -%R}.
-  apply: filter_app (nbhs_right_lt xa).
-  apply: (filter_app _ _ (nbhs_right_ge _)).
-  near=> t => xt ta; have ? : -b <= t by exact: (le_trans bx).
-  have ? : t <= -a by exact: ltW.
-  apply/eqP; rewrite eq_sym -subr_eq opprK addrC.
-  rewrite /= [TV a _ f]total_variation_opp opprK -fineD; last first.
-    by apply/bounded_variationP => //; apply: bounded_variationr bvNf.
-    by apply/bounded_variationP => //; apply: bounded_variationl bvNf.
-  by rewrite -total_variationD.
-apply.
-apply: cvgB; first exact: cvg_cst.
-apply: (total_variation_right_continuous _ _ _ bvNf).
-- by rewrite lerNl opprK //.
-- by rewrite ltrNl opprK //.
-by apply/cvg_at_leftNP; rewrite /= opprK.
+  apply; apply: cvgB; first exact: cvg_cst.
+  apply: (total_variation_right_continuous _ _ _ bvNf).
+  - by rewrite lerNl opprK //.
+  - by rewrite ltrNl opprK //.
+  by apply/cvg_at_leftNP; rewrite /= opprK.
+apply: filter_app (nbhs_right_lt xa).
+apply: (filter_app _ _ (nbhs_right_ge _)).
+near=> t => xt ta; have ? : -b <= t by exact: (le_trans bx).
+have ? : t <= -a by exact: ltW.
+apply/eqP; rewrite eq_sym -subr_eq opprK addrC.
+rewrite /= [TV a _ f]total_variation_opp opprK -fineD.
+- by apply/bounded_variationP => //; apply: bounded_variationl bvNf.
+- by apply/bounded_variationP => //; apply: bounded_variationr bvNf.
+by rewrite -total_variationD.
 Unshelve. all: by end_near. Qed.
 
 Lemma total_variation_continuous a b (f : R -> R) : a < b ->
@@ -2305,8 +2390,8 @@ have [path_at sizets asts] : [/\ path <%R a t, size t = size s &
       rewrite /t ss'b size_rcons/= midf_lt// -[a]/(nth b (a :: s) 0%N).
       by have /pathP := abs.1; exact.
     + rewrite [in X in X -> _]size_map [in X in X -> _]size_iota => ns/=.
-      rewrite !(nth_map 0%N) ?size_iota//; last exact: (leq_trans _ ns).
-      rewrite !nth_iota// ?add0n; last exact: (leq_trans _ ns).
+      rewrite !(nth_map 0%N) ?size_iota//; first exact: (leq_trans _ ns).
+      rewrite !nth_iota// ?add0n; first exact: (leq_trans _ ns).
       rewrite (@lt_trans _ _ (x_ n.+1))// midf_lt//.
         by have /pathP := abs.1; apply; exact: (leq_trans _ ns).
       by have /pathP := abs.1; exact.
@@ -2414,12 +2499,11 @@ rewrite telescope_sumr// lerB//.
       move: (sizes0) => /prednK.
       set m := (size s).-1 => <- H.
       rewrite -[leLHS]/(nth b [seq ((x_ i + x_ i.+1) / 2) | i <- iota 0 m.+1] m).
-      rewrite (nth_map 0%N).
-        rewrite nth_iota// add0n.
-        apply: (@le_trans _ _ (x_ m.+1)).
-          by rewrite midf_le// ltW// H.
-        by apply: itv_partition_nth_le abs; rewrite prednK.
-      by rewrite size_iota.
+      rewrite (nth_map 0%N); first by rewrite size_iota.
+      rewrite nth_iota// add0n.
+      apply: (@le_trans _ _ (x_ m.+1)).
+        by rewrite midf_le// ltW// H.
+      by apply: itv_partition_nth_le abs; rewrite prednK.
   + by rewrite in_itv/= lexx andbT; exact: itv_partition_le abs.
   + have /eqP := abs.2.
     rewrite (last_nth b) => <-.
@@ -2427,11 +2511,10 @@ rewrite telescope_sumr// lerB//.
     move: (sizes0) => /prednK <-.
     set m := (size s).-1.
     rewrite -[leLHS]/(nth b [seq ((x_ i + x_ i.+1) / 2) | i <- iota 0 m.+1] m).
-    rewrite (nth_map 0%N).
-      rewrite nth_iota// add0n midf_le// ltW//.
-      have /pathP := abs.1; apply.
-      by rewrite (prednK sizes0).
-    by rewrite size_iota.
+    rewrite (nth_map 0%N); first by rewrite size_iota.
+    rewrite nth_iota// add0n midf_le// ltW//.
+    have /pathP := abs.1; apply.
+    by rewrite (prednK sizes0).
 have ay1 : a <= y_ 1%N by rewrite -[a]/(nth b (a :: s) 0%N) ltW// ast.
 apply: ndF => //.
   by rewrite in_itv/= lexx andTb; exact: itv_partition_le abs.
@@ -2840,7 +2923,7 @@ Hypotheses (fa0 : f x @[x --> c] --> 0) (ga0 : g x @[x --> c] --> 0)
 Lemma lhopital :
   df x / dg x @[x --> c] --> l -> f x / g x @[x --> c^'] --> l.
 Proof.
-move=> fgcl; apply/cvg_at_right_left_dnbhs.
+move=> fgcl; apply/(@cvg_at_right_left_dnbhs _ R^o).
 - apply: (@lhopital_at_right R f df g dg c b l); try exact/cvg_at_right_filter.
   + by move: cab; rewrite in_itv/= => /andP[].
   + move=> x xac; apply: fdf; rewrite set_itv_splitU ?in_setU//=.

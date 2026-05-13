@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
+From mathcomp Require Import all_ssreflect_compat all_algebra finmap all_classical.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import topology_structure uniform_structure.
@@ -22,6 +22,7 @@ From mathcomp Require Import product_topology pseudometric_structure.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -182,7 +183,7 @@ case/(_ [set` i]): cIi; first by move: oi; rewrite openE; exact.
 move=> /= w [[j [jU oJ jy jw]]] wi; exists (i `|` j)%O; first last.
   exact/(le_trans iy)/leUl.
 split; first by rewrite itv_setU ?{1}subUset //; exists w.
-by rewrite itv_setU ?{1}subUset //; [exact: openU | exists w].
+by rewrite itv_setU ?{1}subUset //; [exists w | exact: openU].
 exact/(le_trans jy)/leUr.
 Qed.
 
@@ -228,13 +229,13 @@ case=> ? [[ I Irp] <-] [?] /[dup] /(Irp _) [F rayF <-] IF Fix IU.
 pose j := \big[Order.meet/`]-oo, +oo[]_(i <- F) i.
 exists j; first split.
 - rewrite /j (@eq_fbig_cond _ _ _ _ _ F _ (mem F) _ id)//.
-  + apply: (big_ind itv_open_ends) => //=; first exact: itv_open_endsI.
-    by rewrite /itv_open_ends; move=> i /rayF /set_mem ->.
-  + by move=> p /=; rewrite !inE/=; exact: andb_id2l.
+    by move=> p /=; rewrite !inE/=; exact: andb_id2l.
+  apply: (big_ind itv_open_ends) => //=; first exact: itv_open_endsI.
+  by rewrite /itv_open_ends; move=> i /rayF /set_mem ->.
 - pose f (i : interval T) : Prop := x \in i; suff : f j by [].
   rewrite /j (@eq_fbig_cond _ _ _ _ _ F _ (mem F) _ id)//=.
-  + by apply: big_ind => //=; rewrite /f /= => a ? xa ?; rewrite in_itvI xa.
   + by move=> p /=; rewrite !inE/=; exact: andb_id2l.
+  + by apply: big_ind => //=; rewrite /f /= => a ? xa ?; rewrite in_itvI xa.
 - suff -> : [set` j] = \bigcap_(i in [set` F]) [set` i].
     by move=> i Fi; apply: IU; exists (\bigcap_(i in [set` F]) [set` i]).
   rewrite -bigsetI_fset_set ?set_fsetK//.
@@ -255,7 +256,8 @@ case=> x y; have [<- U /=|]:= eqVneq x y.
   by have /orP[?|?]/= := le_total a b; [rewrite min_l|rewrite min_r].
 wlog xy : x y / (x < y)%O.
   move=> WH /[dup] /lt_total/orP[|yx /eqP/nesym/eqP yNx]; first exact: WH.
-  rewrite (_ : (fun _ => _) = (fun xy => Order.min xy.1 xy.2) \o @swap T T).
+  rewrite (_ : (fun _ => _)
+      = (fun xy => Order.min xy.1 xy.2) \o @swap T T); last first.
     by apply: continuous_comp; [exact: swap_continuous|exact: WH].
   apply/funext => -[a b/=]; have /orP[ab|ba] := le_total a b.
   - by rewrite min_l // min_r.
@@ -293,7 +295,8 @@ case=> x y; have [<- U|] := eqVneq x y.
   by have /orP[?|?]/= := le_total a b; [rewrite max_r|rewrite max_l].
 wlog xy : x y / (x < y)%O.
   move=> WH /[dup] /lt_total/orP[|yx /eqP/nesym/eqP yNx]; first exact: WH.
-  rewrite (_ : (fun _ => _) = (fun xy => Order.max xy.1 xy.2) \o @swap T T).
+  rewrite (_ : (fun _ => _)
+      = (fun xy => Order.max xy.1 xy.2) \o @swap T T); last first.
     by apply: continuous_comp; [exact: swap_continuous|exact: WH].
   apply/funext => -[a b] /=; have /orP [ab|ba] := le_total a b.
   - by rewrite max_r // max_l.

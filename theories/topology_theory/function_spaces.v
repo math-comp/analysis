@@ -1,11 +1,16 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
+From mathcomp Require Import all_ssreflect_compat all_algebra finmap.
+From mathcomp Require Import generic_quotient.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop reals interval_inference.
-From mathcomp Require Import topology.
+From mathcomp Require Import topology_structure uniform_structure.
+From mathcomp Require Import supremum_topology initial_topology.
+From mathcomp Require Import pseudometric_structure separation_axioms.
+From mathcomp Require Import compact connected subspace_topology.
+From mathcomp Require Import product_topology.
 
 (**md**************************************************************************)
 (* # The topology of functions spaces                                         *)
@@ -107,6 +112,7 @@ Reserved Notation "{ 'compact-open' , U -> V }"
 Reserved Notation "{ 'compact-open' , F --> f }"
   (at level 0, F at level 69, format "{ 'compact-open' ,  F  -->  f }").
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -260,8 +266,8 @@ Lemma perfect_prod {I : Type} (i : I) (K : I -> topologicalType) :
 Proof.
 move=> /perfectTP KPo; apply/perfectTP => f oF; apply: (KPo (f i)).
 rewrite (_ : [set f i] = proj i @` [set f]).
-  by apply: (@proj_open {classic I} _ i); exact: oF.
-by rewrite eqEsubset; split => ? //; [move=> -> /=; exists f | case=> g ->].
+  by rewrite eqEsubset; split => ? //; [move=> -> /=; exists f | case=> g ->].
+by apply: (@proj_open {classic I} _ i); exact: oF.
 Qed.
 
 Lemma perfect_diagonal (K : nat -> topologicalType) :
@@ -291,7 +297,7 @@ Proof.
 move=> dctTI x y /eqP xneqy.
 have [i/eqP/dctTI [U [clU Ux nUy]]] : exists i, x i <> y i.
   by apply/existsNP=> W; exact/xneqy/functional_extensionality_dep.
-exists (proj i @^-1` U); split => //; apply: clopen_comp => //.
+exists (proj i @^-1` U); split => //; apply: preimage_clopen => //.
 exact/proj_continuous.
 Qed.
 
@@ -416,7 +422,7 @@ Lemma join_product_initial : set_inj [set: T] join_product ->
 Proof.
 move=> inj; rewrite predeqE => U; split; first last.
   by move=> [V ? <-]; apply: open_comp => // + _; exact: join_product_continuous.
-move=> /join_product_open/open_subspaceP [V [oU VU]].
+move=> /join_product_open/open_subspaceP [V oU VU].
 exists V => //; have := @f_equal _ _ (preimage join_product) _ _ VU.
 rewrite !preimage_setI // !preimage_range !setIT => ->.
 rewrite eqEsubset; split; last exact: preimage_image.
@@ -737,7 +743,7 @@ Lemma pointwise_uniform_cvg  (f : U -> V) (F : set_system (U -> V)) :
 Proof.
 move=> FF; rewrite cvg_sup => + i; have isubT : [set i] `<=` setT by move=> ?.
 move=> /(uniform_subset_cvg _ isubT); rewrite uniform_set1.
-rewrite cvg_image; last by rewrite eqEsubset; split=> v // _; exists (cst v).
+rewrite cvg_image; first by rewrite eqEsubset; split=> v // _; exists (cst v).
 apply: cvg_trans => W /=; rewrite nbhs_simpl; exists (@^~ i @^-1` W) => //.
 by rewrite image_preimage // eqEsubset; split=> // j _; exists (fun _ => j).
 Qed.
@@ -802,12 +808,12 @@ apply: (filterS EsubQ).
 rewrite (_:  [set h | (forall y : U, (A `|` B) y -> E (f y, h y))] =
     [set h | forall y, A y -> E (f y, h y)] `&`
     [set h | forall y, B y -> E (f y, h y)]).
-- apply: filterI; [apply: AFf| apply: BFf].
-  + by apply/uniform_nbhs; exists E; split.
-  + by apply/uniform_nbhs; exists E; split.
 - rewrite eqEsubset; split=> h.
   + by move=> R; split=> t ?; apply: R;[left| right].
   + by move=> [R1 R2] y [? | ?]; [apply: R1| apply: R2].
+- apply: filterI; [apply: AFf| apply: BFf].
+  + by apply/uniform_nbhs; exists E; split.
+  + by apply/uniform_nbhs; exists E; split.
 Qed.
 
 Lemma cvg_uniform_set0 (F : set_system (U -> V)) (f : U -> V) : Filter F ->
@@ -1129,12 +1135,12 @@ move=> FF; apply/propext.
 rewrite (@fam_cvgP _ _ singletons). (* BUG: slowdown if no arguments *)
 rewrite cvg_sup; split.
   move=> + A [x _ <-] => /(_ x); rewrite uniform_set1.
-  rewrite cvg_image; last by rewrite eqEsubset; split=> v // _; exists (cst v).
+  rewrite cvg_image; first by rewrite eqEsubset; split=> v // _; exists (cst v).
   apply: cvg_trans => W /=; rewrite ?nbhs_simpl /fmap /= => [[W' + <-]].
   by apply: filterS => g W'g /=; exists g.
 move=> + i; have /[swap] /[apply] : singletons [set i] by exists i.
 rewrite uniform_set1.
-rewrite cvg_image; last by rewrite eqEsubset; split=> v // _; exists (cst v).
+rewrite cvg_image; first by rewrite eqEsubset; split=> v // _; exists (cst v).
 move=> + W //=; rewrite ?nbhs_simpl => Q => /Q Q'; exists (@^~ i @^-1` W) => //.
 by rewrite eqEsubset; split => [j [? + <-//]|j Wj]; exists (fun _ => j).
 Qed.
@@ -1221,8 +1227,8 @@ have C : compact R.
 apply: (subclosed_compact _ C); first exact: closed_closure.
 have WsubR : (fW @` W) `<=` R.
   by move=> f [i Wi <-] x; rewrite /K; apply: subset_closure; exists i.
-rewrite closureE; apply: smallest_sub (compact_closed _ C) WsubR.
-exact: hausdorff_product.
+rewrite closureE; apply: smallest_sub => //.
+by apply: compact_closed => //=; exact: hausdorff_product.
 Qed.
 
 Lemma uniform_pointwise_compact (W : set (X -> Y)) :
@@ -1244,7 +1250,7 @@ have : compact (proj x @` (closure W)).
   exact: (@pointwise_cvg_compact_family _ _ (nbhs g)).
 move=> /[dup]/(compact_closed hsdf)/closure_id -> /subclosed_compact.
 apply; first exact: closed_closure.
-by apply/closure_subset/image_subset; exact: (@subset_closure _ W).
+by apply/closureS/image_subset; exact: (@subset_closure _ W).
 Qed.
 
 Lemma pointwise_cvg_entourage (x : X) (f : {ptws X -> Y}) E :
@@ -1607,7 +1613,7 @@ Lemma eval_continuous {X Y : topologicalType} :
 Proof.
 move=> lcX rsX; apply: continuous_uncurry_regular => //.
   exact: initial_continuous.
-by move=> ?; exact: cts_fun.
+by move=> ?; exact: continuous_fun.
 Qed.
 
 Lemma compose_continuous {X Y Z : topologicalType} :

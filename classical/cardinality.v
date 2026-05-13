@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
+From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 
 (**md**************************************************************************)
@@ -38,6 +38,7 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 (*                                                                            *)
 (******************************************************************************)
 
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -655,7 +656,7 @@ Lemma finite_setX_or T T' (A : set T) (B : set T') :
 Proof.
 have [->|/set0P[a Aa]] := eqVneq A set0; first by left.
 have /sub_finite_set : [set a] `*` B `<=` A `*` B by move=> x/= [] -> ?; split.
-move => /[apply]/(finite_image snd); rewrite (_ : _ @` _ = B); first by right.
+move => /[apply]/(finite_image snd); rewrite (_ : _ @` _ = B); last by right.
 by apply/seteqP; split=> [b [[? ?] [? ?] <-//]|b ?]/=; exists (a, b).
 Qed.
 
@@ -802,7 +803,7 @@ Lemma fset_setU {T : choiceType} (A B : set T) :
   fset_set (A `|` B) = (fset_set A `|` fset_set B)%fset.
 Proof.
 move=> fA fB; apply/fsetP=> x.
-rewrite ?(inE, in_fset_set)//; last by rewrite finite_setU.
+rewrite ?(inE, in_fset_set)//; first by rewrite finite_setU.
 by apply/idP/orP; rewrite ?inE.
 Qed.
 
@@ -811,7 +812,7 @@ Lemma fset_setI {T : choiceType} (A B : set T) :
   fset_set (A `&` B) = (fset_set A `&` fset_set B)%fset.
 Proof.
 move=> fA fB; apply/fsetP=> x.
-rewrite ?(inE, in_fset_set)//; last by apply: finite_setI; left.
+rewrite ?(inE, in_fset_set)//; first by apply: finite_setI; left.
 by apply/idP/andP; rewrite ?inE.
 Qed.
 
@@ -824,7 +825,7 @@ Lemma fset_setD {T : choiceType} (A B : set T) :
   fset_set (A `\` B) = (fset_set A `\` fset_set B)%fset.
 Proof.
 move=> fA fB; apply/fsetP=> x.
-rewrite ?(inE, in_fset_set)//; last exact: finite_setD.
+rewrite ?(inE, in_fset_set)//; first exact: finite_setD.
 by apply/idP/andP; rewrite ?inE => -[]; rewrite ?notin_setE.
 Qed.
 
@@ -893,10 +894,10 @@ Lemma trivIset_sum_card (T : choiceType) (F : nat -> set T) n :
    #|` fset_set (\big[setU/set0]_(k < n) F k)|)%N.
 Proof.
 move=> finF tF; elim: n => [|n ih]; first by rewrite !big_ord0 fset_set0.
-rewrite big_ord_recr//= ih big_ord_recr/= fset_setU//; last first.
+rewrite big_ord_recr//= ih big_ord_recr/= fset_setU//.
   by rewrite -bigcup_mkord; exact: bigcup_finite.
 rewrite cardfsU [X in (_ - X)%N](_ : _  = O) ?subn0// ?EFinD ?natrD//.
-apply/eqP; rewrite cardfs_eq0 -fset_setI//; last first.
+apply/eqP; rewrite cardfs_eq0 -fset_setI//.
   by rewrite -bigcup_mkord; exact: bigcup_finite.
 rewrite (@trivIset_bigsetUI _ xpredT)// ?fset_set0//.
 by rewrite [X in trivIset X F](_ : _ = [set: nat])//; exact/seteqP.
@@ -934,7 +935,7 @@ Lemma fset_set_image {T U : choiceType} (f : T -> U) (A : set T) :
   finite_set A -> fset_set (f @` A) = (f @` fset_set A)%fset.
 Proof.
 move=> Afset; apply/fsetP=> i.
-rewrite !in_fset_set; last exact: finite_image.
+rewrite !in_fset_set; first exact: finite_image.
 apply/idP/imfsetP; rewrite !inE/=.
   by move=> [x Ax <-]; exists x; rewrite ?in_fset_set ?inE.
 by move=> [x + ->]; rewrite in_fset_set// inE; exists x.
@@ -1067,7 +1068,7 @@ Lemma infinite_set_fset {T : choiceType} (A : set T) n :
 Proof.
 elim/choicePpointed: T => T in A *; first by rewrite emptyE.
 move=> /infiniteP/ppcard_leP[f]; exists (fset_set [set f i | i in `I_n]).
-  rewrite fset_setK//; last exact: finite_image.
+  rewrite fset_setK//; first exact: finite_image.
   by apply: subset_trans (fun_image_sub f); apply: image_subset.
 rewrite fset_set_image// card_imfset//= fset_set_II/=.
 by rewrite card_imfset//= ?size_enum_ord//; apply: val_inj.
