@@ -436,17 +436,12 @@ Lemma perfectly_normal_space_hereditary (S : set T) :
   @perfectly_normal_space R T 0 -> @perfectly_normal_space R (subspace S) 0.
 Proof.
 move=> pns E /closed_subspaceP [E' [cE' hE']].
-case: (pns _ cE') => f [cf hf].
-exists (fun x => if x \in E then 0 else if x \in E' then 1 else f x).
-split.
-- apply/subspace_eq_continuous/continuous_subspaceT/cf => x /set_mem Sx.
-  have EE' : E x <-> E' x by case/predeqP/(_ x): hE' => /=; tauto.
-  case: ifP; first by move/set_mem/EE'; rewrite hf.
-  by case: ifP => // /set_mem/EE'/mem_set ->.
-apply/seteqP; split => x /=; first by move/mem_set ->.
-case: ifPn => [/set_mem // | Ex].
-case: ifPn; first by move=> _ /eqP; rewrite oner_eq0.
-by rewrite hf notin_setE /=.
+have [f [cf hf]] := pns _ cE'.
+exists (fun x => if x \in S then f x else (x \notin E)%:R).
+split; first by apply/subspace_eq_continuous/continuous_subspaceT/cf => x ->.
+apply/predeqP => x /=; case: ifPn => [/set_mem|] Sx.
+  by suff ->: E x <-> E' x; [rewrite hf | case/predeqP/(_ x): hE' => /=; tauto].
+by rewrite -(in_setE E); case: (x \in E); rewrite // -eq_opE oner_eq0.
 Qed.
 
 Lemma perfectly_normal_space_completely_normal :
