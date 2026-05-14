@@ -321,14 +321,15 @@ Qed.</div></details>
 <span class="vernacular">Variables</span><span class="id"> </span><span id="periodic.U" class="id"><a name="periodic.U" class="">U</a></span><span class="id"> </span><span id="periodic.V" class="id"><a name="periodic.V" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.nmodule#Algebra.Zmodule.Exports.zmodType">zmodType</a></span>.<br/>
 <span class="vernacular">Implicit</span><span class="gallina-kwd"> Type</span><span class="id"> f</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#periodic.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#periodic.V">V</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="periodic" class="id"><div name="periodic" class=" tooltip">periodic<span class='tooltip-area'><p>periodic :
-forall [U V : GRing.Zmodule.Exports.zmodType], (U -> V) -> U -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="periodic" class="id"><div name="periodic" class=" tooltip">periodic<span class='tooltip-area'><p>gauss_integral_proof.integral0_gauss : forall {R : realType}, R -> R
 
-periodic is not universe polymorphic
-Arguments periodic [U V] f%_function_scope T%_ring_scope
-periodic is transparent
-Expands to: Constant mathcomp.analysis.trigo.periodic
-Declared in library mathcomp.analysis.trigo, line 88, characters 11-19
+gauss_integral_proof.integral0_gauss is not universe polymorphic
+Arguments gauss_integral_proof.integral0_gauss {R} x%_ring_scope
+gauss_integral_proof.integral0_gauss is transparent
+Expands to: Constant
+            mathcomp.analysis.gauss_integral.gauss_integral_proof.integral0_gauss
+Declared in
+library mathcomp.analysis.gauss_integral, line 71, characters 11-26
 </p></span></div></span><span class="id"> </span><span id="f:32" class="id"><a name="f:32" class="">f</a></span> (<span id="T:33" class="id"><a name="T:33" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#periodic.U">U</a></span>)<span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="u:34" class="id"><a name="u:34" class="">u</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#f:32">f</a></span> (<span class="id"><a href="mathcomp.analysis.trigo.html#u:34">u</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#T:33">T</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#f:32">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#u:34">u</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="periodicn" class="id"><a name="periodicn" class="">periodicn</a></span><span class="id"> </span><span id="f:35" class="id"><a name="f:35" class="">f</a></span> (<span id="T:36" class="id"><a name="T:36" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#periodic.U">U</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#periodic">periodic</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#f:35">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#T:36">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="gallina-kwd">forall</span><span class="id"> </span><span id="n:37" class="id"><a name="n:37" class="">n</a></span><span class="id"> </span><span id="a:38" class="id"><a name="a:38" class="">a</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#f:35">f</a></span> (<span class="id"><a href="mathcomp.analysis.trigo.html#a:38">a</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#T:36">T</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:37">n</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#f:35">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#a:38">a</a></span>.<br/>
@@ -343,15 +344,14 @@ Qed.</div></details>
 <span class="vernacular">Variables</span> (<span id="alternating.U" class="id"><a name="alternating.U" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.nmodule#Algebra.Zmodule.Exports.zmodType">zmodType</a></span>) (<span id="alternating.V" class="id"><a name="alternating.V" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.PzRing.Exports.pzRingType">pzRingType</a></span>).<br/>
 <span class="vernacular">Implicit</span><span class="gallina-kwd"> Type</span><span class="id"> f</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#alternating.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#alternating.V">V</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="alternating" class="id"><div name="alternating" class=" tooltip">alternating<span class='tooltip-area'><p>alternating :
-forall [U : GRing.Zmodule.Exports.zmodType] [V : pzRingType],
-(U -> V) -> U -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="alternating" class="id"><div name="alternating" class=" tooltip">alternating<span class='tooltip-area'><p>gauss_integral_proof.u : forall {R : realType}, R -> R -> R
 
-alternating is not universe polymorphic
-Arguments alternating [U V] f%_function_scope T%_ring_scope
-alternating is transparent
-Expands to: Constant mathcomp.analysis.trigo.alternating
-Declared in library mathcomp.analysis.trigo, line 100, characters 11-22
+gauss_integral_proof.u is not universe polymorphic
+Arguments gauss_integral_proof.u {R} (x t)%_ring_scope
+gauss_integral_proof.u is transparent
+Expands to: Constant mathcomp.analysis.gauss_integral.gauss_integral_proof.u
+Declared in
+library mathcomp.analysis.gauss_integral, line 85, characters 11-12
 </p></span></div></span><span class="id"> </span><span id="f:43" class="id"><a name="f:43" class="">f</a></span> (<span id="T:44" class="id"><a name="T:44" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#alternating.U">U</a></span>)<span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="x:45" class="id"><a name="x:45" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#f:43">f</a></span> (<span class="id"><a href="mathcomp.analysis.trigo.html#x:45">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#T:44">T</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#f:43">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:45">x</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="alternatingn" class="id"><a name="alternatingn" class="">alternatingn</a></span><span class="id"> </span><span id="f:46" class="id"><a name="f:46" class="">f</a></span> (<span id="T:47" class="id"><a name="T:47" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#alternating.U">U</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#alternating">alternating</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#f:46">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#T:47">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
@@ -365,118 +365,34 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> alternating</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sin_coeff" class="id"><div name="sin_coeff" class=" tooltip">sin_coeff<span class='tooltip-area'><p>sin_coeff :
-forall {R : realType},
-R ->
-(join_GRing_PzRing_between_Algebra_BaseZmodule_and_GRing_PzSemiRing R) ^nat
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sin_coeff" class="id"><div name="sin_coeff" class=" tooltip">sin_coeff<span class='tooltip-area'><p>gauss_integral_proof.integral01_u : forall {R : realType}, R -> R
 
-sin_coeff is not universe polymorphic
-Arguments sin_coeff {R} x%_ring_scope _
-sin_coeff is transparent
-Expands to: Constant mathcomp.analysis.trigo.sin_coeff
-Declared in library mathcomp.analysis.trigo, line 111, characters 11-20
+gauss_integral_proof.integral01_u is not universe polymorphic
+Arguments gauss_integral_proof.integral01_u {R} x%_ring_scope
+gauss_integral_proof.integral01_u is transparent
+Expands to: Constant
+            mathcomp.analysis.gauss_integral.gauss_integral_proof.integral01_u
+Declared in
+library mathcomp.analysis.gauss_integral, line 136, characters 11-23
 </p></span></div></span><span class="id"> {</span><span id="R:50" class="id"><a name="R:50" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="x:51" class="id"><a name="x:51" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:50">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">[sequence</a></span> (<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#odd">odd</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#n:52">n</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span> (<span class="id">-1</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:52">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#::nat_scope:x_'.-1'">-1</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#1ecb2ec20b22101a31d2177b576c9a81">/2</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#x:51">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:52">n</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:52">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#fb85b56582e20c3ab47a4e55b1f6f111">`!</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">]_</a></span><span id="n:52" class="id"><a name="n:52" class="">n</a></span>.<br/>
 <br/>
-<span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><div name="sin_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>sin_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
+<span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><div name="sin_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>gauss_integral_proof.h : forall {R : realType}, R -> R
 
-sin_unlock_subterm is not universe polymorphic
-sin_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 114, characters 0-80
-</p></span></div></span></span></span></span></span></span></span></span>.<span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><div name="sin_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>sin_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
-
-sin_unlock_subterm is not universe polymorphic
-sin_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 114, characters 0-80
-</p></span></div></span></span></span></span></span></span></span></span><span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><div name="sin_unlock_subterm" class=" tooltip"> Definition<span class='tooltip-area'><p>sin_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
-
-sin_unlock_subterm is not universe polymorphic
-sin_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 114, characters 0-80
-</p></span></div></span></span></span></span></span></span></span></span><span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><div name="sin_unlock_subterm" class=" tooltip"> sin<span class='tooltip-area'><p>sin_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
-
-sin_unlock_subterm is not universe polymorphic
-sin_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 114, characters 0-80
-</p></span></div></span></span></span></span></span></span></span></span><span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><div name="sin_unlock_subterm" class=" tooltip"> {R<span class='tooltip-area'><p>sin_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
-
-sin_unlock_subterm is not universe polymorphic
-sin_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 114, characters 0-80
-</p></span></div></span></span></span></span></span></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> </span><span id="x:54" class="id"><a name="x:54" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:53">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#lim">lim</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#series">series</a></span> (<span class="id"><a href="mathcomp.analysis.trigo.html#sin_coeff">sin_coeff</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:54">x</a></span>)<span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#228a5fbd8d7ef28f21231bccff88d0b0">\oo</a></span>).<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_sin" class="id"><div name="locked_sin" class=" tooltip">locked_sin<span class='tooltip-area'><p>locked_sin :
-unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
-
-locked_sin is not universe polymorphic
-locked_sin is transparent
-Expands to: Constant mathcomp.analysis.trigo.locked_sin
-Declared in library mathcomp.analysis.trigo, line 115, characters 10-20
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#Unlockable">Unlockable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#unlock">sin</a></span>.<span class="id"><a href="mathcomp.analysis.trigo.html#unlock">unlock</a></span>.<br/>
+gauss_integral_proof.h is not universe polymorphic
+Arguments gauss_integral_proof.h {R} x%_ring_scope
+gauss_integral_proof.h is transparent
+Expands to: Constant mathcomp.analysis.gauss_integral.gauss_integral_proof.h
+Declared in
+library mathcomp.analysis.gauss_integral, line 225, characters 11-12
+</p></span></div></span></span></span></span></span></span></span></span>.<span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><div name="sin_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'></span></div></span></span></span></span></span></span></span></span><span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><div name="sin_unlock_subterm" class=" tooltip"> Definition<span class='tooltip-area'></span></div></span></span></span></span></span></span></span></span><span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><div name="sin_unlock_subterm" class=" tooltip"> sin<span class='tooltip-area'></span></div></span></span></span></span></span></span></span></span><span id="sin_unlock_subterm" class="id"><span id="sin" class="id"><span id="sin.unlock" class="id"><span id="sin.body" class="id"><span id="sin" class="id"><span id="sin_Locked.unlock" class="id"><span id="sin_Locked.body" class="id"><span id="sin_Locked" class="id"><div name="sin_unlock_subterm" class=" tooltip"> {R<span class='tooltip-area'></span></div></span></span></span></span></span></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> </span><span id="x:54" class="id"><a name="x:54" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:53">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#lim">lim</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#series">series</a></span> (<span class="id"><a href="mathcomp.analysis.trigo.html#sin_coeff">sin_coeff</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:54">x</a></span>)<span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#228a5fbd8d7ef28f21231bccff88d0b0">\oo</a></span>).<br/>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_sin" class="id"><div name="locked_sin" class=" tooltip">locked_sin<span class='tooltip-area'></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#Unlockable">Unlockable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#unlock">sin</a></span>.<span class="id"><a href="mathcomp.analysis.trigo.html#unlock">unlock</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="cos_coeff" class="id"><div name="cos_coeff" class=" tooltip">cos_coeff<span class='tooltip-area'><p>cos_coeff : forall {R : realType}, R -> R ^nat
-
-cos_coeff is not universe polymorphic
-Arguments cos_coeff {R} x%_ring_scope _
-cos_coeff is transparent
-Expands to: Constant mathcomp.analysis.trigo.cos_coeff
-Declared in library mathcomp.analysis.trigo, line 117, characters 11-20
-</p></span></div></span><span class="id"> {</span><span id="R:57" class="id"><a name="R:57" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="x:58" class="id"><a name="x:58" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:57">R</a></span>)<span class="id"> :=</span><br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="cos_coeff" class="id"><div name="cos_coeff" class=" tooltip">cos_coeff<span class='tooltip-area'></span></div></span><span class="id"> {</span><span id="R:57" class="id"><a name="R:57" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="x:58" class="id"><a name="x:58" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:57">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">[sequence</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b3ebd0deddd84fd60e149cb5ef719351">~~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b3ebd0deddd84fd60e149cb5ef719351"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#odd">odd</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#n:59">n</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span> (<span class="id">-1</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#11a706273cccd094dd42b3c7d6457ef8">^</a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:59">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#1ecb2ec20b22101a31d2177b576c9a81">/2</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#x:58">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:59">n</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:59">n</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#fb85b56582e20c3ab47a4e55b1f6f111">`!</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">]_</a></span><span id="n:59" class="id"><a name="n:59" class="">n</a></span>.<br/>
 <br/>
-<span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><div name="cos_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>cos_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
-
-cos_unlock_subterm is not universe polymorphic
-cos_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 120, characters 0-80
-</p></span></div></span></span></span></span></span></span></span></span>.<span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><div name="cos_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>cos_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
-
-cos_unlock_subterm is not universe polymorphic
-cos_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 120, characters 0-80
-</p></span></div></span></span></span></span></span></span></span></span><span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><div name="cos_unlock_subterm" class=" tooltip"> Definition<span class='tooltip-area'><p>cos_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
-
-cos_unlock_subterm is not universe polymorphic
-cos_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 120, characters 0-80
-</p></span></div></span></span></span></span></span></span></span></span><span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><div name="cos_unlock_subterm" class=" tooltip"> cos<span class='tooltip-area'><p>cos_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
-
-cos_unlock_subterm is not universe polymorphic
-cos_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 120, characters 0-80
-</p></span></div></span></span></span></span></span></span></span></span><span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><div name="cos_unlock_subterm" class=" tooltip"> {R<span class='tooltip-area'><p>cos_unlock_subterm :
-unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
-
-cos_unlock_subterm is not universe polymorphic
-cos_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 120, characters 0-80
-</p></span></div></span></span></span></span></span></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> </span><span id="x:61" class="id"><a name="x:61" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:60">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#lim">lim</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#series">series</a></span> (<span class="id"><a href="mathcomp.analysis.trigo.html#cos_coeff">cos_coeff</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:61">x</a></span>)<span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#228a5fbd8d7ef28f21231bccff88d0b0">\oo</a></span>).<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_cos" class="id"><div name="locked_cos" class=" tooltip">locked_cos<span class='tooltip-area'><p>locked_cos :
-unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
-
-locked_cos is not universe polymorphic
-locked_cos is transparent
-Expands to: Constant mathcomp.analysis.trigo.locked_cos
-Declared in library mathcomp.analysis.trigo, line 121, characters 10-20
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#Unlockable">Unlockable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#unlock">cos</a></span>.<span class="id"><a href="mathcomp.analysis.trigo.html#unlock">unlock</a></span>.<br/>
+<span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><div name="cos_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'></span></div></span></span></span></span></span></span></span></span>.<span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><div name="cos_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'></span></div></span></span></span></span></span></span></span></span><span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><div name="cos_unlock_subterm" class=" tooltip"> Definition<span class='tooltip-area'></span></div></span></span></span></span></span></span></span></span><span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><div name="cos_unlock_subterm" class=" tooltip"> cos<span class='tooltip-area'></span></div></span></span></span></span></span></span></span></span><span id="cos_unlock_subterm" class="id"><span id="cos" class="id"><span id="cos.unlock" class="id"><span id="cos.body" class="id"><span id="cos" class="id"><span id="cos_Locked.unlock" class="id"><span id="cos_Locked.body" class="id"><span id="cos_Locked" class="id"><div name="cos_unlock_subterm" class=" tooltip"> {R<span class='tooltip-area'></span></div></span></span></span></span></span></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> </span><span id="x:61" class="id"><a name="x:61" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:60">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#lim">lim</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#series">series</a></span> (<span class="id"><a href="mathcomp.analysis.trigo.html#cos_coeff">cos_coeff</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:61">x</a></span>)<span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#228a5fbd8d7ef28f21231bccff88d0b0">\oo</a></span>).<br/>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_cos" class="id"><div name="locked_cos" class=" tooltip">locked_cos<span class='tooltip-area'></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#Unlockable">Unlockable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#unlock">cos</a></span>.<span class="id"><a href="mathcomp.analysis.trigo.html#unlock">unlock</a></span>.<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> CosSin</span>.<br/>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="CosSin.R" class="id"><a name="CosSin.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>.<br/>
@@ -515,14 +431,7 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#funext">funext</a></span><span class="id"> =&gt;</span><span class="id"> x;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.exp.html#pseries">pseries</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#unlock">unlock</a></span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.trigo.html#sin_coeffE">sin_coeffE</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sin_coeff'" class="id"><div name="sin_coeff'" class=" tooltip">sin_coeff'<span class='tooltip-area'><p>sin_coeff' : forall [R : realType], R -> nat -> R
-
-sin_coeff' is not universe polymorphic
-Arguments sin_coeff' [R] x%_ring_scope n%_nat_scope
-sin_coeff' is transparent
-Expands to: Constant mathcomp.analysis.trigo.sin_coeff'
-Declared in library mathcomp.analysis.trigo, line 149, characters 11-21
-</p></span></div></span><span class="id"> </span><span id="x:74" class="id"><a name="x:74" class="">x</a></span> (<span id="n:75" class="id"><a name="n:75" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>)<span class="id"> :=</span> (<span class="id">-1</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#11a706273cccd094dd42b3c7d6457ef8">^</a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:75">n</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#x:74">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:75">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bff172cdafaf4b86cefb300b16285e42">*2</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:75">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bff172cdafaf4b86cefb300b16285e42">*2</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#fb85b56582e20c3ab47a4e55b1f6f111">`!</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sin_coeff'" class="id"><div name="sin_coeff'" class=" tooltip">sin_coeff'<span class='tooltip-area'></span></div></span><span class="id"> </span><span id="x:74" class="id"><a name="x:74" class="">x</a></span> (<span id="n:75" class="id"><a name="n:75" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>)<span class="id"> :=</span> (<span class="id">-1</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#11a706273cccd094dd42b3c7d6457ef8">^</a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:75">n</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#x:74">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:75">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bff172cdafaf4b86cefb300b16285e42">*2</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:75">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bff172cdafaf4b86cefb300b16285e42">*2</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#fb85b56582e20c3ab47a4e55b1f6f111">`!</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sin_coeff'E" class="id"><a name="sin_coeff'E" class="">sin_coeff'E</a></span><span class="id"> </span><span id="x:76" class="id"><a name="x:76" class="">x</a></span><span class="id"> </span><span id="n:77" class="id"><a name="n:77" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#sin_coeff'">sin_coeff'</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:76">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#n:77">n</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#sin_coeff">sin_coeff</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:76">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#n:77">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bff172cdafaf4b86cefb300b16285e42">*2</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span>.<br/>
 <details>
@@ -630,13 +539,14 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#unlock">unlock</a></span><span class="id">;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#funext">funext</a></span><span class="id"> =&gt;</span><span class="id"> x;</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="mathcomp.analysis.trigo.html#cos_coeffE">cos_coeffE</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="cos_coeff'" class="id"><div name="cos_coeff'" class=" tooltip">cos_coeff'<span class='tooltip-area'><p>cos_coeff' : forall [R : realType], R -> nat -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="cos_coeff'" class="id"><div name="cos_coeff'" class=" tooltip">cos_coeff'<span class='tooltip-area'><p>periodic :
+forall [U V : GRing.Zmodule.Exports.zmodType], (U -> V) -> U -> Prop
 
-cos_coeff' is not universe polymorphic
-Arguments cos_coeff' [R] x%_ring_scope n%_nat_scope
-cos_coeff' is transparent
-Expands to: Constant mathcomp.analysis.trigo.cos_coeff'
-Declared in library mathcomp.analysis.trigo, line 229, characters 11-21
+periodic is not universe polymorphic
+Arguments periodic [U V] f%_function_scope T%_ring_scope
+periodic is transparent
+Expands to: Constant mathcomp.analysis.trigo.periodic
+Declared in library mathcomp.analysis.trigo, line 88, characters 11-19
 </p></span></div></span><span class="id"> </span><span id="x:99" class="id"><a name="x:99" class="">x</a></span> (<span id="n:100" class="id"><a name="n:100" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>)<span class="id"> :=</span> (<span class="id">-1</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#11a706273cccd094dd42b3c7d6457ef8">^</a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:100">n</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#x:99">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:100">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bff172cdafaf4b86cefb300b16285e42">*2</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#n:100">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bff172cdafaf4b86cefb300b16285e42">*2</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#fb85b56582e20c3ab47a4e55b1f6f111">`!</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="cos_coeff'E" class="id"><a name="cos_coeff'E" class="">cos_coeff'E</a></span><span class="id"> </span><span id="x:101" class="id"><a name="x:101" class="">x</a></span><span class="id"> </span><span id="n:102" class="id"><a name="n:102" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#cos_coeff'">cos_coeff'</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:101">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#n:102">n</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#cos_coeff">cos_coeff</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:101">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#n:102">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bff172cdafaf4b86cefb300b16285e42">*2</a></span>.<br/>
@@ -978,13 +888,15 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> apply/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#and3P">and3P</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.num_real">num_real</a></span><span class="id"> !</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#bnd_simp">bnd_simp</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.trigo.html#sin_geN1">sin_geN1</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.trigo.html#sin_le1">sin_le1</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="sin_inum" class="id"><div name="sin_inum" class=" tooltip">sin_inum<span class='tooltip-area'><p>sin_inum : forall {R : realType}, R -> {itv R & `[(-1)%Z, 1%Z]%R}
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="sin_inum" class="id"><div name="sin_inum" class=" tooltip">sin_inum<span class='tooltip-area'><p>alternating :
+forall [U : GRing.Zmodule.Exports.zmodType] [V : pzRingType],
+(U -> V) -> U -> Prop
 
-sin_inum is not universe polymorphic
-Arguments sin_inum {R} x%_ring_scope
-sin_inum is transparent
-Expands to: Constant mathcomp.analysis.trigo.sin_inum
-Declared in library mathcomp.analysis.trigo, line 473, characters 10-18
+alternating is not universe polymorphic
+Arguments alternating [U V] f%_function_scope T%_ring_scope
+alternating is transparent
+Expands to: Constant mathcomp.analysis.trigo.alternating
+Declared in library mathcomp.analysis.trigo, line 100, characters 11-22
 </p></span></div></span><span class="id"> {</span><span id="R:164" class="id"><a name="R:164" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="x:165" class="id"><a name="x:165" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:164">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span> (<span class="id"><a href="mathcomp.analysis.trigo.html#num_spec_sin">num_spec_sin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:165">x</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="num_spec_cos" class="id"><a name="num_spec_cos" class="">num_spec_cos</a></span><span class="id"> {</span><span id="R:166" class="id"><a name="R:166" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="x:167" class="id"><a name="x:167" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:166">R</a></span>)<span class="id"> :</span><br/>
@@ -994,29 +906,29 @@ Declared in library mathcomp.analysis.trigo, line 473, characters 10-18
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> apply/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#and3P">and3P</a></span><span class="id">;</span><span class="id"> rewrite</span><span class="id"> ?</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.num_real">num_real</a></span><span class="id"> !</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#bnd_simp">bnd_simp</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.trigo.html#cos_geN1">cos_geN1</a></span><span class="id"> ?</span><span class="id"><a href="mathcomp.analysis.trigo.html#cos_le1">cos_le1</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="cos_inum" class="id"><div name="cos_inum" class=" tooltip">cos_inum<span class='tooltip-area'><p>cos_inum : forall {R : realType}, R -> {itv R & `[(-1)%Z, 1%Z]%R}
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="cos_inum" class="id"><div name="cos_inum" class=" tooltip">cos_inum<span class='tooltip-area'><p>sin_coeff :
+forall {R : realType},
+R ->
+(join_GRing_PzRing_between_Algebra_BaseZmodule_and_GRing_PzSemiRing R) ^nat
 
-cos_inum is not universe polymorphic
-Arguments cos_inum {R} x%_ring_scope
-cos_inum is transparent
-Expands to: Constant mathcomp.analysis.trigo.cos_inum
-Declared in library mathcomp.analysis.trigo, line 479, characters 10-18
+sin_coeff is not universe polymorphic
+Arguments sin_coeff {R} x%_ring_scope _
+sin_coeff is transparent
+Expands to: Constant mathcomp.analysis.trigo.sin_coeff
+Declared in library mathcomp.analysis.trigo, line 111, characters 11-20
 </p></span></div></span><span class="id"> {</span><span id="R:168" class="id"><a name="R:168" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="x:169" class="id"><a name="x:169" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:168">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span> (<span class="id"><a href="mathcomp.analysis.trigo.html#num_spec_cos">num_spec_cos</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:169">x</a></span>).<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> Pi</span>.<br/>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="Pi.R" class="id"><a name="Pi.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">x</span><span class="id"> y</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#Pi.R">R</a></span>) (<span class="id">n</span><span class="id"> k</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="pi" class="id"><div name="pi" class=" tooltip">pi<span class='tooltip-area'><p>Notation pi := pi.body
-Expands to: Notation mathcomp.boot.generic_quotient.pi
-Declared in library mathcomp.boot.generic_quotient, line 157, characters 0-35
+<span class="vernacular">Definition</span><span class="id"> </span><span id="pi" class="id"><div name="pi" class=" tooltip">pi<span class='tooltip-area'><p>sin_unlock_subterm :
+unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
 
-pi.body : forall [T : Type] (qT : quotType T), T -> qT
-
-pi.body is not universe polymorphic
-Arguments pi.body [T]%_type_scope qT%_type_scope _
-Expands to: Constant mathcomp.boot.generic_quotient.pi.body
-Declared in library mathcomp.boot.generic_quotient, line 157, characters 0-35
+sin_unlock_subterm is not universe polymorphic
+sin_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
+Declared in library mathcomp.analysis.trigo, line 114, characters 0-80
 </p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#Pi.R">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#get">get</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="x:172" class="id"><a name="x:172" class="">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#x:172">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id">2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#cos">cos</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:172">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id">2</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="pihalfE" class="id"><a name="pihalfE" class="">pihalfE</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#pi">pi</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id">2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#get">get</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="x:173" class="id"><a name="x:173" class="">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#x:173">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id">2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#cos">cos</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:173">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
@@ -1408,13 +1320,13 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> Tan</span>.<br/>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="Tan.R" class="id"><a name="Tan.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="tan" class="id"><div name="tan" class=" tooltip">tan<span class='tooltip-area'><p>tan : forall {R : realType}, R -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="tan" class="id"><div name="tan" class=" tooltip">tan<span class='tooltip-area'><p>sin_unlock_subterm :
+unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
 
-tan is not universe polymorphic
-Arguments tan {R} x%_ring_scope
-tan is transparent
-Expands to: Constant mathcomp.analysis.trigo.tan
-Declared in library mathcomp.analysis.trigo, line 782, characters 11-14
+sin_unlock_subterm is not universe polymorphic
+sin_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
+Declared in library mathcomp.analysis.trigo, line 114, characters 0-80
 </p></span></div></span> (<span id="x:223" class="id"><a name="x:223" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#Tan.R">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#sin">sin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:223">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#cos">cos</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:223">x</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="tan0" class="id"><a name="tan0" class="">tan0</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#tan">tan</a></span><span class="id"> 0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> :&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#Tan.R">R</a></span>.<br/>
@@ -1540,53 +1452,50 @@ Qed.</div></details>
 <span class="id">#[global]</span><span class="vernacular"> Hint</span><span class="id"> Extern</span><span class="id"> 0</span> (<span class="id"><a href="mathcomp.analysis.derive.html#is_derive">is_derive</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#tan">tan</a></span><span class="id"> _</span>)<span class="id"> =&gt;</span><br/>
 &nbsp;&nbsp;(<span class="id">eapply</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#is_derive_tan">is_derive_tan</a></span><span class="id">;</span><span class="id"> first</span><span class="gallina-kwd"> by</span><span class="id"> []</span>)<span class="id"> :</span><span class="id"> typeclass_instances</span>.<br/>
 <br/>
-<span id="acos_unlock_subterm" class="id"><span id="acos" class="id"><span id="acos.unlock" class="id"><span id="acos.body" class="id"><span id="acos" class="id"><span id="acos_Locked.unlock" class="id"><span id="acos_Locked.body" class="id"><span id="acos_Locked" class="id"><div name="acos_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'></span></div></span></span></span></span></span></span></span></span>.<span id="acos_unlock_subterm" class="id"><span id="acos" class="id"><span id="acos.unlock" class="id"><span id="acos.body" class="id"><span id="acos" class="id"><span id="acos_Locked.unlock" class="id"><span id="acos_Locked.body" class="id"><span id="acos_Locked" class="id"><div name="acos_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>acos_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (0 <= y <= trigo.pi)%R /\ cos y = x]%classic x0])
+<span id="acos_unlock_subterm" class="id"><span id="acos" class="id"><span id="acos.unlock" class="id"><span id="acos.body" class="id"><span id="acos" class="id"><span id="acos_Locked.unlock" class="id"><span id="acos_Locked.body" class="id"><span id="acos_Locked" class="id"><div name="acos_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>sin_unlock_subterm :
+unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
 
-acos_unlock_subterm is not universe polymorphic
-acos_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.acos_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 872, characters 0-96
-</p></span></div></span></span></span></span></span></span></span></span><span id="acos_unlock_subterm" class="id"><span id="acos" class="id"><span id="acos.unlock" class="id"><span id="acos.body" class="id"><span id="acos" class="id"><span id="acos_Locked.unlock" class="id"><span id="acos_Locked.body" class="id"><span id="acos_Locked" class="id"><div name="acos_unlock_subterm" class=" tooltip"> Definition<span class='tooltip-area'><p>acos_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (0 <= y <= trigo.pi)%R /\ cos y = x]%classic x0])
+sin_unlock_subterm is not universe polymorphic
+sin_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
+Declared in library mathcomp.analysis.trigo, line 114, characters 0-80
+</p></span></div></span></span></span></span></span></span></span></span>.<span id="acos_unlock_subterm" class="id"><span id="acos" class="id"><span id="acos.unlock" class="id"><span id="acos.body" class="id"><span id="acos" class="id"><span id="acos_Locked.unlock" class="id"><span id="acos_Locked.body" class="id"><span id="acos_Locked" class="id"><div name="acos_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>sin_unlock_subterm :
+unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
 
-acos_unlock_subterm is not universe polymorphic
-acos_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.acos_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 872, characters 0-96
-</p></span></div></span></span></span></span></span></span></span></span><span id="acos_unlock_subterm" class="id"><span id="acos" class="id"><span id="acos.unlock" class="id"><span id="acos.body" class="id"><span id="acos" class="id"><span id="acos_Locked.unlock" class="id"><span id="acos_Locked.body" class="id"><span id="acos_Locked" class="id"><div name="acos_unlock_subterm" class=" tooltip"> acos<span class='tooltip-area'><p>acos_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (0 <= y <= trigo.pi)%R /\ cos y = x]%classic x0])
+sin_unlock_subterm is not universe polymorphic
+sin_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
+Declared in library mathcomp.analysis.trigo, line 114, characters 0-80
+</p></span></div></span></span></span></span></span></span></span></span><span id="acos_unlock_subterm" class="id"><span id="acos" class="id"><span id="acos.unlock" class="id"><span id="acos.body" class="id"><span id="acos" class="id"><span id="acos_Locked.unlock" class="id"><span id="acos_Locked.body" class="id"><span id="acos_Locked" class="id"><div name="acos_unlock_subterm" class=" tooltip"> Definition<span class='tooltip-area'><p>sin_unlock_subterm :
+unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
 
-acos_unlock_subterm is not universe polymorphic
-acos_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.acos_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 872, characters 0-96
-</p></span></div></span></span></span></span></span></span></span></span><span id="acos_unlock_subterm" class="id"><span id="acos" class="id"><span id="acos.unlock" class="id"><span id="acos.body" class="id"><span id="acos" class="id"><span id="acos_Locked.unlock" class="id"><span id="acos_Locked.body" class="id"><span id="acos_Locked" class="id"><div name="acos_unlock_subterm" class=" tooltip"> {R<span class='tooltip-area'><p>acos_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (0 <= y <= trigo.pi)%R /\ cos y = x]%classic x0])
+sin_unlock_subterm is not universe polymorphic
+sin_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.trigo.sin_unlock_subterm
+Declared in library mathcomp.analysis.trigo, line 114, characters 0-80
+</p></span></div></span></span></span></span></span></span></span></span><span id="acos_unlock_subterm" class="id"><span id="acos" class="id"><span id="acos.unlock" class="id"><span id="acos.body" class="id"><span id="acos" class="id"><span id="acos_Locked.unlock" class="id"><span id="acos_Locked.body" class="id"><span id="acos_Locked" class="id"><div name="acos_unlock_subterm" class=" tooltip"> acos<span class='tooltip-area'><p>locked_sin :
+unlockable (fun (R : realType) (x : R) => limn (series (sin_coeff x)))
 
-acos_unlock_subterm is not universe polymorphic
-acos_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.acos_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 872, characters 0-96
+locked_sin is not universe polymorphic
+locked_sin is transparent
+Expands to: Constant mathcomp.analysis.trigo.locked_sin
+Declared in library mathcomp.analysis.trigo, line 115, characters 10-20
+</p></span></div></span></span></span></span></span></span></span></span><span id="acos_unlock_subterm" class="id"><span id="acos" class="id"><span id="acos.unlock" class="id"><span id="acos.body" class="id"><span id="acos" class="id"><span id="acos_Locked.unlock" class="id"><span id="acos_Locked.body" class="id"><span id="acos_Locked" class="id"><div name="acos_unlock_subterm" class=" tooltip"> {R<span class='tooltip-area'><p>cos_coeff : forall {R : realType}, R -> R ^nat
+
+cos_coeff is not universe polymorphic
+Arguments cos_coeff {R} x%_ring_scope _
+cos_coeff is transparent
+Expands to: Constant mathcomp.analysis.trigo.cos_coeff
+Declared in library mathcomp.analysis.trigo, line 117, characters 11-20
 </p></span></div></span></span></span></span></span></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="x:239" class="id"><a name="x:239" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:238">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:238">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#get">get</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="y:240" class="id"><a name="y:240" class="">y</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#y:240">y</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#pi">pi</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#cos">cos</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#y:240">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#x:239">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_acos" class="id"><div name="locked_acos" class=" tooltip">locked_acos<span class='tooltip-area'><p>acos_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (0 <= y <= trigo.pi)%R /\ cos y = x]%classic x0])
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_acos" class="id"><div name="locked_acos" class=" tooltip">locked_acos<span class='tooltip-area'><p>cos_unlock_subterm :
+unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
 
-acos_unlock_subterm is not universe polymorphic
-acos_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.acos_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 872, characters 0-96
+cos_unlock_subterm is not universe polymorphic
+cos_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
+Declared in library mathcomp.analysis.trigo, line 120, characters 0-80
 </p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#Unlockable">Unlockable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#unlock">acos</a></span>.<span class="id"><a href="mathcomp.analysis.trigo.html#unlock">unlock</a></span>.<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> Acos</span>.<br/>
@@ -1745,72 +1654,50 @@ Qed.</div></details>
 <span class="id">#[global]</span><span class="vernacular"> Hint</span><span class="id"> Extern</span><span class="id"> 0</span> (<span class="id"><a href="mathcomp.analysis.derive.html#is_derive">is_derive</a></span><span class="id"> _</span><span class="id"> 1</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.trigo.html#acos">acos</a></span><span class="id"> _</span>)<span class="id"> _</span>)<span class="id"> =&gt;</span><br/>
 &nbsp;&nbsp;(<span class="id">eapply</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#is_derive1_acos">is_derive1_acos</a></span><span class="id">;</span><span class="id"> first</span><span class="gallina-kwd"> by</span><span class="id"> []</span>)<span class="id"> :</span><span class="id"> typeclass_instances</span>.<br/>
 <br/>
-<span id="asin_unlock_subterm" class="id"><span id="asin" class="id"><span id="asin.unlock" class="id"><span id="asin.body" class="id"><span id="asin" class="id"><span id="asin_Locked.unlock" class="id"><span id="asin_Locked.body" class="id"><span id="asin_Locked" class="id"><div name="asin_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>locked_acos :
-unlockable
-  (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (0 <= y <= trigo.pi)%R /\ cos y = x]%classic x0])
+<span id="asin_unlock_subterm" class="id"><span id="asin" class="id"><span id="asin.unlock" class="id"><span id="asin.body" class="id"><span id="asin" class="id"><span id="asin_Locked.unlock" class="id"><span id="asin_Locked.body" class="id"><span id="asin_Locked" class="id"><div name="asin_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>cos_unlock_subterm :
+unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
 
-locked_acos is not universe polymorphic
-locked_acos is transparent
-Expands to: Constant mathcomp.analysis.trigo.locked_acos
-Declared in library mathcomp.analysis.trigo, line 874, characters 10-21
-</p></span></div></span></span></span></span></span></span></span></span>.<span id="asin_unlock_subterm" class="id"><span id="asin" class="id"><span id="asin.unlock" class="id"><span id="asin.body" class="id"><span id="asin" class="id"><span id="asin_Locked.unlock" class="id"><span id="asin_Locked.body" class="id"><span id="asin_Locked" class="id"><div name="asin_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>asin_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (- (trigo.pi / 2) <= y <= trigo.pi / 2)%R /\
-                          sin y = x]%classic
-                   x0])
+cos_unlock_subterm is not universe polymorphic
+cos_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
+Declared in library mathcomp.analysis.trigo, line 120, characters 0-80
+</p></span></div></span></span></span></span></span></span></span></span>.<span id="asin_unlock_subterm" class="id"><span id="asin" class="id"><span id="asin.unlock" class="id"><span id="asin.body" class="id"><span id="asin" class="id"><span id="asin_Locked.unlock" class="id"><span id="asin_Locked.body" class="id"><span id="asin_Locked" class="id"><div name="asin_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>cos_unlock_subterm :
+unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
 
-asin_unlock_subterm is not universe polymorphic
-asin_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.asin_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 998, characters 0-108
-</p></span></div></span></span></span></span></span></span></span></span><span id="asin_unlock_subterm" class="id"><span id="asin" class="id"><span id="asin.unlock" class="id"><span id="asin.body" class="id"><span id="asin" class="id"><span id="asin_Locked.unlock" class="id"><span id="asin_Locked.body" class="id"><span id="asin_Locked" class="id"><div name="asin_unlock_subterm" class=" tooltip"> Definition<span class='tooltip-area'><p>asin_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (- (trigo.pi / 2) <= y <= trigo.pi / 2)%R /\
-                          sin y = x]%classic
-                   x0])
+cos_unlock_subterm is not universe polymorphic
+cos_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
+Declared in library mathcomp.analysis.trigo, line 120, characters 0-80
+</p></span></div></span></span></span></span></span></span></span></span><span id="asin_unlock_subterm" class="id"><span id="asin" class="id"><span id="asin.unlock" class="id"><span id="asin.body" class="id"><span id="asin" class="id"><span id="asin_Locked.unlock" class="id"><span id="asin_Locked.body" class="id"><span id="asin_Locked" class="id"><div name="asin_unlock_subterm" class=" tooltip"> Definition<span class='tooltip-area'><p>cos_unlock_subterm :
+unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
 
-asin_unlock_subterm is not universe polymorphic
-asin_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.asin_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 998, characters 0-108
-</p></span></div></span></span></span></span></span></span></span></span><span id="asin_unlock_subterm" class="id"><span id="asin" class="id"><span id="asin.unlock" class="id"><span id="asin.body" class="id"><span id="asin" class="id"><span id="asin_Locked.unlock" class="id"><span id="asin_Locked.body" class="id"><span id="asin_Locked" class="id"><div name="asin_unlock_subterm" class=" tooltip"> asin<span class='tooltip-area'><p>asin_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (- (trigo.pi / 2) <= y <= trigo.pi / 2)%R /\
-                          sin y = x]%classic
-                   x0])
+cos_unlock_subterm is not universe polymorphic
+cos_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
+Declared in library mathcomp.analysis.trigo, line 120, characters 0-80
+</p></span></div></span></span></span></span></span></span></span></span><span id="asin_unlock_subterm" class="id"><span id="asin" class="id"><span id="asin.unlock" class="id"><span id="asin.body" class="id"><span id="asin" class="id"><span id="asin_Locked.unlock" class="id"><span id="asin_Locked.body" class="id"><span id="asin_Locked" class="id"><div name="asin_unlock_subterm" class=" tooltip"> asin<span class='tooltip-area'><p>cos_unlock_subterm :
+unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
 
-asin_unlock_subterm is not universe polymorphic
-asin_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.asin_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 998, characters 0-108
-</p></span></div></span></span></span></span></span></span></span></span><span id="asin_unlock_subterm" class="id"><span id="asin" class="id"><span id="asin.unlock" class="id"><span id="asin.body" class="id"><span id="asin" class="id"><span id="asin_Locked.unlock" class="id"><span id="asin_Locked.body" class="id"><span id="asin_Locked" class="id"><div name="asin_unlock_subterm" class=" tooltip"> {R<span class='tooltip-area'><p>asin_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (- (trigo.pi / 2) <= y <= trigo.pi / 2)%R /\
-                          sin y = x]%classic
-                   x0])
+cos_unlock_subterm is not universe polymorphic
+cos_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.trigo.cos_unlock_subterm
+Declared in library mathcomp.analysis.trigo, line 120, characters 0-80
+</p></span></div></span></span></span></span></span></span></span></span><span id="asin_unlock_subterm" class="id"><span id="asin" class="id"><span id="asin.unlock" class="id"><span id="asin.body" class="id"><span id="asin" class="id"><span id="asin_Locked.unlock" class="id"><span id="asin_Locked.body" class="id"><span id="asin_Locked" class="id"><div name="asin_unlock_subterm" class=" tooltip"> {R<span class='tooltip-area'><p>locked_cos :
+unlockable (fun (R : realType) (x : R) => limn (series (cos_coeff x)))
 
-asin_unlock_subterm is not universe polymorphic
-asin_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.asin_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 998, characters 0-108
+locked_cos is not universe polymorphic
+locked_cos is transparent
+Expands to: Constant mathcomp.analysis.trigo.locked_cos
+Declared in library mathcomp.analysis.trigo, line 121, characters 10-20
 </p></span></div></span></span></span></span></span></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="x:257" class="id"><a name="x:257" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:256">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:256">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#get">get</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="y:258" class="id"><a name="y:258" class="">y</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x">-</a></span>(<span class="id"><a href="mathcomp.analysis.trigo.html#pi">pi</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id">2</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#y:258">y</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#pi">pi</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id">2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#sin">sin</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#y:258">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#x:257">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_asin" class="id"><div name="locked_asin" class=" tooltip">locked_asin<span class='tooltip-area'><p>asin_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (- (trigo.pi / 2) <= y <= trigo.pi / 2)%R /\
-                          sin y = x]%classic
-                   x0])
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_asin" class="id"><div name="locked_asin" class=" tooltip">locked_asin<span class='tooltip-area'><p>sin_coeff' : forall [R : realType], R -> nat -> R
 
-asin_unlock_subterm is not universe polymorphic
-asin_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.asin_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 998, characters 0-108
+sin_coeff' is not universe polymorphic
+Arguments sin_coeff' [R] x%_ring_scope n%_nat_scope
+sin_coeff' is transparent
+Expands to: Constant mathcomp.analysis.trigo.sin_coeff'
+Declared in library mathcomp.analysis.trigo, line 149, characters 11-21
 </p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#Unlockable">Unlockable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#unlock">asin</a></span>.<span class="id"><a href="mathcomp.analysis.trigo.html#unlock">unlock</a></span>.<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> Asin</span>.<br/>
@@ -1932,91 +1819,70 @@ Qed.</div></details>
 <span class="id">#[global]</span><span class="vernacular"> Hint</span><span class="id"> Extern</span><span class="id"> 0</span> (<span class="id"><a href="mathcomp.analysis.derive.html#is_derive">is_derive</a></span><span class="id"> _</span><span class="id"> 1</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.trigo.html#asin">asin</a></span><span class="id"> _</span>)<span class="id"> _</span>)<span class="id"> =&gt;</span><br/>
 &nbsp;&nbsp;(<span class="id">eapply</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#is_derive1_asin">is_derive1_asin</a></span><span class="id">;</span><span class="id"> first</span><span class="gallina-kwd"> by</span><span class="id"> []</span>)<span class="id"> :</span><span class="id"> typeclass_instances</span>.<br/>
 <br/>
-<span id="atan_unlock_subterm" class="id"><span id="atan" class="id"><span id="atan.unlock" class="id"><span id="atan.body" class="id"><span id="atan" class="id"><span id="atan_Locked.unlock" class="id"><span id="atan_Locked.body" class="id"><span id="atan_Locked" class="id"><div name="atan_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>locked_asin :
-unlockable
-  (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (- (trigo.pi / 2) <= y <= trigo.pi / 2)%R /\
-                          sin y = x]%classic
-                   x0])
+<span id="atan_unlock_subterm" class="id"><span id="atan" class="id"><span id="atan.unlock" class="id"><span id="atan.body" class="id"><span id="atan" class="id"><span id="atan_Locked.unlock" class="id"><span id="atan_Locked.body" class="id"><span id="atan_Locked" class="id"><div name="atan_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>cos_coeff' : forall [R : realType], R -> nat -> R
 
-locked_asin is not universe polymorphic
-locked_asin is transparent
-Expands to: Constant mathcomp.analysis.trigo.locked_asin
-Declared in library mathcomp.analysis.trigo, line 1000, characters 10-21
-</p></span></div></span></span></span></span></span></span></span></span>.<span id="atan_unlock_subterm" class="id"><span id="atan" class="id"><span id="atan.unlock" class="id"><span id="atan.body" class="id"><span id="atan" class="id"><span id="atan_Locked.unlock" class="id"><span id="atan_Locked.body" class="id"><span id="atan_Locked" class="id"><div name="atan_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>atan_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (- (trigo.pi / 2) < y < trigo.pi / 2)%R /\
-                          tan y = x]%classic
-                   x0])
+cos_coeff' is not universe polymorphic
+Arguments cos_coeff' [R] x%_ring_scope n%_nat_scope
+cos_coeff' is transparent
+Expands to: Constant mathcomp.analysis.trigo.cos_coeff'
+Declared in library mathcomp.analysis.trigo, line 229, characters 11-21
+</p></span></div></span></span></span></span></span></span></span></span>.<span id="atan_unlock_subterm" class="id"><span id="atan" class="id"><span id="atan.unlock" class="id"><span id="atan.body" class="id"><span id="atan" class="id"><span id="atan_Locked.unlock" class="id"><span id="atan_Locked.body" class="id"><span id="atan_Locked" class="id"><div name="atan_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>sin_inum : forall {R : realType}, R -> {itv R & `[(-1)%Z, 1%Z]%R}
 
-atan_unlock_subterm is not universe polymorphic
-atan_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.atan_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 1098, characters 0-106
-</p></span></div></span></span></span></span></span></span></span></span><span id="atan_unlock_subterm" class="id"><span id="atan" class="id"><span id="atan.unlock" class="id"><span id="atan.body" class="id"><span id="atan" class="id"><span id="atan_Locked.unlock" class="id"><span id="atan_Locked.body" class="id"><span id="atan_Locked" class="id"><div name="atan_unlock_subterm" class=" tooltip"> Definition<span class='tooltip-area'><p>atan_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (- (trigo.pi / 2) < y < trigo.pi / 2)%R /\
-                          tan y = x]%classic
-                   x0])
+sin_inum is not universe polymorphic
+Arguments sin_inum {R} x%_ring_scope
+sin_inum is transparent
+Expands to: Constant mathcomp.analysis.trigo.sin_inum
+Declared in library mathcomp.analysis.trigo, line 473, characters 10-18
+</p></span></div></span></span></span></span></span></span></span></span><span id="atan_unlock_subterm" class="id"><span id="atan" class="id"><span id="atan.unlock" class="id"><span id="atan.body" class="id"><span id="atan" class="id"><span id="atan_Locked.unlock" class="id"><span id="atan_Locked.body" class="id"><span id="atan_Locked" class="id"><div name="atan_unlock_subterm" class=" tooltip"> Definition<span class='tooltip-area'><p>cos_inum : forall {R : realType}, R -> {itv R & `[(-1)%Z, 1%Z]%R}
 
-atan_unlock_subterm is not universe polymorphic
-atan_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.atan_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 1098, characters 0-106
-</p></span></div></span></span></span></span></span></span></span></span><span id="atan_unlock_subterm" class="id"><span id="atan" class="id"><span id="atan.unlock" class="id"><span id="atan.body" class="id"><span id="atan" class="id"><span id="atan_Locked.unlock" class="id"><span id="atan_Locked.body" class="id"><span id="atan_Locked" class="id"><div name="atan_unlock_subterm" class=" tooltip"> atan<span class='tooltip-area'><p>atan_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (- (trigo.pi / 2) < y < trigo.pi / 2)%R /\
-                          tan y = x]%classic
-                   x0])
+cos_inum is not universe polymorphic
+Arguments cos_inum {R} x%_ring_scope
+cos_inum is transparent
+Expands to: Constant mathcomp.analysis.trigo.cos_inum
+Declared in library mathcomp.analysis.trigo, line 479, characters 10-18
+</p></span></div></span></span></span></span></span></span></span></span><span id="atan_unlock_subterm" class="id"><span id="atan" class="id"><span id="atan.unlock" class="id"><span id="atan.body" class="id"><span id="atan" class="id"><span id="atan_Locked.unlock" class="id"><span id="atan_Locked.body" class="id"><span id="atan_Locked" class="id"><div name="atan_unlock_subterm" class=" tooltip"> atan<span class='tooltip-area'><p>Notation pi := pi.body
+Expands to: Notation mathcomp.boot.generic_quotient.pi
+Declared in library mathcomp.boot.generic_quotient, line 157, characters 0-35
 
-atan_unlock_subterm is not universe polymorphic
-atan_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.atan_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 1098, characters 0-106
-</p></span></div></span></span></span></span></span></span></span></span><span id="atan_unlock_subterm" class="id"><span id="atan" class="id"><span id="atan.unlock" class="id"><span id="atan.body" class="id"><span id="atan" class="id"><span id="atan_Locked.unlock" class="id"><span id="atan_Locked.body" class="id"><span id="atan_Locked" class="id"><div name="atan_unlock_subterm" class=" tooltip"> {R<span class='tooltip-area'><p>atan_unlock_subterm :
-unlockable
-  (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (- (trigo.pi / 2) < y < trigo.pi / 2)%R /\
-                          tan y = x]%classic
-                   x0])
+pi.body : forall [T : Type] (qT : quotType T), T -> qT
 
-atan_unlock_subterm is not universe polymorphic
-atan_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.atan_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 1098, characters 0-106
+pi.body is not universe polymorphic
+Arguments pi.body [T]%_type_scope qT%_type_scope _
+Expands to: Constant mathcomp.boot.generic_quotient.pi.body
+Declared in library mathcomp.boot.generic_quotient, line 157, characters 0-35
+</p></span></div></span></span></span></span></span></span></span></span><span id="atan_unlock_subterm" class="id"><span id="atan" class="id"><span id="atan.unlock" class="id"><span id="atan.body" class="id"><span id="atan" class="id"><span id="atan_Locked.unlock" class="id"><span id="atan_Locked.body" class="id"><span id="atan_Locked" class="id"><div name="atan_unlock_subterm" class=" tooltip"> {R<span class='tooltip-area'><p>tan : forall {R : realType}, R -> R
+
+tan is not universe polymorphic
+Arguments tan {R} x%_ring_scope
+tan is transparent
+Expands to: Constant mathcomp.analysis.trigo.tan
+Declared in library mathcomp.analysis.trigo, line 782, characters 11-14
 </p></span></div></span></span></span></span></span></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="x:273" class="id"><a name="x:273" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:272">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#R:272">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#get">get</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="y:274" class="id"><a name="y:274" class="">y</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x">-</a></span>(<span class="id"><a href="mathcomp.analysis.trigo.html#pi">pi</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id">2</span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#y:274">y</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#pi">pi</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id">2</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#tan">tan</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#y:274">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#x:273">x</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_atan" class="id"><div name="locked_atan" class=" tooltip">locked_atan<span class='tooltip-area'><p>atan_unlock_subterm :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_atan" class="id"><div name="locked_atan" class=" tooltip">locked_atan<span class='tooltip-area'><p>acos_unlock_subterm :
 unlockable
   (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (- (trigo.pi / 2) < y < trigo.pi / 2)%R /\
-                          tan y = x]%classic
-                   x0])
+   [get x0 : _ | [set y | (0 <= y <= trigo.pi)%R /\ cos y = x]%classic x0])
 
-atan_unlock_subterm is not universe polymorphic
-atan_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.atan_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 1098, characters 0-106
+acos_unlock_subterm is not universe polymorphic
+acos_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.trigo.acos_unlock_subterm
+Declared in library mathcomp.analysis.trigo, line 872, characters 0-96
 </p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#Unlockable">Unlockable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#unlock">atan</a></span>.<span class="id"><a href="mathcomp.analysis.trigo.html#unlock">unlock</a></span>.<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> oneDsqr</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="oneDsqr.R" class="id"><a name="oneDsqr.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
 <span class="vernacular">Implicit</span><span class="gallina-kwd"> Type</span><span class="id"> x</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#oneDsqr.R">R</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="oneDsqr" class="id"><div name="oneDsqr" class=" tooltip">oneDsqr<span class='tooltip-area'><p>locked_atan :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="oneDsqr" class="id"><div name="oneDsqr" class=" tooltip">oneDsqr<span class='tooltip-area'><p>acos_unlock_subterm :
 unlockable
   (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (- (trigo.pi / 2) < y < trigo.pi / 2)%R /\
-                          tan y = x]%classic
-                   x0])
+   [get x0 : _ | [set y | (0 <= y <= trigo.pi)%R /\ cos y = x]%classic x0])
 
-locked_atan is not universe polymorphic
-locked_atan is transparent
-Expands to: Constant mathcomp.analysis.trigo.locked_atan
-Declared in library mathcomp.analysis.trigo, line 1100, characters 10-21
+acos_unlock_subterm is not universe polymorphic
+acos_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.trigo.acos_unlock_subterm
+Declared in library mathcomp.analysis.trigo, line 872, characters 0-96
 </p></span></div></span><span class="id"> </span><span id="x:278" class="id"><a name="x:278" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#oneDsqr.R">R</a></span><span class="id"> :=</span><span class="id"> 1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#x:278">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id">2</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="oneDsqr_ge1" class="id"><a name="oneDsqr_ge1" class="">oneDsqr_ge1</a></span><span class="id"> </span><span id="x:279" class="id"><a name="x:279" class="">x</a></span><span class="id"> :</span><span class="id"> 1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#ba5152cc8b7dbce43c273ac9c15cfb7c"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#ba5152cc8b7dbce43c273ac9c15cfb7c"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#oneDsqr">oneDsqr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:279">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#ba5152cc8b7dbce43c273ac9c15cfb7c"> :&gt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#ba5152cc8b7dbce43c273ac9c15cfb7c"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#oneDsqr.R">R</a></span>.<br/>
@@ -2028,13 +1894,15 @@ Declared in library mathcomp.analysis.trigo, line 1100, characters 10-21
 <span class="id">#[local]</span><br/>
 <span class="vernacular">Hint</span><span class="id"> Extern</span><span class="id"> 0</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#is_true">is_true</a></span> (<span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#oneDsqr">oneDsqr</a></span><span class="id"> _</span>))<span class="id"> =&gt;</span><span class="id"> solve[apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#oneDsqr_ge1">oneDsqr_ge1</a></span><span class="id">]</span><span class="id"> :</span><span class="id"> core</span>.<br/>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="oneDsqr_inum" class="id"><div name="oneDsqr_inum" class=" tooltip">oneDsqr_inum<span class='tooltip-area'><p>oneDsqr : forall {R : realType}, R -> R
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="oneDsqr_inum" class="id"><div name="oneDsqr_inum" class=" tooltip">oneDsqr_inum<span class='tooltip-area'><p>acos_unlock_subterm :
+unlockable
+  (fun (R : realType) (x : R) =>
+   [get x0 : _ | [set y | (0 <= y <= trigo.pi)%R /\ cos y = x]%classic x0])
 
-oneDsqr is not universe polymorphic
-Arguments oneDsqr {R} x%_ring_scope
-oneDsqr is transparent
-Expands to: Constant mathcomp.analysis.trigo.oneDsqr
-Declared in library mathcomp.analysis.trigo, line 1106, characters 11-18
+acos_unlock_subterm is not universe polymorphic
+acos_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.trigo.acos_unlock_subterm
+Declared in library mathcomp.analysis.trigo, line 872, characters 0-96
 </p></span></div></span><span class="id"> </span><span id="x:280" class="id"><a name="x:280" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#1d654871949ca8d814504e500b52e67c">{itv</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#1d654871949ca8d814504e500b52e67c"> </a></span><span class="id"><a href="mathcomp.analysis.trigo.html#oneDsqr.R">R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#1d654871949ca8d814504e500b52e67c"> &amp;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#1d654871949ca8d814504e500b52e67c"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#c5d1424554ae4f6d783beb7e2b68e8c1">`[</a></span><span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#c5d1424554ae4f6d783beb7e2b68e8c1">,</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#c5d1424554ae4f6d783beb7e2b68e8c1"> +oo[</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#1d654871949ca8d814504e500b52e67c">}</a></span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval_inference.html#ItvReal">ItvReal</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#oneDsqr.R">R</a></span> (<span class="id"><a href="mathcomp.analysis.trigo.html#oneDsqr">oneDsqr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:280">x</a></span>)<br/>
 &nbsp;&nbsp;(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#BLeft">BLeft</a></span><span class="id"> 1%Z</span>) (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.interval.html#BInfty">BInfty</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span>) (<span class="id"><a href="mathcomp.analysis.trigo.html#oneDsqr_ge1">oneDsqr_ge1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.trigo.html#x:280">x</a></span>)<span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#erefl">erefl</a></span>.<br/>
 <br/>

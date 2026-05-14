@@ -553,7 +553,7 @@ forall {R : realType} [p : {poly R}] [c : R] [t : set R],
 nbhs p.[c]%R t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
-  (ball_ [eta normr] c i
+  (ball_ [eta Num.Def.normr] c i
    `<=` (fun t0 : R =>
          (fun u : R => is_true (c < u)%R) t0 -> ([eta horner p] @^-1` t) t0))%classic
 
@@ -574,7 +574,7 @@ forall {R : realType} [p : {poly R}] [c : R] [t : set R],
 nbhs p.[c]%R t ->
 exists2 i : R,
   [set e | (0 < e)%R]%classic i &
-  (ball_ [eta normr] c i
+  (ball_ [eta Num.Def.normr] c i
    `<=` (fun t0 : R =>
          (fun u : R => is_true (c < u)%R) t0 -> ([eta horner p] @^-1` t) t0))%classic
 

@@ -294,74 +294,58 @@ Lp-spaces and properties of Lp-norms:
 <span class="vernacular">Declare</span><span class="vernacular"> Scope</span><span class="id"> Lnorm_scope</span>.<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
-<span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'></span></div></span></span></span></span></span></span></span></span>.<span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>Lnorm_unlock_subterm :
-unlockable
-  (fun (d : measure_display) (T : measurableType d) 
-     (R : realType) (mu : measure T R) (p : \bar R) 
-     (f : T -> \bar R) =>
-   match p with
-   | p0%:E => ((\int[mu]_x `|f x| `^ p0) `^ p0^-1)%E
-   | +oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_sup mu (abse \o f) else 0%R
-   | -oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_inf mu (abse \o f) else 0%R
-   end)
+<span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>wlength : forall {R : realType}, (R -> R) -> set (ocitv_type R) -> \bar R
 
-Lnorm_unlock_subterm is not universe polymorphic
-Lnorm_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.hoelder.Lnorm_unlock_subterm
-Declared in library mathcomp.analysis.hoelder, line 66, characters 0-389
-</p></span></div></span></span></span></span></span></span></span></span><span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip"> Definition<span class='tooltip-area'><p>Lnorm_unlock_subterm :
-unlockable
-  (fun (d : measure_display) (T : measurableType d) 
-     (R : realType) (mu : measure T R) (p : \bar R) 
-     (f : T -> \bar R) =>
-   match p with
-   | p0%:E => ((\int[mu]_x `|f x| `^ p0) `^ p0^-1)%E
-   | +oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_sup mu (abse \o f) else 0%R
-   | -oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_inf mu (abse \o f) else 0%R
-   end)
+wlength is not universe polymorphic
+Arguments wlength {R} f%_function_scope A%_classical_set_scope
+wlength is transparent
+Expands to: Constant mathcomp.analysis.lebesgue_stieltjes_measure.wlength
+Declared in
+library mathcomp.analysis.lebesgue_stieltjes_measure, line 189, characters 11-18
+</p></span></div></span></span></span></span></span></span></span></span>.<span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>lebesgue_stieltjes_measure :
+forall {R : realType},
+cumulative R R -> set (g_sigma_algebraType (R.-ocitv).-measurable) -> \bar R
 
-Lnorm_unlock_subterm is not universe polymorphic
-Lnorm_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.hoelder.Lnorm_unlock_subterm
-Declared in library mathcomp.analysis.hoelder, line 66, characters 0-389
-</p></span></div></span></span></span></span></span></span></span></span><span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip"> Lnorm<span class='tooltip-area'><p>Lnorm_unlock_subterm :
-unlockable
-  (fun (d : measure_display) (T : measurableType d) 
-     (R : realType) (mu : measure T R) (p : \bar R) 
-     (f : T -> \bar R) =>
-   match p with
-   | p0%:E => ((\int[mu]_x `|f x| `^ p0) `^ p0^-1)%E
-   | +oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_sup mu (abse \o f) else 0%R
-   | -oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_inf mu (abse \o f) else 0%R
-   end)
+lebesgue_stieltjes_measure is not universe polymorphic
+Arguments lebesgue_stieltjes_measure {R} f _%_classical_set_scope
+lebesgue_stieltjes_measure is transparent
+Expands to: Constant
+            mathcomp.analysis.lebesgue_stieltjes_measure.lebesgue_stieltjes_measure
+Declared in
+library mathcomp.analysis.lebesgue_stieltjes_measure, line 495, characters 11-37
+</p></span></div></span></span></span></span></span></span></span></span><span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip"> Definition<span class='tooltip-area'><p>measurableTypeR : realType -> Type
 
-Lnorm_unlock_subterm is not universe polymorphic
-Lnorm_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.hoelder.Lnorm_unlock_subterm
-Declared in library mathcomp.analysis.hoelder, line 66, characters 0-389
-</p></span></div></span></span></span></span></span></span></span></span><span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip"> {d}<span class='tooltip-area'><p>Lnorm_unlock_subterm :
-unlockable
-  (fun (d : measure_display) (T : measurableType d) 
-     (R : realType) (mu : measure T R) (p : \bar R) 
-     (f : T -> \bar R) =>
-   match p with
-   | p0%:E => ((\int[mu]_x `|f x| `^ p0) `^ p0^-1)%E
-   | +oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_sup mu (abse \o f) else 0%R
-   | -oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_inf mu (abse \o f) else 0%R
-   end)
+measurableTypeR is not universe polymorphic
+Arguments measurableTypeR R
+measurableTypeR is transparent
+Expands to: Constant
+            mathcomp.analysis.lebesgue_stieltjes_measure.measurableTypeR
+Declared in
+library mathcomp.analysis.lebesgue_stieltjes_measure, line 511, characters 11-26
+</p></span></div></span></span></span></span></span></span></span></span><span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip"> Lnorm<span class='tooltip-area'><p>completed_lebesgue_stieltjes_measure :
+forall {R : realType} (f : cumulative R R),
+set
+  (caratheodory_type (R:=R)
+     (T:=lebesgue_stieltjes_measure_ocitv_type__canonical__measurable_structure_SemiRingOfSets
+           R)
+     (wlength f)^*%mu) ->
+\bar R
 
-Lnorm_unlock_subterm is not universe polymorphic
-Lnorm_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.hoelder.Lnorm_unlock_subterm
-Declared in library mathcomp.analysis.hoelder, line 66, characters 0-389
+completed_lebesgue_stieltjes_measure is not universe polymorphic
+Arguments completed_lebesgue_stieltjes_measure {R} f _%_classical_set_scope
+completed_lebesgue_stieltjes_measure is transparent
+Expands to: Constant
+            mathcomp.analysis.lebesgue_stieltjes_measure.completed_lebesgue_stieltjes_measure
+Declared in
+library mathcomp.analysis.lebesgue_stieltjes_measure, line 533, characters 11-47
+</p></span></div></span></span></span></span></span></span></span></span><span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip"> {d}<span class='tooltip-area'><p>measurableR : forall [R : realType], set (set R)
+
+measurableR is not universe polymorphic
+Arguments measurableR [R] _
+measurableR is transparent
+Expands to: Constant mathcomp.analysis.lebesgue_stieltjes_measure.measurableR
+Declared in
+library mathcomp.analysis.lebesgue_stieltjes_measure, line 554, characters 11-22
 </p></span></div></span></span></span></span></span></span></span></span><span class="id"> {</span><span id="T:2" class="id"><a name="T:2" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#Measurable.Exports.measurableType">measurableType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#d:1">d</a></span><span class="id">}</span><span class="id"> {</span><span id="R:3" class="id"><a name="R:3" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="mu:4" class="id"><a name="mu:4" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">{measure</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> set</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#T:2">T</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> -&gt;</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> \bar</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#R:3">R</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">}</a></span>) (<span id="p:5" class="id"><a name="p:5" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#R:3">R</a></span>) (<span id="f:6" class="id"><a name="f:6" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#T:2">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#R:3">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">match</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#p:5">p</a></span><span class="gallina-kwd"> with</span><br/>
@@ -369,24 +353,7 @@ Declared in library mathcomp.analysis.hoelder, line 66, characters 0-389
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span><span class="id">%E</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#mu:4">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#T:2">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'&gt;'_x"> &gt;</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'&gt;'_x"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.ess_sup_inf.html#ess_sup">ess_sup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#mu:4">mu</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#abse">abse</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#f:6">f</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">0</span><br/>
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-oo'">-oo</a></span><span class="id">%E</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#mu:4">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#T:2">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'&gt;'_x"> &gt;</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'&gt;'_x"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.ess_sup_inf.html#ess_inf">ess_inf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#mu:4">mu</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#abse">abse</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#f:6">f</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">0</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">end</span>.<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_Lnorm" class="id"><div name="locked_Lnorm" class=" tooltip">locked_Lnorm<span class='tooltip-area'><p>Lnorm_unlock_subterm :
-unlockable
-  (fun (d : measure_display) (T : measurableType d) 
-     (R : realType) (mu : measure T R) (p : \bar R) 
-     (f : T -> \bar R) =>
-   match p with
-   | p0%:E => ((\int[mu]_x `|f x| `^ p0) `^ p0^-1)%E
-   | +oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_sup mu (abse \o f) else 0%R
-   | -oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_inf mu (abse \o f) else 0%R
-   end)
-
-Lnorm_unlock_subterm is not universe polymorphic
-Lnorm_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.hoelder.Lnorm_unlock_subterm
-Declared in library mathcomp.analysis.hoelder, line 66, characters 0-389
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#Unlockable">Unlockable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#unlock">Lnorm</a></span>.<span class="id"><a href="mathcomp.analysis.hoelder.html#unlock">unlock</a></span>.<br/>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_Lnorm" class="id"><div name="locked_Lnorm" class=" tooltip">locked_Lnorm<span class='tooltip-area'></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#Unlockable">Unlockable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#unlock">Lnorm</a></span>.<span class="id"><a href="mathcomp.analysis.hoelder.html#unlock">unlock</a></span>.<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#body">Lnorm</a></span><span class="id"> {d</span><span class="id"> T</span><span class="id"> R}</span><span class="id"> mu</span><span class="id"> p</span><span class="id"> f</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Close</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <br/>
@@ -530,24 +497,7 @@ Qed.</div></details>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="hoelder_conjugate" class="id"><div name="hoelder_conjugate" class=" tooltip">hoelder_conjugate<span class='tooltip-area'><p>locked_Lnorm :
-unlockable
-  (fun (d : measure_display) (T : measurableType d) 
-     (R : realType) (mu : measure T R) (p : \bar R) 
-     (f : T -> \bar R) =>
-   match p with
-   | p0%:E => ((\int[mu]_x `|f x| `^ p0) `^ p0^-1)%E
-   | +oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_sup mu (abse \o f) else 0%R
-   | -oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_inf mu (abse \o f) else 0%R
-   end)
-
-locked_Lnorm is not universe polymorphic
-locked_Lnorm is transparent
-Expands to: Constant mathcomp.analysis.hoelder.locked_Lnorm
-Declared in library mathcomp.analysis.hoelder, line 74, characters 10-22
-</p></span></div></span><span class="id"> </span><span id="p:58" class="id"><a name="p:58" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#hoelder_conjugate.R">R</a></span><span class="id"> :=</span><br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="hoelder_conjugate" class="id"><div name="hoelder_conjugate" class=" tooltip">hoelder_conjugate<span class='tooltip-area'></span></div></span><span class="id"> </span><span id="p:58" class="id"><a name="p:58" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#hoelder_conjugate.R">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#p:58">p</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> ==</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#p:58">p</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> ==</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-oo'">-oo</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#p:58">p</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> ==</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-oo'">-oo</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><br/>
@@ -1206,14 +1156,7 @@ Qed.</div></details>
 &nbsp;&nbsp;<span class="id">note=</span><span class="id">&quot;use `minkowski_EFin` or `eminkowski` instead&quot;</span>)<span class="id">]</span><br/>
 <span class="vernacular">Notation</span><span class="id"> </span><span id="minkowski" class="id"><a name="minkowski" class="">minkowski</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#minkowski_EFin">minkowski_EFin</a></span> (<span class="id">only</span><span class="id"> parsing</span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="finite_norm" class="id"><div name="finite_norm" class=" tooltip">finite_norm<span class='tooltip-area'><p>hoelder_conjugate : forall {R : realType}, \bar R -> \bar R
-
-hoelder_conjugate is not universe polymorphic
-Arguments hoelder_conjugate {R} p%_ereal_scope
-hoelder_conjugate is transparent
-Expands to: Constant mathcomp.analysis.hoelder.hoelder_conjugate
-Declared in library mathcomp.analysis.hoelder, line 197, characters 11-28
-</p></span></div></span><span class="id"> </span><span id="d:177" class="id"><a name="d:177" class="">d</a></span> (<span id="T:178" class="id"><a name="T:178" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#Measurable.Exports.measurableType">measurableType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#d:177">d</a></span>) (<span id="R:179" class="id"><a name="R:179" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>)<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="finite_norm" class="id"><div name="finite_norm" class=" tooltip">finite_norm<span class='tooltip-area'></span></div></span><span class="id"> </span><span id="d:177" class="id"><a name="d:177" class="">d</a></span> (<span id="T:178" class="id"><a name="T:178" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#Measurable.Exports.measurableType">measurableType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#d:177">d</a></span>) (<span id="R:179" class="id"><a name="R:179" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="mu:180" class="id"><a name="mu:180" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">{measure</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> set</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#T:178">T</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> -&gt;</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> \bar</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#R:179">R</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">}</a></span>) (<span id="p:181" class="id"><a name="p:181" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#R:179">R</a></span>) (<span id="f:182" class="id"><a name="f:182" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#T:178">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#R:179">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="mathcomp.analysis.hoelder.html#973f8b7b545e49adab9170a5b4d8ee25">'N[</a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#973f8b7b545e49adab9170a5b4d8ee25"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#mu:180">mu</a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#973f8b7b545e49adab9170a5b4d8ee25"> ]_</a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#p:181">p</a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#973f8b7b545e49adab9170a5b4d8ee25"> [</a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#973f8b7b545e49adab9170a5b4d8ee25"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#EFin">EFin</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#f:182">f</a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#973f8b7b545e49adab9170a5b4d8ee25"> ]</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span>)<span class="id">%E</span>.<br/>
 <br/>
@@ -1246,17 +1189,7 @@ Declared in library mathcomp.analysis.hoelder, line 197, characters 11-28
 <span class="vernacular">Context</span><span class="id"> </span><span id="AeEqEquiv.d1" class="id"><a name="AeEqEquiv.d1" class="">d1</a></span><span class="id"> </span><span id="AeEqEquiv.d2" class="id"><a name="AeEqEquiv.d2" class="">d2</a></span> (<span id="AeEqEquiv.R" class="id"><a name="AeEqEquiv.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>) (<span id="AeEqEquiv.T1" class="id"><a name="AeEqEquiv.T1" class="">T1</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#Measurable.Exports.measurableType">measurableType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#d1:215">d1</a></span>) (<span id="AeEqEquiv.T2" class="id"><a name="AeEqEquiv.T2" class="">T2</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#Measurable.Exports.measurableType">measurableType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#d2:216">d2</a></span>).<br/>
 <span class="vernacular">Variables</span> (<span id="AeEqEquiv.mu" class="id"><a name="AeEqEquiv.mu" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">{measure</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> set</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#AeEqEquiv.T1">T1</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> -&gt;</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> \bar</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#AeEqEquiv.R">R</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">}</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="ae_eq_op" class="id"><div name="ae_eq_op" class=" tooltip">ae_eq_op<span class='tooltip-area'><p>finite_norm :
-forall [d : measure_display] [T : measurableType d] [R : realType],
-measure T R -> \bar R -> (T -> R) -> bool
-
-finite_norm is not universe polymorphic
-Arguments finite_norm [d]%_measure_display_scope [T R] 
-  mu p%_ereal_scope f%_function_scope
-finite_norm is transparent
-Expands to: Constant mathcomp.analysis.hoelder.finite_norm
-Declared in library mathcomp.analysis.hoelder, line 787, characters 11-22
-</p></span></div></span> (<span id="f:222" class="id"><a name="f:222" class="">f</a></span><span class="id"> </span><span id="g:223" class="id"><a name="g:223" class="">g</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#cfa8195a18578360e4ad0a1e4cde6878">{mfun</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#cfa8195a18578360e4ad0a1e4cde6878"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#AeEqEquiv.T1">T1</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#cfa8195a18578360e4ad0a1e4cde6878"> &gt;-&gt;</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#cfa8195a18578360e4ad0a1e4cde6878"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#AeEqEquiv.T2">T2</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#cfa8195a18578360e4ad0a1e4cde6878">}</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#f:222">f</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#13c6890861c9fabec11c1f13cdd6c8db"> =</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#13c6890861c9fabec11c1f13cdd6c8db"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#g:223">g</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#13c6890861c9fabec11c1f13cdd6c8db"> %[ae</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#13c6890861c9fabec11c1f13cdd6c8db"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#AeEqEquiv.mu">mu</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#13c6890861c9fabec11c1f13cdd6c8db">]</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> &gt;]</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="ae_eq_op" class="id"><div name="ae_eq_op" class=" tooltip">ae_eq_op<span class='tooltip-area'></span></div></span> (<span id="f:222" class="id"><a name="f:222" class="">f</a></span><span class="id"> </span><span id="g:223" class="id"><a name="g:223" class="">g</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#cfa8195a18578360e4ad0a1e4cde6878">{mfun</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#cfa8195a18578360e4ad0a1e4cde6878"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#AeEqEquiv.T1">T1</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#cfa8195a18578360e4ad0a1e4cde6878"> &gt;-&gt;</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#cfa8195a18578360e4ad0a1e4cde6878"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#AeEqEquiv.T2">T2</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#cfa8195a18578360e4ad0a1e4cde6878">}</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#f:222">f</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#13c6890861c9fabec11c1f13cdd6c8db"> =</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#13c6890861c9fabec11c1f13cdd6c8db"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#g:223">g</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#13c6890861c9fabec11c1f13cdd6c8db"> %[ae</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#13c6890861c9fabec11c1f13cdd6c8db"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#AeEqEquiv.mu">mu</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#13c6890861c9fabec11c1f13cdd6c8db">]</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> &gt;]</a></span>.<br/>
 <br/>
 <span class="vernacular">Let</span><span class="id"> </span><span id="AeEqEquiv.ae_eq_op_refl" class="id"><a name="AeEqEquiv.ae_eq_op_refl" class="">ae_eq_op_refl</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#reflexive">reflexive</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#ae_eq_op">ae_eq_op</a></span>.<br/>
 <details>
@@ -1279,44 +1212,15 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> move=&gt;</span><span class="id"> f</span><span class="id"> g</span><span class="id"> h</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.boolp.html#asboolP">asboolP</a></span><span class="id"> gf</span><span class="id"> /</span><span class="id"><a href="mathcomp.classical.boolp.html#asboolP">asboolP</a></span><span class="id"> fh;</span><span class="id"> apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#asboolP">asboolP</a></span><span class="id">/</span>(<span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#ae_eq_trans">ae_eq_trans</a></span><span class="id"> gf</span><span class="id"> fh</span>).<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="ae_eq_op_canonical" class="id"><div name="ae_eq_op_canonical" class=" tooltip">ae_eq_op_canonical<span class='tooltip-area'><p>ae_eq_op :
-forall [d1 d2 : measure_display] [R : realType] [T1 : measurableType d1]
-  [T2 : measurableType d2],
-measure T1 R -> {mfun T1 >-> T2} -> {mfun T1 >-> T2} -> bool
-
-ae_eq_op is not universe polymorphic
-Arguments ae_eq_op [d1 d2]%_measure_display_scope [R T1 T2] mu f g
-ae_eq_op is transparent
-Expands to: Constant mathcomp.analysis.hoelder.ae_eq_op
-Declared in library mathcomp.analysis.hoelder, line 820, characters 11-19
-</p></span></div></span><span class="id"> :=</span><br/>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="ae_eq_op_canonical" class="id"><div name="ae_eq_op_canonical" class=" tooltip">ae_eq_op_canonical<span class='tooltip-area'></span></div></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#EquivRel">EquivRel</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#ae_eq_op">ae_eq_op</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#AeEqEquiv.ae_eq_op_refl">ae_eq_op_refl</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#AeEqEquiv.ae_eq_op_sym">ae_eq_op_sym</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#AeEqEquiv.ae_eq_op_trans">ae_eq_op_trans</a></span>.<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> quotient_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="aeEqMfun" class="id"><div name="aeEqMfun" class=" tooltip">aeEqMfun<span class='tooltip-area'><p>ae_eq_op_canonical :
-forall [d1 d2 : measure_display] [R : realType] [T1 : measurableType d1]
-  (T2 : measurableType d2),
-measure T1 R -> equiv_rel {mfun T1 >-> T2}
-
-ae_eq_op_canonical is not universe polymorphic
-Arguments ae_eq_op_canonical [d1 d2]%_measure_display_scope [R T1] T2 mu
-ae_eq_op_canonical is transparent
-Expands to: Constant mathcomp.analysis.hoelder.ae_eq_op_canonical
-Declared in library mathcomp.analysis.hoelder, line 837, characters 10-28
-</p></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#0dc587318a1236d89082bca629a5db9b">{eq_quot</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#0dc587318a1236d89082bca629a5db9b"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#ae_eq_op">ae_eq_op</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#0dc587318a1236d89082bca629a5db9b">}</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="aeEqMfun" class="id"><div name="aeEqMfun" class=" tooltip">aeEqMfun<span class='tooltip-area'></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#0dc587318a1236d89082bca629a5db9b">{eq_quot</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#0dc587318a1236d89082bca629a5db9b"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#ae_eq_op">ae_eq_op</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#0dc587318a1236d89082bca629a5db9b">}</a></span>.<br/>
 <span id="hoelder_aeEqMfun__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="hoelder_aeEqMfun__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_5" class="id"><a name="hoelder_aeEqMfun__canonical__choice_Choice" class="">HB</a></span></span></span></span></span></span></span>.<span id="hoelder_aeEqMfun__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="hoelder_aeEqMfun__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_5" class="id"><a name="hoelder_aeEqMfun__canonical__choice_Choice" class="">instance</a></span></span></span></span></span></span></span><span id="hoelder_aeEqMfun__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="hoelder_aeEqMfun__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_5" class="id"><a name="hoelder_aeEqMfun__canonical__choice_Choice" class=""> Definition</a></span></span></span></span></span></span></span><span id="hoelder_aeEqMfun__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="hoelder_aeEqMfun__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_5" class="id"><a name="hoelder_aeEqMfun__canonical__choice_Choice" class=""> _</a></span></span></span></span></span></span></span><span id="hoelder_aeEqMfun__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="hoelder_aeEqMfun__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_5" class="id"><a name="hoelder_aeEqMfun__canonical__choice_Choice" class=""> :=</a></span></span></span></span></span></span></span><span id="hoelder_aeEqMfun__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_9" class="id"><span id="hoelder_aeEqMfun__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_8" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_5" class="id"><a name="hoelder_aeEqMfun__canonical__choice_Choice" class=""> Choice</a></span></span></span></span></span></span></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.on">on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#aeEqMfun">aeEqMfun</a></span>.<br/>
 <span id="hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="hoelder_aeEqMfun__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="generic_quotient_EqQuotient__to__generic_quotient_isEqQuotient" class="id"><span id="generic_quotient_EqQuotient__to__generic_quotient_isQuotient" class="id"><span id="HB_unnamed_factory_10" class="id"><a name="hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient" class="">HB</a></span></span></span></span></span></span></span>.<span id="hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="hoelder_aeEqMfun__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="generic_quotient_EqQuotient__to__generic_quotient_isEqQuotient" class="id"><span id="generic_quotient_EqQuotient__to__generic_quotient_isQuotient" class="id"><span id="HB_unnamed_factory_10" class="id"><a name="hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient" class="">instance</a></span></span></span></span></span></span></span><span id="hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="hoelder_aeEqMfun__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="generic_quotient_EqQuotient__to__generic_quotient_isEqQuotient" class="id"><span id="generic_quotient_EqQuotient__to__generic_quotient_isQuotient" class="id"><span id="HB_unnamed_factory_10" class="id"><a name="hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient" class=""> Definition</a></span></span></span></span></span></span></span><span id="hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="hoelder_aeEqMfun__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="generic_quotient_EqQuotient__to__generic_quotient_isEqQuotient" class="id"><span id="generic_quotient_EqQuotient__to__generic_quotient_isQuotient" class="id"><span id="HB_unnamed_factory_10" class="id"><a name="hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient" class=""> _</a></span></span></span></span></span></span></span><span id="hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="hoelder_aeEqMfun__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="generic_quotient_EqQuotient__to__generic_quotient_isEqQuotient" class="id"><span id="generic_quotient_EqQuotient__to__generic_quotient_isQuotient" class="id"><span id="HB_unnamed_factory_10" class="id"><a name="hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient" class=""> :=</a></span></span></span></span></span></span></span><span id="hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient" class="id"><span id="HB_unnamed_mixin_15" class="id"><span id="hoelder_aeEqMfun__canonical__generic_quotient_Quotient" class="id"><span id="HB_unnamed_mixin_14" class="id"><span id="generic_quotient_EqQuotient__to__generic_quotient_isEqQuotient" class="id"><span id="generic_quotient_EqQuotient__to__generic_quotient_isQuotient" class="id"><span id="HB_unnamed_factory_10" class="id"><a name="hoelder_aeEqMfun__canonical__generic_quotient_EqQuotient" class=""> EqQuotient</a></span></span></span></span></span></span></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#EqQuotient.on">on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#aeEqMfun">aeEqMfun</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="aqEqMfun_to_fun" class="id"><div name="aqEqMfun_to_fun" class=" tooltip">aqEqMfun_to_fun<span class='tooltip-area'><p>aeEqMfun :
-forall [d1 d2 : measure_display] [R : realType] [T1 : measurableType d1],
-measurableType d2 -> measure T1 R -> Type
-
-aeEqMfun is not universe polymorphic
-Arguments aeEqMfun [d1 d2]%_measure_display_scope [R T1] T2 mu
-aeEqMfun is transparent
-Expands to: Constant mathcomp.analysis.hoelder.aeEqMfun
-Declared in library mathcomp.analysis.hoelder, line 842, characters 11-19
-</p></span></div></span> (<span id="f:224" class="id"><a name="f:224" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#aeEqMfun">aeEqMfun</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#AeEqEquiv.T1">T1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#AeEqEquiv.T2">T2</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#repr">repr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#f:224">f</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="aqEqMfun_to_fun" class="id"><div name="aqEqMfun_to_fun" class=" tooltip">aqEqMfun_to_fun<span class='tooltip-area'></span></div></span> (<span id="f:224" class="id"><a name="f:224" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#aeEqMfun">aeEqMfun</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#AeEqEquiv.T1">T1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#AeEqEquiv.T2">T2</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#repr">repr</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#f:224">f</a></span>.<br/>
 <span class="id"><a href="mathcomp.analysis.hoelder.html#aqEqMfun_to_fun">Coercion</a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#aqEqMfun_to_fun"> aqEqMfun_to_fun</a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#aqEqMfun_to_fun"> :</a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#aqEqMfun_to_fun"> aeEqMfun</a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#aqEqMfun_to_fun"> &gt;-&gt;</a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#aqEqMfun_to_fun"> Funclass</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ae_eqP" class="id"><a name="ae_eqP" class="">ae_eqP</a></span> (<span id="f:225" class="id"><a name="f:225" class="">f</a></span><span class="id"> </span><span id="g:226" class="id"><a name="g:226" class="">g</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#aeEqMfun">aeEqMfun</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#reflect">reflect</a></span> (<span class="id"><a href="mathcomp.analysis.hoelder.html#f:225">f</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#13c6890861c9fabec11c1f13cdd6c8db"> =</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#13c6890861c9fabec11c1f13cdd6c8db"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#g:226">g</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#13c6890861c9fabec11c1f13cdd6c8db"> %[ae</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#13c6890861c9fabec11c1f13cdd6c8db"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#AeEqEquiv.mu">mu</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#13c6890861c9fabec11c1f13cdd6c8db">]</a></span>) (<span class="id"><a href="mathcomp.analysis.hoelder.html#f:225">f</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#e3392789fbfaf247c0fb823980d6e8ff"> ==</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#e3392789fbfaf247c0fb823980d6e8ff"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#g:226">g</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#e3392789fbfaf247c0fb823980d6e8ff"> %[mod</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#e3392789fbfaf247c0fb823980d6e8ff"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#aeEqMfun">aeEqMfun</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.generic_quotient#e3392789fbfaf247c0fb823980d6e8ff">]</a></span>).<br/>
@@ -1375,52 +1279,31 @@ Declared in library mathcomp.analysis.hoelder, line 842, characters 11-19
 <span class="vernacular">Context</span><span class="id"> </span><span id="Lfun_pred.d" class="id"><a name="Lfun_pred.d" class="">d</a></span> (<span id="Lfun_pred.T" class="id"><a name="Lfun_pred.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#Measurable.Exports.measurableType">measurableType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#d:256">d</a></span>) (<span id="Lfun_pred.R" class="id"><a name="Lfun_pred.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>).<br/>
 <span class="vernacular">Variables</span> (<span id="Lfun_pred.mu" class="id"><a name="Lfun_pred.mu" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">{measure</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> set</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun_pred.T">T</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> -&gt;</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> \bar</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun_pred.R">R</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">}</a></span>) (<span id="Lfun_pred.p" class="id"><a name="Lfun_pred.p" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun_pred.R">R</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="finLfun" class="id"><div name="finLfun" class=" tooltip">finLfun<span class='tooltip-area'><p>finLfun :
-forall [d : measure_display] [T : measurableType d] [R : realType],
-measure T R -> \bar R -> {pred T -> R}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="finLfun" class="id"><div name="finLfun" class=" tooltip">finLfun<span class='tooltip-area'></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">{pred</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74"> </a></span>_<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">_</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">}</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#mem">mem</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="f:263" class="id"><a name="f:263" class="">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#finite_norm">finite_norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun_pred.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun_pred.p">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#f:263">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Lfun" class="id"><div name="Lfun" class=" tooltip">Lfun<span class='tooltip-area'></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">{pred</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74"> </a></span>_<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">_</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">}</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#974a48c83c527c4d69902f6dad4644e3">[predI</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#974a48c83c527c4d69902f6dad4644e3"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#mfun">mfun</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun_pred.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun_pred.R">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#974a48c83c527c4d69902f6dad4644e3"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#974a48c83c527c4d69902f6dad4644e3"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#finLfun">finLfun</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#974a48c83c527c4d69902f6dad4644e3">]</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Lfun_key" class="id"><div name="Lfun_key" class=" tooltip">Lfun_key<span class='tooltip-area'><p>Lnorm_unlock_subterm :
+unlockable
+  (fun (d : measure_display) (T : measurableType d) 
+     (R : realType) (mu : measure T R) (p : \bar R) 
+     (f : T -> \bar R) =>
+   match p with
+   | p0%:E => ((\int[mu]_x `|f x| `^ p0) `^ p0^-1)%E
+   | +oo%E =>
+       if (0%R < mu [set: T]%classic)%E then ess_sup mu (abse \o f) else 0%R
+   | -oo%E =>
+       if (0%R < mu [set: T]%classic)%E then ess_inf mu (abse \o f) else 0%R
+   end)
 
-finLfun is not universe polymorphic
-Arguments finLfun [d]%_measure_display_scope [T R] mu p%_ereal_scope _
-finLfun is transparent
-Expands to: Constant mathcomp.analysis.hoelder.finLfun
-Declared in library mathcomp.analysis.hoelder, line 895, characters 11-18
-</p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">{pred</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74"> </a></span>_<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">_</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">}</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#mem">mem</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="f:263" class="id"><a name="f:263" class="">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#finite_norm">finite_norm</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun_pred.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun_pred.p">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#f:263">f</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Lfun" class="id"><div name="Lfun" class=" tooltip">Lfun<span class='tooltip-area'><p>Lfun :
-forall [d : measure_display] [T : measurableType d] [R : realType],
-measure T R -> \bar R -> {pred T -> R}
-
-Lfun is not universe polymorphic
-Arguments Lfun [d]%_measure_display_scope [T R] mu p%_ereal_scope _
-Lfun is transparent
-Expands to: Constant mathcomp.analysis.hoelder.Lfun
-Declared in library mathcomp.analysis.hoelder, line 896, characters 11-15
-</p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">{pred</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74"> </a></span>_<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id">_</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#64f8873130736b599801d4930af00e74">}</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#974a48c83c527c4d69902f6dad4644e3">[predI</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#974a48c83c527c4d69902f6dad4644e3"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#mfun">mfun</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun_pred.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun_pred.R">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#974a48c83c527c4d69902f6dad4644e3"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#974a48c83c527c4d69902f6dad4644e3"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#finLfun">finLfun</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#974a48c83c527c4d69902f6dad4644e3">]</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Lfun_key" class="id"><div name="Lfun_key" class=" tooltip">Lfun_key<span class='tooltip-area'><p>Lfun_key :
-forall [d : measure_display] [T : measurableType d] 
-  [R : realType] (mu : measure T R) (p : \bar R),
-pred_key (T:=T -> R) (Lfun (T:=T) (R:=R) mu p)
-
-Lfun_key is not universe polymorphic
-Arguments Lfun_key [d]%_measure_display_scope [T R] mu p%_ereal_scope
-Lfun_key is opaque
-Expands to: Constant mathcomp.analysis.hoelder.Lfun_key
-Declared in library mathcomp.analysis.hoelder, line 897, characters 11-19
+Lnorm_unlock_subterm is not universe polymorphic
+Lnorm_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.hoelder.Lnorm_unlock_subterm
+Declared in library mathcomp.analysis.hoelder, line 66, characters 0-389
 </p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred_key">pred_key</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun">Lfun</a></span><br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="id"> exact</span>. Qed.</div></details>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Lfun_keyed" class="id"><div name="Lfun_keyed" class=" tooltip">Lfun_keyed<span class='tooltip-area'><p>Lfun_keyed :
-forall [d : measure_display] [T : measurableType d] 
-  [R : realType] (mu : measure T R) (p : \bar R),
-keyed_pred (Lfun_key (T:=T) (R:=R) mu p)
-
-Lfun_keyed is not universe polymorphic
-Arguments Lfun_keyed [d]%_measure_display_scope [T R] mu p%_ereal_scope
-Lfun_keyed is transparent
-Expands to: Constant mathcomp.analysis.hoelder.Lfun_keyed
-Declared in library mathcomp.analysis.hoelder, line 898, characters 10-20
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#KeyedPred">KeyedPred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun_key">Lfun_key</a></span>.<br/>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Lfun_keyed" class="id"><div name="Lfun_keyed" class=" tooltip">Lfun_keyed<span class='tooltip-area'></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#KeyedPred">KeyedPred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun_key">Lfun_key</a></span>.<br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sub_Lfun_mfun" class="id"><a name="sub_Lfun_mfun" class="">sub_Lfun_mfun</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">{subset</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun">Lfun</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> &lt;=</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#mfun">mfun</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">}</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
@@ -1441,51 +1324,47 @@ Declared in library mathcomp.analysis.hoelder, line 898, characters 10-20
 <br/>
 <span class="vernacular">Section</span><span class="id"> Sub</span>.<br/>
 <span class="vernacular">Context</span> (<span id="Lfun.Sub.f" class="id"><a name="Lfun.Sub.f" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun.R">R</a></span>) (<span id="Lfun.Sub.fP" class="id"><a name="Lfun.Sub.fP" class="">fP</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#f:273">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun">Lfun</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Lfun_Sub1_subproof" class="id"><div name="Lfun_Sub1_subproof" class=" tooltip">Lfun_Sub1_subproof<span class='tooltip-area'><p>Lfun_Sub1_subproof :
-forall [d : measure_display] [T : measurableType d] 
-  [R : realType] [mu : measure T R] [p : \bar R] [f : T -> R],
-f \in Lfun (T:=T) (R:=R) mu p ->
-isMeasurableFun.axioms_ d default_measure_display T R f
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Lfun_Sub1_subproof" class="id"><div name="Lfun_Sub1_subproof" class=" tooltip">Lfun_Sub1_subproof<span class='tooltip-area'><p>Lnorm_unlock_subterm :
+unlockable
+  (fun (d : measure_display) (T : measurableType d) 
+     (R : realType) (mu : measure T R) (p : \bar R) 
+     (f : T -> \bar R) =>
+   match p with
+   | p0%:E => ((\int[mu]_x `|f x| `^ p0) `^ p0^-1)%E
+   | +oo%E =>
+       if (0%R < mu [set: T]%classic)%E then ess_sup mu (abse \o f) else 0%R
+   | -oo%E =>
+       if (0%R < mu [set: T]%classic)%E then ess_inf mu (abse \o f) else 0%R
+   end)
 
-Lfun_Sub1_subproof is not universe polymorphic
-Arguments Lfun_Sub1_subproof [d]%_measure_display_scope 
-  [T R mu] [p]%_ereal_scope [f]%_function_scope fP
-Lfun_Sub1_subproof is transparent
-Expands to: Constant mathcomp.analysis.hoelder.Lfun_Sub1_subproof
-Declared in library mathcomp.analysis.hoelder, line 913, characters 11-29
+Lnorm_unlock_subterm is not universe polymorphic
+Lnorm_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.hoelder.Lnorm_unlock_subterm
+Declared in library mathcomp.analysis.hoelder, line 66, characters 0-389
 </p></span></div></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id">@</span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#isMeasurableFun.Build">isMeasurableFun</a></span>.<span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#isMeasurableFun.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun.d">d</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun.Sub.f">f</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#set_mem">set_mem</a></span> (<span class="id"><a href="mathcomp.analysis.hoelder.html#sub_Lfun_mfun">sub_Lfun_mfun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun.Sub.fP">fP</a></span>)).<br/>
 <span id="hoelder_f__canonical__measurable_function_MeasurableFun" class="id"><span id="HB_unnamed_factory_23" class="id"><a name="hoelder_f__canonical__measurable_function_MeasurableFun" class="">#[local]</a></span></span><span id="hoelder_f__canonical__measurable_function_MeasurableFun" class="id"><span id="HB_unnamed_factory_23" class="id"><a name="hoelder_f__canonical__measurable_function_MeasurableFun" class=""> HB</a></span></span>.<span id="hoelder_f__canonical__measurable_function_MeasurableFun" class="id"><span id="HB_unnamed_factory_23" class="id"><a name="hoelder_f__canonical__measurable_function_MeasurableFun" class="">instance</a></span></span><span id="hoelder_f__canonical__measurable_function_MeasurableFun" class="id"><span id="HB_unnamed_factory_23" class="id"><a name="hoelder_f__canonical__measurable_function_MeasurableFun" class=""> Definition</a></span></span><span id="hoelder_f__canonical__measurable_function_MeasurableFun" class="id"><span id="HB_unnamed_factory_23" class="id"><a name="hoelder_f__canonical__measurable_function_MeasurableFun" class=""> _</a></span></span><span id="hoelder_f__canonical__measurable_function_MeasurableFun" class="id"><span id="HB_unnamed_factory_23" class="id"><a name="hoelder_f__canonical__measurable_function_MeasurableFun" class=""> :=</a></span></span><span id="hoelder_f__canonical__measurable_function_MeasurableFun" class="id"><span id="HB_unnamed_factory_23" class="id"><a name="hoelder_f__canonical__measurable_function_MeasurableFun" class=""> Lfun_Sub1_subproof</a></span></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Lfun_Sub2_subproof" class="id"><div name="Lfun_Sub2_subproof" class=" tooltip">Lfun_Sub2_subproof<span class='tooltip-area'><p>Lfun_Sub2_subproof :
-forall [d : measure_display] [T : measurableType d] 
-  [R : realType] [mu : measure T R] [p : \bar R] (p1 : (1 <= p)%E)
-  [f : T -> R] (fP : f \in Lfun (T:=T) (R:=R) mu p),
-isLfunction.axioms_ d T R mu p p1 f
-  (hoelder.HB_unnamed_factory_23 (T:=T) (R:=R) (mu:=mu) (p:=p) (f:=f) fP)
-
-Lfun_Sub2_subproof is not universe polymorphic
-Arguments Lfun_Sub2_subproof [d]%_measure_display_scope 
-  [T R mu] [p]%_ereal_scope p1 [f]%_function_scope 
-  fP
-Lfun_Sub2_subproof is transparent
-Expands to: Constant mathcomp.analysis.hoelder.Lfun_Sub2_subproof
-Declared in library mathcomp.analysis.hoelder, line 917, characters 11-29
-</p></span></div></span><span class="id"> :=</span><br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Lfun_Sub2_subproof" class="id"><div name="Lfun_Sub2_subproof" class=" tooltip">Lfun_Sub2_subproof<span class='tooltip-area'></span></div></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id">@</span><span class="id"><a href="mathcomp.analysis.hoelder.html#Build">isLfunction</a></span>.<span class="id"><a href="mathcomp.analysis.hoelder.html#Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun.d">d</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun.p">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun.p1">p1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun.Sub.f">f</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#set_mem">set_mem</a></span> (<span class="id"><a href="mathcomp.analysis.hoelder.html#sub_Lfun_finLfun">sub_Lfun_finLfun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun.Sub.fP">fP</a></span>)).<br/>
 <span id="hoelder_f__canonical__hoelder_Lfunction" class="id"><span id="HB_unnamed_factory_25" class="id"><a name="hoelder_f__canonical__hoelder_Lfunction" class="">#[local]</a></span></span><span id="hoelder_f__canonical__hoelder_Lfunction" class="id"><span id="HB_unnamed_factory_25" class="id"><a name="hoelder_f__canonical__hoelder_Lfunction" class=""> HB</a></span></span>.<span id="hoelder_f__canonical__hoelder_Lfunction" class="id"><span id="HB_unnamed_factory_25" class="id"><a name="hoelder_f__canonical__hoelder_Lfunction" class="">instance</a></span></span><span id="hoelder_f__canonical__hoelder_Lfunction" class="id"><span id="HB_unnamed_factory_25" class="id"><a name="hoelder_f__canonical__hoelder_Lfunction" class=""> Definition</a></span></span><span id="hoelder_f__canonical__hoelder_Lfunction" class="id"><span id="HB_unnamed_factory_25" class="id"><a name="hoelder_f__canonical__hoelder_Lfunction" class=""> _</a></span></span><span id="hoelder_f__canonical__hoelder_Lfunction" class="id"><span id="HB_unnamed_factory_25" class="id"><a name="hoelder_f__canonical__hoelder_Lfunction" class=""> :=</a></span></span><span id="hoelder_f__canonical__hoelder_Lfunction" class="id"><span id="HB_unnamed_factory_25" class="id"><a name="hoelder_f__canonical__hoelder_Lfunction" class=""> Lfun_Sub2_subproof</a></span></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Lfun_Sub" class="id"><div name="Lfun_Sub" class=" tooltip">Lfun_Sub<span class='tooltip-area'><p>Lfun_Sub :
-forall [d : measure_display] [T : measurableType d] 
-  [R : realType] [mu : measure T R] [p : \bar R] (p1 : (1 <= p)%E)
-  [f : T -> R],
-f \in Lfun (T:=T) (R:=R) mu p -> LfunType (T:=T) (R:=R) mu (p:=p) p1
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Lfun_Sub" class="id"><div name="Lfun_Sub" class=" tooltip">Lfun_Sub<span class='tooltip-area'><p>Lnorm_unlock_subterm :
+unlockable
+  (fun (d : measure_display) (T : measurableType d) 
+     (R : realType) (mu : measure T R) (p : \bar R) 
+     (f : T -> \bar R) =>
+   match p with
+   | p0%:E => ((\int[mu]_x `|f x| `^ p0) `^ p0^-1)%E
+   | +oo%E =>
+       if (0%R < mu [set: T]%classic)%E then ess_sup mu (abse \o f) else 0%R
+   | -oo%E =>
+       if (0%R < mu [set: T]%classic)%E then ess_inf mu (abse \o f) else 0%R
+   end)
 
-Lfun_Sub is not universe polymorphic
-Arguments Lfun_Sub [d]%_measure_display_scope [T R mu] 
-  [p]%_ereal_scope p1 [f]%_function_scope fP
-Lfun_Sub is transparent
-Expands to: Constant mathcomp.analysis.hoelder.Lfun_Sub
-Declared in library mathcomp.analysis.hoelder, line 920, characters 11-19
+Lnorm_unlock_subterm is not universe polymorphic
+Lnorm_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.hoelder.Lnorm_unlock_subterm
+Declared in library mathcomp.analysis.hoelder, line 66, characters 0-389
 </p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#dd4e793ea9d0dbe0a320346aa74c809d">[the</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#dd4e793ea9d0dbe0a320346aa74c809d"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#LfunType">LfunType</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#dd4e793ea9d0dbe0a320346aa74c809d"> of</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#dd4e793ea9d0dbe0a320346aa74c809d"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun.Sub.f">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#dd4e793ea9d0dbe0a320346aa74c809d">]</a></span>.<br/>
 <span class="vernacular">End</span><span class="id"> Sub</span>.<br/>
 <br/>
@@ -1670,39 +1549,45 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> </span><span id="Lspace.d" class="id"><a name="Lspace.d" class="">d</a></span> (<span id="Lspace.T" class="id"><a name="Lspace.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#Measurable.Exports.measurableType">measurableType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#d:303">d</a></span>) (<span id="Lspace.R" class="id"><a name="Lspace.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>).<br/>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="Lspace.mu" class="id"><a name="Lspace.mu" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">{measure</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> set</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lspace.T">T</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> -&gt;</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> \bar</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lspace.R">R</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">}</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Lspace" class="id"><div name="Lspace" class=" tooltip">Lspace<span class='tooltip-area'><p>Lspace :
-forall [d : measure_display] [T : measurableType d] 
-  [R : realType] [mu : measure T R] [p : \bar R] [p1 : (1 <= p)%E],
-set (LspaceType (T:=T) (R:=R) mu (p:=p) p1)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Lspace" class="id"><div name="Lspace" class=" tooltip">Lspace<span class='tooltip-area'><p>Lnorm_unlock_subterm :
+unlockable
+  (fun (d : measure_display) (T : measurableType d) 
+     (R : realType) (mu : measure T R) (p : \bar R) 
+     (f : T -> \bar R) =>
+   match p with
+   | p0%:E => ((\int[mu]_x `|f x| `^ p0) `^ p0^-1)%E
+   | +oo%E =>
+       if (0%R < mu [set: T]%classic)%E then ess_sup mu (abse \o f) else 0%R
+   | -oo%E =>
+       if (0%R < mu [set: T]%classic)%E then ess_inf mu (abse \o f) else 0%R
+   end)
 
-Lspace is not universe polymorphic
-Arguments Lspace [d]%_measure_display_scope [T R mu] [p]%_ereal_scope [p1] _
-Lspace is transparent
-Expands to: Constant mathcomp.analysis.hoelder.Lspace
-Declared in library mathcomp.analysis.hoelder, line 1080, characters 11-17
+Lnorm_unlock_subterm is not universe polymorphic
+Lnorm_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.hoelder.Lnorm_unlock_subterm
+Declared in library mathcomp.analysis.hoelder, line 66, characters 0-389
 </p></span></div></span><span class="id"> </span><span id="p:308" class="id"><a name="p:308" class="">p</a></span> (<span id="p1:309" class="id"><a name="p1:309" class="">p1</a></span><span class="id"> :</span> (<span class="id">1</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#p:308">p</a></span>)<span class="id">%E</span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#LspaceType">LspaceType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lspace.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#p1:309">p1</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>.<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lspace">Lspace</a></span><span class="id"> :</span><span class="id"> clear</span><span class="id"> implicits</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="LspaceType1" class="id"><div name="LspaceType1" class=" tooltip">LspaceType1<span class='tooltip-area'><p>LspaceType1 :
-forall [d : measure_display] [T : measurableType d] [R : realType],
-measure T R -> Type
-
-LspaceType1 is not universe polymorphic
-Arguments LspaceType1 [d]%_measure_display_scope [T R] mu
-LspaceType1 is transparent
-Expands to: Constant mathcomp.analysis.hoelder.LspaceType1
-Declared in library mathcomp.analysis.hoelder, line 1083, characters 11-22
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#LspaceType">LspaceType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lspace.mu">mu</a></span> (<span class="id">@</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.lexx">lexx</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> 1%E</span>).<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="LspaceType1" class="id"><div name="LspaceType1" class=" tooltip">LspaceType1<span class='tooltip-area'></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#LspaceType">LspaceType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lspace.mu">mu</a></span> (<span class="id">@</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.lexx">lexx</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> 1%E</span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="LspaceType2" class="id"><div name="LspaceType2" class=" tooltip">LspaceType2<span class='tooltip-area'><p>LspaceType2 :
-forall [d : measure_display] [T : measurableType d] [R : realType],
-measure T R -> Type
+<span class="vernacular">Definition</span><span class="id"> </span><span id="LspaceType2" class="id"><div name="LspaceType2" class=" tooltip">LspaceType2<span class='tooltip-area'><p>Lnorm_unlock_subterm :
+unlockable
+  (fun (d : measure_display) (T : measurableType d) 
+     (R : realType) (mu : measure T R) (p : \bar R) 
+     (f : T -> \bar R) =>
+   match p with
+   | p0%:E => ((\int[mu]_x `|f x| `^ p0) `^ p0^-1)%E
+   | +oo%E =>
+       if (0%R < mu [set: T]%classic)%E then ess_sup mu (abse \o f) else 0%R
+   | -oo%E =>
+       if (0%R < mu [set: T]%classic)%E then ess_inf mu (abse \o f) else 0%R
+   end)
 
-LspaceType2 is not universe polymorphic
-Arguments LspaceType2 [d]%_measure_display_scope [T R] mu
-LspaceType2 is transparent
-Expands to: Constant mathcomp.analysis.hoelder.LspaceType2
-Declared in library mathcomp.analysis.hoelder, line 1085, characters 11-22
+Lnorm_unlock_subterm is not universe polymorphic
+Lnorm_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.hoelder.Lnorm_unlock_subterm
+Declared in library mathcomp.analysis.hoelder, line 66, characters 0-389
 </p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#LspaceType">LspaceType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lspace.mu">mu</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#lee1n">lee1n</a></span><span class="id"> 2</span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="Lfun_norm" class="id"><a name="Lfun_norm" class="">Lfun_norm</a></span> (<span id="f:310" class="id"><a name="f:310" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lspace.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lspace.R">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#f:310">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun">Lfun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lspace.mu">mu</a></span><span class="id"> 1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Def.normr">normr</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#f:310">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lfun">Lfun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#Lspace.mu">mu</a></span><span class="id"> 1</span>.<br/>

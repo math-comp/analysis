@@ -388,18 +388,15 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> </span><span id="mnormalize.d" class="id"><a name="mnormalize.d" class="">d</a></span> (<span id="mnormalize.T" class="id"><a name="mnormalize.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#Measurable.Exports.measurableType">measurableType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#d:82">d</a></span>) (<span id="mnormalize.R" class="id"><a name="mnormalize.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>).<br/>
 <span class="vernacular">Variables</span> (<span id="mnormalize.mu" class="id"><a name="mnormalize.mu" class="">mu</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">{measure</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> set</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#mnormalize.T">T</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> -&gt;</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> \bar</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#mnormalize.R">R</a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_function.html#cab9a9776ae9e3a4c36de416efb30851">}</a></span>) (<span id="mnormalize.P" class="id"><a name="mnormalize.P" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#probability">probability</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#mnormalize.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#mnormalize.R">R</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="mnormalize" class="id"><div name="mnormalize" class=" tooltip">mnormalize<span class='tooltip-area'><p>mnormalize :
-forall [d : measure_display] [T : measurableType d] [R : realType],
-measure T R -> probability T R -> set T -> \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="mnormalize" class="id"><div name="mnormalize" class=" tooltip">mnormalize<span class='tooltip-area'><p>preimage_display : forall {T T' : Type}, (T -> T') -> measure_display
 
-mnormalize is not universe polymorphic
-Arguments mnormalize [d]%_measure_display_scope [T R] 
-  mu P U%_classical_set_scope
-mnormalize is transparent
+preimage_display is not universe polymorphic
+Arguments preimage_display {T T'}%_type_scope _%_function_scope
+preimage_display is opaque
 Expands to: Constant
-            mathcomp.analysis.measure_theory.probability_measure.mnormalize
+            mathcomp.analysis.measure_theory.measurable_structure.preimage_display
 Declared in
-library mathcomp.analysis.measure_theory.probability_measure, line 146, characters 11-21
+library mathcomp.analysis.measure_theory.measurable_structure, line 1331, characters 11-27
 </p></span></div></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">let</span><span class="id"> </span><span id="evidence:89" class="id"><a name="evidence:89" class="">evidence</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#mnormalize.mu">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#mnormalize.T">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="gallina-kwd"> in</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span> (<span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#evidence:89">evidence</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> ==</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> </a></span><span class="id">0</span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#081ff67d3116402bb680e8692aa39185"> ||</a></span> (<span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#evidence:89">evidence</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> ==</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#df45e8c2e8370fd4f0f7c4fdaf208180"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="gallina-kwd">fun</span><span class="id"> </span><span id="U:90" class="id"><a name="U:90" class="">U</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#mnormalize.P">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#U:90">U</a></span><br/>
@@ -463,18 +460,18 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> dist_sigma_algebra_instance</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> </span><span id="dist_sigma_algebra_instance.d" class="id"><a name="dist_sigma_algebra_instance.d" class="">d</a></span> (<span id="dist_sigma_algebra_instance.T" class="id"><a name="dist_sigma_algebra_instance.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#Measurable.Exports.measurableType">measurableType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#d:114">d</a></span>) (<span id="dist_sigma_algebra_instance.R" class="id"><a name="dist_sigma_algebra_instance.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="mset" class="id"><div name="mset" class=" tooltip">mset<span class='tooltip-area'><p>mset :
-forall [d : measure_display] [T : measurableType d] [R : realType],
-set T -> R -> set (probability T R)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="mset" class="id"><div name="mset" class=" tooltip">mset<span class='tooltip-area'><p>g_sigma_algebra_preimageType :
+forall [d' : measure_display] [T : choiceType] [T' : measurableType d'],
+(T -> T') -> Type
 
-mset is not universe polymorphic
-Arguments mset [d]%_measure_display_scope [T R] U%_classical_set_scope
-  r%_ring_scope _
-mset is transparent
+g_sigma_algebra_preimageType is not universe polymorphic
+Arguments g_sigma_algebra_preimageType [d']%_measure_display_scope 
+  [T T'] f%_function_scope
+g_sigma_algebra_preimageType is transparent
 Expands to: Constant
-            mathcomp.analysis.measure_theory.probability_measure.mset
+            mathcomp.analysis.measure_theory.measurable_structure.g_sigma_algebra_preimageType
 Declared in
-library mathcomp.analysis.measure_theory.probability_measure, line 198, characters 11-15
+library mathcomp.analysis.measure_theory.measurable_structure, line 1334, characters 11-39
 </p></span></div></span> (<span id="U:117" class="id"><a name="U:117" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#dist_sigma_algebra_instance.T">T</a></span>) (<span id="r:118" class="id"><a name="r:118" class="">r</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#dist_sigma_algebra_instance.R">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span id="mu:119" class="id"><a name="mu:119" class="">mu</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> :</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#probability">probability</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#dist_sigma_algebra_instance.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#dist_sigma_algebra_instance.R">R</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#mu:119">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#U:117">U</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#r:118">r</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">]</a></span><span class="id">%E</span>.<br/>
 <br/>
@@ -495,31 +492,32 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#mset">mset</a></span><span class="id">/=</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.POrderTheory.le_lt_trans">le_lt_trans</a></span> (<span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#probability_le1">probability_le1</a></span><span class="id"> _</span><span class="id"> _</span>)).<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="pset" class="id"><div name="pset" class=" tooltip">pset<span class='tooltip-area'><p>pset :
-forall [d : measure_display] [T : measurableType d] [R : realType],
-set (set (probability T R))
+<span class="vernacular">Definition</span><span class="id"> </span><span id="pset" class="id"><div name="pset" class=" tooltip">pset<span class='tooltip-area'><p>g_sigma_algebra_preimage :
+forall [d' : measure_display] [T : choiceType] [T' : measurableType d'],
+(T -> T') -> set (set T)
 
-pset is not universe polymorphic
-Arguments pset [d]%_measure_display_scope [T R] _
-pset is transparent
+g_sigma_algebra_preimage is not universe polymorphic
+Arguments g_sigma_algebra_preimage [d']%_measure_display_scope 
+  [T T'] f%_function_scope _
+g_sigma_algebra_preimage is transparent
 Expands to: Constant
-            mathcomp.analysis.measure_theory.probability_measure.pset
+            mathcomp.analysis.measure_theory.measurable_structure.g_sigma_algebra_preimage
 Declared in
-library mathcomp.analysis.measure_theory.probability_measure, line 214, characters 11-15
+library mathcomp.analysis.measure_theory.measurable_structure, line 1337, characters 11-35
 </p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#probability">probability</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#dist_sigma_algebra_instance.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#dist_sigma_algebra_instance.R">R</a></span>))<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#6163cf1e40717c42afb9c2a42ba754ab">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#6163cf1e40717c42afb9c2a42ba754ab"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#mset">mset</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#U:125">U</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#r:124">r</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#6163cf1e40717c42afb9c2a42ba754ab"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#6163cf1e40717c42afb9c2a42ba754ab"> </a></span><span id="r:124" class="id"><a name="r:124" class="">r</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#6163cf1e40717c42afb9c2a42ba754ab"> in</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#6163cf1e40717c42afb9c2a42ba754ab"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">`[</a></span><span class="id">0%R</span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">,</a></span><span class="id">1%R</span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">]</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#6163cf1e40717c42afb9c2a42ba754ab"> &amp;</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#6163cf1e40717c42afb9c2a42ba754ab"> </a></span><span id="U:125" class="id"><a name="U:125" class="">U</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#6163cf1e40717c42afb9c2a42ba754ab"> in</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#6163cf1e40717c42afb9c2a42ba754ab"> </a></span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#measurable">measurable</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#6163cf1e40717c42afb9c2a42ba754ab">]</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="pprobability" class="id"><div name="pprobability" class=" tooltip">pprobability<span class='tooltip-area'><p>pprobability :
-forall [d : measure_display] (T : measurableType d) (R : realType),
-measurableType (pset (T:=T) (R:=R)).-sigma
+<span class="vernacular">Definition</span><span class="id"> </span><span id="pprobability" class="id"><div name="pprobability" class=" tooltip">pprobability<span class='tooltip-area'><p>image_set_system :
+forall [aT rT : Type], set aT -> (aT -> rT) -> set (set aT) -> set (set rT)
 
-pprobability is not universe polymorphic
-Arguments pprobability [d]%_measure_display_scope T R
-pprobability is transparent
+image_set_system is not universe polymorphic
+Arguments image_set_system [aT rT]%_type_scope D%_classical_set_scope
+  f%_function_scope G%_classical_set_scope _
+image_set_system is transparent
 Expands to: Constant
-            mathcomp.analysis.measure_theory.probability_measure.pprobability
+            mathcomp.analysis.measure_theory.measurable_structure.image_set_system
 Declared in
-library mathcomp.analysis.measure_theory.probability_measure, line 217, characters 11-23
+library mathcomp.analysis.measure_theory.measurable_structure, line 1383, characters 11-27
 </p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#Measurable.Exports.measurableType">measurableType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#pset">pset</a></span>.<span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#::measure_display_scope:x_'.-sigma'">-sigma</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#g_sigma_algebraType">g_sigma_algebraType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.probability_measure.html#pset">pset</a></span>.<br/>
 <br/>

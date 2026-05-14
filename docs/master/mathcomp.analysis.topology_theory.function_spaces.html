@@ -630,16 +630,7 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> +</span><span class="id"> z</span><span class="id"> =&gt;</span><span class="id"> /</span>(_<span class="id"> z</span>)<span class="id">;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#initial_sep_nbhsE">initial_sep_nbhsE</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="join_product" class="id"><div name="join_product" class=" tooltip">join_product<span class='tooltip-area'><p>prod_topology : forall {I : Type}, (I -> Type) -> Type
-
-prod_topology is not universe polymorphic
-Arguments prod_topology {I}%_type_scope T%_function_scope
-prod_topology is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.function_spaces.prod_topology
-Declared in
-library mathcomp.analysis.topology_theory.function_spaces, line 129, characters 11-24
-</p></span></div></span> (<span id="x:138" class="id"><a name="x:138" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#product_spaces.product_embeddings.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#product_spaces.product_embeddings.PU">PU</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#product_spaces.product_embeddings.f_">f_</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> ^~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#x:138">x</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="join_product" class="id"><div name="join_product" class=" tooltip">join_product<span class='tooltip-area'></span></div></span> (<span id="x:138" class="id"><a name="x:138" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#product_spaces.product_embeddings.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#product_spaces.product_embeddings.PU">PU</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#product_spaces.product_embeddings.f_">f_</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> ^~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#x:138">x</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="join_product_continuous" class="id"><a name="join_product_continuous" class="">join_product_continuous</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#join_product">join_product</a></span>.<br/>
 <details>
@@ -721,16 +712,7 @@ Qed.</div></details>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> relation_scope</span>.<br/>
 <span class="vernacular">Variables</span> (<span id="fct_Uniform.T" class="id"><a name="fct_Uniform.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span>) (<span id="fct_Uniform.U" class="id"><a name="fct_Uniform.U" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#Uniform.Exports.uniformType">uniformType</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="fct_ent" class="id"><div name="fct_ent" class=" tooltip">fct_ent<span class='tooltip-area'><p>product_topology_def : forall [I : Type], (I -> topologicalType) -> Type
-
-product_topology_def is not universe polymorphic
-Arguments product_topology_def [I]%_type_scope T%_function_scope
-product_topology_def is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.function_spaces.product_topology_def
-Declared in
-library mathcomp.analysis.topology_theory.function_spaces, line 133, characters 11-31
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#filter_from">filter_from</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fct_Uniform.U">U</a></span>)<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="fct_ent" class="id"><div name="fct_ent" class=" tooltip">fct_ent<span class='tooltip-area'></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#filter_from">filter_from</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage">entourage</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fct_Uniform.U">U</a></span>)<br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">fun</span><span class="id"> </span><span id="P:150" class="id"><a name="P:150" class="">P</a></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="fg:151" class="id"><a name="fg:151" class="">fg</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="gallina-kwd">forall</span><span class="id"> </span><span id="t:152" class="id"><a name="t:152" class="">t</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fct_Uniform.T">T</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#P:150">P</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fg:151">fg</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'"> t</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fg:151">fg</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'"> t</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="fct_ent_filter" class="id"><a name="fct_ent_filter" class="">fct_ent_filter</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#Filter">Filter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fct_ent">fct_ent</a></span>.<br/>
@@ -770,18 +752,15 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> apply:</span><span class="id"> sBA</span><span class="id"> =&gt;</span><span class="id"> t;</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#entourage_split">entourage_split</a></span> (<span class="id">spBfh</span><span class="id"> t</span>) (<span class="id">spBhg</span><span class="id"> t</span>).<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="arrow_uniform_type" class="id"><div name="arrow_uniform_type" class=" tooltip">arrow_uniform_type<span class='tooltip-area'><p>separate_points_from_closed :
-forall {I : choiceType} {T : topologicalType} {U_ : I -> topologicalType},
-(forall i : I, T -> U_ i) -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="arrow_uniform_type" class="id"><div name="arrow_uniform_type" class=" tooltip">arrow_uniform_type<span class='tooltip-area'><p>prod_topology : forall {I : Type}, (I -> Type) -> Type
 
-separate_points_from_closed is not universe polymorphic
-Arguments separate_points_from_closed {I T} {U_}%_function_scope
-  f_%_function_scope
-separate_points_from_closed is transparent
+prod_topology is not universe polymorphic
+Arguments prod_topology {I}%_type_scope T%_function_scope
+prod_topology is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.function_spaces.separate_points_from_closed
+            mathcomp.analysis.topology_theory.function_spaces.prod_topology
 Declared in
-library mathcomp.analysis.topology_theory.function_spaces, line 331, characters 11-38
+library mathcomp.analysis.topology_theory.function_spaces, line 129, characters 11-24
 </p></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fct_Uniform.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fct_Uniform.U">U</a></span>.<br/>
 <br/>
 <span id="function_spaces_arrow_uniform_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_94" class="id"><span id="function_spaces_arrow_uniform_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_93" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_90" class="id"><a name="function_spaces_arrow_uniform_type__canonical__choice_Choice" class="">#[export]</a></span></span></span></span></span></span></span><span id="function_spaces_arrow_uniform_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_94" class="id"><span id="function_spaces_arrow_uniform_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_93" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_90" class="id"><a name="function_spaces_arrow_uniform_type__canonical__choice_Choice" class=""> HB</a></span></span></span></span></span></span></span>.<span id="function_spaces_arrow_uniform_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_94" class="id"><span id="function_spaces_arrow_uniform_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_93" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_90" class="id"><a name="function_spaces_arrow_uniform_type__canonical__choice_Choice" class="">instance</a></span></span></span></span></span></span></span><span id="function_spaces_arrow_uniform_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_94" class="id"><span id="function_spaces_arrow_uniform_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_93" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_90" class="id"><a name="function_spaces_arrow_uniform_type__canonical__choice_Choice" class=""> Definition</a></span></span></span></span></span></span></span><span id="function_spaces_arrow_uniform_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_94" class="id"><span id="function_spaces_arrow_uniform_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_93" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_90" class="id"><a name="function_spaces_arrow_uniform_type__canonical__choice_Choice" class=""> _</a></span></span></span></span></span></span></span><span id="function_spaces_arrow_uniform_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_94" class="id"><span id="function_spaces_arrow_uniform_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_93" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_90" class="id"><a name="function_spaces_arrow_uniform_type__canonical__choice_Choice" class=""> :=</a></span></span></span></span></span></span></span><span id="function_spaces_arrow_uniform_type__canonical__choice_Choice" class="id"><span id="HB_unnamed_mixin_94" class="id"><span id="function_spaces_arrow_uniform_type__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_93" class="id"><span id="choice_Choice__to__eqtype_hasDecEq" class="id"><span id="choice_Choice__to__choice_hasChoice" class="id"><span id="HB_unnamed_factory_90" class="id"><a name="function_spaces_arrow_uniform_type__canonical__choice_Choice" class=""> Choice</a></span></span></span></span></span></span></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.on">on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#arrow_uniform_type">arrow_uniform_type</a></span>.<br/>
@@ -835,17 +814,27 @@ library mathcomp.analysis.topology_theory.function_spaces, line 331, characters 
 <div class="doc">Functional metric spaces </div>
 <span class="vernacular">Section</span><span class="id"> fct_PseudoMetric</span>.<br/>
 <span class="vernacular">Variable</span> (<span id="fct_PseudoMetric.T" class="id"><a name="fct_PseudoMetric.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span>) (<span id="fct_PseudoMetric.R" class="id"><a name="fct_PseudoMetric.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numfield.html#Num.NumField.Exports.numFieldType">numFieldType</a></span>) (<span id="fct_PseudoMetric.U" class="id"><a name="fct_PseudoMetric.U" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#PseudoMetric.Exports.pseudoMetricType">pseudoMetricType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#R:185">R</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="fct_ball" class="id"><div name="fct_ball" class=" tooltip">fct_ball<span class='tooltip-area'><p>join_product :
-forall {I : choiceType} {T : topologicalType} {U_ : I -> topologicalType},
-(forall i : I, T -> U_ i) -> T -> prod_topology (fun x : I => U_ x)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="fct_ball" class="id"><div name="fct_ball" class=" tooltip">fct_ball<span class='tooltip-area'><p>product_topology_def : forall [I : Type], (I -> topologicalType) -> Type
 
-join_product is not universe polymorphic
-Arguments join_product {I T} {U_}%_function_scope f_%_function_scope x i
-join_product is transparent
+product_topology_def is not universe polymorphic
+Arguments product_topology_def [I]%_type_scope T%_function_scope
+product_topology_def is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.function_spaces.join_product
+            mathcomp.analysis.topology_theory.function_spaces.product_topology_def
 Declared in
-library mathcomp.analysis.topology_theory.function_spaces, line 377, characters 11-23
+library mathcomp.analysis.topology_theory.function_spaces, line 133, characters 11-31
+separate_points_from_closed :
+forall {I : choiceType} {T : topologicalType} {U_ : I -> topologicalType},
+(forall i : I, T -> U_ i) -> Prop
+
+separate_points_from_closed is not universe polymorphic
+Arguments separate_points_from_closed {I T} {U_}%_function_scope
+  f_%_function_scope
+separate_points_from_closed is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.function_spaces.separate_points_from_closed
+Declared in
+library mathcomp.analysis.topology_theory.function_spaces, line 331, characters 11-38
 </p></span></div></span> (<span id="x:188" class="id"><a name="x:188" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#arrow_uniform_type">arrow_uniform_type</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fct_PseudoMetric.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fct_PseudoMetric.U">U</a></span>) (<span id="eps:189" class="id"><a name="eps:189" class="">eps</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fct_PseudoMetric.R">R</a></span>)<br/>
 &nbsp;&nbsp;(<span id="y:190" class="id"><a name="y:190" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#arrow_uniform_type">arrow_uniform_type</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fct_PseudoMetric.T">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fct_PseudoMetric.U">U</a></span>)<span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="t:191" class="id"><a name="t:191" class="">t</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fct_PseudoMetric.T">T</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#ball">ball</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#x:188">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#t:191">t</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#eps:189">eps</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#y:190">y</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#t:191">t</a></span>).<br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="fct_ball_center" class="id"><a name="fct_ball_center" class="">fct_ball_center</a></span> (<span id="x:192" class="id"><a name="x:192" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fct_PseudoMetric.T">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fct_PseudoMetric.U">U</a></span>) (<span id="e:193" class="id"><a name="e:193" class="">e</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fct_PseudoMetric.R">R</a></span>)<span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#e:193">e</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#fct_ball">fct_ball</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#x:192">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#e:193">e</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#x:192">x</a></span>.<br/>
@@ -957,16 +946,17 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> Cvg_switch</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="uniform_fun" class="id"><div name="uniform_fun" class=" tooltip">uniform_fun<span class='tooltip-area'><p>fct_ent :
-forall [T : choiceType] [U : uniformType], set_system ((T -> U) * (T -> U))
+<span class="vernacular">Definition</span><span class="id"> </span><span id="uniform_fun" class="id"><div name="uniform_fun" class=" tooltip">uniform_fun<span class='tooltip-area'><p>join_product :
+forall {I : choiceType} {T : topologicalType} {U_ : I -> topologicalType},
+(forall i : I, T -> U_ i) -> T -> prod_topology (fun x : I => U_ x)
 
-fct_ent is not universe polymorphic
-Arguments fct_ent [T U] _
-fct_ent is transparent
+join_product is not universe polymorphic
+Arguments join_product {I T} {U_}%_function_scope f_%_function_scope x i
+join_product is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.function_spaces.fct_ent
+            mathcomp.analysis.topology_theory.function_spaces.join_product
 Declared in
-library mathcomp.analysis.topology_theory.function_spaces, line 448, characters 11-18
+library mathcomp.analysis.topology_theory.function_spaces, line 377, characters 11-23
 </p></span></div></span><span class="id"> {</span><span id="U:245" class="id"><a name="U:245" class="">U</a></span><span class="id"> :</span><span class="id"> Type}</span> (<span id="A:246" class="id"><a name="A:246" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#U:245">U</a></span>) (<span id="V:247" class="id"><a name="V:247" class="">V</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#U:245">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#V:247">V</a></span>.<br/>
 <br/>
 <span class="vernacular">Notation</span> <span id="1c6427e9b023b9f2942fbfd099b05e53" class="id"><a name="1c6427e9b023b9f2942fbfd099b05e53" class="">&quot;{ 'uniform`' A -&gt; V }&quot;</a></span><span class="id"> :=</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#uniform_fun">uniform_fun</a></span><span class="id"> _</span><span class="id"> A</span><span class="id"> V</span>)<span class="id"> :</span><span class="id"> type_scope</span>.<br/>
@@ -976,15 +966,16 @@ library mathcomp.analysis.topology_theory.function_spaces, line 448, characters 
 <span class="vernacular">Notation</span> <span id="82751b72ee1979a69897a2299122f3d9" class="id"><a name="82751b72ee1979a69897a2299122f3d9" class="">&quot;{ 'uniform' , F --&gt; f }&quot;</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="mathcomp.classical.filter.html#cvg_to">cvg_to</a></span><span class="id"> F</span> (<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span> (<span class="id">f</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#a898dec246ecc94a8652c2074dc11788">{uniform</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#a898dec246ecc94a8652c2074dc11788"> </a></span>_<span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#a898dec246ecc94a8652c2074dc11788"> -&gt;</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#a898dec246ecc94a8652c2074dc11788"> </a></span><span class="id">_</span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#a898dec246ecc94a8652c2074dc11788">}</a></span>)))<span class="id"> :</span><span class="id"> classical_set_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sigL_arrow" class="id"><div name="sigL_arrow" class=" tooltip">sigL_arrow<span class='tooltip-area'><p>arrow_uniform_type : choiceType -> uniformType -> Type
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sigL_arrow" class="id"><div name="sigL_arrow" class=" tooltip">sigL_arrow<span class='tooltip-area'><p>fct_ent :
+forall [T : choiceType] [U : uniformType], set_system ((T -> U) * (T -> U))
 
-arrow_uniform_type is not universe polymorphic
-Arguments arrow_uniform_type T U
-arrow_uniform_type is transparent
+fct_ent is not universe polymorphic
+Arguments fct_ent [T U] _
+fct_ent is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.function_spaces.arrow_uniform_type
+            mathcomp.analysis.topology_theory.function_spaces.fct_ent
 Declared in
-library mathcomp.analysis.topology_theory.function_spaces, line 480, characters 11-29
+library mathcomp.analysis.topology_theory.function_spaces, line 448, characters 11-18
 </p></span></div></span><span class="id"> {</span><span id="U:248" class="id"><a name="U:248" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.choice#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span> (<span id="A:249" class="id"><a name="A:249" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#U:248">U</a></span>) (<span id="V:250" class="id"><a name="V:250" class="">V</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html#Uniform.Exports.uniformType">uniformType</a></span>)<span class="id"> :</span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#U:248">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#V:250">V</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#arrow_uniform_type">arrow_uniform_type</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#A:249">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#V:250">V</a></span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.classical.functions.html#sigL">sigL</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#V:250">V</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#A:249">A</a></span>.<br/>
 <br/>
@@ -1058,17 +1049,15 @@ Qed.</div></details>
 <br/>
 <div class="doc md"> We use this function to help Coq identify the correct notation to use
   when printing. Otherwise you get goals like `F --&gt; f -&gt; F --&gt; f`.</div>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="uniform_fun_family" class="id"><div name="uniform_fun_family" class=" tooltip">uniform_fun_family<span class='tooltip-area'><p>fct_ball :
-forall [T : choiceType] [R : numFieldType] [U : pseudoMetricType R],
-arrow_uniform_type T U -> R -> arrow_uniform_type T U -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="uniform_fun_family" class="id"><div name="uniform_fun_family" class=" tooltip">uniform_fun_family<span class='tooltip-area'><p>arrow_uniform_type : choiceType -> uniformType -> Type
 
-fct_ball is not universe polymorphic
-Arguments fct_ball [T R U] x eps%_ring_scope y
-fct_ball is transparent
+arrow_uniform_type is not universe polymorphic
+Arguments arrow_uniform_type T U
+arrow_uniform_type is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.function_spaces.fct_ball
+            mathcomp.analysis.topology_theory.function_spaces.arrow_uniform_type
 Declared in
-library mathcomp.analysis.topology_theory.function_spaces, line 534, characters 11-19
+library mathcomp.analysis.topology_theory.function_spaces, line 480, characters 11-29
 </p></span></div></span><span class="id"> {</span><span id="U:289" class="id"><a name="U:289" class="">U</a></span><span class="id">}</span><span class="id"> </span><span id="V:290" class="id"><a name="V:290" class="">V</a></span> (<span id="fam:291" class="id"><a name="fam:291" class="">fam</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#U:289">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="gallina-kwd">Prop</span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#U:289">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#V:290">V</a></span>.<br/>
 <br/>
 <span class="vernacular">Notation</span> <span id="23c479c49b3a095f70befe9dc681dac5" class="id"><a name="23c479c49b3a095f70befe9dc681dac5" class="">&quot;{ 'family' fam , U -&gt; V }&quot;</a></span><span class="id"> :=</span>  (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#uniform_fun_family">uniform_fun_family</a></span><span class="id"> U</span><span class="id"> V</span><span class="id"> fam</span>).<br/>
@@ -1330,7 +1319,18 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> compact_open</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="compact_open.T" class="id"><a name="compact_open.T" class="">T</a></span><span class="id"> </span><span id="compact_open.U" class="id"><a name="compact_open.U" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="compact_open" class="id"><div name="compact_open" class=" tooltip">compact_open<span class='tooltip-area'><p>uniform_fun : forall {U : Type}, set U -> Type -> Type
+<span class="vernacular">Definition</span><span class="id"> </span><span id="compact_open" class="id"><div name="compact_open" class=" tooltip">compact_open<span class='tooltip-area'><p>fct_ball :
+forall [T : choiceType] [R : numFieldType] [U : pseudoMetricType R],
+arrow_uniform_type T U -> R -> arrow_uniform_type T U -> Prop
+
+fct_ball is not universe polymorphic
+Arguments fct_ball [T R U] x eps%_ring_scope y
+fct_ball is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.function_spaces.fct_ball
+Declared in
+library mathcomp.analysis.topology_theory.function_spaces, line 534, characters 11-19
+uniform_fun : forall {U : Type}, set U -> Type -> Type
 
 uniform_fun is not universe polymorphic
 Arguments uniform_fun {U}%_type_scope A%_classical_set_scope V%_type_scope
@@ -2193,6 +2193,18 @@ Expands to: Constant
             mathcomp.analysis.topology_theory.function_spaces.equicontinuous
 Declared in
 library mathcomp.analysis.topology_theory.function_spaces, line 1172, characters 11-25
+pointwise_precompact :
+forall {X : topologicalType} {Y : puniformType} {I : Type},
+set I -> (I -> X -> Y) -> Prop
+
+pointwise_precompact is not universe polymorphic
+Arguments pointwise_precompact {X Y} {I}%_type_scope 
+  W%_classical_set_scope d%_function_scope
+pointwise_precompact is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.function_spaces.pointwise_precompact
+Declared in
+library mathcomp.analysis.topology_theory.function_spaces, line 1207, characters 11-31
 </p></span></div></span><span class="id"> {</span><span id="X:645" class="id"><a name="X:645" class="">X</a></span><span class="id"> </span><span id="Y:646" class="id"><a name="Y:646" class="">Y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Continuous.Exports.continuousType">continuousType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#X:645">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#Y:646">Y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#X:645">X</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#Y:646">Y</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#uncurry">uncurry</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#id">id</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Continuous.Exports.continuousType">continuousType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#X:645">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#Y:646">Y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#X:645">X</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#Y:646">Y</a></span>)).<br/>
 <br/>

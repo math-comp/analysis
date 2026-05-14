@@ -270,64 +270,49 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="Equivalences.U" class="id"><a name="Equivalences.U" class="">U</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_rect_eq_on" class="id"><div name="Eq_rect_eq_on" class=" tooltip">Eq_rect_eq_on<span class='tooltip-area'><p>Eq_rect_eq_on : forall (U : Type) (p : U) (Q : U -> Type), Q p -> Prop
-
-Eq_rect_eq_on is not universe polymorphic
-Arguments Eq_rect_eq_on U%_type_scope p Q%_function_scope x
-Eq_rect_eq_on is transparent
-Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Eq_rect_eq_on
-Declared in
-library mathcomp.classical.internal_Eqdep_dec, line 36, characters 11-24
-</p></span></div></span> (<span id="p:27" class="id"><a name="p:27" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Equivalences.U">U</a></span>) (<span id="Q:28" class="id"><a name="Q:28" class="">Q</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Equivalences.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="gallina-kwd">Type</span>) (<span id="x:29" class="id"><a name="x:29" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Q:28">Q</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:27">p</a></span>)<span class="id"> :=</span><br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_rect_eq_on" class="id"><div name="Eq_rect_eq_on" class=" tooltip">Eq_rect_eq_on<span class='tooltip-area'></span></div></span> (<span id="p:27" class="id"><a name="p:27" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Equivalences.U">U</a></span>) (<span id="Q:28" class="id"><a name="Q:28" class="">Q</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Equivalences.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="gallina-kwd">Type</span>) (<span id="x:29" class="id"><a name="x:29" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Q:28">Q</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:27">p</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span> (<span id="h:30" class="id"><a name="h:30" class="">h</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:27">p</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:27">p</a></span>)<span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:29">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#eq_rect">eq_rect</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:27">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Q:28">Q</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:29">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:27">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#h:30">h</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_rect_eq" class="id"><div name="Eq_rect_eq" class=" tooltip">Eq_rect_eq<span class='tooltip-area'><p>Eq_rect_eq : Type -> Prop
-
-Eq_rect_eq is not universe polymorphic
-Arguments Eq_rect_eq U%_type_scope
-Eq_rect_eq is transparent
-Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Eq_rect_eq
-Declared in
-library mathcomp.classical.internal_Eqdep_dec, line 38, characters 11-21
-</p></span></div></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="p:31" class="id"><a name="p:31" class="">p</a></span><span class="id"> </span><span id="Q:32" class="id"><a name="Q:32" class="">Q</a></span><span class="id"> </span><span id="x:33" class="id"><a name="x:33" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Eq_rect_eq_on">Eq_rect_eq_on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:31">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Q:32">Q</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:33">x</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_rect_eq" class="id"><div name="Eq_rect_eq" class=" tooltip">Eq_rect_eq<span class='tooltip-area'></span></div></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="p:31" class="id"><a name="p:31" class="">p</a></span><span class="id"> </span><span id="Q:32" class="id"><a name="Q:32" class="">Q</a></span><span class="id"> </span><span id="x:33" class="id"><a name="x:33" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Eq_rect_eq_on">Eq_rect_eq_on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:31">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Q:32">Q</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:33">x</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_dep_eq_on" class="id"><div name="Eq_dep_eq_on" class=" tooltip">Eq_dep_eq_on<span class='tooltip-area'><p>Eq_dep_eq_on : forall (U : Type) (P : U -> Type) (p : U), P p -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_dep_eq_on" class="id"><div name="Eq_dep_eq_on" class=" tooltip">Eq_dep_eq_on<span class='tooltip-area'><p>card_le : forall [T U : Type], set T -> set U -> bool
 
-Eq_dep_eq_on is not universe polymorphic
-Arguments Eq_dep_eq_on U%_type_scope P%_function_scope p x
-Eq_dep_eq_on is transparent
-Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Eq_dep_eq_on
-Declared in
-library mathcomp.classical.internal_Eqdep_dec, line 40, characters 11-23
+card_le is not universe polymorphic
+Arguments card_le [T U]%_type_scope (A B)%_classical_set_scope
+card_le is transparent
+Expands to: Constant mathcomp.classical.cardinality.card_le
+Declared in library mathcomp.classical.cardinality, line 61, characters 11-18
 </p></span></div></span> (<span id="P:34" class="id"><a name="P:34" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Equivalences.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="gallina-kwd">Type</span>) (<span id="p:35" class="id"><a name="p:35" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Equivalences.U">U</a></span>) (<span id="x:36" class="id"><a name="x:36" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:34">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:35">p</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span> (<span id="y:37" class="id"><a name="y:37" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:34">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:35">p</a></span>)<span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#eq_dep">eq_dep</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:35">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:36">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:35">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#y:37">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:36">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#y:37">y</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_dep_eq" class="id"><div name="Eq_dep_eq" class=" tooltip">Eq_dep_eq<span class='tooltip-area'><p>Eq_dep_eq : Type -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_dep_eq" class="id"><div name="Eq_dep_eq" class=" tooltip">Eq_dep_eq<span class='tooltip-area'><p>card_eq : forall [T U : Type], set T -> set U -> bool
 
-Eq_dep_eq is not universe polymorphic
-Arguments Eq_dep_eq U%_type_scope
-Eq_dep_eq is transparent
-Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Eq_dep_eq
-Declared in
-library mathcomp.classical.internal_Eqdep_dec, line 42, characters 11-20
+card_eq is not universe polymorphic
+Arguments card_eq [T U]%_type_scope (A B)%_classical_set_scope
+card_eq is transparent
+Expands to: Constant mathcomp.classical.cardinality.card_eq
+Declared in library mathcomp.classical.cardinality, line 66, characters 11-18
 </p></span></div></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="P:38" class="id"><a name="P:38" class="">P</a></span><span class="id"> </span><span id="p:39" class="id"><a name="p:39" class="">p</a></span><span class="id"> </span><span id="x:40" class="id"><a name="x:40" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Eq_dep_eq_on">Eq_dep_eq_on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:38">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:39">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:40">x</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Streicher_K_on_" class="id"><div name="Streicher_K_on_" class=" tooltip">Streicher_K_on_<span class='tooltip-area'><p>Streicher_K_on_ : forall (U : Type) (x : U), (x = x -> Prop) -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Streicher_K_on_" class="id"><div name="Streicher_K_on_" class=" tooltip">Streicher_K_on_<span class='tooltip-area'><p>finite_set : forall {T : Type}, set T -> Prop
 
-Streicher_K_on_ is not universe polymorphic
-Arguments Streicher_K_on_ U%_type_scope x P%_function_scope
-Streicher_K_on_ is transparent
-Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Streicher_K_on_
-Declared in
-library mathcomp.classical.internal_Eqdep_dec, line 44, characters 11-26
+finite_set is not universe polymorphic
+Arguments finite_set {T}%_type_scope A%_classical_set_scope
+finite_set is transparent
+Expands to: Constant mathcomp.classical.cardinality.finite_set
+Declared in library mathcomp.classical.cardinality, line 71, characters 11-21
 </p></span></div></span> (<span id="x:41" class="id"><a name="x:41" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Equivalences.U">U</a></span>) (<span id="P:42" class="id"><a name="P:42" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:41">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:41">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="gallina-kwd">Prop</span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:42">P</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#eq_refl">eq_refl</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:41">x</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="gallina-kwd">forall</span><span class="id"> </span><span id="p:43" class="id"><a name="p:43" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:41">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:41">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:42">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:43">p</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Streicher_K_" class="id"><div name="Streicher_K_" class=" tooltip">Streicher_K_<span class='tooltip-area'><p>Streicher_K_ : Type -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Streicher_K_" class="id"><div name="Streicher_K_" class=" tooltip">Streicher_K_<span class='tooltip-area'><p>emptyE_subdef :
+(forall T : emptyType, all_equal_to (set0 : set T)) *
+(forall (T : emptyType) (U : Type) (A : set T) (B : set U), (A #<= B)%card) *
+(forall (T : emptyType) (U : Type) (A : set T) (B : set U),
+ (B #<= A)%card = (B == set0)) *
+(forall (T : eqType) (x y : T), (x == y : Prop) = (x = y))
 
-Streicher_K_ is not universe polymorphic
-Arguments Streicher_K_ U%_type_scope
-Streicher_K_ is transparent
-Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Streicher_K_
+emptyE_subdef is not universe polymorphic
+emptyE_subdef is transparent
+Expands to: Constant mathcomp.classical.cardinality.emptyE_subdef
 Declared in
-library mathcomp.classical.internal_Eqdep_dec, line 46, characters 11-23
+library mathcomp.classical.cardinality, line 191, characters 11-24
 </p></span></div></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="x:44" class="id"><a name="x:44" class="">x</a></span><span class="id"> </span><span id="P:45" class="id"><a name="P:45" class="">P</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Streicher_K_on_">Streicher_K_on_</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:44">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:45">P</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eq_rect_eq_on__eq_dep1_eq_on" class="id"><a name="eq_rect_eq_on__eq_dep1_eq_on" class="">eq_rect_eq_on__eq_dep1_eq_on</a></span> (<span id="p:46" class="id"><a name="p:46" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Equivalences.U">U</a></span>) (<span id="P:47" class="id"><a name="P:47" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Equivalences.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="gallina-kwd">Type</span>) (<span id="y:48" class="id"><a name="y:48" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:47">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:46">p</a></span>)<span class="id"> :</span><br/>
@@ -467,24 +452,32 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="Eq_dec.Corollaries.U" class="id"><a name="Eq_dec.Corollaries.U" class="">U</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Inj_dep_pair_on" class="id"><div name="Inj_dep_pair_on" class=" tooltip">Inj_dep_pair_on<span class='tooltip-area'><p>Inj_dep_pair_on : forall (U : Type) (P : U -> Type) (p : U), P p -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Inj_dep_pair_on" class="id"><div name="Inj_dep_pair_on" class=" tooltip">Inj_dep_pair_on<span class='tooltip-area'><p>emptyE :
+(forall T : emptyType, all_equal_to (set0 : set T)) *
+(forall (T : emptyType) (U : Type) (A : set T) (B : set U), (A #<= B)%card) *
+(forall (T : emptyType) (U : Type) (A : set T) (B : set U),
+ (B #<= A)%card = (B == set0)) *
+(forall (T : eqType) (x y : T), (x == y : Prop) = (x = y)) *
+(forall (T : emptyType) (U : Type) (A : set T) (B : set U),
+ (B #= A)%card = (B == set0)) *
+(forall (T : emptyType) (U : Type) (A : set T) (B : set U),
+ (A #= B)%card = (B == set0))
 
-Inj_dep_pair_on is not universe polymorphic
-Arguments Inj_dep_pair_on U%_type_scope P%_function_scope p x
-Inj_dep_pair_on is transparent
-Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Inj_dep_pair_on
+emptyE is not universe polymorphic
+emptyE is transparent
+Expands to: Constant mathcomp.classical.cardinality.emptyE
 Declared in
-library mathcomp.classical.internal_Eqdep_dec, line 151, characters 11-26
+library mathcomp.classical.cardinality, line 363, characters 11-17
 </p></span></div></span> (<span id="P:139" class="id"><a name="P:139" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Eq_dec.Corollaries.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="gallina-kwd">Type</span>) (<span id="p:140" class="id"><a name="p:140" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Eq_dec.Corollaries.U">U</a></span>) (<span id="x:141" class="id"><a name="x:141" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:139">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:140">p</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span> (<span id="y:142" class="id"><a name="y:142" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:139">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:140">p</a></span>)<span class="id">,</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:139">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:140">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:141">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:139">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:140">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#y:142">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:141">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#y:142">y</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Inj_dep_pair" class="id"><div name="Inj_dep_pair" class=" tooltip">Inj_dep_pair<span class='tooltip-area'><p>Inj_dep_pair : Type -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Inj_dep_pair" class="id"><div name="Inj_dep_pair" class=" tooltip">Inj_dep_pair<span class='tooltip-area'><p>countable : forall [T : Type], set T -> bool
 
-Inj_dep_pair is not universe polymorphic
-Arguments Inj_dep_pair U%_type_scope
-Inj_dep_pair is transparent
-Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Inj_dep_pair
+countable is not universe polymorphic
+Arguments countable [T]%_type_scope A%_classical_set_scope
+countable is transparent
+Expands to: Constant mathcomp.classical.cardinality.countable
 Declared in
-library mathcomp.classical.internal_Eqdep_dec, line 153, characters 11-23
+library mathcomp.classical.cardinality, line 459, characters 11-20
 </p></span></div></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="P:143" class="id"><a name="P:143" class="">P</a></span><span class="id"> </span><span id="p:144" class="id"><a name="p:144" class="">p</a></span><span class="id"> </span><span id="x:145" class="id"><a name="x:145" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Inj_dep_pair_on">Inj_dep_pair_on</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:143">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:144">p</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:145">x</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eq_dep_eq_on__inj_pair2_on" class="id"><a name="eq_dep_eq_on__inj_pair2_on" class="">eq_dep_eq_on__inj_pair2_on</a></span> (<span id="P:146" class="id"><a name="P:146" class="">P</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Eq_dec.Corollaries.U">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="gallina-kwd">Type</span>) (<span id="p:147" class="id"><a name="p:147" class="">p</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#Eq_dec.Corollaries.U">U</a></span>) (<span id="x:148" class="id"><a name="x:148" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:146">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:147">p</a></span>)<span class="id"> :</span><br/>

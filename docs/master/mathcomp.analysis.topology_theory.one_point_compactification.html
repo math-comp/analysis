@@ -252,7 +252,18 @@ embeds into its one-point compactification.
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="one_point_compactification" class="id"><div name="one_point_compactification" class=" tooltip">one_point_compactification<span class='tooltip-area'></span></div></span> (<span id="X:1" class="id"><a name="X:1" class="">X</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#option">option</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#X:1">X</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="one_point_compactification" class="id"><div name="one_point_compactification" class=" tooltip">one_point_compactification<span class='tooltip-area'><p>sigT_nbhs :
+forall {I : choiceType} {X : I -> topologicalType},
+{i : I & X i} -> set_system {i : I & X i}
+
+sigT_nbhs is not universe polymorphic
+Arguments sigT_nbhs {I} {X}%_function_scope x _
+sigT_nbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.sigT_topology.sigT_nbhs
+Declared in
+library mathcomp.analysis.topology_theory.sigT_topology, line 26, characters 11-20
+</p></span></div></span> (<span id="X:1" class="id"><a name="X:1" class="">X</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#option">option</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.one_point_compactification.html#X:1">X</a></span>.<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> one_point_compactification</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="one_point_compactification.X" class="id"><a name="one_point_compactification.X" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
