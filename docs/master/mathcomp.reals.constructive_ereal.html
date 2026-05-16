@@ -5361,18 +5361,7 @@ Qed.</div></details>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> x</span><span class="id"> y</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#realFieldType_lemmas.R">R</a></span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> r</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#realFieldType_lemmas.R">R</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="inveM_def" class="id"><div name="inveM_def" class=" tooltip">inveM_def<span class='tooltip-area'><p>lteNye :
-forall {R : realDomainType},
-(forall x : \bar R, (-oo < x)%E = (x != -oo%E)) *
-(forall x : \bar R, (-oo <= x)%E)
-
-lteNye is not universe polymorphic
-Arguments lteNye {R}
-lteNye is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.lteNye
-Declared in
-library mathcomp.reals.constructive_ereal, line 509, characters 11-17
-oppe : forall {R : GRing.Zmodule.Exports.zmodType}, \bar R -> \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="inveM_def" class="id"><div name="inveM_def" class=" tooltip">inveM_def<span class='tooltip-area'><p>oppe : forall {R : GRing.Zmodule.Exports.zmodType}, \bar R -> \bar R
 
 oppe is not universe polymorphic
 Arguments oppe {R} x%_ereal_scope
