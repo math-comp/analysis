@@ -525,6 +525,14 @@ HB.instance Definition _ := Nbhs_isUniform_mixin.Build E
     entourage_filter entourage_refl
     entourage_inv entourage_split_ex
     nbhsE.
+
+
+HB.instance Definition _ := PreTopologicalNmodule_isTopologicalNmodule.Build E add_continuous.
+
+HB.instance Definition _ := TopologicalNmodule_isTopologicalLmodule.Build R E scale_continuous.
+
+HB.instance Definition _ := Uniform_isConvexTvs.Build R E locally_convex.
+
 HB.end.
 
 Section ConvexTvs_numDomain.
