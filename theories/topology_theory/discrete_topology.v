@@ -189,6 +189,7 @@ HB.instance Definition _ (T : choiceType) :=
   hasNbhs.Build (discrete_topology T) principal_filter.
 HB.instance Definition _ (T : choiceType) :=
   Discrete_ofNbhs.Build (discrete_topology T) erefl.
+HB.saturate discrete_topology.
 HB.instance Definition _ (T : choiceType) :=
   DiscreteUniform_ofNbhs.Build (discrete_topology T).
 HB.instance Definition _ {R : numDomainType} (T : choiceType) :=
