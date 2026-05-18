@@ -16,6 +16,9 @@ From mathcomp Require Export filter.
 (*          topologicalType == interface type for topological space           *)
 (*                             structure                                      *)
 (*                             the HB class is Topological.                   *)
+(*     subTopologicalType S == join of SubNbhs and Topological where S has    *)
+(*                             pred V with V a topologicalType                *)
+(*                             the HB class is SubTopological.                *)
 (*         ptopologicalType == a pointed topologicalType                      *)
 (*                     open == set of open sets                               *)
 (*                   closed == set of closed sets                             *)
@@ -111,6 +114,10 @@ HB.structure Definition PointedTopological :=
 #[short(type="bpTopologicalType")]
 HB.structure Definition BiPointedTopological :=
   { X of BiPointed X & Topological X }.
+
+#[short(type="subTopologicalType")]
+HB.structure Definition SubTopological (V : topologicalType)
+  (S : pred V) := {U of SubNbhs V S U & Topological U}.
 
 Section Topological1.
 Context {T : topologicalType}.

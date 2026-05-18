@@ -134,14 +134,6 @@
 - new files `signed_measure.v` and `radon_nikodym.v`
   + with the contents of `charge.v` (deprecated)
 
-- in `mathcomp_extra.v`:
-  + lemmas `divDl_ge0`, `divDl_le1`
-  + mixin `Zmodule_isSubNormed`
-  + mixin `isTmp` and structure `SubNormedZmodule_tmp` (temporary kludge)
-
-- in `unstable.v`:
-  + lemmas `divD_onem`
-
 ### Changed
 
 - moved from `measurable_structure.v` to `classical_sets.v`:

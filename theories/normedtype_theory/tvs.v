@@ -46,6 +46,11 @@ From mathcomp Require Import pseudometric_normed_Zmodule.
 (*                             A convex tvs is constructed over a uniform     *)
 (*                             space.                                         *)
 (*                             The HB class is ConvexTvs.                     *)
+(*   subConvexTvsType R V S == join of subTopologicalType, convexTvsType,     *)
+(*                             and subLmoduleType                             *)
+(*                             The HB class is SubConvexTvs.                  *)
+(*                             Instance: in particular, it is shown that a    *)
+(*                             sub-Lmodule is a sub-convex TVS.               *)
 (* PreTopologicalLmod_isConvexTvs == factory allowing the construction of a   *)
 (*                             convex tvs from an Lmodule which is also a     *)
 (*                             topological space                              *)
@@ -393,6 +398,99 @@ HB.mixin Record Uniform_isConvexTvs (R : numDomainType) E
 #[short(type="convexTvsType")]
 HB.structure Definition ConvexTvs (R : numDomainType) :=
   {E of Uniform_isConvexTvs R E & Uniform E & TopologicalLmodule R E}.
+
+#[short(type="subConvexTvsType")]
+HB.structure Definition SubConvexTvs (R : numDomainType) (V : convexTvsType R)
+    (S : pred V) :=
+  { U of SubTopological V S U & ConvexTvs R U & @GRing.SubLmodule R V S U }.
+
+Section SubLmodule_isSubConvexTvs.
+Context (R : numFieldType) (V : convexTvsType R) (S : pred V) (U : subLmodType S).
+
+Local Notation sub_init_topo := (sub_initial_topology U).
+HB.instance Definition _ := Uniform.on sub_init_topo.
+HB.instance Definition _ := GRing.Lmodule.on sub_init_topo.
+
+Let add_sub: continuous (fun x : sub_init_topo * sub_init_topo => x.1 + x.2).
+Proof.
+apply: continuous_comp_initial => -[/= x y].
+pose h := fun xy : U * U => (\val xy.1, \val xy.2).
+pose g := fun xy : V * V => xy.1 + xy.2.
+rewrite (_ : _ \o _ = g \o h).
+  by apply/funext => i /=; rewrite GRing.valD.
+apply: continuous_comp; last exact: add_continuous.
+apply: cvg_pair => //=.
+- apply: (cvg_comp _ _ cvg_fst).
+  exact: (continuous_valE (x : sub_init_topo)).
+- apply: (cvg_comp _ _ cvg_snd).
+  exact: (continuous_valE (y : sub_init_topo)).
+Qed.
+
+HB.instance Definition _ :=
+  @PreTopologicalNmodule_isTopologicalNmodule.Build sub_init_topo add_sub.
+
+Let opp_sub : continuous (-%R : sub_init_topo -> sub_init_topo).
+Proof.
+apply: continuous_comp_initial => x.
+rewrite (_ : _ \o _ = -%R \o \val).
+  by apply/funext=> i /=; rewrite GRing.valN.
+apply: continuous_comp; first exact: continuous_valE.
+exact: opp_continuous.
+Qed.
+
+HB.instance Definition _ :=
+  TopologicalNmodule_isTopologicalZmodule.Build sub_init_topo opp_sub.
+
+Let scale_sub : continuous (fun z : R^o * sub_init_topo => z.1 *: z.2).
+Proof.
+apply: continuous_comp_initial => - [] /= x /= y.
+pose h := fun xy : R * U => (xy.1, \val xy.2).
+pose g := fun xy : R * V => xy.1 *: xy.2.
+rewrite (_ : _ \o _ = g \o h); first by apply/funext=> i /=; rewrite GRing.valZ.
+apply: continuous_comp; last exact: scale_continuous.
+move=> /= A [/= [/= B C]] [[r/= r0 xrB]].
+move/(continuous_valE (y : sub_init_topo)) => [/= C' [woC' C'y C'C] BCA].
+apply: filterS; first exact: BCA.
+exists (ball x r, C') => /=.
+  by split; [exact: nbhsx_ballx|exists C'; split].
+by move=> su/= [xru C'u]; split; [exact: xrB|exact: C'C].
+Qed.
+
+HB.instance Definition _ :=
+  TopologicalZmodule_isTopologicalLmodule.Build R sub_init_topo scale_sub.
+
+Local Open Scope convex_scope.
+
+Let locally_convex_sub : exists2 B : set_system sub_init_topo,
+  (forall b, b \in B -> convex_set b) & basis B.
+Proof.
+have [B convexB [openB/= genB]] := @locally_convex R V.
+exists [set a | exists2 b, B b & \val @^-1` b = a].
+  move=> a /[!inE]/= -[b Bb ba] r s l ra sa.
+  suff : \val (r <|l|> s) \in b by rewrite !inE /= -ba.
+  rewrite !GRing.valD !GRing.valZ convexB//; first exact: mem_set.
+  - by move: ra; rewrite -ba !inE.
+  - by move: sa; rewrite -ba !inE.
+split => /=.
+  move=> a/= [b Bb <-]; rewrite /open/= /wopen/=; exists b => //.
+  exact: openB.
+move=> x a [/= b [[/=c openc] cb bx ba]].
+rewrite /nbhs/= /filter_from/=.
+have : nbhs (val x) c.
+ rewrite nbhsE /=; exists c => //; split => //.
+ by move: bx; rewrite -cb.
+move/genB => [d [Bd dx dc]].
+exists (\val @^-1` d); first by split => //; exists d.
+by move=> y dy; apply: ba; rewrite -cb; exact: dc.
+Qed.
+
+Local Close Scope convex_scope.
+
+HB.instance Definition _ :=
+  @Uniform_isConvexTvs.Build R sub_init_topo locally_convex_sub.
+HB.instance Definition _ := GRing.SubLmodule.on sub_init_topo.
+
+End SubLmodule_isSubConvexTvs.
 
 Section properties_of_topologicalLmodule.
 Context (R : numDomainType) (E : preTopologicalLmodType R) (U : set E).
