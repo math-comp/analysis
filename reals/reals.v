@@ -684,8 +684,8 @@ Qed.
 Lemma sup_Mn A n : sup [set x *+n | x in A ] = sup A *+ n.
 Proof.
 rewrite -mulr_natl (_ : [set _ | _ in _] = [set n%:R * x | x in A]).
-  exact: ge0_supZl.
-by under eq_fun do rewrite -mulr_natl.
+  by under eq_fun do rewrite -mulr_natl.
+exact: ge0_supZl.
 Qed.
 
 End Sup.
