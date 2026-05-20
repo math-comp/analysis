@@ -20,6 +20,7 @@ install: [make "-C" "experimental_reals" "install"]
 depends: [
   "rocq-mathcomp-reals" { = version}
   "rocq-mathcomp-bigenough" { (>= "1.0.0") }
+  "rocq-mathcomp-analysis" { = version }
 ]
 
 conflicts: [ "coq-mathcomp-experimental-reals" { < "1.16~" } ]
