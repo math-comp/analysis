@@ -282,17 +282,19 @@ reciprocals of the prime numbers.
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.tuple#tnth_ord_tuple">tnth_ord_tuple</a></span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#subnKC">subnKC</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#ltnW">ltnW</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="next_prime" class="id"><div name="next_prime" class=" tooltip">next_prime<span class='tooltip-area'><p>mk_path :
-forall {i : bpTopologicalType} {T : topologicalType} {x y : T} [f : i -> T],
-continuous f -> f zero = x -> f one = y -> i -> T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="next_prime" class="id"><div name="next_prime" class=" tooltip">next_prime<span class='tooltip-area'><p>chain_path :
+forall {i j : bpTopologicalType} {T : topologicalType},
+(i -> T) ->
+(j -> T) ->
+wedge (X:=fun b : bool => if b then i else j) (bpwedge_shared_pt i j) -> T
 
-mk_path is not universe polymorphic
-Arguments mk_path {i T x y} [f]%_function_scope ctsf%_function_scope f0 f1 _
-mk_path is transparent
+chain_path is not universe polymorphic
+Arguments chain_path {i j T} (f g)%_function_scope _
+chain_path is transparent
 Expands to: Constant
-            mathcomp.analysis.homotopy_theory.continuous_path.mk_path
+            mathcomp.analysis.homotopy_theory.continuous_path.chain_path
 Declared in
-library mathcomp.analysis.homotopy_theory.continuous_path, line 137, characters 11-18
+library mathcomp.analysis.homotopy_theory.continuous_path, line 143, characters 11-21
 </p></span></div></span><span class="id"> </span><span id="n:9" class="id"><a name="n:9" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.showcase.pnt.html#n:9">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#0dacc1786c5ba797d47dd85006231633"> +</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#0dacc1786c5ba797d47dd85006231633"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bb042dfdfd783b4436ffe2eb4a3c08d6">[arg</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bb042dfdfd783b4436ffe2eb4a3c08d6"> min_</a></span>(<span id="i:11" class="id"><span id="i:10" class="id"><a name="i:11" class="">i</a></span></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bb042dfdfd783b4436ffe2eb4a3c08d6"> &lt;</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bb042dfdfd783b4436ffe2eb4a3c08d6"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#val">val</a></span> (<span class="id"><a href="mathcomp.analysis.showcase.pnt.html#prime_seq.next_prime_subproof">next_prime_subproof</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#n:9">n</a></span>)<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bb042dfdfd783b4436ffe2eb4a3c08d6"> |</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bb042dfdfd783b4436ffe2eb4a3c08d6"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.prime#prime">prime</a></span> (<span class="id"><a href="mathcomp.analysis.showcase.pnt.html#n:9">n</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#0dacc1786c5ba797d47dd85006231633"> +</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#0dacc1786c5ba797d47dd85006231633"> </a></span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#i:10">i</a></span>))<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bb042dfdfd783b4436ffe2eb4a3c08d6"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#val">val</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#i:11">i</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.fintype#bb042dfdfd783b4436ffe2eb4a3c08d6">]</a></span>.<br/>
 <br/>
@@ -326,20 +328,7 @@ Qed.</div></details>
 <span class="id">exact:</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#leq_addr">leq_addr</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="prime_seq" class="id"><div name="prime_seq" class=" tooltip">prime_seq<span class='tooltip-area'><p>chain_path :
-forall {i j : bpTopologicalType} {T : topologicalType},
-(i -> T) ->
-(j -> T) ->
-wedge (X:=fun b : bool => if b then i else j) (bpwedge_shared_pt i j) -> T
-
-chain_path is not universe polymorphic
-Arguments chain_path {i j T} (f g)%_function_scope _
-chain_path is transparent
-Expands to: Constant
-            mathcomp.analysis.homotopy_theory.continuous_path.chain_path
-Declared in
-library mathcomp.analysis.homotopy_theory.continuous_path, line 143, characters 11-21
-</p></span></div></span><span class="id"> </span><span id="n:16" class="id"><a name="n:16" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#iter">iter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#n:16">n</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#next_prime">next_prime</a></span><span class="id"> 2</span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="prime_seq" class="id"><div name="prime_seq" class=" tooltip">prime_seq<span class='tooltip-area'></span></div></span><span class="id"> </span><span id="n:16" class="id"><a name="n:16" class="">n</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#iter">iter</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#n:16">n</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#next_prime">next_prime</a></span><span class="id"> 2</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="leq_prime_seq" class="id"><a name="leq_prime_seq" class="">leq_prime_seq</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088">{mono</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> </a></span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#prime_seq">prime_seq</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> </a></span><span id="m:19" class="id"><span id="m:17" class="id"><a name="m:19" class="">m</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> </a></span><span id="n:20" class="id"><span id="n:18" class="id"><a name="n:20" class="">n</a></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> /</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088"> </a></span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#m:17">m</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#cb53cf0ee22c036a03b4a9281c68b5a3"> &lt;=</a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.ssrnat#cb53cf0ee22c036a03b4a9281c68b5a3"> </a></span><span class="id"><a href="mathcomp.analysis.showcase.pnt.html#n:18">n</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#02b248fee5f27b186ea3a36733c25088">}</a></span>.<br/>
 <details>
