@@ -39,7 +39,6 @@ experimental_reals/discrete.v
 experimental_reals/realseq.v
 experimental_reals/realsum.v
 experimental_reals/distr.v
-experimental_reals/edistr.v
 reals_stdlib/Rstruct.v
 reals_stdlib/nsatz_realtype.v
 

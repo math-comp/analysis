@@ -9,7 +9,7 @@ From mathcomp Require Import boot order algebra.
 From mathcomp Require Import unstable.
 From mathcomp.classical Require Import boolp fsbigop.
 From mathcomp Require Import xfinmap constructive_ereal reals discrete realseq.
-From mathcomp.classical Require Import classical_sets functions.
+From mathcomp.classical Require Import classical_sets functions cardinality.
 From mathcomp.analysis Require Import esum ereal numfun.
 
 Set Implicit Arguments.
@@ -110,7 +110,7 @@ End Sum.
 Section SummableCountable.
 Variable (T : choiceType) (R : realType) (f : T -> R).
 
-Lemma summable_countn0 : summable f -> countable [pred x | f x != 0].
+Lemma summable_countn0 : summable f -> discrete.countable [pred x | f x != 0].
 Proof.
 case/summableP=> M ge0_M bM; pose E (p : nat) := [pred x | `|f x| > p.+1%:~R^-1].
 set F := [pred x | _]; have le: {subset F <= [pred x | `[< exists p, x \in E p >]]}.
@@ -166,17 +166,6 @@ case/asboolP/nboundedP: bdu=> M gt0_M bdu.
 case/(_ (NPInf M)): cu => K /= /(_ K (leqnn _)).
 rewrite inE/= => /ltW /le_trans /(_ (ler_norm _)).
 by move/le_lt_trans/(_ (bdu _)); rewrite ltxx.
-Qed.
-
-Lemma ncvg_mono_sum {T : eqType} [f : nat -> T -> R] [l : T -> R] [J : seq T] :
-  (forall x, ncvg (fun n => f n x) (l x)%:E) ->
-  ncvg (fun n => \sum_(x <- J) f n x) (\sum_(x <- J) l x)%:E.
-Proof.
-move=> hcvg; elim: J => //= [|j J ih].
-- rewrite big_nil; apply/(@ncvg_eq _ (fun _ => 0))/ncvgC.
-  by move=> n /=; rewrite big_nil.
-- rewrite big_cons; have := ncvgD (hcvg j) ih; apply/ncvg_eq.
-  by move=> n /=; rewrite big_cons.
 Qed.
 
 End PosCnv.
@@ -330,42 +319,28 @@ End SumTh.
 
 (* -------------------------------------------------------------------- *)
 Section Esum.
+Context {R : realType} {T : choiceType}.
 
-  Context {R : realType} {T : choiceType}.
-
-  Lemma esum_psum (S: T -> R) :
-    (forall i : T, 0%R <= S i) ->
-    summable S ->
-    esum [set:T] (fun x => (S x)%:E) = (psum S)%:E.
-  Proof.
-    move => Sg0 h; apply/eqP; rewrite eq_le; apply/andP; split.
-    - rewrite ge_ereal_sup//=  => x [] X []  finX XT.
-      rewrite fsumEFin // => <-.
-      rewrite lee_fin.
-      rewrite fsbig_finite //=.
-      revert finX.
-      rewrite cardinality.finite_fsetP.
-      move => []  J ->.
-      rewrite cardinality.set_fsetK.
-      apply: (le_trans _ (gerfin_psum J  h)).
-      rewrite -(@big_fset_seq R _ _ T J S)  //=.
-      apply: (le_trans _ (ler_norm_sum _ _ _)).
-      exact : ler_norm.
-    - rewrite (eq_esum (b:= fun x => `| S x |%:E)%E).
-    - by move => ??; rewrite  ger0_norm.
-      have [H1 H3] := (summable_sup h).
-      rewrite psum_absE //.
-      rewrite -(ereal_sup_EFin H3 H1).
-      rewrite ge_ereal_sup//= => x [] X []  Fs XT <-.
-      rewrite esum_ge //.
-      exists ([set` Fs]%classic) => //.
-      rewrite fsumEFin //.
-      rewrite lee_fin.
-      rewrite XT.
-      rewrite (@big_fset_seq R _ _ T _ (fun x => `|S x|))  //=.
-      rewrite -{1}(cardinality.set_fsetK Fs).
-      by rewrite -fsbig_finite.
-  Qed.
+Lemma esum_psum (S : T -> R) : (forall i, 0 <= S i) -> summable S ->
+  \esum_(x in [set: T]) (S x)%:E = (psum S)%:E.
+Proof.
+move => Sg0 h; apply/eqP; rewrite eq_le; apply/andP; split.
+- rewrite ge_ereal_sup//= => x [X [finX _]].
+  rewrite fsumEFin // => <-.
+  rewrite lee_fin fsbig_finite//=.
+  move/cardinality.finite_fsetP : finX => [J ->].
+  rewrite set_fsetK (le_trans _ (gerfin_psum J h))//.
+  rewrite -(@big_fset_seq R _ _ T J S)//= (le_trans _ (ler_norm_sum _ _ _))//.
+  exact: ler_norm.
+- rewrite (@eq_esum _ _ _ _ (fun x => `| S x |%:E)).
+    by move => t _; rewrite ger0_norm.
+  have [nonempty hasub] := summable_sup h.
+  rewrite psum_absE// -ereal_sup_EFin// ge_ereal_sup//= => x [X [Fs ->] <-].
+  rewrite esum_ge//.
+  exists ([set` Fs]%classic) => //.
+  rewrite fsumEFin// lee_fin (big_fset_seq (fun x => `|S x|))//=.
+  by rewrite -{1}(set_fsetK Fs) -fsbig_finite.
+Qed.
 
 End Esum.
 
@@ -723,20 +698,20 @@ End SummableAlg.
 
 (* -------------------------------------------------------------------- *)
 Section Sum_Sum.
-  Context {T: choiceType} {R : realType}.
+Context {T : choiceType} {R : realType}.
 
-  Lemma sum_sum (S: T -> R) :
-    summable S ->
-    esum.sum (fun x => (S x)%:E) = (sum S)%:E.
-  Proof.
-    move => hs. rewrite /esum.sum /sum.
-    rewrite (eq_esum (a:= (fun x => (S x)%:E)^\+%E) (b:= fun x => (S^\+ x)%:E)).
-    - by move => ??; rewrite funeposE -fine_max//=.
-      rewrite (eq_esum (a:= (fun x => (S x)%:E)^\-%E) (b:= fun x => (S^\- x)%:E)).
-    - by move => ??; rewrite funenegE /funrneg EFin_max.
-    rewrite esum_psum //; first exact : summable_fpos.
-    by rewrite esum_psum //; exact : summable_fneg.
-  Qed.
+Lemma sum_sum (S : T -> R) : summable S ->
+  esum.sum (fun x => (S x)%:E) = (sum S)%:E.
+Proof.
+move=> hs.
+rewrite /esum.sum /sum.
+rewrite (@eq_esum _ _ _ ((fun x => (S x)%:E)^\+%E) (fun x => (S^\+ x)%:E)).
+  by move=> t _; rewrite funeposE -fine_max.
+rewrite (@eq_esum _ _ _ ((fun x => (S x)%:E)^\-%E) (fun x => (S^\- x)%:E)).
+  by move=> t _; rewrite funenegE EFin_max.
+rewrite esum_psum//; first exact : summable_fpos.
+by rewrite esum_psum//; exact : summable_fneg.
+Qed.
 
 End Sum_Sum.
 
