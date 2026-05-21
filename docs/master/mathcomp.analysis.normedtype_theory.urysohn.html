@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.normedtype_theory.urysohn</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis a2cb52e" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis ad75dca" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -279,44 +279,7 @@
 <span class="vernacular">Context</span><span class="id"> {</span><span id="pseudoMetricDist.R" class="id"><a name="pseudoMetricDist.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> {</span><span id="pseudoMetricDist.X" class="id"><a name="pseudoMetricDist.X" class="">X</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#PseudoMetric.Exports.pseudoMetricType">pseudoMetricType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#R:1">R</a></span><span class="id">}</span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> r</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#pseudoMetricDist.R">R</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="edist" class="id"><div name="edist" class=" tooltip">edist<span class='tooltip-area'><p>NearNorm.near_simpl :
-(forall (U : Type) (T : filteredType U) (x : T) (P : set U),
- (\forall x0 \near nbhs x, P x0) = (\near x, P x)) *
-(forall (U : Type) (T : filteredType U) (x : T) (P : set U),
- nbhs x P = (\near x, P x)) *
-(forall (X : Type) (fX : filteredType X) (x : fX) (P : set X),
- nbhs x P = (\near x, P x)) *
-(forall (T : Type) (F : filter_on T) (P : set T),
- (\near F, P F) = (\forall x \near F, P x)) *
-(forall (T U : Type) (f : T -> U) (F : set_system T) (P : set U),
- (\forall y \near (f x @[x --> F])%classic, P y) = (\near F, P (f F))) *
-(forall (T U : Type) (f : T -> set U) (F : set_system T) (P : set U),
- (\forall y \near (f x `@[x --> F])%classic, P y) =
- (\near F, exists y : U, f F y /\ P y)) *
-(forall (T T' U U' : Type) (f : T -> U) (g : T' -> U') 
-   (F : set_system T) (G : set_system T') (P : U -> set U'),
- Filter F ->
- Filter G ->
- (\forall y \near (f x @[x --> F])%classic & y' \near 
-  (g x @[x --> G])%classic, P y y') =
- (\near F & G, P (f F) (g G))) *
-(forall (K : numDomainType) (V : pseudoMetricNormedZmodType K) 
-   (x : V) (P : V -> Prop),
- nbhs_ball_ (ball_ normr) x P = (\near x, P x)) *
-(forall (K : numDomainType) (V : pseudoMetricNormedZmodType K) 
-   (x : V) (P : V -> Prop),
- filter_from [set x0 | (0 < x0)%R] (ball_ normr x) P = (\near x, P x)) *
-(forall (K : numDomainType) (V : pseudoMetricNormedZmodType K) 
-   (x : V) (P : V -> Prop),
- (\forall x0 \near nbhs_ball_ (ball_ normr) x, P x0) = (\near x, P x))
-
-NearNorm.near_simpl is not universe polymorphic
-NearNorm.near_simpl is transparent
-Expands to: Constant
-            mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.NearNorm.near_simpl
-Declared in
-library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 1123, characters 11-21
-</p></span></div></span> (<span id="xy:3" class="id"><a name="xy:3" class="">xy</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#pseudoMetricDist.X">X</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#pseudoMetricDist.X">X</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#pseudoMetricDist.R">R</a></span><span class="id"> :=</span><br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="edist" class="id"><div name="edist" class=" tooltip">edist<span class='tooltip-area'></span></div></span> (<span id="xy:3" class="id"><a name="xy:3" class="">xy</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#pseudoMetricDist.X">X</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#pseudoMetricDist.X">X</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#pseudoMetricDist.R">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.ereal.html#ereal_inf">ereal_inf</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#EFin">EFin</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="r:4" class="id"><a name="r:4" class="">r</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#r:4">r</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#ball">ball</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#xy:3">xy</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#r:4">r</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#xy:3">xy</a></span>.<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="edist_ge0" class="id"><a name="edist_ge0" class="">edist_ge0</a></span> (<span id="xy:5" class="id"><a name="xy:5" class="">xy</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#pseudoMetricDist.X">X</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> *</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#11c698c8685bb8ab1cf725545c085ac4"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#pseudoMetricDist.X">X</a></span>)<span class="id"> :</span> (<span class="id">0</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#edist">edist</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#xy:5">xy</a></span>)<span class="id">%E</span>.<br/>
@@ -522,7 +485,44 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> edist_inf</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="edist_inf.R" class="id"><a name="edist_inf.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> {</span><span id="edist_inf.T" class="id"><a name="edist_inf.T" class="">T</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#PseudoMetric.Exports.pseudoMetricType">pseudoMetricType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#R:34">R</a></span><span class="id">}</span> (<span id="edist_inf.A" class="id"><a name="edist_inf.A" class="">A</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.urysohn.html#T:35">T</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="edist_inf" class="id"><div name="edist_inf" class=" tooltip">edist_inf<span class='tooltip-area'><p>closed_ball_ :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="edist_inf" class="id"><div name="edist_inf" class=" tooltip">edist_inf<span class='tooltip-area'><p>NearNorm.near_simpl :
+(forall (U : Type) (T : filteredType U) (x : T) (P : set U),
+ (\forall x0 \near nbhs x, P x0) = (\near x, P x)) *
+(forall (U : Type) (T : filteredType U) (x : T) (P : set U),
+ nbhs x P = (\near x, P x)) *
+(forall (X : Type) (fX : filteredType X) (x : fX) (P : set X),
+ nbhs x P = (\near x, P x)) *
+(forall (T : Type) (F : filter_on T) (P : set T),
+ (\near F, P F) = (\forall x \near F, P x)) *
+(forall (T U : Type) (f : T -> U) (F : set_system T) (P : set U),
+ (\forall y \near (f x @[x --> F])%classic, P y) = (\near F, P (f F))) *
+(forall (T U : Type) (f : T -> set U) (F : set_system T) (P : set U),
+ (\forall y \near (f x `@[x --> F])%classic, P y) =
+ (\near F, exists y : U, f F y /\ P y)) *
+(forall (T T' U U' : Type) (f : T -> U) (g : T' -> U') 
+   (F : set_system T) (G : set_system T') (P : U -> set U'),
+ Filter F ->
+ Filter G ->
+ (\forall y \near (f x @[x --> F])%classic & y' \near 
+  (g x @[x --> G])%classic, P y y') =
+ (\near F & G, P (f F) (g G))) *
+(forall (K : numDomainType) (V : pseudoMetricNormedZmodType K) 
+   (x : V) (P : V -> Prop),
+ nbhs_ball_ (ball_ normr) x P = (\near x, P x)) *
+(forall (K : numDomainType) (V : pseudoMetricNormedZmodType K) 
+   (x : V) (P : V -> Prop),
+ filter_from [set x0 | (0 < x0)%R] (ball_ normr x) P = (\near x, P x)) *
+(forall (K : numDomainType) (V : pseudoMetricNormedZmodType K) 
+   (x : V) (P : V -> Prop),
+ (\forall x0 \near nbhs_ball_ (ball_ normr) x, P x0) = (\near x, P x))
+
+NearNorm.near_simpl is not universe polymorphic
+NearNorm.near_simpl is transparent
+Expands to: Constant
+            mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.NearNorm.near_simpl
+Declared in
+library mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule, line 1123, characters 11-21
+closed_ball_ :
 forall [R : numDomainType] [V : GRing.Zmodule.Exports.zmodType],
 (V -> R) -> V -> R -> set V
 
