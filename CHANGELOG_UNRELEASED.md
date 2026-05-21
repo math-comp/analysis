@@ -93,6 +93,9 @@
   + lemma `is_diff_mx`
   + instance `is_diff_mx`
 
+- in `reals.v`:
+  + lemmas `sup_ge0`, `has_sup_wpZl`, `gt0_has_supZl`, `has_sup_Mn`, `sup_Mn`
+
 ### Changed
 
 - moved from `measurable_structure.v` to `classical_sets.v`:
