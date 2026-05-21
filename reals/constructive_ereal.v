@@ -94,6 +94,7 @@ From mathcomp Require Import mathcomp_extra interval_inference.
 (*  (\prod_(i in A) f i)%E == bigop-like notation in scope %E                 *)
 (*      maxe x y, mine x y == notation for the maximum/minimum of two         *)
 (*                            extended real numbers                           *)
+(*                   esg x == sign of x (0, -1, or +1, as an extended real)   *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## Signed extended real numbers                                            *)
@@ -3025,6 +3026,30 @@ Notation maxeMl := maxe_pMl (only parsing).
 Notation mineMr := mine_pMr (only parsing).
 #[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to mine_pMl")]
 Notation mineMl := mine_pMl (only parsing).
+
+Section esg.
+Context {R : realDomainType}.
+Implicit Types x : \bar R.
+
+Definition esg x : \bar R := if x == 0 then 0 else if x < 0 then -1 else 1.
+
+Lemma numEesg x : x = esg x * `| x |.
+Proof.
+rewrite /esg; have [x0|x0|->] := ltgtP x 0.
+- by rewrite lte0_abs// muleNN mul1e.
+- by rewrite gte0_abs// mul1e.
+- by rewrite abse0 mule0.
+Qed.
+
+Lemma gte0_esg x : x < 0 -> esg x = -1.
+Proof. by move=> x0; rewrite /esg lt_eqF// x0. Qed.
+
+Lemma lte0_esg x: 0 < x -> esg x = 1.
+Proof. by move=> x0; rewrite /esg gt_eqF// ltNge (ltW x0). Qed.
+
+Lemma esg0 : esg 0 = 0. Proof. by rewrite /esg eqxx. Qed.
+
+End esg.
 
 Module DualAddTheoryRealDomain.
 

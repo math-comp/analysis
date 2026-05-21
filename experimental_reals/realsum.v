@@ -7,10 +7,11 @@
 From mathcomp Require Import boot order algebra.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp.classical Require Import boolp fsbigop.
-From mathcomp Require Import xfinmap constructive_ereal reals discrete realseq.
-From mathcomp.classical Require Import classical_sets functions cardinality.
-From mathcomp.analysis Require Import esum ereal numfun.
+From mathcomp Require Import boolp fsbigop classical_sets functions.
+From mathcomp Require Import cardinality.
+From mathcomp Require Import constructive_ereal reals.
+From mathcomp Require Import xfinmap discrete realseq.
+From mathcomp Require Import esum ereal numfun.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -45,13 +46,13 @@ End Summable.
 (* -------------------------------------------------------------------- *)
 Section Sum.
 Context {R : realType} {T : choiceType}.
-
 Implicit Types f g : T -> R.
 
-Lemma eq_fpos f g : f =1 g -> f^\+ =1 g^\+.
+(* TODO: move to numfun.v *)
+Lemma eq_funrpos f g : f =1 g -> f^\+ =1 g^\+.
 Proof. by move=> eq_fg x; rewrite /funrpos eq_fg. Qed.
 
-Lemma eq_fneg f g : f =1 g -> f^\- =1 g^\-.
+Lemma eq_funrneg f g : f =1 g -> f^\- =1 g^\-.
 Proof. by move=> eq_fg x; rewrite /funrneg eq_fg. Qed.
 
 Lemma funrpos_cst0 x : (fun _ : T => 0)^\+ x = 0 :> R.
@@ -60,43 +61,41 @@ Proof. by rewrite /funrpos maxxx. Qed.
 Lemma funrneg_cst0 x : (fun _ : T => 0)^\- x = 0 :> R.
 Proof. by rewrite /funrneg oppr0 maxxx. Qed.
 
-Lemma fposZ f c : 0 <= c -> (c \*o f)^\+ =1 c \*o f^\+.
+Lemma funrposZ f c : 0 <= c -> (c \*o f)^\+ =1 c \*o f^\+.
 Proof. by move=> ge0_c x; rewrite /= ge0_funrposM. Qed.
 
-Lemma fnegZ f c : 0 <= c -> (c \*o f)^\- =1 c \*o f^\-.
+Lemma funrnegZ f c : 0 <= c -> (c \*o f)^\- =1 c \*o f^\-.
 Proof.
-move=> ge0_c x; rewrite /= -!funrposN; have /= <- := fposZ (- f) ge0_c x.
-by apply/eq_fpos=> y /=; rewrite mulrN.
+move=> ge0_c x; rewrite /= -!funrposN; have /= <- := funrposZ (- f) ge0_c x.
+by apply/eq_funrpos=> y /=; rewrite mulrN.
 Qed.
 
-Lemma fpos_natrM f (n : T -> nat) x :
+Lemma funrpos_natrM f (n : T -> nat) x :
   (fun x => (n x)%:R * f x)^\+ x = (n x)%:R * f^\+ x.
 Proof.
 by rewrite /funrpos -[in RHS]normr_nat maxr_pMr// mulr0 ger0_norm.
 Qed.
 
-Lemma fneg_natrM f (n : T -> nat) x :
+Lemma funrneg_natrM f (n : T -> nat) x :
   (fun x => (n x)%:R * f x)^\- x = (n x)%:R * f^\- x.
 Proof.
-rewrite -[in RHS]funrposN -fpos_natrM -funrposN.
-by apply/eq_fpos=> y; rewrite mulrN.
+rewrite -[in RHS]funrposN -funrpos_natrM -funrposN.
+by apply/eq_funrpos=> y; rewrite mulrN.
 Qed.
 
-Lemma fneg_ge0 f x : (forall x, 0 <= f x) -> f^\- x = 0.
+Lemma ge0_funrneg f x : (forall x, 0 <= f x) -> f^\- x = 0.
 Proof. by move=> ?; rewrite /funrneg max_r// oppr_le0. Qed.
 
-Lemma fpos_ge0 f x : (forall x, 0 <= f x ) -> f^\+ x = f x.
+Lemma ge0_funrpos f x : (forall x, 0 <= f x) -> f^\+ x = f x.
 Proof. by move=> ?; rewrite /funrpos max_l. Qed.
 
-Lemma le_fpos_norm f x : f^\+ x <= `|f x|.
+Lemma le_funrpos_norm f x : f^\+ x <= `|f x|.
 Proof.
 by rewrite -/((Num.Def.normr \o f) x) -funrposDneg lerDl funrneg_ge0.
 Qed.
 
-Lemma le_fpos f1 f2 : f1 <=1 f2 -> f1^\+ <=1 f2^\+.
-Proof.
-by move=> le_f x; rewrite (@funrpos_le _ _ setT)// inE.
-Qed.
+Lemma funrpos_le f1 f2 : f1 <=1 f2 -> f1^\+ <=1 f2^\+.
+Proof. by move=> le_f x; rewrite (@funrpos_le _ _ setT)// in_setT. Qed.
 
 Definition psum f : R :=
   (* We need some ticked `image` operator *)
@@ -104,6 +103,7 @@ Definition psum f : R :=
   if `[<summable f>] then sup S else 0.
 
 Definition sum f : R := psum f^\+ - psum f^\-.
+
 End Sum.
 
 (* -------------------------------------------------------------------- *)
@@ -114,7 +114,7 @@ Lemma summable_countn0 : summable f -> discrete.countable [pred x | f x != 0].
 Proof.
 case/summableP=> M ge0_M bM; pose E (p : nat) := [pred x | `|f x| > p.+1%:~R^-1].
 set F := [pred x | _]; have le: {subset F <= [pred x | `[< exists p, x \in E p >]]}.
-  move=> x; rewrite !inE => nz_fx; exists (Num.truncn `|f x|^-1).
+  move=> x; rewrite !inE => nz_fx; apply/asboolP; exists (Num.truncn `|f x|^-1).
   by rewrite inE invf_plt ?unfold_in/= ?normr_gt0 // -normfV ltr_norm_bound.
 apply/(countable_sub le)/cunion_countable=> i /=.
 case: (existsTP (fun s : seq T => {subset E i <= s}))=> /= [[s le_Eis]|].
@@ -236,7 +236,8 @@ Qed.
 Lemma eq_sum (F1 F2 : T -> R) : F1 =1 F2 -> sum F1 = sum F2.
 Proof.
 move=> eq_fg; rewrite /sum; congr (_ - _); apply/eq_psum.
-  by apply/eq_fpos. by apply/eq_fneg.
+- exact/eq_funrpos.
+- exact/eq_funrneg.
 Qed.
 
 Lemma le_summable (F1 F2 : T -> R) :
@@ -633,18 +634,15 @@ move=> smS1 smS2; apply/summableMl => //; exists (psum S1).
 by move=> x; apply/ger1_psum.
 Qed.
 
-(* -------------------------------------------------------------------- *)
-Lemma summable_fpos (f : T -> R) :
-  summable f -> summable f^\+.
+Lemma summable_funrpos (f : T -> R) : summable f -> summable f^\+.
 Proof.
-by move/summable_abs; apply/le_summable => x; rewrite funrpos_ge0 le_fpos_norm.
+move/summable_abs; apply/le_summable => x.
+by rewrite funrpos_ge0 le_funrpos_norm.
 Qed.
 
-(* -------------------------------------------------------------------- *)
-Lemma summable_fneg (f : T -> R) :
-  summable f -> summable f^\-.
+Lemma summable_funrneg (f : T -> R) : summable f -> summable f^\-.
 Proof.
-by move/summableN/summable_fpos; apply: eq_summable => x; rewrite funrposN.
+by move/summableN/summable_funrpos; apply: eq_summable => x; rewrite funrposN.
 Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -709,8 +707,8 @@ rewrite (@eq_esum _ _ _ ((fun x => (S x)%:E)^\+%E) (fun x => (S^\+ x)%:E)).
   by move=> t _; rewrite funeposE -fine_max.
 rewrite (@eq_esum _ _ _ ((fun x => (S x)%:E)^\-%E) (fun x => (S^\- x)%:E)).
   by move=> t _; rewrite funenegE EFin_max.
-rewrite esum_psum//; first exact : summable_fpos.
-by rewrite esum_psum//; exact : summable_fneg.
+rewrite esum_psum//; first exact : summable_funrpos.
+by rewrite esum_psum//; exact : summable_funrneg.
 Qed.
 
 End Sum_Sum.
@@ -1152,20 +1150,19 @@ Implicit Types (S : T -> R).
 Lemma psum_sum S : (forall x, 0 <= S x) -> psum S = sum S.
 Proof.
 move=> ge0_S; rewrite /sum [X in _-X]psum_eq0 ?subr0.
-  by move=> x; rewrite fneg_ge0.
-by apply/eq_psum=> x; rewrite fpos_ge0.
+  by move=> x; rewrite ge0_funrneg.
+by apply/eq_psum=> x; rewrite ge0_funrpos.
 Qed.
 
-Lemma le_sum S1 S2 :
-  summable S1 -> summable S2 -> (S1 <=1 S2) ->
-    sum S1 <= sum S2.
+Lemma le_sum S1 S2 : summable S1 -> summable S2 -> S1 <=1 S2 ->
+  sum S1 <= sum S2.
 Proof.
 move=> smS1 smS2 leS; rewrite /sum lerB //.
-  apply/le_psum/summable_fpos => // x.
-  by rewrite funrpos_ge0/= le_fpos.
-apply/le_psum/summable_fneg => // x.
-rewrite -!funrposN funrpos_ge0 le_fpos // => y.
-by rewrite lerN2.
+- apply/le_psum/summable_funrpos => // x.
+  by rewrite funrpos_ge0/= funrpos_le.
+- apply/le_psum/summable_funrneg => // x.
+  rewrite -!funrposN funrpos_ge0 funrpos_le // => y.
+  by rewrite lerN2.
 Qed.
 
 Lemma sum0 : sum (@cst T _ 0) = 0 :> R.
@@ -1185,7 +1182,7 @@ transitivity (Num.sg c * sum (`|c| \*o S)).
   + by rewrite (eq_sum (F2 := cst 0)) ?sum0 // => x; rewrite !mul0r.
   + by apply/eq_sum=> x; rewrite mul1r.
   by rewrite mulN1r -sumN; apply/eq_sum=> x; rewrite !mulN1r.
-rewrite {1}/sum !(eq_psum (fposZ _ _), eq_psum (fnegZ _ _)) //.
+rewrite {1}/sum !(eq_psum (funrposZ _ _), eq_psum (funrnegZ _ _)) //.
 by rewrite !psumZ // -mulrBr mulrA -numEsg.
 Qed.
 
@@ -1194,10 +1191,10 @@ Lemma sumID S (P : pred T) :
     sum (fun x => (P x)%:R * S x) + sum (fun x => (~~ P x)%:R * S x).
 Proof.
 move=> sm_S; rewrite /sum addrACA -[in RHS]opprD; congr (_ - _).
-+ rewrite (psumID P); first by apply/summable_fpos.
-  by congr (_ + _); apply/eq_psum => x; rewrite fpos_natrM.
-+ rewrite (psumID P); first by apply/summable_fneg.
-  by congr (_ + _); apply/eq_psum => x; rewrite fneg_natrM.
++ rewrite (psumID P); first exact/summable_funrpos.
+  by congr (_ + _); apply/eq_psum => x; rewrite funrpos_natrM.
++ rewrite (psumID P); first exact/summable_funrneg.
+  by congr (_ + _); apply/eq_psum => x; rewrite funrneg_natrM.
 Qed.
 
 Lemma sum_finseq S (r : seq T) :

@@ -713,32 +713,6 @@ Qed.
 
 End esumB.
 
-(* TODO: This should go to ereal.v or constructive_ereal.v *)
-Section Ereal.
-Context {R : realType}.
-Implicit Types x : \bar R.
-
-Definition esg x : \bar R :=
-  if x == 0 then 0 else if x < 0 then -1 else 1.
-
-Lemma numEsg x : x = esg x * `| x |.
-Proof.
-rewrite /esg; have [x0|x0|->] := ltgtP x 0.
-- by rewrite lte0_abs// muleNN mul1e.
-- by rewrite gte0_abs// mul1e.
-- by rewrite abse0 mule0.
-Qed.
-
-Lemma gte0_esg x : x < 0 -> esg x = -1.
-Proof. by move=> x0; rewrite /esg lt_eqF// x0. Qed.
-
-Lemma lte0_esg x: 0 < x -> esg x = 1.
-Proof. by move=> x0; rewrite /esg gt_eqF// ltNge (ltW x0). Qed.
-
-Lemma esg0 : esg 0 = 0. Proof. by rewrite /esg eqxx. Qed.
-
-End Ereal.
-
 Section Sum.
 Context {R : realType} {T : choiceType}.
 Implicit Types (f : T -> \bar R) (x y : \bar R).
@@ -843,7 +817,7 @@ Lemma sumZ S c : (forall x, 0 <= S x) -> sum (fun x => c * S x) = c * sum S.
 Proof.
 move=> h.
 rewrite (@eq_sum _ (fun x => esg c * (`|c| * S x))).
-  by move=> x; rewrite muleA -numEsg.
+  by move=> x; rewrite muleA -numEesg.
 transitivity (esg c * sum (fun x => `|c| * S x)).
 - have [hc|hc|->] := comparable_ltgtP (comparableT c 0).
   + rewrite {1}lte0_abs// gte0_esg// (@eq_sum _ (fun x => - (- c * S x))).
@@ -858,7 +832,7 @@ transitivity (esg c * sum (fun x => `|c| * S x)).
      by move=> ? _; rewrite ge0_funepos // => x; rewrite mule_ge0.
   rewrite (@eq_esum _ _ _ (_^\-) (@cst T _ 0)).
     by move => ? _; rewrite ge0_funeneg // => x; rewrite mule_ge0.
-  by rewrite (@esum1 _ _ _ (cst 0))// sube0 esumZ// muleA -numEsg esum_sum'.
+  by rewrite (@esum1 _ _ _ (cst 0))// sube0 esumZ// muleA -numEesg esum_sum'.
 Qed.
 
 End SumTheoryP.
@@ -906,7 +880,7 @@ Lemma summable_sumZ S c :
 Proof.
 move => hf h.
 rewrite (@eq_sum _ (fun x => esg c * (`|c| * S x))).
-  by move=> x; rewrite muleA -numEsg.
+  by move=> x; rewrite muleA -numEesg.
 transitivity (esg c * sum (fun x => `|c| * S x)).
 - have [hc|hc|->] := comparable_ltgtP (comparableT c 0).
   + rewrite {1}lte0_abs// gte0_esg// (@eq_sum _ (fun x => - (- c * S x))).
@@ -925,7 +899,7 @@ transitivity (esg c * sum (fun x => `|c| * S x)).
   rewrite !esumZ// -muleBr//=.
     rewrite adde_defC fin_num_adde_defl//.
     exact: summable_esum_funepos.
-  by rewrite muleA -numEsg.
+  by rewrite muleA -numEesg.
 Qed.
 
 End SumTheoryS.

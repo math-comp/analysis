@@ -96,10 +96,12 @@
   + lemma `esum_psum`
   + lemma `sum_sum`
 
+- in `constructive_ereal.v`:
+  + definition `esg`
+  + lemmas `numEesg`, `gte0_esg`, `lte0_esg`, `esg0`
+
 - in `esum.v`:
   + lemmas `esum_eq0P`, `esumZ`, `esum_esum'`
-  + definition `esg`
-  + lemmas `numEsg`, `gte0_esg`, `lte0_esg`, `esg0`
   + lemmas `ge0_funeneg`, `ge0_funepos`, `funepos_cst0`, `funeneg_cst0`,
     `le_funepos`
   + definition `sum`
@@ -244,15 +246,15 @@
     `Radon_Nikodym_cscale`, `Radon_Nikodym_cadd`, `Radon_Nikodym_chain_rule`
 - in `realsum.v`:
   + now use `funrpos` and `funrneg`:
-    * lemmas `eq_fpos`, `eq_fneg`
+    * lemmas `eq_funrpos`, `eq_funrneg`
     * lemma `fpos0` (renamed to `funrpos_cst0`)
     * lemma `fneg0` (renamed to `funrneg_cst0`)
-    * lemmas `fposZ`, `fnegZ`
-    * lemmas `fpos_natrM`, `fneg_natrM`
-    * lemmas `fneg_ge0`, `fpos_ge0`
-    * lemmas `le_fpos_norm`, `le_fpos`
+    * lemmas `funrposZ`, `funrnegZ`
+    * lemmas `funrpos_natrM`, `funrneg_natrM`
+    * lemmas `ge0_funrneg`, `ge0_funrpos`
+    * lemmas `le_funrpos_norm`, `funrpos_le`
     * definition `sum`
-    * lemmas `summable_fpos`, `summable_fneg`
+    * lemmas `summable_funrpos`, `summable_funrneg`
   + lemma `sum0` (now uses `cst`)
 
 ### Renamed
