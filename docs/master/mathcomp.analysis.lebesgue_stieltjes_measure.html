@@ -350,17 +350,17 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> itv_semiRingOfSets</span>.<br/>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="itv_semiRingOfSets.R" class="id"><a name="itv_semiRingOfSets.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">I</span><span class="id"> J</span><span class="id"> K</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#itv_semiRingOfSets.R">R</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="ocitv_type" class="id"><div name="ocitv_type" class=" tooltip">ocitv_type<span class='tooltip-area'><p>atan_unlock_subterm :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="ocitv_type" class="id"><div name="ocitv_type" class=" tooltip">ocitv_type<span class='tooltip-area'><p>locked_asin :
 unlockable
   (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (- (trigo.pi / 2) < y < trigo.pi / 2)%R /\
-                          tan y = x]%classic
+   [get x0 : _ | [set y | (- (trigo.pi / 2) <= y <= trigo.pi / 2)%R /\
+                          sin y = x]%classic
                    x0])
 
-atan_unlock_subterm is not universe polymorphic
-atan_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.trigo.atan_unlock_subterm
-Declared in library mathcomp.analysis.trigo, line 1098, characters 0-106
+locked_asin is not universe polymorphic
+locked_asin is transparent
+Expands to: Constant mathcomp.analysis.trigo.locked_asin
+Declared in library mathcomp.analysis.trigo, line 1000, characters 10-21
 </p></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#itv_semiRingOfSets.R">R</a></span>.<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="ocitv" class="id"><div name="ocitv" class=" tooltip">ocitv<span class='tooltip-area'><p>atan_unlock_subterm :
@@ -866,17 +866,17 @@ Declared in library mathcomp.analysis.trigo, line 1098, characters 0-106
 <span class="vernacular">End</span><span class="id"> wlength_extension</span>.<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#lebesgue_stieltjes_measure">lebesgue_stieltjes_measure</a></span><span class="id"> {R}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="measurableTypeR" class="id"><div name="measurableTypeR" class=" tooltip">measurableTypeR<span class='tooltip-area'><p>locked_atan :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="measurableTypeR" class="id"><div name="measurableTypeR" class=" tooltip">measurableTypeR<span class='tooltip-area'><p>atan_unlock_subterm :
 unlockable
   (fun (R : realType) (x : R) =>
    [get x0 : _ | [set y | (- (trigo.pi / 2) < y < trigo.pi / 2)%R /\
                           tan y = x]%classic
                    x0])
 
-locked_atan is not universe polymorphic
-locked_atan is transparent
-Expands to: Constant mathcomp.analysis.trigo.locked_atan
-Declared in library mathcomp.analysis.trigo, line 1100, characters 10-21
+atan_unlock_subterm is not universe polymorphic
+atan_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.trigo.atan_unlock_subterm
+Declared in library mathcomp.analysis.trigo, line 1098, characters 0-106
 </p></span></div></span> (<span id="R:157" class="id"><a name="R:157" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#g_sigma_algebraType">g_sigma_algebraType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#R:157">R</a></span>.<span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#::classical_set_scope:x_'.-ocitv.-measurable'">-ocitv</a></span>.<span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#::classical_set_scope:x_'.-ocitv.-measurable'">-measurable</a></span>.<br/>
 <br/>
@@ -901,13 +901,17 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> completed_lebesgue_stieltjes_measure</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="completed_lebesgue_stieltjes_measure.R" class="id"><a name="completed_lebesgue_stieltjes_measure.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="completed_lebesgue_stieltjes_measure" class="id"><div name="completed_lebesgue_stieltjes_measure" class=" tooltip">completed_lebesgue_stieltjes_measure<span class='tooltip-area'><p>oneDsqr : forall {R : realType}, R -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="completed_lebesgue_stieltjes_measure" class="id"><div name="completed_lebesgue_stieltjes_measure" class=" tooltip">completed_lebesgue_stieltjes_measure<span class='tooltip-area'><p>locked_atan :
+unlockable
+  (fun (R : realType) (x : R) =>
+   [get x0 : _ | [set y | (- (trigo.pi / 2) < y < trigo.pi / 2)%R /\
+                          tan y = x]%classic
+                   x0])
 
-oneDsqr is not universe polymorphic
-Arguments oneDsqr {R} x%_ring_scope
-oneDsqr is transparent
-Expands to: Constant mathcomp.analysis.trigo.oneDsqr
-Declared in library mathcomp.analysis.trigo, line 1106, characters 11-18
+locked_atan is not universe polymorphic
+locked_atan is transparent
+Expands to: Constant mathcomp.analysis.trigo.locked_atan
+Declared in library mathcomp.analysis.trigo, line 1100, characters 10-21
 </p></span></div></span> (<span id="f:165" class="id"><a name="f:165" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#cumulative">cumulative</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#completed_lebesgue_stieltjes_measure.R">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#completed_lebesgue_stieltjes_measure.R">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id">@</span><span class="id"><a href="mathcomp.analysis.measure_theory.measure_extension.html#completed_measure_extension">completed_measure_extension</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span> (<span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#wlength">wlength</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#f:165">f</a></span>).<br/>
 <br/>
@@ -932,13 +936,13 @@ Declared in library mathcomp.analysis.trigo, line 1106, characters 11-18
 <span class="vernacular">Section</span><span class="id"> salgebra_R_ssets</span>.<br/>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="salgebra_R_ssets.R" class="id"><a name="salgebra_R_ssets.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="measurableR" class="id"><div name="measurableR" class=" tooltip">measurableR<span class='tooltip-area'><p>oneDsqr_inum : forall {R : realType}, R -> {itv R & `[1%Z, +oo[%R}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="measurableR" class="id"><div name="measurableR" class=" tooltip">measurableR<span class='tooltip-area'><p>oneDsqr : forall {R : realType}, R -> R
 
-oneDsqr_inum is not universe polymorphic
-Arguments oneDsqr_inum {R} x%_ring_scope
-oneDsqr_inum is transparent
-Expands to: Constant mathcomp.analysis.trigo.oneDsqr_inum
-Declared in library mathcomp.analysis.trigo, line 1114, characters 10-22
+oneDsqr is not universe polymorphic
+Arguments oneDsqr {R} x%_ring_scope
+oneDsqr is transparent
+Expands to: Constant mathcomp.analysis.trigo.oneDsqr
+Declared in library mathcomp.analysis.trigo, line 1106, characters 11-18
 </p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span> (<span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#salgebra_R_ssets.R">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#salgebra_R_ssets.R">R</a></span>.<span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#::classical_set_scope:x_'.-ocitv.-measurable'">-ocitv</a></span>.<span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#::classical_set_scope:x_'.-ocitv.-measurable'">-measurable</a></span>).<span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#::classical_set_scope:x_'.-sigma.-measurable'">-sigma</a></span>.<span class="id"><a href="mathcomp.analysis.measure_theory.measurable_structure.html#::classical_set_scope:x_'.-sigma.-measurable'">-measurable</a></span>.<br/>
 <br/>
