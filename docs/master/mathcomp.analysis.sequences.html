@@ -3257,9 +3257,7 @@ The reduction tactics never unfold series
 series is transparent
 Expands to: Constant mathcomp.analysis.sequences.series
 Declared in library mathcomp.analysis.sequences, line 519, characters 11-17
-</p></span></div></span><span class="id"> </span><span id="u:1515" class="id"><a name="u:1515" class="">u</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">[sequence</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65"> </a></span><span class="id"><a href="mathcomp.analysis.ereal.html#ereal_sup">ereal_sup</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#sdrop">sdrop</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1515">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#n:1516">n</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">]_</a></span><span id="n:1516" class="id"><a name="n:1516" class="">n</a></span>.<br/>
-<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="einfs" class="id"><div name="einfs" class=" tooltip">einfs<span class='tooltip-area'><p>telescope : forall {V : GRing.Zmodule.Exports.zmodType}, V ^nat -> V ^nat
+telescope : forall {V : GRing.Zmodule.Exports.zmodType}, V ^nat -> V ^nat
 
 telescope is not universe polymorphic
 Arguments telescope {V} u_ n : simpl never
@@ -3268,6 +3266,17 @@ The reduction tactics never unfold telescope
 telescope is transparent
 Expands to: Constant mathcomp.analysis.sequences.telescope
 Declared in library mathcomp.analysis.sequences, line 520, characters 11-20
+</p></span></div></span><span class="id"> </span><span id="u:1515" class="id"><a name="u:1515" class="">u</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">[sequence</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65"> </a></span><span class="id"><a href="mathcomp.analysis.ereal.html#ereal_sup">ereal_sup</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#sdrop">sdrop</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1515">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#n:1516">n</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">]_</a></span><span id="n:1516" class="id"><a name="n:1516" class="">n</a></span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="einfs" class="id"><div name="einfs" class=" tooltip">einfs<span class='tooltip-area'><p>harmonic : forall {R : fieldType}, R ^nat
+
+harmonic is not universe polymorphic
+Arguments harmonic {R} n /
+  (where some original arguments have been renamed)
+The reduction tactics unfold harmonic when applied to 2 arguments
+harmonic is transparent
+Expands to: Constant mathcomp.analysis.sequences.harmonic
+Declared in library mathcomp.analysis.sequences, line 726, characters 11-19
 </p></span></div></span><span class="id"> </span><span id="u:1517" class="id"><a name="u:1517" class="">u</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">[sequence</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65"> </a></span><span class="id"><a href="mathcomp.analysis.ereal.html#ereal_inf">ereal_inf</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#sdrop">sdrop</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1517">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#n:1518">n</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">]_</a></span><span id="n:1518" class="id"><a name="n:1518" class="">n</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="esupsN" class="id"><a name="esupsN" class="">esupsN</a></span><span class="id"> </span><span id="u:1519" class="id"><a name="u:1519" class="">u</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#esups">esups</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#b9ea624cf1ed6f77d648bedb1e978b55">-%E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1519">u</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#b9ea624cf1ed6f77d648bedb1e978b55">-%E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#einfs">einfs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1519">u</a></span>.<br/>
@@ -3370,24 +3379,22 @@ Qed.</div></details>
 <span class="vernacular">Implicit</span><span class="gallina-kwd"> Type</span> (<span class="id">u</span><span class="id"> :</span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#limn_esup_einf.R">R</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span>).<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="limn_esup" class="id"><div name="limn_esup" class=" tooltip">limn_esup<span class='tooltip-area'><p>harmonic : forall {R : fieldType}, R ^nat
-
-harmonic is not universe polymorphic
-Arguments harmonic {R} n /
-  (where some original arguments have been renamed)
-The reduction tactics unfold harmonic when applied to 2 arguments
-harmonic is transparent
-Expands to: Constant mathcomp.analysis.sequences.harmonic
-Declared in library mathcomp.analysis.sequences, line 726, characters 11-19
-</p></span></div></span><span class="id"> </span><span id="u:1544" class="id"><a name="u:1544" class="">u</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.ereal_normedtype.html#limf_esup">limf_esup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1544">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#228a5fbd8d7ef28f21231bccff88d0b0">\oo</a></span>.<br/>
-<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="limn_einf" class="id"><div name="limn_einf" class=" tooltip">limn_einf<span class='tooltip-area'><p>arithmetic_mean : forall [R : numDomainType], R ^nat -> R ^nat
+<span class="vernacular">Definition</span><span class="id"> </span><span id="limn_esup" class="id"><div name="limn_esup" class=" tooltip">limn_esup<span class='tooltip-area'><p>arithmetic_mean : forall [R : numDomainType], R ^nat -> R ^nat
 
 arithmetic_mean is not universe polymorphic
 Arguments arithmetic_mean [R] u_ _
 arithmetic_mean is transparent
 Expands to: Constant mathcomp.analysis.sequences.arithmetic_mean
 Declared in library mathcomp.analysis.sequences, line 766, characters 11-26
+</p></span></div></span><span class="id"> </span><span id="u:1544" class="id"><a name="u:1544" class="">u</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.ereal_normedtype.html#limf_esup">limf_esup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1544">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#228a5fbd8d7ef28f21231bccff88d0b0">\oo</a></span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="limn_einf" class="id"><div name="limn_einf" class=" tooltip">limn_einf<span class='tooltip-area'><p>harmonic_mean : forall [R : numDomainType], R ^nat -> R ^nat
+
+harmonic_mean is not universe polymorphic
+Arguments harmonic_mean [R] u_ _
+harmonic_mean is transparent
+Expands to: Constant mathcomp.analysis.sequences.harmonic_mean
+Declared in library mathcomp.analysis.sequences, line 769, characters 11-24
 </p></span></div></span><span class="id"> </span><span id="u:1545" class="id"><a name="u:1545" class="">u</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-'_x">-</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#limn_esup">limn_esup</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bf80dd271000fa448e03c4c14365c369">\-</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bf80dd271000fa448e03c4c14365c369"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1545">u</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="limn_esup_lim" class="id"><a name="limn_esup_lim" class="">limn_esup_lim</a></span><span class="id"> </span><span id="u:1546" class="id"><a name="u:1546" class="">u</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#limn_esup">limn_esup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1546">u</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#limn">limn</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#esups">esups</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1546">u</a></span>).<br/>
@@ -3790,14 +3797,7 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="adjacent_cut.R" class="id"><a name="adjacent_cut.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> L</span><span class="id"> D</span><span class="id"> E</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#adjacent_cut.R">R</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="adjacent_set" class="id"><div name="adjacent_set" class=" tooltip">adjacent_set<span class='tooltip-area'><p>harmonic_mean : forall [R : numDomainType], R ^nat -> R ^nat
-
-harmonic_mean is not universe polymorphic
-Arguments harmonic_mean [R] u_ _
-harmonic_mean is transparent
-Expands to: Constant mathcomp.analysis.sequences.harmonic_mean
-Declared in library mathcomp.analysis.sequences, line 769, characters 11-24
-root_mean_square : forall [R : realType], R ^nat -> R ^nat
+<span class="vernacular">Definition</span><span class="id"> </span><span id="adjacent_set" class="id"><div name="adjacent_set" class=" tooltip">adjacent_set<span class='tooltip-area'><p>root_mean_square : forall [R : realType], R ^nat -> R ^nat
 
 root_mean_square is not universe polymorphic
 Arguments root_mean_square [R] u_ _
