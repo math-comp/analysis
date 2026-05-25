@@ -858,15 +858,7 @@ Qed.</div></details>
 <span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="near_simpl" class="id"><div name="near_simpl" class=" tooltip">near_simpl<span class='tooltip-area'></span></div></span><span class="id"> :=</span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.filter.html#near_simpl">near_simpl</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.classical.filter.html#near_filter_onE">near_filter_onE</a></span>).<br/>
 <br/>
-<span class="id">Program</span><span class="vernacular"> Definition</span><span class="id"> </span><span id="trivial_filter_on" class="id"><div name="trivial_filter_on" class=" tooltip">trivial_filter_on<span class='tooltip-area'><p>filter_from : forall {I T : Type}, set I -> (I -> set T) -> set_system T
-
-filter_from is not universe polymorphic
-Arguments filter_from {I T}%_type_scope D%_classical_set_scope
-  B%_function_scope _
-filter_from is transparent
-Expands to: Constant mathcomp.classical.filter.filter_from
-Declared in library mathcomp.classical.filter, line 248, characters 11-22
-</p></span></div></span><span class="id"> </span><span id="T:260" class="id"><a name="T:260" class="">T</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#FilterType">FilterType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#94b9287f4dba4876ca96b3ab306cbac9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#94b9287f4dba4876ca96b3ab306cbac9"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#setT">setT</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#94b9287f4dba4876ca96b3ab306cbac9"> :</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#94b9287f4dba4876ca96b3ab306cbac9"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#T:260">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#94b9287f4dba4876ca96b3ab306cbac9">]</a></span><span class="id"> _</span>.<br/>
+<span class="id">Program</span><span class="vernacular"> Definition</span><span class="id"> </span><span id="trivial_filter_on" class="id"><div name="trivial_filter_on" class=" tooltip">trivial_filter_on<span class='tooltip-area'></span></div></span><span class="id"> </span><span id="T:260" class="id"><a name="T:260" class="">T</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#FilterType">FilterType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#94b9287f4dba4876ca96b3ab306cbac9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#94b9287f4dba4876ca96b3ab306cbac9"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#setT">setT</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#94b9287f4dba4876ca96b3ab306cbac9"> :</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#94b9287f4dba4876ca96b3ab306cbac9"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#T:260">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#94b9287f4dba4876ca96b3ab306cbac9">]</a></span><span class="id"> _</span>.<br/>
 <details>
 <summary class="toggleproof">Next Obligation.</summary>
 <div class="proofscript">
@@ -897,7 +889,15 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> /</span>(_<span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span>)<span class="id"> ex</span><span class="id"> /ex</span><span class="id"> []</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Build_ProperFilter_ex" class="id"><div name="Build_ProperFilter_ex" class=" tooltip">Build_ProperFilter_ex<span class='tooltip-area'><p>filter_prod :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Build_ProperFilter_ex" class="id"><div name="Build_ProperFilter_ex" class=" tooltip">Build_ProperFilter_ex<span class='tooltip-area'><p>filter_from : forall {I T : Type}, set I -> (I -> set T) -> set_system T
+
+filter_from is not universe polymorphic
+Arguments filter_from {I T}%_type_scope D%_classical_set_scope
+  B%_function_scope _
+filter_from is transparent
+Expands to: Constant mathcomp.classical.filter.filter_from
+Declared in library mathcomp.classical.filter, line 248, characters 11-22
+filter_prod :
 forall {T U : Type}, set_system T -> set_system U -> set_system (T * U)
 
 filter_prod is not universe polymorphic
