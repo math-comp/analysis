@@ -329,6 +329,9 @@
 - in `simple_functions.v`:
   + lemmas `fctD`, `fctN`, `fctM`, `fctZ`
 
+- in `ereal.v`:
+  + lemmas `ge0_mule_fsumr`, `ge0_mule_fsuml`
+
 ### Deprecated
 
 - file `charge.v` (use `measure.v` and/or `lebesgue_integral.v`)

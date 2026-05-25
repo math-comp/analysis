@@ -141,26 +141,29 @@ Lemma eq_esum [R : realType] [T : choiceType] (I : set T) (a b : T -> \bar R) :
   \esum_(i in I) a i = \esum_(i in I) b i.
 Proof. by move=> e; apply/eqP; rewrite eq_le !le_esum// => i Ii; rewrite e. Qed.
 
-(* TODO: generalize setT to any set *)
-Lemma esumZ [R : realType] [T : choiceType] (a : T -> \bar R)
-    (c : \bar R) : 0 <= c -> (forall t, 0 <= a t) ->
-  \esum_(t in [set: T]) c * a t = c * \esum_(t in [set: T]) a t.
+Lemma esumZ [R : realType] [T : choiceType] (A : set T) (a : T -> \bar R)
+    (c : \bar R) : 0 <= c -> (forall t, A t -> 0 <= a t) ->
+  \esum_(t in A) c * a t = c * \esum_(t in A) a t.
 Proof.
 rewrite le_eqVlt => /predU1P[<- _|c0 a0].
-  by rewrite esum1 ?mul0e// => ? _; rewrite mul0e.
+  by rewrite mul0e esum1// => ? _; rewrite mul0e.
 apply/eqP; rewrite eq_le; apply/andP; split.
-- rewrite ge_ereal_sup//= => _ [X [finX _]] <-.
-  by rewrite -ge0_mule_fsumr// (lee_wpmul2l (ltW c0))// esum_ge//; exists X.
+- rewrite ge_ereal_sup//= => _ [X [finX XA]] <-.
+  rewrite -ge0_mule_fsumr; first by move=> t /XA /a0.
+  by rewrite (lee_wpmul2l (ltW c0))// esum_ge//; exists X.
 - case: c c0 => [s s0|_|//].
   + rewrite -lee_pdivlMl// ge_ereal_sup//= => _ [X [finX XI]] <-.
-    by rewrite lee_pdivlMl// ge0_mule_fsumr// esum_ge//; exists X.
-  + have : 0 <= \esum_(x in setT) a x by apply: esum_ge0 => ? _; exact: a0.
+    rewrite lee_pdivlMl// ge0_mule_fsumr//; first by move=> t /XI /a0.
+    by rewrite esum_ge//; exists X.
+  + have : 0 <= \esum_(x in A) a x by apply: esum_ge0 => ? ?; exact: a0.
     rewrite [in X in X -> _]le_eqVlt => /predU1P[<-|suma0].
-    + by rewrite mule0 esum_ge0// => ? _; rewrite mule_ge0.
+    + by rewrite mule0 esum_ge0// => ? ?; rewrite mule_ge0// a0.
     + rewrite gt0_mulye//.
-      have [y [A fsetsTA yE y0]] := ereal_sup_gt suma0.
+      have [y [B fsetsTB yE y0]] := ereal_sup_gt suma0.
       rewrite leye_eq; apply/eqP/eq_infty => r; rewrite esum_ge//.
-      by exists A => //; rewrite -ge0_mule_fsumr// yE gt0_mulye// leey.
+      exists B => //; rewrite -ge0_mule_fsumr//.
+        by move=> i Bi; rewrite a0//; case: fsetsTB => _ /(_ _ Bi).
+      by rewrite yE gt0_mulye// leey.
 Qed.
 
 Lemma esumD [R : realType] [T : choiceType] (I : set T) (a b : T -> \bar R) :
@@ -1029,18 +1032,15 @@ Qed.
     exact: key.
   Qed.
 
-Lemma esum_esup_comm :
-  \esum_(i in [set: T]) ereal_sup (range (f i)) =
-  ereal_sup (range (fun n => \esum_(x in [set:T]) f x n)).
+Lemma esum_esup_comm (A : set T) :
+  \esum_(i in A) ereal_sup (range (f i)) =
+  ereal_sup (range (fun n => \esum_(x in A) f x n)).
 Proof.
 rewrite /esum.
-under eq_imagel => A [fin ?] do rewrite fsbig_finite// ereal_sup_sum//.
-rewrite ereal_sup_comm.
-congr ereal_sup.
-apply: eq_imagel => n _.
-congr ereal_sup.
-apply: eq_imagel  => A [finA _].
-by rewrite fsbig_finite.
+under eq_imagel => B [fin ?] do rewrite fsbig_finite// ereal_sup_sum.
+rewrite ereal_sup_comm; congr ereal_sup.
+apply: eq_imagel => n _; congr ereal_sup.
+by apply: eq_imagel => B [finB BA]; rewrite fsbig_finite.
 Qed.
 
 End mono_esum.

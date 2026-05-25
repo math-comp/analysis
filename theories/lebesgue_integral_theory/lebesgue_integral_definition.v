@@ -148,7 +148,8 @@ Lemma sintegralrM : sintegral m (cst r \* f)%R = r%:E * sintegral m f.
 Proof.
 have [->|r0] := eqVneq r 0%R.
   by rewrite mul0e (eq_sintegral (cst 0%R)) ?sintegral0// => x/=; rewrite mul0r.
-rewrite !sintegralET ge0_mule_fsumr; first exact: nnsfun_mulemu_ge0.
+rewrite !sintegralET ge0_mule_fsumr.
+  by move=> s ?; rewrite nnsfun_mulemu_ge0.
 rewrite (reindex_fsbigT ( *%R r))/=.
   by exists ( *%R r^-1); [exact: mulKf|exact: mulVKf].
 by apply: eq_fsbigr => x; rewrite preimage_cstM// [(_ / r)%R]mulrC mulKf// muleA.

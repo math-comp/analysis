@@ -226,11 +226,14 @@ by move=> i; rewrite in_fset_set// inE; exact: ab.
 Qed.
 
 Lemma ge0_mule_fsumr (T : choiceType) x (F : T -> \bar R) (P : set T) :
-  (forall i : T, 0 <= F i) -> x * (\sum_(i \in P) F i) = \sum_(i \in P) x * F i.
+  (forall i, P i -> 0 <= F i) ->
+  x * (\sum_(i \in P) F i) = \sum_(i \in P) x * F i.
 Proof.
 move=> F0; have [->{x}|x0] := eqVneq x 0%E.
   by rewrite mul0e big1// => ? _; rewrite mul0e.
-rewrite ge0_sume_distrr//; apply: eq_fbigl => y.
+rewrite big_seq ge0_sume_distrr.
+ by  move=> t; case: finite_supportP => // X XP _ _ /XP/F0.
+rewrite -big_seq; apply: eq_fbigl => y.
 rewrite !unlock; congr (_ \in fset_set _).
 apply/seteqP; rewrite /preimage; split=> [|] z/= [Pz Fz0];
   split=> //; apply: contra_not Fz0.
@@ -239,7 +242,8 @@ by move=> ->; rewrite mule0.
 Qed.
 
 Lemma ge0_mule_fsuml (T : choiceType) x (F : T -> \bar R) (P : set T) :
-  (forall i : T, 0 <= F i) -> (\sum_(i \in P) F i) * x = \sum_(i \in P) F i * x.
+  (forall i, P i -> 0 <= F i) ->
+  (\sum_(i \in P) F i) * x = \sum_(i \in P) F i * x.
 Proof.
 move=> F0; rewrite muleC ge0_mule_fsumr//.
 by apply: eq_fsbigr => i; rewrite muleC.
