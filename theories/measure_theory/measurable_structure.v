@@ -4,7 +4,7 @@ From mathcomp Require Import all_ssreflect_compat algebra finmap.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality reals.
-From mathcomp Require Import ereal topology normedtype sequences.
+From mathcomp Require Import constructive_ereal.
 
 (**md**************************************************************************)
 (* # Measure Theory                                                           *)
@@ -98,8 +98,6 @@ From mathcomp Require Import ereal topology normedtype sequences.
 (*                                   This is an HB alias.                     *)
 (*      f.-preimage.-measurable A == A is measurable for                      *)
 (*                                   g_sigma_algebra_preimage f               *)
-(*    subset_sigma_subadditive mu == alternative predicate defining           *)
-(*                                   sigma-subadditivity                      *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## Product of measurable spaces                                            *)
@@ -154,6 +152,83 @@ Bind Scope measure_display_scope with measure_display.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
+
+(* dup from sequences.v *)
+Notation "'nondecreasing_seq' f" := ({homo f : n m / (n <= m)%nat >-> (n <= m)%O})
+  (at level 10).
+
+Notation "'nonincreasing_seq' f" := ({homo f : n m / (n <= m)%nat >-> (n >= m)%O})
+  (at level 10).
+
+Definition sequence R := nat -> R.
+
+Reserved Notation "R ^nat".
+
+Notation "R ^nat" := (sequence R) : type_scope.
+
+Section seqD.
+Variable T : Type.
+Implicit Types F : nat -> (set T).
+
+Lemma bigcup_bigsetU_bigcup F :
+  \bigcup_k \big[setU/set0]_(i < k.+1) F i = \bigcup_k F k.
+Proof.
+apply/seteqP; split=> [x [i _]|x [i _ Fix]].
+  by rewrite -bigcup_mkord => -[j _ Fjx]; exists j.
+by exists i => //; rewrite big_ord_recr/=; right.
+Qed.
+
+Definition seqDU F n := F n `\` \big[setU/set0]_(k < n) F k.
+
+Lemma trivIset_seqDU F : trivIset setT (seqDU F).
+Proof.
+move=> i j _ _; wlog ij : i j / (i < j)%N => [/(_ _ _ _) tB|].
+  by have [ij /tB->|ij|] := ltngtP i j; rewrite //setIC => /tB ->.
+move=> /set0P; apply: contraNeq => _; apply/eqP.
+rewrite /seqDU 2!setDE !setIA setIC (bigD1 (Ordinal ij)) //=.
+by rewrite setCU setIAC !setIA setICl !set0I.
+Qed.
+
+Definition seqD F := fun n => if n isn't n'.+1 then F O else F n `\` F n'.
+
+Lemma seqDU_seqD F : nondecreasing_seq F -> seqDU F = seqD F.
+Proof.
+move=> ndF; rewrite funeqE => -[|n] /=; first by rewrite /seqDU big_ord0 setD0.
+rewrite /seqDU big_ord_recr /= setUC; congr (_ `\` _); apply/setUidPl.
+by rewrite -bigcup_mkord => + [k /= kn]; exact/subsetPset/ndF/ltnW.
+Qed.
+
+Lemma trivIset_seqD F : nondecreasing_seq F -> trivIset setT (seqD F).
+Proof. by move=> ndF; rewrite -seqDU_seqD //; exact: trivIset_seqDU. Qed.
+
+Lemma eq_bigcup_seqD F : \bigcup_n seqD F n = \bigcup_n F n.
+Proof.
+apply/seteqP; split => [x []|x []].
+  by elim=> [_ /= F0x|n ih _ /= [Fn1x Fnx]]; [exists O | exists n.+1].
+elim=> [_ F0x|n ih _ Fn1x]; first by exists O.
+have [|Fnx] := pselect (F n x); last by exists n.+1.
+by move=> /(ih I)[m _ Fmx]; exists m.
+Qed.
+
+Lemma seqDU_bigcup_eq F : \bigcup_k F k = \bigcup_k seqDU F k.
+Proof.
+rewrite /seqDU predeqE => t; split=> [[n _ Fnt]|[n _]]; last first.
+  by rewrite setDE => -[? _]; exists n.
+have [UFnt|UFnt] := pselect ((\big[setU/set0]_(k < n) F k) t); last by exists n.
+suff [m [Fmt FNmt]] : exists m, F m t /\ forall k, (k < m)%N -> ~ F k t.
+  by exists m => //; split => //; rewrite -bigcup_mkord => -[k kj]; exact: FNmt.
+move: UFnt; rewrite -bigcup_mkord => -[/= k _ Fkt] {Fnt n}.
+have [n kn] := ubnP k; elim: n => // n ih in t k Fkt kn *.
+case: k => [|k] in Fkt kn *; first by exists O.
+have [?|] := pselect (forall m, (m <= k)%N -> ~ F m t); first by exists k.+1.
+move=> /existsNP[i] /not_implyP[ik] /contrapT Fit; apply: (ih t i) => //.
+by rewrite (leq_ltn_trans ik).
+Qed.
+
+End seqD.
+Arguments trivIset_seqDU {T} F.
+#[global] Hint Resolve trivIset_seqDU : core.
+(* /dup from sequences.v *)
 
 Section set_systems.
 Context {T} (C : set (set T) -> Prop) (D : set T) (G : set (set T)).
@@ -1417,11 +1492,6 @@ by move=> _ [B mB <-]; exact: sG'sfun.
 Qed.
 
 End measurability.
-
-(** This predicate is used also by `measure_function.v` *)
-Definition subset_sigma_subadditive {T} {R : numFieldType}
-  (mu : set T -> \bar R) (A : set T) (F : nat -> set T) :=
-  A `<=` \bigcup_n F n -> (mu A <= \sum_(n <oo) mu (F n))%E.
 
 Lemma big_trivIset (I : choiceType) D T (R : Type) (idx : R)
    (op : Monoid.com_law idx) (A : I -> set T) (F : set T -> R) :
