@@ -1,5 +1,5 @@
-(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
-From HB Require Import structures.
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)     
+From HB Require Import structures.  
 From mathcomp Require Import all_ssreflect_compat ssralg ssrnum vector.
 From mathcomp Require Import interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
@@ -387,7 +387,7 @@ HB.end.
 HB.mixin Record Uniform_isConvexTvs (R : numDomainType) E
     & Uniform E & GRing.Lmodule R E := {
   locally_convex : exists2 B : set_system E,
-    (forall b, b \in B -> convex_set b) & basis B
+    (forall b, b \in B -> absolutely_convex_set b) & (nbhs_basis 0)  B
 }.
 
 #[short(type="convexTvsType")]
@@ -435,7 +435,7 @@ HB.factory Record PreTopologicalLmod_isConvexTvs (R : numDomainType) E
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
   scale_continuous : continuous (fun z : R^o * E => z.1 *: z.2) ;
   locally_convex : exists2 B : set_system E,
-    (forall b, b \in B -> convex_set b) & basis B
+    (forall b, b \in B -> absolutely_convex_set b) & nbhs_basis 0 B
   }.
 
 HB.builders Context R E & PreTopologicalLmod_isConvexTvs R E.
@@ -608,14 +608,28 @@ rewrite -[ltRHS]mul1r -(add_onemK l%:num) [ltRHS]mulrDl.
 by rewrite ltrD// ltr_pM2l// onem_gt0.
 Qed.
 
-Let standard_locally_convex_set :
-  exists2 B : set_system R^o, (forall b, b \in B -> convex_set b) & basis B.
+Let standard_ball_balanced_set (r : R) : balanced_set (ball (0 : R^o) r).
 Proof.
-exists [set B | exists x r, B = ball x r].
-  by move=> B/= /[!inE]/= [[x]] [r] ->; exact: standard_ball_convex_set.
-split; first by move=> B [x] [r] ->; exact: ball_open.
-move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
-by exists (ball x r) => //=; split; [exists x, r|exact: ballxx].
+move => t /= t1 z /= [y].  
+rewrite -ball_normE /= !sub0r !normrN => + <-. 
+rewrite normrM. Search ( _ * _ < _ * _).  
+case: (eqVneq `|t| (1 : R)).
+  by move=> -> ; rewrite mul1r.
+move=> t11.
+have : (`|t| <1) by rewrite lt_neqAle; apply/andP; split.
+by move => lt1 yr; rewrite -[ltRHS]mul1r ltr_pM ?normr_ge0.
+Qed.
+
+Let standard_locally_convex_set :
+  exists2 B : set_system R^o, (forall b, b \in B -> absolutely_convex_set b) & nbhs_basis 0 B.
+Proof.
+exists [set B | exists r, B = ball 0 r].
+   move=> B/= /[!inE]/= [] [r] ->; split; first by  exact: standard_ball_convex_set.
+   by exact: standard_ball_balanced_set.
+move=> B [] r /= r0 /= Br.
+exists (ball 0 r); last by exact: Br.
+split; last by apply: ballxx.
+by exists r. 
 Qed.
 
 HB.instance Definition _ :=
@@ -655,28 +669,32 @@ by move=> [l [e f]] /= [] [Al Bl] [] Ae Be; apply: nU; split;
 Qed.
 
 Local Lemma prod_locally_convex :
-  exists2 B : set_system (E * F), (forall b, b \in B -> convex_set b) & basis B.
+  exists2 B : set_system (E * F), (forall b, b \in B -> absolutely_convex_set b) & nbhs_basis (0,0) B.
 Proof.
-have [Be Bcb Beb] := @locally_convex K E.
+have [Be Bce Beb] := @locally_convex K E.
 have [Bf Bcf Bfb] := @locally_convex K F.
-pose B := [set ef : set (E * F) | open ef /\
+pose B := [set ef : set (E * F) | 
   exists be, exists2 bf, Be be & Bf bf /\ be `*` bf = ef].
-have : basis B.
-  rewrite /basis/=; split; first by move=> b => [] [].
-  move=> /= [x y] ef [[ne nf]] /= [Ne Nf] Nef.
-  case: Beb => Beo /(_ x ne Ne) /= -[a] [] Bea ax ea.
-  case: Bfb => Bfo /(_ y nf Nf) /= -[b] [] Beb yb fb.
-  exists [set z | a z.1 /\ b z.2]; last first.
-    by apply: subset_trans Nef => -[zx zy] /= [] /ea + /fb.
-  split=> //=; split; last by exists a, b.
-  rewrite openE => [[z z'] /= [az bz]]; exists (a, b) => /=; last by [].
-  rewrite !nbhsE /=; split; first by exists a => //; split => //; exact: Beo.
-  by exists b => //; split => // []; exact: Bfo.
-exists B => // => b; rewrite inE /= => [[]] bo [] be [] bf Bee [] Bff <-.
-move => [x1 y1] [x2 y2] l /[!inE] /= -[xe1 yf1] [xe2 yf2].
+have lem : nbhs_basis (0,0) B.
+  move=> /= b [/= [be bf] [/= nbe nbf]] /= befb /=.
+  have [/= be' [Beb' be'0] bbe] := Beb be nbe.
+  have [/= bf' [Bfb' bf'0] bbf] := Bfb bf nbf.
+  exists (be' `*` bf').
+  split; first by exists be'; exists bf'.
+  split => //=.
+  apply: subset_trans; last by exact: befb.
+  move => t /= [bet bft]; split; first by apply: bbe.
+  by apply: bbf.
+exists B => // => b; rewrite inE /= => [[]] be [] bf Bee [] Bff <-.
+have [convbe balbe] := Bce be (mem_set Bee).
+have [convbf balbf] := Bcf bf (mem_set Bff).
 split.
-  by apply/set_mem/Bcb; [exact/mem_set|exact/mem_set|exact/mem_set].
-by apply/set_mem/Bcf; [exact/mem_set|exact/mem_set|exact/mem_set].
+  move => [x1 y1] [x2 y2] l /[!inE] /= -[xe1 yf1] [xe2 yf2];split.
+  by apply/set_mem/convbe;[exact/mem_set|exact/mem_set].
+  by apply/set_mem/convbf;[exact/mem_set|exact/mem_set].
+move=> r [r1 [x1 y1]] [[x2 y2]]/= [bex bfy] [] <- <-; split.
+  by apply/balbe; [exact: r1|exists x2].
+  by apply/balbf; [exact: r1|exists y2].
 Qed.
 
 HB.instance Definition _ := PreTopologicalNmodule_isTopologicalNmodule.Build

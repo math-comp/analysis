@@ -120,6 +120,9 @@ Definition open_nbhs (p : T) (A : set T) := open A /\ A p.
 Definition basis (B : set (set T)) :=
   B `<=` open /\ forall x, filter_from [set U | B U /\ U x] id --> x.
 
+Definition nbhs_basis x (B : set (set T)) :=
+  filter_from [set U | B U /\ U x] id --> x.
+
 Definition second_countable := exists2 B, countable B & basis B.
 
 Global Instance nbhs_pfilter (p : T) : ProperFilter (nbhs p).
