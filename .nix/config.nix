@@ -85,6 +85,8 @@ in {
       stdlib.override.version = "master";
       rocq-elpi.override.version = "master";
       hierarchy-builder.override.version = "master";
+      micromega-plugin.override.version = "master";
+      micromega-plugin.job = false;
       mathcomp.override.version = "master";
       mathcomp-bigenough.override.version = "master";
       mathcomp-finmap.override.version = "master";
