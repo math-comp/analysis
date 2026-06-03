@@ -81,6 +81,9 @@
 - in `measurable_structure.v`:
   + structure `PMeasurable`, notation `pmeasurableType`
 
+- in `topology_structure.v`:
+  + definition `nbhs_basis`
+
 - in `subspace_topology.v`:
   + lemma `withinU_continuous_patch`
 - in `matrix_normedtype.v`:
@@ -137,6 +140,12 @@
 - moved from `topology_structure.v` to `filter.v`:
   + lemma `continuous_comp` (and generalized)
 
+- in `tvs.v`:
+  + structure `convexTvsType` where axiom `locally_convex` uses `nbhs_basis`
+    instead of `basis`
+  + adapted lemmas `standard_locally_convex` and `prod_locally_convex`
+    to `nbhs_basis` instead of `basis`
+ 
 - in `numfun.v`:
   + `fune_abse` renamed to `funeposDneg` and direction of the equality changed
   + `funeposneg` renamed to `funeposBneg` and direction of the equality changed
