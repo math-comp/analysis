@@ -2740,9 +2740,15 @@ Lemma mulrfctE (T : Type) (K : pzRingType) (f g : T -> K) :
   f * g = (fun x => f x * g x).
 Proof. by []. Qed.
 
-Lemma scalrfctE (T : Type) (K : pzRingType) (L : lmodType K)
+Lemma scalerfctE (T : Type) (K : pzRingType) (L : lmodType K)
     k (f : T -> L) :
   k *: f = (fun x : T => k *: f x).
+Proof. by []. Qed.
+
+Lemma zerofctE (T : Type) (K : nmodType) : (0 : T -> K) = (fun=> 0).
+Proof. by []. Qed.
+
+Lemma onefctE (T : Type) (K : pzRingType) : (1 : T -> K) = (fun=> 1).
 Proof. by []. Qed.
 
 Lemma cstE (T T': Type) (x : T) : cst x = fun _: T' => x.
@@ -2757,9 +2763,13 @@ Lemma compE (T1 T2 T3 : Type) (f : T1 -> T2) (g : T2 -> T3) :
 Proof. by []. Qed.
 
 Definition fctE :=
-  (cstE, compE, opprfctE, addrfctE, mulrfctE, scalrfctE, exprfctE).
+  (cstE, compE, opprfctE, addrfctE, mulrfctE, scalerfctE, exprfctE,
+   zerofctE, onefctE).
 
 End function_space_lemmas.
+
+#[deprecated(since="mathcomp-analysis 1.17.0", use=scalerfctE)]
+Notation scalrfctE := scalerfctE.
 
 Lemma inv_funK T (R : unitRingType) (f : T -> R) : (f\^-1\^-1)%R = f.
 Proof. by apply/funeqP => x; rewrite /inv_fun/= GRing.invrK. Qed.

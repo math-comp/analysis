@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+### Renamed
+- in `functions.v`
+  + lemma `scalrfctE` -> `scalerfctE` (deprecating `scalrfctE`)
+
+### Changed
+- in `functions.v`
+  + lemma `fctE` (include `zerofctE` and `onefctE`)
+
+### Added
+- in `functions.v`:
+  + lemmas `zerofctE`, `onefctE`
+
 ### Added
 - in `set_interval.v`:
   + lemmas `setU_itvob1`, `setU_1itvob`
