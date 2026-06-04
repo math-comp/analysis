@@ -728,6 +728,12 @@ Qed.
 
 Let standard_locally_convex_set :
   exists2 B : set_system R^o, (forall b, b \in B -> convex_set b) & basis B.
+exists [set B | exists x r, B = ball x r].
+  by move=> B/= /[!inE]/= [[x]] [r] ->; exact: standard_ball_convex_set.
+split; first by move=> B [x] [r] ->; exact: ball_open.
+move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
+by exists (ball x r) => //=; split; [exists x, r|exact: ballxx].
+Qed.
 
 Local Lemma standard_sub_unif_continuous : unif_continuous (fun x : R^o * R^o => x.1 - x.2).
 Proof.
@@ -737,15 +743,6 @@ apply/subsetP => -[] [] a1 a2 [] b1 b2/=; rewrite inE/= => -[]/=.
 rewrite /ball/= => abe1 abe2.
 apply: eU => /=; rewrite inE/= /ball/= opprD addrACA -opprD.
 by rewrite (le_lt_trans (ler_normB _ _))// (splitr e) ltrD.
-Qed.
-
-Local Lemma standard_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: z.2).
-Proof.
-exists [set B | exists x r, B = ball x r].
-  by move=> B/= /[!inE]/= [[x]] [r] ->; exact: standard_ball_convex_set.
-split; first by move=> B [x] [r] ->; exact: ball_open.
-move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
-by exists (ball x r) => //=; split; [exists x, r|exact: ballxx].
 Qed.
 
 HB.instance Definition _ :=
