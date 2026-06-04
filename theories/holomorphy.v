@@ -1,4 +1,4 @@
-
+ 
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 (*Require Import ssrsearch.*)
 From HB Require Import structures.
@@ -39,12 +39,42 @@ HB.instance Definition _ (R : rcfType) := UniformZmodule.copy R[i] R[i]^o.
 HB.instance Definition _ (R : rcfType) := UniformZmodule.copy (Rcomplex R) R[i].
 HB.instance Definition _ (R : rcfType) := Pointed.copy (Rcomplex R) R[i].
 
+Fail HB.instance Definition _ (R : rcfType) := Num.SemiNormedZmodule.copy (Rcomplex R) R.
+
 Module Rcomplex_NormedModType.
 Section Rcomplex_NormedModType.
 Variable (R : rcfType).
+Import Normc.
+Import Num.
 
-Definition ball_Rcomplex : Rcomplex R -> R -> Rcomplex R -> Prop :=
-  ball_ Num.norm.
+(* Lemmas to be used generally when norm is redefined *)
+
+#[local] Lemma ler_normcD : forall (x y : Rcomplex R), normc (x + y) <= normc x + normc y.
+Proof.
+Admitted.
+#[local] Lemma normrcMn : forall (x : Rcomplex R) n, normc (x *+ n) = normc x *+ n.
+Proof.
+Admitted.
+
+#[local] Lemma normrcN : forall (x : Rcomplex R), normc (- x) = normc x.
+Proof.
+Admitted.
+
+HB.instance Definition _ := @Num.Zmodule_isSemiNormed.Build R (Rcomplex R) (@normc R) ler_normcD normrcMn normrcN.
+
+
+#[local] Lemma normrc0_eq0 : forall x : Rcomplex R, normc x = 0 -> x = 0.
+Proof.
+Admitted.
+
+HB.instance Definition _ := @Num.SemiNormedZmodule_isPositiveDefinite.Build R (Rcomplex R) normrc0_eq0.
+
+Check (Rcomplex R : Num.SemiNormedZmodule.type R). 
+Check (Rcomplex R : Num.NormedZmodule.type R). 
+Check (Rcomplex R : zmodType).
+
+Definition ball_Rcomplex : (Rcomplex R) -> R -> set (Rcomplex R) :=
+  ball_ (@normc R).
 
 Lemma entourage_RcomplexE : entourage = entourage_ ball_Rcomplex.
 Proof.
