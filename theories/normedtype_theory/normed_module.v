@@ -2590,6 +2590,56 @@ Proof. by rewrite /open_disjoint_itv; case: cid => //= I [_]. Qed.
 
 End open_set_disjoint_real_intervals.
 
+(* equip a normedZmodType with a structure of normed module *)
+
+Definition pseudometric (K : numFieldType) (M : normedZmodType K) : Type := M.
+
+HB.instance Definition _ (K : numFieldType) (M : normedZmodType K) :=
+  Choice.on (pseudometric M).
+HB.instance Definition _ (K : numFieldType) (M : normedZmodType K) :=
+  Num.NormedZmodule.on (pseudometric M).
+HB.instance Definition _ (K : numFieldType) (M : normedZmodType K) :=
+  isPointed.Build M 0.
+
+Section isnormedmodule.
+Variables (K : numFieldType) (M' : normedZmodType K).
+
+Notation M := (pseudometric M').
+
+Local Definition ball (x : M) (r : K) : set M := ball_ Num.norm x r.
+
+Local Definition ent : set_system (M * M) :=
+  entourage_ ball.
+
+Local Definition nbhs (x : M) : set_system M :=
+  nbhs_ ent x.
+
+Local Lemma nbhsE : nbhs = nbhs_ ent. Proof. by []. Qed.
+
+HB.instance Definition _ := hasNbhs.Build M nbhs.
+
+Local Lemma ball_center x (e : K) : 0 < e -> ball x e x.
+Proof. by rewrite /ball/= subrr normr0. Qed.
+
+Local Lemma ball_sym x y (e : K) : ball x e y -> ball y e x.
+Proof. by rewrite /ball /= distrC. Qed.
+
+Local Lemma ball_triangle x y z e1 e2 : ball x e1 y -> ball y e2 z ->
+  ball x (e1 + e2) z.
+Proof.
+rewrite /ball /= => ? ?.
+rewrite -[x](subrK y) -(addrA (x + _)).
+by rewrite (le_lt_trans (ler_normD _ _))// ltrD.
+Qed.
+
+Local Lemma entourageE : ent = entourage_ ball.
+Proof. by []. Qed.
+
+HB.instance Definition _ := @Nbhs_isPseudoMetric.Build K M
+  ent nbhsE ball ball_center ball_sym ball_triangle entourageE.
+
+End isnormedmodule.
+
 Section EquivalenceNorms.
 Variables (R : realType).
 
