@@ -281,40 +281,19 @@ Section norm_row_mx.
 Context {K : realDomainType} {m n1 n2 : nat}.
 Implicit Types (M : 'M[K]_(m, n1)) (N : 'M[K]_(m, n2)).
 
-Lemma norm_row_mx0r M : `|row_mx M (0 : 'M_(m, n2))| = `|M|.
-Proof.
-rewrite /Num.norm/= !mx_normrE.
-rewrite -!(pair_bigA_idem _ (fun i j => `|_ i j|))/= ?maxxx//.
-apply: eq_bigr => i _.
-have ? := maxxx (0 : K).
-rewrite big_split_ord_idem//= [X in maxr _ X = _]big1_idem//=.
-  by move=> ? _; rewrite row_mxEr mxE normr0.
-by rewrite -bigmax_idr; apply: eq_bigr => j _; rewrite row_mxEl.
-Qed.
-
-Lemma norm_row_mx0l N : `|row_mx (0 : 'M_(m, n1)) N| = `|N|.
-Proof.
-rewrite /Num.norm/= !mx_normrE.
-rewrite -!(pair_bigA_idem _ (fun i j => `|_ i j|))/= ?maxxx//.
-apply: eq_bigr => i _.
-have ? := maxxx (0 : K).
-rewrite big_split_ord_idem//= [X in maxr X _ = _]big1_idem//=.
-  by move=> ? _; rewrite row_mxEl mxE normr0.
-by rewrite -bigmax_idl; apply: eq_bigr => j _; rewrite row_mxEr.
-Qed.
-
 Lemma norm_row_mx M N : `|row_mx M N| = Num.max `|M| `|N|.
 Proof.
-apply/eqP; rewrite eq_le; apply/andP; split.
-- rewrite [leLHS]/Num.norm/= !mx_normrE bigmax_le//= => -[i j] _/=.
-  rewrite le_max mxE; case: splitP => k kE.
-  + by rewrite [in `|M|]/Num.norm/= !mx_normrE (le_bigmax _ _ (i, k)).
-  + by rewrite [in `|N|]/Num.norm/= !mx_normrE (le_bigmax _ _ (i, k)) ?orbT.
-- rewrite ge_max; apply/andP; split;
-    rewrite [leLHS]/Num.norm/= !mx_normrE bigmax_le//= => -[i j] _/=;
-    rewrite [leRHS]/Num.norm/= !mx_normrE.
-  + by rewrite -(row_mxEl _ N)/= (le_bigmax _ _ (i, lshift n2 j)).
-  + by rewrite -(row_mxEr M)/= (le_bigmax _ _ (i, rshift n1 j)).
+rewrite /Num.norm/= !mx_normrE.
+rewrite -!(pair_bigA_idem _ (fun i j => `|_ i j|))/= ?maxxx//.
+rewrite -big_split_idem/= ?maxxx//; apply: eq_bigr => i _.
+rewrite big_split_ord_idem/= ?maxxx//=.
+by congr maxr; apply: eq_bigr => j _; [rewrite row_mxEl|rewrite row_mxEr].
 Qed.
+
+Lemma norm_row_mx0r M : `|row_mx M (0 : 'M_(m, n2))| = `|M|.
+Proof. by rewrite norm_row_mx normr0; exact/max_idPl. Qed.
+
+Lemma norm_row_mx0l N : `|row_mx (0 : 'M_(m, n1)) N| = `|N|.
+Proof. by rewrite norm_row_mx normr0; exact/max_idPr. Qed.
 
 End norm_row_mx.
