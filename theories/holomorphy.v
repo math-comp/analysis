@@ -69,21 +69,18 @@ Admitted.
 
 HB.instance Definition _ := @Num.SemiNormedZmodule_isPositiveDefinite.Build R (Rcomplex R) normrc0_eq0.
 
-Check (Rcomplex R : Num.SemiNormedZmodule.type R). 
-Check (Rcomplex R : Num.NormedZmodule.type R). 
-Check (Rcomplex R : zmodType).
-
 Definition ball_Rcomplex : (Rcomplex R) -> R -> set (Rcomplex R) :=
   ball_ (@normc R).
 
+(* beware that Re and complex.Re don't look similar *)
 Lemma entourage_RcomplexE : entourage = entourage_ ball_Rcomplex.
 Proof.
 rewrite entourage_nbhsE/= eqEsubset.
 split; apply/subsetP => U; rewrite inE => -[].
   move=> V []/= e; rewrite ltcE => /andP[]/eqP/= ei0 e0.
-  have ->: e = (Re e)%:C by case: e ei0 {e0} => r i/= ->.
+  have ->: e = (Re e). case: e ei0 {e0} => r i/= ->. admit.
   move=> /subsetP eV /subsetP VU.
-  rewrite inE; exists (Re e) => //.
+  rewrite inE; exists (complex.Re e) => //.
   apply/subsetP => -[] a b; rewrite inE/= /ball/= => abe.
   by apply: VU; rewrite inE/=; apply: eV; rewrite inE/= add0r opprB ltcR.
 move=> e/= e0 /subsetP eU.
