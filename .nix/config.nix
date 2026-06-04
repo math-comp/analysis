@@ -8,8 +8,6 @@ let
     mathcomp-analysis-stdlib.job = true;
     ssprove.override.version = "main";
     mathcomp-infotheo.override.version = "master";
-    interval.override.version = "master";
-    coquelicot.override.version = "master";
   };
 in {
   ## DO NOT CHANGE THIS
@@ -57,6 +55,7 @@ in {
       coq.override.version = "9.1";
       mathcomp.override.version = "2.6.0";
       mathcomp-finmap.override.version = "2.2.4";
+      mathcomp-real-closed.override.version = "master";
     };
   };
 
@@ -77,8 +76,6 @@ in {
       interval.job = false;  # not yet available for 9.3
       ssprove.job = false;  # not yet available for 9.3
       mathcomp-infotheo.job = false;  # interval not yet available for 9.3
-    };
-  };
 
   bundles."master" = {
     rocqPackages = common-bundle // {

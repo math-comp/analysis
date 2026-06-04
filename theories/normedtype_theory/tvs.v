@@ -967,22 +967,31 @@ by rewrite normrM; apply: le_lt_trans; rewrite ler_piMl.
 Qed.
 
 Let standard_locally_convex_set :
-  exists2 B : set_system R^o, (forall b, b \in B -> absolutely_convex_set b) &
-    nbhs_basis 0 B.
-Proof.
-exists [set B | exists2 r, 0 < r & B = ball 0 r].
-  move=> B /[!inE]/= -[r _ ->]; split.
-  - exact: standard_ball_convex_set.
-  - exact: standard_ball_balanced_set.
-split; first by move=> /= ? [r r0 ->]; exact: nbhsx_ballx.
-by move=> /= B [r r0 Br]; exists (ball 0 r); [exists r|exact: Br].
+  exists2 B : set_system R^o, (forall b, b \in B -> convex_set b) & basis B.
+exists [set B | exists x r, B = ball x r].
+  by move=> B/= /[!inE]/= [[x]] [r] ->; exact: standard_ball_convex_set.
+split; first by move=> B [x] [r] ->; exact: ball_open.
+move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
+by exists (ball x r) => //=; split; [exists x, r|exact: ballxx].
 Qed.
 
-HB.instance Definition _ := TopologicalNmodule_isTopologicalLmodule.Build _
-  R R^o standard_scale_continuous.
+Local Lemma standard_sub_unif_continuous : unif_continuous (fun x : R^o * R^o => x.1 - x.2).
+Proof.
+move=> /= U; rewrite /nbhs/= -!entourage_ballE => -[]/= e e0 /subsetP eU.
+exists (e / 2) => /=; first exact: divr_gt0.
+apply/subsetP => -[] [] a1 a2 [] b1 b2/=; rewrite inE/= => -[]/=.
+rewrite /ball/= => abe1 abe2.
+apply: eU => /=; rewrite inE/= /ball/= opprD addrACA -opprD.
+by rewrite (le_lt_trans (ler_normB _ _))// (splitr e) ltrD.
+Qed.
 
 HB.instance Definition _ :=
-  Uniform_isConvexTvs.Build _ R R^o standard_locally_convex_set.
+  PreTopologicalNmodule_isTopologicalNmodule.Build R^o standard_add_continuous.
+HB.instance Definition _ := PreUniformNmodule_isUniformZmodule.Build R^o standard_sub_unif_continuous.
+HB.instance Definition _ :=
+  TopologicalNmodule_isTopologicalLmodule.Build R R^o standard_scale_continuous.
+HB.instance Definition _ :=
+  Uniform_isConvexTvs.Build R R^o standard_locally_convex_set.
 
 End standard_topology.
 
