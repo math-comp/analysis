@@ -2448,8 +2448,8 @@ Qed.
 End derivable_derive_row_mx.
 
 Lemma eqo_row_mx (K : realFieldType) {m n1 n2 : nat} (F : filter_on K)
-  (A1 : K -> 'M[K]_(m, n1)) (A2 : K -> 'M[K]_(m, n2)) :
-  (fun t => row_mx ([o_F id of A1] t) ([o_F id of A2] t)) =o_F id.
+  (A1 : K -> 'M[K]_(m, n1)) (A2 : K -> 'M[K]_(m, n2)) (f : K -> K) :
+  (fun t => row_mx ([o_F f of A1] t) ([o_F f of A2] t)) =o_F f.
 Proof.
 apply/eqoP => _/posnumP[e]; near=> x; rewrite norm_row_mx ge_max.
 by apply/andP; split; near: x; apply: littleoP.
@@ -2473,7 +2473,7 @@ Local Open Scope classical_set_scope.
 Context {R : realFieldType} {n1 n2 : nat}.
 Implicit Types (M dM : R -> 'rV[R]_n1) (N dN : R -> 'rV[R]_n2) (x t : R).
 
-Fact drow_mx M N x : differentiable M x -> differentiable N x ->
+Fact drow_mx M N x (f : R -> R) : differentiable M x -> differentiable N x ->
   continuous (fun y => row_mx ('d M x y) ('d N x y)) /\
   (fun y => row_mx (M y) (N y)) \o shift x = cst (row_mx (M x) (N x)) +
   (fun y => row_mx ('d M x y) ('d N x y)) +o_ 0 id.
@@ -2502,7 +2502,7 @@ have lin_row_mx : linear d.
 pose row_mxlM := GRing.isLinear.Build _ _ _ _ _ lin_row_mx.
 pose row_mxL : {linear _ -> _} := HB.pack d row_mxlM.
 rewrite -/d -[d]/(row_mxL : _ -> _).
-by apply: diff_unique; have [] := drow_mx df dg.
+by apply: diff_unique; have [] := drow_mx id df dg.
 Qed.
 
 Lemma differentiable_row_mx M N x : differentiable M x -> differentiable N x ->
