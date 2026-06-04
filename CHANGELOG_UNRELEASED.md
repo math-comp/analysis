@@ -200,6 +200,9 @@
     `differentiable_row_mx`
   + instance `is_diff_row_mx`
 
+- in `unstable.v`:
+  + lemma `big_split_ord_idem`
+
 ### Changed
 
 - moved from `measurable_structure.v` to `classical_sets.v`:

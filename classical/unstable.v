@@ -677,3 +677,21 @@ End Theory.
 Module Import Exports. HB.reexport. End Exports.
 End Norm.
 Export Norm.Exports.
+
+(* NB: big_split_org in bigop.v requires Monoid.law idx,
+   big_split_ord_idem will be made available from MathComp
+   via PR https://github.com/math-comp/math-comp/pull/1608
+   (MathComp 2.7.0) *)
+Lemma big_split_ord_idem [R : Type] [idx : R] (op : SemiGroup.com_law R) m n
+    (P : pred 'I_(m + n)) F :
+  op idx idx = idx ->
+  \big[op/idx]_(i | P i) F i =
+        op (\big[op/idx]_(i | P (lshift n i)) F (lshift n i))
+        (\big[op/idx]_(i | P (rshift m i)) F (rshift m i)).
+Proof.
+move=> opxx.
+rewrite -(big_map (lshift n) P F) -(big_map (@rshift m _) P F).
+rewrite -big_cat_idem//; congr bigop; apply: (inj_map val_inj).
+rewrite map_cat -!map_comp (map_comp (addn m)) /=.
+by rewrite ![index_enum _]unlock unlock !val_ord_enum -iotaDl addn0 iotaD.
+Qed.

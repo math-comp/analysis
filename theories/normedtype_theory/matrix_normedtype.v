@@ -2,6 +2,8 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum matrix.
 From mathcomp Require Import interval interval_inference.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import boolp contra classical_sets reals topology.
 From mathcomp Require Import prodnormedzmodule tvs pseudometric_normed_Zmodule.
 From mathcomp Require Import normed_module.
@@ -281,34 +283,24 @@ Implicit Types (M : 'M[K]_(m, n1)) (N : 'M[K]_(m, n2)).
 
 Lemma norm_row_mx0r M : `|row_mx M (0 : 'M_(m, n2))| = `|M|.
 Proof.
-apply/eqP; rewrite eq_le; apply/andP; split.
-- rewrite [leLHS]/Num.norm/= !mx_normrE/=; apply/bigmax_le => // -[i j]/= _.
-  rewrite mxE; case: splitP => k kE; last by rewrite mxE normr0.
-  by rewrite [leRHS]/Num.norm/= !mx_normrE/= (le_bigmax _ _ (i, k)).
-- rewrite [leLHS]/Num.norm/= !mx_normrE/=; apply/bigmax_le => // -[i j]/= _.
-  rewrite [leRHS]/Num.norm/= !mx_normrE/=.
-  rewrite (le_trans _(le_bigmax _ _ (i, lshift n2 j)))// mxE/=.
-  case: splitP => // k kE.
-    rewrite (_ : j = k)//; apply: val_inj => /=.
-    by apply/eqP; rewrite -(eqn_add2l n1) -kE.
-  absurd: kE.
-  by rewrite ltn_eqF// (leq_trans (ltn_ord j))// /lshift/= leq_addr.
+rewrite /Num.norm/= !mx_normrE.
+rewrite -!(pair_bigA_idem _ (fun i j => `|_ i j|))/= ?maxxx//.
+apply: eq_bigr => i _.
+have ? := maxxx (0 : K).
+rewrite big_split_ord_idem//= [X in maxr _ X = _]big1_idem//=.
+  by move=> ? _; rewrite row_mxEr mxE normr0.
+by rewrite -bigmax_idr; apply: eq_bigr => j _; rewrite row_mxEl.
 Qed.
 
 Lemma norm_row_mx0l N : `|row_mx (0 : 'M_(m, n1)) N| = `|N|.
 Proof.
-apply/eqP; rewrite eq_le; apply/andP; split.
-- rewrite [leLHS]/Num.norm/= !mx_normrE/=; apply/bigmax_le => // -[i j]/= _.
-  rewrite mxE; case: splitP => k kE; first by rewrite mxE normr0.
-  by rewrite [leRHS]/Num.norm/= !mx_normrE/= (le_bigmax _ _ (i, k)).
-- rewrite [leLHS]/Num.norm/= !mx_normrE/=; apply/bigmax_le => // -[i j]/= _.
-  rewrite [leRHS]/Num.norm/= !mx_normrE/=.
-  rewrite (le_trans _ (le_bigmax _ _ (i, rshift n1 j)))// mxE/=.
-  case: splitP => // k kE.
-    absurd: kE.
-    by rewrite gtn_eqF// (leq_trans (ltn_ord k))// /rshift/= leq_addr.
-  rewrite (_ : j = k)//; apply: val_inj => /=.
-  by apply/eqP; rewrite -(eqn_add2l n1) -kE.
+rewrite /Num.norm/= !mx_normrE.
+rewrite -!(pair_bigA_idem _ (fun i j => `|_ i j|))/= ?maxxx//.
+apply: eq_bigr => i _.
+have ? := maxxx (0 : K).
+rewrite big_split_ord_idem//= [X in maxr X _ = _]big1_idem//=.
+  by move=> ? _; rewrite row_mxEl mxE normr0.
+by rewrite -bigmax_idl; apply: eq_bigr => j _; rewrite row_mxEr.
 Qed.
 
 Lemma norm_row_mx M N : `|row_mx M N| = Num.max `|M| `|N|.
