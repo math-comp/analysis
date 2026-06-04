@@ -728,7 +728,7 @@ Qed.
 
 Let standard_locally_convex_set :
   exists2 B : set_system R^o, (forall b, b \in B -> convex_set b) & basis B.
-(*=======
+
 Local Lemma standard_sub_unif_continuous : unif_continuous (fun x : R^o * R^o => x.1 - x.2).
 Proof.
 move=> /= U; rewrite /nbhs/= -!entourage_ballE => -[]/= e e0 /subsetP eU.
@@ -740,7 +740,6 @@ by rewrite (le_lt_trans (ler_normB _ _))// (splitr e) ltrD.
 Qed.
 
 Local Lemma standard_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: z.2).
->>>>>>> 50b14da8 (holomorphic):theories/tvs.v*)
 Proof.
 exists [set B | exists x r, B = ball x r].
   by move=> B/= /[!inE]/= [[x]] [r] ->; exact: standard_ball_convex_set.
@@ -751,7 +750,7 @@ Qed.
 
 HB.instance Definition _ :=
   PreTopologicalNmodule_isTopologicalNmodule.Build R^o standard_add_continuous.
-(*HB.instance Definition _ := PreUniformNmodule_isUniformZmodule.Build R^o standard_sub_unif_continuous.*)
+HB.instance Definition _ := PreUniformNmodule_isUniformZmodule.Build R^o standard_sub_unif_continuous.
 HB.instance Definition _ :=
   TopologicalNmodule_isTopologicalLmodule.Build R R^o standard_scale_continuous.
 HB.instance Definition _ :=
