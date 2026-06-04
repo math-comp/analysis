@@ -2745,10 +2745,10 @@ Lemma scalerfctE (T : Type) (K : pzRingType) (L : lmodType K)
   k *: f = (fun x : T => k *: f x).
 Proof. by []. Qed.
 
-Lemma zerofctE (T : Type) (K : nmodType) : (0 : T -> K) = (fun=> 0).
+Lemma zerofctE (T : Type) (K : nmodType) x : (0 : T -> K) x = 0.
 Proof. by []. Qed.
 
-Lemma onefctE (T : Type) (K : pzRingType) : (1 : T -> K) = (fun=> 1).
+Lemma onefctE (T : Type) (K : pzRingType) x : (1 : T -> K) x = 1.
 Proof. by []. Qed.
 
 Lemma cstE (T T': Type) (x : T) : cst x = fun _: T' => x.
