@@ -39,13 +39,33 @@ HB.instance Definition _ (R : rcfType) := UniformZmodule.copy R[i] R[i]^o.
 HB.instance Definition _ (R : rcfType) := UniformZmodule.copy (Rcomplex R) R[i].
 HB.instance Definition _ (R : rcfType) := Pointed.copy (Rcomplex R) R[i].
 
-Fail HB.instance Definition _ (R : rcfType) := Num.SemiNormedZmodule.copy (Rcomplex R) R.
-
 Module Rcomplex_NormedModType.
 Section Rcomplex_NormedModType.
 Variable (R : rcfType).
 Import Normc.
-Import Num.
+
+Definition ball_Rcomplex : (Rcomplex R) -> R -> set (Rcomplex R) :=
+  ball_ (@normc R).
+
+(* beware that Re and complex.Re don't look similar *)
+Lemma entourage_RcomplexE : entourage = entourage_ ball_Rcomplex.
+Proof.
+rewrite entourage_nbhsE/= eqEsubset.
+split; apply/subsetP => U; rewrite inE => -[].
+  move=> V []/= e; rewrite ltcE => /andP[]/eqP/= ei0 e0.
+  have ->: e = (Re e)%:C by case: e ei0 {e0} => r i/= ->.
+  move=> /subsetP eV /subsetP VU.
+  rewrite inE; exists (Re e) => //.
+  apply/subsetP => -[] a b; rewrite inE/= /ball/= => abe.
+  by apply: VU; rewrite inE/=; apply: eV; rewrite inE/= add0r opprB ltcR.
+move=> e/= e0 /subsetP eU.
+rewrite inE; exists (ball_Rcomplex 0 e).
+  exists e%:C; first by rewrite /= ltcR.
+  by apply/subsetP => x; rewrite !inE/= ltcR.
+apply/subsetP => x; rewrite inE/= inE /ball_Rcomplex/= add0r opprB => xe.
+by apply: eU; rewrite inE.
+Qed.
+
 
 (* Lemmas to be used generally when norm is redefined *)
 
@@ -69,28 +89,6 @@ Admitted.
 
 HB.instance Definition _ := @Num.SemiNormedZmodule_isPositiveDefinite.Build R (Rcomplex R) normrc0_eq0.
 
-Definition ball_Rcomplex : (Rcomplex R) -> R -> set (Rcomplex R) :=
-  ball_ (@normc R).
-
-(* beware that Re and complex.Re don't look similar *)
-Lemma entourage_RcomplexE : entourage = entourage_ ball_Rcomplex.
-Proof.
-rewrite entourage_nbhsE/= eqEsubset.
-split; apply/subsetP => U; rewrite inE => -[].
-  move=> V []/= e; rewrite ltcE => /andP[]/eqP/= ei0 e0.
-  have ->: e = (Re e). case: e ei0 {e0} => r i/= ->. admit.
-  move=> /subsetP eV /subsetP VU.
-  rewrite inE; exists (complex.Re e) => //.
-  apply/subsetP => -[] a b; rewrite inE/= /ball/= => abe.
-  by apply: VU; rewrite inE/=; apply: eV; rewrite inE/= add0r opprB ltcR.
-move=> e/= e0 /subsetP eU.
-rewrite inE; exists (ball_Rcomplex 0 e).
-  exists e%:C; first by rewrite /= ltcR.
-  by apply/subsetP => x; rewrite !inE/= ltcR.
-apply/subsetP => x; rewrite inE/= inE /ball_Rcomplex/= add0r opprB => xe.
-by apply: eU; rewrite inE.
-Qed.
-
 HB.instance Definition _ := Uniform_isPseudoMetric.Build R (Rcomplex R)
   ball_norm_center ball_norm_symmetric ball_norm_triangle entourage_RcomplexE.
 HB.instance Definition _ :=
@@ -103,6 +101,8 @@ Qed.
 
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R (Rcomplex R) normcZ.
+
+Check (Rcomplex R : normedModType R).
 
 Lemma Rcomplex_findim : Vector.axiom 2 (Rcomplex R).
 Proof.
@@ -132,19 +132,24 @@ Variable R : realType.
 Local Notation sqrtr := Num.sqrt.
 Local Notation C := R[i].
 Local Notation Rc := (Rcomplex R).
+Fail Check (Rcomplex R : normedModType R). (* why ? *)
+Fail HB.instance Definition _ := NormedModule.copy R (Rcomplex R). 
 
-Definition holomorphic (f : C -> C) (c : C) :=
+
+
+Definition holomorphic (f : C^o -> C^o) (c : C) :=
   cvg ((fun h => h^-1 *: (f (c + h) - f c)) @ 0^').
 
-Lemma holomorphicP (f : C -> C) (c : C) : holomorphic f c <-> derivable f c 1.
+
+Lemma holomorphicP (f : C^o -> C^o) (c : C) : holomorphic f c <-> derivable f c 1.
 Proof.
 rewrite /holomorphic /derivable.
 suff ->: (fun h : C => h^-1 *: ((f (c + h) - f c))) =
-         ((fun h : C => h^-1 *: ((f \o shift c) (h *: 1) - f c))) by [].
+         ((fun h : C => h^-1 *: ((f \o shift c) (h *: (1 : C^o)) - f c))) by [].
 by apply: funext => h; rewrite complexA [X in f X]addrC.
 Qed.
-
-Definition Rdifferentiable (f : C -> C) (c : C) := differentiable f%:Rfun c%:Rc.
+  
+Definition Rdifferentiable (f : C^o -> C^o) (c : C^o) := differentiable f%:Rfun c%:Rc.
 
 Definition realC : R -> C := (fun r => r%:C).
 
