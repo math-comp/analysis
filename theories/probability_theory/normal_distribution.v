@@ -70,8 +70,8 @@ Proof. exact: expR_ge0. Qed.
 Lemma normal_fun_center0 m s : normal_fun m s = normal_fun 0 s \o center m.
 Proof. by apply/funext => x/=; rewrite /normal_fun/= subr0. Qed.
 
-Lemma normal_funN m s : normal_fun (- m) s (- m) = normal_fun m s m.
-Proof. by rewrite /normal_fun opprK addrC. Qed.
+Lemma normal_funN m s x : normal_fun (- m) s (- x) = normal_fun m s x.
+Proof. by rewrite /normal_fun -opprD sqrrN. Qed.
 
 Lemma normal_fun_sym m s x : normal_fun m s x = normal_fun x s m.
 Proof. by rewrite /normal_fun -(sqrrN (x - _)) opprB. Qed.
@@ -79,14 +79,14 @@ Proof. by rewrite /normal_fun -(sqrrN (x - _)) opprB. Qed.
 Lemma normal_fun0abs s x : normal_fun 0 s `|x| = normal_fun 0 s x.
 Proof. by rewrite /normal_fun 2!subr0 real_normK// num_real. Qed.
 
-#[deprecated(since="mathcomp-analysis 1.17.0", note="to be renamed to `normal_fun_center`")]
-Lemma normal_fun_center_new m s x :
-  normal_fun (center m x) s (center m x) = normal_fun m s m.
-Proof. by rewrite [in RHS]/normal_fun subrr -(subrr (x - m)). Qed.
+Lemma normal_fun_shift m s x t :
+  normal_fun (shift m t) s (shift x t) = normal_fun m s x.
+Proof. by rewrite [in LHS]/normal_fun/= (addrC t x) addrKA. Qed.
 
-Lemma normal_fun_shift m s x :
-  normal_fun (shift m x) s (shift m x) = normal_fun m s m.
-Proof. by rewrite -[in LHS]normal_funN/= opprD normal_fun_center_new. Qed.
+#[deprecated(since="mathcomp-analysis 1.17.0", note="to be renamed to `normal_fun_center`")]
+Lemma normal_fun_center_new m s x t :
+  normal_fun (center m t) s (center x t) = normal_fun m s x.
+Proof. by rewrite normal_fun_shift normal_funN. Qed.
 
 End normal_fun.
 #[deprecated(since="mathcomp-analysis 1.17.0", note="renamed to `normal_fun_center0`")]
@@ -139,12 +139,12 @@ Proof. by rewrite /normal_pdf0 normal_fun_sym. Qed.
 Lemma normal_pdf0N m s : normal_pdf0 (- m) s (- m) = normal_pdf0 m s m.
 Proof. by rewrite /normal_pdf0 normal_funN. Qed.
 
-Lemma normal_pdf0_center m s x :
-  normal_pdf0 (center m x) s (center m x) = normal_pdf0 m s m.
+Lemma normal_pdf0_center m s x t :
+  normal_pdf0 (center m t) s (center x t) = normal_pdf0 m s x.
 Proof. by rewrite /normal_pdf0 normal_fun_center_new. Qed.
 
-Lemma normal_pdf0_shift m s x :
-  normal_pdf0 (shift m x) s (shift m x) = normal_pdf0 m s m.
+Lemma normal_pdf0_shift m s x t :
+  normal_pdf0 (shift m t) s (shift x t) = normal_pdf0 m s x.
 Proof. by rewrite /normal_pdf0 normal_fun_shift. Qed.
 
 End normal_pdf0.
@@ -345,52 +345,6 @@ Local Close Scope charge_scope.
 
 End normal_probability.
 
-Section ge0_integration_by_substitution_shift.
-Context {R : realType}.
-Notation mu := (@lebesgue_measure R).
-
-Lemma ge0_integration_by_substitution_shift_itvy (f : R -> R) (r e : R) :
-  {within `[r + e, +oo[, continuous f} ->
-  {in `]r + e, +oo[, forall x : R, 0 <= f x} ->
-  (\int[mu]_(x in `[(r + e)%R, +oo[) (f x)%:E =
-  \int[mu]_(x in `[r, +oo[) ((f \o shift e) x)%:E)%E.
-Proof.
-move=> cf f0.
-have dshiftE : (shift e)^`() = cst 1.
-  by apply/funext => x; rewrite derive1E -(derive_shift 1 e).
-rewrite (@increasing_ge0_integration_by_substitutiony _ (shift e))//=.
-- by move=> x y _ _ xy; rewrite ltr_leD.
-- by rewrite dshiftE => ? _; exact: cst_continuous.
-- by rewrite dshiftE; exact: is_cvg_cst.
-- by rewrite dshiftE; exact: is_cvg_cst.
-- split; first by move=> x _; exact: ex_derive.
-  by apply/cvg_at_right_filter; apply: cvgD => //; exact: cvg_cst.
-- exact: cvg_addrr.
-by rewrite dshiftE mulr1.
-Qed.
-
-Lemma ge0_integration_by_substitution_shift_itvNy (f : R -> R) (r e : R) :
-  {within `]-oo, r + e], continuous f} ->
-  {in `]-oo, r + e[, forall x : R, 0 <= f x} ->
-  (\int[mu]_(x in `]-oo, (r + e)%R]) (f x)%:E =
-   \int[mu]_(x in `]-oo, r]) ((f \o shift e) x)%:E)%E.
-Proof.
-move=> cf f0.
-have dshiftE : (shift e)^`() = cst 1.
-  by apply/funext => x; rewrite derive1E -(derive_shift 1 e).
-rewrite (@increasing_ge0_integration_by_substitutionNy _ (shift e))//.
-- by move=> x y _ _ xy; rewrite ltr_leD.
-- by rewrite dshiftE => ? _; exact: cst_continuous.
-- by rewrite dshiftE; exact: is_cvg_cst.
-- by rewrite dshiftE; exact: cvg_cst.
-- split; first by move=> x _; exact: ex_derive.
-  by apply/cvg_at_left_filter; apply: cvgD => //; exact: cvg_cst.
-- exact: cvg_addrr_Ny.
-by rewrite dshiftE mulr1.
-Qed.
-
-End ge0_integration_by_substitution_shift.
-
 Section normal_prob_continuous.
 (* outline of proof:
    1. It is enough to prove that `(fun x => normal_prob x s Ys)` is continuous
@@ -481,7 +435,7 @@ apply: withinU_continuous.
       by near: t; apply: cvgr_dist_le eps eps0; exact: continuous_normal_pdf0.
     * apply/cvgrPdist_lt => eps eps0; near=> t.
       rewrite /g' !(negPf (ballFE_le _))// (addrC a) addrK normrN.
-      rewrite (ger0_norm e0)// -(normal_pdf0_center _ _ a) pdf0B//.
+      rewrite (ger0_norm e0)// -(normal_pdf0_center _ _ _ a) pdf0B//.
       near: t; apply: cvgr_dist_lt eps eps0.
       by apply/cvg_at_left_filter; exact: continuous_normal_pdf0.
   move: e0; rewrite le_eqVlt => /predU1P[<-|e0].
@@ -516,7 +470,7 @@ apply: withinU_continuous.
   + apply/cvgrPdist_le => eps eps0; near=> t.
     rewrite /g' !(negPf (ballFE_ge _))//.
     rewrite (addrC a) addrK (ger0_norm e0)//.
-    rewrite -(normal_pdf0_shift e s a)/= pdf0D//.
+    rewrite -(normal_pdf0_shift e s _ a)/= pdf0D//.
     near: t; apply/cvgrPdist_le : eps eps0.
     by apply: cvg_at_right_filter; exact: continuous_normal_pdf0.
 Unshelve. all: end_near. Qed.

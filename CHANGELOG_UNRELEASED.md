@@ -182,6 +182,9 @@
 
 - in `esum.v`:
   + lemma `fsetsTE`
+- in `ftc.v`:
+  + lemma `ge0_integration_by_substitution_shift_itvy`,
+    `ge0_integration_by_substitution_shift_itvNy`
 
 ### Changed
 
