@@ -1,6 +1,8 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat all_algebra all_classical.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import interval_inference reals topology_structure.
 From mathcomp Require Import uniform_structure pseudometric_structure.
 From mathcomp Require Import order_topology matrix_topology.
@@ -128,6 +130,10 @@ HB.instance Definition _ (R : realFieldType) := PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ (R : numClosedFieldType) :=
+  PseudoPointedMetric.copy R R^o.
+
+#[export, non_forgetful_inheritance, warnings="-HB.no-new-instance"]
+HB.instance Definition _ (R : conjFieldType) :=
   PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]

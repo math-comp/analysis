@@ -221,6 +221,16 @@ HB.instance Definition _ := NormedModule.copy R R^o.
 HB.instance Definition _ := Num.ClosedField.on R.
 End numClosedFieldType.
 
+Section conjFieldType.
+Variable R : conjFieldType.
+#[export, non_forgetful_inheritance, warnings="-HB.no-new-instance"]
+HB.instance Definition _ := GRing.ComAlgebra.copy R R^o.
+#[export, non_forgetful_inheritance, warnings="-HB.no-new-instance"]
+HB.instance Definition _ := Vector.copy R R^o.
+#[export, non_forgetful_inheritance, warnings="-HB.no-new-instance"]
+HB.instance Definition _ := NormedModule.copy R R^o.
+End conjFieldType.
+
 Section numFieldType.
 Variable (R : numFieldType).
 #[export, non_forgetful_inheritance]

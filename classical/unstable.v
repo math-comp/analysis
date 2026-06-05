@@ -47,6 +47,20 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
 
+(* Backward compatibility with math-comp < 2.6, which has no [conjFieldType]
+ (the common ancestor of [rcfType] and [numClosedFieldType]).  When it is
+ absent we alias it to [rcfType] via a global parsing-only abbreviation, so
+ that MCA files endowing [conjFieldType] with topological/normed  structures
+ still compile: those instances then become redundant copies of  the [rcfType]
+ ones (their [HB.no-new-instance] is silenced at each site). *)
+Elpi Command analysis_declare_conjFieldType_compat.
+Elpi Accumulate lp:{{
+  main [] :- coq.locate-all "Num.ConjField.type" L, L = [_|_], !.
+  main [] :- @global! => coq.notation.add-abbreviation "conjFieldType" 0
+               {{ Num.RealClosedField.type }} tt _.
+}}.
+Elpi analysis_declare_conjFieldType_compat.
+
 Section IntervalNumDomain.
 Variable R : numDomainType.
 Implicit Types x : R.
