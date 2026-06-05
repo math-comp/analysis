@@ -44,11 +44,11 @@ Section Rcomplex_NormedModType.
 Variable (R : rcfType).
 Import Normc.
 
-Definition ball_Rcomplex : (Rcomplex R) -> R -> set (Rcomplex R) :=
+Definition ball_Rcomplex (R : rcfType) : (Rcomplex R) -> R -> set (Rcomplex R) :=
   ball_ (@normc R).
 
 (* beware that Re and complex.Re don't look similar *)
-Lemma entourage_RcomplexE : entourage = entourage_ ball_Rcomplex.
+Lemma entourage_RcomplexE : entourage = entourage_ (@ball_Rcomplex R).
 Proof.
 rewrite entourage_nbhsE/= eqEsubset.
 split; apply/subsetP => U; rewrite inE => -[].
@@ -72,6 +72,7 @@ Qed.
 #[local] Lemma ler_normcD : forall (x y : Rcomplex R), normc (x + y) <= normc x + normc y.
 Proof.
 Admitted.
+
 #[local] Lemma normrcMn : forall (x : Rcomplex R) n, normc (x *+ n) = normc x *+ n.
 Proof.
 Admitted.
@@ -81,7 +82,6 @@ Proof.
 Admitted.
 
 HB.instance Definition _ := @Num.Zmodule_isSemiNormed.Build R (Rcomplex R) (@normc R) ler_normcD normrcMn normrcN.
-
 
 #[local] Lemma normrc0_eq0 : forall x : Rcomplex R, normc x = 0 -> x = 0.
 Proof.
@@ -99,10 +99,10 @@ Proof.
 by case: x => ??; rewrite /normr/= !exprMn -mulrDr sqrtrM ?sqr_ge0// sqrtr_sqr.
 Qed.
 
-HB.instance Definition _ :=
-  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R (Rcomplex R) normcZ.
+#[export] HB.instance Definition _ :=
+  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R (Rcomplex R) normcZ. 
 
-Check (Rcomplex R : normedModType R).
+Check (Rcomplex R : normedModType R). 
 
 Lemma Rcomplex_findim : Vector.axiom 2 (Rcomplex R).
 Proof.
@@ -120,36 +120,35 @@ rewrite ltnS leqn0 => /eqP i0/=.
 by rewrite {1}i0/=; congr (x ord0); apply: val_inj.
 Qed.
 
-HB.instance Definition _ :=
+#[export] HB.instance Definition _ :=
   Lmodule_hasFinDim.Build R (Rcomplex R) Rcomplex_findim.
 
 End Rcomplex_NormedModType.
 End Rcomplex_NormedModType.
+HB.export Rcomplex_NormedModType.
 
 Section Holomorphe_der.
-Variable R : realType.
+Variable R : rcfType.
 
 Local Notation sqrtr := Num.sqrt.
 Local Notation C := R[i].
-Local Notation Rc := (Rcomplex R).
-Fail Check (Rcomplex R : normedModType R). (* why ? *)
-Fail HB.instance Definition _ := NormedModule.copy R (Rcomplex R). 
+Local Notation Rc := (Rcomplex R). 
+Check (Rcomplex R : normedModType R). (* why ? *)
 
 
+Definition holomorphic (f : C -> C) (c : C) :=
+  cvg ((fun h => h^-1 * (f (c + h) - f c)) @ 0^').
 
-Definition holomorphic (f : C^o -> C^o) (c : C) :=
-  cvg ((fun h => h^-1 *: (f (c + h) - f c)) @ 0^').
 
-
-Lemma holomorphicP (f : C^o -> C^o) (c : C) : holomorphic f c <-> derivable f c 1.
+Lemma holomorphicP (f : C -> C) (c : C) : holomorphic f c = derivable (f : C^o -> C^o) c 1.
 Proof.
 rewrite /holomorphic /derivable.
-suff ->: (fun h : C => h^-1 *: ((f (c + h) - f c))) =
-         ((fun h : C => h^-1 *: ((f \o shift c) (h *: (1 : C^o)) - f c))) by [].
+suff ->: (fun h : C => h^-1 * ((f (c + h) - f c))) =
+         ((fun h : C => h^-1 * ((f \o shift c) (h *: (1 : C^o)) - f c))) by [].
 by apply: funext => h; rewrite complexA [X in f X]addrC.
 Qed.
   
-Definition Rdifferentiable (f : C^o -> C^o) (c : C^o) := differentiable f%:Rfun c%:Rc.
+Definition Rdifferentiable (f : C -> C) (c : C) := differentiable f%:Rfun c%:Rc.
 
 Definition realC : R -> C := (fun r => r%:C).
 
@@ -159,8 +158,8 @@ move=> x A /= [] r /[dup] /realC_gt0 Rer0 /gt0_realC rRe H; exists (Re r) => //.
 by move=> z /= nz; apply: (H z%:C); rewrite /= -raddfB realC_norm rRe ltcR.
 Qed. 
 
-Lemma Rdiff1 (f : C -> C) c :
-  lim ((fun h : C => h^-1 *: ((f (c + h) - f c))) @ (realC @ 0^'))
+Lemma Rdiff1 (f : C -> C) (c : C) :
+  lim ((fun h : C => h^-1 * ((f (c + h) - f c))) @ (realC @ 0^'))
   = 'D_1 (f%:Rfun) c%:Rc.
 Proof.
 rewrite /derive.
@@ -170,7 +169,7 @@ suff ->: (fun h : C => h^-1 *: (f (c + h) - f c)) \o realC
   = fun h : R => h^-1 *: ((f \o shift c) (h *: (1%:Rc)) - f c)%:Rc.
   by [].
 apply: funext => h /=.
-by rewrite -fmorphV /= -!scalecr realC_alg [X in f X]addrC.
+rewrite -fmorphV /=. rewrite  -!scalecr realC_alg [X in f X]addrC.
 Qed.
 
 Lemma Rdiffi (f : C -> C) c:
