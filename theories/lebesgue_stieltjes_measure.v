@@ -513,14 +513,34 @@ Definition measurableTypeR (R : realType) :=
 
 Section lebesgue_stieltjes_measure.
 Context {R : realType}.
-Variable f : cumulative R R.
+
+Definition lebesgue_display : measure_display :=
+  (R.-ocitv.-measurable).-sigma.
+Definition measurableR : set (set R) :=
+  (R.-ocitv.-measurable).-sigma.-measurable.
+
+HB.instance Definition _ := Pointed.on R.
+HB.instance Definition _ := Choice.on (measurableTypeR R).
+HB.instance Definition _ :=
+  @isMeasurable.Build lebesgue_display (measurableTypeR R) measurableR
+    measurable0 (@measurableC _ _) (@bigcupT_measurable _ _).
+HB.instance Definition _ := Measurable.copy R (measurableTypeR R).
+(*HB.instance (Real.sort R) R_isMeasurable.*)
+
+Lemma measurableTypeRE : R = g_sigma_algebraType (R.-ocitv.-measurable)
+  :> measurableType lebesgue_display.
+Proof. Admitted.
 
 Lemma lebesgue_stieltjes_measure_unique
-    (mu : {measure set (measurableTypeR R) -> \bar R}) :
+    (f : cumulative R R) (mu : {measure set R -> \bar R}) :
     (forall X, ocitv X -> lebesgue_stieltjes_measure f X = mu X) ->
-  forall A, measurable A -> lebesgue_stieltjes_measure f A = mu A.
+  forall A : set R, measurable A -> lebesgue_stieltjes_measure f A = mu A.
 Proof.
-move=> muE A mA; apply: measure_extension_unique => //=.
+move=> muE A mA.
+have @mu' : {measure set (g_sigma_algebraType R.-ocitv.-measurable) -> \bar R}.
+   rewrite {muE A mA f} -measurableTypeRE.
+have := @measure_extension_unique _ _ _ _ _ mu.
+ apply: measure_extension_unique => //=.
   exact: wlength_sigma_finite.
 by move=> X mX; rewrite -muE// -measurable_mu_extE.
 Qed.
@@ -550,16 +570,6 @@ Arguments completed_lebesgue_stieltjes_measure {R}.
 
 Section salgebra_R_ssets.
 Variable R : realType.
-
-Definition measurableR : set (set R) :=
-  (R.-ocitv.-measurable).-sigma.-measurable.
-
-HB.instance Definition _ := Pointed.on R.
-HB.instance Definition R_isMeasurable :
-  isMeasurable default_measure_display R :=
-  @isMeasurable.Build _ (measurableTypeR R) measurableR
-    measurable0 (@measurableC _ _) (@bigcupT_measurable _ _).
-(*HB.instance (Real.sort R) R_isMeasurable.*)
 
 Lemma measurable_set1 (r : R) : measurable [set r].
 Proof.
