@@ -286,9 +286,7 @@ by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
 Unshelve. all: by end_near. Qed.
 
 Lemma continuous_injective_withinNx
-(*=======
-Lemma within_continuous_withinNx
->>>>>>> 50b14da8 (holomorphic) *)
+Proof.
   (T U : topologicalType) (f : T -> U) (x : T) :
   {for x, continuous f} ->
   (forall y, f y = f x -> y = x) -> f @ x^' --> (f x)^'.
@@ -298,6 +296,26 @@ exists (f @^-1` V); first exact: cf Vfx.
 by apply/seteqP; split=> y/=;
   move/predeqP : AV => /(_ (f y))/= AV [AVfy yx];
   have /contra_neq /(_ yx) := fI y; tauto.
+Qed.
+
+Lemma within_continuous_withinNx
+  (T U : topologicalType) (f : T -> U) (x : T) :
+  {for x, continuous f} ->
+  (forall y, f y = f x -> y = x) -> f @ x^' --> (f x)^'.
+Proof.
+move=> cf fI A.
+rewrite /nbhs /= /dnbhs !withinE/= => -[] V Vfx AV.
+move: (cf _ Vfx); rewrite /nbhs/= -/(nbhs _ _) => Vx.
+exists (f @^-1` V) => //.
+apply/seteqP; split=> y/= [] fyAV yx; split=> //.
+  suff: f y \in A `&` (fun y : U => y != f x).
+    by rewrite AV inE => -[].
+  rewrite inE/=; split=> //.
+  by move: yx; apply: contra => /eqP /fI /eqP.
+suff: f y \in V `&` (fun y : U => y != f x).
+  by rewrite -AV inE => -[].
+rewrite inE/=; split=> //.
+by move: yx; apply: contra => /eqP /fI /eqP.
 Qed.
 
 (* This property is primarily useful for metrizability on uniform spaces *)
