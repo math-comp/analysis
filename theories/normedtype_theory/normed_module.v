@@ -2643,6 +2643,8 @@ End isnormedmodule.
 Section EquivalenceNorms.
 Variables (R : realType).
 
+(* TODO : generalize to a numFieldType *)
+
 (* FIXME: Specialize to vector space with basis and expose this definition
    (see https://github.com/math-comp/analysis/issues/1911).
    It will also be possible to generalize to `numFieldType`. *)
