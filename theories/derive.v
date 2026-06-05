@@ -537,6 +537,7 @@ rewrite invrK -ltr_pdivlMr // ger0_norm // ltr_pdivrMr //.
 by rewrite divfK ?lt0r_neq0// [ltRHS]splitr ltrDl.
 Qed.
 
+
 Lemma diff_unique (V W : normedModType R) (f : V -> W)
   (df : {linear V -> W}) x :
   continuous df -> f \o shift x = cst (f x) + df +o_ 0 id ->
@@ -564,6 +565,14 @@ apply/eqP; rewrite eq_sym addrC addr_eq0 oppox; apply/eqP.
 rewrite [in LHS]littleo_center0 (comp_centerK x id).
 by rewrite -[- _ in RHS](comp_centerK x).
 Qed.
+
+Lemma exists_diff (V W : normedModType R) (f : V -> W) x: 
+ (exists2 l : {linear V -> W}, continuous l & (forall h, f (x + h) = f(x) + l(h) +o_(h \near 0) h))
+ -> differentiable f x.
+Proof.
+move => [l cl hl]. apply/diffP; split.
+Admitted.
+
 
 Lemma diff_cst (V W : normedModType R) a x : ('d (cst a) x : V -> W) = 0.
 Proof. by apply/diff_unique; have [] := dcst a x. Qed.
