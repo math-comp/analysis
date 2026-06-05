@@ -692,6 +692,12 @@ Import complex.
 Lemma scalecE (w v: C^o) : v *: w = v * w.
 Proof. by []. Qed.
 
+Lemma scalerc (h : R) (c : C) : h%:C * c = h *: (c : Rcomplex R).
+Proof.
+case : c => x y.
+by rewrite /(real_complex _) /(_ *: _) /( _ * _) /= /= /scalec !mul0r subr0 addr0.
+Qed.
+
 (* FIXME: unused *)
 Lemma normcr (x : R) : normc (x%:C) = normr x.
 Proof. by rewrite /normc/= expr0n //= addr0 sqrtr_sqr. Qed.
