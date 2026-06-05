@@ -519,28 +519,19 @@ Definition lebesgue_display : measure_display :=
 Definition measurableR : set (set R) :=
   (R.-ocitv.-measurable).-sigma.-measurable.
 
-HB.instance Definition _ := Pointed.on R.
-HB.instance Definition _ := Choice.on (measurableTypeR R).
-HB.instance Definition _ :=
-  @isMeasurable.Build lebesgue_display (measurableTypeR R) measurableR
-    measurable0 (@measurableC _ _) (@bigcupT_measurable _ _).
+HB.instance Definition _ : Measurable lebesgue_display (measurableTypeR R) :=
+   Measurable.on (measurableTypeR R).
+(* Presumably it is safe to use NFI here because morally R is unique
+   and nothing else can be used here*)
+#[non_forgetful_inheritance]
 HB.instance Definition _ := Measurable.copy R (measurableTypeR R).
-(*HB.instance (Real.sort R) R_isMeasurable.*)
-
-Lemma measurableTypeRE : R = g_sigma_algebraType (R.-ocitv.-measurable)
-  :> measurableType lebesgue_display.
-Proof. Admitted.
 
 Lemma lebesgue_stieltjes_measure_unique
     (f : cumulative R R) (mu : {measure set R -> \bar R}) :
     (forall X, ocitv X -> lebesgue_stieltjes_measure f X = mu X) ->
   forall A : set R, measurable A -> lebesgue_stieltjes_measure f A = mu A.
 Proof.
-move=> muE A mA.
-have @mu' : {measure set (g_sigma_algebraType R.-ocitv.-measurable) -> \bar R}.
-   rewrite {muE A mA f} -measurableTypeRE.
-have := @measure_extension_unique _ _ _ _ _ mu.
- apply: measure_extension_unique => //=.
+move=> muE A mA; apply: measure_extension_unique => //=.
   exact: wlength_sigma_finite.
 by move=> X mX; rewrite -muE// -measurable_mu_extE.
 Qed.

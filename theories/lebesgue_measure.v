@@ -989,7 +989,7 @@ have : mu \o Dn @ \oo --> mu (\bigcup_n Dn n).
 rewrite -setI_bigcupr; rewrite bigcup_itvT setIT.
 have finDn n : mu (Dn n) \is a fin_num.
   rewrite ge0_fin_numE// (le_lt_trans _ Dfin)//.
-  by rewrite le_measure// ?inE//=; [exact: mDn|exact: subIsetl].
+  by rewrite le_measure// ?inE//=; exact: subIsetl.
 have finD : mu D \is a fin_num by rewrite fin_num_abs gee0_abs.
 rewrite -[mu D]fineK// => /fine_cvg/(_ (interior (ball (fine (mu D)) eps)))[].
   exact/nbhs_interior/nbhsx_ballx.
@@ -1001,7 +1001,7 @@ have finDDn : mu D - mu (Dn n) \is a fin_num
   by rewrite ?fin_numB ?finD /= ?(finDn n).
 rewrite -fine_abse // gee0_abs ?sube_ge0 ?finD ?(finDn _) //; last first.
   by rewrite -[_ - _]fineK // lte_fin fine.
-by rewrite le_measure// ?inE//; [exact: measurableI |exact: subIsetl].
+by rewrite le_measure// ?inE//; exact: subIsetl.
 Qed.
 
 Lemma lebesgue_regularity_inner (D : set R) (eps : R) :
