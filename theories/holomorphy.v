@@ -191,6 +191,7 @@ apply: funext => h /=.
 by rewrite -fmorphV realCZ [X in f X]addrC scalerc.
 Qed.
 
+
 (* should be generalized to equivalent norms *)
 (* but there is no way to state it for now *)
 Lemma littleoCo (h e : C -> C) (x : C) :
@@ -210,6 +211,7 @@ rewrite -[_%:num]ger0_norm// -rmorphM/= lecR.
 by near: y; apply: small; rewrite (@normr_gt0 _ (Rcomplex R))//.
 Unshelve. all: by end_near. Qed.
 
+
 Definition CauchyRiemannEq (f : C -> C) c :=
   'i * 'D_1 f%:Rfun c%:Rc = 'D_('i) f%:Rfun c%:Rc.
 
@@ -217,15 +219,29 @@ Lemma holo_differentiable (f : C -> C) (c : C) :
   holomorphic f c -> Rdifferentiable f (c : Rc).
 Proof.
 move=> /holomorphicP /derivable1_diffP /diff_locallyP => -[cdiff holo].
+have lDf : linear ('d (f%:Rfun) (c%:Rc) : Rc -> Rc) by move=> t u v; rewrite linearP.
+pose df : Rc -> Rc := 'd (f%:Rfun)(c%:Rc).
+pose df' : {linear Rc -> Rc} :=
+  HB.pack df (GRing.isLinear.Build R Rc _ _ df lDf).
+ Search (differentiable _  _).
+Admitted.
+(*
+move=> /holomorphicP /derivable1_diffP /diff_locallyP => -[cdiff holo].
 pose df : Rc -> Rc := 'd (f%:Rfun)(c%:Rc).
 have lDf : linear df by  move=> t u v; rewrite /df linearP.
 pose df' : {linear Rc -> Rc} :=
   HB.pack df (GRing.isLinear.Build R Rc _ _ df lDf).  
 apply/diff_locallyP; split; first by exact: linear_findim_continuous.
 have eqdf : f%:Rfun \o +%R^~ c = cst (f c : Rc) + df' +o_ (0 : Rc) id.
-  rewrite [LHS]holo /=. 
-  congr (_ + _). congr (_ + _). 
-  rewrite /df /df'. Fail reflexivity. admit.
+ rewrite [LHS]holo /df'/=/df/=.
+  congr (_ + _).
+  exact: littleoCo.
+*)
+(*
+  apply/eqaddoE.
+  rewrite [LHS]holo.
+  congr (_ + _). congr (_ + _).
+  rewrite /df /df' /=. reflexivity. admit.
    Fail exact: littleoCo. admit.
 rewrite (@diff_unique R (Rcomplex R) (Rcomplex R) _ df' _ _ eqdf).
   exact: eqdf.
@@ -233,6 +249,7 @@ exact: linear_findim_continuous.
 (* TODO: fix Qed performance issue (which is due to the proof of `eqdf`).
   3.684s *)
 Admitted. 
+*)
 
 Lemma holo_CauchyRiemann (f : C -> C) c: holomorphic f c -> CauchyRiemannEq f c.
 Proof.
@@ -251,18 +268,18 @@ have lem : quotC \o  *%R^~ 'i%R @ (realC @ (0 : R)^') --> l.
   apply: cvg_comp; last by exact: H.
   apply: (@cvg_comp _ _ _ realC ( *%R^~ 'i)); first by exact: realC'0.
   rewrite -[0 in X in _ `=>` X](mul0r 'i%C).
-  apply: within_continuous_withinNx; first exact: scalel_continuous.
+  apply: within_continuous_withinNx; first by apply: mulrr_continuous.
   move=> x /eqP; rewrite mul0r mulIr_eq0; last by apply/rregP; apply: neq0Ci.
   exact: eqP.
 have HRcomp: cvg (quotC \o *%R^~ 'i%R @ (realC @ ((0 : R)^'))) .
   by apply/cvg_ex; simpl; exists l.
 have ->: lim (quotR @ (realC @ ((0 : R)^')))
-  = 'i *: lim (quotC \o ( fun h => h *'i) @ (realC @ ((0 : R)^'))).
-  have: 'i \*:quotC \o ( fun h => h *'i) =1 quotR.
-  move=> h /=; rewrite /quotC /quotR /=.
-  rewrite invfM scalerA mulrC -mulrA mulVf ?mulr1 ?neq0Ci //.
-  by move=> /funext <-; rewrite limZr.
-rewrite scalecE.
+  = 'i * lim (quotC \o ( fun h => h *'i) @ (realC @ ((0 : R)^'))).
+  have: (fun x => 'i) \* quotC \o ( fun h => h *'i) =1 quotR.
+    move=> h /=; rewrite /quotC /quotR /=.
+    rewrite invfM mulrA (mulrC _ ('i)^-1) mulrA divff ?complexiE ?neq0Ci //. 
+    by rewrite mul1r scalecE. 
+  move=> /funext <-. rewrite limM ?lim_cst.  by []. by []. exact: cvg_cst.  by []. by [].  
 suff ->: lim (quotC @ (realC @ ((0 : R)^')))
       = lim (quotC \o  *%R^~ 'i%R @ (realC @ ((0 : R)^'))) by [].
 suff ->: lim (quotC @ (realC @ ((0 : R)^'))) = l.
@@ -271,24 +288,26 @@ by apply: cvg_lim; last exact: HR0.
 Qed.
 
 Lemma Diff_CR_holo (f : C -> C) (c : C):
-  (Rdifferentiable f c) /\ (CauchyRiemannEq f c) -> (holomorphic f c).
+  Rdifferentiable f c -> CauchyRiemannEq f c -> holomorphic f c.
 Proof.
-move=> [] /= /[dup] H /diff_locallyP => [[derc diff]] CR.
+move=> /= /[dup] H /diff_locallyP => [[derc diff]] CR.
 apply/holomorphicP/derivable1_diffP/diff_locallyP.
-pose Df := (fun h : C => h *: ('D_1 f%:Rfun c : C)).
-have lDf : linear Df by move=> t u v /=; rewrite /Df scalerDl scalerA scalecE.
+pose Df := (fun h : C => h * ('D_1 f%:Rfun c : C)).
+have lDf : linear Df.  move=> t u v /=; rewrite /Df mulrDl -scalecE. congr (_ + _). 
+by rewrite (scalecr u t) !scalecE scalecr mulrA.
 pose df : {linear R[i] -> R[i]} :=
   HB.pack Df (GRing.isLinear.Build _ _ _ _ Df lDf).
-have cdf : continuous df by apply: scalel_continuous.
+simpl in df.
+have cdf : continuous df by apply: mulrr_continuous.
 have lem : Df = 'd (f%:Rfun) (c : Rc). (* issue with notation *)
   apply: funext => z; rewrite  /Df.
   set x := Re z; set y := Im z.
   have zeq : z = x *: 1 %:Rc + y *: 'i%:Rc.
-  by rewrite [LHS]complexE /= realC_alg scalecr scalecE [in RHS]mulrC.
+  by rewrite [LHS]complexE /= realC_alg scalecr [in RHS]mulrC.
   rewrite [X in 'd _ _ X]zeq addrC linearP linearZ /= -!deriveE //.
   rewrite -CR (scalerAl y) -scalecE !scalecr /=.
-  rewrite -(scalerDl  (('D_1 f%:Rfun (c : Rc)) : C) _  (real_complex R x)).
-  by rewrite addrC -!scalecr -realC_alg -zeq.
+  by rewrite zeq scalerDl !scalecr mulr1 !scalecE addrC.
+split. admit. (*apply: derc.*)
 have holo:  f \o shift c = cst (f c) + df +o_ ( 0 : C) id.
   rewrite [LHS]diff /= lem.
   congr (_ + _).
