@@ -389,6 +389,8 @@ Import HBNNSimple.
   NonNegFun.on (cst x%:num).*)
 (* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 
+Import MeasurableR.
+
 Lemma approximation_sfun :
   exists g : {sfun T >-> R}^nat, (forall x, D x -> EFin \o g ^~ x @ \oo --> f x).
 Proof.
