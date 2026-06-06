@@ -145,8 +145,6 @@ Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
 
 HB.instance Definition _ := [Choice of {sfun aT >-> bT} by <:].
 
-Import MeasurableR.
-
 (* NB: already in cardinality.v *)
 HB.instance Definition _ x : @FImFun aT bT (cst x) := FImFun.on (cst x).
 
