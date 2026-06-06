@@ -73,13 +73,14 @@ Local Open Scope ring_scope.
 Module HBSimple.
 Import MeasurableR.
 
-HB.structure Definition SimpleFun d d' (aT : sigmaRingType d)
-    (bT : sigmaRingType d') :=
+HB.structure Definition SimpleFun d d'
+    (aT : sigmaRingType d) (bT : sigmaRingType d') :=
   {f of @isMeasurableFun d d' aT bT f & @FiniteImage aT bT f}.
 
 End HBSimple.
 
-Notation "{ 'sfun' aT >-> T }" := (@HBSimple.SimpleFun.type _ _ aT T) : form_scope.
+Notation "{ 'sfun' aT >-> T }" :=
+  (@HBSimple.SimpleFun.type _ _ aT T) : form_scope.
 Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
 
 Module HBNNSimple.
