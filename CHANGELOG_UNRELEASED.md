@@ -19,6 +19,12 @@
 - in `num_topology.v`:
   + lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
     `at_left_shift`, `at_right_shift`
+- in `borel_hierarchy.v`:
+  + definition `borel_type`
+  + lemmas `singleton_bigcap`, `measurable1`
+
+- in `set_interval.v`:
+  + lemmas `setU_itvob1`, `setU_1itvob`
 
 - in `realfun.v`:
   + lemmas `derivable_oo_LRcontinuousZ`, `derivable_oo_LRcontinuousD`, 
