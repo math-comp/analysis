@@ -6,6 +6,7 @@ From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
 From mathcomp Require Import reals real_interval topology ereal.
 From mathcomp Require Import normedtype sequences esum measure.
 From mathcomp Require Import real_measure numfun realfun.
+From mathcomp Require Import borel_hierarchy.
 
 (**md**************************************************************************)
 (* # Simple functions                                                         *)
@@ -351,7 +352,6 @@ by move=> y [fy /= /nesym yfx]; rewrite indic_lmodE memNset ?mulr0.
 Qed.
 
 End fimfunE_lmod.
-
 
 Lemma preimage_nnfun0 T (R : realDomainType) (f : {nnfun T >-> R}) t :
   t < 0 -> f @^-1` [set t] = set0.

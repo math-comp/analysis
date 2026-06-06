@@ -28,6 +28,8 @@
   + `{sfun aT >-> V}` is an `lmodType` when `V` is a `normedModType`
   + definitions `indic_lmod` `mindic_lmod` `mindic_lmod_sfun`
   + lemmas `indic_lmodE` `preimage_indic_mod` `measurable_indic_lmod`
+  + lemmas `sfun_op`, `sfun_submod_closed`
+  + `{sfun aT >-> borel_type V}` is an `lmodType` when `V` is a `normedModType`
 
 - in `set_interval.v`:
   + lemmas `setU_itvob1`, `setU_1itvob`
