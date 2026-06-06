@@ -72,12 +72,13 @@ Local Open Scope ring_scope.
 
 Module HBSimple.
 
-HB.structure Definition SimpleFun d (aT : sigmaRingType d) (rT : realType) :=
-  {f of @isMeasurableFun d _ aT rT f & @FiniteImage aT rT f}.
+HB.structure Definition SimpleFun d d' (aT : sigmaRingType d)
+    (bT : sigmaRingType d') :=
+  {f of @isMeasurableFun d d' aT bT f & @FiniteImage aT bT f}.
 
 End HBSimple.
 
-Notation "{ 'sfun' aT >-> T }" := (@HBSimple.SimpleFun.type _ aT T) : form_scope.
+Notation "{ 'sfun' aT >-> T }" := (@HBSimple.SimpleFun.type _ _ aT T) : form_scope.
 Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
 
 Module HBNNSimple.
@@ -85,7 +86,7 @@ Import HBSimple.
 
 HB.structure Definition NonNegSimpleFun
     d (aT : sigmaRingType d) (rT : realType) :=
-  {f of @SimpleFun d _ _ f & @NonNegFun aT rT f}.
+  {f of @SimpleFun d _ _ _ f & @NonNegFun aT rT f}.
 
 End HBNNSimple.
 
@@ -93,8 +94,8 @@ Notation "{ 'nnsfun' aT >-> T }" := (@HBNNSimple.NonNegSimpleFun.type _ aT%type 
 Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
 Section sfun_pred.
-Context {d} {aT : sigmaRingType d} {rT : realType}.
-Definition sfun : {pred _ -> _} := [predI @mfun _ _ aT rT & fimfun].
+Context {d d'} {aT : sigmaRingType d} {bT : sigmaRingType d'}.
+Definition sfun : {pred _ -> _} := [predI @mfun _ _ aT bT & fimfun].
 Definition sfun_key : pred_key sfun. Proof. exact. Qed.
 Canonical sfun_keyed := KeyedPred sfun_key.
 Lemma sub_sfun_mfun : {subset sfun <= mfun}. Proof. by move=> x /andP[]. Qed.
@@ -102,16 +103,16 @@ Lemma sub_sfun_fimfun : {subset sfun <= fimfun}. Proof. by move=> x /andP[]. Qed
 End sfun_pred.
 
 Section sfun.
-Context {d} {aT : measurableType d} {rT : realType}.
-Notation T := {sfun aT >-> rT}.
-Notation sfun := (@sfun _ aT rT).
+Context {d d'} {aT : measurableType d} {bT : sigmaRingType d'}.
+Notation T := {sfun aT >-> bT}.
+Notation sfun := (@sfun _ _ aT bT).
 Section Sub.
-Context (f : aT -> rT) (fP : f \in sfun).
+Context (f : aT -> bT) (fP : f \in sfun).
 Definition sfun_Sub1_subproof :=
-  @isMeasurableFun.Build d _ aT rT f (set_mem (sub_sfun_mfun fP)).
+  @isMeasurableFun.Build d d' aT bT f (set_mem (sub_sfun_mfun fP)).
 #[local] HB.instance Definition _ := sfun_Sub1_subproof.
 Definition sfun_Sub2_subproof :=
-  @FiniteImage.Build aT rT f (set_mem (sub_sfun_fimfun fP)).
+  @FiniteImage.Build aT bT f (set_mem (sub_sfun_fimfun fP)).
 
 Import HBSimple.
 
@@ -135,15 +136,15 @@ Proof. by []. Qed.
 
 HB.instance Definition _ := isSub.Build _ _ T sfun_rect sfun_valP.
 
-Lemma sfuneqP (f g : {sfun aT >-> rT}) : f = g <-> f =1 g.
+Lemma sfuneqP (f g : {sfun aT >-> bT}) : f = g <-> f =1 g.
 Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
 
-HB.instance Definition _ := [Choice of {sfun aT >-> rT} by <:].
+HB.instance Definition _ := [Choice of {sfun aT >-> bT} by <:].
 
 (* NB: already in cardinality.v *)
-HB.instance Definition _ x : @FImFun aT rT (cst x) := FImFun.on (cst x).
+HB.instance Definition _ x : @FImFun aT bT (cst x) := FImFun.on (cst x).
 
-Definition cst_sfun x : {sfun aT >-> rT} := cst x.
+Definition cst_sfun x : {sfun aT >-> bT} := cst x.
 
 Lemma cst_sfunE x : @cst_sfun x =1 cst x. Proof. by []. Qed.
 
@@ -165,13 +166,13 @@ Definition fctWE := (fctD, fctN, fctM, fctZ).
 Section ring.
 Context d (aT : measurableType d) (rT : realType).
 
-Lemma sfun_subring_closed : subring_closed (@sfun d aT rT).
+Lemma sfun_subring_closed : subring_closed (@sfun d _ aT rT).
 Proof.
 by split=> [|f g|f g]; rewrite ?inE/= ?rpred1//;
    move=> /andP[/= mf ff] /andP[/= mg fg]; rewrite !(rpredB, rpredM).
 Qed.
 
-HB.instance Definition _ := GRing.isSubringClosed.Build _ sfun
+HB.instance Definition _ := GRing.isSubringClosed.Build _ (@sfun d _ aT rT)
   sfun_subring_closed.
 HB.instance Definition _ := [SubChoice_isSubComPzRing of {sfun aT >-> rT} by <:].
 
