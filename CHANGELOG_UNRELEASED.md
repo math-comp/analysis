@@ -150,6 +150,8 @@
 
 - in `esum.v`:
   + lemma `esum_set1`
+  + structure `SimpleFun` (and notation `{sfun aT >-> _}`): codomain
+    generalized from `realType` to `sigmaRingType d'`, adding a display parameter `d'`;
 
 ### Deprecated
 

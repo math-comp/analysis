@@ -72,13 +72,13 @@ Local Open Scope ring_scope.
 Module HBSimple.
 Import MeasurableR.
 
-HB.structure Definition SimpleFun d d'
-  (aT : sigmaRingType d) (rT : sigmaRingType d') :=
+HB.structure Definition SimpleFun d (aT : sigmaRingType d)
+  d' (rT : sigmaRingType d') :=
   {f of @isMeasurableFun d d' aT rT f & @FiniteImage aT rT f}.
 
 End HBSimple.
 
-Notation "{ 'sfun' aT >-> T }" := (@HBSimple.SimpleFun.type _ _ aT T) : form_scope.
+Notation "{ 'sfun' aT >-> T }" := (@HBSimple.SimpleFun.type _ aT _ T) : form_scope.
 Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
 
 Module HBNNSimple.
@@ -87,7 +87,7 @@ Import MeasurableR.
 
 HB.structure Definition NonNegSimpleFun
     d (aT : sigmaRingType d) (rT : realType) :=
-  {f of @SimpleFun d _ aT rT f & @NonNegFun aT rT f}.
+  {f of @SimpleFun d aT _ rT f & @NonNegFun aT rT f}.
 
 End HBNNSimple.
 
@@ -96,7 +96,6 @@ Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
 Section sfun_pred.
 Context {d} {aT : sigmaRingType d} {d'} {bT : sigmaRingType d'}.
-Import MeasurableR.
 Definition sfun : {pred _ -> _} := [predI @mfun _ _ aT bT & fimfun].
 Definition sfun_key : pred_key sfun. Proof. exact. Qed.
 Canonical sfun_keyed := KeyedPred sfun_key.
