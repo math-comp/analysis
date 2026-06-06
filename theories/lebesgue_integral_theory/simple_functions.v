@@ -72,13 +72,14 @@ Local Open Scope ring_scope.
 
 Module HBSimple.
 
-HB.structure Definition SimpleFun d d' (aT : sigmaRingType d)
-    (bT : sigmaRingType d') :=
+HB.structure Definition SimpleFun d d'
+    (aT : sigmaRingType d) (bT : sigmaRingType d') :=
   {f of @isMeasurableFun d d' aT bT f & @FiniteImage aT bT f}.
 
 End HBSimple.
 
-Notation "{ 'sfun' aT >-> T }" := (@HBSimple.SimpleFun.type _ _ aT T) : form_scope.
+Notation "{ 'sfun' aT >-> T }" :=
+  (@HBSimple.SimpleFun.type _ _ aT T) : form_scope.
 Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
 
 Module HBNNSimple.
@@ -90,7 +91,8 @@ HB.structure Definition NonNegSimpleFun
 
 End HBNNSimple.
 
-Notation "{ 'nnsfun' aT >-> T }" := (@HBNNSimple.NonNegSimpleFun.type _ aT%type T) : form_scope.
+Notation "{ 'nnsfun' aT >-> T }" :=
+  (@HBNNSimple.NonNegSimpleFun.type _ aT%type T) : form_scope.
 Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
 Section sfun_pred.
