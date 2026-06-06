@@ -26,6 +26,7 @@
 - in `num_topology.v`:
   + lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`,
     `at_left_shift`, `at_right_shift`
+
 - in `esum.v`:
   + lemmas `pos_esum_ge1`, `le_pos_esum_fine`, `sum_esum_ge`, `le_esum_fine`,
     `subset_esum`, `esum0`, `esum_if_eq_op_set1`, `esum_neq0`, `esum_ge1`
@@ -35,6 +36,10 @@
      `esummable_esum_fin_num`, `esummable_esumN`
   + lemma `esumE`
   + lemmas `esummable_esumZ`, `esummable_esumD`, `esummableB`
+
+- in `simple_functions.v`:
+  + lemmas `mem_sfun_comp_pair`, `sfun_submod_closed`
+  + `{sfun aT >-> rT}` is an `lmodType` when `rT` is a `normedModType`
 
 ### Changed
 
@@ -71,6 +76,10 @@
 
 - in `esum.v`:
   + lemmma `le_esum`
+
+- in `simple_functions.v`:
+  + structure `SimpleFun` (and notation `{sfun aT >-> _}`): codomain
+    generalized from `realType` to `sigmaRingType d'`, adding a display parameter `d'`;
 
 ### Deprecated
 
