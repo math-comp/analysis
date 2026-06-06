@@ -20,7 +20,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import Order.TTheory GRing.Theory Num.Theory.
+Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Import numFieldNormedType.Exports.
 
 Local Open Scope classical_set_scope.
@@ -79,6 +79,31 @@ by rewrite /f1 pinvKV ?inE//=; exact: set_bij_inj bijf.
 Qed.
 
 End irrational_Gdelta.
+
+Definition borel_type (T : topologicalType) := g_sigma_algebraType (@open T).
+
+Section borel_normedModType.
+Local Open Scope ring_scope.
+Context {R : realType} {V : normedModType R}.
+
+Lemma singleton_bigcap (x : V) :
+  [set x] = \bigcap_(k : nat) ball x (k.+1%:R)^-1.
+Proof.
+apply/seteqP; split => [_ -> k _|y xy].
+  by rewrite -ball_normE/= subrr normr0 invr_gt0 ltr0n.
+apply/eqP; rewrite eq_sym -subr_eq0 -normr_eq0 eq_le normr_ge0 andbT.
+apply/ler_addgt0Pl => e e0; rewrite addr0.
+have := xy (truncn e^-1) I; rewrite -ball_normE/= => /ltW/le_trans; apply.
+by rewrite invf_ple ?posrE ?ltr0n ?invr_gt0//; apply/ltW/truncnS_gt.
+Qed.
+
+Lemma measurable1 (x : borel_type V) : measurable [set x].
+Proof.
+rewrite singleton_bigcap; apply: bigcap_measurable => // k _.
+by apply: sub_sigma_algebra; exact: ball_open.
+Qed.
+
+End borel_normedModType.
 
 Lemma not_rational_Gdelta (R : realType) : ~ Gdelta (@rational R).
 Proof.
