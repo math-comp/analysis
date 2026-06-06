@@ -19,6 +19,10 @@
   + definition `borel_type`
   + lemmas `singleton_bigcap`, `measurable1`
 
+- in `simple_functions.v`:
+  + lemmas `sfun_op`, `sfun_submod_closed`
+  + `{sfun aT >-> borel_type V}` is an `lmodType` when `V` is a `normedModType`
+
 - in `set_interval.v`:
   + lemmas `setU_itvob1`, `setU_1itvob`
 
