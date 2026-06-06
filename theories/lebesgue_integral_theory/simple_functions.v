@@ -151,9 +151,9 @@ Lemma cst_sfunE x : @cst_sfun x =1 cst x. Proof. by []. Qed.
 End sfun.
 
 (* a better way to refactor function stuffs *)
-Lemma fctD (T : Type) (K : pzRingType) (f g : T -> K) : f + g = f \+ g.
+Lemma fctD (T : Type) (N : nmodType) (f g : T -> N) : f + g = f \+ g.
 Proof. by []. Qed.
-Lemma fctN (T : Type) (K : pzRingType) (f : T -> K) : - f = \- f.
+Lemma fctN (T : Type) (N : zmodType) (f : T -> N) : - f = \- f.
 Proof. by []. Qed.
 Lemma fctM (T : Type) (K : pzRingType) (f g : T -> K) : f * g = f \* g.
 Proof. by []. Qed.
