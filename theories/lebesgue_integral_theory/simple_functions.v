@@ -61,7 +61,6 @@ Reserved Notation "{ 'sfun' aT >-> T }"
 Reserved Notation "[ 'sfun' 'of' f ]"
   (at level 0, format "[ 'sfun'  'of'  f ]").
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -74,14 +73,13 @@ Local Open Scope ring_scope.
 Module HBSimple.
 Import MeasurableR.
 
-HB.structure Definition SimpleFun d d'
-    (aT : sigmaRingType d) (bT : sigmaRingType d') :=
+HB.structure Definition SimpleFun d d' (aT : sigmaRingType d)
+    (bT : sigmaRingType d') :=
   {f of @isMeasurableFun d d' aT bT f & @FiniteImage aT bT f}.
 
 End HBSimple.
 
-Notation "{ 'sfun' aT >-> T }" :=
-  (@HBSimple.SimpleFun.type _ _ aT T) : form_scope.
+Notation "{ 'sfun' aT >-> T }" := (@HBSimple.SimpleFun.type _ _ aT T) : form_scope.
 Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
 
 Module HBNNSimple.
@@ -272,9 +270,6 @@ HB.instance Definition _ (V : normedModType R) :=
     (sfun_submod_closed V).
 HB.instance Definition _ (V : normedModType R) :=
   [SubChoice_isSubLmodule of {sfun aT >-> V} by <:].
-
-Lemma sfun0r : (0 : {sfun aT >-> R}) =1 cst 0.
-Lemma sfun0m {V : normedModType R} : (0 : {sfun aT >-> V}) =1 cst 0.
 
 End sfun_lmodType.
 
