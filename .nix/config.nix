@@ -63,6 +63,17 @@ in {
     };
   };
 
+  # bundles."9.1-2.5.0" = {
+  #   rocqPackages = {
+  #     rocq-core.override.version = "9.1";
+  #     mathcomp.override.version = "2.5.0";
+  #   };
+  #   coqPackages = common-bundle // {
+  #     coq.override.version = "9.1";
+  #     ssprove.job = false;  # not yet available for 9.1
+  #   };
+  # };
+
   bundles."9.1-master" = {
     rocqPackages = {
       rocq-core.override.version = "9.1";
@@ -88,6 +99,7 @@ in {
       mathcomp.override.version = "master";
       mathcomp-bigenough.override.version = "master";
       mathcomp-finmap.override.version = "master";
+      micromega-plugin.override.version = "master";
     };
     coqPackages = common-bundle // {
       coq.override.version = "master";
