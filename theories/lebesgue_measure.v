@@ -338,7 +338,6 @@ End LebesgueMeasure.
 
 Definition lebesgue_measure {R : realType} : set R -> \bar R :=
   lebesgue_stieltjes_measure idfun.
-Check fun R : realType => lebesgue_stieltjes_measure idfun : Measure.type _ _.
 HB.instance Definition _ (R : realType) := Measure.on (@lebesgue_measure R).
 HB.instance Definition _ (R : realType) :=
   SigmaFiniteMeasure.on (@lebesgue_measure R).

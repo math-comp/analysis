@@ -128,6 +128,9 @@
     * lemmas `zornS_ex`, `domain_extend`, `hahn_banach_witness`
   + theorems `hahn_banach_extension`, `hahn_banach_extension_normed`
 
+- in `lebesgue_stieltjes_measure.v`:
+  + definition `lebesgue_display`
+
 ### Changed
 
 - moved from `measurable_structure.v` to `classical_sets.v`:
