@@ -19,6 +19,12 @@ From mathcomp Require Import ereal_normedtype pseudometric_normed_Zmodule.
 (*                normedModType K == interface type for a normed module       *)
 (*                                   structure over the numDomainType K       *)
 (*                                   The HB class is NormedModule.            *)
+(*         subNormedModType R V S == join of                                  *)
+(*                                   SubChoice                                *)
+(*                                   NormedModule                             *)
+(*                                   SubLmodule                               *)
+(*                                   SubNormedZmodule                         *)
+(*                                   SubConvexTvs                             *)
 (*               normedVectType K == interface type for a normed vectType     *)
 (*                                   structure over the numDomainType K       *)
 (*                                   The HB class is NormedVector.            *)
@@ -34,6 +40,9 @@ From mathcomp Require Import ereal_normedtype pseudometric_normed_Zmodule.
 (*                            M : normedZmodType K with K : numFieldType.     *)
 (*      Lmodule_isNormed M == factory for a normed module defined using       *)
 (*                            an L-module M over R : numFieldType             *)
+(*  subLmodule_isSubNormedmodule R V S == light-weight factory that builds a  *)
+(*                            SubNormedmodule given a SubLmodule over a       *)
+(*                            normedModType                                   *)
 (* ```                                                                        *)
 (* ## Hulls                                                                   *)
 (* ```                                                                        *)
@@ -87,6 +96,13 @@ HB.mixin Record PseudoMetricNormedZmod_ConvexTvs_isNormedModule K V
 HB.structure Definition NormedModule (K : numDomainType) :=
   {T of PseudoMetricNormedZmod K T & ConvexTvs K T
    & PseudoMetricNormedZmod_ConvexTvs_isNormedModule K T}.
+
+#[short(type="subNormedModType")]
+HB.structure Definition SubNormedModule (R : numDomainType)
+  (V : normedModType R) (S : pred V) :=
+  { U of SubChoice V S U & NormedModule R U & @GRing.SubLmodule R V S U
+       & @Num.SubNormedZmodule(*Zmodule_isSubSemiNormed*) R V S U &
+       @SubConvexTvs R V S U}.
 
 HB.factory Record PseudoMetricNormedZmod_Lmodule_isNormedModule
   (K : numFieldType) V & PseudoMetricNormedZmod K V & GRing.Lmodule K V := {
@@ -302,6 +318,29 @@ Module Exports. HB.reexport. End Exports.
 End pseudoMetric_from_normedZmodType.
 Export pseudoMetric_from_normedZmodType.Exports.
 
+Section filter_ent.
+
+Import pseudoMetric_from_normedZmodType.
+
+Global Instance ent_xsection_filter {R : realFieldType} (U : normedZmodType R) x
+  : Filter [set P | exists2 A : set (pseudoMetric_normed U *
+                                     pseudoMetric_normed U),
+           ent A & xsection A x `<=` P].
+Proof.
+apply: Build_Filter => /=.
+- by exists setT => //; exact: (@entourageT (pseudoMetric_normed U)).
+- move=> A B/= [A' [r/= r0 ballA'] A'A] [B' [d/= d0 ballB'] B'B].
+  exists (A' `&` B'); last by rewrite xsectionI; exact: setISS.
+  rewrite entourageE /entourage_.
+  exists (Num.min r d); first by rewrite /= lt_min r0.
+  move=> z/= Hz; split.
+  + by apply: ballA' => /=; rewrite /ball/= (lt_le_trans Hz)// ge_min lexx.
+  + by apply: ballB' => /=; rewrite /ball/= (lt_le_trans Hz)// ge_min lexx orbT.
+- by move=> P Q PQ [A entA AP]; exists A => //; exact: (subset_trans AP).
+Qed.
+
+End filter_ent.
+
 HB.factory Record Lmodule_isNormed (R : numFieldType) M
     & GRing.Lmodule R M := {
  norm : M -> R;
@@ -334,6 +373,57 @@ HB.instance Definition _ :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R M normrZ.
 
 HB.end.
+
+Definition subLmodule_isSubNormedmodule (R : realFieldType)
+    (V : normedModType R) (S : pred V) (U : Type) : Type := U.
+
+Section SubLmodule_isSubNormedmodule.
+Context (R : realFieldType) (V : normedModType R) (S : pred V)
+  (U' : subLmodType S).
+
+Local Notation U := (subLmodule_isSubNormedmodule S U').
+
+HB.instance Definition _ := GRing.SubLmodule.on U.
+
+Local Definition normu := fun u : U => `|\val u|.
+
+Let ler_normuD (x y : U) : normu (x + y) <= normu x + normu y.
+Proof. by rewrite /normu GRing.valD; exact: ler_normD. Qed.
+
+Let normru0_eq0 x : normu x = 0 -> x = 0.
+Proof. by move/eqP; rewrite normr_eq0 -(@GRing.val0 V S U) => /eqP/val_inj. Qed.
+
+Let normruMn x n : normu (x *+ n) = normu x *+ n.
+Proof. by rewrite /normu raddfMn /=; exact: normrMn. Qed.
+
+Let normruN x : normu (- x) = normu x.
+Proof. by rewrite /normu raddfN /=; exact: normrN. Qed.
+
+Let normruZ (l : R) (x : U) : normu (l *: x) = `|l| * normu x.
+Proof. by rewrite /normu GRing.valZ; exact: normrZ. Qed.
+
+HB.instance Definition _ :=
+  @Lmodule_isNormed.Build R U normu ler_normuD normruZ normru0_eq0.
+
+Let normu_valE : forall x, @Num.norm _ V ((val : U -> V) x) = @Num.norm _ U x.
+Proof. by []. Qed.
+
+HB.instance Definition _ :=  Num.Zmodule_isSubNormed.Build _ _ _ U normu_valE.
+
+Let continuous_valE : continuous (val : U -> V).
+Proof.
+move=> /= x.
+rewrite /continuous_at.
+set rhs := (X in _ --> X).
+apply/cvgrPdist_le => //=.
+move=> e e0; near=> t.
+rewrite -GRing.valN -GRing.valD normu_valE.
+by near: t; exact: cvgr_dist_le e e0.
+Unshelve. all: by end_near. Qed.
+
+HB.instance Definition _ := isSubNbhs.Build _ _ U continuous_valE.
+
+End SubLmodule_isSubNormedmodule.
 
 Lemma scaler1 {R : numFieldType} h : h%:A = h :> R.
 Proof. by rewrite /GRing.scale/= mulr1. Qed.
@@ -2624,8 +2714,8 @@ have leNoo (x : max_space V) : N x <= M0 * `|x|.
   by rewrite Norm.normZ mulrC ler_pM// ?le_coord_max_norm// Norm.norm_ge0.
 have NC0 : continuous (N : max_space V -> R).
   move=> /= x; rewrite /continuous_at.
-  apply: cvg_zero; first exact: nbhs_filter.
-  apply/cvgr0Pnorm_le; first exact: nbhs_filter.
+  apply: cvg_zero.
+  apply/cvgr0Pnorm_le.
   move=> /= e e0.
   near=> y.
   rewrite -[_ y]/(N y - N x) (@le_trans _ _ (N (y - x)))//.

@@ -1,5 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint.
+From HB Require Import structures.
+From mathcomp Require Import all_ssreflect_compat finmap all_algebra.
 
 (**md**************************************************************************)
 (* # MathComp extra                                                           *)
@@ -93,10 +94,21 @@ Proof. by case: C => //= /ltW. Qed.
 (* MathComp 2.6 additions *)
 (**************************)
 
-(* PR in progress: https://github.com/math-comp/math-comp/pull/1515 *)
 Lemma intrD1 {R : pzRingType} (i : int) : (i + 1)%:~R = i%:~R + 1 :> R.
 Proof. by rewrite intrD. Qed.
 
-(* PR in progress: https://github.com/math-comp/math-comp/pull/1515 *)
 Lemma intr1D {R : pzRingType} (i : int) : (1 + i)%:~R = 1 + i%:~R :> R.
 Proof. by rewrite intrD. Qed.
+
+Lemma divDl_ge0 (R : numDomainType) (s t : R) (s0 : 0 <= s) (t0 : 0 <= t) :
+  0 <= s / (s + t).
+Proof.
+by apply: divr_ge0 => //; apply: addr_ge0.
+Qed.
+
+Lemma divDl_le1 (R : numFieldType) (s t : R) (s0 : 0 <= s) (t0 : 0 <= t) :
+  s / (s + t) <= 1.
+Proof.
+move: s0; rewrite le0r => /predU1P [->|s0]; first by rewrite mul0r.
+by rewrite ler_pdivrMr ?mul1r ?lerDl // ltr_wpDr.
+Qed.

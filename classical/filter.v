@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat all_algebra finmap.
 From mathcomp Require Import boolp classical_sets functions wochoice.
@@ -15,21 +15,31 @@ From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
 (*                                                                            *)
 (* ## Structure of filter                                                     *)
 (* ```                                                                        *)
-(*                   filteredType U == interface type for types whose         *)
-(*                                     elements represent sets of sets on U   *)
-(*                                     These sets are intended to be filters  *)
-(*                                     on U but this is not enforced yet.     *)
-(*                                     The HB class is called Filtered.       *)
-(*                                     It extends Pointed.                    *)
-(*                           nbhs p == set of sets associated to p (in a      *)
-(*                                     filtered type)                         *)
-(*                  pfilteredType U == a pointed and filtered type            *)
-(*                          hasNbhs == factory for filteredType               *)
+(*              filteredType U == interface type for types whose elements     *)
+(*                                represent sets of sets on U                 *)
+(*                                These sets are intended to be filters on U  *)
+(*                                but this is not enforced yet.               *)
+(*                                The HB class is called Filtered.            *)
+(*                                It extends Pointed.                         *)
+(*                      nbhs p == set of sets associated to p (in a filtered  *)
+(*                                type)                                       *)
+(*             pfilteredType U == a pointed and filtered type                 *)
+(*                     hasNbhs == factory for filteredType                    *)
+(*                    nbhsType == type of a structure that has a set system   *)
+(*                                of neighborhoods associated to each point   *)
+(*                   pnbhsType == same has nbhsType for pointed types         *)
 (*                     continuous f == f is continuous w.r.t the topology     *)
-(*                 filterI_iter F n == nth stage of recursively building the  *)
-(*                                     filter of finite intersections of F    *)
-(*                    finI_from D f == set of \bigcap_(i in E) f i where E is *)
-(*                                     a finite subset of D                   *)
+(*             isSubNbhs V S U == interface that states the continuity of val *)
+(*                                for U which has a subChoiceType and a       *)
+(*                                nbhsType                                    *)
+(*             subNbhsType V S == structure that extends a                    *)
+(*                                subChoiceType/nbhsType with the isSubNbhs   *)
+(*                                interface                                   *)
+(*                                The HB class is SubNbhs.                    *)
+(*            filterI_iter F n == nth stage of recursively building the       *)
+(*                                filter of finite intersections of F         *)
+(*               finI_from D f == set of \bigcap_(i in E) f i where E is a    *)
+(*                                a finite subset of D                        *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* We endow several standard types with the structure of filter, e.g.:        *)
@@ -950,6 +960,15 @@ Lemma continuous_comp (R S T : nbhsType) (f : R -> S) (g : S -> T) x :
   {for x, continuous f} -> {for (f x), continuous g} ->
   {for x, continuous (g \o f)}.
 Proof. exact: cvg_comp. Qed.
+
+HB.mixin Record isSubNbhs
+  (V : nbhsType) (S : pred V) U & SubChoice V S U & Nbhs U := {
+  continuous_valE : continuous (val : U -> V)
+}.
+
+#[short(type="subNbhsType")]
+HB.structure Definition SubNbhs (V : nbhsType) (S : pred V) :=
+  { U of SubChoice V S U & Nbhs U & isSubNbhs V S U}.
 
 Lemma near_fun (T T' : nbhsType) (f : T -> T') (x : T) (P : T' -> Prop) :
     {for x, continuous f} ->

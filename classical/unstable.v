@@ -369,6 +369,13 @@ Qed.
 Lemma onemV (F : numFieldType) (x : F) : x != 0 -> x^-1.~ = (x - 1) / x.
 Proof. by move=> ?; rewrite mulrDl divff// mulN1r. Qed.
 
+Lemma divD_onem (R : realFieldType) (s t : R) (s0 : 0 < s) (t0 : 0 < t) :
+  (s / (s + t)).~ = t / (s + t).
+Proof.
+rewrite /onem.
+by rewrite -(@divff _ (s + t)) ?gt_eqF ?addr_gt0// -mulrBl (addrC s) addrK.
+Qed.
+
 Lemma lez_abs2 (a b : int) : 0 <= a -> a <= b -> (`|a| <= `|b|)%N.
 Proof. by case: a => //= n _; case: b. Qed.
 
