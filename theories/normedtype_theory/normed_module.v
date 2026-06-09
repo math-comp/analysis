@@ -101,7 +101,7 @@ HB.structure Definition NormedModule (K : numDomainType) :=
 HB.structure Definition SubNormedModule (R : numDomainType)
   (V : normedModType R) (S : pred V) :=
   { U of SubChoice V S U & NormedModule R U & @GRing.SubLmodule R V S U
-       & @SubNormedZmodule(*Zmodule_isSubSemiNormed*) R V S U &
+       & @Num.SubNormedZmodule(*Zmodule_isSubSemiNormed*) R V S U &
        @SubConvexTvs R V S U}.
 
 HB.factory Record PseudoMetricNormedZmod_Lmodule_isNormedModule
