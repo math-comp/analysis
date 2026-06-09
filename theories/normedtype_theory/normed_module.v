@@ -400,14 +400,10 @@ Proof. by rewrite /normu GRing.valZ; exact: normrZ. Qed.
 HB.instance Definition _ :=
   @Lmodule_isNormed.Build R U normu ler_normuD normruZ normru0_eq0.
 
-(* hack, produces no instance with MathComp 2.5.0,
-   can be remove when supporting MC >= 2.6.0 *)
-HB.instance Definition _ := @isTmp.Build R V S U Logic.I.
-
 Let normu_valE : forall x, @Num.norm _ V ((val : U -> V) x) = @Num.norm _ U x.
 Proof. by []. Qed.
 
-HB.instance Definition _ :=  Zmodule_isSubNormed.Build _ _ _ U normu_valE.
+HB.instance Definition _ :=  Num.Zmodule_isSubNormed.Build _ _ _ U normu_valE.
 
 Let continuous_valE : continuous (val : U -> V).
 Proof.
@@ -416,7 +412,7 @@ rewrite /continuous_at.
 set rhs := (X in _ --> X).
 apply/cvgrPdist_le => //=.
 move=> e e0; near=> t.
-rewrite -GRing.valN -GRing.valD norm_valE.
+rewrite -GRing.valN -GRing.valD normu_valE.
 by near: t; exact: cvgr_dist_le e e0.
 Unshelve. all: by end_near. Qed.
 
