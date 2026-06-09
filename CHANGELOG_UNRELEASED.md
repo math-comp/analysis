@@ -113,7 +113,7 @@
 - in `normed_module.v`:
   + structure `SubNormedModule`, notation `subNormedModType`
   + instance `ent_xsection_filter`
-  + factory `SubLmodule_isSubNormedmodule`
+  + light-weigth factory `subLmodule_isSubNormedmodule`
 
 - new file `hahn_banach_theorem.v`:
   + module `LinearGraph`

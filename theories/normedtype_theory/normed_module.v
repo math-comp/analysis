@@ -40,7 +40,7 @@ From mathcomp Require Import ereal_normedtype pseudometric_normed_Zmodule.
 (*                            M : normedZmodType K with K : numFieldType.     *)
 (*      Lmodule_isNormed M == factory for a normed module defined using       *)
 (*                            an L-module M over R : numFieldType             *)
-(*  SubLmodule_isSubNormedmodule R V S == factory that builds a               *)
+(*  subLmodule_isSubNormedmodule R V S == light-weight factory that builds a  *)
 (*                            SubNormedmodule given a SubLmodule over a       *)
 (*                            normedModType                                   *)
 (* ```                                                                        *)
@@ -374,11 +374,16 @@ HB.instance Definition _ :=
 
 HB.end.
 
-HB.factory Record SubLmodule_isSubNormedmodule (R : realFieldType)
-    (V : normedModType R) (S : pred V) U &
-    SubChoice V S U & @GRing.SubLmodule R V S U := {}.
+Definition subLmodule_isSubNormedmodule (R : realFieldType)
+    (V : normedModType R) (S : pred V) (U : Type) : Type := U.
 
-HB.builders Context R V S U & SubLmodule_isSubNormedmodule R V S U.
+Section SubLmodule_isSubNormedmodule.
+Context (R : realFieldType) (V : normedModType R) (S : pred V)
+  (U' : subLmodType S).
+
+Local Notation U := (subLmodule_isSubNormedmodule S U').
+
+HB.instance Definition _ := GRing.SubLmodule.on U.
 
 Local Definition normu := fun u : U => `|\val u|.
 
@@ -416,10 +421,9 @@ rewrite -GRing.valN -GRing.valD normu_valE.
 by near: t; exact: cvgr_dist_le e e0.
 Unshelve. all: by end_near. Qed.
 
-HB.instance Definition _ :=  isSubNbhs.Build _ _ U continuous_valE.
+HB.instance Definition _ := isSubNbhs.Build _ _ U continuous_valE.
 
-HB.instance Definition _ := SubLmodule_isSubNormedmodule.Build _ _ _ U.
-HB.end.
+End SubLmodule_isSubNormedmodule.
 
 Lemma scaler1 {R : numFieldType} h : h%:A = h :> R.
 Proof. by rewrite /GRing.scale/= mulr1. Qed.
