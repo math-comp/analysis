@@ -1,5 +1,5 @@
 From HB Require Import structures.
-From mathcomp Require Import all_boot all_order all_algebra.
+From mathcomp Require Import boot order algebra.
 From mathcomp Require Import interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
@@ -9,22 +9,13 @@ From mathcomp Require Import topology convex reals normedtype.
 (**md**************************************************************************)
 (* # The Hahn-Banach theorem                                                  *)
 (*                                                                            *)
-(* This files proves the Hahn-Banach theorem thanks to Zorn's lemma.          *)
-(* Theorem `hahn_banach_extensionHahnbanach` states that, considering `V` an  *)
-(* lmodType on a realtype, a linear function on a subLmodType of V, that is   *)
-(* bounded by a convex function, can be extended to a linear map on V bounded *)
-(* by the same convex function.                                               *)
+(* This file proves the Hahn-Banach theorem thanks to Zorn's lemma. Theorem   *)
+(* `hahn_banach_extension` states that, considering `V` an lmodType on a      *)
+(* realtype, a linear function on a subLmodType of V, that is bounded by a    *)
+(* convex function, can be extended to a linear map on V bounded by the same  *)
+(* convex function.                                                           *)
 (* Theorem `hahn_banach_extension_normed` specifies this to the extension of  *)
 (* a linear continuous function on a subspace to the whole normed module.     *)
-(*                                                                            *)
-(* ```                                                                        *)
-(*          Module LinearGraph == definitions on linear relations, thought of *)
-(*                                as graph of functions                       *)
-(*       Module HahnBanachZorn == definition of the type zorn_type of linear  *)
-(*                                functional graphs, bounded by a convex      *)
-(*                                function and extending to the whole space a *)
-(*                                given linear graph.                         *)
-(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -43,7 +34,9 @@ Local Open Scope real_scope.
 
 (* TODO : use a lightweight factory to make every subLmodType a subnormedmodtype *)
 
-Module LinearGraph.
+(**md module with definitions on linear relations, thought of as graph of
+  functions *)
+Module LinearGraphInternal.
 Section linear_graph.
 Context (R : numDomainType) (V : lmodType R).
 
@@ -67,11 +60,14 @@ Lemma lingraphD x1 x2 r1 r2 : f x1 r1 -> f x2 r2 -> f (x1 - x2) (r1 - r2).
 Proof. by move=> f1 f2; have := lf (-1) f1 f2; rewrite !scaleN1r mulN1r. Qed.
 
 End linear_graph.
-End LinearGraph.
+End LinearGraphInternal.
 
-Module HahnBanachZorn.
-Section HahnBanachZorn.
-Import LinearGraph.
+(**md module with definition of the type `zorn_type` of linear functional
+      graphs, bounded by a convex function and extending to the whole space a
+      given linear graph *)
+Module HahnBanachZornInternal.
+Section hahnbanachzorn.
+Import LinearGraphInternal.
 Context (R : realType) (V : lmodType R) (F : pred V).
 Variables (F' : subLmodType F) (phi : {linear F' -> R}) (p : V -> R).
 
@@ -281,13 +277,13 @@ move: g gP total_g hP => [c /= [fg _ _ _]] _ _ hP cvr.
 by rewrite (fg v r (h v)).
 Qed.
 
-End HahnBanachZorn.
-End HahnBanachZorn.
+End hahnbanachzorn.
+End HahnBanachZornInternal.
 
 (* NB: could go to convex.v *)
 Section hahn_banach.
-Import LinearGraph.
-Import HahnBanachZorn.
+Import LinearGraphInternal.
+Import HahnBanachZornInternal.
 (* Now we prove HahnBanach on functions *)
 (* We consider R a real (=ordered) field with supremum, and V a (left) module
    on R. We do not make use of the 'vector' interface as the latter enforces
@@ -331,7 +327,8 @@ have [r ltr0 fxrx] : exists2 r, r > 0 & forall z : F', `|f z| <= `|val z| * r.
   suff: \forall r \near +oo, forall x : F', `|f x| <= r * `|x|.
     move=> [t [_ tf]].
     exists (`|t| + 1); first by rewrite ltr_wpDl.
-    by move=> z; rewrite mulrC norm_valE tf// (le_lt_trans (ler_norm _)) ?ltrDl.
+    move=> z; rewrite mulrC Num.norm_valE tf//.
+    by rewrite (le_lt_trans (ler_norm _)) ?ltrDl.
   exact/linear_boundedP/continuous_linear_bounded/continuous_fun.
 pose p := fun x : V => `|x| * r.
 have convp : @convex_function _ _ [set: V] p.
