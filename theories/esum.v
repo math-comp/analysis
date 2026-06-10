@@ -57,20 +57,56 @@ Qed.
 
 End set_of_fset_in_a_set.
 
+Module PosEsum.
+Section posesum.
+Variables (R : realFieldType) (T : choiceType).
+Implicit Types (S : set T) (a g : T -> \bar R).
+
+Definition pos_esum S g := ereal_sup [set \sum_(x \in B) g x | B in fsets S].
+
+Local Notation "\esum_ ( i 'in' P ) A" := (pos_esum P (fun i => A)).
+
+Lemma pos_esum_set0 a : \esum_(i in set0) a i = 0.
+Proof.
+rewrite /pos_esum fsets0 [X in ereal_sup X](_ : _ = [set 0%E]) ?ereal_sup1//.
+apply/seteqP; split=> [x [_ /= ->]|x]; first by rewrite fsbig_set0.
+by move=> -> /=; exists set0 => //; rewrite fsbig_set0.
+Qed.
+
+Lemma ge0_pos_esum S a : (forall x, S x -> 0 <= a x) ->
+  \esum_(i in S) a^\- i = 0.
+Proof.
+move=> a0.
+rewrite /pos_esum [X in ereal_sup X](_ : _ = [set 0]) ?ereal_sup1//.
+apply/seteqP; split => [/= x /= [A SA <-]|].
+  rewrite fsbig1//= => t At.
+  rewrite (@ge0_funenegE _ _ A)//; last exact/mem_set.
+  by move=> u; case: SA => _ => /[apply] /a0.
+move=> /= _ ->.
+exists set0; first exact: fsets_set0.
+by rewrite fsbig_set0.
+Qed.
+
+End posesum.
+End PosEsum.
+
 Section esum.
 Variables (R : realFieldType) (T : choiceType).
 Implicit Types (S : set T) (a g : T -> \bar R).
 
-Definition esum S a := ereal_sup [set \sum_(x \in A) a x | A in fsets S].
+Import PosEsum.
+
+Definition esum S a := (*pos_esum S a^\+ - pos_esum S a^\-*) pos_esum S a.
 
 Local Notation "\esum_ ( i 'in' P ) A" := (esum P (fun i => A)).
 
-Lemma esum_set0 a : \esum_(i in set0) a i = 0.
+Lemma ge0_esum S a : (forall x, S x -> 0 <= a x) ->
+  \esum_(i in S) a i = ereal_sup [set \sum_(x \in B) a x | B in fsets S].
 Proof.
-rewrite /esum fsets0 [X in ereal_sup X](_ : _ = [set 0%E]) ?ereal_sup1//.
-apply/seteqP; split=> [x [_ /= ->]|x]; first by rewrite fsbig_set0.
-by move=> -> /=; exists set0 => //; rewrite fsbig_set0.
-Qed.
+Abort.
+
+Lemma esum_set0 a : \esum_(i in set0) a i = 0.
+Proof. by rewrite /esum pos_esum_set0. Qed.
 
 End esum.
 
@@ -118,7 +154,7 @@ End esum_realType.
 Lemma esum1 [R : realFieldType] [I : choiceType] (D : set I) (a : I -> \bar R) :
   (forall i, D i -> a i = 0) -> \esum_(i in D) a i = 0.
 Proof.
-move=> a0; rewrite /esum (_ : [set _ | _ in _] = [set 0]) ?ereal_sup1//.
+move=> a0; rewrite /esum /PosEsum.pos_esum (_ : [set _ | _ in _] = [set 0]) ?ereal_sup1//.
 apply/seteqP; split=> x //= => [[X [finX XI]] <-|->].
   by rewrite fsbig1// => i /XI/a0.
 by exists set0; rewrite ?fsbig_set0//; exact: fsets_set0.
@@ -741,8 +777,11 @@ Section SumTheoryP.
 Lemma ge0_sum f : (forall x, 0 <= f x) -> sum f = \esum_(i in [set: T]) f i.
 Proof.
 move=> ge0_S; rewrite /sum (@esum1 R T [set: T] f^\-) ?sube0.
-  by move=> x ?; rewrite ge0_funeneg.
-by under eq_esum do rewrite ge0_funepos//.
+  by move=> x ?; rewrite (@ge0_funenegE _ _ setT)// in_setE.
+under eq_esum.
+  move=> ? _; rewrite (@ge0_funeposE _ _ setT) ?in_setT//.
+  over.
+by [].
 Qed.
 
 Lemma sum_ge0 f : (forall x, 0 <= f x) -> 0 <= sum f.
@@ -754,16 +793,16 @@ Proof.
 move=> f0 leS.
 have g0 x : 0 <= g x by rewrite (le_trans _ (leS _)).
 rewrite /sum leeB//.
-- by apply: le_esum => t _; rewrite !ge0_funepos.
-- by apply: le_esum => t _; rewrite !ge0_funeneg.
+- by apply: le_esum => t _; rewrite !(@ge0_funeposE _ _ setT) ?in_setT.
+- by apply: le_esum => t _; rewrite !(@ge0_funenegE _ _ setT) ?in_setT.
 Qed.
 
 Lemma sumN f : (forall x, 0 <= f x) -> sum (\- f ) = - sum f.
 Proof.
 move=> f0; rewrite /sum [X in X - _ = _]esum1 ?add0r.
-  by move=> t _; rewrite funeposN ge0_funeneg.
+  by move=> t _; rewrite funeposN (@ge0_funenegE _ _ setT) ?in_setT//.
 rewrite [X in _ = - (_ - X)]esum1 ?sube0.
-  by move=> t _; rewrite ge0_funeneg.
+  by move=> t _; rewrite (@ge0_funenegE _ _ setT) ?in_setT//.
 by under eq_esum do rewrite funenegN.
 Qed.
 
@@ -783,9 +822,11 @@ transitivity (esg c * sum (fun x => `|c| * f x)).
   + under eq_sum do rewrite esg0 mul0e.
     by rewrite esg0 mul0e sum0.
 - rewrite {1}/sum (@eq_esum _ _ _ _ (fun x => `|c| * f x))//.
-     by move=> ? _; rewrite ge0_funepos // => x; rewrite mule_ge0.
+    move=> ? _; rewrite (@ge0_funeposE _ _ setT) ?in_setT// => x.
+     by rewrite mule_ge0.
   rewrite (@eq_esum _ _ _ (_^\-) (@cst T _ 0)).
-    by move => ? _; rewrite ge0_funeneg // => x; rewrite mule_ge0.
+    move => ? _; rewrite (@ge0_funenegE _ _ setT) ?in_setT// => x.
+    by rewrite mule_ge0.
   by rewrite (@esum1 _ _ _ (cst 0))// sube0 esumZ// muleA -numEesg ge0_sum.
 Qed.
 
@@ -868,7 +909,7 @@ Lemma exchange_esum_ereal_sup (A : set T) :
   \esum_(i in A) ereal_sup (range (f i)) =
   ereal_sup (range (fun n => \esum_(x in A) f x n)).
 Proof.
-rewrite /esum.
+rewrite /esum /PosEsum.pos_esum.
 under eq_imagel.
   move=> B [fin BA]; rewrite fsbig_finite//= ereal_sup_sum//.
   over.

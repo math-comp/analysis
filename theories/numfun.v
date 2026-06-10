@@ -827,12 +827,6 @@ rewrite -[in RHS]funrposN -funrpos_natrM -funrposN.
 by apply/eq_funrpos=> y; rewrite mulrN.
 Qed.
 
-Lemma ge0_funrneg f x : (forall x, 0 <= f x) -> f^\- x = 0.
-Proof. by move=> ?; rewrite /funrneg max_r// oppr_le0. Qed.
-
-Lemma ge0_funrpos f x : (forall x, 0 <= f x) -> f^\+ x = f x.
-Proof. by move=> ?; rewrite /funrpos max_l. Qed.
-
 Lemma le_funrpos_norm f x : f^\+ x <= `|f x|.
 Proof.
 by rewrite -/((Num.Def.normr \o f) x) -funrposDneg lerDl funrneg_ge0.
@@ -989,12 +983,6 @@ move=> fg x Dx; rewrite !funenegE /maxe; case: ifPn => gx; case: ifPn => fx //.
 - by move: gx; rewrite -leNgt => /(lt_le_trans fx); rewrite lteN2 ltNge fg.
 - by rewrite leeN2; exact: fg.
 Qed.
-
-Lemma ge0_funeneg f t : (forall t, 0 <= f t) -> f^\- t = 0.
-Proof. by move => ?; rewrite funenegE max_r// ?lerN0 oppe_le0. Qed.
-
-Lemma ge0_funepos f t : (forall t, 0 <= f t) -> f^\+ t = f t.
-Proof. by move=> ?; rewrite funeposE max_l. Qed.
 
 Lemma funepos_cst0 t : (@cst T _ 0)^\+ t = 0 :> \bar R.
 Proof. by rewrite funeposE maxxx. Qed.

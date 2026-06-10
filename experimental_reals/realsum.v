@@ -1095,8 +1095,8 @@ Implicit Types (S : T -> R).
 Lemma psum_sum S : (forall x, 0 <= S x) -> psum S = sum S.
 Proof.
 move=> ge0_S; rewrite /sum [X in _-X]psum_eq0 ?subr0.
-  by move=> x; rewrite ge0_funrneg.
-by apply/eq_psum=> x; rewrite ge0_funrpos.
+  by move=> x; rewrite (@ge0_funrnegE _ _ setT) ?in_setT.
+by apply/eq_psum=> x; rewrite (@ge0_funrposE _ _ setT) ?in_setT.
 Qed.
 
 Lemma le_sum S1 S2 : summable S1 -> summable S2 -> S1 <=1 S2 ->

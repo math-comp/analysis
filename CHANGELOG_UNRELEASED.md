@@ -101,7 +101,7 @@
   + lemmas `numEesg`, `gte0_esg`, `lte0_esg`, `esg0`
 
 - in `numfun.v`:
-  + lemmas `ge0_funeneg`, `ge0_funepos`, `funepos_cst0`, `funeneg_cst0`
+  + lemmas `funepos_cst0`, `funeneg_cst0`
 
 - in `esum.v`:
   + lemmas `esum_eq0P`, `esumZ`, `exchange_esum`
@@ -263,7 +263,6 @@
     * lemma `fneg0` (renamed to `funrneg_cst0`)
     * lemmas `funrposZ`, `funrnegZ`
     * lemmas `funrpos_natrM`, `funrneg_natrM`
-    * lemmas `ge0_funrneg`, `ge0_funrpos`
     * lemmas `le_funrpos_norm`
 
 - moved from `numfun.v` to `unstable.v`:
