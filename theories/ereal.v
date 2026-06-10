@@ -637,6 +637,22 @@ split=> [ge_x y Sy|ge_x _ [y Sy <-]]; rewrite ?oppeK// ?ge_x//.
 by rewrite -[y]oppeK ge_x//; exists y.
 Qed.
 
+Lemma exchange_ereal_sup {X Y : Type} (f : X -> Y -> \bar R)
+    (A : set X) (B : set Y) :
+  ereal_sup [set ereal_sup [set f x y | y in B] | x in A] =
+  ereal_sup [set ereal_sup [set f x y | x in A] | y in B].
+Proof.
+suff suf : forall (U V : Type) (g : U -> V -> \bar R) (C : set U) (D : set V),
+    ereal_sup [set ereal_sup [set g x y | y in D] | x in C] <=
+    ereal_sup [set ereal_sup [set g x y | x in C] | y in D].
+  by apply/le_anti/andP; split; exact: suf.
+move=> U V g C D.
+apply/ereal_supP => _ [x Cx <-]; apply/ereal_supP => _ [y Dy <-].
+apply: le_ereal_sup_tmp; exists (ereal_sup [set g x y | x in C]).
+- by exists y.
+- by apply: le_ereal_sup_tmp; exists (g x y) => //; exists x.
+Qed.
+
 Lemma ereal_sup_gtP S x :
   reflect (exists2 y : \bar R, S y & x < y) (x < ereal_sup S).
 Proof.
@@ -751,6 +767,53 @@ Proof.
 move=> XN0 r_gt0; rewrite !ereal_supEN muleN image_comp/=; congr (- _).
 by under eq_imagel do rewrite /= -muleN; rewrite -image_comp ereal_inf_pZl.
 Qed.
+
+Lemma ge0_ereal_supZl (c : \bar R) X : 0 <= c -> X != set0 ->
+  (forall x, X x -> 0 <= x) ->
+  ereal_sup [set c * x | x in X] = c * ereal_sup X.
+Proof.
+move=> c0 /[dup] Xneq0 /set0P[x Xx] X_ge0.
+case: c c0 => [r r0|_|//].
+- have [->|_] := eqVneq r 0%R.
+  + rewrite mul0e.
+    under eq_imagel do rewrite mul0e.
+    by rewrite ereal_sup_cst.
+  + exact: ereal_supZl Xneq0 r0.
+- have [Xall0|] := pselect (forall a, X a -> a = 0).
+  + rewrite [X in ereal_sup X = _](_ : _ = [set 0]%classic).
+      apply/seteqP; split.
+      * by move=> _ [z Xz <-]; rewrite (Xall0 _ Xz) mule0.
+      * by move=> y /= ->; exists x => //; rewrite (Xall0 _ Xx) mule0.
+   have -> : X = [set 0]%classic.
+     apply/seteqP; split.
+     + by move=> y /Xall0 ->.
+     + by move=> y /= ->; rewrite -(Xall0 _ Xx).
+   by rewrite ereal_sup1 mule0.
+ + rewrite -existsNE => -[y /not_implyP[Xy /eqP]].
+   rewrite neq_lt ltNge X_ge0//= => y0.
+   rewrite gt0_mulye//.
+     by rewrite (lt_le_trans y0)// ereal_sup_ubound.
+  by rewrite ereal_supy//=; exists y => //; exact: gt0_mulye.
+Qed.
+
+Section ge0_ereal_supZl_range.
+Context {T : choiceType} (f : T -> nat -> \bar R).
+Hypothesis f_ge0 : forall t n, 0 <= f t n.
+
+Lemma ge0_ereal_supZl_range (c : \bar R) (x : T) : 0 <= c ->
+  c * ereal_sup (range (f x)) = ereal_sup (range (fun n => c * f x n)).
+Proof.
+move=> c0.
+rewrite [X in _ = ereal_sup X](_ : _ = [set c * y | y in range (f x)]%classic).
+  apply/seteqP; split.
+  - by move=> _ [n _ <-]; exists (f x n) => //; exists n.
+  - by move=> _ [_ [n _ <-] <-]; exists n.
+rewrite ge0_ereal_supZl//.
+- by apply/set0P; exists (f x 0%N), 0%N.
+- by move=> _ [n _ <-]; exact: f_ge0.
+Qed.
+
+End ge0_ereal_supZl_range.
 
 End ereal_supZ.
 
@@ -1545,7 +1608,7 @@ Definition ereal_loc_seq (R : numDomainType) (x : \bar R) (n : nat) :=
   end.
 
 Lemma cvg_ereal_loc_seq (R : realType) (x : \bar R) :
-  ereal_loc_seq x  @ \oo--> ereal_dnbhs x.
+  ereal_loc_seq x  @ \oo --> ereal_dnbhs x.
 Proof.
 move=> P; rewrite /ereal_loc_seq.
 case: x => /= [x [_/posnumP[d] dP] |[d [dreal dP]] |[d [dreal dP]]]; last 2 first.

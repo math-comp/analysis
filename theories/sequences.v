@@ -1488,6 +1488,60 @@ apply: nondecreasing_cvgn.
   by apply: ereal_sup_ubound; exists (m + N)%N.
 Unshelve. all: by end_near. Qed.
 
+Section ereal_supD.
+Context {R : realType}.
+Local Open Scope ereal_scope.
+
+Lemma ereal_supD (u v : nat -> \bar R) :
+  (forall n, 0 <= u n) -> (forall n, 0 <= v n) ->
+  nondecreasing u -> nondecreasing v ->
+  ereal_sup (range u) + ereal_sup (range v) =
+  ereal_sup (range (fun n => u n + v n)).
+Proof.
+move=> u0 v0 ndu ndv.
+have u_ge0 : 0 <= ereal_sup (range u).
+  by rewrite (le_trans (u0 0%N))// ereal_sup_ubound//; exists 0%N.
+have v_ge0 : 0 <= ereal_sup (range v).
+  by rewrite (le_trans (v0 0%N))// ereal_sup_ubound//; exists 0%N.
+have ndsum : nondecreasing (fun n => u n + v n).
+  by move=> n m nm; apply: leeD; [exact: ndu | exact: ndv].
+have cuv_add : (fun n => u n + v n) @ \oo -->
+    ereal_sup (range u) + ereal_sup (range v).
+  apply: cvgeD.
+  - by apply: ge0_adde_def; rewrite inE.
+  - exact: ereal_nondecreasing_cvgn.
+  - exact: ereal_nondecreasing_cvgn.
+have : (fun n => u n + v n) @ \oo --> ereal_sup (range (fun n => u n + v n)).
+  exact: ereal_nondecreasing_cvgn.
+exact: cvg_unique cuv_add.
+Qed.
+
+Section ereal_sup_sum.
+Context {T : choiceType} (f : T -> nat -> \bar R).
+Hypothesis f_ge0 : forall t n, 0 <= f t n.
+Hypothesis f_nd : forall x, nondecreasing_seq (f x).
+
+Lemma ereal_sup_sum (l : seq T) :
+  \sum_(x <- l) ereal_sup (range (f x)) =
+    ereal_sup (range (fun n => \sum_(x <- l) f x n)).
+Proof.
+elim: l => [|x xs ih].
+- rewrite big_nil.
+  under eq_fun do rewrite big_nil.
+  by rewrite ereal_sup_cst//; apply/set0P; exists 0%N.
+- rewrite big_cons ih.
+  under [in RHS]eq_fun do rewrite big_cons.
+  apply: ereal_supD.
+  + by move=> n; exact: f_ge0.
+  + by move=> n; apply: sume_ge0 => y _; exact: f_ge0.
+  + by move=> n m nm; exact: f_nd.
+  + by move=> n m nm; apply: lee_sum => y _; exact: f_nd.
+Qed.
+
+End ereal_sup_sum.
+
+End ereal_supD.
+
 Lemma ereal_nondecreasing_is_cvgn (R : realType) (u_ : (\bar R) ^nat) :
   nondecreasing_seq u_ -> cvgn u_.
 Proof. by move=> ?; apply/cvg_ex; eexists; exact: ereal_nondecreasing_cvgn. Qed.

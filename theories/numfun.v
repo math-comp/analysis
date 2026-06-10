@@ -16,10 +16,6 @@ From mathcomp Require Import topology normedtype sequences.
 (* zero) ring) and theorems such as Tietze's extension theorem.               *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*     nondecreasing_fun f == the function f is non-decreasing                *)
-(*     nonincreasing_fun f == the function f is non-increasing                *)
-(*        increasing_fun f == the function f is (strictly) increasing         *)
-(*        decreasing_fun f == the function f is (strictly) decreasing         *)
 (*     itv_partition a b s == s is a partition of the interval `[a, b]        *)
 (*      itv_partitionL s c == the left side of splitting a partition at c     *)
 (*      itv_partitionR s c == the right side of splitting a partition at c    *)
@@ -56,15 +52,6 @@ Import numFieldTopology.Exports.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
-
-Notation "'nondecreasing_fun' f" := ({homo f : n m / (n <= m)%O >-> (n <= m)%O})
-  (at level 10).
-Notation "'nonincreasing_fun' f" := ({homo f : n m / (n <= m)%O >-> (n >= m)%O})
-  (at level 10).
-Notation "'increasing_fun' f" := ({mono f : n m / (n <= m)%O >-> (n <= m)%O})
-  (at level 10).
-Notation "'decreasing_fun' f" := ({mono f : n m / (n <= m)%O >-> (n >= m)%O})
-  (at level 10).
 
 Lemma nondecreasing_funN {R : numDomainType} a b (f : R -> R) :
   {in `[a, b] &, nondecreasing_fun f} <->

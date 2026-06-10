@@ -101,16 +101,21 @@
   + lemmas `numEesg`, `gte0_esg`, `lte0_esg`, `esg0`
 
 - in `esum.v`:
-  + lemmas `esum_eq0P`, `esumZ`, `esum_esum'`
+  + lemmas `esum_eq0P`, `esumZ`, `exchange_esum`
   + lemmas `ge0_funeneg`, `ge0_funepos`, `funepos_cst0`, `funeneg_cst0`,
     `le_funepos`
   + definition `sum`
-  + lemmas `sum0`, `eq_sum`, `esum_unit`, `sum_unit`
-  + lemmas `esum_sum'`, `sum_ge0`, `le_sum`, `sumN`, `sumZ`
+  + lemmas `sum0`, `eq_sum`
+  + lemmas `ge0_sum`, `sum_ge0`, `le_sum`, `sumN`, `sumZ`
   + lemmas `summable_le_sum`, `summable_esum_funepos`, `summable_sumN`,
     `summableZ`, `summable_sumZ`
-  + lemmas `ereal_sup_comm`
-  + lemmas `esupZl`, `esupZl_range`, `esup_add`, `ereal_sup_sum`, `esum_esup_comm`
+  + lemmas `exchange_esum_ereal_sup`
+
+- in `ereal.v`:
+  + lemmas `exchange_ereal_sup`, `ge0_ereal_supZl`, `ge0_ereal_supZl_range`
+
+- in `sequences.v`:
+  + lemmas `ereal_supD`, `ereal_sup_sum`
 
 - in `reals.v`:
   + lemmas `sup_ge0`, `has_sup_wpZl`, `gt0_has_supZl`, `has_sup_Mn`, `sup_Mn`
@@ -256,6 +261,10 @@
     * definition `sum`
     * lemmas `summable_funrpos`, `summable_funrneg`
   + lemma `sum0` (now uses `cst`)
+
+- moved from `numfun.v` to `unstable.v`:
+  + notations `nondecreasing_fun`, `nonincreasing_fun`,
+    `decreasing_fun`, `increasing_fun`
 
 ### Renamed
 

@@ -16,6 +16,10 @@ From mathcomp Require Import vector archimedean interval.
 (* ```                                                                        *)
 (*                 swap x := (x.2, x.1)                                       *)
 (*           map_pair f x := (f x.1, f x.2)                                   *)
+(*    nondecreasing_fun f == the function f is non-decreasing                 *)
+(*    nonincreasing_fun f == the function f is non-increasing                 *)
+(*       increasing_fun f == the function f is (strictly) increasing          *)
+(*       decreasing_fun f == the function f is (strictly) decreasing          *)
 (*          monotonic A f := {in A &, {homo f : x y / x <= y}} \/             *)
 (*                           {in A &, {homo f : x y /~ x <= y}}               *)
 (*   strict_monotonic A f := {in A &, {homo f : x y / x < y}} \/              *)
@@ -196,6 +200,15 @@ exists n.+1; rewrite nm2/= -addn1.
 rewrite -[X in (_ <= X)%N]prednK ?expn_gt0// -[X in (_ <= X)%N]addn1 leq_add2r.
 by rewrite (leq_trans h2)// -subn1 leq_subRL ?expn_gt0// add1n ltn_exp2l.
 Qed.
+
+Notation "'nondecreasing_fun' f" := ({homo f : n m / (n <= m)%O >-> (n <= m)%O})
+  (at level 10).
+Notation "'nonincreasing_fun' f" := ({homo f : n m / (n <= m)%O >-> (n >= m)%O})
+  (at level 10).
+Notation "'increasing_fun' f" := ({mono f : n m / (n <= m)%O >-> (n <= m)%O})
+  (at level 10).
+Notation "'decreasing_fun' f" := ({mono f : n m / (n <= m)%O >-> (n >= m)%O})
+  (at level 10).
 
 Definition monotonic d (T : porderType d) d' (T' : porderType d')
     (pT : predType T) (A : pT) (f : T -> T') :=
