@@ -793,6 +793,51 @@ move=> fg x Dx; rewrite /funrneg /Num.max; case: ifPn => gx; case: ifPn => fx//.
 - by rewrite lerN2; exact: fg.
 Qed.
 
+Lemma eq_funrpos f g : f =1 g -> f^\+ =1 g^\+.
+Proof. by move=> eq_fg x; rewrite /funrpos eq_fg. Qed.
+
+Lemma eq_funrneg f g : f =1 g -> f^\- =1 g^\-.
+Proof. by move=> eq_fg x; rewrite /funrneg eq_fg. Qed.
+
+Lemma funrpos_cst0 x : (fun _ : T => 0)^\+ x = 0 :> R.
+Proof. by rewrite /funrpos maxxx. Qed.
+
+Lemma funrneg_cst0 x : (fun _ : T => 0)^\- x = 0 :> R.
+Proof. by rewrite /funrneg oppr0 maxxx. Qed.
+
+Lemma funrposZ f c : 0 <= c -> (c \*o f)^\+ =1 c \*o f^\+.
+Proof. by move=> ge0_c x; rewrite /= ge0_funrposM. Qed.
+
+Lemma funrnegZ f c : 0 <= c -> (c \*o f)^\- =1 c \*o f^\-.
+Proof.
+move=> ge0_c x; rewrite /= -!funrposN; have /= <- := funrposZ (- f) ge0_c x.
+by apply/eq_funrpos=> y /=; rewrite mulrN.
+Qed.
+
+Lemma funrpos_natrM f (n : T -> nat) x :
+  (fun x => (n x)%:R * f x)^\+ x = (n x)%:R * f^\+ x.
+Proof.
+by rewrite /funrpos -[in RHS]normr_nat maxr_pMr// mulr0 ger0_norm.
+Qed.
+
+Lemma funrneg_natrM f (n : T -> nat) x :
+  (fun x => (n x)%:R * f x)^\- x = (n x)%:R * f^\- x.
+Proof.
+rewrite -[in RHS]funrposN -funrpos_natrM -funrposN.
+by apply/eq_funrpos=> y; rewrite mulrN.
+Qed.
+
+Lemma ge0_funrneg f x : (forall x, 0 <= f x) -> f^\- x = 0.
+Proof. by move=> ?; rewrite /funrneg max_r// oppr_le0. Qed.
+
+Lemma ge0_funrpos f x : (forall x, 0 <= f x) -> f^\+ x = f x.
+Proof. by move=> ?; rewrite /funrpos max_l. Qed.
+
+Lemma le_funrpos_norm f x : f^\+ x <= `|f x|.
+Proof.
+by rewrite -/((Num.Def.normr \o f) x) -funrposDneg lerDl funrneg_ge0.
+Qed.
+
 End funrposneg_lemmas.
 #[global]
 Hint Extern 0 (is_true (0%R <= _ ^\+ _)%R) => solve [apply: funrpos_ge0] : core.

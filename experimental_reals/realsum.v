@@ -43,68 +43,13 @@ by have := h fset0; rewrite big_pred0 // => -[x]; rewrite in_fset0.
 Qed.
 End Summable.
 
-(* -------------------------------------------------------------------- *)
-Section Sum.
-Context {R : realType} {T : choiceType}.
-Implicit Types f g : T -> R.
-
-(* TODO: move to numfun.v *)
-Lemma eq_funrpos f g : f =1 g -> f^\+ =1 g^\+.
-Proof. by move=> eq_fg x; rewrite /funrpos eq_fg. Qed.
-
-Lemma eq_funrneg f g : f =1 g -> f^\- =1 g^\-.
-Proof. by move=> eq_fg x; rewrite /funrneg eq_fg. Qed.
-
-Lemma funrpos_cst0 x : (fun _ : T => 0)^\+ x = 0 :> R.
-Proof. by rewrite /funrpos maxxx. Qed.
-
-Lemma funrneg_cst0 x : (fun _ : T => 0)^\- x = 0 :> R.
-Proof. by rewrite /funrneg oppr0 maxxx. Qed.
-
-Lemma funrposZ f c : 0 <= c -> (c \*o f)^\+ =1 c \*o f^\+.
-Proof. by move=> ge0_c x; rewrite /= ge0_funrposM. Qed.
-
-Lemma funrnegZ f c : 0 <= c -> (c \*o f)^\- =1 c \*o f^\-.
-Proof.
-move=> ge0_c x; rewrite /= -!funrposN; have /= <- := funrposZ (- f) ge0_c x.
-by apply/eq_funrpos=> y /=; rewrite mulrN.
-Qed.
-
-Lemma funrpos_natrM f (n : T -> nat) x :
-  (fun x => (n x)%:R * f x)^\+ x = (n x)%:R * f^\+ x.
-Proof.
-by rewrite /funrpos -[in RHS]normr_nat maxr_pMr// mulr0 ger0_norm.
-Qed.
-
-Lemma funrneg_natrM f (n : T -> nat) x :
-  (fun x => (n x)%:R * f x)^\- x = (n x)%:R * f^\- x.
-Proof.
-rewrite -[in RHS]funrposN -funrpos_natrM -funrposN.
-by apply/eq_funrpos=> y; rewrite mulrN.
-Qed.
-
-Lemma ge0_funrneg f x : (forall x, 0 <= f x) -> f^\- x = 0.
-Proof. by move=> ?; rewrite /funrneg max_r// oppr_le0. Qed.
-
-Lemma ge0_funrpos f x : (forall x, 0 <= f x) -> f^\+ x = f x.
-Proof. by move=> ?; rewrite /funrpos max_l. Qed.
-
-Lemma le_funrpos_norm f x : f^\+ x <= `|f x|.
-Proof.
-by rewrite -/((Num.Def.normr \o f) x) -funrposDneg lerDl funrneg_ge0.
-Qed.
-
-Lemma funrpos_le f1 f2 : f1 <=1 f2 -> f1^\+ <=1 f2^\+.
-Proof. by move=> le_f x; rewrite (@funrpos_le _ _ setT)// in_setT. Qed.
-
-Definition psum f : R :=
+Definition psum {R : realType} {T : choiceType} (f : T -> R) : R :=
   (* We need some ticked `image` operator *)
   let S := [set x | exists J : {fset T}, x = \sum_(x : J) `|f (val x)| ]%classic in
   if `[<summable f>] then sup S else 0.
 
-Definition sum f : R := psum f^\+ - psum f^\-.
-
-End Sum.
+Definition sum {R : realType} {T : choiceType} (f : T -> R) : R :=
+  psum f^\+ - psum f^\-.
 
 (* -------------------------------------------------------------------- *)
 Section SummableCountable.
@@ -1159,15 +1104,16 @@ Lemma le_sum S1 S2 : summable S1 -> summable S2 -> S1 <=1 S2 ->
 Proof.
 move=> smS1 smS2 leS; rewrite /sum lerB //.
 - apply/le_psum/summable_funrpos => // x.
-  by rewrite funrpos_ge0/= funrpos_le.
+  by rewrite funrpos_ge0/= (@funrpos_le _ _ setT)//= in_setE.
 - apply/le_psum/summable_funrneg => // x.
-  rewrite -!funrposN funrpos_ge0 funrpos_le // => y.
+  rewrite -!funrposN funrpos_ge0 (@funrpos_le _ _ setT) ?in_setE//= => y _.
   by rewrite lerN2.
 Qed.
 
 Lemma sum0 : sum (@cst T _ 0) = 0 :> R.
 Proof.
-by rewrite /sum !(eq_psum funrpos_cst0, eq_psum funrneg_cst0) !psum0 subr0.
+rewrite /sum !(eq_psum (@funrpos_cst0 _ _), eq_psum (@funrneg_cst0 _ _)).
+by rewrite !psum0 subr0.
 Qed.
 
 Lemma sumN S : sum (- S) = - sum S.

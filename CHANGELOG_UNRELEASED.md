@@ -252,16 +252,19 @@
     `Radon_Nikodym_cscale`, `Radon_Nikodym_cadd`, `Radon_Nikodym_chain_rule`
 - in `realsum.v`:
   + now use `funrpos` and `funrneg`:
+    * definition `sum`
+    * lemmas `summable_funrpos`, `summable_funrneg`
+  + lemma `sum0` (now uses `cst`)
+
+- moved from `realsum` to `numfun.v`:
+  + now use `funrpos` and `funrneg`:
     * lemmas `eq_funrpos`, `eq_funrneg`
     * lemma `fpos0` (renamed to `funrpos_cst0`)
     * lemma `fneg0` (renamed to `funrneg_cst0`)
     * lemmas `funrposZ`, `funrnegZ`
     * lemmas `funrpos_natrM`, `funrneg_natrM`
     * lemmas `ge0_funrneg`, `ge0_funrpos`
-    * lemmas `le_funrpos_norm`, `funrpos_le`
-    * definition `sum`
-    * lemmas `summable_funrpos`, `summable_funrneg`
-  + lemma `sum0` (now uses `cst`)
+    * lemmas `le_funrpos_norm`
 
 - moved from `numfun.v` to `unstable.v`:
   + notations `nondecreasing_fun`, `nonincreasing_fun`,
@@ -381,6 +384,7 @@
   + lemmas `fnegN`, `fposN`
   + lemmas `ge0_pos`, `ge0_neg`
   + lemma `fposBfneg`
+  + lemma `funrpos_le`
 
 ### Infrastructure
 
