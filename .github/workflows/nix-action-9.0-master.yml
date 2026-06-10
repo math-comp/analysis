@@ -681,10 +681,6 @@ jobs:
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
         "9.0-master" --argstr job "mathcomp-analysis-stdlib"
     - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: mathcomp-algebra-tactics'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "9.0-master" --argstr job "mathcomp-algebra-tactics"
-    - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: interval'
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
         "9.0-master" --argstr job "interval"

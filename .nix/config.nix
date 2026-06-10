@@ -59,6 +59,9 @@ in {
     };
     coqPackages = common-bundle // {
       coq.override.version = "9.0";
+      mathcomp.override.version = "master";
+      mathcomp-bigenough.override.version = "master";
+      mathcomp-finmap.override.version = "master";
       ssprove.job = false;  # not yet available for 9.1
     };
   };
@@ -84,6 +87,9 @@ in {
     };
     coqPackages = common-bundle // {
       coq.override.version = "9.1";
+      mathcomp.override.version = "master";
+      mathcomp-bigenough.override.version = "master";
+      mathcomp-finmap.override.version = "master";
       ssprove.job = false;  # not yet available for 9.1
     };
   };
