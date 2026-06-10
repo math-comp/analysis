@@ -945,6 +945,18 @@ move=> fg x Dx; rewrite !funenegE /maxe; case: ifPn => gx; case: ifPn => fx //.
 - by rewrite leeN2; exact: fg.
 Qed.
 
+Lemma ge0_funeneg f t : (forall t, 0 <= f t) -> f^\- t = 0.
+Proof. by move => ?; rewrite funenegE max_r// ?lerN0 oppe_le0. Qed.
+
+Lemma ge0_funepos f t : (forall t, 0 <= f t) -> f^\+ t = f t.
+Proof. by move=> ?; rewrite funeposE max_l. Qed.
+
+Lemma funepos_cst0 t : (@cst T _ 0)^\+ t = 0 :> \bar R.
+Proof. by rewrite funeposE maxxx. Qed.
+
+Lemma funeneg_cst0 t : (@cst T _ 0)^\- t = 0 :> \bar R.
+Proof. by rewrite funenegE oppe0 maxxx. Qed.
+
 End funposneg_lemmas.
 #[deprecated(since="mathcomp-analysis 1.15.0", note="use `-funeDB` instead")]
 Notation funeD_posD := funeDB (only parsing).

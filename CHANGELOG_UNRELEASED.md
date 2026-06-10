@@ -100,10 +100,11 @@
   + definition `esg`
   + lemmas `numEesg`, `gte0_esg`, `lte0_esg`, `esg0`
 
+- in `numfun.v`:
+  + lemmas `ge0_funeneg`, `ge0_funepos`, `funepos_cst0`, `funeneg_cst0`
+
 - in `esum.v`:
   + lemmas `esum_eq0P`, `esumZ`, `exchange_esum`
-  + lemmas `ge0_funeneg`, `ge0_funepos`, `funepos_cst0`, `funeneg_cst0`,
-    `le_funepos`
   + definition `sum`
   + lemmas `sum0`, `eq_sum`
   + lemmas `ge0_sum`, `sum_ge0`, `le_sum`, `sumN`, `sumZ`

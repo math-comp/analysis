@@ -20,6 +20,7 @@ From mathcomp Require Import topology sequences normedtype numfun.
 (*                       reals; it is 0 if I = set0 and sup(\sum_A a) where A *)
 (*                       is a finite set included in I o.w.                   *)
 (*       summable D f := \esum_(x in D) `| f x | < +oo                        *)
+(*              sum f := esum [set: T] f^\+ - esum [set: T] f^\-.             *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -715,29 +716,8 @@ Qed.
 
 End esumB.
 
-Section Sum.
-Context {R : realType} {T : choiceType}.
-Implicit Types (f : T -> \bar R) (x y : \bar R).
-
-Lemma ge0_funeneg f t : (forall t, 0 <= f t) -> f^\- t = 0.
-Proof. by move => ?; rewrite funenegE max_r// ?lerN0 oppe_le0. Qed.
-
-Lemma ge0_funepos f t : (forall t, 0 <= f t) -> f^\+ t = f t.
-Proof. by move=> ?; rewrite funeposE max_l. Qed.
-
-Lemma funepos_cst0 t : (@cst T _ 0)^\+ t = 0 :> \bar R.
-Proof. by rewrite funeposE maxxx. Qed.
-
-Lemma funeneg_cst0 t : (@cst T _ 0)^\- t = 0 :> \bar R.
-Proof. by rewrite funenegE oppe0 maxxx. Qed.
-
-Lemma le_funepos f1 f2 : (forall t, f1 t <= f2 t) ->
-  (forall t, f1^\+ t <= f2^\+ t).
-Proof. by move=> le_f x; rewrite (@funepos_le _ _ setT)// inE. Qed.
-
-Definition sum f : \bar R := esum [set: T] f^\+ - esum [set: T] f^\-.
-
-End Sum.
+Definition sum {R : realType} {T : choiceType} (f : T -> \bar R) : \bar R :=
+  esum [set: T] f^\+ - esum [set: T] f^\-.
 
 Section SumTheory.
 Context {R : realType} {T : choiceType}.
@@ -817,9 +797,10 @@ Lemma summable_le_sum f g : summable [set : T] g ->
   (forall x, f x <= g x) -> sum f <= sum g.
 Proof.
 move=> sg leS; rewrite /sum leeB//.
-  by apply: le_esum => ? ?; exact: le_funepos.
+  by apply: le_esum => ? ?; apply: (@funepos_le _ _ setT) => //; rewrite inE.
 apply le_esum => t _.
-by rewrite -!funeposN; apply: le_funepos => ?; rewrite leeN2.
+rewrite -!funeposN.
+by apply: (@funepos_le _ _ setT); rewrite ?inE// => ? ?; rewrite leeN2.
 Qed.
 
 Lemma summable_esum_funepos A f :
