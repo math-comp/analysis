@@ -1,4 +1,3 @@
- 
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 (*Require Import ssrsearch.*)
 From HB Require Import structures.
@@ -65,8 +64,6 @@ rewrite inE; exists (ball_Rcomplex 0 e).
 apply/subsetP => x; rewrite inE/= inE /ball_Rcomplex/= add0r opprB => xe.
 by apply: eU; rewrite inE.
 Qed.
-
-Check scalecr.
 
 
 (* Lemmas to be used generally when norm is redefined *)
@@ -178,24 +175,87 @@ by rewrite -fmorphV realC_alg [X in f X]addrC /realC /= scalerc.
 Qed.
 
 Lemma Cdiff1 (f : C -> C) (c : C) :
-  lim ((fun h : C => h^-1 * ((f (c + h) - f c))) @  0^')
+  lim ((fun h : C => h^-1 * ((f (h + c) - f c))) @  0^')
   = 'D_1 (f : C^o -> C^o) c.
 Proof.
 rewrite /derive.
-rewrite -[LHS]/(lim ((fun h : C => h^-1 * ((f (c + h) - f c)))
+rewrite -[LHS]/(lim ((fun h : C => h^-1 * ((f (h + c) - f c)))
                    @ 0^')). 
-suff ->: (fun h : C => h^-1 * (f (c + h) - f c))  
+suff ->: (fun h : C => h^-1 * (f (h + c) - f c))  
   = (fun h : C => h^-1 *: (( (f : C^o -> C^o) \o shift c) (h *: 1 : C^o) - f c) : C^o).
   by [].
 apply: funext => h /=.
-by rewrite scalecE [X in f X]addrC scaler1. 
+by rewrite scalecE scaler1. 
+Qed.
+
+From mathcomp Require Import ssrAC.
+
+Lemma mulOo [K : rcfType] [pT : pointedType] (F : filter_on pT)
+    (h1 h2 f g : pT -> K^o) : [O_F h1 of f] * [o_F h2 of g] =o_F 
+  h1 * h2.
+Proof. Admitted.
+
+
+Lemma mulro [K : rcfType] [pT : pointedType] (F : filter_on pT)
+    (h2 f g : pT -> K^o) : f * [o_F h2 of g] =o_F f * h2.
+Proof. Admitted.
+
+Lemma mulrox [K : rcfType] [pT : pointedType] (F : filter_on pT)
+    (h2 f g : pT -> K^o) (x : pT) : f x * [o_F h2 of g] x =o_(x \near F) f x * h2 x.
+Proof. Admitted.
+
+Lemma normRcomplex (x : R[i]) : `|x : Rc|%:C = `|x|.
+Proof.
+by []. 
 Qed.
 
 Lemma RCdiff1 (f : C -> C) (c : C) :
-  'D_1 (f%:Rfun) c%:Rc  = 'D_1 (f : C^o -> C^o) c.
+    differentiable (f%:Rfun) (c%:Rc) -> 
+   'D_1 (f : C^o -> C^o) c = 'D_1 (f%:Rfun) c%:Rc. 
 Proof.
-rewrite -Rdiff1 -Cdiff1.
-Admitted. 
+move => fdiff.
+rewrite -Cdiff1. 
+apply: (@cvg_lim _ _ _ _ _   (fun h => h^-1 * (f (h + c) - f c))) => //= A.
+(*rewrite /nbhs /= /nbhs_ball_ /= /filter_from /=.*)
+move => [/= _ /posnumP [r]] /=; rewrite /ball_ /= => H.
+near_simpl.
+near=> t.
+(*exists (r%:Rc) => //=.*)
+(*rewrite sub0r normrN => tr t0.*)
+apply: H => /=.
+rewrite deriveE => //. 
+rewrite [f _](@diff_locallyx R Rc Rc) => //=.
+rewrite (ACl (1*4*2*3)) /= subrr add0r.  
+have -> : 'd (f%:Rfun) (c%:Rc) (t : Rc) = t * 'd (f%:Rfun) (c%:Rc) (1: Rc).  
+  rewrite -[t in LHS]scaler1. 
+  set l : {linear Rc -> Rc} := ('d (f%:Rfun) (c%:Rc)). 
+  rewrite -[t * _](linearZ l).
+  (* linearZ *) admit.
+rewrite mulrDr mulKf //; last by near:t; exact: nbhs_dnbhs_neq.
+rewrite opprD addNKr normrN. 
+near: t.
+case: littleo.
+move => h /= H. 
+near=> t.
+rewrite normrM normfV ltr_pdivrMl. 
+rewrite (@le_lt_trans _ _ ((r%:num/2  * `|t|)))  //.
+rewrite -!normRcomplex. 
+rewrite [r%:num/2]gt0_normc // -rmorphM /= lecR.
+near: t.
+apply: nbhs_dnbhs.
+near_simpl.
+apply: H => //.
+rewrite -[Normc.normc _]/(`|_|) //.
+by rewrite normr_gt0 //. 
+rewrite mulrC ltr_pM2l //. 
+rewrite gtr_pMr // invf_lt1 // ?ltr1n //.
+rewrite normr_gt0.
+near: t.  apply: nbhs_dnbhs_neq. 
+rewrite normr_gt0.
+near: t.  apply: nbhs_dnbhs_neq. 
+Unshelve. all: by end_near. 
+Qed.
+
 
 Lemma Rdiffi (f : C^o -> C^o) c:
   lim ((fun h : C => h^-1 * ((f (c + h * 'i) - f c))) @ (realC @ 0^'))
@@ -323,7 +383,7 @@ have lem : Df = 'd (f%:Rfun) (c : Rc). (* issue with notation *)
   rewrite -CR (scalerAl y) -scalecE !scalecr /=.
   rewrite  scalerDl mulr1 scalecE. 
   by rewrite scalecE RCdiff1.
-apply/holomorphicP/derivable1_diffP/diff_locallyP.
+apply/holomorphicP/derivable1_diffP/diff_locallyP. 
 split.  
   apply: bounded_linear_continuous; apply/linear_boundedP.
   have /linear_bounded_continuous/linear_boundedP [M [Mr F]] := derc. 
