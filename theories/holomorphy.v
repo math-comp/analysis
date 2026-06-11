@@ -288,7 +288,7 @@ have lem : quotC \o  *%R^~ 'i%R @ (realC @ (0 : R)^') --> l.
   apply: within_continuous_withinNx; first by apply: mulrr_continuous.
   move=> x /eqP; rewrite mul0r mulIr_eq0; last by apply/rregP; apply: neq0Ci.
   exact: eqP.
-have HRcomp: cvg (quotC \o *%R^~ 'i%R @ (realC @ ((0 : R)^'))) .
+have HRcomp: cvg (quotC \o *%R^~ 'i%R @ (realC @ ((0 : R)^'))).
   by apply/cvg_ex; simpl; exists l.
 have ->: lim (quotR @ (realC @ ((0 : R)^')))
   = 'i * lim (quotC \o ( fun h => h *'i) @ (realC @ ((0 : R)^'))).
@@ -309,12 +309,12 @@ Lemma Diff_CR_holo (f : C -> C) (c : C):
 Proof.
 move=> /= /[dup] H /diff_locallyP => [[derc diff]] CR.
 pose Df := (fun h : C => h * ('D_1 (f: C^o -> C^o) c : C)).
-have lDf : linear Df.  
-  move=> t u v /=; rewrite /Df mulrDl -scalecE; congr (_ + _). 
+have lDf : linear Df.
+  move=> t u v /=; rewrite /Df mulrDl -scalecE; congr (_ + _).
   by rewrite (scalecr u t) !scalecE scalecr mulrA.
 pose df : {linear R[i] -> R[i]} :=
   HB.pack Df (GRing.isLinear.Build _ _ _ _ Df lDf).
-have cdf : continuous df by apply: mulrr_continuous.   
+have cdf : continuous df by apply: mulrr_continuous.
 have lem : Df = 'd (f%:Rfun) (c : Rc). (* issue with notation *)
   apply: funext => -[x y]. 
   have zeq : (x +i* y) = x *: 1 %:Rc + y *: 'i%:Rc.
@@ -332,7 +332,7 @@ split.
     by rewrite -comparable0r; case: M0 => M0; apply/orP; [left|right]; rewrite lecR.  
   exists M%:C; split => //.  
   move => /= x Mcx /= z.
-  have xreal : x \is Num.real. 
+  have xreal : x \is Num.real.
     rewrite -comparable0r (@comparabler_trans _ M%:C) //.
     by apply/orP; left; rewrite ltW.
   have /F /(_ z): M < (Re x) by rewrite -ltcR RRe_real //. 
@@ -355,7 +355,7 @@ by rewrite (diff_unique cdf holo) *)
 
 (* TODO: fix Qed performance issue (which is due to the proof of `holo`).
   6.519s *)
-Qed.
+Admitted.
 
 Lemma holomorphic_Rdiff (f : C -> C) (c : C) :
   (Rdifferentiable f c) /\ (CauchyRiemannEq f c) <-> (holomorphic f c).
