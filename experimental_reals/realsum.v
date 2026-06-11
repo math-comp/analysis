@@ -271,7 +271,9 @@ Lemma esum_psum (S : T -> R) : (forall i, 0 <= S i) -> summable S ->
   \esum_(x in [set: T]) (S x)%:E = (psum S)%:E.
 Proof.
 move => Sg0 h; apply/eqP; rewrite eq_le; apply/andP; split.
-- rewrite ge_ereal_sup//= => x [X [finX _]].
+- rewrite ge0_esum.
+    by move=> t _; rewrite lee_fin.
+  rewrite ge_ereal_sup//= => x [X [finX _]].
   rewrite fsumEFin // => <-.
   rewrite lee_fin fsbig_finite//=.
   move/cardinality.finite_fsetP : finX => [J ->].
@@ -282,7 +284,8 @@ move => Sg0 h; apply/eqP; rewrite eq_le; apply/andP; split.
     by move => t _; rewrite ger0_norm.
   have [nonempty hasub] := summable_sup h.
   rewrite psum_absE// -ereal_sup_EFin// ge_ereal_sup//= => x [X [Fs ->] <-].
-  rewrite esum_ge//.
+  rewrite ge0_esum//.
+  rewrite PosEsum.pos_esum_ge//.
   exists ([set` Fs]%classic) => //.
   rewrite fsumEFin// lee_fin (big_fset_seq (fun x => `|S x|))//=.
   by rewrite -{1}(set_fsetK Fs) -fsbig_finite.
@@ -639,24 +642,20 @@ Qed.
 
 End SummableAlg.
 
-(* -------------------------------------------------------------------- *)
-Section Sum_Sum.
-Context {T : choiceType} {R : realType}.
-
-Lemma sum_sum (S : T -> R) : summable S ->
-  esum.sum (fun x => (S x)%:E) = (sum S)%:E.
+Lemma esumEsum {T : choiceType} {R : realType} (S : T -> R) : summable S ->
+  \esum_(x in setT) (S x)%:E = (sum S)%:E.
 Proof.
-move=> hs.
-rewrite /esum.sum /sum.
-rewrite (@eq_esum _ _ _ ((fun x => (S x)%:E)^\+%E) (fun x => (S^\+ x)%:E)).
+move=> hs; rewrite /esum.
+rewrite (PosEsum.eq_pos_esum _ (fun x => (S x)%:E)^\+%E (fun x => (S^\+ x)%:E)).
   by move=> t _; rewrite funeposE -fine_max.
-rewrite (@eq_esum _ _ _ ((fun x => (S x)%:E)^\-%E) (fun x => (S^\- x)%:E)).
+rewrite (PosEsum.eq_pos_esum _ (fun x => (S x)%:E)^\-%E (fun x => (S^\- x)%:E)).
   by move=> t _; rewrite funenegE EFin_max.
-rewrite esum_psum//; first exact : summable_funrpos.
-by rewrite esum_psum//; exact : summable_funrneg.
+rewrite EFinB; congr (_ - _)%E.
+- rewrite -esum_psum//; first exact : summable_funrpos.
+  by rewrite ge0_esum// => x _; rewrite lee_fin.
+- rewrite -esum_psum//; first exact : summable_funrneg.
+  by rewrite ge0_esum// => x _; rewrite lee_fin.
 Qed.
-
-End Sum_Sum.
 
 (* -------------------------------------------------------------------- *)
 Section StdSum.

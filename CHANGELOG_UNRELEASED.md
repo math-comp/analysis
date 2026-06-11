@@ -94,7 +94,7 @@
   + instance `is_diff_mx`
 - in `realsum.v`:
   + lemma `esum_psum`
-  + lemma `sum_sum`
+  + lemma `esumEsum`
 
 - in `constructive_ereal.v`:
   + definition `esg`
@@ -105,11 +105,9 @@
 
 - in `esum.v`:
   + lemmas `esum_eq0P`, `esumZ`, `exchange_esum`
-  + definition `sum`
-  + lemmas `sum0`, `eq_sum`
-  + lemmas `ge0_sum`, `sum_ge0`, `le_sum`, `sumN`, `sumZ`
-  + lemmas `summable_le_sum`, `summable_esum_funepos`, `summable_sumN`,
-    `summableZ`, `summable_sumZ`
+  + lemmas `le_esum`, `esumN`
+  + lemmas `summable_le_esum`, `summable_esum_funepos`, `summable_esumN`,
+    `summableZ`, `summable_esumZ`
   + lemmas `exchange_esum_ereal_sup`
 
 - in `ereal.v`:
@@ -186,6 +184,9 @@
 
 - new files `signed_measure.v` and `radon_nikodym.v`
   + with the contents of `charge.v` (deprecated)
+
+- in `esum.v`:
+  + `ge0_esum`
 
 ### Changed
 
@@ -268,6 +269,12 @@
 - moved from `numfun.v` to `unstable.v`:
   + notations `nondecreasing_fun`, `nonincreasing_fun`,
     `decreasing_fun`, `increasing_fun`
+
+- in `esum.v`:
+  + definition `esum`
+  + lemma `esum_fset`
+  + lemma `esum_ge` -> `PosEsum.pos_esum_ge`
+  + lemma `le_esum` -> `PosEsum.le_pos_esum`
 
 ### Renamed
 

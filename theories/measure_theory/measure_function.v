@@ -1206,7 +1206,11 @@ rewrite esum_bigcup//.
    move=> /(decomp_neq0 DUBiN0) [y Yy].
    apply: (@trivIset_seqDU _ B) => //; exists y.
    by split => //; [exact: YBi|exact: YBj].
-rewrite nneseries_esumT// le_esum// => i _.
+rewrite nneseries_esumT//.
+rewrite ge0_esum/=.
+  by move=> i _; exact: esum_ge0.
+rewrite ge0_esum//.
+apply: PosEsum.le_pos_esum => // i _.
 rewrite [leLHS](_ : _ = \sum_(j \in decomp (seqDU B i)) mu j).
   by rewrite esum_fset//; exact: decomp_finite_set.
 rewrite -SetRing.Rmu_fin_bigcup//=.
