@@ -394,23 +394,6 @@ Proof.
 by move=> finF f0; rewrite ge0_esum//; exact: PosEsum.pos_esum_fset.
 Qed.
 
-Lemma esum_set1 t a : 0 <= a t -> \esum_(i in [set t]) a i = a t.
-Proof.
-move=> ?; rewrite ge0_esum.
-  by move=> x ->.
-exact: PosEsum.pos_esum_set1.
-Qed.
-
-Lemma esum_eq0P (A : set T) a : (forall i, A i -> 0 <= a i) ->
-  \esum_(x in A) a x = 0 ->
-  forall x, A x -> a x = 0.
-Proof.
-move=> a0; rewrite ge0_esum// => suma0 x Ax.
-apply/eqP; rewrite eq_le a0//= -suma0 ereal_sup_ubound//=.
-exists [set x]; first by split => // t ->.
-by rewrite -esum_set1 ?a0// esum_fset// => i ->; exact: a0.
-Qed.
-
 End esum_realType.
 
 Lemma esum1 {R : realFieldType} {I : choiceType} (D : set I) (a : I -> \bar R) :
@@ -430,6 +413,81 @@ move=> e; congr (_ - _).
 Qed.
 Arguments eq_esum {R T} I a b.
 
+Lemma esum_mkcond [R : realType] [T : choiceType] (I : set T)
+    (a : T -> \bar R) :
+  \esum_(i in I) a i = \esum_(i in [set: T]) if i \in I then a i else 0.
+Proof.
+rewrite /esum; congr (_ - _); rewrite PosEsum.pos_esum_mkcond;
+  congr PosEsum.pos_esum; apply/funext => x/=.
+- by rewrite (funepos_restrict I a).
+- by rewrite (funeneg_restrict I a).
+Qed.
+
+Lemma esum_mkcondr [R : realType] [T : choiceType] (I J : set T)
+    (a : T -> \bar R) :
+  \esum_(i in I `&` J) a i = \esum_(i in I) if i \in J then a i else 0.
+Proof.
+rewrite esum_mkcond [RHS]esum_mkcond; apply: eq_esum=> i _.
+by rewrite in_setI; case: (i \in I) (i \in J) => [] [].
+Qed.
+
+Lemma esum_mkcondl [R : realType] [T : choiceType] (I J : set T)
+    (a : T -> \bar R) :
+  \esum_(i in I `&` J) a i = \esum_(i in J) if i \in I then a i else 0.
+Proof.
+rewrite esum_mkcond [RHS]esum_mkcond; apply: eq_esum=> i _.
+by rewrite in_setI; case: (i \in I) (i \in J) => [] [].
+Qed.
+
+Lemma esum_if_eq_op {R : realType} {T : choiceType} (f : T -> \bar R) x :
+  \esum_(y in [set: T]) (if x == y then f y else 0) = \esum_(i in [set x]) f i.
+Proof.
+rewrite [RHS]esum_mkcond.
+by under [in RHS]eq_esum do rewrite in_set1 eq_sym.
+Qed.
+
+Section esum_set1.
+Context {R : realType} {T : choiceType}.
+
+Let ge0_esum_set1 t (a : T -> \bar R) : 0 <= a t ->
+  \esum_(i in [set t]) a i = a t.
+Proof.
+move=> ?; rewrite ge0_esum; first by move=> x ->.
+exact: PosEsum.pos_esum_set1.
+Qed.
+
+Lemma esum_set1 (f : T -> \bar R) x : \esum_(i in [set x]) f i = f x.
+Proof.
+rewrite /esum.
+rewrite (PosEsum.eq_pos_esum _ _ (fun y => if x == y then f^\+ y else 0)).
+  by move=> i /[!inE] ->; rewrite eqxx.
+rewrite [X in _ - X](PosEsum.eq_pos_esum _ _
+    (fun y => if x == y then f^\- y else 0)).
+  by move=> i /[!inE] ->; rewrite eqxx.
+rewrite -[X in X - _]ge0_esum; first by move=> t _; case: ifPn.
+rewrite -[X in _ - X]ge0_esum; first by move=> t _; case: ifPn.
+have [Sx0|Sx0] := comparable_ltP (comparableT (f x) 0)%E.
+- rewrite esum1; first by move => t //= ->; rewrite eqxx funeposE// max_r// ltW.
+  rewrite ge0_esum_set1 eqxx ?funeneg_ge0//.
+  by rewrite funenegE max_l// ?oppeK ?add0e// leeNr oppe0 ltW.
+- rewrite ge0_esum_set1 eqxx ?funepos_ge0//.
+  rewrite esum1; first by move => t ->; rewrite funenegE eqxx max_r// oppe_le0.
+  by rewrite funeposE max_l// sube0.
+Qed.
+
+End esum_set1.
+
+Lemma esum_eq0P [R : realType] [T : choiceType] (A : set T) (a : T -> \bar R) :
+  (forall i, A i -> 0 <= a i) ->
+  \esum_(x in A) a x = 0 ->
+  forall x, A x -> a x = 0.
+Proof.
+move=> a0; rewrite ge0_esum// => suma0 x Ax.
+apply/eqP; rewrite eq_le a0//= -suma0 ereal_sup_ubound//=.
+exists [set x]; first by split => // t ->.
+by rewrite -esum_set1 ?a0// esum_fset// => i ->; exact: a0.
+Qed.
+
 Section esumZ.
 Context {R : realType} {T : choiceType}.
 
@@ -440,7 +498,7 @@ Proof.
 rewrite le_eqVlt => /predU1P[<- _|c0 a0].
   by rewrite mul0e esum1// => ? _; rewrite mul0e.
 rewrite ge0_esum.
-  by move=> x /a0 ax0; rewrite mule_ge0// ltW.
+  by move=> x /a0 ax0; rewrite ?mule_ge0//; exact: ltW.
 rewrite ge0_esum//.
 by apply: PosEsum.pos_esumZ => //; exact: ltW.
 Qed.
@@ -474,32 +532,6 @@ move=> ag0 bg0.
 rewrite ge0_esum//.
   by move=> x Ix; rewrite adde_ge0 ?ag0 ?bg0//.
 by do 2 rewrite ge0_esum//; exact: PosEsum.pos_esumD.
-Qed.
-
-Lemma esum_mkcond [R : realType] [T : choiceType] (I : set T)
-    (a : T -> \bar R) :
-  \esum_(i in I) a i = \esum_(i in [set: T]) if i \in I then a i else 0.
-Proof.
-rewrite /esum; congr (_ - _); rewrite PosEsum.pos_esum_mkcond;
-  congr PosEsum.pos_esum; apply/funext => x/=.
-- by rewrite (funepos_restrict I a).
-- by rewrite (funeneg_restrict I a).
-Qed.
-
-Lemma esum_mkcondr [R : realType] [T : choiceType] (I J : set T)
-    (a : T -> \bar R) :
-  \esum_(i in I `&` J) a i = \esum_(i in I) if i \in J then a i else 0.
-Proof.
-rewrite esum_mkcond [RHS]esum_mkcond; apply: eq_esum=> i _.
-by rewrite in_setI; case: (i \in I) (i \in J) => [] [].
-Qed.
-
-Lemma esum_mkcondl [R : realType] [T : choiceType] (I J : set T)
-    (a : T -> \bar R) :
-  \esum_(i in I `&` J) a i = \esum_(i in J) if i \in I then a i else 0.
-Proof.
-rewrite esum_mkcond [RHS]esum_mkcond; apply: eq_esum=> i _.
-by rewrite in_setI; case: (i \in I) (i \in J) => [] [].
 Qed.
 
 Lemma esumID (R : realType) (I : choiceType) (B : set I) (A : set I)

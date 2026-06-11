@@ -108,6 +108,7 @@
   + lemmas `le_esum`, `esumN`
   + lemmas `summable_le_esum`, `summable_esum_funepos`, `summable_esumN`,
     `summableZ`, `summable_esumZ`
+  + lemmas `esum_unit`
   + lemmas `exchange_esum_ereal_sup`
 
 - in `ereal.v`:
@@ -350,6 +351,9 @@
 
 - in `ereal.v`:
   + lemmas `ge0_mule_fsumr`, `ge0_mule_fsuml`
+
+- in `esum.v`:
+  + lemma `esum_set1`
 
 ### Deprecated
 
