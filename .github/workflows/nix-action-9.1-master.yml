@@ -491,7 +491,7 @@ jobs:
   mathcomp-experimental-reals:
     needs:
     - rocq-core
-    - mathcomp-reals
+    - mathcomp-analysis
     - mathcomp-bigenough
     runs-on: ubuntu-latest
     steps:
@@ -546,9 +546,9 @@ jobs:
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
         "9.1-master" --argstr job "rocq-core"
     - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: mathcomp-reals'
+      name: 'Building/fetching previous CI target: mathcomp-analysis'
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "9.1-master" --argstr job "mathcomp-reals"
+        "9.1-master" --argstr job "mathcomp-analysis"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-bigenough'
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
@@ -680,10 +680,6 @@ jobs:
       name: 'Building/fetching previous CI target: mathcomp-analysis-stdlib'
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
         "9.1-master" --argstr job "mathcomp-analysis-stdlib"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: mathcomp-algebra-tactics'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "9.1-master" --argstr job "mathcomp-algebra-tactics"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: interval'
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
