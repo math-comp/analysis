@@ -188,6 +188,22 @@ apply: funext => h /=.
 by rewrite scalecE scaler1. 
 Qed.
 
+
+Lemma Rdiffi (f : C^o -> C^o) c:
+  lim ((fun h : C => h^-1 * ((f (c + h * 'i) - f c))) @ (realC @ 0^'))
+  = 'D_('i) (f%:Rfun) c%:Rc.
+Proof.
+rewrite /derive.
+rewrite -[LHS]/(lim ((fun h : (R[i]) => h^-1 * (f (c + h * 'i) - f c))
+                  \o realC @ 0^')).
+suff -> : (fun h : (R[i]) => h^-1 * (f (c + h * 'i) - f c)) \o realC
+  = fun h : R => h^-1 *: ((f \o shift c) (h *: ('i%:Rc)) - f c)%:Rc.
+  by [].
+apply: funext => h /=. 
+by rewrite -fmorphV realCZ [X in f X]addrC scalerc.
+Qed.
+
+
 From mathcomp Require Import ssrAC.
 
 Lemma mulOo [K : rcfType] [pT : pointedType] (F : filter_on pT)
@@ -209,11 +225,24 @@ Proof.
 by []. 
 Qed.
 
+(* TODO: clean lemmas about scalec *)
+Lemma scaleCr (h : R) (c : R[i]): h *: (c : Rc) = h%:C *: (c : C^o).
+Proof.
+Admitted.
+
+Lemma scaleC1 (h : R) : h *: (1 : C^o) = h%:C.
+Proof.
+Admitted.
+
+
+Definition CauchyRiemannEq (f : C -> C) c :=
+  'i * 'D_1 f%:Rfun c%:Rc = 'D_('i) f%:Rfun c%:Rc.
+
 Lemma RCdiff1 (f : C -> C) (c : C) :
-    differentiable (f%:Rfun) (c%:Rc) -> 
+    differentiable (f%:Rfun) (c%:Rc) -> CauchyRiemannEq f c ->
    'D_1 (f : C^o -> C^o) c = 'D_1 (f%:Rfun) c%:Rc. 
 Proof.
-move => fdiff.
+move => fdiff CR.
 rewrite -Cdiff1. 
 apply: (@cvg_lim _ _ _ _ _   (fun h => h^-1 * (f (h + c) - f c))) => //= A.
 (*rewrite /nbhs /= /nbhs_ball_ /= /filter_from /=.*)
@@ -226,11 +255,17 @@ apply: H => /=.
 rewrite deriveE => //. 
 rewrite [f _](@diff_locallyx R Rc Rc) => //=.
 rewrite (ACl (1*4*2*3)) /= subrr add0r.  
-have -> : 'd (f%:Rfun) (c%:Rc) (t : Rc) = t * 'd (f%:Rfun) (c%:Rc) (1: Rc).  
-  rewrite -[t in LHS]scaler1. 
-  set l : {linear Rc -> Rc} := ('d (f%:Rfun) (c%:Rc)). 
-  rewrite -[t * _](linearZ l).
-  (* linearZ *) admit.
+have -> : 'd (f%:Rfun) (c%:Rc) (t : Rc) = t * 'd (f%:Rfun) (c%:Rc) (1: Rc).
+  rewrite (complexE t).
+  rewrite !linearD. 
+  have -> : (Re t)%:C = Re t *: 1 by rewrite scaleC1.
+  have -> : 'i%C * (Im t)%:C = Im t *: 'i%C by rewrite scalecr mulrC.
+  rewrite !linearZ /=. 
+  rewrite -!deriveE //.
+  rewrite -CR. 
+  rewrite -scalecE.  rewrite !scaleCr. rewrite scalerA. 
+  rewrite -(scalerDl ('D_1 f%:Rfun c : C^o)).
+  by rewrite !scalecE mulr1.
 rewrite mulrDr mulKf //; last by near:t; exact: nbhs_dnbhs_neq.
 rewrite opprD addNKr normrN. 
 near: t.
@@ -257,20 +292,6 @@ Unshelve. all: by end_near.
 Qed.
 
 
-Lemma Rdiffi (f : C^o -> C^o) c:
-  lim ((fun h : C => h^-1 * ((f (c + h * 'i) - f c))) @ (realC @ 0^'))
-  = 'D_('i) (f%:Rfun) c%:Rc.
-Proof.
-rewrite /derive.
-rewrite -[LHS]/(lim ((fun h : (R[i]) => h^-1 * (f (c + h * 'i) - f c))
-                  \o realC @ 0^')).
-suff -> : (fun h : (R[i]) => h^-1 * (f (c + h * 'i) - f c)) \o realC
-  = fun h : R => h^-1 *: ((f \o shift c) (h *: ('i%:Rc)) - f c)%:Rc.
-  by [].
-apply: funext => h /=. 
-by rewrite -fmorphV realCZ [X in f X]addrC scalerc.
-Qed.
-
 
 (* should be generalized to equivalent norms *)
 (* but there is no way to state it for now *)
@@ -291,9 +312,6 @@ rewrite -[_%:num]ger0_norm// -rmorphM/= lecR.
 by near: y; apply: small; rewrite (@normr_gt0 _ (Rcomplex R))//.
 Unshelve. all: by end_near. Qed.
 
-
-Definition CauchyRiemannEq (f : C -> C) c :=
-  'i * 'D_1 f%:Rfun c%:Rc = 'D_('i) f%:Rfun c%:Rc.
 
 Lemma holo_differentiable (f : C -> C) (c : C) :
   holomorphic f c -> Rdifferentiable f (c : Rc).
