@@ -1523,7 +1523,7 @@ Hypothesis f_nd : forall x, nondecreasing_seq (f x).
 
 Lemma ereal_sup_sum (l : seq T) :
   \sum_(x <- l) ereal_sup (range (f x)) =
-    ereal_sup (range (fun n => \sum_(x <- l) f x n)).
+  ereal_sup (range (fun n => \sum_(x <- l) f x n)).
 Proof.
 elim: l => [|x xs ih].
 - rewrite big_nil.

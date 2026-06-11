@@ -773,27 +773,26 @@ Lemma ge0_ereal_supZl (c : \bar R) X : 0 <= c -> X != set0 ->
   ereal_sup [set c * x | x in X] = c * ereal_sup X.
 Proof.
 move=> c0 /[dup] Xneq0 /set0P[x Xx] X_ge0.
-case: c c0 => [r r0|_|//].
-- have [->|_] := eqVneq r 0%R.
+case: c c0 => [r|_|//].
+- rewrite lee_fin le_eqVlt => /predU1P[<-|r0].
   + rewrite mul0e.
     under eq_imagel do rewrite mul0e.
     by rewrite ereal_sup_cst.
-  + exact: ereal_supZl Xneq0 r0.
+  + exact/(ereal_supZl Xneq0)/ltW.
 - have [Xall0|] := pselect (forall a, X a -> a = 0).
   + rewrite [X in ereal_sup X = _](_ : _ = [set 0]%classic).
       apply/seteqP; split.
       * by move=> _ [z Xz <-]; rewrite (Xall0 _ Xz) mule0.
       * by move=> y /= ->; exists x => //; rewrite (Xall0 _ Xx) mule0.
-   have -> : X = [set 0]%classic.
-     apply/seteqP; split.
-     + by move=> y /Xall0 ->.
-     + by move=> y /= ->; rewrite -(Xall0 _ Xx).
-   by rewrite ereal_sup1 mule0.
- + rewrite -existsNE => -[y /not_implyP[Xy /eqP]].
-   rewrite neq_lt ltNge X_ge0//= => y0.
-   rewrite gt0_mulye//.
-     by rewrite (lt_le_trans y0)// ereal_sup_ubound.
-  by rewrite ereal_supy//=; exists y => //; exact: gt0_mulye.
+    have -> : X = [set 0]%classic.
+      apply/seteqP; split.
+      * by move=> y /Xall0 ->.
+      * by move=> y /= ->; rewrite -(Xall0 _ Xx).
+    by rewrite ereal_sup1 mule0.
+  + rewrite -existsNE => -[y /not_implyP[Xy /eqP]].
+    rewrite neq_lt ltNge X_ge0//= => y0.
+    rewrite gt0_mulye//; first  by rewrite (lt_le_trans y0)// ereal_sup_ubound.
+    by rewrite ereal_supy//=; exists y => //; exact: gt0_mulye.
 Qed.
 
 Section ge0_ereal_supZl_range.

@@ -100,15 +100,12 @@
   + definition `esg`
   + lemmas `numEesg`, `gte0_esg`, `lte0_esg`, `esg0`
 
-- in `numfun.v`:
-  + lemmas `funepos_cst0`, `funeneg_cst0`
-
 - in `esum.v`:
   + lemmas `esum_eq0P`, `esumZ`, `exchange_esum`
   + lemmas `le_esum`, `esumN`
   + lemmas `summable_le_esum`, `summable_esum_funepos`, `summable_esumN`,
     `summableZ`, `summable_esumZ`
-  + lemmas `esum_unit`
+  + lemmas `esum_if_eq_op`
   + lemmas `exchange_esum_ereal_sup`
 
 - in `ereal.v`:
@@ -253,7 +250,7 @@
     `ae_eq_Radon_Nikodym_SigmaFinite`, `Radon_Nikodym_change_of_variables`,
     `Radon_Nikodym_cscale`, `Radon_Nikodym_cadd`, `Radon_Nikodym_chain_rule`
 - in `realsum.v`:
-  + now use `funrpos` and `funrneg`:
+  + the following now use `funrpos` and `funrneg`:
     * definition `sum`
     * lemmas `summable_funrpos`, `summable_funrneg`
   + lemma `sum0` (now uses `cst`)
@@ -320,6 +317,8 @@
 
 - in `topology_structure.v`:
   + `closure_setC` -> `closureC`
+- in `esum.v`:
+  + `esum_sum` -> ` exchange_esum_sum`
 
 ### Generalized
 
