@@ -29,8 +29,6 @@ From mathcomp Require Export filter.
 (*       second_countable T == T has a countable basis                        *)
 (*              [locally P] := forall a, A a -> G (within A (nbhs x)) if P    *)
 (*                             is convertible to G (globally A)               *)
-(*            finI_from D f == set of \bigcap_(i in E) f i where E is a       *)
-(*                             finite subset of D                             *)
 (*                       U° == all of the points which are locally in U,      *)
 (*                             i.e., the largest open set contained in U      *)
 (*                             This is a notation for `interior U`.           *)
