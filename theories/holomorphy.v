@@ -1,6 +1,5 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-(*Require Import ssrsearch.*)
-From HB Require Import structures.
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)  
+From HB Require Import structures. 
 From mathcomp Require Import ssreflect ssrfun ssrbool fieldext falgebra vector.
 From mathcomp Require Import ssrnat eqtype seq choice fintype bigop order.
 From mathcomp Require Import ssralg ssrnum ssrfun matrix complex.
@@ -65,7 +64,6 @@ apply/subsetP => x; rewrite inE/= inE /ball_Rcomplex/= add0r opprB => xe.
 by apply: eU; rewrite inE.
 Qed.
 
-
 (* Lemmas to be used generally when norm is redefined *)
 
 #[local] Lemma ler_normcD : forall (x y : Rcomplex R), normc (x + y) <= normc x + normc y.
@@ -101,7 +99,6 @@ Qed.
 #[export] HB.instance Definition _ :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R (Rcomplex R) normcZ. 
 
-Check (Rcomplex R : normedModType R). 
 
 Lemma Rcomplex_findim : Vector.axiom 2 (Rcomplex R).
 Proof.
@@ -126,6 +123,7 @@ End Rcomplex_NormedModType.
 End Rcomplex_NormedModType.
 HB.export Rcomplex_NormedModType.
 
+
 Section Holomorphe_der.
 Variable R : realType.
 
@@ -145,17 +143,6 @@ Proof.
 by []. 
 Qed.
 
-(* TODO: clean lemmas about scalec *)
-Lemma scaleCr (h : R) (c : R[i]): h *: (c : Rc) = h%:C *: (c : C^o).
-Proof.
-by rewrite  scalecE scalerc.
-Qed.
-
-Lemma scaleC1 (h : R) : h *: (1 : C^o) = h%:C.
-Proof.
-by rewrite scaleCr scaler1.
-Qed.
-
 (* TODO : put the h at the left *)
 Definition holomorphic (f : C -> C) (c : C) :=
   cvg ((fun (h : C) => h^-1 * (f (c + h) - f c)) @ 0^').
@@ -169,7 +156,8 @@ suff ->: (fun h : C => h^-1 * ((f (c + h) - f c))) =
 by apply: funext => h; rewrite complexA [X in f X]addrC.
 Qed.
   
-Definition Rdifferentiable (f : C -> C) (c : C) := differentiable f%:Rfun c%:Rc.
+
+Definition Rdifferentiable (f : C -> C) (c : C) := differentiable f%:Rfun c%:RC.
 
 Definition realC : R -> C := (fun r => r%:C).
 
@@ -181,13 +169,13 @@ Qed.
 
 Lemma Rdiff1 (f : C -> C) (c : C) :
   lim ((fun h : C => h^-1 * ((f (c + h) - f c))) @ (realC @ 0^'))
-  = 'D_1 (f%:Rfun) c%:Rc.
+  = 'D_1 (f%:Rfun) c%:RC.
 Proof.
 rewrite /derive.
 rewrite -[LHS]/(lim ((fun h : C => h^-1 * ((f (c + h) - f c)))
                   \o realC @ 0^')).
 suff ->: (fun h : C => h^-1 * (f (c + h) - f c)) \o realC
-  = fun h : R => h^-1 *: ((f \o shift c) (h *: (1%:Rc)) - f c)%:Rc.
+  = fun h : R => h^-1 *: ((f \o shift c) (h *: (1%:RC)) - f c)%:RC.
   by [].
 apply: funext => h /=.
 by rewrite -fmorphV realC_alg [X in f X]addrC /realC /= scalerc.
@@ -195,16 +183,16 @@ Qed.
 
 Lemma Rdiffv (f : C -> C) (v c : C) :
   lim ((fun h : C => h^-1 * ((f (c + h *: (v : C^o)) - f c))) @ (realC @ 0^'))
-  = 'D_v (f%:Rfun) c%:Rc.
+  = 'D_v (f%:Rfun) c%:RC.
 Proof.
 rewrite /derive.
 rewrite -[LHS]/(lim ((fun h : C => h^-1 * ((f (c + h *: (v : C^o)) - f c)))
                   \o realC @ 0^')).
 suff ->: (fun h : C => h^-1 * (f (c + h *: (v : C^o)) - f c)) \o realC
-  = fun h : R => h^-1 *: ((f \o shift c) (h *: (v:Rc)) - f c)%:Rc.
+  = fun h : R => h^-1 *: ((f \o shift c) (h *: (v:Rc)) - f c)%:RC.
   by [].
 apply: funext => h /=.
-by rewrite -fmorphV [X in f X]addrC /realC /= scalerc scaleCr.
+by rewrite -fmorphV [X in f X]addrC /realC /= scalerc scalerc_regular. (*-scaleCE*)
 Qed.
 
 Lemma Cdiff1 (f : C -> C) (c : C) :
@@ -224,31 +212,27 @@ Qed.
 
 Lemma Rdiffi (f : C^o -> C^o) c:
   lim ((fun h : C => h^-1 * ((f (c + h * 'i) - f c))) @ (realC @ 0^'))
-  = 'D_('i) (f%:Rfun) c%:Rc.
+  = 'D_('i) (f%:Rfun) c%:RC.
 Proof.
 rewrite /derive.
 rewrite -[LHS]/(lim ((fun h : (R[i]) => h^-1 * (f (c + h * 'i) - f c))
                   \o realC @ 0^')).
 suff -> : (fun h : (R[i]) => h^-1 * (f (c + h * 'i) - f c)) \o realC
-  = fun h : R => h^-1 *: ((f \o shift c) (h *: ('i%:Rc)) - f c)%:Rc.
+  = fun h : R => h^-1 *: ((f \o shift c) (h *: ('i%:RC)) - f c)%:RC.
   by [].
 apply: funext => h /=. 
-by rewrite -fmorphV realCZ [X in f X]addrC scalerc.
+by rewrite -fmorphV scalerc [X in f X]addrC scalerc.
 Qed.
 
-
-
-
-
 Definition CauchyRiemannEq (f : C -> C) c :=
-  'i * 'D_1 f%:Rfun c%:Rc = 'D_('i) f%:Rfun c%:Rc.
+  'i * 'D_1 f%:Rfun c%:RC = 'D_('i) f%:Rfun c%:RC.
 
 
 Lemma is_derive_holo (f : C -> C) (c : C) :
     Rdifferentiable f c -> CauchyRiemannEq f c ->
-    is_derive (c : C^o) 1 (f : C^o -> C^o) ('D_1 (f%:Rfun) c%:Rc). Proof.
+    is_derive (c : C^o) 1 (f : C^o -> C^o) ('D_1 (f%:Rfun) c%:RC). Proof.
 move => fdiff CR.
-suff lem: (h^-1 * (f (h + c) - f c) @[h --> 0^']) --> 'D_1 (f%:Rfun) (c%:Rc).
+suff lem: (h^-1 * (f (h + c) - f c) @[h --> 0^']) --> 'D_1 (f%:Rfun) (c%:RC).
   split; last first. 
     by rewrite -Cdiff1; apply: cvg_lim lem; by [].
   apply/cvg_ex. eexists. rewrite /=. under eq_fun do rewrite scaler1/=. exact: lem.
@@ -260,12 +244,12 @@ move => /= A.
   rewrite deriveE => //. 
   rewrite [f _](@diff_locallyx R Rc Rc) => //=.
   rewrite (ACl (1*4*2*3)) /= subrr add0r.  
-  have -> : 'd (f%:Rfun) (c%:Rc) (t : Rc) = t * 'd (f%:Rfun) (c%:Rc) (1: Rc).
+  have -> : 'd (f%:Rfun) (c%:RC) (t : Rc) = t * 'd (f%:Rfun) (c%:RC) (1: Rc).
     rewrite (complexE t).
     rewrite !linearD. 
-    have -> : (Re t)%:C = Re t *: 1 by rewrite scaleC1.
-    have -> : 'i%C * (Im t)%:C = Im t *: 'i%C by rewrite scalecr mulrC.
-    rewrite !linearZ -!deriveE // -CR -scalecE /= !scaleCr scalerA. 
+    have -> : (Re t)%:C = Re t *: 1 by rewrite scalec1.
+    have -> : 'i%C * (Im t)%:C = Im t *: 'i%C by rewrite scalerc mulrC. 
+    rewrite !linearZ -!deriveE // -CR /= !scalerc_regular scalerA.
     by rewrite -(scalerDl ('D_1 f%:Rfun c : C^o)) !scalecE mulr1.
   rewrite mulrDr mulKf //; last by near:t; exact: nbhs_dnbhs_neq.
   rewrite opprD addNKr normrN. 
@@ -308,90 +292,19 @@ move => /holomorphicP/derivable1_diffP fdiff.
 rewrite /Rdifferentiable.
 pose df (v : Rc) : Rc := 'd (f : C^o -> C^o) (c : C^o) v.
 have lindf : linear df.
-  by move=> /= k x y; rewrite !scaleCr /df /= linearP.
-pose Df : {linear Rc -> Rc} := 
-HB.pack df (@GRing.isLinear.Build _ _ _ _ df lindf).
-apply: (exists_diff).  
-exists Df; first exact: linear_findim_continuous. 
-rewrite /Df /df /=.
-apply/eqaddoPx.
-move => r r0.
-near=> w.
-rewrite /Df /df /=.
+  by move=> /= k x y; rewrite !scalerc /df /= linearP.
+pose Df : {linear Rc -> Rc} := HB.pack df (@GRing.isLinear.Build _ _ _ _ df lindf).
+apply: (exists_diff); exists Df; first exact: linear_findim_continuous.
+rewrite /Df /df /=; apply/eqaddoPx => r r0; near=> w.
 have /diff_locallyxP [_ ] := fdiff.
-move  => /(_ (w - c)). 
-rewrite !fctE subrK => ->.
-rewrite opprD.  
-rewrite (AC (3*2) ((1*4)*(2*5)*3)) /=.
-rewrite !subrr !add0r.
-near: w.
-case : littleo => /=.
-move => h heps.
-near=> w.
-rewrite -lecR.
-rewrite rmorphM /=.
-rewrite !normRcomplex.
-near: w.
-suff: \forall x \near c, `|h (x - c)| <= r%:C * `|x - c|.
-  exact.
-apply/nbhs0P.
-near do rewrite addrC addKr.
-apply: heps.
+move  => /(_ (w - c)); rewrite !fctE subrK => ->.
+rewrite opprD (AC (3*2) ((1*4)*(2*5)*3)) /=  !subrr !add0r.
+near: w; case : littleo => /= h heps; near=> w.
+rewrite -lecR rmorphM /= !normRcomplex; near: w.
+suff: \forall x \near c, `|h (x - c)| <= r%:C * `|x - c| by exact.
+apply/nbhs0P; near do rewrite addrC addKr; apply: heps.
 by rewrite ltcR.
 Unshelve. all: end_near. Qed.
-
-Lemma is_derive_Rdiff  (f : C -> C) (c v : C):
-    is_derive (c%:Rc) v (f%:Rfun) ('D_v (f : C^o -> C^o) c). 
-Proof.
-Admitted.
-(*
-move => fdiff.
-suff lem: ((h^-1 : R) *: ((f%:Rfun) ( h *:v + (c%:Rc)) - (f%:Rfun) (c%:Rc)) @[h --> 0^']) --> 'D_v (f : C^o -> C^o) (c%:Rc).
-  split; last first. 
-    rewrite -Rdiffv. apply: cvg_lim. by [].  
-    Search "cvg"  "comp". admit. 
-  apply/cvg_ex. eexists. . under eq_fun do rewrite scaler1/=. exact: lem.
-move => /= A. 
-  move => [/= _ /posnumP [r]] /=; rewrite /ball_ /= => H.
-  near_simpl.
-  near=> t.
-  apply: H => /=.
-  rewrite deriveE => //. 
-  rewrite [f _](@diff_locallyx R Rc Rc) => //=.
-  rewrite (ACl (1*4*2*3)) /= subrr add0r.  
-  have -> : 'd (f%:Rfun) (c%:Rc) (t : Rc) = t * 'd (f%:Rfun) (c%:Rc) (1: Rc).
-    rewrite (complexE t).
-    rewrite !linearD. 
-    have -> : (Re t)%:C = Re t *: 1 by rewrite scaleC1.
-    have -> : 'i%C * (Im t)%:C = Im t *: 'i%C by rewrite scalecr mulrC.
-    rewrite !linearZ -!deriveE // -CR -scalecE /= !scaleCr scalerA. 
-    by rewrite -(scalerDl ('D_1 f%:Rfun c : C^o)) !scalecE mulr1.
-  rewrite mulrDr mulKf //; last by near:t; exact: nbhs_dnbhs_neq.
-  rewrite opprD addNKr normrN. 
-  near: t.
-  case: littleo.
-  move => h /= H. 
-  near=> t. 
-  rewrite normrM normfV ltr_pdivrMl; last by rewrite normr_gt0; near: t; apply: nbhs_dnbhs_neq.   
-  rewrite (@le_lt_trans _ _ ((r%:num/2  * `|t|)))  //.
-    rewrite -!normRcomplex. 
-    rewrite [r%:num/2]gt0_normc // -rmorphM /= lecR.
-    near: t; apply: nbhs_dnbhs; near_simpl.
-    by apply: H => //; rewrite -[Normc.normc _]/(`|_|) normr_gt0 //. 
-  rewrite mulrC ltr_pM2l //. 
-    by rewrite gtr_pMr // invf_lt1 // ?ltr1n //.
-  rewrite normr_gt0; near: t;  apply: nbhs_dnbhs_neq. 
-Unshelve. all: by end_near. 
-*)
-
-
-
-(* exact: linear_findim_continuous. *)
-(*Lemma thm_qui_manque (K : numFieldType) (V W : normedModType K) (f : V -> W) (c h v: V) (df : W): is_derive c v f df -> 
-  forall h, f ( c + h *: v) = f c + df +o_(v \near c) (v - c).
-Admitted.
-*)
-
 
 
 Lemma holo_CauchyRiemann (f : C -> C) c: holomorphic f c -> CauchyRiemannEq f c.
@@ -440,7 +353,3 @@ by exact: holo_CauchyRiemann.
 Qed.
 
 End Holomorphe_der.
-
-Search "scale" "C".
-Search "scale" "c".
-Check scalerc.

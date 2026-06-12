@@ -679,6 +679,15 @@ Module Import Exports. HB.reexport. End Exports.
 End Norm.
 Export Norm.Exports.
 
+
+Notation  "f %:Rfun" :=
+  (f : (Rcomplex _) -> (Rcomplex _))
+  (at level 5,  format "f %:Rfun")  : complex_scope.
+
+Notation  "v %:RC" :=   (v : (Rcomplex _))
+                          (at level 5, format "v %:RC")  : complex_scope.
+
+
 (* TODO: backport to real-closed *)
 Section complex_extras.
 Variable R : rcfType.
@@ -689,10 +698,11 @@ Import Normc.
 Import Num.Def.
 Import complex.
 
+(*TODO : rename scale regular and put there*)
 Lemma scalecE (w v: C^o) : v *: w = v * w.
 Proof. by []. Qed.
 
-Lemma scalerc (h : R) (c : C) : h%:C * c = h *: (c : Rcomplex R).
+Lemma scalerc (h : R) (c : C) : h *: (c : Rcomplex R) = h%:C * c.
 Proof.
 case : c => x y.
 by rewrite /(real_complex _) /(_ *: _) /( _ * _) /= /= /scalec !mul0r subr0 addr0.
@@ -779,35 +789,27 @@ rewrite sqr_sqrtr ?addr_ge0 ?sqr_ge0 ?real_normK //=.
 by rewrite lerDr ?sqr_ge0.
 Qed.
 
-End complex_extras.
-
-Notation  "f %:Rfun" :=
-  (f : (Rcomplex _) -> (Rcomplex _))
-  (at level 5,  format "f %:Rfun")  : complex_scope.
-
-Notation  "v %:Rc" :=   (v : (Rcomplex _))
-                          (at level 5, format "v %:Rc")  : complex_scope.
-
-Section algebraic_lemmas.
-Variable (R: rcfType).
-Notation C := R[i].
-Notation Rcomplex := (Rcomplex R).
-
-Import Normc.
-
-Lemma realCZ (a : R) (b : Rcomplex) : a%:C * b = a *: b.
-Proof. by case: b => x y; simpc. Qed.
-
-Lemma realC_alg (a : R) : a *: (1%:Rc) = a%:C.
+Lemma realC_alg (a : R) : a *: (1%:RC) = a%:C.
 Proof. by rewrite /GRing.scale/= mulr1 mulr0. Qed.
 
-Lemma scalecr (w: C) (r : R) : r *: (w: Rcomplex) = r%:C * w .
-Proof. by case w => a b; simpc. Qed.
-
-Lemma scalecV (h: R) (v: Rcomplex):
+Lemma scalecV (h: R) (v: Rcomplex R):
   h != 0 -> v != 0 -> (h *: v)^-1 = h^-1 *: v^-1. (* scaleCV *)
 Proof.
-by move=> h0 v0; rewrite scalecr invrM // ?unitfE ?eqCr // mulrC scalecr fmorphV.
+by move=> h0 v0; rewrite scalerc invrM // ?unitfE ?eqCr // mulrC  scalerc fmorphV.
 Qed.
 
-End algebraic_lemmas.
+
+(* TODO: clean lemmas about scalec *)
+Lemma scalerc_regular (h : R) (c : R[i]): h *: (c : Rcomplex R) = h%:C *: (c : C^o).
+Proof.
+by rewrite scalecE scalerc.
+Qed.
+
+Lemma scalec1 (h : R) : h *: (1 : C^o) = h%:C.
+Proof.
+by rewrite scalerc mulr1.
+Qed.
+
+
+End complex_extras.
+
