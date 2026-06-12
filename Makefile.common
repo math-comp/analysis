@@ -98,14 +98,16 @@ GIT_HASH := $(shell git describe --tags --exact-match 2>/dev/null || git rev-par
 
 $(DOCDIR)/dependency_graph.pre:
 	mkdir -p $(DOCDIR)
-	coqdep -f _CoqProject | perl etc/builddoc_dependency_dot.pl > $(DOCDIR)/dependency_graph.pre
+	$(COQDEP) -f _CoqProject | perl etc/builddoc_dependency_dot.pl > $(DOCDIR)/dependency_graph.pre
 
 $(DOCDIR)/dependency_graph.dot: $(DOCDIR)/dependency_graph.pre
 	tred $(DOCDIR)/dependency_graph.pre > $(DOCDIR)/dependency_graph.dot
 
-html: build $(DOCDIR)/dependency_graph.dot
+$(DOCDIR)/hierarchy_graph.dot:
 	etc/rocqnavi_generate-hierarchy-graph.sh $(DOCDIR)/hierarchy_graph.dot
-	find . -name "*.v" -or -name "*.glob" | grep -v "/\." | grep -v "_opam/" | xargs rocqnavi \
+
+html: build $(DOCDIR)/dependency_graph.dot $(DOCDIR)/hierarchy_graph.dot
+	find . -name "*.v" -or -name "*.glob" | grep -v "/\." | grep -v "_opam/" | xargs -P8 rocqnavi \
 	-title "Mathcomp Analysis $(GIT_HASH)" \
 	-d $(DOCDIR) -Q theories mathcomp.analysis \
 	-Q classical mathcomp.classical \
