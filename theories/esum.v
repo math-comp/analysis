@@ -493,7 +493,7 @@ Let ge0_esumZ c : 0 <= c -> (forall t, A t -> 0 <= f t) ->
 Proof.
 rewrite le_eqVlt => /predU1P[<- _|c0 f0].
   by rewrite mul0e esum1// => ? _; rewrite mul0e.
-rewrite ge0_esum; first by move=> x /f0 ax0; rewrite ?mule_ge0// ltW.
+rewrite [in LHS]ge0_esum; first by move=> x /f0 ax0; rewrite ?mule_ge0// ltW.
 by rewrite ge0_esum//; apply: PosEsum.pos_esumZ => //; exact: ltW.
 Qed.
 
@@ -521,7 +521,8 @@ Lemma esumD {R : realType} {T : choiceType} (I : set T) (f g : T -> \bar R) :
   (forall i, I i -> 0 <= f i) -> (forall i, I i -> 0 <= g i) ->
   \esum_(i in I) (f i + g i) = \esum_(i in I) f i + \esum_(i in I) g i.
 Proof.
-move=> f0 g0; rewrite ge0_esum//; first by move=> *; rewrite adde_ge0 ?f0 ?g0.
+move=> f0 g0; rewrite [in LHS]ge0_esum//.
+  by move=> *; rewrite adde_ge0 ?f0 ?g0.
 by do 2 rewrite ge0_esum//; exact: PosEsum.pos_esumD.
 Qed.
 
