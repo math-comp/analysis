@@ -153,8 +153,8 @@ Qed.
 
 Lemma scaleC1 (h : R) : h *: (1 : C^o) = h%:C.
 Proof.
-Admitted.
-
+by rewrite scaleCr scaler1.
+Qed.
 
 (* TODO : put the h at the left *)
 Definition holomorphic (f : C -> C) (c : C) :=
@@ -291,8 +291,56 @@ Proof.
 by move=> /is_derive_holo /[apply] ?; exact/holomorphicP.
 Qed.
 
-Lemma is_derive_Rdiff (f : C -> C) (c v : C):
-   holomorphic f c ->
+
+Lemma eqaddoPx {K : numDomainType} {T : Type} {V W : normedModType K}
+  (F : filter_on T) (f g : T -> V) (e : T -> W) :
+(forall x, f x = g x +o_(x \near F) e x)  <->
+ forall eps :  K,  0 < eps -> \near F, `|(f - g) F| <= eps * `|e F|.
+Proof.
+rewrite -eqaddoP; split=> [fE|->]; last exact/eqaddoEx.
+by apply/funext=> x; rewrite fctE.
+Qed.
+
+Lemma holo_differentiable (f : C -> C) (c v : C):
+   holomorphic f c -> Rdifferentiable f c.
+Proof.
+move => /holomorphicP/derivable1_diffP fdiff.
+rewrite /Rdifferentiable.
+pose df (v : Rc) : Rc := 'd (f : C^o -> C^o) (c : C^o) v.
+have lindf : linear df.
+  by move=> /= k x y; rewrite !scaleCr /df /= linearP.
+pose Df : {linear Rc -> Rc} := 
+HB.pack df (@GRing.isLinear.Build _ _ _ _ df lindf).
+apply: (exists_diff).  
+exists Df; first exact: linear_findim_continuous. 
+rewrite /Df /df /=.
+apply/eqaddoPx.
+move => r r0.
+near=> w.
+rewrite /Df /df /=.
+have /diff_locallyxP [_ ] := fdiff.
+move  => /(_ (w - c)). 
+rewrite !fctE subrK => ->.
+rewrite opprD.  
+rewrite (AC (3*2) ((1*4)*(2*5)*3)) /=.
+rewrite !subrr !add0r.
+near: w.
+case : littleo => /=.
+move => h heps.
+near=> w.
+rewrite -lecR.
+rewrite rmorphM /=.
+rewrite !normRcomplex.
+near: w.
+suff: \forall x \near c, `|h (x - c)| <= r%:C * `|x - c|.
+  exact.
+apply/nbhs0P.
+near do rewrite addrC addKr.
+apply: heps.
+by rewrite ltcR.
+Unshelve. all: end_near. Qed.
+
+Lemma is_derive_Rdiff  (f : C -> C) (c v : C):
     is_derive (c%:Rc) v (f%:Rfun) ('D_v (f : C^o -> C^o) c). 
 Proof.
 Admitted.
@@ -339,11 +387,11 @@ Unshelve. all: by end_near.
 
 
 (* exact: linear_findim_continuous. *)
-
-Lemma holo_differentiable (f : C -> C) (c v : C):
-   holomorphic f c -> Rdifferentiable f c.
-Proof.
+(*Lemma thm_qui_manque (K : numFieldType) (V W : normedModType K) (f : V -> W) (c h v: V) (df : W): is_derive c v f df -> 
+  forall h, f ( c + h *: v) = f c + df +o_(v \near c) (v - c).
 Admitted.
+*)
+
 
 
 Lemma holo_CauchyRiemann (f : C -> C) c: holomorphic f c -> CauchyRiemannEq f c.
@@ -391,5 +439,8 @@ split; first by exact: holo_differentiable.
 by exact: holo_CauchyRiemann.
 Qed.
 
-
 End Holomorphe_der.
+
+Search "scale" "C".
+Search "scale" "c".
+Check scalerc.
