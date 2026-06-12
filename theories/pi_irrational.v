@@ -395,7 +395,7 @@ End analytic_part.
 
 End pi_irrational.
 
-Lemma pi_irrationnal {R : realType} : ~ rational (pi : R).
+Lemma pi_irrational {R : realType} : ~ rational (pi : R).
 Proof.
 move/rationalP => [a [b]]; have [->|b0 piratE] := eqVneq b O.
   by rewrite invr0 mulr0; apply/eqP; rewrite gt_eqF// pi_gt0.
