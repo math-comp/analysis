@@ -263,33 +263,26 @@ by case=> /= [|J lt_lJ _]; [apply/summable_sup | exists J].
 Qed.
 End SumTh.
 
-(* -------------------------------------------------------------------- *)
-Section Esum.
-Context {R : realType} {T : choiceType}.
-
-Lemma esum_psum (S : T -> R) : (forall i, 0 <= S i) -> summable S ->
-  \esum_(x in [set: T]) (S x)%:E = (psum S)%:E.
+Lemma esum_psum {R : realType} {T : choiceType} (f : T -> R) :
+    (forall i, 0 <= f i) -> summable f ->
+  \esum_(x in [set: T]) (f x)%:E = (psum f)%:E.
 Proof.
-move => Sg0 h; apply/eqP; rewrite eq_le; apply/andP; split.
+move => f0 h; apply/eqP; rewrite eq_le; apply/andP; split.
 - rewrite ge0_esum; first by move=> t _; rewrite lee_fin.
   rewrite ge_ereal_sup//= => x [X [finX _]].
   rewrite fsumEFin // => <-.
   rewrite lee_fin fsbig_finite//=.
   move/finite_fsetP : finX => [J ->].
   rewrite set_fsetK (le_trans _ (gerfin_psum J h))//.
-  rewrite -(@big_fset_seq R _ _ T J S)//= (le_trans _ (ler_norm_sum _ _ _))//.
-  exact: ler_norm.
-- rewrite (@eq_esum _ _ _ _ (fun x => `| S x |%:E)).
+  by rewrite -big_fset_seq//= (le_trans _ (ler_norm_sum _ _ _))// ler_norm.
+- rewrite (eq_esum _ _ (fun x => `|f x|%:E)).
     by move => t _; rewrite ger0_norm.
   have [nonempty hasub] := summable_sup h.
   rewrite psum_absE// -ereal_sup_EFin// ge_ereal_sup//= => x [X [Fs ->] <-].
-  rewrite ge0_esum// PosEsum.pos_esum_ge//.
-  exists [set` Fs]%classic => //.
-  rewrite fsumEFin// lee_fin (big_fset_seq (fun x => `|S x|))//=.
+  rewrite esum_ge//;  exists [set` Fs]%classic => //.
+  rewrite fsumEFin// lee_fin (big_fset_seq (fun x => `|f x|))//=.
   by rewrite -{1}(set_fsetK Fs) -fsbig_finite.
 Qed.
-
-End Esum.
 
 (* -------------------------------------------------------------------- *)
 Lemma max_sup {R : realType} x (E : set R) :
@@ -644,15 +637,13 @@ Lemma esumEsum {T : choiceType} {R : realType} (f : T -> R) : summable f ->
   \esum_(x in [set: T]) (f x)%:E = (sum f)%:E.
 Proof.
 move=> hs; rewrite /esum.
-rewrite (PosEsum.eq_pos_esum _ (fun x => (f x)%:E)^\+%E (fun x => (f^\+ x)%:E)).
-  by move=> t _; rewrite funeposE -fine_max.
-rewrite (PosEsum.eq_pos_esum _ (fun x => (f x)%:E)^\-%E (fun x => (f^\- x)%:E)).
-  by move=> t _; rewrite funenegE EFin_max.
 rewrite EFinB; congr (_ - _)%E.
 - rewrite -esum_psum//; first exact: summable_funrpos.
-  by rewrite ge0_esum// => x _; rewrite lee_fin.
+  rewrite ge0_esum/=; first by move=> x _; rewrite lee_fin.
+  by apply: PosEsum.eq_pos_esum => x _; rewrite funerpos.
 - rewrite -esum_psum//; first exact: summable_funrneg.
-  by rewrite ge0_esum// => x _; rewrite lee_fin.
+  rewrite ge0_esum/=; first by move=> x _; rewrite lee_fin.
+  by apply: PosEsum.eq_pos_esum => x _; rewrite funerneg.
 Qed.
 
 (* -------------------------------------------------------------------- *)

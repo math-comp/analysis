@@ -232,7 +232,7 @@ Proof.
 move=> F0; have [->{x}|x0] := eqVneq x 0%E.
   by rewrite mul0e big1// => ? _; rewrite mul0e.
 rewrite big_seq ge0_sume_distrr.
- by  move=> t; case: finite_supportP => // X XP _ _ /XP/F0.
+  by move=> t; case: finite_supportP => // X XP _ _ /XP/F0.
 rewrite -big_seq; apply: eq_fbigl => y.
 rewrite !unlock; congr (_ \in fset_set _).
 apply/seteqP; rewrite /preimage; split=> [|] z/= [Pz Fz0];

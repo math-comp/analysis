@@ -184,7 +184,8 @@
   + with the contents of `charge.v` (deprecated)
 
 - in `esum.v`:
-  + `ge0_esum`
+  + lemma `ge0_esum`
+  + lemma `esum_ge`
 
 ### Changed
 
