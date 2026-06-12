@@ -603,7 +603,7 @@ Lemma connected_continuous_connected (T U : topologicalType)
   connected A -> {within A, continuous f} -> connected (f @` A).
 Proof.
 move=> cA cf; apply: contrapT => /connectedPn[E [E0 fAE sE]].
-set AfE := fun b =>(A `&` f @^-1` E b) : set (subspace A).
+set AfE := fun b => (A `&` f @^-1` E b) : set (subspace A).
 suff sAfE : separated (AfE false) (AfE true).
   move: cA; apply/connectedPn; exists AfE; split; last (rewrite /AfE; split).
   - move=> b; case: (E0 b) => /= u Ebu.

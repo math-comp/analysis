@@ -98,8 +98,6 @@ From mathcomp Require Import ereal topology normedtype sequences.
 (*                                   This is an HB alias.                     *)
 (*      f.-preimage.-measurable A == A is measurable for                      *)
 (*                                   g_sigma_algebra_preimage f               *)
-(*         image_set_system D f G == set system of the sets with a preimage   *)
-(*                                   by f in G                                *)
 (*    subset_sigma_subadditive mu == alternative predicate defining           *)
 (*                                   sigma-subadditivity                      *)
 (* ```                                                                        *)
@@ -1380,10 +1378,6 @@ Notation "f .-preimage" := (preimage_display f) : measure_display_scope.
 Notation "f .-preimage.-measurable" :=
   (measurable : set (set (g_sigma_algebra_preimageType f))) : classical_set_scope.
 
-Definition image_set_system (aT rT : Type) (D : set aT) (f : aT -> rT)
-    (G : set (set aT)) : set (set rT) :=
-  [set B : set rT | G (D `&` f @^-1` B)].
-
 Lemma sigma_algebra_image (aT rT : Type) (D : set aT) (f : aT -> rT)
     (G : set (set aT)) :
   sigma_algebra D G -> sigma_algebra setT (image_set_system D f G).
@@ -1423,17 +1417,6 @@ by move=> _ [B mB <-]; exact: sG'sfun.
 Qed.
 
 End measurability.
-#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `preimage_set_system`")]
-Notation preimage_class := preimage_set_system (only parsing).
-#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `image_set_system`")]
-Notation image_class := image_set_system (only parsing).
-#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `sigma_algebra_preimage`")]
-Notation sigma_algebra_preimage_class := sigma_algebra_preimage (only parsing).
-#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `sigma_algebra_image`")]
-Notation sigma_algebra_image_class := sigma_algebra_image (only parsing).
-
-#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `g_sigma_preimageE`")]
-Notation sigma_algebra_preimage_classE := g_sigma_preimageE (only parsing).
 
 (** This predicate is used also by `measure_function.v` *)
 Definition subset_sigma_subadditive {T} {R : numFieldType}
