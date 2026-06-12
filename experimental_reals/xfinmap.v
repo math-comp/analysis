@@ -4,7 +4,7 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 
 (* -------------------------------------------------------------------- *)
-From mathcomp Require Import all_ssreflect_compat all_algebra.
+From mathcomp Require Import all_ssreflect_compat algebra.
 From mathcomp Require Export finmap.
 
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)

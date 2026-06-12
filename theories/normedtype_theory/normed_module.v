@@ -186,7 +186,7 @@ Module numFieldNormedType.
 Section realType.
 Variable (R : realType).
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ := GRing.ComAlgebra.copy R R^o.
+HB.instance Definition _ := GRing.ComNzAlgebra.copy R R^o.
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ := Vector.copy R R^o.
 #[export, non_forgetful_inheritance]
@@ -196,7 +196,7 @@ End realType.
 Section rcfType.
 Variable (R : rcfType).
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ := GRing.ComAlgebra.copy R R^o.
+HB.instance Definition _ := GRing.ComNzAlgebra.copy R R^o.
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ := Vector.copy R R^o.
 #[export, non_forgetful_inheritance]
@@ -206,7 +206,7 @@ End rcfType.
 Section archiFieldType.
 Variable (R : archiRealFieldType).
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ := GRing.ComAlgebra.copy R R^o.
+HB.instance Definition _ := GRing.ComNzAlgebra.copy R R^o.
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ := Vector.copy R R^o.
 #[export, non_forgetful_inheritance]
@@ -216,7 +216,7 @@ End archiFieldType.
 Section realFieldType.
 Variable (R : realFieldType).
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ := GRing.ComAlgebra.copy R R^o.
+HB.instance Definition _ := GRing.ComNzAlgebra.copy R R^o.
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ := Vector.copy R R^o.
 #[export, non_forgetful_inheritance]
@@ -228,7 +228,7 @@ End realFieldType.
 Section numClosedFieldType.
 Variable (R : numClosedFieldType).
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ := GRing.ComAlgebra.copy R R^o.
+HB.instance Definition _ := GRing.ComNzAlgebra.copy R R^o.
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ := Vector.copy R R^o.
 #[export, non_forgetful_inheritance]
@@ -240,7 +240,7 @@ End numClosedFieldType.
 Section numFieldType.
 Variable (R : numFieldType).
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ := GRing.ComAlgebra.copy R R^o.
+HB.instance Definition _ := GRing.ComNzAlgebra.copy R R^o.
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ := Vector.copy R R^o.
 #[export, non_forgetful_inheritance]
@@ -2727,7 +2727,7 @@ have NC0 : continuous (N : max_space V -> R).
   by near: y; apply: cvgr_dist_le; [exact: cvg_id|exact: divr_gt0].
 have: compact [set x : max_space V | `|x| = 1].
   apply: (subclosed_compact _ (@sup_closed_ball_compact V)).
-  - apply: (@closed_comp _ _ _ [set 1 : R]); last exact: closed_eq.
+  - apply: (@preimage_closed _ _ _ [set 1 : R]); last exact: closed_eq.
     by move=> *; exact: norm_continuous.
   - by move => x/=; rewrite closed_ballE// /closed_ball_/= sub0r normrN => ->.
 move=> /(@continuous_compact _ _ (N : max_space V -> R)) -/(_ _)/wrap[].

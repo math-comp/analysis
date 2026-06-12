@@ -1,5 +1,5 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect_compat all_algebra.
+From mathcomp Require Import all_ssreflect_compat algebra.
 From mathcomp Require Import boolp classical_sets functions cardinality.
 From mathcomp Require Import reals topology normedtype sequences.
 From mathcomp Require Import measure lebesgue_measure measurable_realfun.

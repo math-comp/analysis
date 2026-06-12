@@ -106,7 +106,7 @@ HB.instance Definition _ := GRing.Zmodule_isNzRing.Build R
   RmultA Rmult_1_l Rmult_1_r Rmult_plus_distr_r Rmult_plus_distr_l R1_neq_0.
 
 #[hnf]
-HB.instance Definition _ := GRing.PzRing_hasCommutativeMul.Build R Rmult_comm.
+HB.instance Definition _ := GRing.SemiRing_hasCommutativeMul.Build R Rmult_comm.
 
 Import Monoid.
 

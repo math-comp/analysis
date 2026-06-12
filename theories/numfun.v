@@ -1146,10 +1146,10 @@ by rewrite ler_pdivrMr//= ler_pMr// ?subr_gt0// ler1n.
 Unshelve. all: by end_near. Qed.
 
 (* NB: should appear in MathComp 2.6.0 (PR #1586) *)
-Notation "[ 'SubZmodule_isSubPzRing' 'of' U 'by' <: ]" :=
-  (GRing.SubZmodule_isSubPzRing.Build _ _ U (subringClosedP _))
+(*Notation "[ 'SubZmodule_isSubPzRing' 'of' U 'by' <: ]" :=
+  (GRing.SubNmodule_isSubPzSemiRing.Build _ _ U (subringClosedP _))
   (format "[ 'SubZmodule_isSubPzRing'  'of'  U  'by'  <: ]")
-  : form_scope.
+  : form_scope.*)
 
 Section ring.
 Context (aT : Type) (rT : pzRingType).
@@ -1162,7 +1162,7 @@ Qed.
 
 HB.instance Definition _ :=
    @GRing.isMulClosed.Build _ (@fimfun aT rT) fimfun_mulr_closed.
-HB.instance Definition _ := [SubZmodule_isSubPzRing of {fimfun aT >-> rT} by <:].
+HB.instance Definition _ := [SubNmodule_isSubPzSemiRing of {fimfun aT >-> rT} by <:].
 
 Implicit Types f g : {fimfun aT >-> rT}.
 
