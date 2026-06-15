@@ -967,8 +967,8 @@ Lemma closure_interior_idem : @idempotent_fun (set T) (closure \o interior).
 Proof. move=> ?; exact/closure_open_regclosed/open_interior. Qed.
 
 End closure_interior_lemmas.
-(*#[deprecated(since="mathcomp-analysis 1.17.0", note="renamed to `closureC`")]
-Notation closure_setC := closureC (only parsing).*)
+#[deprecated(since="mathcomp-analysis 1.17.0", note="renamed to `closureC`")]
+Notation closure_setC := closureC (only parsing).
 
 Definition dense (T : topologicalType) (S : set T) :=
   forall (O : set T), O !=set0 -> open O -> O `&` S !=set0.
