@@ -894,8 +894,7 @@ exists U => //; apply/(subset_trans UX)/disjoints_subset; rewrite setIC.
 exact/eqP/negbNE/negP/set0P.
 Qed.
 
-(* TODO: rename to closureC after removing the deprecated one *)
-Lemma closure_setC A : closure (~` A) = ~` A°.
+Lemma closureC A : closure (~` A) = ~` A°.
 Proof. by apply: setC_inj; rewrite -interiorC !setCK. Qed.
 
 Lemma interiorS A B : A `<=` B -> A° `<=` B°.
@@ -926,18 +925,15 @@ Lemma closureU A B : closure (A `|` B) = closure A `|` closure B.
 Proof. by apply: setC_inj; rewrite setCU -!interiorC -interiorI setCU. Qed.
 
 Lemma interiorU A B : A° `|` B° `<=` (A `|` B)°.
-Proof.
-by apply: subsetC2; rewrite setCU -!closure_setC setCU; exact: closureI.
-Qed.
+Proof. by apply: subsetC2; rewrite setCU -!closureC setCU; exact: closureI. Qed.
 
 Lemma closureEbigcap A :
   closure A = \bigcap_(x in [set C | closed C /\ A `<=` C]) x.
 Proof. exact: closureE. Qed.
 
-Lemma interiorEbigcup A :
-  A° = \bigcup_(x in [set U | open U /\ U `<=` A]) x.
+Lemma interiorEbigcup A : A° = \bigcup_(x in [set U | open U /\ U `<=` A]) x.
 Proof.
-apply: setC_inj; rewrite -closure_setC closureEbigcap setC_bigcup.
+apply: setC_inj; rewrite -closureC closureEbigcap setC_bigcup.
 rewrite -[RHS](bigcap_image _ setC idfun) /=.
 apply: eq_bigcapl; split => X /=.
   by rewrite -openC -setCS setCK; exists (~` X)=> //; rewrite setCK.
@@ -961,8 +957,7 @@ Qed.
 Lemma closure_open_regclosed A : open A -> regclosed (closure A).
 Proof.
 rewrite /regclosed -(setCK A) openC => cCA.
-rewrite closure_setC -[in RHS]interior_closed_regopen//.
-by rewrite !(closure_setC, interiorC).
+by rewrite closureC -[in RHS]interior_closed_regopen// !(closureC, interiorC).
 Qed.
 
 Lemma interior_closure_idem : @idempotent_fun (set T) (interior \o closure).
@@ -972,12 +967,8 @@ Lemma closure_interior_idem : @idempotent_fun (set T) (closure \o interior).
 Proof. move=> ?; exact/closure_open_regclosed/open_interior. Qed.
 
 End closure_interior_lemmas.
-
-Lemma closureC_deprecated (T : topologicalType) (E : set T) :
-  ~` closure E = \bigcup_(x in [set U | open U /\ U `<=` ~` E]) x.
-Proof. by rewrite -interiorC interiorEbigcup. Qed.
-#[deprecated(since="mathcomp-analysis 1.7.0", note="use `interiorC` and `interiorEbigcup` instead")]
-Notation closureC := closureC_deprecated (only parsing).
+(*#[deprecated(since="mathcomp-analysis 1.17.0", note="renamed to `closureC`")]
+Notation closure_setC := closureC (only parsing).*)
 
 Definition dense (T : topologicalType) (S : set T) :=
   forall (O : set T), O !=set0 -> open O -> O `&` S !=set0.

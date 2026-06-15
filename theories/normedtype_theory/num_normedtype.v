@@ -707,9 +707,6 @@ Lemma near_in_itvNyo :
 Proof. exact: interval_open. Qed.
 
 End near_in_itv.
-#[deprecated(since="mathcomp-analysis 1.7.0",
-  note="use `near_in_itvoo` instead")]
-Notation near_in_itv := near_in_itvoo (only parsing).
 
 Lemma nbhs_infty_gtr {R : archiRealFieldType} (r : R) :
   \forall n \near \oo, r < n%:R.

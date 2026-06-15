@@ -1407,7 +1407,7 @@ HB.mixin Record isFinNumFun d (T : semiRingOfSetsType d) (R : numDomainType)
 Notation isFinite x1 x2 x3 x4 := (isFinNumFun x1 x2 x3 x4).
 
 Module isFinite.
-#[deprecated(since="mathcomp-analysis 1.117.0", use=isFinNumFun)]
+#[deprecated(since="mathcomp-analysis 1.17.0", use=isFinNumFun)]
 Notation Build x1 x2 x3 x4 := (isFinNumFun.Build x1 x2 x3 x4) (only parsing).
 End isFinite.
 

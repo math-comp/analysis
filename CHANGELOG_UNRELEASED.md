@@ -264,6 +264,9 @@
 - in `measure_function.v`:
   + `isFinite` -> `isFinNumFun`
 
+- in `topology_structure.v`:
+  + `closure_setC` -> `closureC`
+
 ### Generalized
 
 - in `measurable_structure.v`:
@@ -306,6 +309,26 @@
 - file `measurable_structure.v`:
   + notations `preimage_class`, `image_class`, `sigma_algebra_preimage_class`,
     `sigma_algebra_image_class`, `sigma_algebra_preimage_classE` (deprecated since 1.9.0)
+
+- in `ftc.v`:
+  + lemma `integrable_locally`
+
+- in `lebesgue_Rintegral.v`:
+  + notation `Rintegral_setU_EFin` (deprecated since 1.9.0)
+
+- in `topology_structure.v`:
+  + lemma `closureC_deprecated` (deprecated since 1.7.0)
+
+- in `num_normedtype.v`:
+  + notation `near_in_itv` (deprecated since 1.7.0)
+
+- in `measurable_fun_approximation.v`:
+  + lemma `approximation` (deprecated since 1.8.0)
+  + notations `emeasurable_fun_sum`, `emeasurable_fun_fsum`,
+    `ge0_emeasurable_fun_sum` (deprecated since 1.8.0)
+
+- in `random_variable.v`:
+  + notation `expectationM` (deprecated since 1.8.0)
 
 ### Infrastructure
 
