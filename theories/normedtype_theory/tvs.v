@@ -472,7 +472,7 @@ exists [set a | exists2 b, B b & \val @^-1` b = a].
   - by move: ra; rewrite -ba !inE.
   - by move: sa; rewrite -ba !inE.
 split => /=.
-  move=> a/= [b Bb <-]; rewrite /open/= /wopen/=; exists b => //.
+  move=> a/= [b Bb <-]; rewrite /open/= /initial_open/=; exists b => //.
   exact: openB.
 move=> x a [/= b [[/=c openc] cb bx ba]].
 rewrite /nbhs/= /filter_from/=.

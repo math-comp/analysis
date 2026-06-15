@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat all_algebra finmap.
+From mathcomp Require Import all_ssreflect_compat algebra finmap.
 From mathcomp Require Import generic_quotient.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
@@ -437,8 +437,8 @@ Proof. exact: nbhs_pfilter. Qed.
 
 End product_spaces.
 
-HB.instance Definition _ (U : Type) (T : U -> ptopologicalType) :=
-  Pointed.copy (forall x : U, T x) (prod_topology T).
+(*HB.instance Definition _ (U : Type) (T : U -> ptopologicalType) :=
+  Pointed.copy (forall x : U, T x) (prod_topology T).*)
 
 (**md the uniform topologies type *)
 Section fct_Uniform.

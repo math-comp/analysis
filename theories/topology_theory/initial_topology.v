@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat all_algebra all_classical.
+From mathcomp Require Import all_ssreflect_compat algebra all_classical.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import interval_inference reals topology_structure.
@@ -55,18 +55,18 @@ Section Initial_Topology.
 Variable (S : choiceType) (T : topologicalType) (f : S -> T).
 Local Notation W := (initial_topology f).
 
-Definition wopen := [set f @^-1` A | A in open].
+Definition initial_open := [set f @^-1` A | A in open].
 
-Local Lemma wopT : wopen [set: W].
-Proof. by exists setT => //; apply: openT. Qed.
+Let initial_opT : initial_open [set: W].
+Proof. by exists setT => //; exact: openT. Qed.
 
-Local Lemma wopI : setI_closed wopen.
+Let initial_opI : setI_closed initial_open.
 Proof.
 by move=> ? ? [C Cop <-] [D Dop <-]; exists (C `&` D) => //; exact: openI.
 Qed.
 
-Local Lemma wop_bigU (I : Type) (g : I -> set W) :
-  (forall i, wopen (g i)) -> wopen (\bigcup_i g i).
+Let initial_op_bigU (I : Type) (g : I -> set W) :
+  (forall i, initial_open (g i)) -> initial_open (\bigcup_i g i).
 Proof.
 move=> gop.
 set opi := fun i => [set Ui | open Ui /\ g i = f @^-1` Ui].
@@ -81,7 +81,7 @@ Qed.
 
 HB.instance Definition _ := Choice.on W.
 HB.instance Definition _ :=
-  isOpenTopological.Build W wopT wopI wop_bigU.
+  isOpenTopological.Build W initial_opT initial_opI initial_op_bigU.
 
 Lemma initial_continuous : continuous (f : W -> T).
 Proof. by apply/continuousP => A ?; exists A. Qed.
@@ -102,6 +102,8 @@ by apply: subset_trans sBfA; rewrite -fCeB; apply: preimage_image.
 Qed.
 
 End Initial_Topology.
+(*#[deprecated(since="mathcomp-analysis 1.17.0", note="renamed `initial_open`")]
+Notation wopen := initial_open (only parsing).*)
 
 HB.instance Definition _ (S : pointedType) (T : topologicalType) (f : S -> T) :=
   Pointed.on (initial_topology f).

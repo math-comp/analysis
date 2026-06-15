@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat all_algebra all_classical.
+From mathcomp Require Import all_ssreflect_compat algebra all_classical.
 From mathcomp Require Import topology_structure uniform_structure compact.
 From mathcomp Require Import pseudometric_structure connected initial_topology.
 From mathcomp Require Import product_topology.
@@ -603,7 +603,7 @@ Lemma connected_continuous_connected (T U : topologicalType)
   connected A -> {within A, continuous f} -> connected (f @` A).
 Proof.
 move=> cA cf; apply: contrapT => /connectedPn[E [E0 fAE sE]].
-set AfE := fun b =>(A `&` f @^-1` E b) : set (subspace A).
+set AfE := fun b => (A `&` f @^-1` E b) : set (subspace A).
 suff sAfE : separated (AfE false) (AfE true).
   move: cA; apply/connectedPn; exists AfE; split; last (rewrite /AfE; split).
   - move=> b; case: (E0 b) => /= u Ebu.

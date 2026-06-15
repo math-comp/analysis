@@ -2656,7 +2656,7 @@ Let mulrC : commutative (@GRing.mul (T -> M)).
 Proof. by move=> f g; rewrite funeqE => x; rewrite /GRing.mul/= mulrC. Qed.
 
 HB.instance Definition _ :=
-  GRing.PzRing_hasCommutativeMul.Build (T -> M) mulrC.
+  GRing.SemiRing_hasCommutativeMul.Build (T -> M) mulrC.
 
 End fct_comPzRingType.
 

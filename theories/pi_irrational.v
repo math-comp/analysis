@@ -1,5 +1,5 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect_compat all_algebra.
+From mathcomp Require Import all_ssreflect_compat algebra.
 From mathcomp Require Import interval_inference.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop.
@@ -395,7 +395,7 @@ End analytic_part.
 
 End pi_irrational.
 
-Lemma pi_irrationnal {R : realType} : ~ rational (pi : R).
+Lemma pi_irrational {R : realType} : ~ rational (pi : R).
 Proof.
 move/rationalP => [a [b]]; have [->|b0 piratE] := eqVneq b O.
   by rewrite invr0 mulr0; apply/eqP; rewrite gt_eqF// pi_gt0.

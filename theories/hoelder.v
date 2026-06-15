@@ -884,7 +884,7 @@ Proof. by move=> a/= f; rewrite !inE; exact: measurable_funM. Qed.
 HB.instance Definition _ := GRing.isScaleClosed.Build _ _ (@mfun _ _ T R)
   mfun_scaler_closed.
 
-HB.instance Definition _ := [SubZmodule_isSubLmodule of {mfun T >-> R} by <:].
+HB.instance Definition _ := [SubNmodule_isSubLSemiModule of {mfun T >-> R} by <:].
 
 End mfun_extra.
 
@@ -962,7 +962,7 @@ HB.instance Definition _ := GRing.isOppClosed.Build _ Lfun
   Lfun_oppr_closed.
 
 (* NB: not used directly by HB.instance *)
-Lemma Lfun_addr_closed : addr_closed Lfun.
+Lemma Lfun_addr_closed : Algebra.nmod_closed Lfun.
 Proof.
 split.
   by rewrite inE rpred0/= inE/=; exact: finite_norm_cst0.

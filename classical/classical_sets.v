@@ -108,6 +108,8 @@ From mathcomp Require Import mathcomp_extra boolp wochoice.
 (*               rectangle X Y := [set U `*` V | U in X & V in Y]             *)
 (*   preimage_set_system D f G == set system of the preimages by f of sets    *)
 (*                                in G                                        *)
+(*      image_set_system D f G == set system of the sets with a preimage      *)
+(*                                by f in G                                   *)
 (*               cross f g X Y := preimage_set_system setT f X                *)
 (*                                `|` preimage_set_system setT g Y            *)
 (*                     X `x` Y := cross fst snd X Y                           *)
@@ -1716,6 +1718,10 @@ Lemma preimage_set_systemS {T1 T2} (A B : set_system T2) (f : T1 -> T2) :
   A `<=` B ->
   preimage_set_system [set: _] f A `<=` preimage_set_system [set: _] f B.
 Proof. by move=> AB _ [C ? <-]; exists C => //; exact: AB. Qed.
+
+Definition image_set_system (aT rT : Type) (D : set aT) (f : aT -> rT)
+    (G : set (set aT)) : set (set rT) :=
+  [set B : set rT | G (D `&` f @^-1` B)].
 
 Section cross.
 Context {T T1 T2 : Type}.

@@ -303,6 +303,10 @@
 - in `measurable_structure.v`:
   + lemmas `measurable_prod_g_measurableType`, `measurable_prod_g_measurableTypeR`
 
+- file `measurable_structure.v`:
+  + notations `preimage_class`, `image_class`, `sigma_algebra_preimage_class`,
+    `sigma_algebra_image_class`, `sigma_algebra_preimage_classE` (deprecated since 1.9.0)
+
 ### Infrastructure
 
 ### Misc
