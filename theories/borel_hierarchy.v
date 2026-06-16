@@ -107,6 +107,10 @@ Qed.
 
 End borel_normedModType.
 
+#[non_forgetful_inheritance]
+HB.instance Definition _ (R : realType) (V : normedModType R) :=
+  Measurable.copy V (borel_type V).
+
 Lemma not_rational_Gdelta (R : realType) : ~ Gdelta (@rational R).
 Proof.
 apply/forall2NP => A; apply/not_andP => -[oA ratrA].
