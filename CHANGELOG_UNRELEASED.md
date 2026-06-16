@@ -307,6 +307,9 @@
   + definition `subset_sigma_subadditive`
 
 - moved from `measurable_structure.v` to `unstable.v`:
+  + notations `nondecreasing_seq`, `nonincreasing_seq`
+
+- moved from `measurable_structure.v` to `classical_sets.v`:
   + defintion `sequence`
   + defintion `seqDU`
   + lemmas `seqDU_bigcup_eq`, `trivIset_seqDU`
