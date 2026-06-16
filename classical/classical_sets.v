@@ -153,6 +153,8 @@ From mathcomp Require Import mathcomp_extra boolp wochoice.
 (*                                if there is one, to f0 x otherwise          *)
 (*                    F `#` G <-> intersections beween elements of F an G are *)
 (*                                all non empty                               *)
+(*                     seqDU F := sequence F_0, F_1\F_0, F_2\(F_0 U F_1),...  *)
+(*                      seqD F == the sequence F_0, F_1 \ F_0, F_2 \ F_1,...  *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## Pointed types                                                           *)
@@ -187,8 +189,6 @@ From mathcomp Require Import mathcomp_extra boolp wochoice.
 (*                                D : set I, form a partition of A            *)
 (*          pblock_index D F x == index i such that i \in D and x \in F i     *)
 (*                pblock D F x := F (pblock_index D F x)                      *)
-(*                     seqDU F := sequence F_0, F_1\F_0, F_2\(F_0 U F_1),...  *)
-(*                      seqD F == the sequence F_0, F_1 \ F_0, F_2 \ F_1,...  *)
 (*                                                                            *)
 (*   maximal_disjoint_subcollection F A B == A is a maximal (for inclusion)   *)
 (*                                   disjoint subcollection of the collection *)
@@ -2941,170 +2941,6 @@ End partitions.
 #[deprecated(note="Use trivIset_setIl instead")]
 Notation trivIset_setI := trivIset_setIl (only parsing).
 
-Fact set_display : Order.disp_t. Proof. by []. Qed.
-
-Module SetOrder.
-Module Internal.
-Section SetOrder.
-Context {T : Type}.
-Implicit Types A B : set T.
-
-Lemma le_def A B : `[< A `<=` B >] = (A `&` B == A).
-Proof. by apply/asboolP/eqP; rewrite setIidPl. Qed.
-
-Lemma lt_def A B : `[< A `<` B >] = (B != A) && `[< A `<=` B >].
-Proof.
-apply/idP/idP => [/asboolP|/andP[BA /asboolP AB]]; rewrite properEneq eq_sym;
-  by [move=> [] -> /asboolP|apply/asboolP].
-Qed.
-
-Lemma joinKI B A : A `&` (A `|` B) = A.
-Proof. by rewrite setUC setKU. Qed.
-
-Lemma meetKU B A : A `|` (A `&` B) = A.
-Proof. by rewrite setIC setKI. Qed.
-
-#[export]
-HB.instance Definition _ : Choice (set T) := Choice.copy _ (set T).
-
-#[export]
-HB.instance Definition _ :=
-  Order.isMeetJoinDistrLattice.Build set_display (set T)
-    le_def lt_def (@setIC _) (@setUC _) (@setIA _) (@setUA _)
-    joinKI meetKU (@setIUl _) setIid.
-
-Lemma SetOrder_sub0set A : (set0 <= A)%O.
-Proof. by apply/asboolP; exact: sub0set. Qed.
-
-Lemma SetOrder_setTsub A : (A <= setT)%O.
-Proof. exact/asboolP. Qed.
-
-#[export]
-HB.instance Definition _ := Order.hasBottom.Build set_display (set T)
-  SetOrder_sub0set.
-
-#[export]
-HB.instance Definition _ := Order.hasTop.Build set_display (set T)
-  SetOrder_setTsub.
-
-Lemma subKI A B : B `&` (A `\` B) = set0.
-Proof. by rewrite setDE setICA setICr setI0. Qed.
-
-Lemma joinIB A B : (A `&` B) `|` A `\` B = A.
-Proof. by rewrite setUC -setDDr setDv setD0. Qed.
-
-#[export]
-HB.instance Definition _ := Order.BDistrLattice_hasSectionalComplement.Build
-  set_display (set T) subKI joinIB.
-
-#[export]
-HB.instance Definition _ := Order.CBDistrLattice_hasComplement.Build
-  set_display (set T) (fun x => esym (setTD x)).
-
-End SetOrder.
-Module Exports. HB.reexport. End Exports.
-End Internal.
-
-Module Exports.
-
-Export Internal.Exports.
-
-Section exports.
-Context {T : Type}.
-Implicit Types A B : set T.
-
-Lemma subsetEset A B : (A <= B)%O = (A `<=` B) :> Prop.
-Proof. by rewrite asboolE. Qed.
-
-Lemma properEset A B : (A < B)%O = (A `<` B) :> Prop.
-Proof. by rewrite asboolE. Qed.
-
-Lemma subEset A B : (A `\` B)%O = (A `\` B). Proof. by []. Qed.
-
-Lemma complEset A : (~` A)%O = ~` A. Proof. by []. Qed.
-
-Lemma botEset : \bot%O = @set0 T. Proof. by []. Qed.
-
-Lemma topEset : \top%O = @setT T. Proof. by []. Qed.
-
-Lemma meetEset A B : (A `&` B)%O = (A `&` B). Proof. by []. Qed.
-
-Lemma joinEset A B : (A `|` B)%O = (A `|` B). Proof. by []. Qed.
-
-Lemma subsetPset A B : reflect (A `<=` B) (A <= B)%O.
-Proof. by apply: (iffP idP); rewrite subsetEset. Qed.
-
-Lemma properPset A B : reflect (A `<` B) (A < B)%O.
-Proof. by apply: (iffP idP); rewrite properEset. Qed.
-
-End exports.
-End Exports.
-End SetOrder.
-Export SetOrder.Exports.
-
-Section seqD.
-Variable T : Type.
-Implicit Types F : (set T)^nat.
-
-Lemma bigcup_bigsetU_bigcup F :
-  \bigcup_k \big[setU/set0]_(i < k.+1) F i = \bigcup_k F k.
-Proof.
-apply/seteqP; split=> [x [i _]|x [i _ Fix]].
-  by rewrite -bigcup_mkord => -[j _ Fjx]; exists j.
-by exists i => //; rewrite big_ord_recr/=; right.
-Qed.
-
-Definition seqDU F n := F n `\` \big[setU/set0]_(k < n) F k.
-
-Lemma trivIset_seqDU F : trivIset setT (seqDU F).
-Proof.
-move=> i j _ _; wlog ij : i j / (i < j)%N => [/(_ _ _ _) tB|].
-  by have [ij /tB->|ij|] := ltngtP i j; rewrite //setIC => /tB ->.
-move=> /set0P; apply: contraNeq => _; apply/eqP.
-rewrite /seqDU 2!setDE !setIA setIC (bigD1 (Ordinal ij)) //=.
-by rewrite setCU setIAC !setIA setICl !set0I.
-Qed.
-
-Definition seqD F := fun n => if n isn't n'.+1 then F O else F n `\` F n'.
-
-Lemma seqDU_seqD F : nondecreasing_seq F -> seqDU F = seqD F.
-Proof.
-move=> ndF; rewrite funeqE => -[|n] /=; first by rewrite /seqDU big_ord0 setD0.
-rewrite /seqDU big_ord_recr /= setUC; congr (_ `\` _); apply/setUidPl.
-by rewrite -bigcup_mkord => + [k /= kn]; exact/subsetPset/ndF/ltnW.
-Qed.
-
-Lemma trivIset_seqD F : nondecreasing_seq F -> trivIset setT (seqD F).
-Proof. by move=> ndF; rewrite -seqDU_seqD //; exact: trivIset_seqDU. Qed.
-
-Lemma eq_bigcup_seqD F : \bigcup_n seqD F n = \bigcup_n F n.
-Proof.
-apply/seteqP; split => [x []|x []].
-  by elim=> [_ /= F0x|n ih _ /= [Fn1x Fnx]]; [exists O | exists n.+1].
-elim=> [_ F0x|n ih _ Fn1x]; first by exists O.
-have [|Fnx] := pselect (F n x); last by exists n.+1.
-by move=> /(ih I)[m _ Fmx]; exists m.
-Qed.
-
-Lemma seqDU_bigcup_eq F : \bigcup_k F k = \bigcup_k seqDU F k.
-Proof.
-rewrite /seqDU predeqE => t; split=> [[n _ Fnt]|[n _]]; last first.
-  by rewrite setDE => -[? _]; exists n.
-have [UFnt|UFnt] := pselect ((\big[setU/set0]_(k < n) F k) t); last by exists n.
-suff [m [Fmt FNmt]] : exists m, F m t /\ forall k, (k < m)%N -> ~ F k t.
-  by exists m => //; split => //; rewrite -bigcup_mkord => -[k kj]; exact: FNmt.
-move: UFnt; rewrite -bigcup_mkord => -[/= k _ Fkt] {Fnt n}.
-have [n kn] := ubnP k; elim: n => // n ih in t k Fkt kn *.
-case: k => [|k] in Fkt kn *; first by exists O.
-have [?|] := pselect (forall m, (m <= k)%N -> ~ F m t); first by exists k.+1.
-move=> /existsNP[i] /not_implyP[ik] /contrapT Fit; apply: (ih t i) => //.
-by rewrite (leq_ltn_trans ik).
-Qed.
-
-End seqD.
-Arguments trivIset_seqDU {T} F.
-#[global] Hint Resolve trivIset_seqDU : core.
-
 Section Zorn.
 
 Definition total_on T (A : set T) (R : T -> T -> Prop) :=
@@ -3396,6 +3232,170 @@ Lemma meetsSl T (G F F' : set (set T)) :
 Proof. by move=> /sub_meets; apply. Qed.
 
 End meets.
+
+Fact set_display : Order.disp_t. Proof. by []. Qed.
+
+Module SetOrder.
+Module Internal.
+Section SetOrder.
+Context {T : Type}.
+Implicit Types A B : set T.
+
+Lemma le_def A B : `[< A `<=` B >] = (A `&` B == A).
+Proof. by apply/asboolP/eqP; rewrite setIidPl. Qed.
+
+Lemma lt_def A B : `[< A `<` B >] = (B != A) && `[< A `<=` B >].
+Proof.
+apply/idP/idP => [/asboolP|/andP[BA /asboolP AB]]; rewrite properEneq eq_sym;
+  by [move=> [] -> /asboolP|apply/asboolP].
+Qed.
+
+Lemma joinKI B A : A `&` (A `|` B) = A.
+Proof. by rewrite setUC setKU. Qed.
+
+Lemma meetKU B A : A `|` (A `&` B) = A.
+Proof. by rewrite setIC setKI. Qed.
+
+#[export]
+HB.instance Definition _ : Choice (set T) := Choice.copy _ (set T).
+
+#[export]
+HB.instance Definition _ :=
+  Order.isMeetJoinDistrLattice.Build set_display (set T)
+    le_def lt_def (@setIC _) (@setUC _) (@setIA _) (@setUA _)
+    joinKI meetKU (@setIUl _) setIid.
+
+Lemma SetOrder_sub0set A : (set0 <= A)%O.
+Proof. by apply/asboolP; exact: sub0set. Qed.
+
+Lemma SetOrder_setTsub A : (A <= setT)%O.
+Proof. exact/asboolP. Qed.
+
+#[export]
+HB.instance Definition _ := Order.hasBottom.Build set_display (set T)
+  SetOrder_sub0set.
+
+#[export]
+HB.instance Definition _ := Order.hasTop.Build set_display (set T)
+  SetOrder_setTsub.
+
+Lemma subKI A B : B `&` (A `\` B) = set0.
+Proof. by rewrite setDE setICA setICr setI0. Qed.
+
+Lemma joinIB A B : (A `&` B) `|` A `\` B = A.
+Proof. by rewrite setUC -setDDr setDv setD0. Qed.
+
+#[export]
+HB.instance Definition _ := Order.BDistrLattice_hasSectionalComplement.Build
+  set_display (set T) subKI joinIB.
+
+#[export]
+HB.instance Definition _ := Order.CBDistrLattice_hasComplement.Build
+  set_display (set T) (fun x => esym (setTD x)).
+
+End SetOrder.
+Module Exports. HB.reexport. End Exports.
+End Internal.
+
+Module Exports.
+
+Export Internal.Exports.
+
+Section exports.
+Context {T : Type}.
+Implicit Types A B : set T.
+
+Lemma subsetEset A B : (A <= B)%O = (A `<=` B) :> Prop.
+Proof. by rewrite asboolE. Qed.
+
+Lemma properEset A B : (A < B)%O = (A `<` B) :> Prop.
+Proof. by rewrite asboolE. Qed.
+
+Lemma subEset A B : (A `\` B)%O = (A `\` B). Proof. by []. Qed.
+
+Lemma complEset A : (~` A)%O = ~` A. Proof. by []. Qed.
+
+Lemma botEset : \bot%O = @set0 T. Proof. by []. Qed.
+
+Lemma topEset : \top%O = @setT T. Proof. by []. Qed.
+
+Lemma meetEset A B : (A `&` B)%O = (A `&` B). Proof. by []. Qed.
+
+Lemma joinEset A B : (A `|` B)%O = (A `|` B). Proof. by []. Qed.
+
+Lemma subsetPset A B : reflect (A `<=` B) (A <= B)%O.
+Proof. by apply: (iffP idP); rewrite subsetEset. Qed.
+
+Lemma properPset A B : reflect (A `<` B) (A < B)%O.
+Proof. by apply: (iffP idP); rewrite properEset. Qed.
+
+End exports.
+End Exports.
+End SetOrder.
+Export SetOrder.Exports.
+
+Section seqD.
+Variable T : Type.
+Implicit Types F : (set T)^nat.
+
+Lemma bigcup_bigsetU_bigcup F :
+  \bigcup_k \big[setU/set0]_(i < k.+1) F i = \bigcup_k F k.
+Proof.
+apply/seteqP; split=> [x [i _]|x [i _ Fix]].
+  by rewrite -bigcup_mkord => -[j _ Fjx]; exists j.
+by exists i => //; rewrite big_ord_recr/=; right.
+Qed.
+
+Definition seqDU F n := F n `\` \big[setU/set0]_(k < n) F k.
+
+Lemma trivIset_seqDU F : trivIset setT (seqDU F).
+Proof.
+move=> i j _ _; wlog ij : i j / (i < j)%N => [/(_ _ _ _) tB|].
+  by have [ij /tB->|ij|] := ltngtP i j; rewrite //setIC => /tB ->.
+move=> /set0P; apply: contraNeq => _; apply/eqP.
+rewrite /seqDU 2!setDE !setIA setIC (bigD1 (Ordinal ij)) //=.
+by rewrite setCU setIAC !setIA setICl !set0I.
+Qed.
+
+Definition seqD F := fun n => if n isn't n'.+1 then F O else F n `\` F n'.
+
+Lemma seqDU_seqD F : nondecreasing_seq F -> seqDU F = seqD F.
+Proof.
+move=> ndF; rewrite funeqE => -[|n] /=; first by rewrite /seqDU big_ord0 setD0.
+rewrite /seqDU big_ord_recr /= setUC; congr (_ `\` _); apply/setUidPl.
+by rewrite -bigcup_mkord => + [k /= kn]; exact/subsetPset/ndF/ltnW.
+Qed.
+
+Lemma trivIset_seqD F : nondecreasing_seq F -> trivIset setT (seqD F).
+Proof. by move=> ndF; rewrite -seqDU_seqD //; exact: trivIset_seqDU. Qed.
+
+Lemma eq_bigcup_seqD F : \bigcup_n seqD F n = \bigcup_n F n.
+Proof.
+apply/seteqP; split => [x []|x []].
+  by elim=> [_ /= F0x|n ih _ /= [Fn1x Fnx]]; [exists O | exists n.+1].
+elim=> [_ F0x|n ih _ Fn1x]; first by exists O.
+have [|Fnx] := pselect (F n x); last by exists n.+1.
+by move=> /(ih I)[m _ Fmx]; exists m.
+Qed.
+
+Lemma seqDU_bigcup_eq F : \bigcup_k F k = \bigcup_k seqDU F k.
+Proof.
+rewrite /seqDU predeqE => t; split=> [[n _ Fnt]|[n _]]; last first.
+  by rewrite setDE => -[? _]; exists n.
+have [UFnt|UFnt] := pselect ((\big[setU/set0]_(k < n) F k) t); last by exists n.
+suff [m [Fmt FNmt]] : exists m, F m t /\ forall k, (k < m)%N -> ~ F k t.
+  by exists m => //; split => //; rewrite -bigcup_mkord => -[k kj]; exact: FNmt.
+move: UFnt; rewrite -bigcup_mkord => -[/= k _ Fkt] {Fnt n}.
+have [n kn] := ubnP k; elim: n => // n ih in t k Fkt kn *.
+case: k => [|k] in Fkt kn *; first by exists O.
+have [?|] := pselect (forall m, (m <= k)%N -> ~ F m t); first by exists k.+1.
+move=> /existsNP[i] /not_implyP[ik] /contrapT Fit; apply: (ih t i) => //.
+by rewrite (leq_ltn_trans ik).
+Qed.
+
+End seqD.
+Arguments trivIset_seqDU {T} F.
+#[global] Hint Resolve trivIset_seqDU : core.
 
 Section product.
 Variables (T1 T2 : Type).
