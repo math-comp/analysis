@@ -1,4 +1,5 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat algebra.
 From mathcomp Require Import boolp classical_sets functions cardinality.
 From mathcomp Require Import reals topology normedtype sequences.
@@ -104,6 +105,10 @@ by apply: sub_sigma_algebra; exact: ball_open.
 Qed.
 
 End borel_normedModType.
+
+#[non_forgetful_inheritance]
+HB.instance Definition _ (R : realType) (V : normedModType R) :=
+  Measurable.copy V (borel_type V).
 
 Lemma not_rational_Gdelta (R : realType) : ~ Gdelta (@rational R).
 Proof.
