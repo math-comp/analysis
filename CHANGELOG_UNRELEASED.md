@@ -310,11 +310,12 @@
   + notations `nondecreasing_seq`, `nonincreasing_seq`
 
 - moved from `measurable_structure.v` to `classical_sets.v`:
+  + notation `^nat`
   + defintion `sequence`
   + defintion `seqDU`
   + lemmas `seqDU_bigcup_eq`, `trivIset_seqDU`
   + definition `seqD`
-  + lemmas `eq_bigcup_seqD`, `trivIset_seqD`, `seqDU_seqD`, ``bigcup_bigsetU_bigcup`
+  + lemmas `eq_bigcup_seqD`, `trivIset_seqD`, `seqDU_seqD`, `bigcup_bigsetU_bigcup`
 
 ### Renamed
 

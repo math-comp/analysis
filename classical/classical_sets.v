@@ -2333,6 +2333,14 @@ rewrite -(big_mkord xpredT F) -bigcup_seq.
 by apply: eq_bigcupl; split=> i; rewrite /= mem_index_iota leq0n.
 Qed.
 
+Lemma bigcup_bigsetU_bigcup F :
+  \bigcup_k \big[setU/set0]_(i < k.+1) F i = \bigcup_k F k.
+Proof.
+apply/seteqP; split=> [x [i _]|x [i _ Fix]].
+  by rewrite -bigcup_mkord => -[j _ Fjx]; exists j.
+by exists i => //; rewrite big_ord_recr/=; right.
+Qed.
+
 Lemma bigcup_mkord_ord n (G : 'I_n.+1 -> set T) :
   \bigcup_(i < n.+1) G (inord i) = \big[setU/set0]_(i < n.+1) G i.
 Proof.
@@ -3337,14 +3345,6 @@ Export SetOrder.Exports.
 Section seqD.
 Variable T : Type.
 Implicit Types F : (set T)^nat.
-
-Lemma bigcup_bigsetU_bigcup F :
-  \bigcup_k \big[setU/set0]_(i < k.+1) F i = \bigcup_k F k.
-Proof.
-apply/seteqP; split=> [x [i _]|x [i _ Fix]].
-  by rewrite -bigcup_mkord => -[j _ Fjx]; exists j.
-by exists i => //; rewrite big_ord_recr/=; right.
-Qed.
 
 Definition seqDU F n := F n `\` \big[setU/set0]_(k < n) F k.
 
