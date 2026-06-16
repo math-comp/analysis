@@ -559,8 +559,6 @@ by rewrite IHX//= => Xi XiX; rewrite intX// inE XiX orbT.
 Qed.
 
 End expectation_lemmas.
-#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to `expectationZl`")]
-Notation expectationM := expectationZl (only parsing).
 
 Section tail_expectation_formula.
 Local Open Scope ereal_scope.

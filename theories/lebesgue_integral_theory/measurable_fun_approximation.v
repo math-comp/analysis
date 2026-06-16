@@ -373,15 +373,6 @@ move=> m n mn; rewrite (nnsfun_approxE n) (nnsfun_approxE m).
 exact: nd_approx.
 Qed.
 
-#[deprecated(since="mathcomp-analysis 1.8.0", note="use `nnsfun_approx`, `cvg_nnsfun_approx`, and `nd_nnsfun_approx` instead")]
-Lemma approximation : (forall t, D t -> (0 <= f t)%E) ->
-  exists g : {nnsfun T >-> R}^nat, nondecreasing_seq (g : (T -> R)^nat) /\
-                        (forall x, D x -> EFin \o g^~ x @ \oo --> f x).
-Proof.
-exists nnsfun_approx; split; [exact: nd_nnsfun_approx|].
-by move=> x Dx; exact: cvg_nnsfun_approx.
-Qed.
-
 End approximation.
 
 Section approximation_sfun.
@@ -565,12 +556,6 @@ Lemma measurable_funeM D (f : T -> \bar R) (k : \bar R) :
 Proof. by move=> mf; exact/(emeasurable_funM _ mf). Qed.
 
 End emeasurable_fun_arith.
-#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to `emeasurable_sum`")]
-Notation emeasurable_fun_sum := emeasurable_sum (only parsing).
-#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to `emeasurable_fsum`")]
-Notation emeasurable_fun_fsum := emeasurable_fsum (only parsing).
-#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to `ge0_emeasurable_sum`")]
-Notation ge0_emeasurable_fun_sum := ge0_emeasurable_sum (only parsing).
 
 Section measurable_sum.
 Context d (T : measurableType d) (R : realType).

@@ -189,8 +189,6 @@ by rewrite /Rintegral integralB_EFin// fineB//; exact: integrable_fin_num.
 Qed.
 
 End Rintegral.
-#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `Rintegral_setU`")]
-Notation Rintegral_setU_EFin := Rintegral_setU (only parsing).
 #[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `le_normr_Rintegral`")]
 Notation le_normr_integral := le_normr_Rintegral (only parsing).
 
