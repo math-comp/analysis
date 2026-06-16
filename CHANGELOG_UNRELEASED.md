@@ -303,6 +303,16 @@
   + lemmas `real_cvgr_lt`, `real_cvgr_le`, `real_cvgr_le`, `real_cvgr_gt`
   + lemmas `cvgr_lt`, `cvgr_gt`, `cvgr_ge`, `cvgr_le`
 
+- moved from `measurable_structure.v` to `measure_function.v`:
+  + definition `subset_sigma_subadditive`
+
+- moved from `measurable_structure.v` to `unstable.v`:
+  + defintion `sequence`
+  + defintion `seqDU`
+  + lemmas `seqDU_bigcup_eq`, `trivIset_seqDU`
+  + definition `seqD`
+  + lemmas `eq_bigcup_seqD`, `trivIset_seqD`, `seqDU_seqD`, ``bigcup_bigsetU_bigcup`
+
 ### Renamed
 
 - in `tvs.v`:
