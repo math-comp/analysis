@@ -263,8 +263,7 @@ Corollary FTC1 f a :
   {ae mu, forall x, a < BRight x -> derivable F x 1 /\ F^`() x = f x}.
 Proof.
 move=> intf locf F; move: (locf) => /lebesgue_differentiation.
-apply: filterS; first exact: (ae_filter_ringOfSetsType mu).
-move=> i fi ai.
+apply: filterS => i fi ai.
 by apply: (@FTC1_lebesgue_pt _ _ _ (i + 1)%R) => //; rewrite ltrDl.
 Qed.
 
@@ -274,8 +273,7 @@ Corollary FTC1Ny f :
   let F x := (\int[mu]_(t in [set` `]-oo, x]]) (f t))%R in
   {ae mu, forall x, derivable F x 1 /\ F^`() x = f x}.
 Proof.
-move=> intf locf F; have := FTC1 intf locf.
-apply: filterS; first exact: (ae_filter_ringOfSetsType mu).
+move=> intf locf F; have := FTC1 intf locf; apply: filterS.
 by move=> r /=; apply; rewrite ltNyr.
 Qed.
 

@@ -1016,14 +1016,14 @@ have incl n : Ee `<=` B k `&` (HLf_g_Be n `|` f_g_Be n) by move=> ?; apply.
 near \oo => n.
 rewrite (@le_trans _ _ (mu (B k `&` (HLf_g_Be n `|` f_g_Be n))))//.
   rewrite le_measure// inE//; apply: measurableI; first exact: measurable_ball.
-  by apply: measurableU => //; [exact: mEHL|exact: mfge].
+  by apply: measurableU => //; exact: mfge.
 rewrite (@le_trans _ _ ((4 / (e / 2))%:E * n.+1%:R^-1%:E))//.
   rewrite (@le_trans _ _ (mu (HLf_g_Be n `|` f_g_Be n)))//.
     rewrite le_measure// inE//.
       apply: measurableI => //.
-      by apply: measurableU => //; [exact: mEHL|exact: mfge].
-    by apply: measurableU => //; [exact: mEHL|exact: mfge].
-  rewrite (le_trans (measureU2 _ _ _))//=; [exact: mEHL|exact: mfge|].
+      by apply: measurableU => //; exact: mfge.
+    by apply: measurableU => //; exact: mfge.
+  rewrite (le_trans (measureU2 _ _ _))//=.
   apply: le_trans; first by apply: leeD; [exact: HL_null|exact: fgn_null].
   rewrite -muleDl// lee_pmul2r// -EFinD lee_fin -{2}(mul1r (_^-1)%R).
   by rewrite -mulrDl natr1.
@@ -1109,7 +1109,7 @@ Lemma lebesgue_density (A : set R) : measurable A ->
                       @[r --> 0^'+] --> (\1_A x)%:E}.
 Proof.
 move=> mA; have := lebesgue_differentiation (locally_integrable_indic openT mA).
-apply: filter_app; first exact: (ae_filter_ringOfSetsType mu).
+apply: filter_app.
 apply: aeW => /= x Ax.
 apply: (sube_cvg0 _ _).1 => //.
 move: Ax; rewrite /lebesgue_pt /davg /= -/mu => Ax.

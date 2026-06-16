@@ -1088,7 +1088,7 @@ split=> [|f g|f g]; rewrite !inE/=.
 - exact: measurable_funM.
 Qed.
 HB.instance Definition _ := GRing.isSubringClosed.Build _
-  (@mfun d default_measure_display aT rT) mfun_subring_closed.
+  (@mfun d lebesgue_display aT rT) mfun_subring_closed.
 
 HB.instance Definition _ := [SubChoice_isSubComPzRing of {mfun aT >-> rT} by <:].
 
