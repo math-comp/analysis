@@ -566,26 +566,27 @@ rewrite [in LHS]littleo_center0 (comp_centerK x id).
 by rewrite -[- _ in RHS](comp_centerK x).
 Qed.
 
-Lemma shift_addo (V W: normedModType R) (f l : V -> W) x :
- (forall t, f (t) = f(x) + l(t - x) +o_(t \near x) (t - x))
-  <-> (forall h, f (h + x) = f(x) + l(h) +o_(h \near 0) h).
+Lemma shift_addo (V W : normedModType R) (f l : V -> W) x :
+ (forall t, f t = f x + l (t - x) +o_(t \near x) (t - x))
+  <-> (forall h, f (h + x) = f x + l h +o_(h \near 0) h).
 Proof.
 split=> [fE t|fE t].
-  rewrite fE addrK.
-  congr (_ + _).
-  
-  admit.
-Admitted.
+  rewrite fE addrK; congr (_ + _).
+  by rewrite littleo_center0/= addrK; congr the_littleo;
+    apply/funext => ?/=; rewrite addrK.
+rewrite -[in LHS](@subrK _ x t) fE; congr (_ + _).
+by rewrite [in RHS]littleo_center0/=; congr the_littleo;
+   apply/funext => ?/=; rewrite addrK.
+Qed.
 
-Lemma exists_diff (V W: normedModType R) (f : V -> W) x: 
- (exists2 l : {linear V -> W}, 
- continuous l & (forall t, f (t) = f(x) + l(t - x) +o_(t \near x) (t - x)))
- -> differentiable f x.
+Lemma exists_diff (V W : normedModType R) (f : V -> W) x :
+ (exists2 l : {linear V -> W},
+   continuous l & (forall t, f t = f x + l (t - x) +o_(t \near x) (t - x))) ->
+  differentiable f x.
 Proof.
-move => [l cl hl].
-have lem : 'd f x = l :> (V -> W).
-  by apply:(@diff_unique V W f l x cl); exact/funext/shift_addo.
-by apply/diffP => //=; split; rewrite lem => // t; rewrite norm_lim_id.
+move=> [l cl hl].
+have fxl : 'd f x = l :> (V -> W) by exact/(diff_unique cl)/funext/shift_addo.
+by apply/diffP => //=; split; rewrite fxl => // t; rewrite norm_lim_id.
 Qed.
 
 Lemma diff_cst (V W : normedModType R) a x : ('d (cst a) x : V -> W) = 0.
