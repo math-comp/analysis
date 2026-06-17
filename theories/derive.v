@@ -567,12 +567,14 @@ by rewrite -[- _ in RHS](comp_centerK x).
 Qed.
 
 Lemma shift_addo (V W: normedModType R) (f l : V -> W) x :
- (forall t, f (t) = f(x) + l(t - x) +o_(t \near x) (t - x))  
+ (forall t, f (t) = f(x) + l(t - x) +o_(t \near x) (t - x))
   <-> (forall h, f (h + x) = f(x) + l(h) +o_(h \near 0) h).
 Proof.
-split => fE t.
-  rewrite fE.
-rewrite addrK.
+split=> [fE t|fE t].
+  rewrite fE addrK.
+  congr (_ + _).
+  
+  admit.
 Admitted.
 
 Lemma exists_diff (V W: normedModType R) (f : V -> W) x: 
