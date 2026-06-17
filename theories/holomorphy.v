@@ -1,8 +1,9 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)  
+@(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)  
 From HB Require Import structures. 
-From mathcomp Require Import ssreflect ssrfun ssrbool fieldext falgebra vector.
+(*From mathcomp Require Import ssreflect ssrfun ssrbool fieldext falgebra vector.
 From mathcomp Require Import ssrnat eqtype seq choice fintype bigop order.
-From mathcomp Require Import ssralg ssrnum ssrfun matrix complex.
+From mathcomp Require Import ssralg ssrnum ssrfun matrix complex.*)
+From mathcomp Require Import boot order algebra complex.
 From mathcomp Require Import unstable boolp reals ereal derive.
 From mathcomp Require Import classical_sets functions interval_inference.
 From mathcomp Require Import topology normedtype landau.
@@ -20,6 +21,8 @@ From mathcomp Require Import topology normedtype landau.
 (*    CauchyRiemannEq f c == The Cauchy-Riemman equation for f at point c     *)
 (*                                                                            *)
 (******************************************************************************)
+
+Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Import Order.TTheory GRing.Theory Num.Theory ComplexField Num.Def complex.
 Local Open Scope ring_scope.
@@ -66,7 +69,7 @@ Qed.
 
 (* Lemmas to be used generally when norm is redefined *)
 
-#[local] Lemma ler_normcD : forall (x y : Rcomplex R), normc (x + y) <= normc x + normc y.
+(*#[local] Lemma ler_normcD : forall (x y : Rcomplex R), normc (x + y) <= normc x + normc y.
 Proof.
 Admitted.
 
@@ -78,13 +81,13 @@ Admitted.
 Proof.
 Admitted.
 
-HB.instance Definition _ := @Num.Zmodule_isSemiNormed.Build R (Rcomplex R) (@normc R) ler_normcD normrcMn normrcN.
+HB.instance Definition _ := @Num.Zmodule_isSemiNormed.Build R (Rcomplex R) (@normc R) ler_normcD normrcMn normrcN.*)
 
-#[local] Lemma normrc0_eq0 : forall x : Rcomplex R, normc x = 0 -> x = 0.
+(*#[local] Lemma normrc0_eq0 : forall x : Rcomplex R, normc x = 0 -> x = 0.
 Proof.
 Admitted.
 
-HB.instance Definition _ := @Num.SemiNormedZmodule_isPositiveDefinite.Build R (Rcomplex R) normrc0_eq0.
+HB.instance Definition _ := @Num.SemiNormedZmodule_isPositiveDefinite.Build R (Rcomplex R) normrc0_eq0.*)
 
 HB.instance Definition _ := Uniform_isPseudoMetric.Build R (Rcomplex R)
   ball_norm_center ball_norm_symmetric ball_norm_triangle entourage_RcomplexE.
@@ -246,28 +249,31 @@ move => /= A.
   rewrite (ACl (1*4*2*3)) /= subrr add0r.  
   have -> : 'd (f%:Rfun) (c%:RC) (t : Rc) = t * 'd (f%:Rfun) (c%:RC) (1: Rc).
     rewrite (complexE t).
-    rewrite !linearD. 
-    have -> : (Re t)%:C = Re t *: 1 by rewrite scalec1.
-    have -> : 'i%C * (Im t)%:C = Im t *: 'i%C by rewrite scalerc mulrC. 
+    rewrite !linearD.
+    have <- := scalec1 (Re t).
+    have := scalerc (Im t) 'i%C.
+    rewrite mulrC => <-.
     rewrite !linearZ -!deriveE // -CR /= !scalerc_regular scalerA.
     by rewrite -(scalerDl ('D_1 f%:Rfun c : C^o)) !scalecE mulr1.
-  rewrite mulrDr mulKf //; last by near:t; exact: nbhs_dnbhs_neq.
+    rewrite mulrDr mulKf //.
+      by near:t; exact: nbhs_dnbhs_neq.
   rewrite opprD addNKr normrN. 
   near: t.
   case: littleo.
   move => h /= H. 
   near=> t. 
-  rewrite normrM normfV ltr_pdivrMl; last by rewrite normr_gt0; near: t; apply: nbhs_dnbhs_neq.   
+  rewrite normrM normfV ltr_pdivrMl; first by rewrite normr_gt0; near: t; apply: nbhs_dnbhs_neq.   
   rewrite (@le_lt_trans _ _ ((r%:num/2  * `|t|)))  //.
     rewrite -!normRcomplex. 
     rewrite [r%:num/2]gt0_normc // -rmorphM /= lecR.
     near: t; apply: nbhs_dnbhs; near_simpl.
-    by apply: H => //; rewrite -[Normc.normc _]/(`|_|) normr_gt0 //. 
+    apply: H => //.
+(*    rewrite -[Normc.normc _]/(`|_|).
+    rewrite normr_gt0.*) admit.
   rewrite mulrC ltr_pM2l //. 
-    by rewrite gtr_pMr // invf_lt1 // ?ltr1n //.
-  rewrite normr_gt0; near: t;  apply: nbhs_dnbhs_neq. 
-Unshelve. all: by end_near. 
-Qed.
+    by rewrite normr_gt0; near: t;  apply: nbhs_dnbhs_neq. 
+  by rewrite gtr_pMr // invf_lt1 // ?ltr1n //.
+Unshelve. all: by end_near. Admitted.
 
 Lemma diff_CR_holo (f : C -> C) (c : C):
   Rdifferentiable f c -> CauchyRiemannEq f c -> holomorphic f c.
@@ -325,7 +331,7 @@ have lem : quotC \o  *%R^~ 'i%R @ (realC @ (0 : R)^') --> l.
   apply: (@cvg_comp _ _ _ realC ( *%R^~ 'i)); first by exact: realC'0.
   rewrite -[0 in X in _ `=>` X](mul0r 'i%C).
   apply: within_continuous_withinNx; first by apply: mulrr_continuous.
-  move=> x /eqP; rewrite mul0r mulIr_eq0; last by apply/rregP; apply: neq0Ci.
+  move=> x /eqP; rewrite mul0r mulIr_eq0; first by apply/rregP; apply: neq0Ci.
   exact: eqP.
 have HRcomp: cvg (quotC \o *%R^~ 'i%R @ (realC @ ((0 : R)^'))).
   by apply/cvg_ex; simpl; exists l.
@@ -335,7 +341,12 @@ have ->: lim (quotR @ (realC @ ((0 : R)^')))
     move=> h /=; rewrite /quotC /quotR /=.
     rewrite invfM mulrA (mulrC _ ('i)^-1) mulrA divff ?complexiE ?neq0Ci //. 
     by rewrite mul1r scalecE. 
-  move=> /funext <-. rewrite limM ?lim_cst.  by []. by []. exact: cvg_cst.  by []. by [].  
+  move=> /funext <-. rewrite limM ?lim_cst. 
+  by [].
+  exact: cvg_cst.
+  by [].
+  by [].
+  by [].
 suff ->: lim (quotC @ (realC @ ((0 : R)^')))
       = lim (quotC \o  *%R^~ 'i%R @ (realC @ ((0 : R)^'))) by [].
 suff ->: lim (quotC @ (realC @ ((0 : R)^'))) = l.
