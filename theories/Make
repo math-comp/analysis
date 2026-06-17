@@ -9,6 +9,8 @@
 # introduced in Rocq 9.3
 -arg -w -arg -rewrite-rw
 
+unstable_analysis.v
+
 ereal.v
 landau.v
 
@@ -118,3 +120,4 @@ pi_irrational.v
 gauss_integral.v
 all_analysis.v
 showcase/summability.v
+holomorphy.v

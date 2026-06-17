@@ -4,7 +4,7 @@ From HB Require Import structures.
 From mathcomp Require Import ssrnat eqtype seq choice fintype bigop order.
 From mathcomp Require Import ssralg ssrnum ssrfun matrix complex.*)
 From mathcomp Require Import boot order algebra complex.
-From mathcomp Require Import unstable boolp reals ereal derive.
+From mathcomp Require Import unstable_analysis boolp reals ereal derive.
 From mathcomp Require Import classical_sets functions interval_inference.
 From mathcomp Require Import topology normedtype landau.
 
