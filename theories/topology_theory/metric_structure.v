@@ -341,3 +341,60 @@ rewrite neq_lt => /orP[tp|pt].
 Unshelve. all: by end_near. Qed.
 
 End cvg_at_right_left_dnbhs.
+
+(* TODO: we need to have a way to force r in ball x r to be a realType, even for
+a normed space which is a lmodtype over (K : numDomain or numFieldtype) *)
+HB.factory Record Hausdorff_isMetric (R : realType) (M : Type) & PseudoMetric R M := {
+  absorbing : forall x y : M, exists e : {posnum R}, ball x e%:num y ;
+  hausdorff : hausdorff_space M
+}.
+
+HB.builders Context R M & Hausdorff_isMetric R M.
+
+From mathcomp Require Import compact constructive_ereal.
+
+Definition d (x y : M) := inf [set e : R | 0 < e /\ ball x e y].
+
+Let d_positivity x y : d x y = 0 -> x = y.
+Proof.
+rewrite /d => Bxy.
+have := hausdorff.
+apply.
+rewrite -closeEnbhs.
+rewrite ball_close => e.
+have : forall a, 0 < a -> exists2 b, ball x b y & b < a.
+  move=> a a0.
+  have : has_inf [set e : R | (0 < e) /\ ball x e y].
+    split.
+      have [e' xe'y/= ] := absorbing x y.
+      exists e'%:num => //=.
+    by exists 0 => z/= [/ltW].
+    move/inf_adherent => /(_ _ a0)[e' /= [e'0 xe'y]].
+  rewrite Bxy add0r => e'a.
+  by exists e'.
+move/(_ e%:num (gt0 e)) => [b + be].
+by apply: le_ball; exact: ltW.
+Qed.
+
+Let d_ge0 x y : 0 <= d x y.
+Proof.
+have [e' xe'y/= ] := absorbing x y. 
+rewrite /d /=; apply: lb_le_inf => /=; first by exists e'%:num => /=; split.
+by move => z [] * ; exact: ltW.
+Qed. 
+
+
+Let ballEd (x : M) delta : ball x delta = [set y | d x y < delta].
+Proof.
+apply/seteqP; split.
+  move=> /= z/= xdeltaz; rewrite /d/=.
+  (* NB: this works only if we know that ball are open *)
+  admit. 
+have H z : [set e | 0 < e /\ ball x e z] !=set0.
+  have [e' xe'y] := absorbing x z.
+  by  exists e'%:num => //=.
+move=> z/=; rewrite /d.
+move/inf_lt => /(_ (H z))[e/= [e0 xez]] edelta.
+apply: le_ball xez.
+exact: ltW.
+Admitted.
