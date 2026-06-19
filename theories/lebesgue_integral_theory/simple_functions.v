@@ -221,12 +221,10 @@ Section sfun_lmodType.
 Context d (aT : measurableType d) (R : realType).
 Import HBSimple.
 
-HB.instance Definition _ (V : normedModType R) := GRing.Lmodule.on (borel_type V).
-
 Lemma sfun_op (U V W : normedModType R)
-    (f : {sfun aT >-> borel_type U}) (g : {sfun aT >-> borel_type V})
+    (f : {sfun aT >-> U}) (g : {sfun aT >-> V})
     (h : U * V -> W) :
-  (fun x => h (f x, g x)) \in @sfun _ _ aT (borel_type W).
+  (fun x => h (f x, g x)) \in @sfun _ _ aT W.
 Proof.
 rewrite inE; apply/andP; split; rewrite inE/=.
   move=> _ Y mY; rewrite setTI.
@@ -252,17 +250,17 @@ by apply: finite_image; apply: finite_setX; exact: fimfunP.
 Qed.
 
 Lemma sfun_submod_closed (V : normedModType R) :
-  submod_closed (@sfun _ _ aT (borel_type V)).
+  submod_closed (@sfun _ _ aT V).
 Proof.
-split=> [|k f g sf sg]; first exact: (valP (cst_sfun (0 : borel_type V))).
+split=> [|k f g sf sg]; first exact: (valP (cst_sfun (0 : V))).
 exact: (sfun_op (sfun_Sub sf) (sfun_Sub sg) (fun t => k *: t.1 + t.2)).
 Qed.
 
 HB.instance Definition _ (V : normedModType R) :=
-  GRing.isSubmodClosed.Build _ _ (@sfun _ _ aT (borel_type V))
+  GRing.isSubmodClosed.Build _ _ (@sfun _ _ aT V)
     (sfun_submod_closed V).
 HB.instance Definition _ (V : normedModType R) :=
-  [SubChoice_isSubLmodule of {sfun aT >-> borel_type V} by <:].
+  [SubChoice_isSubLmodule of {sfun aT >-> V} by <:].
 
 End sfun_lmodType.
 
