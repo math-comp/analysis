@@ -496,6 +496,10 @@ HB.instance Definition _ := Nbhs_isTopological.Build T
 
 HB.end.
 
+Definition open_from (T : Type) (I : Type) (D : set I) (b : I -> set T)
+:= [set \bigcup_(i in D') b i | D' in subset^~ D].
+
+
 (** Topology defined by a base of open sets *)
 
 HB.factory Record isBaseTopological T & Choice T := {
@@ -509,7 +513,7 @@ HB.factory Record isBaseTopological T & Choice T := {
 
 HB.builders Context T & isBaseTopological T.
 
-Definition open_from := [set \bigcup_(i in D') b i | D' in subset^~ D].
+Local Notation open_from := (open_from D b).
 
 Let open_fromT : open_from setT.
 Proof. exists D => //; exact: b_cover. Qed.
