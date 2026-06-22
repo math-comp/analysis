@@ -341,3 +341,106 @@ rewrite neq_lt => /orP[tp|pt].
 Unshelve. all: by end_near. Qed.
 
 End cvg_at_right_left_dnbhs.
+
+Section at_left_rightR.
+Variable (R : numFieldType).
+
+(**md `cvgrPdistC_lt` is also defined in `pseudometric_normed_Zmodule.v` where it only needs `numDomainType` *)
+Let cvgrPdistC_lt {T} {F : set_system T} {FF : Filter F} (f : T -> R^o) (y : R) :
+  f @ F --> y <-> forall eps, 0 < eps -> \forall t \near F, mdist (f t) y < eps.
+Proof.
+rewrite metricType_numDomainType.cvgrPdist_lt.
+by under eq_forall do under eq_near do rewrite /mdist/= (@distrC _ R^o).
+Qed.
+
+(**md `cvgr_distC_lt` is also defined in `pseudometric_normed_Zmodule.v` where it only needs `numDomainType` *)
+Let cvgr_distC_lt {T} {F : set_system T} {FF : Filter F} (f : T -> R^o) (y : R) :
+  f @ F --> y -> forall eps, eps > 0 -> \forall t \near F, mdist (f t) y < eps.
+Proof. by move=> /cvgrPdistC_lt. Qed.
+
+Lemma real_cvgr_lt {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
+    y \is Num.real -> f @ F --> y ->
+  forall z, z > y -> \forall t \near F, f t \is Num.real -> f t < z.
+Proof.
+move=> yr Fy z zy; near=> x => fxr.
+rewrite -(ltrD2r (- y)) real_ltr_normlW// ?rpredB// distrC.
+by near: x; apply: cvgr_distC_lt => //; rewrite subr_gt0.
+Unshelve. all: by end_near. Qed.
+
+Lemma real_cvgr_le {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
+    y \is Num.real ->  f @ F --> y ->
+  forall z, z > y -> \forall t \near F, f t \is Num.real -> f t <= z.
+Proof.
+move=> /real_cvgr_lt/[apply] + ? z0 => /(_ _ z0).
+by apply: filterS => ? /[apply]/ltW.
+Qed.
+
+Lemma real_cvgr_gt {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
+    y \is Num.real -> f @ F --> y ->
+  forall z, y > z -> \forall t \near F, f t \is Num.real -> f t > z.
+Proof.
+move=> yr Fy z zy; near=> x => fxr.
+rewrite -ltrN2 -(ltrD2l y) real_ltr_normlW// ?rpredB// distrC.
+by near: x; apply: (@metricType_numDomainType.cvgr_dist_lt _ R^o) => //; rewrite subr_gt0.
+Unshelve. all: by end_near. Qed.
+
+Lemma real_cvgr_ge {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
+    y \is Num.real -> f @ F --> y ->
+  forall z, z < y -> \forall t \near F, f t \is Num.real -> f t >= z.
+Proof.
+move=> /real_cvgr_gt/[apply] + ? z0 => /(_ _ z0).
+by apply: filterS => ? /[apply]/ltW.
+Qed.
+
+End at_left_rightR.
+Arguments real_cvgr_le {R T F FF f}.
+Arguments real_cvgr_lt {R T F FF f}.
+Arguments real_cvgr_ge {R T F FF f}.
+Arguments real_cvgr_gt {R T F FF f}.
+
+Section squeeze_cvgr.
+Context {T : Type} {F : set_system T} {FF : Filter F} {R : realFieldType}.
+Implicit Types f g h : T -> R.
+
+Lemma cvgr_lt f (y : R) :
+  f @ F --> y -> forall z, z > y -> \forall t \near F, f t < z.
+Proof.
+move=> Fy z zy; near=> x; rewrite -(ltrD2r (- y)) ltr_normlW//.
+by near: x; apply: (@metricType_numDomainType.cvgr_dist_lt _ R^o) => //; rewrite subr_gt0.
+Unshelve. all: by end_near. Qed.
+
+Lemma cvgr_gt f (y : R) :
+  f @ F --> y -> forall z, y > z -> \forall t \near F, f t > z.
+Proof.
+move=> Fy z zy; near=> x; rewrite -ltrN2 -(ltrD2l y) ltr_normlW// distrC.
+by near: x; apply: (@metricType_numDomainType.cvgr_dist_lt _ R^o) => //; rewrite subr_gt0.
+Unshelve. all: by end_near. Qed.
+
+Lemma cvgr_le f (y : R) :
+  f @ F --> y -> forall z, z > y -> \forall t \near F, f t <= z.
+Proof.
+by move=> /cvgr_lt + ? z0 => /(_ _ z0); apply: filterS => ?; apply/ltW.
+Qed.
+
+Lemma cvgr_ge f (y : R) :
+  f @ F --> y -> forall z, z < y -> \forall t \near F, f t >= z.
+Proof.
+by move=> /cvgr_gt + ? z0 => /(_ _ z0); apply: filterS => ?; apply/ltW.
+Qed.
+
+Lemma squeeze_cvgr f h g : (\near F, f F <= g F <= h F) ->
+  forall (l : R), f @ F --> l -> h @ F --> l -> g @ F --> l.
+Proof.
+move=> fgh l lfa lga.
+apply/(@metricType_numDomainType.cvgrPdist_lt R R^o) => e e_gt0.
+near=> x; have /(_ _)/andP[//|fg gh] := near fgh x.
+rewrite ltr_distl (lt_le_trans _ fg) ?(le_lt_trans gh)//=.
+  by near: x; apply: (cvgr_gt lfa); rewrite // gtrDl oppr_lt0.
+by near: x; apply: (cvgr_lt lga); rewrite // ltrDl.
+Unshelve. all: end_near. Qed.
+
+End squeeze_cvgr.
+Arguments cvgr_lt {T F FF R f}.
+Arguments cvgr_gt {T F FF R f}.
+Arguments cvgr_le {T F FF R f}.
+Arguments cvgr_ge {T F FF R f}.

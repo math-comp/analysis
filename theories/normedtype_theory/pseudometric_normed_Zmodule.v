@@ -905,49 +905,6 @@ Arguments cvgr_norm_ley {R V I F FF}.
 Arguments cvgr_norm_gtNy {R V I F FF}.
 Arguments cvgr_norm_geNy {R V I F FF}.
 
-Section at_left_rightR.
-Variable (R : numFieldType).
-
-Lemma real_cvgr_lt {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
-    y \is Num.real -> f @ F --> y ->
-  forall z, z > y -> \forall t \near F, f t \is Num.real -> f t < z.
-Proof.
-move=> yr Fy z zy; near=> x => fxr.
-rewrite -(ltrD2r (- y)) real_ltr_normlW// ?rpredB//.
-by near: x; apply: (@cvgr_distC_lt R R^o) => //; rewrite subr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Lemma real_cvgr_le {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
-    y \is Num.real ->  f @ F --> y ->
-  forall z, z > y -> \forall t \near F, f t \is Num.real -> f t <= z.
-Proof.
-move=> /real_cvgr_lt/[apply] + ? z0 => /(_ _ z0).
-by apply: filterS => ? /[apply]/ltW.
-Qed.
-
-Lemma real_cvgr_gt {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
-    y \is Num.real -> f @ F --> y ->
-  forall z, y > z -> \forall t \near F, f t \is Num.real -> f t > z.
-Proof.
-move=> yr Fy z zy; near=> x => fxr.
-rewrite -ltrN2 -(ltrD2l y) real_ltr_normlW// ?rpredB//.
-by near: x; apply: (@cvgr_dist_lt _ R^o) => //; rewrite subr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Lemma real_cvgr_ge {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
-    y \is Num.real -> f @ F --> y ->
-  forall z, z < y -> \forall t \near F, f t \is Num.real -> f t >= z.
-Proof.
-move=> /real_cvgr_gt/[apply] + ? z0 => /(_ _ z0).
-by apply: filterS => ? /[apply]/ltW.
-Qed.
-
-End at_left_rightR.
-Arguments real_cvgr_le {R T F FF f}.
-Arguments real_cvgr_lt {R T F FF f}.
-Arguments real_cvgr_ge {R T F FF f}.
-Arguments real_cvgr_gt {R T F FF f}.
-
 Section realFieldType.
 Context (R : realFieldType).
 
@@ -958,37 +915,7 @@ rewrite (@nbhsr0P _ R^o) -propeqE; apply: eq_near => y /=.
 by rewrite -propeqE; apply: eq_forall => z; rewrite ler_distlC.
 Qed.
 
-Lemma cvgr_lt {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
-  f @ F --> y -> forall z, z > y -> \forall t \near F, f t < z.
-Proof.
-move=> Fy z zy; near=> x; rewrite -(ltrD2r (- y)) ltr_normlW//.
-by near: x; apply: (@cvgr_distC_lt _ R^o) => //; rewrite subr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgr_le {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
-  f @ F --> y -> forall z, z > y -> \forall t \near F, f t <= z.
-Proof.
-by move=> /cvgr_lt + ? z0 => /(_ _ z0); apply: filterS => ?; apply/ltW.
-Qed.
-
-Lemma cvgr_gt {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
-  f @ F --> y -> forall z, y > z -> \forall t \near F, f t > z.
-Proof.
-move=> Fy z zy; near=> x; rewrite -ltrN2 -(ltrD2l y) ltr_normlW//.
-by near: x; apply: (@cvgr_dist_lt _ R^o) => //; rewrite subr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgr_ge {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
-  f @ F --> y -> forall z, z < y -> \forall t \near F, f t >= z.
-Proof.
-by move=> /cvgr_gt + ? z0 => /(_ _ z0); apply: filterS => ?; apply/ltW.
-Qed.
-
 End realFieldType.
-Arguments cvgr_le {R T F FF f}.
-Arguments cvgr_lt {R T F FF f}.
-Arguments cvgr_ge {R T F FF f}.
-Arguments cvgr_gt {R T F FF f}.
 
 Module Export NbhsNorm.
 Definition nbhs_simpl := (nbhs_simpl,@nbhs_nbhs_norm,@filter_from_norm_nbhs).

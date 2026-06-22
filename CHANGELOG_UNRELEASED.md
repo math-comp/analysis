@@ -226,6 +226,13 @@
     `ae_eq_Radon_Nikodym_SigmaFinite`, `Radon_Nikodym_change_of_variables`,
     `Radon_Nikodym_cscale`, `Radon_Nikodym_cadd`, `Radon_Nikodym_chain_rule`
 
+- moved from `normed_module.v` to `metric_structure.v`
+  + lemma `squeeze_cvgr`
+
+- moved from `pseudometric_normed_Zmodule.v` to `metric_structure.v`
+  + lemmas `real_cvgr_lt`, `real_cvgr_le`, `real_cvgr_le`, `real_cvgr_gt`
+  + lemmas `cvgr_lt`, `cvgr_gt`, `cvgr_ge`, `cvgr_le`
+
 ### Renamed
 
 - in `tvs.v`:
