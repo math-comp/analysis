@@ -24,8 +24,9 @@ jobs:
         with:
           ocaml-compiler: 4.14
           opam-repositories: |
-            coq-released: https://coq.inria.fr/opam/released
             default: https://github.com/ocaml/opam-repository.git
+            rocq-released: https://rocq-prover.org/opam/released
+            rocq-extra-dev: https://rocq-prover.org/opam/extra-dev
 
       - name: Build Mathcomp Analysis
         run: opam install -y --deps-only . --with-doc && opam exec -- make -j 4
