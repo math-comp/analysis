@@ -38,6 +38,9 @@ digraph depend {
 		"theories/convex"	[URL="mathcomp.analysis.convex.html",
 			fillcolor=5,
 			label=convex];
+		"theories/functional_analysis/hahn_banach_theorem"	[URL="mathcomp.analysis.hahn_banach_theorem.html",
+			fillcolor=5,
+			label=hahn_banach_theorem];
 		"theories/realfun"	[URL="mathcomp.analysis.realfun.html",
 			fillcolor=5,
 			label=realfun];
@@ -503,6 +506,7 @@ digraph depend {
 	"theories/landau" -> "theories/sequences";
 	"theories/landau" -> "theories/derive";
 	"theories/normedtype_theory/normedtype" -> "theories/landau";
+	"theories/normedtype_theory/normedtype" -> "theories/functional_analysis/hahn_banach_theorem";
 	"theories/normedtype_theory/normedtype" -> "theories/showcase/summability";
 	"theories/topology_theory/bool_topology" -> "theories/topology_theory/topology";
 	"theories/topology_theory/compact" -> "theories/topology_theory/product_topology";

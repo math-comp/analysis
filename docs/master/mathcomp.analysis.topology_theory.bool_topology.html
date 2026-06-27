@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.topology_theory.bool_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 723425a" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 4eaa6fb" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -25,7 +25,13 @@
           <ul>
           <li><details id="mathcomp.analysis"><summary>analysis</summary>
           <ul>
-          <li><details id="mathcomp.analysis.homotopy_theory"><summary>homotopy_theory</summary>
+          <li><details id="mathcomp.analysis.functional_analysis"><summary>functional_analysis</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.functional_analysis.hahn_banach_theorem.html">hahn_banach_theorem</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.homotopy_theory"><summary>homotopy_theory</summary>
           <ul>
           <li><a href="mathcomp.analysis.homotopy_theory.continuous_path.html">continuous_path</a></li>
 <li><a href="mathcomp.analysis.homotopy_theory.homotopy.html">homotopy</a></li>
@@ -232,7 +238,7 @@
       </p>
       <h1 class="title">Module mathcomp.analysis.topology_theory.bool_topology</h1>
 <span class="vernacular">From</span><span class="id"> HB</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for HB.structures">structures</a></span>.<br/>
-<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_ssreflect_compat.html">all_ssreflect_compat</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.all_algebra.html">all_algebra</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_classical.html">all_classical</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_ssreflect_compat.html">all_ssreflect_compat</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebra.html">algebra</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_classical.html">all_classical</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html">reals</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html">topology_structure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.uniform_structure.html">uniform_structure</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html">pseudometric_structure</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html">order_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.compact.html">compact</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.discrete_topology.html">discrete_topology</a></span>.<br/>
@@ -244,7 +250,7 @@ This file equips bool with the discrete pseudometric.
 <br/>
 <span class="vernacular">Unset</span><span class="id"> SsrOldRewriteGoalsOrder</span>.  <br/>
 <br/>
-<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.TTheory">Order</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.TTheory">TTheory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory">Theory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.Theory">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.Theory">Theory</a></span>.<br/>
+<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.TTheory">Order</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order.TTheory">TTheory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.ssralg.html#GRing.Theory">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.ssralg.html#GRing.Theory">Theory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.Theory">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.Theory">Theory</a></span>.<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>

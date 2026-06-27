@@ -537,6 +537,16 @@ subgraph cluster_normedtype { "theories/normedtype_theory/normedtype"[label="nor
   "theories/normedtype_theory/tvs" -> "theories/normedtype_theory/normedtype";
   "theories/normedtype_theory/urysohn" -> "theories/normedtype_theory/normedtype";
   "theories/normedtype_theory/vitali_lemma" -> "theories/normedtype_theory/normedtype";
+subgraph cluster_analysis { "theories/functional_analysis/hahn_banach_theorem"[label="hahn_banach_theorem",URL="mathcomp.analysis.hahn_banach_theorem.html",fillcolor=5]}  "classical/boolp" -> "theories/functional_analysis/hahn_banach_theorem";
+  "classical/classical_sets" -> "theories/functional_analysis/hahn_banach_theorem";
+  "classical/contra" -> "theories/functional_analysis/hahn_banach_theorem";
+  "classical/filter" -> "theories/functional_analysis/hahn_banach_theorem";
+  "classical/mathcomp_extra" -> "theories/functional_analysis/hahn_banach_theorem";
+  "classical/unstable" -> "theories/functional_analysis/hahn_banach_theorem";
+  "reals/reals" -> "theories/functional_analysis/hahn_banach_theorem";
+  "theories/convex" -> "theories/functional_analysis/hahn_banach_theorem";
+  "theories/normedtype_theory/normedtype" -> "theories/functional_analysis/hahn_banach_theorem";
+  "theories/topology_theory/topology" -> "theories/functional_analysis/hahn_banach_theorem";
 subgraph cluster_analysis { "theories/sequences"[label="sequences",URL="mathcomp.analysis.sequences.html",fillcolor=5]}  "classical/all_ssreflect_compat" -> "theories/sequences";
   "classical/boolp" -> "theories/sequences";
   "classical/cardinality" -> "theories/sequences";

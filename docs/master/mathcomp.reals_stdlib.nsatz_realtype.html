@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.reals_stdlib.nsatz_realtype</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 723425a" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 4eaa6fb" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -25,7 +25,13 @@
           <ul>
           <li><details id="mathcomp.analysis"><summary>analysis</summary>
           <ul>
-          <li><details id="mathcomp.analysis.homotopy_theory"><summary>homotopy_theory</summary>
+          <li><details id="mathcomp.analysis.functional_analysis"><summary>functional_analysis</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.functional_analysis.hahn_banach_theorem.html">hahn_banach_theorem</a></li>
+          </ul>
+          </details>
+          </li>
+<li><details id="mathcomp.analysis.homotopy_theory"><summary>homotopy_theory</summary>
           <ul>
           <li><a href="mathcomp.analysis.homotopy_theory.continuous_path.html">continuous_path</a></li>
 <li><a href="mathcomp.analysis.homotopy_theory.homotopy.html">homotopy</a></li>
@@ -232,7 +238,7 @@
       </p>
       <h1 class="title">Module mathcomp.reals_stdlib.nsatz_realtype</h1>
 <span class="vernacular">From</span><span class="id"> Stdlib</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Nsatz.html">Nsatz</a></span>.<br/>
-<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_ssreflect_compat.html">all_ssreflect_compat</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html">ssralg</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html">ssrint</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.ssrnum.html">ssrnum</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.all_ssreflect_compat.html">all_ssreflect_compat</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.ssralg.html">ssralg</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html">ssrint</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.ssrnum.html">ssrnum</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Import</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html">boolp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html">reals</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html">constructive_ereal</a></span>.<br/>
 <br/>
 <div class="ssrdoc md">
@@ -247,7 +253,7 @@ Reference:
 
 </div>
 <br/>
-<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory">Theory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.ssrnum.html#Num.Theory">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.ssrnum.html#Num.Theory">Theory</a></span>.<br/>
+<span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.ssralg.html#GRing.Theory">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.ssralg.html#GRing.Theory">Theory</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.ssrnum.html#Num.Theory">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.ssrnum.html#Num.Theory">Theory</a></span>.<br/>
 <br/>
 <span class="vernacular">Unset</span><span class="id"> SsrOldRewriteGoalsOrder</span>.  <br/>
 <br/>
@@ -262,60 +268,33 @@ Reference:
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> constructor</span><span class="id"> =&gt;</span><span class="id"> [x</span><span class="id"> //|x</span><span class="id"> y</span><span class="id"> //|x</span><span class="id"> y</span><span class="id"> z</span><span class="id"> -&gt;]</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType0" class="id"><div name="Nsatz_realType0" class=" tooltip">Nsatz_realType0<span class='tooltip-area'><p>Nsatz_realType0 : forall T : realType, T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType0" class="id"><div name="Nsatz_realType0" class=" tooltip">Nsatz_realType0<span class='tooltip-area'><p>Rceil : forall [R : realType], R -> R
 
-Nsatz_realType0 is not universe polymorphic
-Arguments Nsatz_realType0 T
-Nsatz_realType0 is transparent
-Expands to: Constant mathcomp.reals_stdlib.nsatz_realtype.Nsatz_realType0
-Declared in
-library mathcomp.reals_stdlib.nsatz_realtype, line 29, characters 11-26
-</p></span></div></span><span class="id"> :=</span> (<span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType1" class="id"><div name="Nsatz_realType1" class=" tooltip">Nsatz_realType1<span class='tooltip-area'><p>Nsatz_realType1 : forall T : realType, T
+Rceil is not universe polymorphic
+Arguments Rceil [R] x%_ring_scope
+Rceil is transparent
+Expands to: Constant mathcomp.reals.reals.Rceil
+Declared in library mathcomp.reals.reals, line 247, characters 11-16
+</p></span></div></span><span class="id"> :=</span> (<span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>).<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType1" class="id"><div name="Nsatz_realType1" class=" tooltip">Nsatz_realType1<span class='tooltip-area'><p>rational : forall {R : realType}, set R
 
-Nsatz_realType1 is not universe polymorphic
-Arguments Nsatz_realType1 T
-Nsatz_realType1 is transparent
-Expands to: Constant mathcomp.reals_stdlib.nsatz_realtype.Nsatz_realType1
-Declared in
-library mathcomp.reals_stdlib.nsatz_realtype, line 30, characters 11-26
-</p></span></div></span><span class="id"> :=</span> (<span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_add" class="id"><div name="Nsatz_realType_add" class=" tooltip">Nsatz_realType_add<span class='tooltip-area'><p>Nsatz_realType_add : forall T : realType, T -> T -> T
+rational is not universe polymorphic
+Arguments rational {R} _
+rational is transparent
+Expands to: Constant mathcomp.reals.reals.rational
+Declared in library mathcomp.reals.reals, line 785, characters 11-19
+</p></span></div></span><span class="id"> :=</span> (<span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>).<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_add" class="id"><div name="Nsatz_realType_add" class=" tooltip">Nsatz_realType_add<span class='tooltip-area'><p>irrational : forall {R : realType}, set R
 
-Nsatz_realType_add is not universe polymorphic
-Arguments Nsatz_realType_add T (x y)%_ring_scope
-Nsatz_realType_add is transparent
-Expands to: Constant mathcomp.reals_stdlib.nsatz_realtype.Nsatz_realType_add
-Declared in
-library mathcomp.reals_stdlib.nsatz_realtype, line 31, characters 11-29
-</p></span></div></span> (<span id="x:3" class="id"><a name="x:3" class="">x</a></span><span class="id"> </span><span id="y:4" class="id"><a name="y:4" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:3">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:4">y</a></span>)<span class="id">%R</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_mul" class="id"><div name="Nsatz_realType_mul" class=" tooltip">Nsatz_realType_mul<span class='tooltip-area'><p>Nsatz_realType_mul : forall T : realType, T -> T -> T
-
-Nsatz_realType_mul is not universe polymorphic
-Arguments Nsatz_realType_mul T (x y)%_ring_scope
-Nsatz_realType_mul is transparent
-Expands to: Constant mathcomp.reals_stdlib.nsatz_realtype.Nsatz_realType_mul
-Declared in
-library mathcomp.reals_stdlib.nsatz_realtype, line 32, characters 11-29
-</p></span></div></span> (<span id="x:5" class="id"><a name="x:5" class="">x</a></span><span class="id"> </span><span id="y:6" class="id"><a name="y:6" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:5">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:6">y</a></span>)<span class="id">%R</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_sub" class="id"><div name="Nsatz_realType_sub" class=" tooltip">Nsatz_realType_sub<span class='tooltip-area'><p>Nsatz_realType_sub : forall T : realType, T -> T -> T
-
-Nsatz_realType_sub is not universe polymorphic
-Arguments Nsatz_realType_sub T (x y)%_ring_scope
-Nsatz_realType_sub is transparent
-Expands to: Constant mathcomp.reals_stdlib.nsatz_realtype.Nsatz_realType_sub
-Declared in
-library mathcomp.reals_stdlib.nsatz_realtype, line 33, characters 11-29
-</p></span></div></span> (<span id="x:7" class="id"><a name="x:7" class="">x</a></span><span class="id"> </span><span id="y:8" class="id"><a name="y:8" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:7">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:8">y</a></span>)<span class="id">%R</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_opp" class="id"><div name="Nsatz_realType_opp" class=" tooltip">Nsatz_realType_opp<span class='tooltip-area'><p>Nsatz_realType_opp : forall T : realType, T -> T
-
-Nsatz_realType_opp is not universe polymorphic
-Arguments Nsatz_realType_opp T x%_ring_scope
-Nsatz_realType_opp is transparent
-Expands to: Constant mathcomp.reals_stdlib.nsatz_realtype.Nsatz_realType_opp
-Declared in
-library mathcomp.reals_stdlib.nsatz_realtype, line 34, characters 11-29
-</p></span></div></span> (<span id="x:9" class="id"><a name="x:9" class="">x</a></span> <span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#::ring_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:9">x</a></span>)<span class="id">%R</span>.<br/>
+irrational is not universe polymorphic
+Arguments irrational {R} _
+irrational is transparent
+Expands to: Constant mathcomp.reals.reals.irrational
+Declared in library mathcomp.reals.reals, line 796, characters 11-21
+</p></span></div></span> (<span id="x:3" class="id"><a name="x:3" class="">x</a></span><span class="id"> </span><span id="y:4" class="id"><a name="y:4" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:3">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:4">y</a></span>)<span class="id">%R</span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_mul" class="id"><div name="Nsatz_realType_mul" class=" tooltip">Nsatz_realType_mul<span class='tooltip-area'></span></div></span> (<span id="x:5" class="id"><a name="x:5" class="">x</a></span><span class="id"> </span><span id="y:6" class="id"><a name="y:6" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:5">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:6">y</a></span>)<span class="id">%R</span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_sub" class="id"><div name="Nsatz_realType_sub" class=" tooltip">Nsatz_realType_sub<span class='tooltip-area'></span></div></span> (<span id="x:7" class="id"><a name="x:7" class="">x</a></span><span class="id"> </span><span id="y:8" class="id"><a name="y:8" class="">y</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:7">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:8">y</a></span>)<span class="id">%R</span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_opp" class="id"><div name="Nsatz_realType_opp" class=" tooltip">Nsatz_realType_opp<span class='tooltip-area'></span></div></span> (<span id="x:9" class="id"><a name="x:9" class="">x</a></span> <span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:9">x</a></span>)<span class="id">%R</span>.<br/>
 <br/>
 <span class="id">#[global]</span><br/>
 <span class="vernacular">Instance</span><span class="id"> </span><span id="Nsatz_realType_Ring_ops" class="id"><a name="Nsatz_realType_Ring_ops" class="">Nsatz_realType_Ring_ops</a></span><span class="id">:</span><br/>
@@ -340,15 +319,15 @@ Defined.</div></details>
 <span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> y</span><span class="id"> -&gt;</span><span class="id"> x1</span><span class="id"> y1</span><span class="id"> -&gt;</span>.<br/>
 <span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> y</span><span class="id"> -&gt;</span><span class="id"> x1</span><span class="id"> y1</span><span class="id"> -&gt;</span>.<br/>
 <span class="id">-</span><span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> y</span><span class="id"> -&gt;</span>.<br/>
-<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.add0r">add0r</a></span>.<br/>
-<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.addrC">addrC</a></span>.<br/>
-<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.addrA">addrA</a></span>.<br/>
-<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.mul1r">mul1r</a></span>.<br/>
-<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulr1">mulr1</a></span>.<br/>
-<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulrA">mulrA</a></span>.<br/>
-<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulrDl">mulrDl</a></span>.<br/>
-<span class="id">-</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> y</span><span class="id"> z;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulrDr">mulrDr</a></span>.<br/>
-<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.subrr">subrr</a></span>.<br/>
+<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Theory.add0r">add0r</a></span>.<br/>
+<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Theory.addrC">addrC</a></span>.<br/>
+<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Theory.addrA">addrA</a></span>.<br/>
+<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Theory.mul1r">mul1r</a></span>.<br/>
+<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Theory.mulr1">mulr1</a></span>.<br/>
+<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Theory.mulrA">mulrA</a></span>.<br/>
+<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Theory.mulrDl">mulrDl</a></span>.<br/>
+<span class="id">-</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> y</span><span class="id"> z;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Theory.mulrDr">mulrDr</a></span>.<br/>
+<span class="id">-</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Theory.subrr">subrr</a></span>.<br/>
 Defined.</div></details>
 <br/>
 <span class="id">#[global]</span><br/>
@@ -356,7 +335,7 @@ Defined.</div></details>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
-<span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulrC">mulrC</a></span>. Defined.</div></details>
+<span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Theory.mulrC">mulrC</a></span>. Defined.</div></details>
 <br/>
 <span class="id">#[global]</span><br/>
 <span class="vernacular">Instance</span><span class="id"> </span><span id="Nsatz_realType_Integral_domain" class="id"><a name="Nsatz_realType_Integral_domain" class="">Nsatz_realType_Integral_domain</a></span><span class="id"> :</span><br/>
@@ -366,10 +345,10 @@ Defined.</div></details>
 <div class="proofscript">
 <span class="id">constructor</span>.<br/>
 &nbsp;&nbsp;<span class="id">move=&gt;</span><span class="id"> x</span><span class="id"> y</span>.<br/>
-&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> -[_</span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.setoid_ring.Algebra_syntax.html#zero">Algebra_syntax</a></span>.<span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.setoid_ring.Algebra_syntax.html#zero">zero</a></span><span class="id">]/</span>(<span class="id">x</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id">y</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span>)<span class="id">%R</span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span>.<br/>
-&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssralg.html#GRing.Theory.mulf_eq0">mulf_eq0</a></span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#orP">orP</a></span><span class="id">[]</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span><span class="id">-&gt;;</span><span class="id"> [left</span><span class="id"> |</span><span class="id"> right]</span>.<br/>
+&nbsp;&nbsp;<span class="id">rewrite</span><span class="id"> -[_</span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.setoid_ring.Algebra_syntax.html#zero">Algebra_syntax</a></span>.<span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.setoid_ring.Algebra_syntax.html#zero">zero</a></span><span class="id">]/</span>(<span class="id">x</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id">y</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span>)<span class="id">%R</span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.divalg.html#GRing.Theory.mulf_eq0">mulf_eq0</a></span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#orP">orP</a></span><span class="id">[]</span><span class="id"> /</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span><span class="id">-&gt;;</span><span class="id"> [left</span><span class="id"> |</span><span class="id"> right]</span>.<br/>
 <span class="id">rewrite</span><span class="id"> -[_</span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.setoid_ring.Algebra_syntax.html#zero">Algebra_syntax</a></span>.<span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.setoid_ring.Algebra_syntax.html#zero">zero</a></span><span class="id">]/</span>(<span class="id">1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span>)<span class="id">%R;</span><span class="id"> apply/</span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#eqP">eqP</a></span>.<br/>
-<span class="gallina-kwd">by</span><span class="id"> rewrite</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.num_theory.numdomain.html#Num.Theory.eqr_nat">eqr_nat</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span><span class="id"> 1</span><span class="id"> 0</span>).<br/>
+<span class="gallina-kwd">by</span><span class="id"> rewrite</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#Num.Theory.eqr_nat">eqr_nat</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span><span class="id"> 1</span><span class="id"> 0</span>).<br/>
 Defined.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> Nsatz_realType</span>.<br/>
