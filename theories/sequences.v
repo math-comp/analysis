@@ -120,7 +120,6 @@ Import numFieldNormedType.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Reserved Notation "R ^nat".
 Reserved Notation "a `^ x" (at level 11).
 Reserved Notation "[ 'sequence' E ]_ n"
   (at level 0, n name, format "[ 'sequence'  E ]_ n").

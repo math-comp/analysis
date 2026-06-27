@@ -242,6 +242,7 @@ Unset Printing Implicit Defensive.
 
 Declare Scope classical_set_scope.
 
+Reserved Notation "R ^nat".
 Reserved Notation "[ 'set' x : T | P ]" (only parsing).
 Reserved Notation "[ 'set' x | P ]" (format "[ 'set'  x  |  P ]").
 Reserved Notation "[ 'set' E | x 'in' A ]"
