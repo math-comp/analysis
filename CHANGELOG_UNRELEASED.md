@@ -208,6 +208,14 @@
 - in `realsum.v`:
   + lemma `__admitted__psumB` proved and renamed to `psumB`
 
+- in `realsum.v`:
+  + lemmas `interchange_sup`, `interchange_psum` are no longer
+    deprecated
+- in `distr.v`:
+  + lemmas `dlet_dlet`, `dmargin_dlet`, `dlet_dmargin`, `dfst_dswap`,
+    `dsnd_dswap`, `dsndE`, `pr_dlet` are no longer deprecated
+
+
 ### Changed
 
 - moved from `measurable_structure.v` to `classical_sets.v`:
