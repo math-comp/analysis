@@ -1307,16 +1307,6 @@ Section FilterRealType.
 Context {T : Type} {a : set_system T} {Fa : Filter a} {R : realFieldType}.
 Implicit Types f g h : T -> R.
 
-Lemma squeeze_cvgr f h g : (\near a, f a <= g a <= h a) ->
-  forall (l : R), f @ a --> l -> h @ a --> l -> g @ a --> l.
-Proof.
-move=> fgh l lfa lga; apply/cvgrPdist_lt => e e_gt0.
-near=> x; have /(_ _)/andP[//|fg gh] := near fgh x.
-rewrite distrC ltr_distl (lt_le_trans _ fg) ?(le_lt_trans gh)//=.
-  by near: x; apply: (cvgr_gt l); rewrite // gtrDl oppr_lt0.
-by near: x; apply: (cvgr_lt l); rewrite // ltrDl.
-Unshelve. all: end_near. Qed.
-
 Lemma ger_cvgy f g : (\near a, f a <= g a) ->
   f @ a --> +oo -> g @ a --> +oo.
 Proof.
