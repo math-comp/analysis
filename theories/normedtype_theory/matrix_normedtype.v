@@ -286,7 +286,8 @@ Proof.
 rewrite /Num.norm/= !mx_normrE.
 rewrite -!(pair_bigA_idem _ (fun i j => `|_ i j|))/= ?maxxx//.
 rewrite -big_split_idem/= ?maxxx//; apply: eq_bigr => i _.
-rewrite big_split_ord_idem/= ?maxxx//=.
+rewrite big_split_ord_idem/= ?maxxx//.
+   by move=> a; rewrite maxC.
 by congr maxr; apply: eq_bigr => j _; [rewrite row_mxEl|rewrite row_mxEr].
 Qed.
 
@@ -297,3 +298,15 @@ Lemma norm_row_mx0l N : `|row_mx (0 : 'M_(m, n1)) N| = `|N|.
 Proof. by rewrite norm_row_mx normr0; exact/max_idPr. Qed.
 
 End norm_row_mx.
+
+Lemma cvg_row_mx {T : realFieldType} {F : set_system T} {n1 n2 : nat}
+    (G : 'rV[T]_n1) (H : 'rV[T]_n2) : Filter F ->
+  forall (f : T -> 'rV[T]_n1) (g : T -> 'rV[T]_n2),
+  f x @[x --> F] --> G -> g x @[x --> F] --> H ->
+  row_mx (f x) (g x) @[x --> F] --> row_mx G H.
+Proof.
+move=> FF M N cvgM cvgN; apply/cvgrPdist_le => /= e e0; near=> t.
+rewrite sub_row_mx norm_row_mx ge_max; apply/andP; split.
+- by near: t; move/cvgrPdist_le : cvgM => /(_ _ e0).
+- by near: t; move/cvgrPdist_le : cvgN => /(_ _ e0).
+Unshelve. all: by end_near. Qed.

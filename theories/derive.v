@@ -2455,19 +2455,6 @@ apply/eqoP => _/posnumP[e]; near=> x; rewrite norm_row_mx ge_max.
 by apply/andP; split; near: x; apply: littleoP.
 Unshelve. all: by end_near. Qed.
 
-(* NB: this could be moved earlier in the file hierarchy *)
-Lemma cvg_row_mx {T : realFieldType} {F : set_system T} {n1 n2 : nat}
-    (G : 'rV[T]_n1) (H : 'rV[T]_n2) : Filter F ->
-  forall (f : T -> 'rV[T]_n1) (g : T -> 'rV[T]_n2),
-  f x @[x --> F] --> G -> g x @[x --> F] --> H ->
-  row_mx (f x) (g x) @[x --> F] --> row_mx G H.
-Proof.
-move=> FF M N cvgM cvgN; apply/cvgrPdist_le => /= e e0; near=> t.
-rewrite sub_row_mx norm_row_mx ge_max; apply/andP; split.
-- by near: t; move/cvgrPdist_le : cvgM => /(_ _ e0).
-- by near: t; move/cvgrPdist_le : cvgN => /(_ _ e0).
-Unshelve. all: by end_near. Qed.
-
 Section is_diff_row_mx.
 Local Open Scope classical_set_scope.
 Context {R : realFieldType} {n1 n2 : nat}.
