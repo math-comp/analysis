@@ -19,7 +19,6 @@ depends: [
   "rocq-mathcomp-solvable"
   "rocq-mathcomp-field"
   "rocq-mathcomp-bigenough" { (>= "1.0.0") }
-  "rocq-mathcomp-algebra-tactics" { (>= "1.2.7") }
   "rocq-navi" {= "0.4.1" & with-doc}
 ]
 

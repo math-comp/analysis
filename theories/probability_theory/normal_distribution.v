@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval.
-From mathcomp Require Import archimedean finmap interval_inference ring.
+From mathcomp Require Import archimedean finmap interval_inference ring_tactic.
 From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
 From mathcomp Require Import reals ereal topology normedtype sequences derive.
 From mathcomp Require Import measure exp trigo numfun realfun.
