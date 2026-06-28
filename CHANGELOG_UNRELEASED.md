@@ -152,6 +152,9 @@
 - in `lebesgue_stieltjes_measure.v`:
   + definition `lebesgue_display`
 
+- in `realsum.v`:
+  + lemma `esum_summableP`
+
 ### Changed
 
 - moved from `measurable_structure.v` to `classical_sets.v`:
@@ -186,6 +189,9 @@
 - in `esum.v`:
   + lemma `ge0_esum`
   + lemma `esum_ge`
+
+- in `realsum.v`:
+  + lemma `__admitted__psumB` proved and renamed to `psumB`
 
 ### Changed
 

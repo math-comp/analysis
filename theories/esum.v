@@ -119,6 +119,13 @@ Implicit Types (S : set T) (f g : T -> \bar R).
 
 Local Notation "\esum_ ( i 'in' P ) A" := (pos_esum P (fun i => A)).
 
+Lemma subset_pos_esum (I J : set T) (a : T -> \bar R) :
+  (I `<=` J)%classic -> (\esum_(i in I) a i <= \esum_(i in J) a i)%E.
+Proof.
+move=> IJ; apply: ereal_sup_le => _/= [A [finA AI]] <-.
+by exists A => //; split => //; exact: subset_trans IJ.
+Qed.
+
 Lemma pos_esum_ge0 S f : 0 <= \esum_(i in S) f i.
 Proof.
 rewrite /pos_esum ereal_sup_ubound//.

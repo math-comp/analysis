@@ -41,15 +41,40 @@ move/asboolP/exists_asboolP=> h; have := (xchooseP h).
 move: (xchoose _)=> {h} M /asboolP h; exists M => //.
 by have := h fset0; rewrite big_pred0 // => -[x]; rewrite in_fset0.
 Qed.
+
 End Summable.
+
+Lemma esum_summableP (f : T -> R) :
+  summable f <-> esum.summable [set: T] (EFin \o f).
+Proof.
+have fsbigsum (B : {fset T}) :
+    (\sum_(x \in [set` B]) `|f x|%:E)%R = (\sum_(x : B) `|f (\val x)|)%:E.
+  rewrite (fsbigE B)//=; first by move=> i ->.
+  by rewrite sumEFin big_seq_fsetE/= (eq_bigl xpredT)// => x; apply/mem_set => /=.
+split.
+  move=> [M fM].
+  rewrite /esum.summable.
+  rewrite ge0_esum// (@le_lt_trans _ _ M%:E) ?ltey//.
+  apply/ereal_supP => _/= [A [/finite_fsetP[B AB] _] <-].
+  by rewrite AB fsbigsum; exact: fM.
+rewrite /summable => H.
+exists (fine (\esum_(x in [set: T]) `|(EFin \o f) x|))%E => J/=.
+rewrite -lee_fin -fsbigsum fineK.
+  by rewrite ge0_fin_numE// esum_ge0.
+by rewrite -esum_fset// !ge0_esum//; apply: PosEsum.subset_pos_esum.
+Qed.
+
+Module PosSum.
 
 Definition psum {R : realType} {T : choiceType} (f : T -> R) : R :=
   (* We need some ticked `image` operator *)
   let S := [set x | exists J : {fset T}, x = \sum_(x : J) `|f (val x)| ]%classic in
   if `[<summable f>] then sup S else 0.
 
+End PosSum.
+
 Definition sum {R : realType} {T : choiceType} (f : T -> R) : R :=
-  psum f^\+ - psum f^\-.
+  PosSum.psum f^\+ - PosSum.psum f^\-.
 
 (* -------------------------------------------------------------------- *)
 Section SummableCountable.
@@ -129,16 +154,16 @@ case/summableP=> M _ hbd; split.
 by exists M; apply/ubP=> y [J ->].
 Qed.
 
-Lemma psum_sup S : psum S =
+Lemma psum_sup S : PosSum.psum S =
   sup [set x | exists J : {fset T}, x = \sum_(x : J) `|S (val x)|]%classic.
 Proof.
-rewrite /psum; case: ifPn => // /asboolPn h.
+rewrite /PosSum.psum; case: ifPn => // /asboolPn h.
 rewrite sup_out //; set X := [set r | _]%classic => hs.
 apply: h; exists (sup X) => J.
 by move/ubP : (sup_upper_bound hs); apply; exists J.
 Qed.
 
-Lemma psum_sup_seq S : psum S =
+Lemma psum_sup_seq S : PosSum.psum S =
   sup [set x | exists2 J : seq T,
     uniq J & x = \sum_(x <- J) `|S x| ]%classic.
 Proof.
@@ -169,9 +194,9 @@ move=> eq_12; congr sup; rewrite predeqE => x.
 by split=> -[J ->]; exists J.
 Qed.
 
-Lemma eq_psum (F1 F2 : T -> R) : F1 =1 F2 -> psum F1 = psum F2.
+Lemma eq_psum (F1 F2 : T -> R) : F1 =1 F2 -> PosSum.psum F1 = PosSum.psum F2.
 Proof.
-move=> eq_12; rewrite /psum (eq_summableb eq_12).
+move=> eq_12; rewrite /PosSum.psum (eq_summableb eq_12).
 case: `[< summable F1 >] => //.
 congr sup.
 rewrite predeqE => x; split=> -[J ->]; exists J;
@@ -194,11 +219,11 @@ by rewrite !ger0_norm // (le_trans h1 h2).
 Qed.
 
 Lemma le_psum (F1 F2 : T -> R) :
-  (forall x, 0 <= F1 x <= F2 x) -> summable F2 -> psum F1 <= psum F2.
+  (forall x, 0 <= F1 x <= F2 x) -> summable F2 -> PosSum.psum F1 <= PosSum.psum F2.
 Proof.
 move=> le_F smF2; have smF1: summable F1 by apply/(le_summable le_F).
-rewrite /psum (asboolT smF1) (asboolT smF2); apply: sup_le; first last.
-+ by apply/summable_sup.
+rewrite /PosSum.psum (asboolT smF1) (asboolT smF2); apply: sup_le; first last.
++ exact/summable_sup.
 + by exists 0, fset0; rewrite big_fset0.
 move=> x [J ->]; apply/downP; exists (\sum_(j : J) `|F2 (val j)|).
   by exists J.
@@ -206,19 +231,19 @@ apply/ler_sum=> /= j _; case/andP: (le_F (val j)) => h1 h2.
 by rewrite !ger0_norm // (le_trans h1 h2).
 Qed.
 
-Lemma psum_out S : ~ summable S -> psum S = 0.
-Proof. by move/asboolPn/negbTE=> smN; rewrite /psum smN. Qed.
+Lemma psum_out S : ~ summable S -> PosSum.psum S = 0.
+Proof. by move/asboolPn/negbTE=> smN; rewrite /PosSum.psum smN. Qed.
 
-Lemma psumE S : (forall x, 0 <= S x) -> summable S -> psum S =
+Lemma psumE S : (forall x, 0 <= S x) -> summable S -> PosSum.psum S =
   sup [set x | exists J : {fset T}, x = \sum_(j : J) S (val j)]%classic.
 Proof.
-move=> gt0_S smS; rewrite /psum (asboolT smS); apply/eq_ppsum=> /=.
+move=> gt0_S smS; rewrite /PosSum.psum (asboolT smS); apply/eq_ppsum=> /=.
 by move=> J; apply/eq_bigr=> j _; rewrite ger0_norm.
 Qed.
 
-Lemma psum_absE S : summable S -> psum S =
+Lemma psum_absE S : summable S -> PosSum.psum S =
   sup [set x | exists J : {fset T}, x = \sum_(j : J) `|S (val j)|]%classic.
-Proof. by move=> smS; rewrite /psum (asboolT smS). Qed.
+Proof. by move=> smS; rewrite /PosSum.psum (asboolT smS). Qed.
 
 Lemma summable_seqP S :
   summable S <-> (exists2 M, 0 <= M &
@@ -230,21 +255,21 @@ by case=> J cJ; rewrite (big_fset_seq \`|_|) /=; apply/h/canonical_uniq.
 Qed.
 
 Lemma gerfin_psum S (J : {fset T}) :
-  summable S -> \sum_(j : J) `|S (val j)| <= psum S.
+  summable S -> \sum_(j : J) `|S (val j)| <= PosSum.psum S.
 Proof.
-move=> smS; rewrite /psum (asboolT smS).
+move=> smS; rewrite /PosSum.psum (asboolT smS).
 by move/ubP : (sup_upper_bound (summable_sup smS)); apply; exists J.
 Qed.
 
 Lemma gerfinseq_psum S (r : seq T) :
-  uniq r -> summable S -> \sum_(j <- r) `|S j| <= psum S.
+  uniq r -> summable S -> \sum_(j <- r) `|S j| <= PosSum.psum S.
 Proof.
 move=> uq_r /gerfin_psum -/(_ [fset x in r]);
   by rewrite (big_seq_fset \`|S|).
 Qed.
 
 Lemma psum_le S z :
-  (forall J, uniq J -> \sum_(j <- J) `|S j| <= z) -> psum S <= z.
+  (forall J, uniq J -> \sum_(j <- J) `|S j| <= z) -> PosSum.psum S <= z.
 Proof.
 move=> le_z; have: summable S; first (apply/summable_seqP; exists z).
 + by apply/(le_trans _ (le_z [::] _)) => //; rewrite big_nil.
@@ -255,17 +280,18 @@ by rewrite (big_fset_seq \`|_|) le_z /=; case: J => J /= /canonical_uniq.
 Qed.
 
 Lemma lt_psum (F : T -> R) l :
-  summable F -> l < psum F ->
+  summable F -> l < PosSum.psum F ->
     exists J : {fset T}, l < \sum_(j : J) `|F (val j)|.
 Proof.
-move=> smF; rewrite /psum (asboolT smF) => /lt_sup_imfset.
+move=> smF; rewrite /PosSum.psum (asboolT smF) => /lt_sup_imfset.
 by case=> /= [|J lt_lJ _]; [apply/summable_sup | exists J].
 Qed.
+
 End SumTh.
 
 Lemma esum_psum {R : realType} {T : choiceType} (f : T -> R) :
     (forall i, 0 <= f i) -> summable f ->
-  \esum_(x in [set: T]) (f x)%:E = (psum f)%:E.
+  \esum_(x in [set: T]) (f x)%:E = (PosSum.psum f)%:E.
 Proof.
 move=> f0 sumf; apply/eqP; rewrite eq_le; apply/andP; split.
 - rewrite ge0_esum; first by move=> t _; rewrite lee_fin.
@@ -306,10 +332,10 @@ move=> J; apply: (big_fset_subset (F := \`|_|)).
 by move=> i _; apply/imfsetP; exists i.
 Qed.
 
-Lemma psum_fin (f : I -> R) : psum f = \sum_i `|f i|.
+Lemma psum_fin (f : I -> R) : PosSum.psum f = \sum_i `|f i|.
 Proof.                          (* FIXME *)
 pose S := \sum_(i : [fset i | i : I]) `|f (val i)|.
-rewrite /psum (asboolT (summable_fin f)) (@max_sup _ S).
+rewrite /PosSum.psum (asboolT (summable_fin f)) (@max_sup _ S).
   rewrite /=; split; first by exists [fset i | i : I]%fset.
   apply/ubP=> y [J ->]; apply/(big_fset_subset (F := \`|_|)).
     by move=> i; rewrite normr_ge0.
@@ -322,6 +348,7 @@ move=> i /=; rewrite mem_enum in_imfset //; apply/mapP.
 have h: i \in [fset j | j : I] by rewrite in_imfset.
 by exists (FSetSub h) => //; rewrite mem_enum.
 Qed.
+
 End FinSumTh.
 
 (* -------------------------------------------------------------------- *)
@@ -331,27 +358,28 @@ Context {R : realType} (T : choiceType).
 Variable (S : T -> R).
 
 Lemma ger_big_psum r : uniq r -> summable S ->
-  \sum_(x <- r) `|S x| <= psum S.
+  \sum_(x <- r) `|S x| <= PosSum.psum S.
 Proof.
-move=> uq_r smS; rewrite /psum (asboolT smS).
+move=> uq_r smS; rewrite /PosSum.psum (asboolT smS).
 set E := (X in sup X).
-have : has_sup E by apply/summable_sup.
+have : has_sup E by exact/summable_sup.
 move/sup_upper_bound/ubP; apply.
 by exists [fset x in r]; rewrite (big_seq_fset (fun i => `|S i|)).
 Qed.
 
-Lemma ger1_psum x : summable S -> `|S x| <= psum S.
+Lemma ger1_psum x : summable S -> `|S x| <= PosSum.psum S.
 Proof.
 move=> smS; have h := @ger_big_psum [:: x] _ smS.
 by rewrite (le_trans _ (h _)) ?big_seq1.
 Qed.
 
-Lemma ge0_psum : 0 <= psum S.
+Lemma ge0_psum : 0 <= PosSum.psum S.
 Proof.                          (* FIXME: asbool_spec *)
 case/boolP: `[< summable S >] => [|/asboolPn/psum_out ->//].
 move/asboolP=> smS; have h := @ger_big_psum [::] _ smS.
 by rewrite (le_trans _ (h _)) ?big_nil.
 Qed.
+
 End PSumGe.
 
 (* -------------------------------------------------------------------- *)
@@ -360,11 +388,12 @@ Context {R : realType}.
 
 Variable (S : nat -> R) (smS : summable S).
 
-Lemma ger_big_ord_psum n : \sum_(i < n) `|S i| <= psum S.
+Lemma ger_big_ord_psum n : \sum_(i < n) `|S i| <= PosSum.psum S.
 Proof.
 rewrite -(big_mkord predT (fun i => `|S i|)) /=.
 by apply/ger_big_psum => //; rewrite iota_uniq.
 Qed.
+
 End PSumNatGe.
 
 (* -------------------------------------------------------------------- *)
@@ -384,7 +413,7 @@ Qed.
 
 Lemma psummable_ptbounded : nbounded (fun n => \sum_(i < n) S i).
 Proof.
-apply/asboolP/nboundedP; exists (psum S + 1).
+apply/asboolP/nboundedP; exists (PosSum.psum S + 1).
   rewrite ltr_pwDr ?ltr01 1?(le_trans (normr_ge0 (S 0%N))) //.
   by apply/ger1_psum.
 move=> n; rewrite ltr_pwDr ?ltr01 // ger0_norm ?sumr_ge0 //.
@@ -392,20 +421,20 @@ apply/(le_trans _ (ger_big_ord_psum _ n)) => //.
 by apply/ler_sum=> /= i _; apply/ler_norm.
 Qed.
 
-Lemma ncvg_sum : ncvg (fun n => \sum_(i < n) S i) (psum S)%:E.
+Lemma ncvg_sum : ncvg (fun n => \sum_(i < n) S i) (PosSum.psum S)%:E.
 Proof.
 set u := (fun n => _); apply: contraPP smS => ncv _.
 case: (ncvg_mono_bnd (u := u)) => //.
   by apply/ptsum_homo. by apply/psummable_ptbounded.
-move=> x cvux; suff xE: x = (psum S) by rewrite xE in cvux.
+move=> x cvux; suff xE: x = (PosSum.psum S) by rewrite xE in cvux.
 apply/eqP; case: (x =P _) => // /eqP /lt_total /orP[]; last first.
 + rewrite -lte_fin => /ncvg_gt /(_ cvux) [K /(_ _ (leqnn _))] /=.
   rewrite ltNge lee_fin (le_trans _ (ger_big_ord_psum _ K)) //.
   by apply/ler_sum=> /= i _; apply/ler_norm.
-move=> lt_xS; pose e := psum S - x.
+move=> lt_xS; pose e := PosSum.psum S - x.
   have ge0_e: 0 < e by rewrite subr_gt0.
 case: (sup_adherent ge0_e (summable_sup smS)) => y.
-case=> /= J ->; rewrite /e /psum (asboolT smS) subKr => lt_xSJ.
+case=> /= J ->; rewrite /e /PosSum.psum (asboolT smS) subKr => lt_xSJ.
 pose k := \max_(j : J) (val j); have lt_x_uSk: x < u k.+1.
   apply/(lt_le_trans lt_xSJ); rewrite /u big_ord_mkfset.
   rewrite (eq_bigr (S \o val)) => /= [j _|]; first by rewrite ger0_norm.
@@ -431,19 +460,19 @@ Hypothesis smS     : summable S.
 Hypothesis homo_P  : forall n m, (n <= m)%N -> (P n `<=` P m).
 Hypothesis cover_P : forall x, S x != 0 -> exists n, x \in P n.
 
-Lemma psum_as_lim : psum S = fine (nlim (fun n => \sum_(j : P n) (S (val j)))).
+Lemma psum_as_lim : PosSum.psum S = fine (nlim (fun n => \sum_(j : P n) (S (val j)))).
 Proof.
 set v := fun n => _; have hm_v m n: (m <= n)%N -> v m <= v n.
   by move=> le_mn; apply/big_fset_subset/fsubsetP/homo_P.
-have bd_v n : v n <= psum S.
+have bd_v n : v n <= PosSum.psum S.
   apply/(le_trans _ (gerfin_psum _ smS))/ler_sum.
   by move=> J _; apply/ler_norm.
 case: (ncvg_mono_bnd hm_v) => [|l cv].
-  apply/asboolP/nboundedP; exists (psum S + 1) => //.
+  apply/asboolP/nboundedP; exists (PosSum.psum S + 1) => //.
     by apply/(le_lt_trans (ge0_psum S)); rewrite ltrDl ltr01.
   move=> n; rewrite ger0_norm ?sumr_ge0 //.
   by rewrite (le_lt_trans (bd_v n)) // ltrDl ltr01.
-have le_lS: l <= psum S by rewrite -lee_fin (ncvg_leC _ cv).
+have le_lS: l <= PosSum.psum S by rewrite -lee_fin (ncvg_leC _ cv).
 rewrite (nlimE cv) /= (rwP eqP) eq_le le_lS andbT.
 rewrite leNgt; apply/negP=> {le_lS} /(lt_psum smS)[J].
 rewrite (big_fset_seq \`|_|) /=; case: J => /= J.
@@ -462,6 +491,7 @@ move=> le_K_Pn; have: l < v n; first apply/(lt_le_trans lt_jS).
   by apply/big_fset_subset => // x; rewrite in_fset => /le_K_Pn.
 by apply/negP; rewrite -leNgt -lee_fin ncvg_homo_le.
 Qed.
+
 End PSumAsLim.
 
 (* -------------------------------------------------------------------- *)
@@ -569,7 +599,7 @@ Proof. by move=> bd sm; apply/summable_mulrC/summableMl. Qed.
 Lemma summableM (S1 S2 : T -> R) :
   summable S1 -> summable S2 -> summable (S1 \* S2).
 Proof.
-move=> smS1 smS2; apply/summableMl => //; exists (psum S1).
+move=> smS1 smS2; apply/summableMl => //; exists (PosSum.psum S1).
 by move=> x; apply/ger1_psum.
 Qed.
 
@@ -605,12 +635,12 @@ Qed.
 (* -------------------------------------------------------------------- *)
 Lemma summable_of_bd (S : T -> R) (d : R) :
   (forall J, uniq J -> \sum_(x <- J) `|S x| <= d) ->
-    summable S /\ psum S <= d.
+    summable S /\ PosSum.psum S <= d.
 Proof.
 move=> leS; have ge0_d: 0 <= d.
   by apply/(le_trans _ (leS [::] _)); rewrite // big_nil.
 have smS: summable S by apply/summable_seqP; exists d.
-split=> //; rewrite /psum (asboolT smS); apply: ge_sup.
+split=> //; rewrite /PosSum.psum (asboolT smS); apply: ge_sup.
   by exists 0, fset0; rewrite big_fset0.
 apply/ubP=> _ [J ->]; rewrite (big_fset_seq \`|_|) /=.
 by apply/leS; case: J => J /= /canonical_uniq.
@@ -652,9 +682,9 @@ Context {R : realType} (T : choiceType) (I : Type).
 Implicit Type S : T -> R.
 
 (* -------------------------------------------------------------------- *)
-Lemma psum0 : psum (fun _ : T => 0) = 0 :> R.
+Lemma psum0 : PosSum.psum (fun _ : T => 0) = 0 :> R.
 Proof.
-rewrite /psum asboolT; first by apply/summable0.
+rewrite /PosSum.psum asboolT; first by apply/summable0.
 set S := [set x | _]%classic; suff: S = (set1 0).
   by move => ->; rewrite sup1.
 rewrite predeqE => x; split.
@@ -663,12 +693,12 @@ by move=> ->; exists fset0; rewrite big_fset0.
 Qed.
 
 (* -------------------------------------------------------------------- *)
-Lemma psum_eq0 (f : T -> R) : (forall x, f x = 0) -> psum f = 0.
+Lemma psum_eq0 (f : T -> R) : (forall x, f x = 0) -> PosSum.psum f = 0.
 Proof. by move=> eq; rewrite (eq_psum eq) psum0. Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma eq0_psum (f : T -> R) :
-  summable f -> psum f = 0 -> (forall x : T, f x = 0).
+  summable f -> PosSum.psum f = 0 -> (forall x : T, f x = 0).
 Proof.
 move=> sm psum_eq0 x; apply/eqP; rewrite -normr_eq0.
 rewrite eq_le normr_ge0 andbT -psum_eq0.
@@ -677,15 +707,15 @@ by rewrite big_seq1.
 Qed.
 
 (* -------------------------------------------------------------------- *)
-Lemma neq0_psum (f : T -> R) : psum f <> 0 -> exists x : T, f x <> 0.
+Lemma neq0_psum (f : T -> R) : PosSum.psum f <> 0 -> exists x : T, f x <> 0.
 Proof.
 by move=> nz_psum; apply/existsp_asboolPn/asboolPn => /psum_eq0.
 Qed.
 
 (* -------------------------------------------------------------------- *)
-Lemma psum_abs (S : T -> R) : psum \`|S| = psum S.
+Lemma psum_abs (S : T -> R) : PosSum.psum \`|S| = PosSum.psum S.
 Proof.
-rewrite /psum; do 2! case: ifPn => //; first last.
+rewrite /PosSum.psum; do 2! case: ifPn => //; first last.
 + by move/asboolP/summable_abs/asboolP=> ->.
 + by move/asboolPn/summable_abs/asboolPn=> /negbTE->.
 move=> _ _; congr sup; rewrite predeqE => x; split.
@@ -697,14 +727,14 @@ Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma eq_psum_abs (S1 S2 : T -> R) :
-  \`|S1| =1 \`|S2| -> psum S1 = psum S2.
+  \`|S1| =1 \`|S2| -> PosSum.psum S1 = PosSum.psum S2.
 Proof.
 by move=> eqS; rewrite -[LHS]psum_abs -[RHS]psum_abs; apply/eq_psum.
 Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma le_psum_abs (S1 S2 : T -> R) :
-  (forall x, `|S1 x| <= `|S2 x|) -> summable S2 -> psum S1 <= psum S2.
+  (forall x, `|S1 x| <= `|S2 x|) -> summable S2 -> PosSum.psum S1 <= PosSum.psum S2.
 Proof.
 move=> leS smS2; rewrite -[X in X<=_]psum_abs -[X in _<=X]psum_abs.
 by apply/le_psum/summable_abs => // x; rewrite normr_ge0 leS.
@@ -712,7 +742,7 @@ Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma le_psum_condl (S : T -> R) (P : pred T) :
-  summable S -> psum (fun x => (P x)%:R * S x) <= psum S.
+  summable S -> PosSum.psum (fun x => (P x)%:R * S x) <= PosSum.psum S.
 Proof.
 move=> smS; apply/le_psum_abs=> // x; rewrite normrM.
 by apply/ler_piMl => //; rewrite normr_nat lern1 leq_b1.
@@ -720,7 +750,7 @@ Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma le_psum_condr (S : T -> R) (P : pred T) :
-  summable S -> psum (fun x => S x * (P x)%:R) <= psum S.
+  summable S -> PosSum.psum (fun x => S x * (P x)%:R) <= PosSum.psum S.
 Proof.
 move=> smS; apply/(le_trans _ (le_psum_condl P smS)).
 rewrite le_eqVlt -(rwP orP); left; apply/eqP/eq_psum.
@@ -728,11 +758,11 @@ by move=> x /=; rewrite mulrC.
 Qed.
 
 (* -------------------------------------------------------------------- *)
-Lemma psumN (S : T -> R) : psum (- S) = psum S.
+Lemma psumN (S : T -> R) : PosSum.psum (- S) = PosSum.psum S.
 Proof.
 case/boolP: `[< summable S >] => h; last first.
   by rewrite !psum_out ?oppr0 //; apply/asboolPn; rewrite ?summablebN.
-rewrite /psum summablebN h; apply/eq_ppsum=> J /=.
+rewrite /PosSum.psum summablebN h; apply/eq_ppsum=> J /=.
 by apply/eq_bigr=> j _; rewrite normrN.
 Qed.
 
@@ -740,7 +770,7 @@ Qed.
 Lemma psumD S1 S2 :
     (forall x, 0 <= S1 x) -> (forall x, 0 <= S2 x)
   -> summable S1 -> summable S2
-  -> psum (S1 \+ S2) = (psum S1 + psum S2).
+  -> PosSum.psum (S1 \+ S2) = (PosSum.psum S1 + PosSum.psum S2).
 Proof.
 move=> ge0_S1 ge0_S2 smS1 smS2; have smD := summableD smS1 smS2.
 have ge0D: forall x, 0 <= S1 x + S2 x by move=> x; rewrite addr_ge0.
@@ -749,8 +779,8 @@ rewrite !psumE // (rwP eqP) eq_le -(rwP andP); split.
   + by exists 0, fset0; rewrite big_fset0.
   apply/ubP=> _ [J ->]; rewrite big_split /=.
   apply/lerD; rewrite -psumE 1?(le_trans _ (gerfin_psum J _)) //.
-  + by apply/ler_sum=> j _ /=; apply/ler_norm.
-  + by apply/ler_sum=> j _ /=; apply/ler_norm.
+  + by apply/ler_sum=> j _ /=; exact/ler_norm.
+  + by apply/ler_sum=> j _ /=; exact/ler_norm.
 rewrite -lerBrDr; apply: ge_sup.
 + by exists 0, fset0; rewrite big_fset0.
 apply/ubP=> _ [J1 ->]; rewrite lerBrDr addrC.
@@ -765,13 +795,30 @@ rewrite /D big_split /=; apply/lerD; apply/big_fset_subset=> //.
 Qed.
 
 (* -------------------------------------------------------------------- *)
-Lemma __admitted__psumB S1 S2 :
+
+Lemma psumB S1 S2 :
     (forall x, 0 <= S2 x <= S1 x) -> summable S1
-  -> psum (S1 \- S2) = (psum S1 - psum S2).
-Proof using Type. Admitted.
+  -> PosSum.psum (S1 \- S2) = (PosSum.psum S1 - PosSum.psum S2).
+Proof.
+move=> S2S1 sumS1; apply: EFin_inj; rewrite EFinB.
+have sumS2 : summable S2 by exact: le_summable sumS1.
+rewrite -(@esum_psum _ _ S1)//.
+  by move=> t; have /andP[S20] := S2S1 t; exact: le_trans.
+rewrite -(@esum_psum _ _ S2)//.
+  by move=> t; have /andP[] := S2S1 t.
+rewrite -esumB//.
+- exact/esum_summableP.
+- exact/esum_summableP.
+- by move=> t _; rewrite lee_fin; have /andP[S20] := S2S1 t; exact: le_trans.
+- by move=> t _; rewrite lee_fin; have /andP[] := S2S1 t.
+rewrite -esum_psum.
+- by move=> t; rewrite subr_ge0; have /andP[] := S2S1 t.
+  by apply: summableD => //; exact: summableN.
+by rewrite {1}/esum; congr (_ - _)%E; rewrite ge0_esum.
+Qed.
 
 (* -------------------------------------------------------------------- *)
-Lemma psumZ S c : 0 <= c -> psum (c \*o S) = c * psum S.
+Lemma psumZ S c : 0 <= c -> PosSum.psum (c \*o S) = c * PosSum.psum S.
 Proof.
 rewrite le_eqVlt => /orP[/eqP<-|gt0_c].
   by rewrite mul0r psum_eq0 // => x /=; rewrite mul0r.
@@ -780,14 +827,14 @@ case/asboolP: (summable S) => [smS|NsmS]; last first.
   move/(summableZ c^-1): smZ; apply/eq_summable=> x /=.
   by rewrite mulKf // gt_eqF.
 have smZ := summableZ c smS; rewrite (rwP eqP) eq_le.
-apply/andP; split; first rewrite {1}/psum asboolT //.
+apply/andP; split; first rewrite {1}/PosSum.psum asboolT //.
   apply: ge_sup.
   + by exists 0, fset0; rewrite big_fset0.
   apply/ubP=> _ [J ->]; rewrite -ler_pdivrMl //.
   rewrite mulr_sumr (le_trans _ (gerfin_psum J _)) //.
   apply/ler_sum=> /= j _; rewrite normrM.
   by rewrite gtr0_norm // mulKf ?gt_eqF.
-rewrite -ler_pdivlMl // {1}/psum asboolT //; apply: ge_sup.
+rewrite -ler_pdivlMl // {1}/PosSum.psum asboolT //; apply: ge_sup.
 + by exists 0, fset0; rewrite big_fset0.
 apply/ubP=> _ [J ->]; rewrite ler_pdivlMl //.
 rewrite mulr_sumr; apply/(le_trans _ (gerfin_psum J _))=> //.
@@ -796,7 +843,7 @@ Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma psumZr S c :
-  0 <= c -> psum (c \o* S) = psum S * c.
+  0 <= c -> PosSum.psum (c \o* S) = PosSum.psum S * c.
 Proof.
 move=> ge0_c; rewrite [RHS]mulrC -psumZ //.
 by apply/eq_psum => x /=; rewrite mulrC.
@@ -805,8 +852,8 @@ Qed.
 (* -------------------------------------------------------------------- *)
 Lemma psum_bigop (F : I -> T -> R) P r :
     (forall i x, 0 <= F i x) -> (forall i, summable (F i)) ->
-  \sum_(i <- r | P i) psum (F i) =
-    psum (fun x => \sum_(i <- r | P i) F i x).
+  \sum_(i <- r | P i) PosSum.psum (F i) =
+    PosSum.psum (fun x => \sum_(i <- r | P i) F i x).
 Proof.
 move=> ge0_F sm_F; elim: r => [|i r ih].
   by rewrite big_nil; apply/esym/psum_eq0 => x; rewrite big_nil.
@@ -819,8 +866,8 @@ Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma psumID S (P : pred T) :
-  summable S -> psum S =
-    psum (fun x => (P x)%:R * S x) + psum (fun x => (~~P x)%:R * S x).
+  summable S -> PosSum.psum S =
+    PosSum.psum (fun x => (P x)%:R * S x) + PosSum.psum (fun x => (~~P x)%:R * S x).
 Proof.
 have h x: `|S x| = (P x)%:R * `|S x| + (~~P x)%:R * `|S x|.
   by case: (P x); rewrite !Monoid.simpm.
@@ -836,7 +883,7 @@ Qed.
 (* -------------------------------------------------------------------- *)
 Lemma psum_finseq S (r : seq.seq T) :
     uniq r -> {subset [pred x | S x != 0] <= r}
-  -> psum S = \sum_(x <- r) `|S x|.
+  -> PosSum.psum S = \sum_(x <- r) `|S x|.
 Proof.
 move=> eq_r ler; set s := RHS; have h J: uniq J -> \sum_(x <- J) `|S x| <= s.
   move=> uqJ; rewrite (bigID (ssrbool.mem r)) /= addrC big1.
@@ -853,21 +900,19 @@ by rewrite eq_le le_psum /=; apply/gerfinseq_psum.
 Qed.
 End StdSum.
 
-#[deprecated(since="mathcomp-analysis 0.6.2",
-  note="lacks proof, use __admitted__psumB explicitly if you really want to")]
-Notation psumB := __admitted__psumB.
+#[deprecated(since="1.17.0", note="use `psumB` instead")]
+Notation __admitted__psumB :=psumB.
 
 (* -------------------------------------------------------------------- *)
 Section PSumReindex.
 Context {R : realType} {T U : choiceType}.
 Context (S : T -> R) (P : pred T) (h : U -> T).
 
-
 Lemma reindex_psum_onto h' :
      (forall x, S x != 0 -> x \in P)
   -> (forall i, i \in P -> omap h (h' i) = Some i)
   -> (forall i, h i \in P -> h' (h i) = Some i)
-  -> psum S = psum (fun x : U => S (h x)).
+  -> PosSum.psum S = PosSum.psum (fun x : U => S (h x)).
 Proof.
 move=> PS hO hP; rewrite !psum_sup_seq; congr sup; rewrite predeqE => x.
 split=> -[J uqJ ->] {x}; last first.
@@ -911,12 +956,13 @@ Qed.
 Lemma reindex_psum :
      (forall x, S x != 0 -> x \in P)
   -> {on P, bijective h}
-  -> psum S = psum (fun x : U => S (h x)).
+  -> PosSum.psum S = PosSum.psum (fun x : U => S (h x)).
 Proof.
 move=> hP [hI h1 h2]; apply/(@reindex_psum_onto (some \o hI)) => //.
-+ by move=> x Px /=; rewrite h2.
-+ by move=> x Px /=; rewrite h1.
+- by move=> x Px /=; rewrite h2.
+- by move=> x Px /=; rewrite h1.
 Qed.
+
 End PSumReindex.
 
 (* -------------------------------------------------------------------- *)
@@ -926,7 +972,7 @@ Context {R : realType} {T U : choiceType} (f : T -> U).
 Let C y := `[< exists x : T, f x == y >].
 
 Lemma partition_psum (S : T -> R) : summable S ->
-  psum S = psum (fun y => psum (fun x => S x * (f x == y)%:R)).
+  PosSum.psum S = PosSum.psum (fun y => PosSum.psum (fun x => S x * (f x == y)%:R)).
 Proof.                          (* FIXME: this proof is a joke *)
 move=> smS; rewrite (rwP eqP) eq_le -(rwP andP); split.
   pose F x y := `|S x| * (f x == y :> U)%:R.
@@ -935,7 +981,7 @@ move=> smS; rewrite (rwP eqP) eq_le -(rwP andP); split.
   set G := fun y : U => _; have: summable G.
     case/summable_seqP: smS => M ge0_M leM.
     apply/summable_seqP; exists M => // J uqJ; rewrite {}/G.
-    rewrite (eq_bigr (fun y => psum (F^~ y))) => [y _|].
+    rewrite (eq_bigr (fun y => PosSum.psum (F^~ y))) => [y _|].
       rewrite ger0_norm ?ge0_psum //; apply/eq_psum_abs => x.
       by rewrite !normrM [ `|_%:R|]ger0_norm ?(normr_id, ler0n).
     rewrite psum_bigop // => [y x|].
@@ -958,7 +1004,7 @@ move=> smS; rewrite (rwP eqP) eq_le -(rwP andP); split.
   move/gerfinseq_psum: smG => /(_ K (undup_uniq _)).
   move/(le_trans _); apply; rewrite {}/G.
   pose G x y := `|S x| * (f x == y)%:R.
-  rewrite (eq_bigr (fun y => psum (G^~ y))).
+  rewrite (eq_bigr (fun y => PosSum.psum (G^~ y))).
     move=> y _; rewrite ger0_norm ?ge0_psum //.
     rewrite -psum_abs; apply/eq_psum=> x.
     by rewrite normrM [ `|_%:R|]ger0_norm ?ler0n.
@@ -980,7 +1026,7 @@ move=> smS; rewrite (rwP eqP) eq_le -(rwP andP); split.
   have: summable G by apply/summable_condr.
   move/gerfinseq_psum => /(_ _ uqJ) /(le_trans _); apply.
   by rewrite -big_seq; apply/ler_sum => x _; rewrite normrM.
-apply/psum_le=> J uqJ; pose F j := psum (fun x => `|S x| * (f x == j)%:R).
+apply/psum_le=> J uqJ; pose F j := PosSum.psum (fun x => `|S x| * (f x == j)%:R).
 rewrite (eq_bigr F) => [y _|]; first rewrite ger0_norm ?ge0_psum //.
 + rewrite -psum_abs; apply/eq_psum => x; rewrite normrM.
   by rewrite [ `|_%:R|]ger0_norm ?ler0n.
@@ -1002,7 +1048,7 @@ by case/andP => _ /eqP<-.
 Qed.
 
 Lemma partition_psum_cond (S : T -> R) : summable S ->
-  psum S = psum (fun y => (C y)%:R * psum (fun x => S x * (f x == y)%:R)).
+  PosSum.psum S = PosSum.psum (fun y => (C y)%:R * PosSum.psum (fun x => S x * (f x == y)%:R)).
 Proof.
 move=> smS; apply/(eq_trans (partition_psum smS)).
 apply/eq_psum => y; case/boolP: (C y); rewrite !simpm //.
@@ -1010,6 +1056,7 @@ move=> NCy; rewrite psum_eq0 // => x; case: (_ =P y).
   by move/eqP=> fxE; move/asboolP: NCy; case; exists x.
 by rewrite mulr0.
 Qed.
+
 End PSumPartition.
 
 (* -------------------------------------------------------------------- *)
@@ -1017,7 +1064,7 @@ Section PSumPair.
 Context {R : realType} {T U : choiceType}.
 
 Lemma psum_pair (S : T * U -> R) : summable S ->
-  psum S = psum (fun x => psum (fun y => S (x, y))).
+  PosSum.psum S = PosSum.psum (fun x => PosSum.psum (fun y => S (x, y))).
 Proof.
 move=> sblS; rewrite (partition_psum fst) //; apply/eq_psum.
 move=> x /=; pose P := [pred xy : T * U | xy.1 == x].
@@ -1029,7 +1076,7 @@ by apply/eq_psum=> y /=; rewrite eqxx mulr1.
 Qed.
 
 Lemma psum_pair_swap (S : T * U -> R) : summable S ->
-  psum S = psum (fun y => psum (fun x => S (x, y))).
+  PosSum.psum S = PosSum.psum (fun y => PosSum.psum (fun x => S (x, y))).
 Proof.
 move=> sblS; rewrite (partition_psum snd) //; apply/eq_psum.
 move=> y /=; pose P := [pred xy : T * U | xy.2 == y].
@@ -1039,6 +1086,7 @@ rewrite (reindex_psum (h := [eta pair^~ y]) (P := P)) //=.
 + by exists fst => // -[x' y'] /eqP /= <-.
 by apply/eq_psum=> x /=; rewrite eqxx mulr1.
 Qed.
+
 End PSumPair.
 
 (* -------------------------------------------------------------------- *)
@@ -1064,8 +1112,8 @@ Context {R : realType} {T U : choiceType}.
 
 Lemma __admitted__interchange_psum (S : T -> U -> R) :
     (forall x, summable (S x))
-  -> summable (fun x => psum (fun y => S x y))
-  -> psum (fun x => psum (fun y => S x y)) = psum (fun y => psum (fun x => S x y)).
+  -> summable (fun x => PosSum.psum (fun y => S x y))
+  -> PosSum.psum (fun x => PosSum.psum (fun y => S x y)) = PosSum.psum (fun y => PosSum.psum (fun x => S x y)).
 Proof using Type. Admitted.
 End PSumInterchange.
 
@@ -1079,7 +1127,7 @@ Context {R : realType} {T : choiceType}.
 
 Implicit Types (S : T -> R).
 
-Lemma psum_sum S : (forall x, 0 <= S x) -> psum S = sum S.
+Lemma psum_sum S : (forall x, 0 <= S x) -> PosSum.psum S = sum S.
 Proof.
 move=> ge0_S; rewrite /sum [X in _-X]psum_eq0 ?subr0.
   by move=> x; rewrite (@ge0_funrnegE _ _ setT) ?in_setT.
