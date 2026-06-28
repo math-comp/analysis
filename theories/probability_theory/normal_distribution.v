@@ -1,12 +1,12 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval.
-From mathcomp Require Import archimedean finmap interval_inference ring_tactic.
+From mathcomp Require Import archimedean finmap interval_inference field_tactic.
 From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
 From mathcomp Require Import reals ereal topology normedtype sequences derive.
 From mathcomp Require Import measure exp trigo numfun realfun.
 From mathcomp Require Import measurable_realfun lebesgue_measure.
-From mathcomp Require Import lebesgue_integral ftc gauss_integral charge.
+From mathcomp Require Import lebesgue_integral ftc gauss_integral.
 
 (**md**************************************************************************)
 (* # Normal distribution                                                      *)
@@ -719,8 +719,10 @@ apply: eq_integral => /= z _.
 by rewrite 2?normal_pdfE// /normal_pdf0 mulrACA.
 Qed.
 
-(* Variable elimination and integration [Shan, Section 3.5, (9)],
- also known as the reproductive property of normal distribution. *)
+(**md Variable elimination and integration [Shan, Section 3.5, (9)],
+ also known as the reproductive property of normal distribution
+ $\int_x \mathcal{N}(m_2+x,s_2)Ud\mathcal{N}(m_1,s_1) = \mathcal{N}\left(m_1+m_2,\sqrt{s_1^2+s_2^2}\right)U$.
+ *)
 Lemma normal_probD (m1 s1 m2 s2 : R) V : s1 != 0%R -> s2 != 0%R ->
   measurable V ->
   \int[normal_prob m1 s1]_x normal_prob (m2 + x) s2 V =
