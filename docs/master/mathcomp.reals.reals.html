@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.reals.reals</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 4eaa6fb" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis e656ced" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -383,16 +383,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Bind</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span><span class="gallina-kwd"> with</span><span class="id"> Real</span>.<span class="id">sort</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sup" class="id"><div name="sup" class=" tooltip">sup<span class='tooltip-area'><p>itv_is_cc : forall {d : disp_t} {T : porderType d}, interval T -> bool
-
-itv_is_cc is not universe polymorphic
-Arguments itv_is_cc {d T} i
-itv_is_cc is transparent
-Expands to: Constant mathcomp.classical.set_interval.itv_is_cc
-Declared in
-library mathcomp.classical.set_interval, line 994, characters 11-20
-</p></span></div></span><span class="id"> {</span><span id="R:23" class="id"><a name="R:23" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#realType">realType</a></span><span class="id">}</span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.classical.classical_sets.html#supremum">supremum</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#R:23">R</a></span><span class="id"> 0</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="inf" class="id"><div name="inf" class=" tooltip">inf<span class='tooltip-area'><p>itv_closed_ends : forall {d : disp_t} {T : porderType d}, interval T -> bool
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sup" class="id"><div name="sup" class=" tooltip">sup<span class='tooltip-area'><p>itv_closed_ends : forall {d : disp_t} {T : porderType d}, interval T -> bool
 
 itv_closed_ends is not universe polymorphic
 Arguments itv_closed_ends {d T} i
@@ -400,7 +391,8 @@ itv_closed_ends is transparent
 Expands to: Constant mathcomp.classical.set_interval.itv_closed_ends
 Declared in
 library mathcomp.classical.set_interval, line 996, characters 11-26
-</p></span></div></span><span class="id"> {</span><span id="R:24" class="id"><a name="R:24" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#realType">realType</a></span><span class="id">}</span> (<span id="E:25" class="id"><a name="E:25" class="">E</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#R:24">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#sup">sup</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#a8ac36d488c8d5cdcfec5adcde894e5f">-%R</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#E:25">E</a></span>).<br/>
+</p></span></div></span><span class="id"> {</span><span id="R:23" class="id"><a name="R:23" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#realType">realType</a></span><span class="id">}</span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.classical.classical_sets.html#supremum">supremum</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#R:23">R</a></span><span class="id"> 0</span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="inf" class="id"><div name="inf" class=" tooltip">inf<span class='tooltip-area'></span></div></span><span class="id"> {</span><span id="R:24" class="id"><a name="R:24" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#realType">realType</a></span><span class="id">}</span> (<span id="E:25" class="id"><a name="E:25" class="">E</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#R:24">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#sup">sup</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#a8ac36d488c8d5cdcfec5adcde894e5f">-%R</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#E:25">E</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sup_upper_bound" class="id"><a name="sup_upper_bound" class="">sup_upper_bound</a></span><span class="id"> {</span><span id="R:26" class="id"><a name="R:26" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#realType">realType</a></span><span class="id">}</span> (<span id="E:27" class="id"><a name="E:27" class="">E</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#R:26">R</a></span>)<span class="id">:</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.classical_sets.html#has_sup">has_sup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#E:27">E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#ubound">ubound</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#E:27">E</a></span> (<span class="id"><a href="mathcomp.reals.reals.html#sup">sup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#E:27">E</a></span>).<br/>
@@ -541,26 +533,34 @@ Qed.</div></details>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> x</span><span class="id"> y</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#RealDerivedOps.R">R</a></span>.<br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="floor_set" class="id"><div name="floor_set" class=" tooltip">floor_set<span class='tooltip-area'></span></div></span><span class="id"> </span><span id="x:55" class="id"><a name="x:55" class="">x</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span id="y:56" class="id"><a name="y:56" class="">y</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> :</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#RealDerivedOps.R">R</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> |</a></span> (<span class="id"><a href="mathcomp.reals.reals.html#y:56">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#f6c65697fefaf4504de1d4d641cd4409"> \is</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#f6c65697fefaf4504de1d4d641cd4409"> a</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#f6c65697fefaf4504de1d4d641cd4409"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#Rint">Rint</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span> (<span class="id"><a href="mathcomp.reals.reals.html#y:56">y</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#x:55">x</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">]</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Rfloor" class="id"><div name="Rfloor" class=" tooltip">Rfloor<span class='tooltip-area'></span></div></span><span class="id"> </span><span id="x:57" class="id"><a name="x:57" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#RealDerivedOps.R">R</a></span><span class="id"> :=</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.floor">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.floor">floor</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#x:57">x</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#fd24b924079f6f5906ec417190abcf00">%:~R</a></span>.<br/>
-<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="range1" class="id"><div name="range1" class=" tooltip">range1<span class='tooltip-area'><p>dual_extended : Type -> Type
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Rfloor" class="id"><div name="Rfloor" class=" tooltip">Rfloor<span class='tooltip-area'><p>dual_extended : Type -> Type
 
 dual_extended is not universe polymorphic
 Arguments dual_extended R%_type_scope
 dual_extended is transparent
 Expands to: Constant mathcomp.reals.constructive_ereal.dual_extended
 Declared in
-library mathcomp.reals.constructive_ereal, line 150, characters 11-24
-</p></span></div></span> (<span id="x:58" class="id"><a name="x:58" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#RealDerivedOps.R">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="y:59" class="id"><a name="y:59" class="">y</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#x:58">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#eecc969a2fa3156b5b7024f4c30ed163"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#eecc969a2fa3156b5b7024f4c30ed163"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#y:59">y</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#eecc969a2fa3156b5b7024f4c30ed163"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#eecc969a2fa3156b5b7024f4c30ed163"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#x:58">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id">1</span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
+library mathcomp.reals.constructive_ereal, line 151, characters 11-24
+</p></span></div></span><span class="id"> </span><span id="x:57" class="id"><a name="x:57" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#RealDerivedOps.R">R</a></span><span class="id"> :=</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.floor">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.floor">floor</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#x:57">x</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#fd24b924079f6f5906ec417190abcf00">%:~R</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Rceil" class="id"><div name="Rceil" class=" tooltip">Rceil<span class='tooltip-area'><p>dEFin : forall {R : Type}, R -> \bar^d R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="range1" class="id"><div name="range1" class=" tooltip">range1<span class='tooltip-area'><p>dEFin : forall {R : Type}, R -> \bar^d R
 
 dEFin is not universe polymorphic
 Arguments dEFin {R}%_type_scope _
 dEFin is transparent
 Expands to: Constant mathcomp.reals.constructive_ereal.dEFin
 Declared in
-library mathcomp.reals.constructive_ereal, line 152, characters 11-16
+library mathcomp.reals.constructive_ereal, line 153, characters 11-16
+</p></span></div></span> (<span id="x:58" class="id"><a name="x:58" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#RealDerivedOps.R">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="y:59" class="id"><a name="y:59" class="">y</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#x:58">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#eecc969a2fa3156b5b7024f4c30ed163"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#eecc969a2fa3156b5b7024f4c30ed163"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#y:59">y</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#eecc969a2fa3156b5b7024f4c30ed163"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#eecc969a2fa3156b5b7024f4c30ed163"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#x:58">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id">1</span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Rceil" class="id"><div name="Rceil" class=" tooltip">Rceil<span class='tooltip-area'><p>er_map : forall [T T' : Type], (T -> T') -> \bar T -> \bar T'
+
+er_map is not universe polymorphic
+Arguments er_map [T T']%_type_scope f%_function_scope x%_ereal_scope
+er_map is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.er_map
+Declared in
+library mathcomp.reals.constructive_ereal, line 180, characters 11-17
 </p></span></div></span><span class="id"> </span><span id="x:60" class="id"><a name="x:60" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#RealDerivedOps.R">R</a></span><span class="id"> :=</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.ceil">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.archimedean.html#Num.ceil">ceil</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#x:60">x</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.ssrint.html#fd24b924079f6f5906ec417190abcf00">%:~R</a></span>.<br/>
 <br/>
 <span class="vernacular">End</span><span class="id"> RealDerivedOps</span>.<br/>
@@ -1258,22 +1258,30 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> rational</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="rational.R" class="id"><a name="rational.R" class="">R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#realType">realType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="rational" class="id"><div name="rational" class=" tooltip">rational<span class='tooltip-area'><p>er_map : forall [T T' : Type], (T -> T') -> \bar T -> \bar T'
-
-er_map is not universe polymorphic
-Arguments er_map [T T']%_type_scope f%_function_scope x%_ereal_scope
-er_map is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.er_map
-Declared in
-library mathcomp.reals.constructive_ereal, line 179, characters 11-17
-fine : forall {R : GRing.Zmodule.Exports.zmodType}, \bar R -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="rational" class="id"><div name="rational" class=" tooltip">rational<span class='tooltip-area'><p>fine : forall {R : GRing.Zmodule.Exports.zmodType}, \bar R -> R
 
 fine is not universe polymorphic
 Arguments fine {R} x%_ereal_scope
 fine is transparent
 Expands to: Constant mathcomp.reals.constructive_ereal.fine
 Declared in
-library mathcomp.reals.constructive_ereal, line 189, characters 11-15
+library mathcomp.reals.constructive_ereal, line 190, characters 11-15
+eq_ereal : forall [R : eqType], \bar R -> \bar R -> bool
+
+eq_ereal is not universe polymorphic
+Arguments eq_ereal [R] (x y)%_ereal_scope
+eq_ereal is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.eq_ereal
+Declared in
+library mathcomp.reals.constructive_ereal, line 195, characters 11-19
+code : forall [R : choiceType], \bar R -> GenTree.tree R
+
+code is not universe polymorphic
+Arguments code [R] x%_ereal_scope
+code is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.code
+Declared in
+library mathcomp.reals.constructive_ereal, line 215, characters 11-15
 </p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#rational.R">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.rat.html#ratr">ratr</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.rat.html#rat">rat</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="rationalP" class="id"><a name="rationalP" class="">rationalP</a></span> (<span id="r:251" class="id"><a name="r:251" class="">r</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#rational.R">R</a></span>)<span class="id"> :</span><br/>
@@ -1287,14 +1295,14 @@ library mathcomp.reals.constructive_ereal, line 189, characters 11-15
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.divalg.html#GRing.Theory.fmorph_div">fmorph_div</a></span><span class="id">/=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.rat.html#ratr_nat">ratr_nat</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.rat.html#ratr_int">ratr_int</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="irrational" class="id"><div name="irrational" class=" tooltip">irrational<span class='tooltip-area'><p>eq_ereal : forall [R : eqType], \bar R -> \bar R -> bool
+<span class="vernacular">Definition</span><span class="id"> </span><span id="irrational" class="id"><div name="irrational" class=" tooltip">irrational<span class='tooltip-area'><p>decode : forall [R : choiceType], GenTree.tree R -> option \bar R
 
-eq_ereal is not universe polymorphic
-Arguments eq_ereal [R] (x y)%_ereal_scope
-eq_ereal is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.eq_ereal
+decode is not universe polymorphic
+Arguments decode [R] x
+decode is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.decode
 Declared in
-library mathcomp.reals.constructive_ereal, line 194, characters 11-19
+library mathcomp.reals.constructive_ereal, line 222, characters 11-17
 </p></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#rational.R">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1">~`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#rational">rational</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="irrationalE" class="id"><a name="irrationalE" class="">irrationalE</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#irrational">irrational</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9cb6036901aff0cb53f30093328452cb">\bigcap_</a></span>(<span id="q:254" class="id"><a name="q:254" class="">q</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9cb6036901aff0cb53f30093328452cb"> :</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9cb6036901aff0cb53f30093328452cb"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.rat.html#rat">rat</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#9cb6036901aff0cb53f30093328452cb"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1">~`</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.rat.html#ratr">ratr</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#q:254">q</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span>).<br/>

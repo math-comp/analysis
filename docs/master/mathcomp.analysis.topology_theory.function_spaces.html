@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.topology_theory.function_spaces</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 4eaa6fb" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis e656ced" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -611,15 +611,6 @@ Expands to: Constant
             mathcomp.analysis.topology_theory.uniform_structure.entourage_set
 Declared in
 library mathcomp.analysis.topology_theory.uniform_structure, line 331, characters 11-24
-cauchy : forall {T : uniformType}, set_system T -> Prop
-
-cauchy is not universe polymorphic
-Arguments cauchy {T} F
-cauchy is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.uniform_structure.cauchy
-Declared in
-library mathcomp.analysis.topology_theory.uniform_structure, line 337, characters 11-17
 </p></span></div></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span> (<span id="U:124" class="id"><a name="U:124" class="">U</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#product_spaces.product_embeddings.T">T</a></span>)<span class="id"> </span><span id="x:125" class="id"><a name="x:125" class="">x</a></span><span class="id">,</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#U:124">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181">~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#U:124">U</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#x:125">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">exists</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="i:126" class="id"><a name="i:126" class="">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181">~</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span> (<span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#product_spaces.product_embeddings.f_">f_</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#i:126">i</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#U:124">U</a></span>)) (<span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#product_spaces.product_embeddings.f_">f_</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#i:126">i</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#x:125">x</a></span>).<br/>
 <br/>
@@ -672,7 +663,16 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> split</span><span class="id"> =&gt;</span><span class="id"> +</span><span class="id"> z</span><span class="id"> =&gt;</span><span class="id"> /</span>(_<span class="id"> z</span>)<span class="id">;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#initial_sep_nbhsE">initial_sep_nbhsE</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="join_product" class="id"><div name="join_product" class=" tooltip">join_product<span class='tooltip-area'></span></div></span> (<span id="x:138" class="id"><a name="x:138" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#product_spaces.product_embeddings.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#product_spaces.product_embeddings.PU">PU</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#product_spaces.product_embeddings.f_">f_</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> ^~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#x:138">x</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="join_product" class="id"><div name="join_product" class=" tooltip">join_product<span class='tooltip-area'><p>cauchy : forall {T : uniformType}, set_system T -> Prop
+
+cauchy is not universe polymorphic
+Arguments cauchy {T} F
+cauchy is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.uniform_structure.cauchy
+Declared in
+library mathcomp.analysis.topology_theory.uniform_structure, line 337, characters 11-17
+</p></span></div></span> (<span id="x:138" class="id"><a name="x:138" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#product_spaces.product_embeddings.T">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#product_spaces.product_embeddings.PU">PU</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#product_spaces.product_embeddings.f_">f_</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> ^~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#x:138">x</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="join_product_continuous" class="id"><a name="join_product_continuous" class="">join_product_continuous</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#join_product">join_product</a></span>.<br/>
 <details>

@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.classical.contra</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 4eaa6fb" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis e656ced" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -1024,26 +1024,7 @@ Declared in library mathcomp.classical.functions, line 2668, characters 19-32
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="id"> #[warnings=</span><span class="id">&quot;-user-warn&quot;</span><span class="id">]</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#inhabitedE">inhabitedE</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.notE">notE</a></span>. Qed.</div></details>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.inhabited_nProp" class="id"><div name="Internals.inhabited_nProp" class=" tooltip">inhabited_nProp<span class='tooltip-area'><p>fctE :
-(forall (T T' : Type) (x : T), cst x = (fun=> x)) *
-(forall (T1 T2 T3 : Type) (f : T1 -> T2) (g : T2 -> T3),
- g \o f = (fun x : T1 => g (f x))) *
-(forall (T : Type) (K : GRing.Zmodule.Exports.zmodType) (f : T -> K),
- (- f)%R = (fun x : T => (- f x)%R)) *
-(forall (T : Type) (K : GRing.Nmodule.Exports.nmodType) (f g : T -> K),
- (f + g)%R = (fun x : T => (f x + g x)%R)) *
-(forall (T : Type) (K : pzRingType) (f g : T -> K),
- (f * g)%R = (fun x : T => (f x * g x)%R)) *
-(forall (T : Type) (K : pzRingType) (L : lmodType K) (k : K) (f : T -> L),
- (k *: f)%R = (fun x : T => (k *: f x)%R)) *
-(forall (T : Type) (K : pzRingType) (f : T -> K) (n : nat),
- (f ^+ n)%R = (fun x : T => (f x ^+ n)%R))
-
-fctE is not universe polymorphic
-fctE is transparent
-Expands to: Constant mathcomp.classical.functions.fctE
-Declared in library mathcomp.classical.functions, line 2759, characters 11-15
-</p></span></div></span><span class="id"> </span><span id="T:238" class="id"><a name="T:238" class="">T</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.ProperNegatedProp">ProperNegatedProp</a></span> (<span class="id"><a href="mathcomp.classical.contra.html#Internals.inhabited_nPropP">inhabited_nPropP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#T:238">T</a></span>).<br/>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.inhabited_nProp" class="id"><div name="Internals.inhabited_nProp" class=" tooltip">inhabited_nProp<span class='tooltip-area'></span></div></span><span class="id"> </span><span id="T:238" class="id"><a name="T:238" class="">T</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.ProperNegatedProp">ProperNegatedProp</a></span> (<span class="id"><a href="mathcomp.classical.contra.html#Internals.inhabited_nPropP">inhabited_nPropP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#T:238">T</a></span>).<br/>
 <br/>
 <div class="ssrdoc md">
 Rule 2: forall negation, including (T : Type) -&gt; P statements.
@@ -1081,14 +1062,28 @@ match the exists_nProp rule.
 <span class="id">apply/</span><span class="id"><a href="mathcomp.classical.contra.html#Internals.generic_forall_extensionality">generic_forall_extensionality</a></span><span class="id">=&gt;</span><span class="id"> x;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#if_arg">if_arg</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.lax_notI">lax_notI</a></span>.<br/>
 <span class="gallina-kwd">by</span><span class="id"> case:</span> (<span class="id">R</span><span class="id"> x</span>)<span class="id"> =&gt;</span><span class="id"> _</span><span class="id"> &lt;-</span>.<br/>
 Qed.</div></details>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.forall_nProp" class="id"><div name="Internals.forall_nProp" class=" tooltip">forall_nProp<span class='tooltip-area'><p>linfun :
-forall {K : numDomainType} {E F : lmodType K}, (K -> F -> F) -> {pred E -> F}
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.forall_nProp" class="id"><div name="Internals.forall_nProp" class=" tooltip">forall_nProp<span class='tooltip-area'><p>fctE :
+(forall (T T' : Type) (x : T), cst x = (fun=> x)) *
+(forall (T1 T2 T3 : Type) (f : T1 -> T2) (g : T2 -> T3),
+ g \o f = (fun x : T1 => g (f x))) *
+(forall (T : Type) (K : GRing.Zmodule.Exports.zmodType) (f : T -> K),
+ (- f)%R = (fun x : T => (- f x)%R)) *
+(forall (T : Type) (K : GRing.Nmodule.Exports.nmodType) (f g : T -> K),
+ (f + g)%R = (fun x : T => (f x + g x)%R)) *
+(forall (T : Type) (K : pzRingType) (f g : T -> K),
+ (f * g)%R = (fun x : T => (f x * g x)%R)) *
+(forall (T : Type) (K : pzRingType) (L : lmodType K) (k : K) (f : T -> L),
+ (k *: f)%R = (fun x : T => (k *: f x)%R)) *
+(forall (T : Type) (K : pzRingType) (f : T -> K) (n : nat),
+ (f ^+ n)%R = (fun x : T => (f x ^+ n)%R)) *
+(forall (T : Type) (K : GRing.Nmodule.Exports.nmodType) (x : T),
+ (0%R : T -> K) x = 0%R) *
+(forall (T : Type) (K : pzRingType) (x : T), (1%R : T -> K) x = 1%R)
 
-linfun is not universe polymorphic
-Arguments linfun {K E F} {s}%_function_scope _
-linfun is transparent
-Expands to: Constant mathcomp.classical.functions.linfun
-Declared in library mathcomp.classical.functions, line 2776, characters 11-17
+fctE is not universe polymorphic
+fctE is transparent
+Expands to: Constant mathcomp.classical.functions.fctE
+Declared in library mathcomp.classical.functions, line 2765, characters 11-15
 </p></span></div></span><span class="id"> </span><span id="A:270" class="id"><a name="A:270" class="">A</a></span><span class="id"> </span><span id="b:271" class="id"><a name="b:271" class="">b</a></span><span class="id"> </span><span id="P:272" class="id"><a name="P:272" class="">P</a></span><span class="id"> </span><span id="nQ:273" class="id"><a name="nQ:273" class="">nQ</a></span><span class="id"> </span><span id="tR:274" class="id"><a name="tR:274" class="">tR</a></span><span class="id"> </span><span id="nR:275" class="id"><a name="nR:275" class="">nR</a></span> (<span id="R:277" class="id"><a name="R:277" class="">R</a></span><span class="id"> :</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="x:276" class="id"><a name="x:276" class="">x</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.nBody">nBody</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#b:271">b</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#P:272">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nQ:273">nQ</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#tR:274">tR</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nR:275">nR</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#x:276">x</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id">@</span><span class="id"><a href="mathcomp.classical.contra.html#Internals.NegatedProp">NegatedProp</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="id"> _</span> (<span class="id"><a href="mathcomp.classical.contra.html#Internals.wrap2Prop">wrap2Prop</a></span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:278" class="id"><a name="x:278" class="">x</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#A:270">A</a></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#R:277">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#x:278">x</a></span>)) (<span class="id"><a href="mathcomp.classical.contra.html#Internals.forall_nPropP">forall_nPropP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#R:277">R</a></span>).<br/>
 <br/>
@@ -1098,7 +1093,18 @@ Declared in library mathcomp.classical.functions, line 2776, characters 11-17
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> case</span>. Qed.</div></details>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.proper_nBody" class="id"><div name="Internals.proper_nBody" class=" tooltip">proper_nBody<span class='tooltip-area'><p>linfun_key :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.proper_nBody" class="id"><div name="Internals.proper_nBody" class=" tooltip">proper_nBody<span class='tooltip-area'><p>linfun :
+forall {K : numDomainType} {E F : lmodType K}, (K -> F -> F) -> {pred E -> F}
+
+linfun is not universe polymorphic
+Arguments linfun {K E F} {s}%_function_scope _
+linfun is transparent
+Expands to: Constant mathcomp.classical.functions.linfun
+Declared in library mathcomp.classical.functions, line 2786, characters 11-17
+</p></span></div></span><span class="id"> </span><span id="b:283" class="id"><a name="b:283" class="">b</a></span><span class="id"> </span><span id="P:284" class="id"><a name="P:284" class="">P</a></span><span class="id"> </span><span id="nQ:285" class="id"><a name="nQ:285" class="">nQ</a></span><span class="id"> </span><span id="nR:286" class="id"><a name="nR:286" class="">nR</a></span><span class="id"> </span><span id="R:287" class="id"><a name="R:287" class="">R</a></span><span class="id"> :=</span><br/>
+&nbsp;&nbsp;<span class="gallina-kwd">let</span><span class="id"> </span><span id="def_nR:288" class="id"><a name="def_nR:288" class="">def_nR</a></span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.classical.contra.html#Internals.proper_nBodyP">proper_nBodyP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#b:283">b</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#P:284">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nQ:285">nQ</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nR:286">nR</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#R:287">R</a></span><span class="gallina-kwd"> in</span><br/>
+&nbsp;&nbsp;<span class="id">@</span><span class="id"><a href="mathcomp.classical.contra.html#Internals.NegatedForallBody">NegatedForallBody</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#b:283">b</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#P:284">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nQ:285">nQ</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nR:286">nR</a></span> (<span class="id"><a href="mathcomp.classical.contra.html#Internals.proper_nProp">proper_nProp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#R:287">R</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#def_nR:288">def_nR</a></span>.<br/>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.nonproper_nBody" class="id"><div name="Internals.nonproper_nBody" class=" tooltip">nonproper_nBody<span class='tooltip-area'><p>linfun_key :
 forall {K : numDomainType} {E F : lmodType K} {s : K -> F -> F},
 pred_key (T:=E -> F) linfun
 
@@ -1106,19 +1112,7 @@ linfun_key is not universe polymorphic
 Arguments linfun_key {K E F} {s}%_function_scope
 linfun_key is opaque
 Expands to: Constant mathcomp.classical.functions.linfun_key
-Declared in library mathcomp.classical.functions, line 2778, characters 11-21
-</p></span></div></span><span class="id"> </span><span id="b:283" class="id"><a name="b:283" class="">b</a></span><span class="id"> </span><span id="P:284" class="id"><a name="P:284" class="">P</a></span><span class="id"> </span><span id="nQ:285" class="id"><a name="nQ:285" class="">nQ</a></span><span class="id"> </span><span id="nR:286" class="id"><a name="nR:286" class="">nR</a></span><span class="id"> </span><span id="R:287" class="id"><a name="R:287" class="">R</a></span><span class="id"> :=</span><br/>
-&nbsp;&nbsp;<span class="gallina-kwd">let</span><span class="id"> </span><span id="def_nR:288" class="id"><a name="def_nR:288" class="">def_nR</a></span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.classical.contra.html#Internals.proper_nBodyP">proper_nBodyP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#b:283">b</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#P:284">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nQ:285">nQ</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nR:286">nR</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#R:287">R</a></span><span class="gallina-kwd"> in</span><br/>
-&nbsp;&nbsp;<span class="id">@</span><span class="id"><a href="mathcomp.classical.contra.html#Internals.NegatedForallBody">NegatedForallBody</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#b:283">b</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#P:284">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nQ:285">nQ</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nR:286">nR</a></span> (<span class="id"><a href="mathcomp.classical.contra.html#Internals.proper_nProp">proper_nProp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#R:287">R</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#def_nR:288">def_nR</a></span>.<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.nonproper_nBody" class="id"><div name="Internals.nonproper_nBody" class=" tooltip">nonproper_nBody<span class='tooltip-area'><p>linfun_keyed :
-forall {K : numDomainType} {E F : lmodType K} {s : K -> F -> F},
-keyed_pred linfun_key
-
-linfun_keyed is not universe polymorphic
-Arguments linfun_keyed {K E F} {s}%_function_scope
-linfun_keyed is transparent
-Expands to: Constant mathcomp.classical.functions.linfun_keyed
-Declared in library mathcomp.classical.functions, line 2780, characters 10-22
+Declared in library mathcomp.classical.functions, line 2788, characters 11-21
 </p></span></div></span><span class="id"> </span><span id="tP:289" class="id"><a name="tP:289" class="">tP</a></span><span class="id"> </span><span id="nP:290" class="id"><a name="nP:290" class="">nP</a></span><span class="id"> </span><span id="P:291" class="id"><a name="P:291" class="">P</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id">@</span><span class="id"><a href="mathcomp.classical.contra.html#Internals.NegatedForallBody">NegatedForallBody</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#True">True</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nP:290">nP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#tP:289">tP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nP:290">nP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#P:291">P</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#erefl">erefl</a></span>.<br/>
 <br/>
@@ -1127,19 +1121,18 @@ Declared in library mathcomp.classical.functions, line 2780, characters 10-22
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> case</span>. Qed.</div></details>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.bounded_nBody" class="id"><div name="Internals.bounded_nBody" class=" tooltip">bounded_nBody<span class='tooltip-area'><p>linfun_Sub_subproof not a defined object.
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.bounded_nBody" class="id"><div name="Internals.bounded_nBody" class=" tooltip">bounded_nBody<span class='tooltip-area'><p>linfun_keyed :
+forall {K : numDomainType} {E F : lmodType K} {s : K -> F -> F},
+keyed_pred linfun_key
+
+linfun_keyed is not universe polymorphic
+Arguments linfun_keyed {K E F} {s}%_function_scope
+linfun_keyed is transparent
+Expands to: Constant mathcomp.classical.functions.linfun_keyed
+Declared in library mathcomp.classical.functions, line 2790, characters 10-22
 </p></span></div></span><span class="id"> </span><span id="b:296" class="id"><a name="b:296" class="">b</a></span><span class="id"> </span><span id="P:297" class="id"><a name="P:297" class="">P</a></span><span class="id"> </span><span id="nQ:298" class="id"><a name="nQ:298" class="">nQ</a></span><span class="id"> </span><span id="PnQ:299" class="id"><a name="PnQ:299" class="">PnQ</a></span><span class="id"> </span><span id="tR:300" class="id"><a name="tR:300" class="">tR</a></span><span class="id"> </span><span id="nR:301" class="id"><a name="nR:301" class="">nR</a></span><span class="id"> </span><span id="R:302" class="id"><a name="R:302" class="">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.classical.contra.html#Internals.ProperNegatedForallBody">ProperNegatedForallBody</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.contra.html#Internals.imply_nProp">imply_nProp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#b:296">b</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#P:297">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nQ:298">nQ</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#PnQ:299">PnQ</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#tR:300">tR</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nR:301">nR</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#R:302">R</a></span>) (<span class="id"><a href="mathcomp.classical.contra.html#Internals.andRHS_def">andRHS_def</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nR:301">nR</a></span>).<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.unbounded_nBody" class="id"><div name="Internals.unbounded_nBody" class=" tooltip">unbounded_nBody<span class='tooltip-area'><p>linfun_Sub :
-forall {R : numDomainType} {E F : lmodType R} {s : GRing.Scale.law R F}
-  [f : E -> F],
-f \in linfun -> {linear E -> F | s}
-
-linfun_Sub is not universe polymorphic
-Arguments linfun_Sub {R E F s} [f]%_function_scope fP
-linfun_Sub is transparent
-Expands to: Constant mathcomp.classical.functions.linfun_Sub
-Declared in library mathcomp.classical.functions, line 2799, characters 11-21
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.unbounded_nBody" class="id"><div name="Internals.unbounded_nBody" class=" tooltip">unbounded_nBody<span class='tooltip-area'><p>linfun_Sub_subproof not a defined object.
 </p></span></div></span><span class="id"> </span><span id="nQ:303" class="id"><a name="nQ:303" class="">nQ</a></span><span class="id"> </span><span id="Q:304" class="id"><a name="Q:304" class="">Q</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id">@</span><span class="id"><a href="mathcomp.classical.contra.html#Internals.ProperNegatedForallBody">ProperNegatedForallBody</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#True">True</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nQ:303">nQ</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nQ:303">nQ</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Q:304">Q</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#erefl">erefl</a></span>.<br/>
 <br/>
@@ -1166,14 +1159,16 @@ statement in its desired shape.
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> case:</span><span class="id"> b</span>. Qed.</div></details>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.is_true_nProp" class="id"><div name="Internals.is_true_nProp" class=" tooltip">is_true_nProp<span class='tooltip-area'><p>Eq_rect_eq_on : forall (U : Type) (p : U) (Q : U -> Type), Q p -> Prop
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.is_true_nProp" class="id"><div name="Internals.is_true_nProp" class=" tooltip">is_true_nProp<span class='tooltip-area'><p>linfun_Sub :
+forall {R : numDomainType} {E F : lmodType R} {s : GRing.Scale.law R F}
+  [f : E -> F],
+f \in linfun -> {linear E -> F | s}
 
-Eq_rect_eq_on is not universe polymorphic
-Arguments Eq_rect_eq_on U%_type_scope p Q%_function_scope x
-Eq_rect_eq_on is transparent
-Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Eq_rect_eq_on
-Declared in
-library mathcomp.classical.internal_Eqdep_dec, line 36, characters 11-24
+linfun_Sub is not universe polymorphic
+Arguments linfun_Sub {R E F s} [f]%_function_scope fP
+linfun_Sub is transparent
+Expands to: Constant mathcomp.classical.functions.linfun_Sub
+Declared in library mathcomp.classical.functions, line 2809, characters 11-21
 </p></span></div></span><span class="id"> </span><span id="nP:313" class="id"><a name="nP:313" class="">nP</a></span><span class="id"> </span><span id="b:314" class="id"><a name="b:314" class="">b</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.ProperNegatedProp">ProperNegatedProp</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.contra.html#Internals.is_true_nPropP">is_true_nPropP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nP:313">nP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#b:314">b</a></span>).<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Fact</span><span class="id"> </span><span id="Internals.true_negP" class="id"><a name="Internals.true_negP" class="">true_negP</a></span><span class="id"> :</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181">~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#False">False</a></span><br/>
@@ -1196,7 +1191,16 @@ library mathcomp.classical.internal_Eqdep_dec, line 36, characters 11-24
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> eqProp</span>. Qed.</div></details>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.true_neg" class="id"><div name="Internals.true_neg" class=" tooltip">true_neg<span class='tooltip-area'><p>Eq_rect_eq : Type -> Prop
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.true_neg" class="id"><div name="Internals.true_neg" class=" tooltip">true_neg<span class='tooltip-area'><p>Eq_rect_eq_on : forall (U : Type) (p : U) (Q : U -> Type), Q p -> Prop
+
+Eq_rect_eq_on is not universe polymorphic
+Arguments Eq_rect_eq_on U%_type_scope p Q%_function_scope x
+Eq_rect_eq_on is transparent
+Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Eq_rect_eq_on
+Declared in
+library mathcomp.classical.internal_Eqdep_dec, line 36, characters 11-24
+</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.NegatedBool">NegatedBool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.true_negP">true_negP</a></span>.<br/>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.true_pos" class="id"><div name="Internals.true_pos" class=" tooltip">true_pos<span class='tooltip-area'><p>Eq_rect_eq : Type -> Prop
 
 Eq_rect_eq is not universe polymorphic
 Arguments Eq_rect_eq U%_type_scope
@@ -1204,8 +1208,8 @@ Eq_rect_eq is transparent
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Eq_rect_eq
 Declared in
 library mathcomp.classical.internal_Eqdep_dec, line 38, characters 11-21
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.NegatedBool">NegatedBool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.true_negP">true_negP</a></span>.<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.true_pos" class="id"><div name="Internals.true_pos" class=" tooltip">true_pos<span class='tooltip-area'><p>Eq_dep_eq_on : forall (U : Type) (P : U -> Type) (p : U), P p -> Prop
+</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.PositedBool">PositedBool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.true_posP">true_posP</a></span>.<br/>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.false_neg" class="id"><div name="Internals.false_neg" class=" tooltip">false_neg<span class='tooltip-area'><p>Eq_dep_eq_on : forall (U : Type) (P : U -> Type) (p : U), P p -> Prop
 
 Eq_dep_eq_on is not universe polymorphic
 Arguments Eq_dep_eq_on U%_type_scope P%_function_scope p x
@@ -1213,8 +1217,8 @@ Eq_dep_eq_on is transparent
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Eq_dep_eq_on
 Declared in
 library mathcomp.classical.internal_Eqdep_dec, line 40, characters 11-23
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.PositedBool">PositedBool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.true_posP">true_posP</a></span>.<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.false_neg" class="id"><div name="Internals.false_neg" class=" tooltip">false_neg<span class='tooltip-area'><p>Eq_dep_eq : Type -> Prop
+</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.NegatedBool">NegatedBool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.false_negP">false_negP</a></span>.<br/>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.false_pos" class="id"><div name="Internals.false_pos" class=" tooltip">false_pos<span class='tooltip-area'><p>Eq_dep_eq : Type -> Prop
 
 Eq_dep_eq is not universe polymorphic
 Arguments Eq_dep_eq U%_type_scope
@@ -1222,15 +1226,6 @@ Eq_dep_eq is transparent
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Eq_dep_eq
 Declared in
 library mathcomp.classical.internal_Eqdep_dec, line 42, characters 11-20
-</p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.NegatedBool">NegatedBool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.false_negP">false_negP</a></span>.<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.false_pos" class="id"><div name="Internals.false_pos" class=" tooltip">false_pos<span class='tooltip-area'><p>Streicher_K_on_ : forall (U : Type) (x : U), (x = x -> Prop) -> Prop
-
-Streicher_K_on_ is not universe polymorphic
-Arguments Streicher_K_on_ U%_type_scope x P%_function_scope
-Streicher_K_on_ is transparent
-Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Streicher_K_on_
-Declared in
-library mathcomp.classical.internal_Eqdep_dec, line 44, characters 11-26
 </p></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.PositedBool">PositedBool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.false_posP">false_posP</a></span>.<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Fact</span><span class="id"> </span><span id="Internals.id_negP" class="id"><a name="Internals.id_negP" class="">id_negP</a></span> (<span id="b:315" class="id"><a name="b:315" class="">b</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#bool">bool</a></span>)<span class="id"> :</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181">~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181"> </a></span><span class="id"><a href="mathcomp.classical.contra.html#b:315">b</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b3ebd0deddd84fd60e149cb5ef719351">~~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b3ebd0deddd84fd60e149cb5ef719351"> </a></span><span class="id"><a href="mathcomp.classical.contra.html#b:315">b</a></span><br/>
@@ -1238,7 +1233,16 @@ library mathcomp.classical.internal_Eqdep_dec, line 44, characters 11-26
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="id"> exact/</span><span class="id"><a href="mathcomp.classical.boolp.html#reflect_eq">reflect_eq</a></span><span class="id">/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#negP">negP</a></span>. Qed.</div></details>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.id_neg" class="id"><div name="Internals.id_neg" class=" tooltip">id_neg<span class='tooltip-area'><p>Streicher_K_ : Type -> Prop
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.id_neg" class="id"><div name="Internals.id_neg" class=" tooltip">id_neg<span class='tooltip-area'><p>Streicher_K_on_ : forall (U : Type) (x : U), (x = x -> Prop) -> Prop
+
+Streicher_K_on_ is not universe polymorphic
+Arguments Streicher_K_on_ U%_type_scope x P%_function_scope
+Streicher_K_on_ is transparent
+Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Streicher_K_on_
+Declared in
+library mathcomp.classical.internal_Eqdep_dec, line 44, characters 11-26
+</p></span></div></span><span class="id"> </span><span id="b:316" class="id"><a name="b:316" class="">b</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.NegatedBool">NegatedBool</a></span> (<span class="id"><a href="mathcomp.classical.contra.html#Internals.id_negP">id_negP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#b:316">b</a></span>).<br/>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.id_pos" class="id"><div name="Internals.id_pos" class=" tooltip">id_pos<span class='tooltip-area'><p>Streicher_K_ : Type -> Prop
 
 Streicher_K_ is not universe polymorphic
 Arguments Streicher_K_ U%_type_scope
@@ -1246,15 +1250,6 @@ Streicher_K_ is transparent
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Streicher_K_
 Declared in
 library mathcomp.classical.internal_Eqdep_dec, line 46, characters 11-23
-</p></span></div></span><span class="id"> </span><span id="b:316" class="id"><a name="b:316" class="">b</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.NegatedBool">NegatedBool</a></span> (<span class="id"><a href="mathcomp.classical.contra.html#Internals.id_negP">id_negP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#b:316">b</a></span>).<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.id_pos" class="id"><div name="Internals.id_pos" class=" tooltip">id_pos<span class='tooltip-area'><p>Inj_dep_pair_on : forall (U : Type) (P : U -> Type) (p : U), P p -> Prop
-
-Inj_dep_pair_on is not universe polymorphic
-Arguments Inj_dep_pair_on U%_type_scope P%_function_scope p x
-Inj_dep_pair_on is transparent
-Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Inj_dep_pair_on
-Declared in
-library mathcomp.classical.internal_Eqdep_dec, line 151, characters 11-26
 </p></span></div></span> (<span id="b:317" class="id"><a name="b:317" class="">b</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#bool">bool</a></span>)<span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.classical.contra.html#Internals.PositedBool">PositedBool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#b:317">b</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#b:317">b</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#erefl">erefl</a></span>.<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Fact</span><span class="id"> </span><span id="Internals.negb_negP" class="id"><a name="Internals.negb_negP" class="">negb_negP</a></span><span class="id"> </span><span id="P:318" class="id"><a name="P:318" class="">P</a></span> (<span id="b:319" class="id"><a name="b:319" class="">b</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.positedBool">positedBool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#P:318">P</a></span>)<span class="id"> :</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181">~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b3ebd0deddd84fd60e149cb5ef719351">~~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b3ebd0deddd84fd60e149cb5ef719351"> </a></span><span class="id"><a href="mathcomp.classical.contra.html#b:319">b</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.contra.html#P:318">P</a></span>.<br/>
@@ -1262,7 +1257,21 @@ library mathcomp.classical.internal_Eqdep_dec, line 151, characters 11-26
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span> (<span class="id"><a href="mathcomp.classical.boolp.html#reflect_eq">reflect_eq</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#negP">negP</a></span>)<span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#negbK">negbK</a></span><span class="id">;</span><span class="id"> case:</span><span class="id"> b</span>. Qed.</div></details>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.negb_neg" class="id"><div name="Internals.negb_neg" class=" tooltip">negb_neg<span class='tooltip-area'><p>Inj_dep_pair : Type -> Prop
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.negb_neg" class="id"><div name="Internals.negb_neg" class=" tooltip">negb_neg<span class='tooltip-area'><p>Inj_dep_pair_on : forall (U : Type) (P : U -> Type) (p : U), P p -> Prop
+
+Inj_dep_pair_on is not universe polymorphic
+Arguments Inj_dep_pair_on U%_type_scope P%_function_scope p x
+Inj_dep_pair_on is transparent
+Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Inj_dep_pair_on
+Declared in
+library mathcomp.classical.internal_Eqdep_dec, line 151, characters 11-26
+</p></span></div></span><span class="id"> </span><span id="P:320" class="id"><a name="P:320" class="">P</a></span><span class="id"> </span><span id="b:321" class="id"><a name="b:321" class="">b</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.NegatedBool">NegatedBool</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.contra.html#Internals.negb_negP">negb_negP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#P:320">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#b:321">b</a></span>).<br/>
+<span class="vernacular">Local</span><span class="vernacular"> Fact</span><span class="id"> </span><span id="Internals.negb_posP" class="id"><a name="Internals.negb_posP" class="">negb_posP</a></span><span class="id"> </span><span id="nP:322" class="id"><a name="nP:322" class="">nP</a></span> (<span id="b:323" class="id"><a name="b:323" class="">b</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.negatedBool">negatedBool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nP:322">nP</a></span>)<span class="id"> :</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b3ebd0deddd84fd60e149cb5ef719351">~~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b3ebd0deddd84fd60e149cb5ef719351"> </a></span><span class="id"><a href="mathcomp.classical.contra.html#b:323">b</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id"><a href="mathcomp.classical.contra.html#nP:322">nP</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> :&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="gallina-kwd">Prop</span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id"> #[warnings=</span><span class="id">&quot;-user-warn&quot;</span><span class="id">]</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> -</span>(<span class="id"><a href="mathcomp.classical.boolp.html#reflect_eq">reflect_eq</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#negP">negP</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.notE">notE</a></span>. Qed.</div></details>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.negb_pos" class="id"><div name="Internals.negb_pos" class=" tooltip">negb_pos<span class='tooltip-area'><p>Inj_dep_pair : Type -> Prop
 
 Inj_dep_pair is not universe polymorphic
 Arguments Inj_dep_pair U%_type_scope
@@ -1270,13 +1279,7 @@ Inj_dep_pair is transparent
 Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Inj_dep_pair
 Declared in
 library mathcomp.classical.internal_Eqdep_dec, line 153, characters 11-23
-</p></span></div></span><span class="id"> </span><span id="P:320" class="id"><a name="P:320" class="">P</a></span><span class="id"> </span><span id="b:321" class="id"><a name="b:321" class="">b</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.NegatedBool">NegatedBool</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.contra.html#Internals.negb_negP">negb_negP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#P:320">P</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#b:321">b</a></span>).<br/>
-<span class="vernacular">Local</span><span class="vernacular"> Fact</span><span class="id"> </span><span id="Internals.negb_posP" class="id"><a name="Internals.negb_posP" class="">negb_posP</a></span><span class="id"> </span><span id="nP:322" class="id"><a name="nP:322" class="">nP</a></span> (<span id="b:323" class="id"><a name="b:323" class="">b</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.negatedBool">negatedBool</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nP:322">nP</a></span>)<span class="id"> :</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b3ebd0deddd84fd60e149cb5ef719351">~~</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b3ebd0deddd84fd60e149cb5ef719351"> </a></span><span class="id"><a href="mathcomp.classical.contra.html#b:323">b</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="id"><a href="mathcomp.classical.contra.html#nP:322">nP</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> :&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#b8b2ebc8e1a8b9aa935c0702efb5dccf"> </a></span><span class="gallina-kwd">Prop</span>).<br/>
-<details>
-<summary class="toggleproof">Proof.</summary>
-<div class="proofscript">
-<span class="id"> #[warnings=</span><span class="id">&quot;-user-warn&quot;</span><span class="id">]</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> -</span>(<span class="id"><a href="mathcomp.classical.boolp.html#reflect_eq">reflect_eq</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#negP">negP</a></span>)<span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.notE">notE</a></span>. Qed.</div></details>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="Internals.negb_pos" class="id"><div name="Internals.negb_pos" class=" tooltip">negb_pos<span class='tooltip-area'></span></div></span><span class="id"> </span><span id="nP:324" class="id"><a name="nP:324" class="">nP</a></span><span class="id"> </span><span id="b:325" class="id"><a name="b:325" class="">b</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.PositedBool">PositedBool</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.contra.html#Internals.negb_posP">negb_posP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nP:324">nP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#b:325">b</a></span>).<br/>
+</p></span></div></span><span class="id"> </span><span id="nP:324" class="id"><a name="nP:324" class="">nP</a></span><span class="id"> </span><span id="b:325" class="id"><a name="b:325" class="">b</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#Internals.PositedBool">PositedBool</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.contra.html#Internals.negb_posP">negb_posP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#nP:324">nP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.contra.html#b:325">b</a></span>).<br/>
 <br/>
 <div class="ssrdoc md">
 We use a tertiary structure to handle the negation of nat comparisons, and

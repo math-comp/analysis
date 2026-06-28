@@ -121,9 +121,10 @@ subgraph cluster_reals { "experimental_reals/realseq"[label="realseq",URL="mathc
   "experimental_reals/xfinmap" -> "experimental_reals/realseq";
   "reals/constructive_ereal" -> "experimental_reals/realseq";
   "reals/reals" -> "experimental_reals/realseq";
-subgraph cluster_reals { "experimental_reals/realsum"[label="realsum",URL="mathcomp.experimental_reals.realsum.html",fillcolor=2,fontcolor=white]}  "classical/all_ssreflect_compat" -> "experimental_reals/realsum";
-  "classical/boolp" -> "experimental_reals/realsum";
+subgraph cluster_reals { "experimental_reals/realsum"[label="realsum",URL="mathcomp.experimental_reals.realsum.html",fillcolor=2,fontcolor=white]}  "classical/boolp" -> "experimental_reals/realsum";
+  "classical/cardinality" -> "experimental_reals/realsum";
   "classical/classical_sets" -> "experimental_reals/realsum";
+  "classical/fsbigop" -> "experimental_reals/realsum";
   "classical/functions" -> "experimental_reals/realsum";
   "classical/unstable" -> "experimental_reals/realsum";
   "experimental_reals/discrete" -> "experimental_reals/realsum";
@@ -131,6 +132,9 @@ subgraph cluster_reals { "experimental_reals/realsum"[label="realsum",URL="mathc
   "experimental_reals/xfinmap" -> "experimental_reals/realsum";
   "reals/constructive_ereal" -> "experimental_reals/realsum";
   "reals/reals" -> "experimental_reals/realsum";
+  "theories/ereal" -> "experimental_reals/realsum";
+  "theories/esum" -> "experimental_reals/realsum";
+  "theories/numfun" -> "experimental_reals/realsum";
 subgraph cluster_reals { "experimental_reals/distr"[label="distr",URL="mathcomp.experimental_reals.distr.html",fillcolor=2,fontcolor=white]}  "classical/all_ssreflect_compat" -> "experimental_reals/distr";
   "classical/boolp" -> "experimental_reals/distr";
   "classical/classical_sets" -> "experimental_reals/distr";
@@ -623,6 +627,7 @@ subgraph cluster_analysis { "theories/esum"[label="esum",URL="mathcomp.analysis.
   "classical/fsbigop" -> "theories/esum";
   "classical/functions" -> "theories/esum";
   "classical/mathcomp_extra" -> "theories/esum";
+  "classical/unstable" -> "theories/esum";
   "reals/reals" -> "theories/esum";
   "theories/ereal" -> "theories/esum";
   "theories/normedtype_theory/normedtype" -> "theories/esum";

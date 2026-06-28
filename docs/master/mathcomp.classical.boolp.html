@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.classical.boolp</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 4eaa6fb" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis e656ced" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -687,36 +687,14 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#propeqE">propeqE</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#rwP">rwP</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="asbool" class="id"><div name="asbool" class=" tooltip">asbool<span class='tooltip-area'><p>fneg :
-forall {R : realType} {T : choiceType},
-(T -> R) ->
-T ->
-{|
-  Num.POrderZmodule.sort := R;
-  Num.POrderZmodule.class :=
-    {|
-      Num.POrderZmodule.choice_hasChoice_mixin := Real.class R;
-      Num.POrderZmodule.eqtype_hasDecEq_mixin := Real.class R;
-      Num.POrderZmodule.Order_isDuallyPreorder_mixin := Real.class R;
-      Num.POrderZmodule.Order_Preorder_isDuallyPOrder_mixin := Real.class R;
-      Num.POrderZmodule.Algebra_hasOpp_mixin := Real.class R;
-      Num.POrderZmodule.Algebra_hasZero_mixin := Real.class R;
-      Num.POrderZmodule.Algebra_hasAdd_mixin := Real.class R;
-      Num.POrderZmodule.Algebra_BaseZmoduleNmodule_isZmodule_mixin :=
-        Real.class R;
-      Num.POrderZmodule.Algebra_BaseAddUMagma_isAddUMagma_mixin :=
-        Real.class R;
-      Num.POrderZmodule.Algebra_BaseAddMagma_isAddMagma_mixin := Real.class R;
-      Num.POrderZmodule.Algebra_AddMagma_isAddSemigroup_mixin := Real.class R
-    |}
-|}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="asbool" class="id"><div name="asbool" class=" tooltip">asbool<span class='tooltip-area'><p>PosSum.psum : forall {R : realType} {T : choiceType}, (T -> R) -> R
 
-fneg is not universe polymorphic
-Arguments fneg {R T} f%_function_scope x
-fneg is transparent
-Expands to: Constant mathcomp.experimental_reals.realsum.fneg
+PosSum.psum is not universe polymorphic
+Arguments PosSum.psum {R T} f%_function_scope
+PosSum.psum is transparent
+Expands to: Constant mathcomp.experimental_reals.realsum.PosSum.psum
 Declared in
-library mathcomp.experimental_reals.realsum, line 50, characters 11-15
+library mathcomp.experimental_reals.realsum, line 69, characters 11-15
 </p></span></div></span> (<span id="P:292" class="id"><a name="P:292" class="">P</a></span><span class="id"> :</span><span class="gallina-kwd"> Prop</span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#pselect">pselect</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#P:292">P</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span>.<br/>
 <br/>
 <span class="vernacular">Notation</span> <span id="cd531d9d29c2247dfa84f185bc7200e2" class="id"><a name="cd531d9d29c2247dfa84f185bc7200e2" class="">&quot;`[&lt; P &gt;]&quot;</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.classical.boolp.html#asbool">asbool</a></span><span class="id"> P</span>)<span class="id"> :</span><span class="id"> bool_scope</span>.<br/>
@@ -805,29 +783,21 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> []</span><span class="id"> [];</span><span class="id"> rewrite</span><span class="id"> ?</span>(<span class="id"><a href="mathcomp.classical.boolp.html#trueE">trueE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#falseE">falseE</a></span>)<span class="id"> ?</span><span class="id"><a href="mathcomp.classical.boolp.html#propeqE">propeqE</a></span><span class="id">;</span><span class="id"> tauto</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="gen_eq" class="id"><div name="gen_eq" class=" tooltip">gen_eq<span class='tooltip-area'><p>psum : forall {R : realType} {T : choiceType}, (T -> R) -> R
-
-psum is not universe polymorphic
-Arguments psum {R T} f%_function_scope
-psum is transparent
-Expands to: Constant mathcomp.experimental_reals.realsum.psum
-Declared in
-library mathcomp.experimental_reals.realsum, line 128, characters 11-15
-</p></span></div></span> (<span id="T:312" class="id"><a name="T:312" class="">T</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>) (<span id="u:313" class="id"><a name="u:313" class="">u</a></span><span class="id"> </span><span id="v:314" class="id"><a name="v:314" class="">v</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:312">T</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span><span class="id"><a href="mathcomp.classical.boolp.html#u:313">u</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#v:314">v</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">&gt;]</a></span>.<br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="gen_eqP" class="id"><a name="gen_eqP" class="">gen_eqP</a></span> (<span id="T:315" class="id"><a name="T:315" class="">T</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#MathCompCompatEquality.Equality.axiom">Equality</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#MathCompCompatEquality.Equality.axiom">axiom</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.boolp.html#gen_eq">gen_eq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:315">T</a></span>).<br/>
-<details>
-<summary class="toggleproof">Proof.</summary>
-<div class="proofscript">
-<span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> y;</span><span class="id"> apply:</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#iffP">iffP</a></span> (<span class="id"><a href="mathcomp.classical.boolp.html#asboolP">asboolP</a></span><span class="id"> _</span>)). Qed.</div></details>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="gen_eqMixin" class="id"><div name="gen_eqMixin" class=" tooltip">gen_eqMixin<span class='tooltip-area'><p>sum : forall {R : realType} {T : choiceType}, (T -> R) -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="gen_eq" class="id"><div name="gen_eq" class=" tooltip">gen_eq<span class='tooltip-area'><p>sum : forall {R : realType} {T : choiceType}, (T -> R) -> R
 
 sum is not universe polymorphic
 Arguments sum {R T} f%_function_scope
 sum is transparent
 Expands to: Constant mathcomp.experimental_reals.realsum.sum
 Declared in
-library mathcomp.experimental_reals.realsum, line 133, characters 11-14
-</p></span></div></span> (<span id="T:316" class="id"><a name="T:316" class="">T</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#hasDecEq">hasDecEq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:316">T</a></span><span class="id"> :=</span><br/>
+library mathcomp.experimental_reals.realsum, line 78, characters 11-14
+</p></span></div></span> (<span id="T:312" class="id"><a name="T:312" class="">T</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>) (<span id="u:313" class="id"><a name="u:313" class="">u</a></span><span class="id"> </span><span id="v:314" class="id"><a name="v:314" class="">v</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:312">T</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span><span class="id"><a href="mathcomp.classical.boolp.html#u:313">u</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#v:314">v</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">&gt;]</a></span>.<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="gen_eqP" class="id"><a name="gen_eqP" class="">gen_eqP</a></span> (<span id="T:315" class="id"><a name="T:315" class="">T</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#MathCompCompatEquality.Equality.axiom">Equality</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#MathCompCompatEquality.Equality.axiom">axiom</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.boolp.html#gen_eq">gen_eq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:315">T</a></span>).<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> y;</span><span class="id"> apply:</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#iffP">iffP</a></span> (<span class="id"><a href="mathcomp.classical.boolp.html#asboolP">asboolP</a></span><span class="id"> _</span>)). Qed.</div></details>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="gen_eqMixin" class="id"><div name="gen_eqMixin" class=" tooltip">gen_eqMixin<span class='tooltip-area'></span></div></span> (<span id="T:316" class="id"><a name="T:316" class="">T</a></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#hasDecEq">hasDecEq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:316">T</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#hasDecEq.Build">hasDecEq</a></span>.<span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#hasDecEq.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:316">T</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.boolp.html#gen_eqP">gen_eqP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:316">T</a></span>).<br/>
 <br/>
 <span id="prod__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_2" class="id"><span id="hb_instance_1.T'" class="id"><span id="hb_instance_1.T" class="id"><a name="prod__canonical__eqtype_Equality" class="">HB</a></span></span></span></span>.<span id="prod__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_2" class="id"><span id="hb_instance_1.T'" class="id"><span id="hb_instance_1.T" class="id"><a name="prod__canonical__eqtype_Equality" class="">instance</a></span></span></span></span><span id="prod__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_2" class="id"><span id="hb_instance_1.T'" class="id"><span id="hb_instance_1.T" class="id"><a name="prod__canonical__eqtype_Equality" class=""> Definition</a></span></span></span></span><span id="prod__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_2" class="id"><span id="hb_instance_1.T'" class="id"><span id="hb_instance_1.T" class="id"><a name="prod__canonical__eqtype_Equality" class=""> _</a></span></span></span></span> (<span id="prod__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_2" class="id"><span id="hb_instance_1.T'" class="id"><span id="hb_instance_1.T" class="id"><a name="prod__canonical__eqtype_Equality" class="">T</a></span></span></span></span><span id="prod__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_2" class="id"><span id="hb_instance_1.T'" class="id"><span id="hb_instance_1.T" class="id"><a name="prod__canonical__eqtype_Equality" class=""> :</a></span></span></span></span><span id="prod__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_2" class="id"><span id="hb_instance_1.T'" class="id"><span id="hb_instance_1.T" class="id"><a name="prod__canonical__eqtype_Equality" class=""> Type</a></span></span></span></span>) (<span id="prod__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_2" class="id"><span id="hb_instance_1.T'" class="id"><span id="hb_instance_1.T" class="id"><a name="prod__canonical__eqtype_Equality" class="">T'</a></span></span></span></span><span id="prod__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_2" class="id"><span id="hb_instance_1.T'" class="id"><span id="hb_instance_1.T" class="id"><a name="prod__canonical__eqtype_Equality" class=""> :</a></span></span></span></span><span id="prod__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_2" class="id"><span id="hb_instance_1.T'" class="id"><span id="hb_instance_1.T" class="id"><a name="prod__canonical__eqtype_Equality" class=""> T</a></span></span></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="NOTFOUND the module url for mathcomp.boot.eqtype#Equality.Exports.eqType">eqType</a></span>)<span class="id"> :=</span><br/>
