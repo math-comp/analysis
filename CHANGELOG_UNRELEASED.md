@@ -327,6 +327,9 @@
 - in `esum.v`:
   + `esum_sum` -> ` exchange_esum_sum`
 
+- in `realsum.v`:
+  + `psum` -> `PosSum.psum`
+
 ### Generalized
 
 - in `measurable_structure.v`:

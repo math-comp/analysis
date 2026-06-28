@@ -72,6 +72,8 @@ Definition psum {R : realType} {T : choiceType} (f : T -> R) : R :=
   if `[<summable f>] then sup S else 0.
 
 End PosSum.
+#[deprecated(since="1.17.0", note="use `PosSum.psum` instead")]
+Notation psum := PosSum.psum.
 
 Definition sum {R : realType} {T : choiceType} (f : T -> R) : R :=
   PosSum.psum f^\+ - PosSum.psum f^\-.
