@@ -94,7 +94,7 @@
   + instance `is_diff_mx`
 - in `realsum.v`:
   + lemma `esum_psum`
-  + lemma `esumEsum`
+  + lemma `esum_sum`
 
 - in `constructive_ereal.v`:
   + definition `esg`

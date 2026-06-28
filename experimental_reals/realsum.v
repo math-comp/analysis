@@ -665,7 +665,7 @@ Qed.
 
 End SummableAlg.
 
-Lemma esumEsum {T : choiceType} {R : realType} (f : T -> R) : summable f ->
+Lemma esum_sum {T : choiceType} {R : realType} (f : T -> R) : summable f ->
   \esum_(x in [set: T]) (f x)%:E = (sum f)%:E.
 Proof.
 move=> hs; rewrite /esum; rewrite EFinB; congr (_ - _)%E.
