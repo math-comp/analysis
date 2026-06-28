@@ -760,7 +760,7 @@ transitivity (((Num.sqrt S1 * Num.sqrt S2 * pi *+ 2)^-1)%:E *
   rewrite sqr_sqrtr.
     by rewrite mulr_ge0 ?invr_ge0// ?addr_ge0 ?(@mulr_ge0 _ (_ ^+ 2))// ?sqr_ge0.
   rewrite -/S1 -/S2.
-  by field; apply/and3P; split => //; rewrite sqrf_eq0.
+  by field by rewrite ?sqrf_eq0.
 set DS12 := (S1 + S2)%R.
 set MS12 := (S1 * S2)%R.
 set C := (((y * S1 + m1 * S2) - m2 * S1) / DS12)%R.
