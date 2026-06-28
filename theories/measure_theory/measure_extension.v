@@ -623,7 +623,7 @@ pose g i := (f^-1%FUN i).2; exists g; first split.
 rewrite !nneseries_esumT//= /measure.
 transitivity (\esum_(i in setT) \sum_(X0 \in decomp (F i)) mu X0); last first.
   by apply: eq_esum => /= k _; rewrite fsbig_finite//; exact: decomp_finite_set.
-rewrite -(eq_esum (fun _ _ => esum_fset _ _))//.
+rewrite -(eq_esum _ _ _ (fun _ _ => esum_fset _ _))//.
   by move=> ? _; exact: decomp_finite_set.
 rewrite esum_esum//= (reindex_esum K setT f) => //=.
 by apply: eq_esum => i Ki; rewrite /g funK ?inE.

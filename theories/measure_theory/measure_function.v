@@ -1206,13 +1206,15 @@ rewrite esum_bigcup//.
    move=> /(decomp_neq0 DUBiN0) [y Yy].
    apply: (@trivIset_seqDU _ B) => //; exists y.
    by split => //; [exact: YBi|exact: YBj].
-rewrite nneseries_esumT// le_esum// => i _.
+rewrite nneseries_esumT//.
+apply: le_esum => /=; first by move=> i _; exact: esum_ge0.
+move=> // i _.
 rewrite [leLHS](_ : _ = \sum_(j \in decomp (seqDU B i)) mu j).
   by rewrite esum_fset//; exact: decomp_finite_set.
 rewrite -SetRing.Rmu_fin_bigcup//=.
-  exact: decomp_finite_set.
-  exact: decomp_triv.
-  by move=> ?; exact: decomp_measurable.
+- exact: decomp_finite_set.
+- exact: decomp_triv.
+- by move=> ?; exact: decomp_measurable.
 rewrite -[leRHS]SetRing.RmuE// le_measure//; last by rewrite cover_decomp.
 - rewrite inE; apply: fin_bigcup_measurable; first exact: decomp_finite_set.
   move=> j /mem_set jdec; apply: sub_gen_smallest.

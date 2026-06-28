@@ -477,7 +477,8 @@ apply: (@le_trans _ _ (\sum_(i <- X) (wlength f `](b i).1, (b i).2]%classic) +
   rewrite addeC -big_split/=; apply: lee_sum => k _.
   by rewrite !(EFinB, wlength_itv_bnd)// addeA subeK.
 rewrite -big_split/= nneseries_esum//; first by move=> k _; rewrite adde_ge0.
-rewrite esum_ge//; exists [set` X] => //; rewrite fsbig_finite//= set_fsetK.
+rewrite esum_ge//=; first by move=> n _; rewrite adde_ge0.
+exists [set` X] => //; rewrite fsbig_finite//= set_fsetK.
 rewrite big_seq [in X in (_ <= X)%E]big_seq; apply: lee_sum => k kX.
 by rewrite AE leeD2l// lee_fin lerBlDl natrX De.
 Qed.

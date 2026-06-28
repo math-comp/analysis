@@ -893,7 +893,7 @@ rewrite ge0_integral_fsum//; first by move=> m y Ey; exact: nnfun_muleindic_ge0.
 transitivity (\int[mu]_(x in E) (\sum_(y \in range (h n))
     (y * \1_(h n @^-1` [set y]) x)%:E * g x)).
   under [RHS]eq_integral => x xE.
-    rewrite -ge0_mule_fsuml => [y|]; first exact: nnfun_muleindic_ge0.
+    rewrite -ge0_mule_fsuml => [y ?|]; first exact: nnfun_muleindic_ge0.
     rewrite fsumEFin // -(fimfunE _ x); over.
   by [].
 rewrite ge0_integral_fsum//.

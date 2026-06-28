@@ -102,7 +102,7 @@ Lemma infinite_card_dirac (A : set T) : infinite_set A ->
 Proof.
 move=> infA; apply/eqyP => r r0.
 have [B BA Br] := infinite_set_fset (Num.truncn r).+1 infA.
-apply: esum_ge; exists [set` B] => //.
+rewrite ge0_esum//; apply: PosEsum.pos_esum_ge; exists [set` B] => //.
 apply: (@le_trans _ _ (Num.truncn r).+1%:R%:E).
   by rewrite lee_fin ltW// truncnS_gt.
 move: Br; rewrite -(@ler_nat R) -lee_fin => /le_trans; apply.

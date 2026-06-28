@@ -16,10 +16,6 @@ From mathcomp Require Import topology normedtype sequences.
 (* zero) ring) and theorems such as Tietze's extension theorem.               *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*     nondecreasing_fun f == the function f is non-decreasing                *)
-(*     nonincreasing_fun f == the function f is non-increasing                *)
-(*        increasing_fun f == the function f is (strictly) increasing         *)
-(*        decreasing_fun f == the function f is (strictly) decreasing         *)
 (*     itv_partition a b s == s is a partition of the interval `[a, b]        *)
 (*      itv_partitionL s c == the left side of splitting a partition at c     *)
 (*      itv_partitionR s c == the right side of splitting a partition at c    *)
@@ -56,15 +52,6 @@ Import numFieldTopology.Exports.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
-
-Notation "'nondecreasing_fun' f" := ({homo f : n m / (n <= m)%O >-> (n <= m)%O})
-  (at level 10).
-Notation "'nonincreasing_fun' f" := ({homo f : n m / (n <= m)%O >-> (n >= m)%O})
-  (at level 10).
-Notation "'increasing_fun' f" := ({mono f : n m / (n <= m)%O >-> (n <= m)%O})
-  (at level 10).
-Notation "'decreasing_fun' f" := ({mono f : n m / (n <= m)%O >-> (n >= m)%O})
-  (at level 10).
 
 Lemma nondecreasing_funN {R : numDomainType} a b (f : R -> R) :
   {in `[a, b] &, nondecreasing_fun f} <->
@@ -806,6 +793,45 @@ move=> fg x Dx; rewrite /funrneg /Num.max; case: ifPn => gx; case: ifPn => fx//.
 - by rewrite lerN2; exact: fg.
 Qed.
 
+Lemma eq_funrpos f g : f =1 g -> f^\+ =1 g^\+.
+Proof. by move=> eq_fg x; rewrite /funrpos eq_fg. Qed.
+
+Lemma eq_funrneg f g : f =1 g -> f^\- =1 g^\-.
+Proof. by move=> eq_fg x; rewrite /funrneg eq_fg. Qed.
+
+Lemma funrpos_cst0 x : (fun _ : T => 0)^\+ x = 0 :> R.
+Proof. by rewrite /funrpos maxxx. Qed.
+
+Lemma funrneg_cst0 x : (fun _ : T => 0)^\- x = 0 :> R.
+Proof. by rewrite /funrneg oppr0 maxxx. Qed.
+
+Lemma funrposZ f c : 0 <= c -> (c \*o f)^\+ =1 c \*o f^\+.
+Proof. by move=> ge0_c x; rewrite /= ge0_funrposM. Qed.
+
+Lemma funrnegZ f c : 0 <= c -> (c \*o f)^\- =1 c \*o f^\-.
+Proof.
+move=> ge0_c x; rewrite /= -!funrposN; have /= <- := funrposZ (- f) ge0_c x.
+by apply/eq_funrpos=> y /=; rewrite mulrN.
+Qed.
+
+Lemma funrpos_natrM f (n : T -> nat) x :
+  (fun x => (n x)%:R * f x)^\+ x = (n x)%:R * f^\+ x.
+Proof.
+by rewrite /funrpos -[in RHS]normr_nat maxr_pMr// mulr0 ger0_norm.
+Qed.
+
+Lemma funrneg_natrM f (n : T -> nat) x :
+  (fun x => (n x)%:R * f x)^\- x = (n x)%:R * f^\- x.
+Proof.
+rewrite -[in RHS]funrposN -funrpos_natrM -funrposN.
+by apply/eq_funrpos=> y; rewrite mulrN.
+Qed.
+
+Lemma le_funrpos_norm f x : f^\+ x <= `|f x|.
+Proof.
+by rewrite -/((Num.Def.normr \o f) x) -funrposDneg lerDl funrneg_ge0.
+Qed.
+
 End funrposneg_lemmas.
 #[global]
 Hint Extern 0 (is_true (0%R <= _ ^\+ _)%R) => solve [apply: funrpos_ge0] : core.
@@ -957,6 +983,12 @@ move=> fg x Dx; rewrite !funenegE /maxe; case: ifPn => gx; case: ifPn => fx //.
 - by move: gx; rewrite -leNgt => /(lt_le_trans fx); rewrite lteN2 ltNge fg.
 - by rewrite leeN2; exact: fg.
 Qed.
+
+Lemma funepos_cst0 t : (@cst T _ 0)^\+ t = 0 :> \bar R.
+Proof. by rewrite funeposE maxxx. Qed.
+
+Lemma funeneg_cst0 t : (@cst T _ 0)^\- t = 0 :> \bar R.
+Proof. by rewrite funenegE oppe0 maxxx. Qed.
 
 End funposneg_lemmas.
 #[deprecated(since="mathcomp-analysis 1.15.0", note="use `-funeDB` instead")]

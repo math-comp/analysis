@@ -136,7 +136,7 @@ apply/funext => U; rewrite /bernoulli_prob; case: ifPn => [p01|]; last first.
 rewrite measure_addE/= /mscale/=.
 have := @subsetT _ U; rewrite setT_bool => UT.
 have [->|->|->|->] /= := subset_set2 UT.
-- rewrite -esum_fset//=; first by move=> b; rewrite lee_fin bernoulli_pmf_ge0.
+- rewrite -esum_fset//=.
   by rewrite esum_set0 2!measure0 2!mule0 adde0.
 - rewrite -esum_fset//=; first by move=> b; rewrite lee_fin bernoulli_pmf_ge0.
   rewrite esum_set1/= ?lee_fin// 2!diracE mem_set//= memNset//= mule0 adde0.

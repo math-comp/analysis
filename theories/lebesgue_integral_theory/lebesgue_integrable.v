@@ -984,7 +984,8 @@ rewrite -esumB//.
 rewrite -summable_eseries_esum.
   apply: (@le_lt_trans _ _ (\esum_(i in (fun=> true))
      `|(fine (\int[m_ i]_(x in D) f x))%:E|)).
-    by apply: le_esum => k _; rewrite -EFinB -fineB// -?integralE//;
+    do 2 rewrite ge0_esum//.
+    by apply: PosEsum.le_pos_esum => k _; rewrite -EFinB -fineB// -?integralE//;
       [exact: integrable_pos_fin_num|exact: integrable_neg_fin_num].
   rewrite -nneseries_esum; first by [].
   apply: (@le_lt_trans _ _

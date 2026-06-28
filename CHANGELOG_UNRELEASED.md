@@ -104,6 +104,27 @@
   + lemma `diffmx`
   + lemma `is_diff_mx`
   + instance `is_diff_mx`
+- in `realsum.v`:
+  + lemma `esum_psum`
+  + lemma `esum_sum`
+
+- in `constructive_ereal.v`:
+  + definition `esg`
+  + lemmas `numEesg`, `gte0_esg`, `lte0_esg`, `esg0`
+
+- in `esum.v`:
+  + lemmas `esum_eq0P`, `esumZ`, `exchange_esum`
+  + lemmas `le_esum`, `esumN`
+  + lemmas `summable_le_esum`, `summable_esum_funepos`, `summable_esumN`,
+    `summableZ`, `summable_esumZ`
+  + lemmas `esum_if_eq_op`
+  + lemmas `exchange_esum_ereal_sup`
+
+- in `ereal.v`:
+  + lemmas `exchange_ereal_sup`, `ge0_ereal_supZl`, `ge0_ereal_supZl_range`
+
+- in `sequences.v`:
+  + lemmas `ereal_supD`, `ereal_sup_sum`
 
 - in `reals.v`:
   + lemmas `sup_ge0`, `has_sup_wpZl`, `gt0_has_supZl`, `has_sup_Mn`, `sup_Mn`
@@ -143,6 +164,12 @@
 - in `lebesgue_stieltjes_measure.v`:
   + definition `lebesgue_display`
 
+- in `realsum.v`:
+  + lemma `esum_summableP`
+
+- in `esum.v`:
+  + lemma `fsetsTE`
+
 ### Changed
 
 - moved from `measurable_structure.v` to `classical_sets.v`:
@@ -173,6 +200,13 @@
 
 - new files `signed_measure.v` and `radon_nikodym.v`
   + with the contents of `charge.v` (deprecated)
+
+- in `esum.v`:
+  + lemma `ge0_esum`
+  + lemma `esum_ge`
+
+- in `realsum.v`:
+  + lemma `__admitted__psumB` proved and renamed to `psumB`
 
 ### Changed
 
@@ -237,6 +271,30 @@
   + lemmas `Radon_NikodymE`, `Radon_Nikodym_fin_num`, `Radon_Nikodym_integrable`,
     `ae_eq_Radon_Nikodym_SigmaFinite`, `Radon_Nikodym_change_of_variables`,
     `Radon_Nikodym_cscale`, `Radon_Nikodym_cadd`, `Radon_Nikodym_chain_rule`
+- in `realsum.v`:
+  + the following now use `funrpos` and `funrneg`:
+    * definition `sum`
+    * lemmas `summable_funrpos`, `summable_funrneg`
+  + lemma `sum0` (now uses `cst`)
+
+- moved from `realsum` to `numfun.v`:
+  + now use `funrpos` and `funrneg`:
+    * lemmas `eq_funrpos`, `eq_funrneg`
+    * lemma `fpos0` (renamed to `funrpos_cst0`)
+    * lemma `fneg0` (renamed to `funrneg_cst0`)
+    * lemmas `funrposZ`, `funrnegZ`
+    * lemmas `funrpos_natrM`, `funrneg_natrM`
+    * lemmas `le_funrpos_norm`
+
+- moved from `numfun.v` to `unstable.v`:
+  + notations `nondecreasing_fun`, `nonincreasing_fun`,
+    `decreasing_fun`, `increasing_fun`
+
+- in `esum.v`:
+  + definition `esum`
+  + lemma `esum_fset`
+  + lemma `esum_ge` -> `PosEsum.pos_esum_ge`
+  + lemma `le_esum` -> `PosEsum.le_pos_esum`
 
 - moved from `normed_module.v` to `metric_structure.v`
   + lemma `squeeze_cvgr`
@@ -288,6 +346,11 @@
 
 - in `topology_structure.v`:
   + `closure_setC` -> `closureC`
+- in `esum.v`:
+  + `esum_sum` -> ` exchange_esum_sum`
+
+- in `realsum.v`:
+  + `psum` -> `PosSum.psum`
 
 ### Generalized
 
@@ -316,6 +379,12 @@
 
 - in `simple_functions.v`:
   + lemmas `fctD`, `fctN`, `fctM`, `fctZ`
+
+- in `ereal.v`:
+  + lemmas `ge0_mule_fsumr`, `ge0_mule_fsuml`
+
+- in `esum.v`:
+  + lemma `esum_set1`
 
 ### Deprecated
 
@@ -351,6 +420,12 @@
 
 - in `random_variable.v`:
   + notation `expectationM` (deprecated since 1.8.0)
+- in `realsum.v`:
+  + definitions `fpos`, `fneg` (use `funrpos`, `funrneg` instead)
+  + lemmas `fnegN`, `fposN`
+  + lemmas `ge0_pos`, `ge0_neg`
+  + lemma `fposBfneg`
+  + lemma `funrpos_le`
 
 ### Infrastructure
 
