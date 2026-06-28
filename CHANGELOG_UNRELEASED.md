@@ -155,6 +155,9 @@
 - in `realsum.v`:
   + lemma `esum_summableP`
 
+- in `esum.v`:
+  + lemma `fsetsTE`
+
 ### Changed
 
 - moved from `measurable_structure.v` to `classical_sets.v`:

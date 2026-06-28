@@ -45,6 +45,9 @@ Definition fsets S : set (set T) := [set F | finite_set F /\ F `<=` S].
 
 Lemma fsets_set0 S : fsets S set0. Proof. by split. Qed.
 
+Lemma fsetsTE : fsets [set: T] = finite_set.
+Proof. by apply/funext=> ?; apply/propext; split => // -[]. Qed.
+
 Lemma fsets_self (F : set T) : finite_set F -> fsets F F.
 Proof. by move=> finF; split. Qed.
 
@@ -179,7 +182,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
       have [y [B fsetsTB yE y0]] := ereal_sup_gt suma0.
       rewrite leye_eq; apply/eqP/eq_infty => r; rewrite pos_esum_ge//.
       exists B => //; rewrite -ge0_mule_fsumr//.
-        by move=> i Bi; rewrite f0//; case: fsetsTB => _ /(_ _ Bi).
+        by move=> i Bi; rewrite f0//; case: fsetsTB => _; exact.
       by rewrite yE gt0_mulye// leey.
 Qed.
 
