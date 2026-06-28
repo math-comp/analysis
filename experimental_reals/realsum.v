@@ -267,21 +267,21 @@ Lemma esum_psum {R : realType} {T : choiceType} (f : T -> R) :
     (forall i, 0 <= f i) -> summable f ->
   \esum_(x in [set: T]) (f x)%:E = (psum f)%:E.
 Proof.
-move => f0 h; apply/eqP; rewrite eq_le; apply/andP; split.
+move=> f0 sumf; apply/eqP; rewrite eq_le; apply/andP; split.
 - rewrite ge0_esum; first by move=> t _; rewrite lee_fin.
-  rewrite ge_ereal_sup//= => x [X [finX _]].
-  rewrite fsumEFin // => <-.
+  rewrite ge_ereal_sup//= => x [A [finA _]].
+  rewrite fsumEFin// => <-.
   rewrite lee_fin fsbig_finite//=.
-  move/finite_fsetP : finX => [J ->].
-  rewrite set_fsetK (le_trans _ (gerfin_psum J h))//.
+  move/finite_fsetP : finA => [J ->].
+  rewrite set_fsetK (le_trans _ (gerfin_psum J sumf))//.
   by rewrite -big_fset_seq//= (le_trans _ (ler_norm_sum _ _ _))// ler_norm.
 - rewrite (eq_esum _ _ (fun x => `|f x|%:E)).
     by move => t _; rewrite ger0_norm.
-  have [nonempty hasub] := summable_sup h.
-  rewrite psum_absE// -ereal_sup_EFin// ge_ereal_sup//= => x [X [Fs ->] <-].
-  rewrite esum_ge//;  exists [set` Fs]%classic => //.
-  rewrite fsumEFin// lee_fin (big_fset_seq (fun x => `|f x|))//=.
-  by rewrite -{1}(set_fsetK Fs) -fsbig_finite.
+  have [nonempty hasub] := summable_sup sumf.
+  rewrite psum_absE// -ereal_sup_EFin// ge_ereal_sup//= => x [r [J ->] <-].
+  rewrite esum_ge//; exists [set` J]%classic => //.
+  rewrite fsumEFin// lee_fin (big_fset_seq (Num.Def.normr \o f))//=.
+  by rewrite -[in leLHS](set_fsetK J) -fsbig_finite.
 Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -636,8 +636,7 @@ End SummableAlg.
 Lemma esumEsum {T : choiceType} {R : realType} (f : T -> R) : summable f ->
   \esum_(x in [set: T]) (f x)%:E = (sum f)%:E.
 Proof.
-move=> hs; rewrite /esum.
-rewrite EFinB; congr (_ - _)%E.
+move=> hs; rewrite /esum; rewrite EFinB; congr (_ - _)%E.
 - rewrite -esum_psum//; first exact: summable_funrpos.
   rewrite ge0_esum/=; first by move=> x _; rewrite lee_fin.
   by apply: PosEsum.eq_pos_esum => x _; rewrite funerpos.

@@ -332,20 +332,27 @@ Section esum.
 Variables (R : realFieldType) (T : choiceType).
 Implicit Types (S : set T) (f g : T -> \bar R).
 
-Import PosEsum.
-
-Definition esum S f := pos_esum S f^\+ - pos_esum S f^\-.
+Definition esum S f := PosEsum.pos_esum S f^\+ - PosEsum.pos_esum S f^\-.
 
 Local Notation "\esum_ ( i 'in' P ) A" := (esum P (fun i => A)).
+
+Lemma eq_esum S f g : (forall i, S i -> f i = g i) ->
+  \esum_(i in S) f i = \esum_(i in S) g i.
+Proof.
+by move=> e; congr (_ - _); apply: PosEsum.eq_pos_esum => i /set_mem/e fgi;
+  rewrite !(funeposE,funenegE) fgi.
+Qed.
 
 Lemma ge0_esum S f : (forall x, S x -> 0 <= f x) ->
   \esum_(i in S) f i = ereal_sup [set \sum_(x \in B) f x | B in fsets S].
 Proof.
-by move=> ?; rewrite /esum ge0_pos_esum_funepos// ge0_pos_esum_funeneg// sube0.
+move=> ?.
+rewrite /esum PosEsum.ge0_pos_esum_funepos// PosEsum.ge0_pos_esum_funeneg//.
+by rewrite sube0.
 Qed.
 
 Lemma esum_set0 f : \esum_(i in set0) f i = 0.
-Proof. by rewrite /esum !pos_esum_set0 subee. Qed.
+Proof. by rewrite /esum !PosEsum.pos_esum_set0 subee. Qed.
 
 Lemma esumN S f : (forall x, S x -> 0 <= f x) ->
   \esum_(x in S) - f x = - \esum_(i in S) f i.
@@ -360,6 +367,7 @@ by case: SB => _; exact.
 Qed.
 
 End esum.
+Arguments eq_esum {R T} S f g.
 
 Notation "\esum_ ( i 'in' P ) F" := (esum P (fun i => F)) : ring_scope.
 
@@ -388,19 +396,9 @@ End esum_realType.
 Lemma esum1 {R : realFieldType} {I : choiceType} (D : set I) (f : I -> \bar R) :
   (forall i, D i -> f i = 0) -> \esum_(i in D) f i = 0.
 Proof.
-move=> a0; rewrite ge0_esum; last exact: PosEsum.pos_esum1.
-by move=> i /a0 ->.
+move=> Df0; rewrite ge0_esum; last exact: PosEsum.pos_esum1.
+by move=> i /Df0 ->.
 Qed.
-
-Lemma eq_esum {R : realFieldType} {T : choiceType} (A : set T)
-    (f g : T -> \bar R) : (forall i, A i -> f i = g i) ->
-  \esum_(i in A) f i = \esum_(i in A) g i.
-Proof.
-move=> e; congr (_ - _).
-- by apply: PosEsum.eq_pos_esum => i /set_mem/e abi; rewrite !funeposE abi.
-- by apply: PosEsum.eq_pos_esum => i /set_mem/e abi; rewrite !funenegE abi.
-Qed.
-Arguments eq_esum {R T} A f g.
 
 Section esum_cond.
 Context {R : realType} {T : choiceType}.
