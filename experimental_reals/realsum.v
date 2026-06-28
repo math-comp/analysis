@@ -44,7 +44,7 @@ Qed.
 
 End Summable.
 
-Lemma esum_summableP (f : T -> R) :
+Lemma esum_summableP (T : choiceType) (R : realType) (f : T -> R) :
   summable f <-> esum.summable [set: T] (EFin \o f).
 Proof.
 have fsbigsum (B : {fset T}) :

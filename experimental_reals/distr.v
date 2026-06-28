@@ -46,7 +46,7 @@ Structure distr := Distr {
   mu :> T -> R;
   _  :  forall x, 0 <= mu x;
   _  :  summable mu;
-  _  :  psum mu <= 1
+  _  :  PosSum.psum mu <= 1
 }.
 
 Definition distr_of & phant R & phant T := distr.
@@ -63,7 +63,7 @@ Context {R : realType} (T : choiceType) (mu : {distr T / R}).
 Lemma ge0_mu : forall x, 0 <= mu x.
 Proof. by case: mu. Qed.
 
-Lemma le1_mu : psum mu <= 1.
+Lemma le1_mu : PosSum.psum mu <= 1.
 Proof. by case: mu. Qed.
 
 Lemma summable_mu : summable mu.
@@ -119,7 +119,7 @@ Proof. by apply: (iffP idP) => /eqP. Qed.
 Lemma dinsuppPn mu x : reflect (mu x = 0) (x \notin dinsupp mu).
 Proof. by rewrite -topredE /dinsupp /= negbK; apply/eqP. Qed.
 
-Definition pr   mu E   := psum (fun x => (E x)%:R * mu x).
+Definition pr   mu E   := PosSum.psum (fun x => (E x)%:R * mu x).
 Definition prc  mu E A := pr mu [predI E & A] / pr mu A.
 Definition esp  mu f   := sum (fun x => f x * mu x).
 Definition espc mu f A := sum (fun x => f x * prc mu (pred1 x) A).
@@ -153,7 +153,7 @@ move=> s /h /(le_trans _); apply; rewrite le_eqVlt; apply/orP.
 by left; apply/eqP/eq_bigr=> i _; rewrite ger0_norm ?isd1.
 Qed.
 
-Local Lemma isd3 : psum mu <= 1.
+Local Lemma isd3 : PosSum.psum mu <= 1.
 Proof.
 rewrite psumE; [apply/isd1 | apply/isd2 | apply: ge_sup].
   by exists 0, fset0; rewrite big_fset0.
@@ -181,7 +181,7 @@ Qed.
 Lemma le1_mu1
   {R : realType} {T : choiceType} (mu : {distr T / R}) x : mu x <= 1.
 Proof.
-apply/(@le_trans _ _ (psum mu)) => //; rewrite -[mu x]ger0_norm//.
+apply/(@le_trans _ _ (PosSum.psum mu)) => //; rewrite -[mu x]ger0_norm//.
 by apply/ger1_psum.
 Qed.
 
@@ -356,7 +356,7 @@ Implicit Types (T U : choiceType).
 Section Bind.
 Context {T U : choiceType} (f : T -> distr U) (mu : distr T).
 
-Definition mlet := fun y : U => psum (fun x => mu x * f x y).
+Definition mlet := fun y : U => PosSum.psum (fun x => mu x * f x y).
 
 Lemma isd_mlet : isdistr mlet.
 Proof.
@@ -373,7 +373,7 @@ Qed.
 
 Definition dlet := locked (mkdistr isd_mlet).
 
-Lemma dletE y : dlet y = psum (fun x => mu x * f x y).
+Lemma dletE y : dlet y = PosSum.psum (fun x => mu x * f x y).
 Proof. by unlock dlet. Qed.
 End Bind.
 
@@ -511,7 +511,7 @@ Lemma __deprecated__dlet_dlet (mu : {distr T / R}) :
 Proof.
 move=> z; unlock dlet => /=; rewrite /mlet /=.
 pose S y x := mu x * (f1 x y * f2 y z).
-rewrite (eq_psum (F2 := fun y => psum (S^~ y))) => [x|].
+rewrite (eq_psum (F2 := fun y => PosSum.psum (S^~ y))) => [x|].
   by rewrite -psumZ //; apply/eq_psum => y /=.
 rewrite __admitted__interchange_psum.
 + by move=> x; apply/summableZ/summable_mlet.
@@ -713,7 +713,7 @@ Section MarginalsTh.
 Variable (T U V : choiceType).
 
 Lemma dmargin_psumE (mu : {distr T / R}) (f : T -> U) y :
-  (dmargin f mu) y = psum (fun x => (f x == y)%:R * mu x).
+  (dmargin f mu) y = PosSum.psum (fun x => (f x == y)%:R * mu x).
 Proof.
 rewrite dmarginE dletE; apply/eq_psum => x //=.
 by rewrite mulrC dunit1E.
@@ -812,7 +812,7 @@ Section DFst.
 Context {R : realType} {T U : choiceType}.
 
 Lemma dfstE (mu : {distr (T * U) /  R}) x :
-  dfst mu x = psum (fun y => mu (x, y)).
+  dfst mu x = PosSum.psum (fun y => mu (x, y)).
 Proof.
 rewrite dmargin_psumE /=; pose h y : T * U := (x, y).
 rewrite (reindex_psum (P := [pred z | z.1 == x]) (h := h)) /=.
@@ -837,7 +837,7 @@ Section DSnd.
 Context {R : realType} {T U : choiceType}.
 
 Lemma __deprecated__dsndE (mu : {distr (T * U) / R}) y :
-  dsnd mu y = psum (fun x => mu (x, y)).
+  dsnd mu y = PosSum.psum (fun x => mu (x, y)).
 Proof. by rewrite -__deprecated__dfst_dswap dfstE; apply/eq_psum=> x; rewrite dswapE. Qed.
 
 Lemma summable_snd (mu : {distr (T * U) / R}) y :
@@ -878,7 +878,7 @@ Qed.
 Lemma pr_exp mu (E : pred T) : \P_[mu] E = \E_[mu] (fun m => (E m)%:R).
 Proof. by rewrite /pr psum_sum // => x; rewrite mulr_ge0 // ler0n. Qed.
 
-Lemma pr_predT mu : \P_[mu] predT = psum mu.
+Lemma pr_predT mu : \P_[mu] predT = PosSum.psum mu.
 Proof. by apply/eq_psum=> x; rewrite mul1r. Qed.
 
 Lemma pr_dunit E x : \P_[dunit x] E = (E x)%:R :> R.
@@ -963,7 +963,7 @@ Proof.
 rewrite /esp -psum_sum => [x|]; first by rewrite mulr_ge0 ?ge0_pr.
 rewrite /pr; unlock dlet => /=; rewrite /mlet /=.
 pose F x y := (E x)%:R * (mu y * f y x).
-transitivity (psum (fun x => psum (fun y => F x y))); rewrite {}/F.
+transitivity (PosSum.psum (fun x => PosSum.psum (fun y => F x y))); rewrite {}/F.
   by apply/eq_psum => x; rewrite -psumZ ?ler0n.
 rewrite __admitted__interchange_psum /=; last first.
   apply/eq_psum=> y /=; rewrite mulrC -psumZ //.
@@ -1048,7 +1048,7 @@ by move/ler_pdivrMr=> ->; rewrite mul1r le_in_pr // => x _ /andP[].
 Qed.
 
 Lemma prc_sum A mu : 0 < \P_[mu] A ->
-  psum (fun x => \P_[mu, A] (pred1 x)) = 1.
+  PosSum.psum (fun x => \P_[mu, A] (pred1 x)) = 1.
 Proof.
 move=> gt0_pE; rewrite psumZr ?(invr_ge0, ge0_pr) //.
 rewrite (eq_psum (F2 := (fun x => (A x)%:R * mu x))); last first.
