@@ -4,7 +4,6 @@ From mathcomp Require Import all_ssreflect_compat algebra finmap.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality reals.
-From mathcomp Require Import ereal topology normedtype sequences.
 
 (**md**************************************************************************)
 (* # Measure Theory                                                           *)
@@ -98,8 +97,6 @@ From mathcomp Require Import ereal topology normedtype sequences.
 (*                                   This is an HB alias.                     *)
 (*      f.-preimage.-measurable A == A is measurable for                      *)
 (*                                   g_sigma_algebra_preimage f               *)
-(*    subset_sigma_subadditive mu == alternative predicate defining           *)
-(*                                   sigma-subadditivity                      *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## Product of measurable spaces                                            *)
@@ -1417,11 +1414,6 @@ by move=> _ [B mB <-]; exact: sG'sfun.
 Qed.
 
 End measurability.
-
-(** This predicate is used also by `measure_function.v` *)
-Definition subset_sigma_subadditive {T} {R : numFieldType}
-  (mu : set T -> \bar R) (A : set T) (F : nat -> set T) :=
-  A `<=` \bigcup_n F n -> (mu A <= \sum_(n <oo) mu (F n))%E.
 
 Lemma big_trivIset (I : choiceType) D T (R : Type) (idx : R)
    (op : Monoid.com_law idx) (A : I -> set T) (F : set T -> R) :

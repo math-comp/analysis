@@ -20,6 +20,8 @@ From mathcomp Require Import vector archimedean interval.
 (*    nonincreasing_fun f == the function f is non-increasing                 *)
 (*       increasing_fun f == the function f is (strictly) increasing          *)
 (*       decreasing_fun f == the function f is (strictly) decreasing          *)
+(*    nondecreasing_seq u == the sequence u is non-decreasing                 *)
+(*    nonincreasing_seq u == the sequence u is non-increasing                 *)
 (*          monotonic A f := {in A &, {homo f : x y / x <= y}} \/             *)
 (*                           {in A &, {homo f : x y /~ x <= y}}               *)
 (*   strict_monotonic A f := {in A &, {homo f : x y / x < y}} \/              *)
@@ -208,6 +210,10 @@ Notation "'nonincreasing_fun' f" := ({homo f : n m / (n <= m)%O >-> (n >= m)%O})
 Notation "'increasing_fun' f" := ({mono f : n m / (n <= m)%O >-> (n <= m)%O})
   (at level 10).
 Notation "'decreasing_fun' f" := ({mono f : n m / (n <= m)%O >-> (n >= m)%O})
+  (at level 10).
+Notation "'nondecreasing_seq' f" := ({homo f : n m / (n <= m)%nat >-> (n <= m)%O})
+  (at level 10).
+Notation "'nonincreasing_seq' f" := ({homo f : n m / (n <= m)%nat >-> (n >= m)%O})
   (at level 10).
 
 Definition monotonic d (T : porderType d) d' (T' : porderType d')

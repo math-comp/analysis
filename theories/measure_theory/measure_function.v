@@ -19,6 +19,8 @@ From mathcomp Require Import measurable_structure measurable_function.
 (* etc. Also contains a number of details about its implementation.           *)
 (*                                                                            *)
 (* ```                                                                        *)
+(*    subset_sigma_subadditive mu == alternative predicate defining           *)
+(*                                   sigma-subadditivity                      *)
 (* {content set T -> \bar R} == type of contents                              *)
 (*                              T is expected to be a semiring of sets and R  *)
 (*                              a numFieldType.                               *)
@@ -171,6 +173,10 @@ Definition subadditive := forall (A : set T) (F : nat -> set T) n,
   (forall k, `I_n k -> measurable (F k)) -> measurable A ->
   A `<=` \big[setU/set0]_(k < n) F k ->
   (mu A <= \sum_(k < n) mu (F k))%E.
+
+Definition subset_sigma_subadditive {T} {R : numFieldType}
+  (mu : set T -> \bar R) (A : set T) (F : (set T)^nat) :=
+  A `<=` \bigcup_n F n -> (mu A <= \sum_(n <oo) mu (F n))%E.
 
 Definition measurable_subset_sigma_subadditive :=
   forall (A : set T) (F : nat -> set T),

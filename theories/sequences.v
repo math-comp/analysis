@@ -14,8 +14,6 @@ From mathcomp Require Import ereal topology tvs normedtype landau.
 (* The purpose of this file is to gather generic definitions and lemmas about *)
 (* sequences. Incidentally, it defines the exponential function.              *)
 (* ```                                                                        *)
-(*     nondecreasing_seq u == the sequence u is non-decreasing                *)
-(*     nonincreasing_seq u == the sequence u is non-increasing                *)
 (*        increasing_seq u == the sequence u is (strictly) increasing         *)
 (*        decreasing_seq u == the sequence u is (strictly) decreasing         *)
 (* ```                                                                        *)
@@ -23,10 +21,6 @@ From mathcomp Require Import ereal topology tvs normedtype landau.
 (* ## About sequences of real numbers                                         *)
 (* ```                                                                        *)
 (*        [sequence u_n]_n == the sequence of general element u_n             *)
-(*                  R ^nat == notation for the type of sequences, i.e.,       *)
-(*                            functions of type nat -> R                      *)
-(*                 seqDU F == sequence F_0, F_1 \ F_0, F_2 \ (F_0 U F_1),...  *)
-(*                  seqD F == the sequence F_0, F_1 \ F_0, F_2 \ F_1,...      *)
 (*               series u_ == the sequence of partial sums of u_              *)
 (*            telescope u_ := [sequence u_ n.+1 - u_ n]_n                     *)
 (*                harmonic == harmonic sequence                               *)
@@ -126,7 +120,6 @@ Import numFieldNormedType.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Reserved Notation "R ^nat".
 Reserved Notation "a `^ x" (at level 11).
 Reserved Notation "[ 'sequence' E ]_ n"
   (at level 0, n name, format "[ 'sequence'  E ]_ n").
@@ -160,7 +153,6 @@ Reserved Notation "\sum_ ( i '<oo' ) F"
   (F at level 41,
            format "'[' \sum_ ( i  <oo ) '/  '  F ']'").
 
-Definition sequence R := nat -> R.
 Definition mk_sequence R f : sequence R := f.
 Arguments mk_sequence R f /.
 Notation "[ 'sequence' E ]_ n" := (mk_sequence (fun n => E%E)) : ereal_scope.
@@ -258,17 +250,6 @@ Section seqDU.
 Variables (T : Type).
 Implicit Types F : (set T)^nat.
 
-Definition seqDU F n := F n `\` \big[setU/set0]_(k < n) F k.
-
-Lemma trivIset_seqDU F : trivIset setT (seqDU F).
-Proof.
-move=> i j _ _; wlog ij : i j / (i < j)%N => [/(_ _ _ _) tB|].
-  by have [ij /tB->|ij|] := ltngtP i j; rewrite //setIC => /tB ->.
-move=> /set0P; apply: contraNeq => _; apply/eqP.
-rewrite /seqDU 2!setDE !setIA setIC (bigD1 (Ordinal ij)) //=.
-by rewrite setCU setIAC !setIA setICl !set0I.
-Qed.
-
 Lemma bigsetU_seqDU F n :
   \big[setU/set0]_(k < n) F k = \big[setU/set0]_(k < n) seqDU F k.
 Proof.
@@ -279,21 +260,6 @@ rewrite !big_ord_recr /= predeqE => t; split=> [[Ft|Fnt]|[Ft|[Fnt Ft]]].
   by right; split => //; rewrite ih.
 - by left; rewrite ih.
 - by right.
-Qed.
-
-Lemma seqDU_bigcup_eq F : \bigcup_k F k = \bigcup_k seqDU F k.
-Proof.
-rewrite /seqDU predeqE => t; split=> [[n _ Fnt]|[n _]]; last first.
-  by rewrite setDE => -[? _]; exists n.
-have [UFnt|UFnt] := pselect ((\big[setU/set0]_(k < n) F k) t); last by exists n.
-suff [m [Fmt FNmt]] : exists m, F m t /\ forall k, (k < m)%N -> ~ F k t.
-  by exists m => //; split => //; rewrite -bigcup_mkord => -[k kj]; exact: FNmt.
-move: UFnt; rewrite -bigcup_mkord => -[/= k _ Fkt] {Fnt n}.
-have [n kn] := ubnP k; elim: n => // n ih in t k Fkt kn *.
-case: k => [|k] in Fkt kn *; first by exists O.
-have [?|] := pselect (forall m, (m <= k)%N -> ~ F m t); first by exists k.+1.
-move=> /existsNP[i] /not_implyP[ik] /contrapT Fit; apply: (ih t i) => //.
-by rewrite (leq_ltn_trans ik).
 Qed.
 
 Lemma seqDUIE (S : set T) (F : (set T)^nat) :
@@ -315,18 +281,6 @@ Arguments trivIset_seqDU {T} F.
 Section seqD.
 Variable T : Type.
 Implicit Types F : (set T) ^nat.
-
-Definition seqD F := fun n => if n isn't n'.+1 then F O else F n `\` F n'.
-
-Lemma seqDU_seqD F : nondecreasing_seq F -> seqDU F = seqD F.
-Proof.
-move=> ndF; rewrite funeqE => -[|n] /=; first by rewrite /seqDU big_ord0 setD0.
-rewrite /seqDU big_ord_recr /= setUC; congr (_ `\` _); apply/setUidPl.
-by rewrite -bigcup_mkord => + [k /= kn]; exact/subsetPset/ndF/ltnW.
-Qed.
-
-Lemma trivIset_seqD F : nondecreasing_seq F -> trivIset setT (seqD F).
-Proof. by move=> ndF; rewrite -seqDU_seqD //; exact: trivIset_seqDU. Qed.
 
 Lemma bigsetU_seqD F n :
   \big[setU/set0]_(i < n) F i = \big[setU/set0]_(i < n) seqD F i.
@@ -360,15 +314,6 @@ move=> ndF; elim: n => [|n ih]; rewrite funeqE => x; rewrite propeqE; split.
   by rewrite big_ord_recr /=; right.
 Qed.
 
-Lemma eq_bigcup_seqD F : \bigcup_n seqD F n = \bigcup_n F n.
-Proof.
-apply/seteqP; split => [x []|x []].
-  by elim=> [_ /= F0x|n ih _ /= [Fn1x Fnx]]; [exists O | exists n.+1].
-elim=> [_ F0x|n ih _ Fn1x]; first by exists O.
-have [|Fnx] := pselect (F n x); last by exists n.+1.
-by move=> /(ih I)[m _ Fmx]; exists m.
-Qed.
-
 Lemma eq_bigcup_seqD_bigsetU F :
   \bigcup_n (seqD (fun n => \big[setU/set0]_(i < n.+1) F i) n) = \bigcup_n F n.
 Proof.
@@ -376,14 +321,6 @@ rewrite (eq_bigcup_seqD (fun n => \big[setU/set0]_(i < n.+1) F i)).
 rewrite eqEsubset; split => [t [i _]|t [i _ Fit]].
   by rewrite -bigcup_seq_cond => -[/= j _ Fjt]; exists j.
 by exists i => //; rewrite big_ord_recr /=; right.
-Qed.
-
-Lemma bigcup_bigsetU_bigcup F :
-  \bigcup_k \big[setU/set0]_(i < k.+1) F i = \bigcup_k F k.
-Proof.
-apply/seteqP; split=> [x [i _]|x [i _ Fix]].
-  by rewrite -bigcup_mkord => -[j _ Fjx]; exists j.
-by exists i => //; rewrite big_ord_recr/=; right.
 Qed.
 
 End seqD.
