@@ -170,6 +170,10 @@
 - in `esum.v`:
   + lemma `fsetsTE`
 
+- new file `absolute_continuity.v`
+  + definitions `abs_cont`, `abs_cont_order`
+  + lemma `abs_contP`
+
 ### Changed
 
 - moved from `measurable_structure.v` to `classical_sets.v`:
