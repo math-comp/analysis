@@ -15,6 +15,14 @@
   + lemmas `zerofctE`, `onefctE`
 
 ### Added
+- new file `measurable_topology.v`:
+  + definition `borelType`
+  + lemmas `singleton_bigcap`, `measurable1`
+
+- in `simple_functions.v`:
+  + lemmas `mem_sfun_comp_pair`, `sfun_submod_closed`
+  + `{sfun aT >-> rT}` is an `lmodType` when `rT` is a `normedModType`
+
 - in `set_interval.v`:
   + lemmas `setU_itvob1`, `setU_1itvob`
 
@@ -411,6 +419,8 @@
 
 - in `simple_functions.v`:
   + lemmas `fctD`, `fctN`, `fctM`, `fctZ`
+  + structure `SimpleFun` (and notation `{sfun aT >-> _}`): codomain
+    generalized from `realType` to `sigmaRingType d'`, adding a display parameter `d'`;
 
 - in `ereal.v`:
   + lemmas `ge0_mule_fsumr`, `ge0_mule_fsuml`
