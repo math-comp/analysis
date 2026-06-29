@@ -6,7 +6,7 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality reals fsbigop ereal topology tvs.
 From mathcomp Require Import normedtype sequences real_interval esum measure.
 From mathcomp Require Import lebesgue_measure numfun realfun measurable_realfun.
-From mathcomp Require Import borel_hierarchy.
+From mathcomp Require Import measurable_function measurable_topology.
 
 (**md**************************************************************************)
 (* # Simple functions                                                         *)
@@ -74,8 +74,8 @@ Local Open Scope ring_scope.
 Module HBSimple.
 
 HB.structure Definition SimpleFun d d'
-    (aT : sigmaRingType d) (bT : sigmaRingType d') :=
-  {f of @isMeasurableFun d d' aT bT f & @FiniteImage aT bT f}.
+    (aT : sigmaRingType d) (rT : sigmaRingType d') :=
+  {f of @isMeasurableFun d d' aT rT f & @FiniteImage aT rT f}.
 
 End HBSimple.
 
@@ -97,8 +97,8 @@ Notation "{ 'nnsfun' aT >-> T }" :=
 Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
 Section sfun_pred.
-Context {d d'} {aT : sigmaRingType d} {bT : sigmaRingType d'}.
-Definition sfun : {pred _ -> _} := [predI @mfun _ _ aT bT & fimfun].
+Context {d d'} {aT : sigmaRingType d} {rT : sigmaRingType d'}.
+Definition sfun : {pred _ -> _} := [predI @mfun _ _ aT rT & fimfun].
 Definition sfun_key : pred_key sfun. Proof. exact. Qed.
 Canonical sfun_keyed := KeyedPred sfun_key.
 Lemma sub_sfun_mfun : {subset sfun <= mfun}. Proof. by move=> x /andP[]. Qed.
@@ -106,16 +106,16 @@ Lemma sub_sfun_fimfun : {subset sfun <= fimfun}. Proof. by move=> x /andP[]. Qed
 End sfun_pred.
 
 Section sfun.
-Context {d d'} {aT : measurableType d} {bT : sigmaRingType d'}.
-Notation T := {sfun aT >-> bT}.
-Notation sfun := (@sfun _ _ aT bT).
+Context {d d'} {aT : measurableType d} {rT : sigmaRingType d'}.
+Notation T := {sfun aT >-> rT}.
+Notation sfun := (@sfun _ _ aT rT).
 Section Sub.
-Context (f : aT -> bT) (fP : f \in sfun).
+Context (f : aT -> rT) (fP : f \in sfun).
 Definition sfun_Sub1_subproof :=
-  @isMeasurableFun.Build d d' aT bT f (set_mem (sub_sfun_mfun fP)).
+  @isMeasurableFun.Build d d' aT rT f (set_mem (sub_sfun_mfun fP)).
 #[local] HB.instance Definition _ := sfun_Sub1_subproof.
 Definition sfun_Sub2_subproof :=
-  @FiniteImage.Build aT bT f (set_mem (sub_sfun_fimfun fP)).
+  @FiniteImage.Build aT rT f (set_mem (sub_sfun_fimfun fP)).
 
 Import HBSimple.
 
@@ -139,15 +139,15 @@ Proof. by []. Qed.
 
 HB.instance Definition _ := isSub.Build _ _ T sfun_rect sfun_valP.
 
-Lemma sfuneqP (f g : {sfun aT >-> bT}) : f = g <-> f =1 g.
+Lemma sfuneqP (f g : {sfun aT >-> rT}) : f = g <-> f =1 g.
 Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
 
-HB.instance Definition _ := [Choice of {sfun aT >-> bT} by <:].
+HB.instance Definition _ := [Choice of {sfun aT >-> rT} by <:].
 
 (* NB: already in cardinality.v *)
-HB.instance Definition _ x : @FImFun aT bT (cst x) := FImFun.on (cst x).
+HB.instance Definition _ x : @FImFun aT rT (cst x) := FImFun.on (cst x).
 
-Definition cst_sfun x : {sfun aT >-> bT} := cst x.
+Definition cst_sfun x : {sfun aT >-> rT} := cst x.
 
 Lemma cst_sfunE x : @cst_sfun x =1 cst x. Proof. by []. Qed.
 

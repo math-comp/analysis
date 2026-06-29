@@ -15,13 +15,13 @@
   + lemmas `zerofctE`, `onefctE`
 
 ### Added
-- in `borel_hierarchy.v`:
-  + definition `borel_type`
+- new file `measurable_topology.v`:
+  + definition `borelType`
   + lemmas `singleton_bigcap`, `measurable1`
 
 - in `simple_functions.v`:
   + lemmas `mem_sfun_comp_pair`, `sfun_submod_closed`
-  + `{sfun aT >-> borel_type V}` is an `lmodType` when `V` is a `normedModType`
+  + `{sfun aT >-> rT}` is an `lmodType` when `rT` is a `normedModType`
 
 - in `set_interval.v`:
   + lemmas `setU_itvob1`, `setU_1itvob`
