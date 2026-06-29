@@ -725,7 +725,7 @@ exists (\bigcup_(i in range f) dK i); split.
 - by rewrite -bigsetU_fset_set//; apply: bigsetU_compact=>// i _; case: (dkP i).
 - by move=> z [y _ dy]; have [_ /(_ _ dy) []] := dkP y.
 - have -> : A `\` \bigcup_(i in range f) dK i = \bigcup_(i in range f) J i.
-    rewrite -bigcupDr /= ?eqEsubset; first by exists (f point), point.
+    rewrite setD_bigcupr /= ?eqEsubset; first by exists (f point), point.
     split => z; first by move=> /(_ (f z)) [//| ? ?]; exists (f z).
     case => ? [? _ <-] [[zab /= <- nfz]] ? [r _ <-]; split => //.
     by move: nfz; apply: contra_not => /[dup] /dKsub ->.

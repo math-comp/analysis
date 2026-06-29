@@ -6,6 +6,9 @@
 - in `functions.v`
   + lemma `scalrfctE` -> `scalerfctE` (deprecating `scalrfctE`)
 
+- in `classical_sets.v`
+  + lemma `bigcupDr` -> `setD_bigcupr` (deprecating `bigcupDr`)
+
 ### Changed
 - in `functions.v`
   + lemma `fctE` (include `zerofctE` and `onefctE`)
@@ -26,6 +29,7 @@
   + definitions `cross`, `cross12`
   + lemmas `smallest_sub_sub`, `bigcap_closed_smallest`, `smallest_sub_iff`
   + lemma `preimage_set_systemS`
+  + lemma `setD_bigcapr`
 
 - in `measurable_structure.v`:
   + lemmas `g_sigma_algebra_cross`, `g_sigma_algebra_rectangle`
