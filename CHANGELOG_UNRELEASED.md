@@ -20,7 +20,7 @@
   + lemmas `singleton_bigcap`, `measurable1`
 
 - in `simple_functions.v`:
-  + lemmas `sfun_op`, `sfun_submod_closed`
+  + lemmas `mem_sfun_comp_pair`, `sfun_submod_closed`
   + `{sfun aT >-> borel_type V}` is an `lmodType` when `V` is a `normedModType`
 
 - in `set_interval.v`:

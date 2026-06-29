@@ -221,9 +221,8 @@ Section sfun_lmodType.
 Context d (aT : measurableType d) (R : realType).
 Import HBSimple.
 
-Lemma sfun_op (U V W : normedModType R)
-    (f : {sfun aT >-> U}) (g : {sfun aT >-> V})
-    (h : U * V -> W) :
+Lemma mem_sfun_comp_pair (U V W : normedModType R) (f : {sfun aT >-> U})
+    (g : {sfun aT >-> V}) (h : U * V -> W) :
   (fun x => h (f x, g x)) \in @sfun _ _ aT W.
 Proof.
 rewrite inE; apply/andP; split; rewrite inE/=.
@@ -232,28 +231,26 @@ rewrite inE; apply/andP; split; rewrite inE/=.
       \bigcup_(a in range f) (\bigcup_(b in range g)
         ((f @^-1` [set a] `&` g @^-1` [set b]) `&` [set _ | Y (h (a, b))]))).
     apply/seteqP; split=> [x/= Yfg|x [a _] [b _] [[/= <- <-]]//].
-    by exists (f x); [exists x|exists (g x); [exists x|split]].
+    by exists (f x); [exists x|exists (g x); [exists x|]].
   apply: fin_bigcup_measurable; first exact: fimfunP.
   move=> a _; apply: fin_bigcup_measurable; first exact: fimfunP.
-  move=> b _; apply: measurableI; last first.
-    have [Yhab|Yhab] := pselect (Y (h (a, b))).
-      by rewrite (_ : [set _ | _] = setT);
-          [apply/seteqP; split|exact: measurableT].
-    rewrite (_ : [set _ | _] = set0); last exact: measurable0.
-    by apply/seteqP; split.
-  apply: measurableI.
-    exact: (measurable_funPTI f (measurable1 a)).
-  exact: (measurable_funPTI g (measurable1 b)).
-apply: (sub_finite_set (B := h @` (range f `*` range g))).
+  move=> b _; apply: measurableI.
+    by apply: measurableI; exact/(measurable_funPTI _ (measurable1 _)).
+  have [Yhab|Yhab] := pselect (Y (h (a, b))).
+    by rewrite (_ : [set _ | _] = setT);
+        [apply/seteqP; split|exact: measurableT].
+  rewrite (_ : [set _ | _] = set0); last exact: measurable0.
+  by apply/seteqP; split.
+apply: (@sub_finite_set _ _ (h @` (range f `*` range g))).
   by move=> _ [x _ <-]/=; exists (f x, g x) => //; split; exists x.
-by apply: finite_image; apply: finite_setX; exact: fimfunP.
+exact/finite_image/finite_setX/fimfunP.
 Qed.
 
 Lemma sfun_submod_closed (V : normedModType R) :
   submod_closed (@sfun _ _ aT V).
 Proof.
 split=> [|k f g sf sg]; first exact: (valP (cst_sfun (0 : V))).
-exact: (sfun_op (sfun_Sub sf) (sfun_Sub sg) (fun t => k *: t.1 + t.2)).
+exact: (mem_sfun_comp_pair (sfun_Sub sf) (sfun_Sub sg) (fun t => k *: t.1 + t.2)).
 Qed.
 
 HB.instance Definition _ (V : normedModType R) :=
