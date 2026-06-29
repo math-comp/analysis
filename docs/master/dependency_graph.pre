@@ -36,6 +36,7 @@ subgraph cluster_classical { "classical/classical_sets"[label="classical_sets",U
   "classical/all_ssreflect_compat" -> "classical/classical_sets";
   "classical/boolp" -> "classical/classical_sets";
   "classical/mathcomp_extra" -> "classical/classical_sets";
+  "classical/unstable" -> "classical/classical_sets";
   "classical/wochoice" -> "classical/classical_sets";
 subgraph cluster_classical { "classical/mathcomp_extra"[label="mathcomp_extra",URL="mathcomp.classical.mathcomp_extra.html",fillcolor=1]}
   "classical/all_ssreflect_compat" -> "classical/mathcomp_extra";
@@ -668,10 +669,6 @@ subgraph cluster_measure { "theories/measure_theory/measurable_structure"[label=
   "classical/functions" -> "theories/measure_theory/measurable_structure";
   "classical/unstable" -> "theories/measure_theory/measurable_structure";
   "reals/reals" -> "theories/measure_theory/measurable_structure";
-  "theories/ereal" -> "theories/measure_theory/measurable_structure";
-  "theories/normedtype_theory/normedtype" -> "theories/measure_theory/measurable_structure";
-  "theories/sequences" -> "theories/measure_theory/measurable_structure";
-  "theories/topology_theory/topology" -> "theories/measure_theory/measurable_structure";
 subgraph cluster_measure { "theories/measure_theory/measure_function"[label="measure_function",URL="mathcomp.analysis.measure_theory.measure_function.html",fillcolor=11]}  "classical/all_ssreflect_compat" -> "theories/measure_theory/measure_function";
   "classical/boolp" -> "theories/measure_theory/measure_function";
   "classical/cardinality" -> "theories/measure_theory/measure_function";

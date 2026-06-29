@@ -462,6 +462,7 @@ digraph depend {
 	"classical/all_classical" -> "theories/topology_theory/topology_structure";
 	"classical/boolp" -> "classical/contra";
 	"classical/cardinality" -> "classical/fsbigop";
+	"classical/cardinality" -> "theories/measure_theory/measurable_structure";
 	"classical/classical_orders" -> "classical/all_classical";
 	"classical/classical_sets" -> "classical/functions";
 	"classical/contra" -> "classical/wochoice";
@@ -479,7 +480,7 @@ digraph depend {
 	"classical/all_ssreflect_compat" -> "classical/unstable";
 	"classical/all_ssreflect_compat" -> "experimental_reals/xfinmap";
 	"classical/wochoice" -> "classical/classical_sets";
-	"classical/unstable" -> "classical/functions";
+	"classical/unstable" -> "classical/classical_sets";
 	"reals/constructive_ereal" -> "reals/real_interval";
 	"reals/constructive_ereal" -> "experimental_reals/realseq";
 	"reals/constructive_ereal" -> "reals_stdlib/nsatz_realtype";
@@ -488,6 +489,7 @@ digraph depend {
 	"reals/reals" -> "reals_stdlib/Rstruct";
 	"reals/reals" -> "reals_stdlib/nsatz_realtype";
 	"reals/reals" -> "theories/topology_theory/pseudometric_structure";
+	"reals/reals" -> "theories/measure_theory/measurable_structure";
 	"reals/real_interval" -> "reals/all_reals";
 	"reals/prodnormedzmodule" -> "reals/all_reals";
 	"reals/all_reals" -> "theories/topology_theory/discrete_topology";
@@ -555,7 +557,7 @@ digraph depend {
 	"theories/measurable_realfun" -> "theories/lebesgue_measure";
 	"theories/measure_theory/measure" -> "theories/lebesgue_stieltjes_measure";
 	"theories/sequences" -> "theories/numfun";
-	"theories/sequences" -> "theories/measure_theory/measurable_structure";
+	"theories/sequences" -> "theories/measure_theory/measurable_function";
 	"theories/sequences" -> "theories/showcase/pnt";
 	"theories/cantor" -> "theories/all_analysis";
 	"theories/normedtype_theory/num_normedtype" -> "theories/normedtype_theory/pseudometric_normed_Zmodule";
