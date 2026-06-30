@@ -2,21 +2,6 @@
 
 ## [Unreleased]
 
-### Renamed
-- in `functions.v`
-  + lemma `scalrfctE` -> `scalerfctE` (deprecating `scalrfctE`)
-
-- in `classical_sets.v`
-  + lemma `bigcupDr` -> `setD_bigcupr` (deprecating `bigcupDr`)
-
-### Changed
-- in `functions.v`
-  + lemma `fctE` (include `zerofctE` and `onefctE`)
-
-### Added
-- in `functions.v`:
-  + lemmas `zerofctE`, `onefctE`
-
 ### Added
 - in `set_interval.v`:
   + lemmas `setU_itvob1`, `setU_1itvob`
@@ -174,12 +159,9 @@
 - in `esum.v`:
   + lemma `fsetsTE`
 
-### Changed
+- in `functions.v`:
+  + lemmas `zerofctE`, `onefctE`
 
-- moved from `measurable_structure.v` to `classical_sets.v`:
-  + definition `preimage_set_system`
-  + lemmas `preimage_set_system0`, `preimage_set_systemU`, `preimage_set_system_comp`,
-    `preimage_set_system_id`
 - in `functions.v`:
   + lemmas `linfunP`, `linfun_eqP`
   + instances of `SubLmodule` and `pointedType` on `{linear _->_ | _ }`
@@ -209,10 +191,10 @@
   + lemma `ge0_esum`
   + lemma `esum_ge`
 
+### Changed
+
 - in `realsum.v`:
   + lemma `__admitted__psumB` proved and renamed to `psumB`
-
-### Changed
 
 - moved from `measurable_structure.v` to `classical_sets.v`:
   + definition `preimage_set_system`
@@ -321,6 +303,12 @@
   + definition `seqD`
   + lemmas `eq_bigcup_seqD`, `trivIset_seqD`, `seqDU_seqD`, `bigcup_bigsetU_bigcup`
 
+- in `functions.v`
+  + lemma `fctE` (include `zerofctE` and `onefctE`)
+
+- in `classical_sets.v`
+  + lemma `bigcupDr` -> `setD_bigcupr` (deprecating `bigcupDr`)
+
 ### Renamed
 
 - in `tvs.v`:
@@ -369,6 +357,9 @@
 
 - in `realsum.v`:
   + `psum` -> `PosSum.psum`
+
+- in `functions.v`
+  + lemma `scalrfctE` -> `scalerfctE` (deprecating `scalrfctE`)
 
 ### Generalized
 
