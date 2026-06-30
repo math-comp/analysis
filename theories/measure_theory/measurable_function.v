@@ -379,7 +379,7 @@ Lemma preimage_measurability d d' (aT : measurableType d)
 Proof. by move=> + mD Y mY; apply; exists Y. Qed.
 
 Lemma measurability d d' (aT : measurableType d) (rT : measurableType d')
-    (D : set aT) (f : aT -> rT) (G : set (set rT)) :
+    (D : set aT) (f : aT -> rT) (G : set_system rT) :
   @measurable _ rT = <<s G >> ->
   preimage_set_system D f G `<=` @measurable _ aT ->
   measurable_fun D f.

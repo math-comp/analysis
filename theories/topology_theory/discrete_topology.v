@@ -40,7 +40,7 @@ HB.mixin Record Discrete_ofNbhs T & Nbhs T := {
 #[short(type="discreteNbhsType")]
 HB.structure Definition DiscreteNbhs := {T of Nbhs T & Discrete_ofNbhs T}.
 
-Definition discrete_ent {T} : set (set (T * T)) :=
+Definition discrete_ent {T} : set_system (T * T) :=
   globally (range (fun x => (x, x))).
 
 (** Note: having the discrete topology does not guarantee the discrete

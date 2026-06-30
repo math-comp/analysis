@@ -69,7 +69,7 @@ Reserved Notation "f ^` ( n )" (format "f ^` ( n )").
 Section Differential.
 Context {K : numDomainType} {V W : normedModType K}.
 
-Definition diff (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
+Definition diff (F : filter_on V) (_ : phantom (set_system V) F) (f : V -> W) :=
   (get (fun (df : {linear V -> W}) => continuous df /\ forall x,
       f x = f (lim F) + df (x - lim F) +o_(x \near F) (x - lim F))).
 
@@ -77,14 +77,14 @@ Local Notation "''d' f x" := (@diff _ (Phantom _ (nbhs x)) f).
 
 Fact diff_key : forall T, T -> unit. Proof. by constructor. Qed.
 Variant differentiable_def (f : V -> W) (x : filter_on V)
-  (phF : phantom (set (set V)) x) : Prop := DifferentiableDef of
+  (phF : phantom (set_system V) x) : Prop := DifferentiableDef of
   (continuous ('d f x) /\
   f = cst (f (lim x)) + 'd f x \o center (lim x) +o_x (center (lim x))).
 
 Local Notation differentiable f F :=
   (@differentiable_def f _ (Phantom _ (nbhs F))).
 
-Class is_diff_def (x : filter_on V) (Fph : phantom (set (set V)) x) (f : V -> W)
+Class is_diff_def (x : filter_on V) (Fph : phantom (set_system V) x) (f : V -> W)
   (df : V -> W) := DiffDef {
     ex_diff : differentiable f x ;
     diff_val : 'd f x = df :> (V -> W)

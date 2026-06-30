@@ -185,7 +185,7 @@ Qed.
 Lemma measurable_binomial_prob (R : realType) (n : nat) :
   measurable_fun setT (binomial_prob n : R -> pprobability _ _).
 Proof.
-apply: (measurability (@pset _ _ _ : set (set (pprobability _ R)))) => //.
+apply: (measurability (@pset _ _ _ : set_system (pprobability _ R))) => //.
 move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
 apply: measurable_fun_if => //=.
   by apply: measurable_and => //; exact: measurable_fun_ler.

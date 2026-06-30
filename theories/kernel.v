@@ -930,7 +930,7 @@ Lemma measurable_fun_mnormalize d d' (X : measurableType d)
     (Y : pmeasurableType d') (R : realType) (k : R.-ker X ~> Y) :
   measurable_fun [set: X] (fun x => mnormalize (k x) point : pprobability Y R).
 Proof.
-apply: (measurability (@pset _ _ _ : set (set (pprobability Y R)))) => //.
+apply: (measurability (@pset _ _ _ : set_system (pprobability Y R))) => //.
 move=> _ -[_ [r r01] [Ys mYs <-]] <-.
 rewrite /mnormalize /mset /preimage/=.
 apply: emeasurable_fun_infty_o => //.

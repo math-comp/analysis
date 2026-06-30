@@ -391,7 +391,7 @@ have UFGT : \bigcup_k (F k `*` G k) = setT.
   move=> [/= [n _ Fnx] [k _ Gky]]; exists (maxn n k) => //; split.
   - by move: x Fnx; exact/subsetPset/ndF/leq_maxl.
   - by move: y Gky; exact/subsetPset/ndG/leq_maxr.
-pose C : set (set (T1 * T2)) :=
+pose C : set_system (T1 * T2) :=
   [set C | exists A, measurable A /\ exists B, measurable B /\ C = A `*` B].
 have CI : setI_closed C.
   move=> /= _ _ [X1 [mX1 [X2 [mX2 ->]]]] [Y1 [mY1 [Y2 [mY2 ->]]]].

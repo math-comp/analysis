@@ -188,7 +188,7 @@ Implicit Type p : R.
 Lemma measurable_bernoulli_prob :
   measurable_fun setT (bernoulli_prob : R -> pprobability bool R).
 Proof.
-apply: (measurability (@pset _ _ _ : set (set (pprobability _ R)))) => //.
+apply: (measurability (@pset _ _ _ : set_system (pprobability _ R))) => //.
 move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
 apply: measurable_fun_ifT => //=.
   by apply: measurable_and => //; exact: measurable_fun_ler.

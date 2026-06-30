@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat ssralg ssrnum interval.
 From mathcomp Require Import interval_inference.
@@ -16,7 +16,7 @@ From mathcomp Require Import real_interval num_normedtype.
 (* ```                                                                        *)
 (*   limf_esup f F, limf_einf f F == limit sup/inferior of f at "filter" F    *)
 (*                                   f has type X -> \bar R.                  *)
-(*                                   F has type set (set X).                  *)
+(*                                   F has type set_system X.                 *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## Lower semicontinuous                                                    *)
@@ -42,7 +42,7 @@ Local Open Scope ring_scope.
 
 Section limf_esup_einf.
 Variables (T : choiceType) (X : filteredType T) (R : realFieldType).
-Implicit Types (f : X -> \bar R) (F : set (set X)).
+Implicit Types (f : X -> \bar R) (F : set_system X).
 Local Open Scope ereal_scope.
 
 Definition limf_esup f F := ereal_inf [set ereal_sup (f @` V) | V in F].
@@ -71,7 +71,7 @@ End limf_esup_einf.
 
 Section limf_esup_einf_realType.
 Variables (T : choiceType) (X : filteredType T) (R : realType).
-Implicit Types (f : X -> \bar R) (F : set (set X)).
+Implicit Types (f : X -> \bar R) (F : set_system X).
 Local Open Scope ereal_scope.
 
 Lemma limf_esup_ge0 f F : ~ F set0 ->

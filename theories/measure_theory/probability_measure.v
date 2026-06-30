@@ -211,7 +211,7 @@ move=> mU r1; apply/seteqP; split => // x/= _.
 by rewrite /mset/= (le_lt_trans (probability_le1 _ _)).
 Qed.
 
-Definition pset : set (set (probability T R)) :=
+Definition pset : set_system (probability T R) :=
   [set mset U r | r in `[0%R,1%R] & U in measurable].
 
 Definition pprobability : measurableType pset.-sigma :=

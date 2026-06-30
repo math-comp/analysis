@@ -709,10 +709,10 @@ HB.instance Definition _ := isRingOfSets.Build (display d) rT
 
 Local Notation "d .-ring" := (display d).
 Local Notation "d .-ring.-measurable" :=
-  ((d%mdisp.-ring).-measurable : set (set (type _))).
+  ((d%mdisp.-ring).-measurable : set_system (type _)).
 
-Local Definition measurable_fin_trivIset : set (set T) :=
-  [set A | exists B : set (set T),
+Local Definition measurable_fin_trivIset : set_system T :=
+  [set A | exists B : set_system T,
     [/\ A = \bigcup_(X in B) X, forall X : set T, B X -> measurable X,
       finite_set B & trivIset B id]].
 
@@ -769,10 +769,10 @@ rewrite -bigcup2inE; apply: mdU => //; last by move=> [|[]]// _; apply: mdDI.
 by move=> [|[]]// [|[]]//= _ _ []; rewrite setDE ?setIA => X [] []//.
 Qed.
 
-Lemma measurable_subring : (d.-measurable : set (set T)) `<=` d.-ring.-measurable.
+Lemma measurable_subring : (d.-measurable : set_system T) `<=` d.-ring.-measurable.
 Proof. by rewrite /measurable => X Xmeas /= M /= [_]; apply. Qed.
 
-Lemma ring_finite_set (A : set rT) : measurable A -> exists B : set (set T),
+Lemma ring_finite_set (A : set rT) : measurable A -> exists B : set_system T,
   [/\ finite_set B,
       (forall X, B X -> X !=set0),
       trivIset B id,
@@ -789,7 +789,7 @@ rewrite bigcup_mkcondr; apply: eq_bigcupr => X Bx; case: ifPn => //.
 by rewrite notin_setE/= => /negP/negPn/eqP.
 Qed.
 
-Definition decomp (A : set rT) : set (set T) :=
+Definition decomp (A : set rT) : set_system T :=
   if A == set0 then [set set0] else
   if pselect (measurable A) is left mA then projT1 (cid (ring_finite_set mA))
   else [set A].
@@ -930,7 +930,7 @@ End SetRing.
 Export SetRing.Exports.
 Notation "d .-ring" := (SetRing.display d) : measure_display_scope.
 Notation "d .-ring.-measurable" :=
-  ((d%mdisp.-ring).-measurable : set (set (SetRing.type _))) : classical_set_scope.
+  ((d%mdisp.-ring).-measurable : set_system (SetRing.type _)) : classical_set_scope.
 
 Lemma le_measure d (R : realFieldType) (T : semiRingOfSetsType d)
     (mu : {content set T -> \bar R}) :
@@ -1727,7 +1727,7 @@ End measure_continuity.
 
 Section g_sigma_algebra_measure_unique_trace.
 Context d (R : realType) (T : measurableType d).
-Variables (G : set (set T)) (D : set T) (mD : measurable D).
+Variables (G : set_system T) (D : set T) (mD : measurable D).
 Let H := [set X | G X /\ X `<=` D] (* "trace" of G wrt D *).
 Hypotheses (Hm : H `<=` measurable) (setIH : setI_closed H).
 Variables m1 m2 : {measure set T -> \bar R}.
@@ -1869,7 +1869,7 @@ Notation le_mu_bigcup := generalized_Boole_inequality.
 
 Section g_sigma_algebra_measure_unique.
 Context d (R : realType) (T : measurableType d).
-Variable G : set (set T).
+Variable G : set_system T.
 Hypothesis Gm : G `<=` measurable.
 Variable g : (set T)^nat.
 Hypotheses Gg : forall i, G (g i).
@@ -1973,7 +1973,7 @@ Qed.
 
 Section measure_unique.
 Context d (R : realType) (T : measurableType d).
-Variables  (G : set (set T)) (g : (set T)^nat).
+Variables  (G : set_system T) (g : (set T)^nat).
 Hypotheses (mG : measurable = <<s G >>) (setIG : setI_closed G).
 Hypothesis Gg : forall i, G (g i).
 Hypothesis g_cover : \bigcup_k (g k) = setT.

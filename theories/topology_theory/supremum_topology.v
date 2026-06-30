@@ -179,7 +179,7 @@ Lemma countable_sup_ent :
   countable_uniformity Tt.
 Proof.
 move=> Icnt countable_ent; pose f n := cid (countable_ent n).
-pose g (n : Ii) : set (set (T * T)) := projT1 (f n).
+pose g (n : Ii) : set_system (T * T) := projT1 (f n).
 have [I0 | /set0P [i0 _]] := eqVneq [set: I] set0.
   exists [set setT]; split; [exact: countable1|move=> A ->; exact: entourageT|].
   move=> P [w [A _]] <- subP; exists setT => //.
