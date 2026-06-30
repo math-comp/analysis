@@ -191,6 +191,9 @@
   + lemma `ge0_esum`
   + lemma `esum_ge`
 
+- in `functions.v`:
+  + lemma `preimageD1`
+
 ### Changed
 
 - in `realsum.v`:

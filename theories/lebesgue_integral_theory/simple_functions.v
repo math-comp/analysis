@@ -227,16 +227,6 @@ move=> x0; apply/seteqP.
 by split=> [z/= <-|z/= ->]; rewrite [x * _]mulrC (mulfK, divfK).
 Qed.
 
-Lemma preimage_add T (R : numDomainType) (f g : T -> R) z :
-  (f \+ g) @^-1` [set z] = \bigcup_(a in f @` setT)
-    ((f @^-1` [set a]) `&` (g @^-1` [set z - a])).
-Proof.
-apply/seteqP; split=> [x /= fgz|x [_ /= [y _ <-]] [fxfy gzf]]; last first.
-  by rewrite gzf -fxfy addrC subrK.
-exists (z - g x); first by exists x; rewrite // -fgz addrK.
-by split; rewrite 1?subKr // -fgz addrK.
-Qed.
-
 Section simple_bounded.
 Context d (T : sigmaRingType d) (R : realType).
 
