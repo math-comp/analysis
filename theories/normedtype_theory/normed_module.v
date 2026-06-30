@@ -100,7 +100,7 @@ HB.structure Definition NormedModule0 (K : numDomainType) :=
 HB.structure Definition NormedModule (K : numDomainType) :=
   {T of NormedModule0 K T & Metric K T}.
 
-HB.factory Record isNormedModule (K : numDomainType) T of NormedModule0 K T := { }.
+HB.factory Record isNormedModule (K : numDomainType) T & NormedModule0 K T := { }.
 
 HB.builders Context K T of isNormedModule K T.
 
