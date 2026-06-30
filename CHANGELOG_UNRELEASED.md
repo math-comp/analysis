@@ -2,18 +2,6 @@
 
 ## [Unreleased]
 
-### Renamed
-- in `functions.v`
-  + lemma `scalrfctE` -> `scalerfctE` (deprecating `scalrfctE`)
-
-### Changed
-- in `functions.v`
-  + lemma `fctE` (include `zerofctE` and `onefctE`)
-
-### Added
-- in `functions.v`:
-  + lemmas `zerofctE`, `onefctE`
-
 ### Added
 - in `set_interval.v`:
   + lemmas `setU_itvob1`, `setU_1itvob`
@@ -26,6 +14,7 @@
   + definitions `cross`, `cross12`
   + lemmas `smallest_sub_sub`, `bigcap_closed_smallest`, `smallest_sub_iff`
   + lemma `preimage_set_systemS`
+  + lemma `setD_bigcapr`
 
 - in `measurable_structure.v`:
   + lemmas `g_sigma_algebra_cross`, `g_sigma_algebra_rectangle`
@@ -186,12 +175,9 @@
   + lemma `ge0_integration_by_substitution_shift_itvy`,
     `ge0_integration_by_substitution_shift_itvNy`
 
-### Changed
+- in `functions.v`:
+  + lemmas `zerofctE`, `onefctE`
 
-- moved from `measurable_structure.v` to `classical_sets.v`:
-  + definition `preimage_set_system`
-  + lemmas `preimage_set_system0`, `preimage_set_systemU`, `preimage_set_system_comp`,
-    `preimage_set_system_id`
 - in `functions.v`:
   + lemmas `linfunP`, `linfun_eqP`
   + instances of `SubLmodule` and `pointedType` on `{linear _->_ | _ }`
@@ -221,10 +207,13 @@
   + lemma `ge0_esum`
   + lemma `esum_ge`
 
-- in `realsum.v`:
-  + lemma `__admitted__psumB` proved and renamed to `psumB`
+- in `functions.v`:
+  + lemma `preimageD1`
 
 ### Changed
+
+- in `realsum.v`:
+  + lemma `__admitted__psumB` proved and renamed to `psumB`
 
 - moved from `measurable_structure.v` to `classical_sets.v`:
   + definition `preimage_set_system`
@@ -335,6 +324,12 @@
   + definition `seqD`
   + lemmas `eq_bigcup_seqD`, `trivIset_seqD`, `seqDU_seqD`, `bigcup_bigsetU_bigcup`
 
+- in `functions.v`
+  + lemma `fctE` (include `zerofctE` and `onefctE`)
+
+- in `classical_sets.v`
+  + lemma `bigcupDr` -> `setD_bigcupr` (deprecating `bigcupDr`)
+
 ### Renamed
 
 - in `tvs.v`:
@@ -383,6 +378,9 @@
 
 - in `realsum.v`:
   + `psum` -> `PosSum.psum`
+
+- in `functions.v`
+  + lemma `scalrfctE` -> `scalerfctE` (deprecating `scalrfctE`)
 
 ### Generalized
 

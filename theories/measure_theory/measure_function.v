@@ -739,7 +739,7 @@ have mDbigcup I (D : set I) (A : set T) (B : I -> set T) : finite_set D ->
     measurable_fin_trivIset (A `\` \bigcup_(i in D) B i).
   have [->|/set0P D0] := eqVneq D set0.
     by rewrite bigcup0// setD0 => *; apply: mdW.
-  move=> Dfin Am Bm; rewrite -bigcupDr//; apply: mdisj_bigcap=> // i Di.
+  move=> Dfin Am Bm; rewrite setD_bigcupr//; apply: mdisj_bigcap=> // i Di.
   by have [F [Ffin Fm -> ?]] := semi_measurableD A (B i) Am (Bm _ Di); exists F.
 have mdU : fin_trivIset_closed measurable_fin_trivIset.
   elim/Pchoice=> I D F Dfin Ftriv Fm.
@@ -760,7 +760,7 @@ have mdDI : setD_closed measurable_fin_trivIset.
   have [->|/set0P F'N0] := eqVneq F' set0.
     by rewrite bigcup_set0 setD0; exists F.
   rewrite setD_bigcupl; apply: mdU => //; first by apply: trivIset_setIr.
-  move=> X DX; rewrite -bigcupDr//; apply: mdisj_bigcap => //.
+  move=> X DX; rewrite setD_bigcupr//; apply: mdisj_bigcap => //.
   move=> Y DY; case: (semi_measurableD X Y); [exact: Fm|exact: F'm|].
   by move=> G [Gfin Gm -> Gtriv]; exists G.
 apply: smallest_sub => //; split=> //; first by apply: mdW.

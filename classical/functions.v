@@ -2766,6 +2766,15 @@ Definition fctE :=
   (cstE, compE, opprfctE, addrfctE, mulrfctE, scalerfctE, exprfctE,
    zerofctE, onefctE).
 
+Lemma preimageD1 {T : Type} {Z : zmodType} (f g : T -> Z) (z : Z) :
+  (f \+ g) @^-1`[set z] =
+  \bigcup_(a in range f) (f @^-1` [set a] `&` g @^-1` [set z - a]).
+Proof.
+rewrite eqEsubset; split => [x <-|x [a _ /= [<- ->]]].
+  by exists (f x) => /=; [exact/imageT|rewrite addrC addKr].
+by rewrite subrKC.
+Qed.
+
 End function_space_lemmas.
 
 #[deprecated(since="mathcomp-analysis 1.17.0", use=scalerfctE)]
