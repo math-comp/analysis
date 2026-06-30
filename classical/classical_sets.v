@@ -2115,7 +2115,6 @@ Lemma setC_bigsetI U (s : seq T) (f : T -> set U) (P : pred T) :
   \big[setU/set0]_(t <- s | P t) ~` f t.
 Proof. by elim/big_rec2: _ => [|i X Y Pi <-]; rewrite ?setCT ?setCI. Qed.
 
-<<<<<<< HEAD
 #[deprecated(since="mathcomp-analysis 1.17.0", note="use `setD_bigcupr` instead")]
 Lemma bigcupDr (F : I -> set T) (P : set I) (A : set T) : P !=set0 ->
   \bigcap_(i in P) (A `\` F i) = A `\` \bigcup_(i in P) F i.
@@ -2126,13 +2125,6 @@ Lemma setD_bigcupr (F : I -> set T) (P : set I) (A : set T) : P !=set0 ->
 Proof. by move=> PN0; rewrite setDE setC_bigcup -bigcapIr. Qed.
 
 Lemma setD_bigcapr (F : I -> set T) [P : set I] (A : set T) :
-=======
-Lemma setD_bigcupr (F : I -> set T) (P : set I) (A : set T) : P !=set0 ->
-  A `\` \bigcup_(i in P) F i = \bigcap_(i in P) (A `\` F i).
-Proof. by move=> PN0; rewrite setDE setC_bigcup -bigcapIr. Qed.
-
-Lemma setD_bigcapr (F : I -> set T) [P : set I] (A : set T) : 
->>>>>>> 93b0d36e (added setD_bigcapr + renamed bigcupDr to setD_bigcupr)
   A `\` \bigcap_(i in P)  F i = \bigcup_(i in P)  (A `\` F i).
 Proof. by rewrite setDE setC_bigcap setI_bigcupr. Qed.
 
