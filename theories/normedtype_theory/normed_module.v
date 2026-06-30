@@ -221,8 +221,9 @@ HB.instance Definition _ := GRing.ComNzAlgebra.copy R R^o.
 HB.instance Definition _ := Vector.copy R R^o.
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ := NormedModule.copy R R^o.
-#[export, non_forgetful_inheritance]
-HB.instance Definition _ := Num.RealField.on R.
+(*#[export, non_forgetful_inheritance]
+HB.instance Definition _ := Num.RealField.on R.*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 End realFieldType.
 
 Section numClosedFieldType.
@@ -245,8 +246,9 @@ HB.instance Definition _ := GRing.ComNzAlgebra.copy R R^o.
 HB.instance Definition _ := Vector.copy R R^o.
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ := NormedModule.copy R R^o.
-#[export, non_forgetful_inheritance]
-HB.instance Definition _ := Num.NumField.on R.
+(*#[export, non_forgetful_inheritance]
+HB.instance Definition _ := Num.NumField.on R.*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 End numFieldType.
 
 Module Exports. Export numFieldTopology.Exports. HB.reexport. End Exports.

@@ -746,7 +746,8 @@ Definition type : Type := let _ := completely_regular_nbhsE in X.
   (@entourage_inv X')
   (@entourage_split_ex X')
   completely_regular_nbhsE.
-#[export] HB.instance Definition _ := Uniform.on type.
+(*#[export] HB.instance Definition _ := Uniform.on type.*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 
 End completely_regular_uniformity.
 Module Exports. HB.reexport. End Exports.

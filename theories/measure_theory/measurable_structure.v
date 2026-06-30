@@ -1584,7 +1584,8 @@ Let prod_salgebra_bigcup (F : _^nat) :
   g_sigma_preimageU f1 f2 (\bigcup_i (F i)).
 Proof. exact: sigma_algebra_bigcup. Qed.
 
-HB.instance Definition _ := Choice.on (T1 * T2)%type.
+(*HB.instance Definition _ := Choice.on (T1 * T2)%type.*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 HB.instance Definition prod_salgebra_mixin :=
   @isMeasurable.Build (measure_prod_display (d1, d2))
     (T1 * T2)%type (g_sigma_preimageU f1 f2)

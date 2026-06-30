@@ -567,10 +567,11 @@ HB.instance Definition _ (U : topologicalType) (T : uniformType) :=
     (continuousType U T)
     (initial_topology (id : continuousType U T -> (U -> T))).
 
-HB.instance Definition _ (U : topologicalType) (R : realType)
+(*HB.instance Definition _ (U : topologicalType) (R : realType)
      (T : pseudoMetricType R) :=
   PseudoMetric.on
-    (initial_topology (id : continuousType U T -> (U -> T))).
+    (initial_topology (id : continuousType U T -> (U -> T))).*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 
 End ArrowAsUniformType.
 

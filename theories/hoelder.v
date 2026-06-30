@@ -939,7 +939,8 @@ HB.instance Definition _ :=
 Lemma LfuneqP (f g : LfunType mu p1) : f = g <-> f =1 g.
 Proof. by split=> [->//|fg]; exact/val_inj/funext. Qed.
 
-HB.instance Definition _ := [Choice of LfunType mu p1 by <:].
+(*HB.instance Definition _ := [Choice of LfunType mu p1 by <:].*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 
 Lemma finite_norm_cst0 : finite_norm mu p (cst 0).
 Proof. by rewrite /finite_norm Lnorm0// gt_eqF// (lt_le_trans _ p1). Qed.

@@ -373,8 +373,9 @@ split; first exact: measurableX.
 by rewrite product_measure1E// lte_mul_pinfty// ge0_fin_numE.
 Qed.
 
-HB.instance Definition _ := Measure_isSigmaFinite.Build _ _ _ (m1 \x m2)
-  product_measure_sigma_finite.
+(*HB.instance Definition _ := Measure_isSigmaFinite.Build _ _ _ (m1 \x m2)
+  product_measure_sigma_finite.*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 
 Lemma product_measure_unique
     (m' : {measure set (T1 * T2) -> \bar R}) :

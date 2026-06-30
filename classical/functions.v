@@ -647,7 +647,8 @@ HB.instance Definition _ (f : {oinvfun A >-> B}) := Fun.on (oapp f).
 HB.instance Definition _ (f : {injfun A >-> B}) := Fun.on (oapp f).
 HB.instance Definition _ (f : {surjfun A >-> B}) := Fun.on (oapp f).
 HB.instance Definition _ (f : {bij A >-> B}) := Fun.on (oapp f).
-HB.instance Definition _ (f : {splitbij A >-> B}) := Fun.on (oapp f).
+(*HB.instance Definition _ (f : {splitbij A >-> B}) := Fun.on (oapp f).*)
+(* generates: Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 
 End OApply.
 
