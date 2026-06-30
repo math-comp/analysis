@@ -102,7 +102,7 @@ HB.structure Definition NormedModule (K : numDomainType) :=
 
 HB.factory Record isNormedModule (K : numDomainType) T & NormedModule0 K T := { }.
 
-HB.builders Context K T of isNormedModule K T.
+HB.builders Context K T & isNormedModule K T.
 
 Let mdist (x y : T) : K := `|x - y|.
 
