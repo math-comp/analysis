@@ -557,7 +557,6 @@ digraph depend {
 	"theories/measurable_realfun" -> "theories/lebesgue_measure";
 	"theories/measure_theory/measure" -> "theories/lebesgue_stieltjes_measure";
 	"theories/sequences" -> "theories/numfun";
-	"theories/sequences" -> "theories/measure_theory/measurable_function";
 	"theories/sequences" -> "theories/showcase/pnt";
 	"theories/cantor" -> "theories/all_analysis";
 	"theories/normedtype_theory/num_normedtype" -> "theories/normedtype_theory/pseudometric_normed_Zmodule";

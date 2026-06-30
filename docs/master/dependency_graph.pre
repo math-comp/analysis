@@ -440,6 +440,8 @@ subgraph cluster_normedtype { "theories/normedtype_theory/num_normedtype"[label=
 subgraph cluster_normedtype { "theories/normedtype_theory/matrix_normedtype"[label="matrix_normedtype",URL="mathcomp.analysis.normedtype_theory.matrix_normedtype.html",fillcolor=9]}  "classical/all_ssreflect_compat" -> "theories/normedtype_theory/matrix_normedtype";
   "classical/boolp" -> "theories/normedtype_theory/matrix_normedtype";
   "classical/classical_sets" -> "theories/normedtype_theory/matrix_normedtype";
+  "classical/contra" -> "theories/normedtype_theory/matrix_normedtype";
+  "classical/unstable" -> "theories/normedtype_theory/matrix_normedtype";
   "reals/prodnormedzmodule" -> "theories/normedtype_theory/matrix_normedtype";
   "reals/reals" -> "theories/normedtype_theory/matrix_normedtype";
   "theories/normedtype_theory/normed_module" -> "theories/normedtype_theory/matrix_normedtype";
@@ -755,16 +757,10 @@ subgraph cluster_measure { "theories/measure_theory/measure_extension"[label="me
   "theories/topology_theory/topology" -> "theories/measure_theory/measure_extension";
 subgraph cluster_measure { "theories/measure_theory/measurable_function"[label="measurable_function",URL="mathcomp.analysis.measure_theory.measurable_function.html",fillcolor=11]}  "classical/all_ssreflect_compat" -> "theories/measure_theory/measurable_function";
   "classical/boolp" -> "theories/measure_theory/measurable_function";
-  "classical/cardinality" -> "theories/measure_theory/measurable_function";
   "classical/classical_sets" -> "theories/measure_theory/measurable_function";
   "classical/functions" -> "theories/measure_theory/measurable_function";
   "classical/unstable" -> "theories/measure_theory/measurable_function";
-  "reals/reals" -> "theories/measure_theory/measurable_function";
-  "theories/ereal" -> "theories/measure_theory/measurable_function";
   "theories/measure_theory/measurable_structure" -> "theories/measure_theory/measurable_function";
-  "theories/normedtype_theory/normedtype" -> "theories/measure_theory/measurable_function";
-  "theories/sequences" -> "theories/measure_theory/measurable_function";
-  "theories/topology_theory/topology" -> "theories/measure_theory/measurable_function";
 subgraph cluster_measure { "theories/measure_theory/signed_measure"[label="signed_measure",URL="mathcomp.analysis.measure_theory.signed_measure.html",fillcolor=11]}  "classical/all_ssreflect_compat" -> "theories/measure_theory/signed_measure";
   "classical/boolp" -> "theories/measure_theory/signed_measure";
   "classical/cardinality" -> "theories/measure_theory/signed_measure";
