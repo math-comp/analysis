@@ -1,11 +1,10 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat algebra.
+From mathcomp Require Import all_ssreflect_compat.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import boolp classical_sets functions cardinality reals.
-From mathcomp Require Import ereal topology normedtype.
-From mathcomp Require Import sequences measurable_structure.
+From mathcomp Require Import boolp classical_sets functions.
+From mathcomp Require Import measurable_structure.
 
 (**md**************************************************************************)
 (* # Measurable Functions                                                     *)
@@ -29,7 +28,6 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import ProperNotations.
-Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -358,7 +356,7 @@ Context {d} {T : measurableType d} {d1} {T1 : measurableType d1}
 
 Lemma g_sigma_algebra_preimage_comp (X : {mfun T >-> T1}) (f : T1 -> T2) :
   measurable_fun [set: T1] f ->
-  g_sigma_algebra_preimage (f \o X)%R `<=` g_sigma_algebra_preimage X.
+  g_sigma_algebra_preimage (f \o X) `<=` g_sigma_algebra_preimage X.
 Proof. exact: preimage_set_system_compS. Qed.
 
 End g_sigma_algebra_preimage_comp.
