@@ -92,10 +92,32 @@ HB.mixin Record PseudoMetricNormedZmod_ConvexTvs_isNormedModule K V
   normrZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
 
-#[short(type="normedModType")]
-HB.structure Definition NormedModule (K : numDomainType) :=
+HB.structure Definition NormedModule0 (K : numDomainType) :=
   {T of PseudoMetricNormedZmod K T & ConvexTvs K T
    & PseudoMetricNormedZmod_ConvexTvs_isNormedModule K T}.
+
+#[short(type="normedModType")]
+HB.structure Definition NormedModule (K : numDomainType) :=
+  {T of NormedModule0 K T & Metric K T}.
+
+HB.factory Record isNormedModule (K : numDomainType) T of NormedModule0 K T := { }.
+
+HB.builders Context K T of isNormedModule K T.
+
+Let mdist (x y : T) : K := `|x - y|.
+
+Let mdist_ge0 x y : 0 <= mdist x y. Proof. by rewrite /mdist. Qed.
+
+Let mdist_positivity x y : mdist x y = 0 -> x = y.
+Proof. by move=> /normr0_eq0/subr0_eq. Qed.
+
+Let ballEmdist x d : ball x d = [set y | mdist x y < d].
+Proof. by rewrite -ball_normE. Qed.
+
+HB.instance Definition _ :=
+  @PseudoMetric_isMetric.Build K T mdist mdist_ge0 mdist_positivity ballEmdist.
+
+HB.end.
 
 #[short(type="subNormedModType")]
 HB.structure Definition SubNormedModule (R : numDomainType)
@@ -1721,7 +1743,7 @@ Qed.
 Section prod_NormedModule.
 Context {K : numFieldType} {U V : normedModType K}.
 
-Lemma prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
+Let prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
 Proof. by rewrite prod_normE /= !normrZ maxr_pMr. Qed.
 
 HB.instance Definition _ :=
@@ -1729,6 +1751,9 @@ HB.instance Definition _ :=
   prod_norm_scale.
 
 End prod_NormedModule.
+
+HB.instance Definition _ (R : numFieldType) (U V' : normedModType R) :=
+  isNormedModule.Build _ (U * V')%type.
 
 Section prod_NormedModule_lemmas.
 Context {T : Type} {K : numDomainType} {U V : normedModType K}.
@@ -2656,6 +2681,9 @@ HB.instance Definition _ (V : vectType R) :=
 HB.instance Definition _ (V : vectType R) :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R (max_space V)
     (@Norm.normZ _ _ (@max_norm V)).
+
+HB.instance Definition _ (V : vectType R) :=
+  isNormedModule.Build _ (max_space V).
 
 (* NB: Get Trocq to prove the continuity part automatically. *)
 Lemma sup_closed_ball_compact (V : vectType R) :
