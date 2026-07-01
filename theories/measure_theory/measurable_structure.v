@@ -355,7 +355,13 @@ by apply: (PU) => n; apply: GA.
 Qed.
 Hint Resolve smallest_sigma_algebra : core.
 
-Lemma sub_sigma_algebra2 M : M `<=` G -> <<s D, M >> `<=` <<s D, G >>.
+Lemma sigma_algebra_subl M : M `<=` <<s D, G>> -> <<s D, M >> `<=` <<s D, G >>.
+Proof.
+move=> MsG A + H [sH GH]; apply; split => //; apply: (subset_trans MsG).
+exact: bigcap_inf.
+Qed.
+
+Lemma sigma_algebra_sub M : M `<=` G -> <<s D, M >> `<=` <<s D, G >>.
 Proof. exact: sub_smallest2r. Qed.
 
 Lemma sigma_algebra_id : sigma_algebra D G -> <<s D, G >> = G.
@@ -1157,6 +1163,24 @@ Lemma bigcapT_measurable F :
   (forall k, measurable (F k)) -> measurable (\bigcap_i F i).
 Proof. by move=> PF; apply: bigcap_measurable => //; exists 1. Qed.
 
+Lemma countable_bigcup_measurable {U} {F : U -> set T}
+    {P : set U} : countable P -> (forall i, P i -> measurable (F i)) ->
+  measurable (\bigcup_(i in P) F i).
+Proof.
+move=>/[dup] cP /pfcard_geP =>[[-> _|/surjfunPex [f ->] mF]].
+  by rewrite bigcup0.
+by rewrite bigcup_image; apply: bigcupT_measurable=>// i; exact: mF.
+Qed.
+
+Lemma countable_bigcap_measurable {U} {F : U -> set T} (P : set U) :
+    P !=set0 -> countable P -> (forall k, P k -> measurable (F k)) ->
+  measurable (\bigcap_(i in P) F i).
+Proof.
+move=> [j Pj] /pfcard_geP=>[[P0|/surjfunPex [f ->] mF]].
+  by rewrite P0/= in Pj.
+by rewrite bigcap_image; apply: bigcap_measurable=>// k _; exact: mF.
+Qed.
+
 End sigmaring_lemmas.
 
 (* Adapted from mathlib induction_on_inter *)
@@ -1616,7 +1640,7 @@ move=> sX sY; apply/seteqP; split.
   apply: (@measurableI _ (@g_sigma_algebraType _ (X `x` Y))).
   + by apply: sub_sigma_algebra; left; exists A1 => //; rewrite setTI.
   + by apply: sub_sigma_algebra; right; exists A2 => //; rewrite setTI.
-- apply: sub_sigma_algebra2 => A [|].
+- apply: sigma_algebra_sub => A [|].
   + rewrite /preimage_set_system/= => -[A1 XA1 <-{A}].
     by rewrite -setXT setTI; exact: rectangle_setX.
   + rewrite /preimage_set_system/= => -[A1 XA1 <-{A}].

@@ -2343,6 +2343,17 @@ rewrite -(big_mkord xpredT F) -bigcup_seq.
 by apply: eq_bigcupl; split=> i; rewrite /= mem_index_iota leq0n.
 Qed.
 
+Lemma bigcup_bigsetU F :
+  \bigcup_k \big[setU/set0]_(i < k.+1) F i =
+  \bigcup_k \big[setU/set0]_(i < k) F i.
+Proof.
+transitivity (\bigcup_(k in S @` setT) \big[setU/set0]_(i < k) F i).
+  by rewrite bigcup_image.
+rewrite [RHS](bigcup_setD1 0%N)// big_ord0 set0U; apply: eq_bigcupl.
+split=> [x [? _ <-//]|x [_ x0]]/=; exists x.-1 => //; rewrite prednK// lt0n.
+exact/eqP.
+Qed.
+
 Lemma bigcup_bigsetU_bigcup F :
   \bigcup_k \big[setU/set0]_(i < k.+1) F i = \bigcup_k F k.
 Proof.

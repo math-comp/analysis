@@ -18,6 +18,7 @@
 
 - in `measurable_structure.v`:
   + lemmas `g_sigma_algebra_cross`, `g_sigma_algebra_rectangle`
+  + lemma `sigma_algebra_sub`
 
 - in `measurable_function.v`:
   + lemma `preimage_measurability`
@@ -224,6 +225,15 @@
 - in `functions.v`:
   + lemma `preimageD1`
 
+- in `measure_function.v`:
+  + lemmas `cvg_measure_bigcap`, `cvg_measure_bigcup`
+
+- in `classical_sets.v`:
+  + lemma `bigcup_bigsetU`
+
+- in `measurable_structure.v`:
+  + lemmas `countable_bigcap_measurable`, `countable_bigcup_measurable`
+
 ### Changed
 
 - in `realsum.v`:
@@ -361,6 +371,7 @@
 
 - in `measurable_structure.v`:
   + `measurable_prod_measurableType` -> `prod_measurable_rectangle`
+  + `sub_sigma_algebra2` -> `sigma_algebra_sub`
 - in `measurable_realfun.v`:
   + `measurable_fun_itv_co` -> `measurable_fun_itvbb_itvco`
   + `measurable_fun_itv_oc` -> `measurable_fun_itvbb_itvoc`

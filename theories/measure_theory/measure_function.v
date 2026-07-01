@@ -1674,7 +1674,7 @@ Qed.
 Section measure_continuity.
 Local Open Scope ereal_scope.
 
-Lemma nondecreasing_cvg_mu d (T : ringOfSetsType d) (R : realFieldType)
+Lemma nondecreasing_cvg_measure d (T : ringOfSetsType d) (R : realFieldType)
   (mu : {measure set T -> \bar R}) (F : (set T) ^nat) :
   (forall i, measurable (F i)) -> measurable (\bigcup_n F n) ->
   nondecreasing_seq F ->
@@ -1697,7 +1697,7 @@ under eq_fun do rewrite -(big_mkord predT (mu \o seqD F)).
 exact/(nS m.+1)/(leq_trans nm).
 Qed.
 
-Lemma nonincreasing_cvg_mu d (T : algebraOfSetsType d) (R : realFieldType)
+Lemma nonincreasing_cvg_measure d (T : algebraOfSetsType d) (R : realFieldType)
   (mu : {measure set T -> \bar R}) (F : (set T) ^nat) :
   mu (F 0%N) < +oo ->
   (forall i, measurable (F i)) -> measurable (\bigcap_n F n) ->
@@ -1716,14 +1716,47 @@ have -> : \bigcap_n F n = F 0%N `&` \bigcap_n F n.
 rewrite -measureD // setDE setC_bigcap setI_bigcupr -[x in bigcup _ x]/G.
 have -> : (fun n => mu (F 0%N) - mu (F n)) = mu \o G.
   by apply: funext => n /=; rewrite measureD// setIidr//; exact/subsetPset/niF.
-apply: nondecreasing_cvg_mu.
+apply: nondecreasing_cvg_measure.
 - by move=> ?; apply: measurableD; exact: mF.
 - rewrite -setI_bigcupr; apply: measurableI; first exact: mF.
   by rewrite -@setC_bigcap; exact: measurableC.
 - by move=> n m NM; apply/subsetPset; apply: setDS; apply/subsetPset/niF.
 Qed.
 
+Lemma cvg_measure_bigcup {d} {M : sigmaRingType d} {R : realFieldType}
+  {mu : {measure set M -> \bar R}} (A : (set M)^nat)
+  (mA : forall i, measurable (A i)) :
+  mu (\bigcup_(i < n) A i) @[n-->\oo] --> mu (\bigcup_n A n).
+Proof.
+rewrite -bigcup_bigsetU_bigcup bigcup_bigsetU.
+under eq_bigcupr do rewrite -bigcup_mkord.
+apply: nondecreasing_cvg_measure => [i||n m nm]; [exact: bigcup_measurable|
+  by apply: bigcup_measurable => ? ?; exact: bigcup_measurable|].
+by apply/subsetPset => x [i/= i_n Aix]; exists i => //=; exact: leq_trans nm.
+Qed.
+
+Lemma cvg_measure_bigcap {d} {M : measurableType d} {R : realFieldType}
+    {mu : {measure set M -> \bar R}} (A : (set M)^nat)
+    (mA : forall i, measurable (A i)) :
+  mu (A 0%N) \is a fin_num ->
+  mu (\bigcap_(i < n.+1) A i) @[n-->\oo] --> mu (\bigcap_n A n).
+Proof.
+move=> muA0.
+rewrite [\bigcap_n A n] (_:_ = \bigcap_n (\bigcap_(i < n.+1) A i)).
+  by rewrite eqEsubset/bigcap; split=> [a/= + j _  i _|a/= aIa i _];
+    [exact|exact: (aIa i.+1)].
+apply: nonincreasing_cvg_measure.
+- by rewrite bigcap_mkord big_ord1 -ge0_fin_numE.
+- by move=> i; exact: bigcap_measurableType.
+- by apply: bigcap_measurableType=> k _; exact: bigcap_measurableType.
+- by move=> n m nm; apply/subsetPset=> x + i/= i_n; apply; exact: leq_trans nm.
+Qed.
+
 End measure_continuity.
+#[deprecated(since="mathcomp-analysis 1.17.0", use=nondecreasing_cvg_measure)]
+Notation nondecreasing_cvg_mu := nondecreasing_cvg_measure.
+#[deprecated(since="mathcomp-analysis 1.17.0", use=nonincreasing_cvg_measure)]
+Notation nonincreasing_cvg_mu := nonincreasing_cvg_measure.
 
 Section g_sigma_algebra_measure_unique_trace.
 Context d (R : realType) (T : measurableType d).
