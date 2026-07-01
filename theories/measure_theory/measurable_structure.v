@@ -1163,6 +1163,22 @@ Lemma bigcapT_measurable F :
   (forall k, measurable (F k)) -> measurable (\bigcap_i F i).
 Proof. by move=> PF; apply: bigcap_measurable => //; exists 1. Qed.
 
+Lemma countable_bigcup_measurable {U} {F : U -> set T}
+    {P : set U} : countable P -> (forall i, P i -> measurable (F i)) -> 
+  measurable (\bigcup_(i in P) F i).
+Proof.
+move=>/[dup] cP /pfcard_geP=>[[-> _|/surjfunPex [f ->] mF]]. by rewrite bigcup0.
+rewrite bigcup_image; apply: bigcupT_measurable=>// i; exact: mF.
+Qed.
+
+Lemma countable_bigcap_measurable {U} {F : U -> set T} {P : set U} : 
+    P !=set0 -> countable P -> (forall k, P k -> measurable (F k)) -> 
+  measurable (\bigcap_(i in P) F i).
+Proof.
+move=> [j Pj] /pfcard_geP=>[[P0|/surjfunPex [f ->] mF]]. by rewrite P0/= in Pj.
+by rewrite bigcap_image; apply: bigcap_measurable=>// k _; exact: mF.
+Qed.
+
 End sigmaring_lemmas.
 
 (* Adapted from mathlib induction_on_inter *)
