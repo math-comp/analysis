@@ -1172,7 +1172,7 @@ move=>/[dup] cP /pfcard_geP =>[[-> _|/surjfunPex [f ->] mF]].
 by rewrite bigcup_image; apply: bigcupT_measurable=>// i; exact: mF.
 Qed.
 
-Lemma countable_bigcap_measurable {U} {F : U -> set T} ({P : set U) :
+Lemma countable_bigcap_measurable {U} {F : U -> set T} (P : set U) :
     P !=set0 -> countable P -> (forall k, P k -> measurable (F k)) ->
   measurable (\bigcap_(i in P) F i).
 Proof.
