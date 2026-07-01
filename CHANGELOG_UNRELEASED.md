@@ -234,6 +234,14 @@
 - in `measurable_structure.v`:
   + lemmas `countable_bigcap_measurable`, `countable_bigcup_measurable`
 
+- in `topology_structure.v` :
+  + definitions `separable`, `separable_set`
+  + lemmas `basisP`, `separableE`, `second_countable_separable`,
+  `bigcupT_separable`, `bigcup_separable`
+
+- new file `measurable_topology.v`
+  + lemmas `salgebra_countable_basis`, `salgebra_open_closedE`
+
 ### Changed
 
 - in `realsum.v`:
