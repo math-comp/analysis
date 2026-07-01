@@ -357,8 +357,8 @@ Hint Resolve smallest_sigma_algebra : core.
 
 Lemma sigma_algebra_subl M : M `<=` <<s D, G>> -> <<s D, M >> `<=` <<s D, G >>.
 Proof.
-rewrite /smallest/==> /[dup] MsG K A sMA H [sH GH]. apply : (sMA H); split=>//.
-apply: (subset_trans MsG). by apply: bigcap_inf; split.
+move=> MsG A + H [sH GH]; apply; split => //; apply: (subset_trans MsG).
+exact: bigcap_inf.
 Qed.
 
 Lemma sigma_algebra_sub M : M `<=` G -> <<s D, M >> `<=` <<s D, G >>.
