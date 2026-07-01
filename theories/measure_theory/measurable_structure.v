@@ -1293,16 +1293,6 @@ Variables (T : choiceType) (G : set (set T)).
 Lemma sigma_algebraC (A : set T) : <<s G >> A -> <<s G >> (~` A).
 Proof. by move=> sGA; rewrite -setTD; exact: sigma_algebraCD. Qed.
 
-Lemma sub_sigma_algebra_measurable {d} {M : measurableType d} {H : set (set M)}
-(mH : H `<=`d.-measurable) : <<s H>> `<=` d.-measurable.
-Proof.
-  by rewrite /smallest/bigcap=> K/= /(_ measurable) oK; apply: oK;
-  split=>[|//]; apply:sigma_algebra_measurable.
-Qed.
-
-Lemma subset_g_sigma_algebra : G `<=`<<s G>>.
-Proof. by rewrite /smallest=>A hA H [saH GH]; apply: GH. Qed.
-
 HB.instance Definition _ := Choice.on (g_sigma_algebraType G).
 HB.instance Definition _ := @isMeasurable.Build (sigma_display G)
   (g_sigma_algebraType G)

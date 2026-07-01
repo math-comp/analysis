@@ -231,11 +231,6 @@
 - in `realsum.v`:
   + lemma `__admitted__psumB` proved and renamed to `psumB`
 
-### Changed
-
-- in `realsum.v`:
-  + lemma `__admitted__psumB` proved and renamed to `psumB`
-
 - moved from `measurable_structure.v` to `classical_sets.v`:
   + definition `preimage_set_system`
   + lemmas `preimage_set_system0`, `preimage_set_systemU`, `preimage_set_system_comp`,
