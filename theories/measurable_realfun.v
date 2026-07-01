@@ -93,10 +93,10 @@ Qed.
 End ps_infty.
 
 Section salgebra_ereal.
-Variables (R : realType) (G : set (set R)).
-Let measurableR : set (set R) := G.-sigma.-measurable.
+Variables (R : realType) (G : set_system R).
+Let measurableR : set_system R := G.-sigma.-measurable.
 
-Definition emeasurable : set (set \bar R) :=
+Definition emeasurable : set_system (\bar R) :=
   [set EFin @` A `|` B | A in measurableR & B in ps_infty].
 
 Lemma emeasurable0 : emeasurable set0.
@@ -418,7 +418,7 @@ Section rgencinfty.
 Variable R : realType.
 Implicit Types x y z : R.
 
-Definition G : set (set R) := [set A | exists x, A = `[x, +oo[%classic].
+Definition G : set_system R := [set A | exists x, A = `[x, +oo[%classic].
 
 Lemma measurable_itv_bnd_infty b x :
   G.-sigma.-measurable [set` Interval (BSide b x) +oo%O].
@@ -1184,7 +1184,7 @@ Module NGenCInfty.
 Section ngencinfty.
 Implicit Types x y z : nat.
 
-Definition G : set (set nat) := [set A | exists x, A = `[x, +oo[%classic].
+Definition G : set_system nat := [set A | exists x, A = `[x, +oo[%classic].
 
 Lemma measurable_itv_bnd_infty b x :
   G.-sigma.-measurable [set` Interval (BSide b x) +oo%O].

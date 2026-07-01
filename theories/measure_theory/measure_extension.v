@@ -399,7 +399,7 @@ Definition caratheodory_type (R : realType) (T : Type)
   (mu : set T -> \bar R) := T.
 
 Notation "mu .-cara.-measurable" :=
-  (measurable : set (set (caratheodory_type mu))) : classical_set_scope.
+  (measurable : set_system (caratheodory_type mu)) : classical_set_scope.
 
 Definition caratheodory_display R T : (set T -> \bar R) -> measure_display.
 Proof. exact. Qed.

@@ -166,7 +166,7 @@ End NbhsEntourage.
 Lemma nbhsP {M : uniformType} (x : M) P : nbhs x P <-> nbhs_ entourage x P.
 Proof. by rewrite nbhs_simpl. Qed.
 
-Lemma filter_inv {T : Type} (F : set (set (T * T))) :
+Lemma filter_inv {T : Type} (F : set_system (T * T)) :
   Filter F -> Filter [set V^-1 | V in F]%relation.
 Proof.
 move=> FF; split => /=.

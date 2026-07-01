@@ -45,7 +45,8 @@ move=> [QR [/nbhs_interior p1_Q /nbhs_interior p2_R] sQRA].
 by exists (QR.1°, QR.2°) => // ??; exists QR.
 Qed.
 
-HB.instance Definition _ := hasNbhs.Build (T * U)%type prod_nbhs.
+(*HB.instance Definition _ := hasNbhs.Build (T * U)%type prod_nbhs.*)
+(* generates: Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 
 HB.instance Definition _ := Nbhs_isNbhsTopological.Build (T * U)%type
   prod_nbhs_filter prod_nbhs_singleton prod_nbhs_nbhs.

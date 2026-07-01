@@ -122,7 +122,7 @@ Context {T : topologicalType}.
 
 Definition open_nbhs (p : T) (A : set T) := open A /\ A p.
 
-Definition basis (B : set (set T)) :=
+Definition basis (B : set_system T) :=
   B `<=` open /\ forall x, filter_from [set U | B U /\ U x] id --> x.
 
 Definition second_countable := exists2 B, countable B & basis B.

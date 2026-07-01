@@ -153,7 +153,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section set_systems.
-Context {T} (C : set (set T) -> Prop) (D : set T) (G : set (set T)).
+Context {T} (C : set_system T -> Prop) (D : set T) (G : set_system T).
 
 Definition setC_closed := forall A, G A -> G (~` A).
 Definition setSD_closed := forall A B, B `<=` A -> G A -> G B -> G (A `\` B).
@@ -250,7 +250,7 @@ Notation "'<<sr' G '>>'" := (smallest sigma_ring G) : classical_set_scope.
 Notation "'<<M' G '>>'" := (smallest monotone G) : classical_set_scope.
 
 Section lambda_system_smallest.
-Variables (T : Type) (D : set T) (G : set (set T)).
+Variables (T : Type) (D : set T) (G : set_system T).
 Hypothesis GD : forall A, G A -> A `<=` D.
 
 Lemma lambda_system_smallest : lambda_system D <<l D , G >>.
@@ -265,7 +265,7 @@ Qed.
 
 End lambda_system_smallest.
 
-Lemma fin_bigcup_closedP T (G : set (set T)) :
+Lemma fin_bigcup_closedP T (G : set_system T) :
   (G set0 /\ setU_closed G) <-> fin_bigcup_closed G.
 Proof.
 split=> [[G0 GU] I D A DF GA|GU]; last first.
@@ -275,7 +275,7 @@ elim/Pchoice: I => I in D DF A GA *; rewrite -bigsetU_fset_set// big_seq.
 by elim/big_ind: _ => // i; rewrite in_fset_set// inE => /GA.
 Qed.
 
-Lemma finN0_bigcap_closedP T (G : set (set T)) :
+Lemma finN0_bigcap_closedP T (G : set_system T) :
   setI_closed G <-> finN0_bigcap_closed G.
 Proof.
 split=> [GI I D A DF [i Di] GA|GI A B GA GB]; last first.
@@ -288,7 +288,7 @@ rewrite in_fset_set// inE => -[Dj /eqP nij] GAB.
 by rewrite setICA; apply: GI => //; apply: GA.
 Qed.
 
-Lemma setD_closedP T (G : set (set T)) :
+Lemma setD_closedP T (G : set_system T) :
   setD_closed G <-> (setI_closed G /\ setSD_closed G).
 Proof.
 split=> [GDI|[GI GD]].
@@ -301,7 +301,7 @@ Qed.
 Notation sedDI_closedP := setD_closed (only parsing).
 
 Lemma sigma_algebra_bigcap T (I : choiceType) (D : set T)
-    (F : I -> set (set T)) (J : set I) :
+    (F : I -> set_system T) (J : set I) :
   (forall n, J n -> sigma_algebra D (F n)) ->
   sigma_algebra D (\bigcap_(i in J) F i).
 Proof.
@@ -310,7 +310,7 @@ move=> mG; split=> [i Ji|A AJ i Ji|H GH i Ji]; first by have [] := mG i.
 - by have [_ _ mGiU] := mG i Ji; apply: mGiU => j; exact: GH.
 Qed.
 
-Lemma sigma_algebraP T U (C : set (set T)) :
+Lemma sigma_algebraP T U (C : set_system T) :
   (forall X, C X -> X `<=` U) ->
   sigma_algebra U C <->
   [/\ C U, setSD_closed C, ndseq_closed C & setI_closed C].
@@ -344,8 +344,8 @@ move=> C_subU; split => [[C0 CD CU]|[DT DC DU DI]]; split.
 Qed.
 
 Section generated_sigma_algebra.
-Context {T : Type} (D : set T) (G : set (set T)).
-Implicit Types (M : set (set T)).
+Context {T : Type} (D : set T) (G : set_system T).
+Implicit Type M : set_system T.
 
 Lemma smallest_sigma_algebra : sigma_algebra D <<s D, G >>.
 Proof.
@@ -383,8 +383,8 @@ End generated_sigma_algebra.
 #[global] Hint Resolve smallest_sigma_algebra : core.
 
 Section generated_setring.
-Context {T : Type} (G : set (set T)).
-Implicit Types (M : set (set T)).
+Context {T : Type} (G : set_system T).
+Implicit Type M : set_system T.
 
 Lemma smallest_setring : setring <<r G >>.
 Proof.
@@ -421,7 +421,7 @@ End generated_setring.
 #[deprecated(since="mathcomp-analysis 1.9.0", note="renamed `setringD`")]
 Notation setringDI := setringD (only parsing).
 
-Lemma g_sigma_algebra_lambda_system T (G : set (set T)) (D : set T) :
+Lemma g_sigma_algebra_lambda_system T (G : set_system T) (D : set T) :
   (forall X, <<s D, G >> X -> X `<=` D) ->
   lambda_system D <<s D, G >>.
 Proof.
@@ -429,7 +429,7 @@ move=> sDGD; have := smallest_sigma_algebra D G.
 by move=> /(sigma_algebraP sDGD) [sT sD snd sI]; split.
 Qed.
 
-Lemma smallest_sigma_ring T (G : set (set T)) : sigma_ring <<sr G >>.
+Lemma smallest_sigma_ring T (G : set_system T) : sigma_ring <<sr G >>.
 Proof.
 split=> [B [[]]//|A B GA GB C [[? CDI ?]] GC|A GA C [[? ? CU]] GC] /=.
 - by apply: (CDI); [exact: GA|exact: GB].
@@ -437,21 +437,21 @@ split=> [B [[]]//|A B GA GB C [[? CDI ?]] GC|A GA C [[? ? CU]] GC] /=.
 Qed.
 
 (**md see Paul Halmos' Measure Theory, Ch.1, sec.6, thm.A(1), p.27 *)
-Lemma sigma_ring_monotone T (G : set (set T)) : sigma_ring G -> monotone G.
+Lemma sigma_ring_monotone T (G : set_system T) : sigma_ring G -> monotone G.
 Proof.
 move=> [G0 GDI GU]; split => [F ndF GF|F icF GF]; first exact: GU.
 rewrite -(@setD_bigcup _ _ F _ O)//; apply: (GDI); first exact: GF.
 by rewrite bigcup_mkcond; apply: GU => n; case: ifPn => // _; exact: GDI.
 Qed.
 
-Lemma g_sigma_ring_monotone T (G : set (set T)) : monotone <<sr G >>.
+Lemma g_sigma_ring_monotone T (G : set_system T) : monotone <<sr G >>.
 Proof. by apply: sigma_ring_monotone => //; exact: smallest_sigma_ring. Qed.
 
-Lemma sub_g_sigma_ring T (G : set (set T)) : G `<=` <<sr G >>.
+Lemma sub_g_sigma_ring T (G : set_system T) : G `<=` <<sr G >>.
 Proof. exact: sub_smallest. Qed.
 
 (**md see Paul Halmos' Measure Theory, Ch.1, sec.6, thm.A(2), p.27 *)
-Lemma setring_monotone_sigma_ring T (G : set (set T)) :
+Lemma setring_monotone_sigma_ring T (G : set_system T) :
   setring G -> monotone G -> sigma_ring G.
 Proof.
 move=> [G0 GU GD] [ndG niG]; split => // F GF.
@@ -460,7 +460,7 @@ rewrite -bigcup_bigsetU_bigcup; apply: ndG.
 by elim=> [|n ih]; rewrite big_ord_recr/= ?big_ord0 ?set0U//; exact: GU.
 Qed.
 
-Lemma g_monotone_monotone T (G : set (set T)) : monotone <<M G>>.
+Lemma g_monotone_monotone T (G : set_system T) : monotone <<M G>>.
 Proof.
 split=> /= F ndF GF C [[ndC niC] GC];
   have {}GC : <<M G >> `<=` C by exact: smallest_sub.
@@ -469,7 +469,7 @@ split=> /= F ndF GF C [[ndC niC] GC];
 Qed.
 
 Section g_monotone_g_sigma_ring.
-Variables (T : Type) (G : set (set T)).
+Variables (T : Type) (G : set_system T).
 Hypothesis ringG : setring G.
 
 (**md see Paul Halmos' Measure Theory, Ch.1, sec.6, thm.B, p.27 *)
@@ -533,14 +533,14 @@ Qed.
 
 End g_monotone_g_sigma_ring.
 
-Corollary monotone_setring_sub_g_sigma_ring T (G R : set (set T)) : monotone G ->
+Corollary monotone_setring_sub_g_sigma_ring T (G R : set_system T) : monotone G ->
   setring R -> R `<=` G -> <<sr R>> `<=` G.
 Proof.
 by move=> mG rR RG; rewrite -g_monotone_g_sigma_ring//; exact: smallest_sub.
 Qed.
 
 Section smallest_lambda_system.
-Variables (T : Type) (G : set (set T)) (setIG : setI_closed G) (D : set T).
+Variables (T : Type) (G : set_system T) (setIG : setI_closed G) (D : set T).
 Hypothesis lambdaDG : lambda_system D <<l D, G >>.
 
 Lemma smallest_lambda_system : (forall X, <<s D, G >> X -> X `<=` D) ->
@@ -592,8 +592,8 @@ Qed.
 End smallest_lambda_system.
 
 Section lambda_system_subset.
-Variables (T : Type) (G : set (set T)) (setIG : setI_closed G) (D : set T).
-Variables (H : set (set T)) (DH : lambda_system D H) (GH : G `<=` H).
+Variables (T : Type) (G : set_system T) (setIG : setI_closed G) (D : set T).
+Variables (H : set_system T) (DH : lambda_system D H) (GH : G `<=` H).
 
 (**md a.k.a. Sierpiński–Dynkin's pi-lambda theorem *)
 Lemma lambda_system_subset : (forall X, (<<s D, G >>) X -> X `<=` D) ->
@@ -609,7 +609,7 @@ End lambda_system_subset.
 
 Section dynkin.
 Variable T : Type.
-Implicit Types G D : set (set T).
+Implicit Types G D : set_system T.
 
 Lemma dynkinT G : dynkin G -> G setT. Proof. by case. Qed.
 
@@ -622,7 +622,7 @@ End dynkin.
 
 Section dynkin_lemmas.
 Variable T : Type.
-Implicit Types D G : set (set T).
+Implicit Types D G : set_system T.
 
 Lemma dynkin_lambda_system G : dynkin G <-> lambda_system setT G.
 Proof.
@@ -734,7 +734,7 @@ End dynkin_lemmas.
 
 Section trace.
 Variable (T : Type).
-Implicit Types (G : set (set T)) (A D : set T).
+Implicit Types (G : set_system T) (A D : set T).
 
 Definition strace G D := [set x `&` D | x in G].
 
@@ -851,7 +851,7 @@ Qed.
 End trace.
 
 HB.mixin Record isSemiRingOfSets (d : measure_display) T := {
-  measurable : set (set T) ;
+  measurable : set_system T ;
   measurable0 : measurable set0 ;
   measurableI : setI_closed measurable;
   semi_measurableD : semi_setD_closed measurable;
@@ -910,7 +910,7 @@ HB.structure Definition SigmaRing d :=
   {T of SemiRingOfSets d T & hasMeasurableCountableUnion d T}.
 
 HB.factory Record isSigmaRing (d : measure_display) T & Choice T := {
-  measurable : set (set T) ;
+  measurable : set_system T ;
   measurable0 : measurable set0 ;
   measurableD : setD_closed measurable ;
   bigcupT_measurable : forall F : (set T)^nat, (forall i, measurable (F i)) ->
@@ -941,7 +941,7 @@ HB.structure Definition Measurable d :=
 HB.structure Definition PMeasurable d := {T of Pointed T & Measurable d T}.
 
 HB.factory Record isRingOfSets (d : measure_display) T & Choice T := {
-  measurable : set (set T) ;
+  measurable : set_system T ;
   measurable0 : measurable set0 ;
   measurableU : setU_closed measurable;
   measurableD : setD_closed measurable;
@@ -965,7 +965,7 @@ HB.end.
 
 HB.factory Record isRingOfSets_setY (d : measure_display) T
     & Choice T := {
-  measurable : set (set T) ;
+  measurable : set_system T ;
   measurable_nonempty : measurable !=set0 ;
   measurable_setY : setY_closed measurable ;
   measurable_setI : setI_closed measurable }.
@@ -996,7 +996,7 @@ HB.instance Definition _ := isRingOfSets.Build d T m0 mU mD.
 HB.end.
 
 HB.factory Record isAlgebraOfSets (d : measure_display) T & Choice T := {
-  measurable : set (set T) ;
+  measurable : set_system T ;
   measurable0 : measurable set0 ;
   measurableU : setU_closed measurable;
   measurableC : setC_closed measurable
@@ -1021,7 +1021,7 @@ HB.instance Definition _ := RingOfSets_isAlgebraOfSets.Build d T measurableT.
 HB.end.
 
 HB.factory Record isAlgebraOfSets_setD (d : measure_display) T & Choice T := {
-  measurable : set (set T) ;
+  measurable : set_system T ;
   measurableT : measurable [set: T] ;
   measurableD : setD_closed measurable
 }.
@@ -1045,7 +1045,7 @@ HB.instance Definition _ := RingOfSets_isAlgebraOfSets.Build d T measurableT.
 HB.end.
 
 HB.factory Record isMeasurable (d : measure_display) T & Choice T := {
-  measurable : set (set T) ;
+  measurable : set_system T ;
   measurable0 : measurable set0 ;
   measurableC : forall A, measurable A -> measurable (~` A) ;
   measurable_bigcup : forall F : (set T)^nat, (forall i, measurable (F i)) ->
@@ -1184,7 +1184,7 @@ Qed.
 End sigmaring_lemmas.
 
 (* Adapted from mathlib induction_on_inter *)
-Lemma dynkin_induction d {T : measurableType d} (G : set (set T))
+Lemma dynkin_induction d {T : measurableType d} (G : set_system T)
     (P : set_system T) :
   @measurable _ T = <<s G >> ->
   setI_closed G ->
@@ -1273,7 +1273,7 @@ End measurable_lemmas.
 Section discrete_measurable.
 Context {T : Type}.
 
-Definition discrete_measurable : set (set T) := [set: set T].
+Definition discrete_measurable : set_system T := [set: set T].
 
 Lemma discrete_measurable0 : discrete_measurable set0. Proof. by []. Qed.
 
@@ -1300,13 +1300,13 @@ HB.instance Definition _ := @isMeasurable.Build default_measure_display
   nat discrete_measurable discrete_measurable0
   discrete_measurableC discrete_measurableU.
 
-Definition sigma_display {T} : set (set T) -> measure_display.
+Definition sigma_display {T} : set_system T -> measure_display.
 Proof. exact. Qed.
 
-Definition g_sigma_algebraType {T} (G : set (set T)) := T.
+Definition g_sigma_algebraType {T} (G : set_system T) := T.
 
 Section g_salgebra_instance.
-Variables (T : choiceType) (G : set (set T)).
+Variables (T : choiceType) (G : set_system T).
 
 Lemma sigma_algebraC (A : set T) : <<s G >> A -> <<s G >> (~` A).
 Proof. by move=> sGA; rewrite -setTD; exact: sigma_algebraCD. Qed.
@@ -1321,15 +1321,15 @@ End g_salgebra_instance.
 
 Notation "G .-sigma" := (sigma_display G) : measure_display_scope.
 Notation "G .-sigma.-measurable" :=
-  (measurable : set (set (g_sigma_algebraType G))) : classical_set_scope.
+  (measurable : set_system (g_sigma_algebraType G)) : classical_set_scope.
 
-Lemma measurable_g_measurableTypeE (T : choiceType) (G : set (set T)) :
+Lemma measurable_g_measurableTypeE (T : choiceType) (G : set_system T) :
   sigma_algebra setT G -> G.-sigma.-measurable = G.
 Proof. exact: sigma_algebra_id. Qed.
 
 Section measurability.
 
-Lemma sigma_algebra_preimage (aT rT : Type) (G : set (set rT))
+Lemma sigma_algebra_preimage (aT rT : Type) (G : set_system rT)
     (D : set aT) (f : aT -> rT) :
   sigma_algebra setT G -> sigma_algebra D (preimage_set_system D f G).
 Proof.
@@ -1397,10 +1397,10 @@ End preimage_generated_sigma_algebra.
 
 Notation "f .-preimage" := (preimage_display f) : measure_display_scope.
 Notation "f .-preimage.-measurable" :=
-  (measurable : set (set (g_sigma_algebra_preimageType f))) : classical_set_scope.
+  (measurable : set_system (g_sigma_algebra_preimageType f)) : classical_set_scope.
 
 Lemma sigma_algebra_image (aT rT : Type) (D : set aT) (f : aT -> rT)
-    (G : set (set aT)) :
+    (G : set_system aT) :
   sigma_algebra D G -> sigma_algebra setT (image_set_system D f G).
 Proof.
 move=> [G0 GC GU]; split; rewrite /image_set_system.
@@ -1414,7 +1414,7 @@ move=> [G0 GC GU]; split; rewrite /image_set_system.
 Qed.
 
 Lemma g_sigma_preimageE aT (rT : choiceType) (D : set aT)
-    (f : aT -> rT) (G' : set (set rT)) :
+    (f : aT -> rT) (G' : set_system rT) :
   <<s D, preimage_set_system D f G' >> =
     preimage_set_system D f (G'.-sigma.-measurable).
 Proof.
@@ -1428,7 +1428,7 @@ rewrite eqEsubset; split.
   exact: smallest_sub.
 have G'pre A' : G' A' -> (preimage_set_system D f G') (D `&` f @^-1` A').
   by move=> ?; exists A'.
-pose I : set (set aT) := <<s D, preimage_set_system D f G' >>.
+pose I : set_system aT := <<s D, preimage_set_system D f G' >>.
 have G'sfun : G' `<=` image_set_system D f I.
   by move=> A' /G'pre[B G'B h]; apply: sub_sigma_algebra; exists B.
 have sG'sfun : <<s G' >> `<=` image_set_system D f I.
@@ -1467,7 +1467,7 @@ Qed.
 
 Section covering.
 Context {T : Type}.
-Implicit Type (C : forall I, set (set I)).
+Implicit Type (C : forall I, set_system I).
 Implicit Type (P : forall I, set I -> set (I -> set T)).
 
 (* TODO: undocumented *)
@@ -1608,7 +1608,8 @@ Let prod_salgebra_bigcup (F : _^nat) :
   g_sigma_preimageU f1 f2 (\bigcup_i (F i)).
 Proof. exact: sigma_algebra_bigcup. Qed.
 
-HB.instance Definition _ := Choice.on (T1 * T2)%type.
+(*HB.instance Definition _ := Choice.on (T1 * T2)%type.*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 HB.instance Definition prod_salgebra_mixin :=
   @isMeasurable.Build (measure_prod_display (d1, d2))
     (T1 * T2)%type (g_sigma_preimageU f1 f2)
@@ -1617,7 +1618,7 @@ HB.instance Definition prod_salgebra_mixin :=
 End product_salgebra_instance.
 Notation "p .-prod" := (measure_prod_display p) : measure_display_scope.
 Notation "p .-prod.-measurable" :=
-  ((p.-prod).-measurable : set (set (_ * _))) :
+  ((p.-prod).-measurable : set_system (_ * _)) :
     classical_set_scope.
 
 Lemma measurableX d1 d2 (T1 : semiRingOfSetsType d1) (T2 : semiRingOfSetsType d2)
@@ -1661,7 +1662,7 @@ End product_salgebra_algebraOfSetsType.
 Notation measurable_prod_measurableType := prod_measurable_rectangle (only parsing).
 
 Section product_salgebra_g_measurableTypeR.
-Context d1 (T1 : algebraOfSetsType d1) (T2 : choiceType) (C2 : set (set T2)).
+Context d1 (T1 : algebraOfSetsType d1) (T2 : choiceType) (C2 : set_system T2).
 Hypothesis setTC2 : setT `<=` C2.
 
 #[deprecated(since="mathcomp-analysis 1.17.0")]
@@ -1678,7 +1679,7 @@ Qed.
 End product_salgebra_g_measurableTypeR.
 
 Section product_salgebra_g_measurableType.
-Variables (T1 T2 : choiceType) (C1 : set (set T1)) (C2 : set (set T2)).
+Variables (T1 T2 : choiceType) (C1 : set_system T1) (C2 : set_system T2).
 Hypotheses (setTC1 : setT `<=` C1) (setTC2 : setT `<=` C2).
 
 #[deprecated(since="mathcomp-analysis 1.17.0")]
@@ -1695,7 +1696,7 @@ Qed.
 End product_salgebra_g_measurableType.
 
 Definition g_sigma_preimage d (rT : semiRingOfSetsType d) (aT : Type)
-    (n : nat) (f : 'I_n -> aT -> rT) : set (set aT) :=
+    (n : nat) (f : 'I_n -> aT -> rT) : set_system aT :=
   <<s \big[setU/set0]_(i < n) preimage_set_system setT (f i) measurable >>.
 
 Lemma g_sigma_preimage_comp d1 {T1 : semiRingOfSetsType d1} n

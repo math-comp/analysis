@@ -145,16 +145,21 @@ by apply: filter_bigI => ??; apply: entP.
 Unshelve. all: by end_near. Qed.
 
 Section matrix_PointedTopology.
-Variables (m n : nat) .
+Variables (m n : nat).
 HB.instance Definition _ (T : ptopologicalType) := Filtered.on 'M[T]_(m, n).
-HB.instance Definition _ (T : ptopologicalType) := Pointed.on 'M[T]_(m, n).
-HB.instance Definition _ (T : ptopologicalType) :=
-  PointedFiltered.on 'M[T]_(m, n).
-HB.instance Definition _ (T : ptopologicalType) :=
-  PointedTopological.on 'M[T]_(m, n).
-HB.instance Definition _ (T : uniformType) := Uniform.on 'M[T]_(m, n).
+(*HB.instance Definition _ (T : ptopologicalType) := Pointed.on 'M[T]_(m, n).*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
+(*HB.instance Definition _ (T : ptopologicalType) :=
+  PointedFiltered.on 'M[T]_(m, n).*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
+(*HB.instance Definition _ (T : ptopologicalType) :=
+  PointedTopological.on 'M[T]_(m, n).*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
+(*HB.instance Definition _ (T : uniformType) := Uniform.on 'M[T]_(m, n).*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 HB.instance Definition _ (T : puniformType) := Pointed.on 'M[T]_(m, n).
-HB.instance Definition _ (T : puniformType) := PointedUniform.on 'M[T]_(m, n).
+(*HB.instance Definition _ (T : puniformType) := PointedUniform.on 'M[T]_(m, n).*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 End matrix_PointedTopology.
 
 Section matrix_Complete.

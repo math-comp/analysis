@@ -41,7 +41,7 @@ Section set_of_fset_in_a_set.
 Variable (T : choiceType).
 Implicit Type S : set T.
 
-Definition fsets S : set (set T) := [set F | finite_set F /\ F `<=` S].
+Definition fsets S : set_system T := [set F | finite_set F /\ F `<=` S].
 
 Lemma fsets_set0 S : fsets S set0. Proof. by split. Qed.
 

@@ -707,8 +707,9 @@ move=> x; apply: continuous_comp; last exact: continuous_fun.
 exact/subspaceT_continuous/continuous_fun.
 Qed.
 
-HB.instance Definition _ :=
-  @isContinuous.Build (subspace A) Z (g \o f) continuous_comp_subproof.
+(*HB.instance Definition _ :=
+  @isContinuous.Build (subspace A) Z (g \o f) continuous_comp_subproof.*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 
 End continuous_fun_comp.
 
