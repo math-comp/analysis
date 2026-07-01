@@ -18,6 +18,7 @@
 
 - in `measurable_structure.v`:
   + lemmas `g_sigma_algebra_cross`, `g_sigma_algebra_rectangle`
+  + lemma `sigma_algebra_sub`
 
 - in `measurable_function.v`:
   + lemma `preimage_measurability`
@@ -49,6 +50,7 @@
 
 - in `measure_function.v`:
   + lemma `g_sigma_algebra_finite_measure_unique`
+  + lemmas `bigcap_cvg_mu`, `bigcup_cvg_mu`
 
 - new file `independence.v`:
   + definition `independent_events`
@@ -366,6 +368,7 @@
 
 - in `measurable_structure.v`:
   + `measurable_prod_measurableType` -> `prod_measurable_rectangle`
+  + `sub_sigma_algebra2` -> `sigma_algebra_sub`
 - in `measurable_realfun.v`:
   + `measurable_fun_itv_co` -> `measurable_fun_itvbb_itvco`
   + `measurable_fun_itv_oc` -> `measurable_fun_itvbb_itvoc`

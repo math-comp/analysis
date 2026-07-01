@@ -355,7 +355,13 @@ by apply: (PU) => n; apply: GA.
 Qed.
 Hint Resolve smallest_sigma_algebra : core.
 
-Lemma sub_sigma_algebra2 M : M `<=` G -> <<s D, M >> `<=` <<s D, G >>.
+Lemma sigma_algebra_subl M : M `<=` <<s D, G>> -> <<s D, M >> `<=` <<s D, G >>.
+Proof.
+rewrite /smallest/==> /[dup] MsG K A sMA H [sH GH]. apply : (sMA H); split=>//.
+apply: (subset_trans MsG). by apply: bigcap_inf; split.
+Qed.
+
+Lemma sigma_algebra_sub M : M `<=` G -> <<s D, M >> `<=` <<s D, G >>.
 Proof. exact: sub_smallest2r. Qed.
 
 Lemma sigma_algebra_id : sigma_algebra D G -> <<s D, G >> = G.
@@ -1626,7 +1632,7 @@ move=> sX sY; apply/seteqP; split.
   apply: (@measurableI _ (@g_sigma_algebraType _ (X `x` Y))).
   + by apply: sub_sigma_algebra; left; exists A1 => //; rewrite setTI.
   + by apply: sub_sigma_algebra; right; exists A2 => //; rewrite setTI.
-- apply: sub_sigma_algebra2 => A [|].
+- apply: sigma_algebra_sub => A [|].
   + rewrite /preimage_set_system/= => -[A1 XA1 <-{A}].
     by rewrite -setXT setTI; exact: rectangle_setX.
   + rewrite /preimage_set_system/= => -[A1 XA1 <-{A}].

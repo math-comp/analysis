@@ -1723,6 +1723,37 @@ apply: nondecreasing_cvg_mu.
 - by move=> n m NM; apply/subsetPset; apply: setDS; apply/subsetPset/niF.
 Qed.
 
+Lemma bigcup_cvg_mu {d} {M : sigmaRingType d} {R : realFieldType} 
+{mu : {measure set M -> \bar R}} (A : (set M)^nat) 
+(mA : forall i, measurable (A i)) : 
+mu (\bigcup_(i<n) A i) @[n-->\oo] --> mu (\bigcup_n A n).
+Proof.
+rewrite [\bigcup_n A n] (_:_ = \bigcup_n (\bigcup_(i<n) A i)). 
+  rewrite eqEsubset; split=> [a [n _ Ana]|a [n _ [k kn aka]]]. 
+    by exists n.+1=>//; exists n=>/=. by exists k.
+apply: nondecreasing_cvg_mu=>[i||n m nm]; try apply: bigcup_measurable=>k _//.
+  exact: bigcup_measurable.
+apply/subsetPset=> x [i/= i_n Aix]; exists i=>//=. exact: (ltn_leq_trans i_n).
+Qed.
+
+(* can remove the finite hyp if we have \bigcap_(i<n.+1), and mu (A 0) < +oo *)
+Lemma bigcap_cvg_mu {d} {M : measurableType d} {R : realType} 
+{mu : {finite_measure set M -> \bar R}} (A : (set M)^nat) 
+(mA : forall i, measurable (A i)) :
+mu (\bigcap_(i<n) A i) @[n-->\oo] --> mu (\bigcap_n A n).
+Proof.
+rewrite [\bigcap_n A n] (_:_ = \bigcap_n (\bigcap_(i<n) A i)). 
+  rewrite eqEsubset/bigcap; split=> [a/=aia j _  i _|a/= aIa i _]. exact: aia.
+  exact: (aIa i.+1).
+apply: nonincreasing_cvg_mu. 
+apply: (le_lt_trans (le_measure mu _ _ (subsetT _)) 
+  (fin_num_fun_lty (fin_num_measure mu))); rewrite ?in_setE//. 
+      exact: bigcap_measurableType. move=>i; exact: bigcap_measurableType.
+  apply: bigcap_measurableType=> k _; exact: bigcap_measurableType.
+move=> n m nm; apply/subsetPset=> x bAx i/= i_n. 
+apply: (bAx i); exact: (ltn_leq_trans i_n nm).
+Qed.
+
 End measure_continuity.
 
 Section g_sigma_algebra_measure_unique_trace.
