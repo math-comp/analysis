@@ -381,12 +381,14 @@ Variables (D : set T) (mD : measurable D) (mf : measurable_fun D f).
 
 Import HBSimple.
 (* NB: already instantiated in cardinality.v *)
-HB.instance Definition _ x : @FImFun T R (cst x) := FImFun.on (cst x).
+(*HB.instance Definition _ x : @FImFun T R (cst x) := FImFun.on (cst x).*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 
 Import HBNNSimple.
 (* NB: already instantiated in lebesgue_integral.v *)
-HB.instance Definition _ x : @NonNegFun T R (cst x%:num) :=
-  NonNegFun.on (cst x%:num).
+(*HB.instance Definition _ x : @NonNegFun T R (cst x%:num) :=
+  NonNegFun.on (cst x%:num).*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 
 Lemma approximation_sfun :
   exists g : {sfun T >-> R}^nat, (forall x, D x -> EFin \o g ^~ x @ \oo --> f x).

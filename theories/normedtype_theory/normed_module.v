@@ -243,8 +243,9 @@ HB.instance Definition _ := GRing.ComNzAlgebra.copy R R^o.
 HB.instance Definition _ := Vector.copy R R^o.
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ := NormedModule.copy R R^o.
-#[export, non_forgetful_inheritance]
-HB.instance Definition _ := Num.RealField.on R.
+(*#[export, non_forgetful_inheritance]
+HB.instance Definition _ := Num.RealField.on R.*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 End realFieldType.
 
 Section numClosedFieldType.
@@ -267,8 +268,9 @@ HB.instance Definition _ := GRing.ComNzAlgebra.copy R R^o.
 HB.instance Definition _ := Vector.copy R R^o.
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ := NormedModule.copy R R^o.
-#[export, non_forgetful_inheritance]
-HB.instance Definition _ := Num.NumField.on R.
+(*#[export, non_forgetful_inheritance]
+HB.instance Definition _ := Num.NumField.on R.*)
+(* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 End numFieldType.
 
 Module Exports. Export numFieldTopology.Exports. HB.reexport. End Exports.
@@ -1581,7 +1583,7 @@ Qed.
 Lemma RhullT : Rhull setT = `]-oo, +oo[%R :> interval R.
 Proof. by rewrite /Rhull -set_itvNyy asboolF// asboolF. Qed.
 
-Lemma RhullK : {in (@is_interval _ : set (set R)), cancel Rhull pred_set}.
+Lemma RhullK : {in (@is_interval _ : set_system R), cancel Rhull pred_set}.
 Proof. by move=> X /asboolP iX; exact/esym/is_intervalP. Qed.
 
 Lemma set_itv_setT (i : interval R) : [set` i] = setT -> i = `]-oo, +oo[.

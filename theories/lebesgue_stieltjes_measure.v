@@ -177,7 +177,7 @@ HB.instance Definition _ :=
 End itv_semiRingOfSets.
 
 Notation "R .-ocitv" := (ocitv_display R) : measure_display_scope.
-Notation "R .-ocitv.-measurable" := (measurable : set (set (ocitv_type R))) :
+Notation "R .-ocitv.-measurable" := (measurable : set_system (ocitv_type R)) :
   classical_set_scope.
 
 Local Open Scope measure_display_scope.
@@ -519,9 +519,8 @@ Definition measurableTypeR (R : realType) :=
 Section lebesgue_stieltjes_measure.
 Context {R : realType}.
 
-Definition lebesgue_display : measure_display :=
-  (R.-ocitv.-measurable).-sigma.
-Definition measurableR : set (set R) :=
+Definition lebesgue_display : measure_display := (R.-ocitv.-measurable).-sigma.
+Definition measurableR : set_system R :=
   (R.-ocitv.-measurable).-sigma.-measurable.
 
 HB.instance Definition _ : Measurable lebesgue_display (measurableTypeR R) :=

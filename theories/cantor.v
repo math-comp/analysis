@@ -397,7 +397,7 @@ Context (t0 t1 : T).
 Hypothesis T2e : t0 != t1.
 
 Let ent_balls' (E : set (T * T)) :
-  exists M : set (set T), entourage E -> [/\
+  exists M : set_system T, entourage E -> [/\
     finite_set M,
     forall A, M A -> exists a, A a /\
       A `<=` closure (xsection (split_ent E) a),

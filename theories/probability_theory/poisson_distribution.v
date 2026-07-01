@@ -112,7 +112,7 @@ End poisson.
 Lemma measurable_poisson_prob {R : realType} n :
   measurable_fun setT (poisson_prob ^~ n : R -> pprobability _ _).
 Proof.
-apply: (measurability (@pset _ _ _ : set (set (pprobability _ R)))) => //.
+apply: (measurability (@pset _ _ _ : set_system (pprobability _ R))) => //.
 move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
 apply: measurable_fun_if => //=; first exact: measurable_fun_ltr.
 apply: (eq_measurable_fun (fun t =>
