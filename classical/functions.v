@@ -2766,30 +2766,12 @@ Definition fctE :=
   (cstE, compE, opprfctE, addrfctE, mulrfctE, scalerfctE, exprfctE,
    zerofctE, onefctE).
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 Lemma preimageD1 {T : Type} {Z : zmodType} (f g : T -> Z) (z : Z) :
   (f \+ g) @^-1`[set z] =
   \bigcup_(a in range f) (f @^-1` [set a] `&` g @^-1` [set z - a]).
 Proof.
 rewrite eqEsubset; split => [x <-|x [a _ /= [<- ->]]].
   by exists (f x) => /=; [exact/imageT|rewrite addrC addKr].
-=======
-Lemma preimageD {T : Type} {Z : zmodType} (f g : T -> Z) (z : Z) : 
-(f \+ g) @^-1`[set z] 
-  = \bigcup_(a in range f) (f@^-1`[set a] `&` g@^-1`[set z-a]).
-Proof.
-rewrite/preimage eqEsubset; split=>[x /= fgz| x [a _ [/= <- -> ]]]. 
-  exists (f x)=>//; split=>//=. by rewrite -fgz addrC addKr.
->>>>>>> b6d8fd45 (added preimageD)
-=======
-Lemma preimageD1 {T : Type} {Z : zmodType} (f g : T -> Z) (z : Z) :
-  (f \+ g) @^-1`[set z] =
-  \bigcup_(a in range f) (f @^-1` [set a] `&` g @^-1` [set z - a]).
-Proof.
-rewrite eqEsubset; split => [x <-|x [a _ /= [<- ->]]].
-  by exists (f x) => /=; [exact/imageT|rewrite addrC addKr].
->>>>>>> 328801e7 (actually use preimageD1)
 by rewrite subrKC.
 Qed.
 
