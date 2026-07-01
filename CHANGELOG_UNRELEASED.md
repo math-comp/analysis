@@ -231,6 +231,9 @@
 - in `classical_sets.v`:
   + lemma `bigcup_bigsetU`
 
+- in `measurable_structure.v`:
+  + lemmas `countable_bigcap_measurable`, `countable_bigcup_measurable`
+
 ### Changed
 
 - in `realsum.v`:
