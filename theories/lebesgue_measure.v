@@ -630,7 +630,7 @@ Let lebesgue_measure_itvoo_subr1 (a : R) :
 Proof.
 rewrite itv_bnd_open_bigcup//; transitivity (limn (lebesgue_measure \o
     (fun k => `]a - 1, a - k.+1%:R^-1]%classic : set R))).
-  apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
+  apply/esym/cvg_lim => //; apply: nondecreasing_cvg_measure.
   - by move=> ?; exact: measurable_itv.
   - by apply: bigcup_measurable => k _; exact: measurable_itv.
   - move=> n m nm; apply/subsetPset => x /=; rewrite !in_itv/= => /andP[->/=].
@@ -728,7 +728,7 @@ Let lebesgue_measure_itv_bnd_infty x (a : R) :
 Proof.
 rewrite itv_bndy_bigcup_BRight; transitivity (limn (lebesgue_measure \o
     (fun k => [set` Interval (BSide x a) (BRight (a + k%:R))] : set R))).
-  apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
+  apply/esym/cvg_lim => //; apply: nondecreasing_cvg_measure.
   + by move=> k; exact: measurable_itv.
   + by apply: bigcup_measurable => k _; exact: measurable_itv.
   + move=> m n mn; apply/subsetPset => r/=; rewrite !in_itv/= => /andP[->/=].
@@ -744,7 +744,7 @@ Let lebesgue_measure_itv_infty_bnd y (b : R) :
 Proof.
 rewrite itvNy_bnd_bigcup_BLeft; transitivity (limn (lebesgue_measure \o
     (fun k => [set` Interval (BLeft (b - k%:R)) (BSide y b)] : set R))).
-  apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
+  apply/esym/cvg_lim => //; apply: nondecreasing_cvg_measure.
   + by move=> k; exact: measurable_itv.
   + by apply: bigcup_measurable => k _; exact: measurable_itv.
   + move=> m n mn; apply/subsetPset => r/=; rewrite !in_itv/= => /andP[+ ->].
@@ -981,7 +981,7 @@ Proof.
 move=> mD Dfin epspos; pose Dn n := D `&` [set` `[-(n%:R), n%:R]]%R.
 have mDn n : measurable (Dn n) by exact: measurableI.
 have : mu \o Dn @ \oo --> mu (\bigcup_n Dn n).
-  apply: nondecreasing_cvg_mu => //.
+  apply: nondecreasing_cvg_measure => //.
   - by apply: bigcup_measurable => // ? _; exact: mDn.
   - move=> n m nm; apply/subsetPset; apply: setIS => z /=; rewrite !in_itv/=.
     move=> /andP[nz zn]; rewrite (le_trans _ nz)/= ?(le_trans zn) ?ler_nat//.
@@ -1076,7 +1076,7 @@ rewrite leye_eq => /eqP /[dup] + ->.
 have {1}-> : D = \bigcup_n (F n `&` D) by rewrite -setI_bigcupl -RFU setTI.
 move=> FDp; apply/esym/eq_infty => M.
 have : (fun n => mu (F n `&` D)) @ \oo --> +oo.
-  rewrite -FDp; apply: nondecreasing_cvg_mu.
+  rewrite -FDp; apply: nondecreasing_cvg_measure.
   - by move=> i; apply: measurableI => //; exact: (ffin i).1.
   - by apply: bigcup_measurable => i _; exact: (measurableI _ _ (ffin i).1).
   - by move=> n m nm; apply/subsetPset; apply: setSI; exact/subsetPset/Fsub.

@@ -497,6 +497,35 @@ Qed.
 End rgenopens.
 End RGenOpens.
 
+Module RGenOpenSets.
+Section rgenopensets.
+Variable R : realType.
+Implicit Types a b : R.
+
+Definition G := @open R.
+
+Lemma open_ocitv_measurable (U : set R) : G U -> measurable U.
+Proof.
+move=> oU; rewrite (open_disjoint_itv_bigcup oU);
+apply: sigma_algebra_bigcup => k.
+have /is_intervalP -> := @open_disjoint_itv_is_interval _ U oU k.
+exact : measurable_itv.
+Qed.
+
+Lemma ocitv_open_measurable a b : <<s G>> `]a,b[%classic.
+Proof. by apply: sub_sigma_algebra; rewrite/G. Qed.
+
+Lemma measuralbeE : (@ocitv R).-sigma.-measurable = G.-sigma.-measurable.
+Proof.
+rewrite eqEsubset; split; [rewrite RGenOpens.measurableE|];
+  apply: sigma_algebra_subl=> U.
+  rewrite/RGenOpens.G/= => [[a [b ->]]]; exact: ocitv_open_measurable.
+by move=> /open_ocitv_measurable.
+Qed.
+
+End rgenopensets.
+End RGenOpenSets.
+
 Section erealwithrays.
 Variable R : realType.
 Implicit Types (x y z : \bar R) (r s : R).
@@ -1729,7 +1758,7 @@ have Ek0 k : \bigcap_n (E k n) = set0.
 have badn' k : exists n, mu (E k n) < ((eps / 2) / (2 ^ k.+1)%:R)%:E.
   pose ek : R := (eps / 2 / (2 ^ k.+1)%:R)%R.
   have : mu \o E k @ \oo --> mu set0.
-    rewrite -(Ek0 k); apply: nonincreasing_cvg_mu => //.
+    rewrite -(Ek0 k); apply: nonincreasing_cvg_measure => //.
     - by rewrite (le_lt_trans _ finA)// le_measure// ?inE// => ? [? _ []].
     - exact: bigcap_measurable.
   rewrite measure0; case/fine_cvg/(_ (interior (ball 0%R ek))).
