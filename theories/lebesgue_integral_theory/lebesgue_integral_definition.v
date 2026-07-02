@@ -338,7 +338,7 @@ apply: cvgeZl => //=; rewrite [X in _ --> X](_ : _ =
     mu (\bigcup_n (f @^-1` [set r] `&` fleg c n))).
   by rewrite -setI_bigcupr bigcup_fleg// setIT.
 have ? k i : measurable (f @^-1` [set k] `&` fleg c i) by exact: measurableI.
-apply: nondecreasing_cvg_mu; [by []|exact: bigcupT_measurable|].
+apply: nondecreasing_cvg_measure; [by []|exact: bigcupT_measurable|].
 move=> n m nm; apply/subsetPset; apply: setIS.
 by move/(nd_fleg c) : nm => /subsetPset.
 Unshelve. all: by end_near. Qed.
