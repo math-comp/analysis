@@ -211,20 +211,22 @@ Lemma measurable_image_EFin (A : set R) :
   measurableR A -> measurable (EFin @` A).
 Proof.
 move=> mA; exists A => //.
-  red in mA.
-  by rewrite RGenOpenSets.measurableE//.
+  by rewrite RGenOpenSets.measurableE.
 by exists set0; [constructor|rewrite setU0].
 Qed.
 
 Lemma emeasurable_set1 (x : \bar R) : measurable [set x].
 Proof.
 case: x => [r| |].
-(*- by rewrite -image_set1; apply: measurable_image_EFin; apply: measurable_set1.
+- rewrite -image_set1; apply: measurable_image_EFin; apply: newmeasurable_set1.
+  split.
+    exact: sigma_algebra_measurable.
+  by rewrite /measurableR.
 - exists set0 => //; [exists [set +oo%E]; [by constructor|]].
   by rewrite image_set0 set0U.
 - exists set0 => //; [exists [set -oo%E]; [by constructor|]].
   by rewrite image_set0 set0U.
-Qed.*) Admitted.
+Qed.
 #[local] Hint Resolve emeasurable_set1 : core.
 
 Let emeasurable_itv_bndy b (y : \bar R) :
@@ -258,7 +260,11 @@ Lemma measurable_image_fine (X : set \bar R) : measurable X ->
 Proof.
 case => Y mY [X' [ | <-{X} | <-{X} | <-{X} ]].
 - rewrite setU0 => <-{X}.
-(*  rewrite [X in measurable X](_ : _ = Y) // predeqE => r; split.
+  rewrite [X in measurable X](_ : _ = Y) //; last first.
+    move: mY.
+    rewrite RGenOpenSets.measurableE//=.
+    admit.
+(*  rewrite predeqE => r; split.
     by move=> [x [[x' Yx' <-{x}/= _ <-//]]].
   by move=> Yr; exists r%:E; split => [|[]//]; exists r.
 - rewrite [X in measurable X](_ : _ = Y) // predeqE => r; split.

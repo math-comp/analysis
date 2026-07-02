@@ -435,25 +435,17 @@ Section rgenopensets.
 Variable R : realType.
 Implicit Types a b : R.
 
-Import OcitvMeasurableOld.
-
-Lemma open_ocitv_measurable (U : set R) : open U -> measurable U.
-Proof.
-move=> oU; rewrite (open_disjoint_itv_bigcup oU);
-apply: sigma_algebra_bigcup => k.
-have /is_intervalP -> := @open_disjoint_itv_is_interval _ U oU k.
-exact : measurable_itv.
-Qed.
-
-Lemma ocitv_open_measurable a b : <<s open>> `]a,b[%classic.
-Proof. by apply: sub_sigma_algebra. Qed.
-
 Lemma measurableE : (@ocitv R).-sigma.-measurable = open.-sigma.-measurable.
 Proof.
 rewrite eqEsubset; split; [rewrite RGenOpens.measurableE|];
   apply: sigma_algebra_subl=> U.
-  rewrite/RGenOpens.G/= => [[a [b ->]]]; exact: ocitv_open_measurable.
-by move=> /open_ocitv_measurable.
+  rewrite /RGenOpens.G/= => -[a [b ->]].
+  exact: sub_sigma_algebra.
+move=> oU.
+rewrite (open_disjoint_itv_bigcup oU).
+apply: sigma_algebra_bigcup => k.
+have /is_intervalP -> := @open_disjoint_itv_is_interval _ U oU k.
+exact : measurable_itv.
 Qed.
 
 End rgenopensets.
