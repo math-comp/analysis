@@ -591,12 +591,13 @@ Lemma subspace_continuous_measurable_fun (D : set R) (f : subspace D -> R) :
   measurable D -> continuous f -> measurable_fun D f.
 Proof.
 move=> mD /continuousP cf.
-rewrite /measurable_fun.
-rewrite -?RGenOpenSets.measurableE.
+rewrite /measurable_fun -?RGenOpenSets.measurableE.
 apply: (measurability _ (RGenOpens.measurableE R)).
-move=> _ [_ [a [b ->] <-]]; apply: open_measurable_subspace => //.
-  exact/cf/interval_open.
-Admitted.
+move=> _ [_ [a [b ->] <-]].
+rewrite RGenOpenSets.measurableE.
+apply: open_measurable_subspace => //.
+exact/cf/interval_open.
+Qed.
 
 Corollary open_continuous_measurable_fun (D : set R) (f : R -> R) :
   open D -> {in D, continuous f} -> measurable_fun D f.
@@ -633,8 +634,12 @@ Qed.
 
 Lemma normr_measurable D : measurable_fun D (@normr _ R).
 Proof.
-(*move=> mD; apply: (measurability _ (RGenOInfty.measurableE R)) => //.
+move=> mD.
+rewrite -RGenOpenSets.measurableE.
+apply: (measurability _ (RGenOInfty.measurableE R)) => //; last first.
+  by rewrite RGenOpenSets.measurableE.
 move=> /= _ [_ [x ->] <-]; apply: measurableI => //.
+  by rewrite RGenOpenSets.measurableE.
 have [x0|x0] := leP 0 x; last first.
   rewrite [X in measurable X](_ : _ = setT)// predeqE => r.
   by split => // _; rewrite /= in_itv /= andbT (lt_le_trans x0).
@@ -649,7 +654,6 @@ rewrite predeqE => r; split => [|[|]]; rewrite preimage_itv ?in_itv ?andbT/=.
   by rewrite ler0_norm 1?ltrNr// (le_trans (ltW rx))// lerNl oppr0.
 - by rewrite in_itv /= andbT => xr; rewrite (lt_le_trans _ (ler_norm _)).
 Qed.
-*) Admitted.
 
 Lemma mulrl_measurable D (k : R) : measurable_fun D ( *%R k).
 Proof.
@@ -693,7 +697,9 @@ Implicit Types (D : set T) (f g : T -> R).
 Lemma measurable_funD D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \+ g).
 Proof.
-(*move=> mf mg mD; apply: (measurability _ (RGenOInfty.measurableE R)) => //.
+move=> mf mg mD.
+rewrite -RGenOpenSets.measurableE.
+apply: (measurability _ (RGenOInfty.measurableE R)) => //.
 move=> /= _ [_ [a ->] <-]; rewrite preimage_itvoy.
 rewrite [X in measurable X](_ : _ = \bigcup_(q : rat) ((D `&`
     [set x | ratr q < f x]) `&` (D `&` [set x | a - ratr q < g x]))); last first.
@@ -706,7 +712,7 @@ rewrite predeqE => x; split => [|[r _] []/= [Dx rfx]] /= => [[Dx]|[_]].
     by rewrite h.
   by rewrite ltrBlDr addrC -ltrBlDr h.
 by rewrite ltrBlDr=> afg; rewrite (lt_le_trans afg)// addrC lerD2r ltW.
-Qed.*) Admitted.
+Qed.
 
 Lemma measurable_funB D f g : measurable_fun D f ->
   measurable_fun D g -> measurable_fun D (f \- g).
@@ -780,20 +786,24 @@ Lemma measurable_fun_sups D (h : (T -> R)^nat) n :
   (forall m, measurable_fun D (h m)) ->
   measurable_fun D (fun x => sups (h ^~ x) n).
 Proof.
-(*move=> f_ub mf mD; apply: (measurability _ (RGenOInfty.measurableE R)) => //.
+move=> f_ub mf mD.
+rewrite -RGenOpenSets.measurableE.
+apply: (measurability _ (RGenOInfty.measurableE R)) => //.
 move=> _ [_ [x ->] <-]; rewrite sups_preimage // setI_bigcupr.
 by apply: bigcup_measurable => k /= nk; apply: mf => //; exact: measurable_itv.
-Qed.*) Admitted.
+Qed.
 
 Lemma measurable_fun_infs D (h : (T -> R)^nat) n :
   (forall t, D t -> has_lbound (range (h ^~ t))) ->
   (forall n, measurable_fun D (h n)) ->
   measurable_fun D (fun x => infs (h ^~ x) n).
 Proof.
-(*move=> lb_f mf mD; apply: (measurability _ (RGenInftyO.measurableE R)) => //.
+move=> lb_f mf mD.
+rewrite -RGenOpenSets.measurableE.
+apply: (measurability _ (RGenInftyO.measurableE R)) => //.
 move=> _ [_ [x ->] <-]; rewrite infs_preimage // setI_bigcupr.
 by apply: bigcup_measurable => k /= nk; apply: mf => //; exact: measurable_itv.
-Qed.*)Admitted.
+Qed.
 
 Lemma measurable_fun_limn_sup D (h : (T -> R)^nat) :
   (forall t, D t -> has_ubound (range (h ^~ t))) ->
@@ -880,12 +890,15 @@ Lemma nondecreasing_measurable (D : set R) (f : R -> R) : measurable D ->
   nondecreasing_fun f -> measurable_fun D f.
 Proof.
 move=> mD f_nd.
-apply: (measurability (@RGenCInfty.G R)) => [|/= _ [_] [r] -> <-].
- (*  exact: RGenCInfty.measurableE.*) admit.
+rewrite /measurable_fun.
+apply: (@measurability).
+  rewrite -RGenOpenSets.measurableE.
+  by rewrite RGenCInfty.measurableE.
+move => /= _ [_] [r] -> <-.
 apply: measurableI => //; apply: is_interval_measurable => s t/=.
 rewrite !in_itv/= !andbT => fs ft u /andP[su ut].
 by rewrite in_itv/= andbT (le_trans fs)// f_nd.
-Admitted.
+Qed.
 
 Lemma nonincreasing_measurable (D : set R) (f : R -> R) : measurable D ->
   nonincreasing_fun f -> measurable_fun D f.
@@ -1224,8 +1237,9 @@ Lemma EFin_measurable (D : set R) : measurable_fun D EFin.
 Proof.
 move=> mD; apply: (measurability _ (ErealGenOInfty.measurableE R)) => //.
 move=> /= _ [_ [x ->]] <-; apply: measurableI => //.
-(*by rewrite preimage_itvoy EFin_itv; exact: measurable_itv.
-Qed.*) Admitted.
+rewrite -RGenOpenSets.measurableE.
+by rewrite preimage_itvoy EFin_itv; exact: measurable_itv.
+Qed.
 
 Lemma abse_measurable (D : set (\bar R)) : measurable_fun D abse.
 Proof.
@@ -1235,13 +1249,15 @@ rewrite [X in _ @^-1` X](punct_eitv_bndy _ x) preimage_setU setIUr.
 apply: measurableU; last first.
   by rewrite preimage_abse_pinfty; apply: measurableI => //; exact: measurableU.
 apply: measurableI => //; exists (normr @^-1` `]x, +oo[%classic).
-(*  by rewrite -[X in measurable X]setTI; exact: normr_measurable.*) admit.
+  rewrite -[X in measurable X]setTI.
+  rewrite RGenOpenSets.measurableE.
+  exact: normr_measurable.
 exists set0; first by constructor.
 rewrite setU0 predeqE => -[y| |]; split => /= => -[r];
   rewrite ?/= /= ?in_itv /= ?andbT => xr//.
   + by move=> [ry]; exists `|y| => //=; rewrite in_itv/= andbT -ry.
   + by move=> [ry]; exists y => //=; rewrite /= in_itv/= andbT -ry.
-Admitted.
+Qed.
 
 Lemma oppe_measurable (D : set (\bar R)) :
   measurable_fun D (-%E : \bar R -> \bar R).
@@ -1267,10 +1283,12 @@ Lemma measurable_EFinP d (T : measurableType d) (R : realType) (D : set T)
 Proof.
 split=> [mf mD A mA|]; last by move=> mg; exact: measurableT_comp.
 rewrite [X in measurable X](_ : _ = D `&` (EFin \o g) @^-1` (EFin @` A)); last first.
-(*  by apply: mf => //; exists A => //; exists set0; [constructor|rewrite setU0].*) admit.
+  apply: mf => //; exists A => //.
+    by rewrite RGenOpenSets.measurableE//.
+  by exists set0; [constructor|rewrite setU0].
 congr (_ `&` _);rewrite eqEsubset; split=> [|? []/= _ /[swap] -[->//]].
 by move=> ? ?; exact: preimage_image.
-Admitted.
+Qed.
 
 Section measurable_fun_itvW.
 Context {R : realType}.
