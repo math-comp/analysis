@@ -411,6 +411,7 @@ Context d (T : measurableType d) (R : realType).
 Implicit Types (D : set T) (f g : T -> \bar R).
 
 Import HBSimple.
+Import OcitvMeasurable.
 
 Lemma emeasurable_funD D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \+ g).
@@ -563,6 +564,8 @@ Section measurable_sum.
 Context d (T : measurableType d) (R : realType).
 Implicit Types (D : set T) (f g : T -> R).
 
+Import OcitvMeasurable.
+
 Lemma measurable_sum D I s (h : I -> T -> R) :
   (forall i, measurable_fun D (h i)) ->
   measurable_fun D (fun x => \sum_(i <- s) h i x).
@@ -659,6 +662,8 @@ by apply: measurable_and; exact: measurable_fun_lee.
 Qed.
 
 End emeasurable_fun_comparison.
+
+Import OcitvMeasurable.
 
 Lemma measurable_poweR (R : realType) r :
   measurable_fun [set: \bar R] (poweR ^~ r).

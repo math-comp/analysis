@@ -256,6 +256,7 @@ Local Open Scope ereal_scope.
 
 Import HBSimple.
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Let sfun_dense_L1_pos (f : T -> \bar R) :
   mu.-integrable E f -> (forall x, E x -> 0 <= f x) ->

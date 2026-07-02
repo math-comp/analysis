@@ -55,6 +55,8 @@ apply: continuous_comp; last exact: continuous_expR.
 by apply: continuousM => //; apply: (@continuousN _ R^o); exact: cst_continuous.
 Qed.
 
+Import OcitvMeasurable.
+
 Lemma measurable_exponential_pdf : measurable_fun [set: R] exponential_pdf.
 Proof.
 apply/measurable_restrict => //; apply: measurable_funTS.
@@ -88,6 +90,8 @@ by apply: cvg_at_right_filter; exact: continuous_exponential_pdfT.
 Unshelve. end_near. Qed.
 
 End exponential_pdf.
+
+Import OcitvMeasurable.
 
 Definition exponential_prob {R : realType} (rate : R) :=
   fun V => (\int[lebesgue_measure]_(x in V) (exponential_pdf rate x)%:E)%E.

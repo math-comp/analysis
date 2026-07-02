@@ -1290,6 +1290,8 @@ rewrite /Rintegral (@continuous_FTC2 _ _ atan)//.
 - by rewrite atan0 sube0.
 Qed.
 
+Import OcitvMeasurable.
+
 Lemma integral0y_oneDsqr :
   (\int[mu]_(x in `[0%R, +oo[) (oneDsqr x)^-1%:E = (pi / 2)%:E)%E.
 Proof.

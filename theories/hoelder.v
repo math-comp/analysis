@@ -362,6 +362,8 @@ Variable mu : {measure set T -> \bar R}.
 Local Open Scope ereal_scope.
 Implicit Types (p q : R) (f g : T -> R).
 
+Import OcitvMeasurable.
+
 Let measurableT_comp_powR f p :
   measurable_fun [set: T] f -> measurable_fun setT (fun x => f x `^ p)%R.
 Proof. exact: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ p)). Qed.
@@ -498,6 +500,8 @@ Section hoelder2.
 Context {R : realType}.
 Local Open Scope ring_scope.
 
+Import OcitvMeasurable.
+
 Lemma hoelder2 (a1 a2 b1 b2 : R) (p q : R) :
   0 <= a1 -> 0 <= a2 -> 0 <= b1 -> 0 <= b2 ->
   0 < p -> 0 < q -> p^-1 + q^-1 = 1 ->
@@ -533,6 +537,8 @@ Section convex_powR.
 Context {R : realType}.
 Local Open Scope ring_scope.
 Local Open Scope convex_scope.
+
+Import OcitvMeasurable.
 
 Lemma convex_powR p : 1 <= p ->
   convex_function (`[0, +oo[%classic : set R) (@powR R ^~ p).
@@ -594,6 +600,8 @@ rewrite {2 4}(_ : 2^-1 = 1 - 2^-1); first by rewrite {2}(splitr 1) div1r addrK.
 by apply: (convex_powR p1 (Itv01 _ _)) => //=;
   rewrite ?inE/= ?in_itv/= ?normr_ge0// ?invr_ge0// invf_le1 ?ler1n.
 Qed.
+
+Import OcitvMeasurable.
 
 Let measurableT_comp_powR f p :
   measurable_fun setT f -> measurable_fun setT (fun x => f x `^ p)%R.
@@ -787,6 +795,8 @@ Notation minkowski := minkowski_EFin (only parsing).
 Definition finite_norm d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) (p : \bar R) (f : T -> R) :=
   ('N[ mu ]_p [ EFin \o f ] < +oo)%E.
+
+Import OcitvMeasurable.
 
 HB.mixin Record isLfunction d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E) (f : T -> R)

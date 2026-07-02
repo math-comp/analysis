@@ -48,6 +48,8 @@ Qed.
 
 End binomial_pmf.
 
+Import OcitvMeasurable.
+
 Lemma measurable_binomial_pmf {R : realType} D n k :
   measurable_fun D (@binomial_pmf R n ^~ k).
 Proof.

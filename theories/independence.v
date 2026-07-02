@@ -440,6 +440,8 @@ Context {R : realType} d d' (T : measurableType d) (T' : measurableType d').
 Variable P : probability T R.
 Local Open Scope ring_scope.
 
+Import OcitvMeasurable.
+
 Lemma independent_RVs2_comp (X Y : {RV P >-> R}) (f g : {mfun R >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P (f \o X) (g \o Y).
 Proof.
@@ -521,6 +523,8 @@ Context {R : realType} d (T : measurableType d).
 Variable P : probability T R.
 Local Open Scope ereal_scope.
 
+Import OcitvMeasurable.
+
 Lemma independent_RVs2_setI_preimage (X Y : {mfun T >-> R}) (A1 A2 : set R) :
   measurable A1 -> measurable A2 ->
   independent_RVs2 P X Y ->
@@ -554,6 +558,8 @@ Section product_expectation_over_product_measure.
 Context {R : realType} d (T : measurableType d).
 Variable P : probability T R.
 Local Open Scope ereal_scope.
+
+Import OcitvMeasurable.
 
 Lemma independent_Lfun1_expectation_product_measure_lty (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y ->
@@ -603,6 +609,7 @@ Variable P : probability T R.
 Local Open Scope ereal_scope.
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 #[local] Lemma expectationM_nnsfun (f g : {nnsfun T >-> R}) :
   (forall y y', y \in range f -> y' \in range g ->
@@ -778,6 +785,7 @@ Variable P : probability T R.
 Local Open Scope ereal_scope.
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Lemma independent_Lfun1_expectationM_lty (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y ->

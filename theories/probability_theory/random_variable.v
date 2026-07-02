@@ -80,6 +80,8 @@ Lemma notin_range_measure d d' (T : measurableType d) (T' : measurableType d')
   r \notin range X -> P (X @^-1` [set r]) = 0%E.
 Proof. by rewrite notin_setE => hr; rewrite preimage10. Qed.
 
+Import OcitvMeasurable.
+
 Lemma probability_range d d' (T : measurableType d) (T' : measurableType d')
     (R : realType) (P : probability T R) (X : {RV P >-> R}) :
   P (X @^-1` range X) = 1%E.

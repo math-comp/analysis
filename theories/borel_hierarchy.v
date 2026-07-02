@@ -47,6 +47,8 @@ Proof. by exists (fun=> S)=> //; rewrite bigcup_const. Qed.
 
 End Gdelta_Fsigma.
 
+Import OcitvMeasurable.
+
 Lemma Gdelta_measurable {R : realType} (S : set R) : Gdelta S -> measurable S.
 Proof.
 move=> [] B oB ->; apply: bigcapT_measurable => i.

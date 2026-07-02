@@ -41,6 +41,8 @@ move=> ab; rewrite /uniform_pdf; case: ifPn => // axb.
 by rewrite invr_ge0// ltW// subr_gt0.
 Qed.
 
+Import OcitvMeasurable.
+
 Lemma measurable_uniform_pdf : measurable_fun setT uniform_pdf.
 Proof.
 rewrite /uniform_pdf /=; apply: measurable_fun_if => //=.

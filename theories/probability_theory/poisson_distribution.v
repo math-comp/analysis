@@ -44,6 +44,8 @@ Qed.
 
 End poisson_pmf.
 
+Import OcitvMeasurable.
+
 Lemma measurable_poisson_pmf {R : realType} D k : measurable D ->
   measurable_fun D (@poisson_pmf R ^~ k).
 Proof.

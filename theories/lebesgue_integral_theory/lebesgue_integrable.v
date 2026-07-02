@@ -283,6 +283,8 @@ case: fi => mf; apply: le_lt_trans; apply: ge0_le_integral => //.
 - by move=> x Dx; rewrite -/((abse \o f) x) -funeposDneg leeDl.
 Qed.
 
+Import OcitvMeasurable.
+
 Lemma integrableMr (h : T -> R) g :
   measurable_fun D h -> [bounded h x | x in D] ->
   mu_int g -> mu_int ((EFin \o h) \* g).
@@ -350,6 +352,8 @@ Context d {T : measurableType d} {R : realType}.
 Variable mu : {measure set T -> \bar R}.
 Implicit Types (D A B : set T) (f : T -> R).
 
+Import OcitvMeasurable.
+
 Lemma integrable_norm D f : mu.-integrable D (EFin \o f) ->
   mu.-integrable D (EFin \o (normr \o f)).
 Proof.
@@ -379,6 +383,8 @@ Lemma integrable_funrneg A f : measurable A ->
 Proof. by move/integrable_funeneg => /[apply]; rewrite funerneg. Qed.
 
 End Rintegrable.
+
+Import OcitvMeasurable.
 
 Lemma integrable_indic_itv {R : realType} (a b : R) (b0 b1 : bool) :
   let mu := lebesgue_measure in

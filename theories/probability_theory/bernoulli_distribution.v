@@ -52,6 +52,8 @@ Qed.
 
 End bernoulli_pmf.
 
+Import OcitvMeasurable.
+
 Lemma measurable_bernoulli_pmf {R : realType} D n :
   measurable_fun D (@bernoulli_pmf R ^~ n).
 Proof.

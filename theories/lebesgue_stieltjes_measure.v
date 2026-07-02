@@ -62,54 +62,6 @@ Reserved Notation "R .-ocitv" (at level 1, format "R .-ocitv").
 Reserved Notation "R .-ocitv.-measurable"
  (at level 2, format "R .-ocitv.-measurable").
 
-(* TODO: move? *)
-Notation right_continuous f :=
-  (forall x, f%function @ at_right x --> f%function x).
-
-Lemma right_continuousW (R : numFieldType) {d} (U : orderNbhsType d)
-  (f : R -> U) : continuous f -> right_continuous f.
-Proof. by move=> cf x; apply: cvg_within_filter; exact/cf. Qed.
-
-HB.mixin Record isCumulative (R : numFieldType) {d} (U : orderNbhsType d)
-  (f : R -> U) := {
-  cumulative_is_nondecreasing : nondecreasing f ;
-  cumulative_is_right_continuous : right_continuous f }.
-
-#[short(type=cumulative)]
-HB.structure Definition Cumulative
-  (R : numFieldType) {d} (U : orderNbhsType d) := { f of isCumulative R d U f }.
-
-Arguments cumulative_is_nondecreasing {R d U} _.
-Arguments cumulative_is_right_continuous {R d U} _.
-
-Lemma nondecreasing_right_continuousP (R : realFieldType) (a : R) (e : R)
-    (f : cumulative R R) :
-  e > 0 -> exists d : {posnum R}, f (a + d%:num) <= f a + e.
-Proof.
-move=> e0; move: (cumulative_is_right_continuous f).
-move=> /(_ a) /(@cvgr_dist_lt _ R^o) /(_ _ e0)[] _ /posnumP[d] => h.
-exists (PosNum [gt0 of (d%:num / 2)]) => //=.
-move: h => /(_ (a + d%:num / 2)) /=.
-rewrite opprD addNKr normrN ger0_norm// ltr_pdivrMr// ltr_pMr// 2!ltrDl.
-rewrite ltr01 divr_gt0// => /(_ erefl erefl).
-rewrite ler0_norm.
-  by rewrite subr_le0 (cumulative_is_nondecreasing f)// lerDl.
-by rewrite opprB ltrBlDl; exact: ltW.
-Qed.
-
-Section id_is_cumulative.
-Variable R : realFieldType.
-
-Let id_nd : {homo @idfun R : x y / x <= y}.
-Proof. by []. Qed.
-
-Let id_rc : right_continuous (@idfun R).
-Proof. by apply/right_continuousW => x; exact: cvg_id. Qed.
-
-HB.instance Definition _ := isCumulative.Build R _ R idfun id_nd id_rc.
-End id_is_cumulative.
-(* /TODO: move? *)
-
 Section itv_semiRingOfSets.
 Variable R : realType.
 Implicit Types (I J K : set R).
@@ -180,7 +132,438 @@ Notation "R .-ocitv" := (ocitv_display R) : measure_display_scope.
 Notation "R .-ocitv.-measurable" := (measurable : set_system (ocitv_type R)) :
   classical_set_scope.
 
+Module OcitvMeasurableOld.
+Section realType_sigma_algebra.
+Context {R : realType}.
+
+Definition measurableTypeR (R : realType) :=
+  g_sigma_algebraType R.-ocitv.-measurable.
+
+Definition lebesgue_display : measure_display := (R.-ocitv.-measurable).-sigma.
+Definition measurableR : set_system R :=
+  (R.-ocitv.-measurable).-sigma.-measurable.
+
+HB.instance Definition _ : Measurable lebesgue_display (measurableTypeR R) :=
+   Measurable.on (measurableTypeR R).
+(* Presumably it is safe to use NFI here because morally R is unique
+   and nothing else can be used here *)
+#[non_forgetful_inheritance]
+HB.instance Definition _ := Measurable.copy R (measurableTypeR R).
+
+End realType_sigma_algebra.
+End OcitvMeasurableOld.
+
+Section salgebra_R_ssets.
+Variable R : realType.
+
+Import OcitvMeasurableOld.
+
+Lemma measurable_set1 (r : R) : measurable [set r].
+Proof.
+rewrite set1_bigcap_oc; apply: bigcap_measurable => // k _.
+by apply: sub_sigma_algebra; exact/is_ocitv.
+Qed.
+#[local] Hint Resolve measurable_set1 : core.
+
+Lemma measurable_itv (i : interval R) : measurable [set` i].
+Proof.
+have moc (a b : R) : measurable `]a, b].
+  by apply: sub_sigma_algebra; apply: is_ocitv.
+have mopoo (x : R) : measurable `]x, +oo[.
+  by rewrite itv_bndy_bigcup_BRight; exact: bigcup_measurable.
+have mnooc (x : R) : measurable `]-oo, x].
+  by rewrite -setCitvr; exact/measurableC.
+have ooE (a b : R) : `]a, b[%classic = `]a, b] `\ b.
+  by rewrite setDitv1r.
+have moo (a b : R) : measurable `]a, b[.
+  by rewrite ooE; exact: measurableD.
+have mcc (a b : R) : measurable `[a, b].
+  case: (boolP (a <= b)) => ab; last by rewrite set_itv_ge.
+  by rewrite -setU_1itvob//; apply/measurableU.
+have mco (a b : R) : measurable `[a, b[.
+  case: (boolP (a < b)) => ab; last by rewrite set_itv_ge.
+  by rewrite -setU_1itvob//; apply/measurableU.
+have oooE (b : R) : `]-oo, b[%classic = `]-oo, b] `\ b.
+  by rewrite setDitv1r.
+case: i => [[[] a|[]] [[] b|[]]] => //; do ?by rewrite set_itv_ge.
+- by rewrite -setU_1itvob//; exact/measurableU.
+- by rewrite oooE; exact/measurableD.
+- by rewrite set_itvNyy.
+Qed.
+#[local] Hint Resolve measurable_itv : core.
+
+End salgebra_R_ssets.
+#[global]
+Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
+#[global]
+Hint Extern 0 (measurable [set` _] ) => exact: measurable_itv : core.
+
+(* NB: new *)
+
+Section open.
+Context {R : realType}.
+
+Definition open_type : Type := R.
+
+HB.instance Definition _ := Pointed.on open_type.
+
+Let measurable : set_system R := @measurable _ (g_sigma_algebraType (@open R)).
+
+Let measurable0 : measurable set0. Proof. exact: measurable0. Qed.
+
+Let measurableC A : measurable A -> measurable (~` A).
+Proof. by move=> /measurableC. Qed.
+
+Let measurable_bigcup (F : (set R)^nat) : (forall i, measurable (F i)) ->
+  measurable (\bigcup_i (F i)).
+Proof. move=> mF; exact: bigcupT_measurable. Qed.
+
+HB.instance Definition _ :=
+  @isMeasurable.Build (sigma_display (@open R))
+    open_type measurable measurable0 measurableC measurable_bigcup.
+
+End open.
+
+Reserved Notation "R .-open" (at level 1, format "R .-open").
+Reserved Notation "R .-open.-measurable"
+ (at level 2, format "R .-open.-measurable").
+
+Notation "R .-open" := (sigma_display (@open R)) : measure_display_scope.
+Notation "R .-open.-measurable" := (measurable : set_system (@open_type R)) :
+  classical_set_scope.
+
+Module OpenMeasurable.
+Section realType_sigma_algebra.
+Context {R : realType}.
+
 Local Open Scope measure_display_scope.
+
+Definition lebesgue_display : measure_display := (R.-open.-measurable).-sigma.
+Definition measurableR : set_system R :=
+  (R.-open.-measurable).-sigma.-measurable.
+
+Definition measurableTypeR (R : realType) :=
+  g_sigma_algebraType R.-open.-measurable.
+
+HB.instance Definition _ : Measurable lebesgue_display (measurableTypeR R) :=
+   Measurable.on (measurableTypeR R).
+(* Presumably it is safe to use NFI here because morally R is unique
+   and nothing else can be used here *)
+#[non_forgetful_inheritance]
+HB.instance Definition _ := Measurable.copy R (measurableTypeR R).
+
+End realType_sigma_algebra.
+End OpenMeasurable.
+
+Section moveme.
+Context {V : realType}.
+
+Lemma singleton_bigcap (x : V) :
+  [set x] = \bigcap_(k : nat) ball x (k.+1%:R)^-1.
+Proof.
+apply/seteqP; split => [_ -> k _|y xy] /=.
+  rewrite /ball/=.
+  by rewrite subrr normr0 invr_gt0 ltr0n.
+apply/eqP; rewrite eq_sym -subr_eq0 -normr_eq0 eq_le normr_ge0 andbT.
+apply/ler_addgt0Pl => e e0; rewrite addr0.
+have := xy (truncn e^-1) I; rewrite /ball/= => /ltW/le_trans; apply.
+by rewrite invf_ple ?posrE ?ltr0n ?invr_gt0//; apply/ltW/truncnS_gt.
+Qed.
+
+End moveme.
+
+Module RGenOInfty.
+Section rgenoinfty.
+Variable R : realType.
+Implicit Types x y z : R.
+
+Definition G := [set A | exists x, A = `]x, +oo[%classic].
+
+Lemma measurable_itv_bnd_infty b x :
+  G.-sigma.-measurable [set` Interval (BSide b x) +oo%O].
+Proof.
+case: b; last by apply: sub_sigma_algebra; eexists; reflexivity.
+rewrite itvcyEbigcap; apply: bigcapT_measurable => k.
+by apply: sub_sigma_algebra; eexists; reflexivity.
+Qed.
+
+Lemma measurable_itv_bounded a b x : a != +oo%O ->
+  G.-sigma.-measurable [set` Interval a (BSide b x)].
+Proof.
+case: a => [a r _|[_|//]].
+  by rewrite set_itv_splitD; apply: measurableD => //;
+    exact: measurable_itv_bnd_infty.
+by rewrite -setCitvr; apply: measurableC; exact: measurable_itv_bnd_infty.
+Qed.
+
+Lemma measurableE : (@ocitv R).-sigma.-measurable = G.-sigma.-measurable.
+Proof.
+rewrite eqEsubset; split => A.
+  apply: smallest_sub; first exact: smallest_sigma_algebra.
+  by move=> I [x _ <-]; exact: measurable_itv_bounded.
+by apply: smallest_sub; [exact: smallest_sigma_algebra|move=> A' /= [x ->]].
+Qed.
+
+End rgenoinfty.
+End RGenOInfty.
+
+Module RGenInftyO.
+Section rgeninftyo.
+Variable R : realType.
+Implicit Types x y z : R.
+
+Definition G := [set A | exists x, A = `]-oo, x[%classic].
+
+Lemma measurable_itv_bnd_infty b x :
+  G.-sigma.-measurable [set` Interval -oo%O (BSide b x)].
+Proof.
+case: b; first by apply sub_sigma_algebra; eexists; reflexivity.
+rewrite -setCitvr itvoyEbigcup; apply/measurableC/bigcupT_measurable => n.
+rewrite -setCitvl; apply: measurableC.
+by apply: sub_sigma_algebra; eexists; reflexivity.
+Qed.
+
+Lemma measurable_itv_bounded a b x : a != -oo%O ->
+  G.-sigma.-measurable [set` Interval (BSide b x) a].
+Proof.
+case: a => [a r _|[//|_]].
+  by rewrite set_itv_splitD; apply/measurableD => //;
+     rewrite -setCitvl; apply: measurableC; exact: measurable_itv_bnd_infty.
+by rewrite -setCitvl; apply: measurableC; exact: measurable_itv_bnd_infty.
+Qed.
+
+Lemma measurableE : (@ocitv R).-sigma.-measurable = G.-sigma.-measurable.
+Proof.
+rewrite eqEsubset; split => A.
+  apply: smallest_sub; first exact: smallest_sigma_algebra.
+  by move=> I [x _ <-]; exact: measurable_itv_bounded.
+by apply: smallest_sub; [exact: smallest_sigma_algebra|move=> A' /= [x ->]].
+Qed.
+
+End rgeninftyo.
+End RGenInftyO.
+
+Module RGenCInfty.
+Section rgencinfty.
+Variable R : realType.
+Implicit Types x y z : R.
+
+Definition G : set_system R := [set A | exists x, A = `[x, +oo[%classic].
+
+Lemma measurable_itv_bnd_infty b x :
+  G.-sigma.-measurable [set` Interval (BSide b x) +oo%O].
+Proof.
+case: b; first by apply: sub_sigma_algebra; exists x; rewrite set_itvcy.
+rewrite itvoyEbigcup; apply: bigcupT_measurable => k.
+by apply: sub_sigma_algebra; eexists; reflexivity.
+Qed.
+
+Lemma measurable_itv_bounded a b y : a != +oo%O ->
+  G.-sigma.-measurable [set` Interval a (BSide b y)].
+Proof.
+case: a => [a r _|[_|//]].
+  rewrite set_itv_splitD.
+  by apply: measurableD; exact: measurable_itv_bnd_infty.
+by rewrite -setCitvr; apply: measurableC; exact: measurable_itv_bnd_infty.
+Qed.
+
+Lemma measurableE : (@ocitv R).-sigma.-measurable = G.-sigma.-measurable.
+Proof.
+rewrite eqEsubset; split => A.
+  apply: smallest_sub; first exact: smallest_sigma_algebra.
+  by move=> I [x _ <-]; exact: measurable_itv_bounded.
+by apply: smallest_sub; [exact: smallest_sigma_algebra|move=> A' /= [x ->]].
+Qed.
+
+End rgencinfty.
+End RGenCInfty.
+
+Module RGenOpens.
+Section rgenopens.
+Variable R : realType.
+Implicit Types x y z : R.
+
+Definition G := [set A | exists x y, A = `]x, y[%classic].
+
+Local Lemma measurable_itvoo x y : G.-sigma.-measurable `]x, y[%classic.
+Proof. by apply sub_sigma_algebra; eexists; eexists; reflexivity. Qed.
+
+Local Lemma measurable_itv_o_infty x : G.-sigma.-measurable `]x, +oo[%classic.
+Proof.
+rewrite itvbndyEbigcup; apply: bigcupT_measurable => i.
+exact: measurable_itvoo.
+Qed.
+
+Lemma measurable_itv_bnd_infty b x :
+  G.-sigma.-measurable [set` Interval (BSide b x) +oo%O].
+Proof.
+case: b; last exact: measurable_itv_o_infty.
+rewrite itvcyEbigcap; apply: bigcapT_measurable => k.
+exact: measurable_itv_o_infty.
+Qed.
+
+Lemma measurable_itv_infty_bnd b x :
+  G.-sigma.-measurable [set` Interval -oo%O (BSide b x)].
+Proof.
+by rewrite -setCitvr; apply: measurableC; exact: measurable_itv_bnd_infty.
+Qed.
+
+Lemma measurable_itv_bounded a x b y :
+  G.-sigma.-measurable [set` Interval (BSide a x) (BSide b y)].
+Proof.
+move: a b => [] []; rewrite -[X in measurable X]setCK setCitv;
+  apply: measurableC; apply: measurableU; try solve[
+    exact: measurable_itv_infty_bnd|exact: measurable_itv_bnd_infty].
+Qed.
+
+Lemma measurableE : (@ocitv R).-sigma.-measurable = G.-sigma.-measurable.
+Proof.
+rewrite eqEsubset; split => A.
+  apply: smallest_sub; first exact: smallest_sigma_algebra.
+  by move=> I [x _ <-]; exact: measurable_itv_bounded.
+by apply: smallest_sub; [exact: smallest_sigma_algebra|move=> A' /= [x [y ->]]].
+Qed.
+
+End rgenopens.
+End RGenOpens.
+
+Module RGenOpenSets.
+Section rgenopensets.
+Variable R : realType.
+Implicit Types a b : R.
+
+Import OcitvMeasurableOld.
+
+Lemma open_ocitv_measurable (U : set R) : open U -> measurable U.
+Proof.
+move=> oU; rewrite (open_disjoint_itv_bigcup oU);
+apply: sigma_algebra_bigcup => k.
+have /is_intervalP -> := @open_disjoint_itv_is_interval _ U oU k.
+exact : measurable_itv.
+Qed.
+
+Lemma ocitv_open_measurable a b : <<s open>> `]a,b[%classic.
+Proof. by apply: sub_sigma_algebra. Qed.
+
+Lemma measurableE : (@ocitv R).-sigma.-measurable = open.-sigma.-measurable.
+Proof.
+rewrite eqEsubset; split; [rewrite RGenOpens.measurableE|];
+  apply: sigma_algebra_subl=> U.
+  rewrite/RGenOpens.G/= => [[a [b ->]]]; exact: ocitv_open_measurable.
+by move=> /open_ocitv_measurable.
+Qed.
+
+End rgenopensets.
+End RGenOpenSets.
+
+Section salgebra_R_ssets.
+Variable R : realType.
+
+Import OpenMeasurable.
+
+Lemma newmeasurable_set1 (r : R) : measurable [set r].
+Proof.
+rewrite singleton_bigcap; apply: bigcap_measurable => // k _.
+rewrite /lebesgue_display.
+rewrite measurable_g_measurableTypeE//.
+  by apply:sigma_algebra_measurable.
+red.
+simpl.
+apply: sub_sigma_algebra.
+by apply: ball_open.
+Qed.
+#[local] Hint Resolve newmeasurable_set1 : core.
+
+Lemma newmeasurable_itv (i : interval R) : measurable [set` i].
+Proof.
+have := measurable_itv i.
+rewrite /OcitvMeasurableOld.lebesgue_display.
+rewrite /lebesgue_display.
+rewrite RGenOpenSets.measurableE//=.
+move=> H.
+rewrite measurable_g_measurableTypeE//=.
+by apply: sigma_algebra_measurable.
+Qed.
+#[local] Hint Resolve newmeasurable_itv : core.
+
+End salgebra_R_ssets.
+#[global]
+Hint Extern 0 (measurable [set _]) => solve [apply: newmeasurable_set1] : core.
+#[global]
+Hint Extern 0 (measurable [set` _] ) => exact: newmeasurable_itv : core.
+
+Module OcitvMeasurable.
+(*Export OcitvMeasurableOld.*)
+Export OpenMeasurable.
+End OcitvMeasurable.
+
+Import OcitvMeasurable.
+
+#[global] Hint Extern 0 (measurable (_ @^-1` [set _])) =>
+  solve [apply: measurable_funPTI; exact: measurable_set1] : core.
+
+Lemma measurable_funP1 {d} {aT : measurableType d} {rT : realType}
+   (f : {mfun aT >-> rT}) D (y : rT) :
+  measurable D -> measurable (D `&` f @^-1` [set y]).
+Proof.
+move=> mD.
+have := @measurable_funP _ _ aT rT D f mD [set y].
+by apply.
+Qed.
+
+#[deprecated(since="mathcomp-analysis 1.13.0", note="renamed to `measurable_funP1`")]
+Notation measurable_sfun_inP := measurable_funP1 (only parsing).
+
+#[global] Hint Extern 0 (measurable (_ `&` _ @^-1` [set _])) =>
+  solve [apply: measurable_funP1; assumption] : core.
+
+(* NB: Lebesgue-Stieltjes measure actually starts here... *)
+
+Notation right_continuous f :=
+  (forall x, f%function @ at_right x --> f%function x).
+
+Lemma right_continuousW (R : numFieldType) {d} (U : orderNbhsType d)
+  (f : R -> U) : continuous f -> right_continuous f.
+Proof. by move=> cf x; apply: cvg_within_filter; exact/cf. Qed.
+
+HB.mixin Record isCumulative (R : numFieldType) {d} (U : orderNbhsType d)
+  (f : R -> U) := {
+  cumulative_is_nondecreasing : nondecreasing f ;
+  cumulative_is_right_continuous : right_continuous f }.
+
+#[short(type=cumulative)]
+HB.structure Definition Cumulative
+  (R : numFieldType) {d} (U : orderNbhsType d) := { f of isCumulative R d U f }.
+
+Arguments cumulative_is_nondecreasing {R d U} _.
+Arguments cumulative_is_right_continuous {R d U} _.
+
+Lemma nondecreasing_right_continuousP (R : realFieldType) (a : R) (e : R)
+    (f : cumulative R R) :
+  e > 0 -> exists d : {posnum R}, f (a + d%:num) <= f a + e.
+Proof.
+move=> e0; move: (cumulative_is_right_continuous f).
+move=> /(_ a) /(@cvgr_dist_lt _ R^o) /(_ _ e0)[] _ /posnumP[d] => h.
+exists (PosNum [gt0 of (d%:num / 2)]) => //=.
+move: h => /(_ (a + d%:num / 2)) /=.
+rewrite opprD addNKr normrN ger0_norm// ltr_pdivrMr// ltr_pMr// 2!ltrDl.
+rewrite ltr01 divr_gt0// => /(_ erefl erefl).
+rewrite ler0_norm.
+  by rewrite subr_le0 (cumulative_is_nondecreasing f)// lerDl.
+by rewrite opprB ltrBlDl; exact: ltW.
+Qed.
+
+Section id_is_cumulative.
+Variable R : realFieldType.
+
+Let id_nd : {homo @idfun R : x y / x <= y}.
+Proof. by []. Qed.
+
+Let id_rc : right_continuous (@idfun R).
+Proof. by apply/right_continuousW => x; exact: cvg_id. Qed.
+
+HB.instance Definition _ := isCumulative.Build R _ R idfun id_nd id_rc.
+End id_is_cumulative.
 
 Section wlength.
 Context {R : realType}.
@@ -513,34 +896,23 @@ HB.instance Definition _ (f : cumulative R R) :=
 End wlength_extension.
 Arguments lebesgue_stieltjes_measure {R}.
 
-Definition measurableTypeR (R : realType) :=
-  g_sigma_algebraType R.-ocitv.-measurable.
-
-Section lebesgue_stieltjes_measure.
-Context {R : realType}.
-
-Definition lebesgue_display : measure_display := (R.-ocitv.-measurable).-sigma.
-Definition measurableR : set_system R :=
-  (R.-ocitv.-measurable).-sigma.-measurable.
-
-HB.instance Definition _ : Measurable lebesgue_display (measurableTypeR R) :=
-   Measurable.on (measurableTypeR R).
-(* Presumably it is safe to use NFI here because morally R is unique
-   and nothing else can be used here *)
-#[non_forgetful_inheritance]
-HB.instance Definition _ := Measurable.copy R (measurableTypeR R).
-
-Lemma lebesgue_stieltjes_measure_unique
-    (f : cumulative R R) (mu : {measure set R -> \bar R}) :
+Lemma lebesgue_stieltjes_measure_unique {R : realType}
+    (f : cumulative R R) (mu : {measure set (OcitvMeasurableOld.measurableTypeR R) -> \bar R}) :
     (forall X, ocitv X -> lebesgue_stieltjes_measure f X = mu X) ->
   forall A : set R, measurable A -> lebesgue_stieltjes_measure f A = mu A.
 Proof.
-move=> muE A mA; apply: measure_extension_unique => //=.
+move=> muE A mA.
+apply: measure_extension_unique => //=.
   exact: wlength_sigma_finite.
 by move=> X mX; rewrite -muE// -measurable_mu_extE.
+(* TODO: rewrite with was is in realfun*)
+rewrite /lebesgue_display in mA.
+rewrite RGenOpens.measurableE.
+rewrite measurable_g_measurableTypeE//= in mA.
+  by apply: sigma_algebra_measurable.
+rewrite -RGenOpens.measurableE.
+by rewrite RGenOpenSets.measurableE//.
 Qed.
-
-End lebesgue_stieltjes_measure.
 
 Section completed_lebesgue_stieltjes_measure.
 Context {R : realType}.
@@ -562,63 +934,6 @@ HB.instance Definition _ (f : cumulative R R) :=
 
 End completed_lebesgue_stieltjes_measure.
 Arguments completed_lebesgue_stieltjes_measure {R}.
-
-Section salgebra_R_ssets.
-Variable R : realType.
-
-Lemma measurable_set1 (r : R) : measurable [set r].
-Proof.
-rewrite set1_bigcap_oc; apply: bigcap_measurable => // k _.
-by apply: sub_sigma_algebra; exact/is_ocitv.
-Qed.
-#[local] Hint Resolve measurable_set1 : core.
-
-Lemma measurable_itv (i : interval R) : measurable [set` i].
-Proof.
-have moc (a b : R) : measurable `]a, b].
-  by apply: sub_sigma_algebra; apply: is_ocitv.
-have mopoo (x : R) : measurable `]x, +oo[.
-  by rewrite itv_bndy_bigcup_BRight; exact: bigcup_measurable.
-have mnooc (x : R) : measurable `]-oo, x].
-  by rewrite -setCitvr; exact/measurableC.
-have ooE (a b : R) : `]a, b[%classic = `]a, b] `\ b.
-  by rewrite setDitv1r.
-have moo (a b : R) : measurable `]a, b[.
-  by rewrite ooE; exact: measurableD.
-have mcc (a b : R) : measurable `[a, b].
-  case: (boolP (a <= b)) => ab; last by rewrite set_itv_ge.
-  by rewrite -setU_1itvob//; apply/measurableU.
-have mco (a b : R) : measurable `[a, b[.
-  case: (boolP (a < b)) => ab; last by rewrite set_itv_ge.
-  by rewrite -setU_1itvob//; apply/measurableU.
-have oooE (b : R) : `]-oo, b[%classic = `]-oo, b] `\ b.
-  by rewrite setDitv1r.
-case: i => [[[] a|[]] [[] b|[]]] => //; do ?by rewrite set_itv_ge.
-- by rewrite -setU_1itvob//; exact/measurableU.
-- by rewrite oooE; exact/measurableD.
-- by rewrite set_itvNyy.
-Qed.
-#[local] Hint Resolve measurable_itv : core.
-
-End salgebra_R_ssets.
-#[global]
-Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
-#[global]
-Hint Extern 0 (measurable [set` _] ) => exact: measurable_itv : core.
-
-#[global] Hint Extern 0 (measurable (_ @^-1` [set _])) =>
-  solve [apply: measurable_funPTI; exact: measurable_set1] : core.
-
-Lemma measurable_funP1 {d} {aT : measurableType d} {rT : realType}
-   (f : {mfun aT >-> rT}) D (y : rT) :
-  measurable D -> measurable (D `&` f @^-1` [set y]).
-Proof. move=> mD; exact: measurable_funP. Qed.
-
-#[deprecated(since="mathcomp-analysis 1.13.0", note="renamed to `measurable_funP1`")]
-Notation measurable_sfun_inP := measurable_funP1 (only parsing).
-
-#[global] Hint Extern 0 (measurable (_ `&` _ @^-1` [set _])) =>
-  solve [apply: measurable_funP1; assumption] : core.
 
 HB.mixin Record isCumulativeBounded (R : numFieldType) (l r : R) (f : R -> R) := {
   cumulativeNy : f @ -oo --> l ;

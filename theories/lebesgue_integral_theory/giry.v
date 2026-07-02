@@ -101,6 +101,7 @@ Context d (T : measurableType d) (R : realType).
 Definition giry_int (mu : giry T R) (f : T -> \bar R) := \int[mu]_x f x.
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 (**md The idea is to reconstruct f from simple functions, then use measurability
   of giry_ev. Reference: Tom Avery. Codensity and the Giry monad.
@@ -287,6 +288,7 @@ by apply: measurable_giry_int => //; exact: measurable_giry_ev.
 Qed.
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Lemma sintegral_giry_join (M : giry (giry T R) R) (h : {nnsfun T >-> R}) :
   sintegral (giry_join M) h = \int[M]_mu sintegral mu h.

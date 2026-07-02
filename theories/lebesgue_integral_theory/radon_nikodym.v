@@ -142,6 +142,8 @@ Hypothesis intf : mu.-integrable setT (EFin \o f).
 Let intnf : mu.-integrable setT (abse \o EFin \o f).
 Proof. exact: integrable_abse. Qed.
 
+Import OcitvMeasurable.
+
 Lemma integral_normr_continuous (e : R) : (0 < e)%R ->
   exists d : R, (0 < d)%R /\
   forall A, measurable A -> mu A < d%:E -> (\int[mu]_(x in A) `|f x| < e)%R.
@@ -852,6 +854,7 @@ Implicit Types f : T -> \bar R.
 Local Notation "'d nu '/d mu" := (f nu mu).
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Lemma change_of_variables f E : (forall x, 0 <= f x) ->
     measurable E -> measurable_fun E f ->

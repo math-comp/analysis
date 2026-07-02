@@ -46,6 +46,7 @@ Context d (T : measurableType d) (R : realType) (D : set T).
 Implicit Types m : {measure set T -> \bar R}.
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Let eq_measure_integral0 m2 m1 (f : T -> \bar R) :
   (forall A, measurable A -> A `<=` D -> m1 A = m2 A) ->
@@ -341,6 +342,7 @@ rewrite ge0_integralZl//; exact/measurable_EFinP.
 Qed.
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Lemma integralZl_indic_nnsfun (f : {nnsfun T >-> R}) (k : R) :
   \int[m]_(x in D) (k * \1_(f @^-1` [set k]) x)%:E =
@@ -365,6 +367,7 @@ Let integral_mscale_indic E : measurable E ->
 Proof. by move=> ?; rewrite !integral_indic. Qed.
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Let integral_mscale_nnsfun (h : {nnsfun T >-> R}) :
   \int[mscale k m]_(x in D) (h x)%:E = k%:num%:E * \int[m]_(x in D) (h x)%:E.
@@ -520,6 +523,7 @@ Let mphi_mixin := isMeasurableFun.Build _ _ _ _ _ mphi.
 Let mphi_pack : {mfun _ >-> _} := HB.pack phi mphi_mixin.
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Lemma ge0_integral_pushforward D (f : Y -> \bar R) :
   measurable D -> measurable_fun D f -> {in D, forall y, 0 <= f y} ->
@@ -573,6 +577,7 @@ Open Scope ereal_scope.
 Context {R : realType}.
 
 Local Notation mu := lebesgue_measure.
+Import OcitvMeasurable.
 
 Lemma lebesgue_measureN (A : set R) : measurable A ->
   pushforward mu (-%R : _ -> measurableTypeR R) A = mu A.
@@ -601,6 +606,7 @@ Context d (T : measurableType d) (a : T) (R : realType).
 Variables (D : set T) (mD : measurable D).
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Let ge0_integral_dirac (f : T -> \bar R) (mf : measurable_fun D f)
     (f0 : forall x, D x -> 0 <= f x) :
@@ -670,6 +676,7 @@ by rewrite integral_indic// setIT.
 Qed.
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Let integralT_measure_sum (f : {nnsfun T >-> R}) :
   \int[m]_x (f x)%:E = \sum_(n < N) \int[m_ n]_x (f x)%:E.
@@ -788,6 +795,7 @@ by rewrite integral_indic// setIT.
 Qed.
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Lemma integral_measure_series_nnsfun (D : set T) (mD : measurable D)
     (f : {nnsfun T >-> R}) :
@@ -961,6 +969,8 @@ rewrite oppeD 1?addeACA//.
 by rewrite ge0_adde_def// inE integral_ge0.
 Qed.
 
+Import OcitvMeasurable.
+
 Lemma __deprecated__integral_setU_EFin (A B : set T) (f : T -> R) :
   measurable A -> measurable B ->
   measurable_fun (A `|` B) f ->
@@ -1079,9 +1089,12 @@ End integral_patch.
 Section ge0_cvgn_integral.
 Local Open Scope ereal_scope.
 Context {R : realType}.
+Import OcitvMeasurable.
 Variable mu : {measure set (@measurableTypeR R) -> \bar R}.
 Variable f : R -> R.
 Hypothesis f0 : (forall x, 0 <= f x)%R.
+
+
 Hypothesis mf : measurable_fun setT f.
 
 Lemma ge0_integral_ereal_sup :
@@ -1170,6 +1183,8 @@ rewrite ge0_integralD//;[exact/measurable_funepos|exact/measurable_funeneg|].
 move: foo; rewrite integralE/= -fin_num_abs fin_numB => /andP[fpoo fnoo].
 by rewrite lte_add_pinfty// ltey_eq ?fpoo ?fnoo.
 Qed.
+
+Import OcitvMeasurable.
 
 Lemma integral_fin_num_abs d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) (D : set T) (f : T -> R) :

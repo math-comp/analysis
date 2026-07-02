@@ -128,6 +128,7 @@ Variables m1 m2 : {measure set T -> \bar R}.
 Hypothesis m12 : forall S, measurable S -> m1 S <= m2 S.
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Lemma le_measure_sintegral (f : {nnsfun T >-> R}) :
   sintegral m1 f <= sintegral m2 f.
@@ -164,6 +165,7 @@ Variables (m : {measure set T -> \bar R}).
 Variables (D : set T) (mD : measurable D) (f g : {nnsfun T >-> R}).
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Lemma sintegralD : sintegral m (f \+ g)%R = sintegral m f + sintegral m g.
 Proof.
@@ -244,6 +246,8 @@ Proof.
 move=> n m nm; rewrite /fleg; apply/subsetPset => x /= cfg.
 by move: cfg => /le_trans; apply; exact: nd_g.
 Qed.
+
+Import OcitvMeasurable.
 
 Let mfleg c n : measurable (fleg c n).
 Proof.

@@ -298,6 +298,8 @@ Variable m1 : {measure set T1 -> \bar R}.
 Variable m2 : {sigma_finite_measure set T2 -> \bar R}.
 Implicit Types A : set (T1 * T2).
 
+Import OcitvMeasurable.
+
 Lemma product_measure1E (A1 : set T1) (A2 : set T2) :
   measurable A1 -> measurable A2 -> (m1 \x m2) (A1 `*` A2) = m1 A1 * m2 A2.
 Proof.
@@ -452,6 +454,8 @@ Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variable m1 : {sigma_finite_measure set T1 -> \bar R}.
 Variable m2 : {measure set T2 -> \bar R}.
 
+Import OcitvMeasurable.
+
 Lemma product_measure2E (A1 : set T1) (A2 : set T2)
     (mA1 : measurable A1) (mA2 : measurable A2) :
   (m1 \x^ m2) (A1 `*` A2) = m1 A1 * m2 A2.
@@ -570,6 +574,7 @@ Section sfun_fubini_tonelli.
 Variable f : {nnsfun T1 * T2 >-> R}.
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Let F := fubini_F m2 (EFin \o f).
 Let G := fubini_G m1 (EFin \o f).
@@ -693,6 +698,7 @@ Let F := fubini_F m2 f.
 Let G := fubini_G m1 f.
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Let F_ (g : {nnsfun T >-> R}^nat) n x := \int[m2]_y (g n (x, y))%:E.
 Let G_ (g : {nnsfun T >-> R}^nat) n y := \int[m1]_x (g n (x, y))%:E.

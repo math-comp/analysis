@@ -659,6 +659,7 @@ Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
 Variable k : X * Y -> \bar R.
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Lemma measurable_fun_xsection_integral
     (l : X -> {measure set Y -> \bar R})
@@ -762,6 +763,8 @@ Definition kdirac (mf : measurable_fun [set: X] f) (x : X) :
   {measure set Y -> \bar R} := dirac (f x).
 
 Hypothesis mf : measurable_fun [set: X] f.
+
+Import OcitvMeasurable.
 
 Let measurable_fun_kdirac U : measurable U ->
   measurable_fun [set: X] (kdirac mf ^~ U).
@@ -885,6 +888,8 @@ Variable f : R.-ker X ~> Y.
 Definition knormalize (P : probability Y R) : X -> {measure set Y -> \bar R} :=
   fun x => mnormalize (f x) P.
 
+Import OcitvMeasurable.
+
 Let measurable_knormalize (P : probability Y R) U :
   measurable U -> measurable_fun [set: X] (knormalize P ^~ U).
 Proof.
@@ -925,6 +930,8 @@ HB.instance Definition _ (P : probability Y R):=
   @Kernel_isProbability.Build _ _ _ _ _ (knormalize P) (knormalize1 P).
 
 End knormalize.
+
+Import OcitvMeasurable.
 
 Lemma measurable_fun_mnormalize d d' (X : measurableType d)
     (Y : pmeasurableType d') (R : realType) (k : R.-ker X ~> Y) :

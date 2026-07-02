@@ -72,6 +72,8 @@ Local Open Scope ring_scope.
 
 Module HBSimple.
 
+Import OcitvMeasurable.
+
 HB.structure Definition SimpleFun d (aT : sigmaRingType d) (rT : realType) :=
   {f of @isMeasurableFun d _ aT rT f & @FiniteImage aT rT f}.
 
@@ -94,6 +96,7 @@ Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
 Section sfun_pred.
 Context {d} {aT : sigmaRingType d} {rT : realType}.
+Import OcitvMeasurable.
 Definition sfun : {pred _ -> _} := [predI @mfun _ _ aT rT & fimfun].
 Definition sfun_key : pred_key sfun. Proof. exact. Qed.
 Canonical sfun_keyed := KeyedPred sfun_key.
@@ -107,6 +110,7 @@ Notation T := {sfun aT >-> rT}.
 Notation sfun := (@sfun _ aT rT).
 Section Sub.
 Context (f : aT -> rT) (fP : f \in sfun).
+Import OcitvMeasurable.
 Definition sfun_Sub1_subproof :=
   @isMeasurableFun.Build d _ aT rT f (set_mem (sub_sfun_mfun fP)).
 #[local] HB.instance Definition _ := sfun_Sub1_subproof.
@@ -139,6 +143,8 @@ Lemma sfuneqP (f g : {sfun aT >-> rT}) : f = g <-> f =1 g.
 Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
 
 HB.instance Definition _ := [Choice of {sfun aT >-> rT} by <:].
+
+Import OcitvMeasurable.
 
 (* NB: already in cardinality.v *)
 HB.instance Definition _ x : @FImFun aT rT (cst x) := FImFun.on (cst x).
@@ -193,6 +199,8 @@ Lemma sfun_prod I r (P : {pred I}) (f : I -> {sfun aT >-> rT}) (x : aT) :
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
 Lemma sfunX f n : f ^+ n =1 (fun x => f x ^+ n).
 Proof. by move=> x; elim: n => [|n IHn]//; rewrite !exprS sfunM/= IHn. Qed.
+
+Import OcitvMeasurable.
 
 HB.instance Definition _ f g := MeasurableFun.copy (f \+ g) (f + g).
 HB.instance Definition _ f g := MeasurableFun.copy (\- f) (- f).
@@ -251,6 +259,7 @@ Section nnsfun_functions.
 Context d (T : measurableType d) (R : realType).
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Lemma cst_nnfun_subproof (x : {nonneg R}) : forall t : T, 0 <= cst x%:num t.
 Proof. by move=> /=. Qed.
@@ -295,6 +304,7 @@ Context d (T : measurableType d) (R : realType).
 Variables f g : {nnsfun T >-> R}.
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 HB.instance Definition _ := MeasurableFun.on (f \+ g).
 Definition add_nnsfun : {nnsfun T >-> R} := f \+ g.
@@ -382,6 +392,7 @@ by rewrite fsbig_finite// -measure_fin_bigcup// -bigsetU_fset_set.
 Qed.
 
 Import HBNNSimple.
+Import OcitvMeasurable.
 
 Lemma additive_nnsfunr (g f : {nnsfun T >-> R}) x :
   \sum_(i \in range g) m (f @^-1` [set x] `&` (g @^-1` [set i])) =
