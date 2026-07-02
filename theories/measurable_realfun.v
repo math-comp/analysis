@@ -93,10 +93,10 @@ Qed.
 End ps_infty.
 
 Section salgebra_ereal.
-Variables (R : realType) (G : set_system R).
-Let measurableR : set_system R := G.-sigma.-measurable.
+Variables (R : realType) (G : set (set R)).
+Let measurableR : set (set R) := G.-sigma.-measurable.
 
-Definition emeasurable : set_system (\bar R) :=
+Definition emeasurable : set (set \bar R) :=
   [set EFin @` A `|` B | A in measurableR & B in ps_infty].
 
 Lemma emeasurable0 : emeasurable set0.
@@ -418,7 +418,7 @@ Section rgencinfty.
 Variable R : realType.
 Implicit Types x y z : R.
 
-Definition G : set_system R := [set A | exists x, A = `[x, +oo[%classic].
+Definition G : set (set R) := [set A | exists x, A = `[x, +oo[%classic].
 
 Lemma measurable_itv_bnd_infty b x :
   G.-sigma.-measurable [set` Interval (BSide b x) +oo%O].
@@ -496,35 +496,6 @@ Qed.
 
 End rgenopens.
 End RGenOpens.
-
-Module RGenOpenSets.
-Section rgenopensets.
-Variable R : realType.
-Implicit Types a b : R.
-
-Definition G := @open R.
-
-Lemma open_ocitv_measurable (U : set R) : G U -> measurable U.
-Proof.
-move=> oU; rewrite (open_disjoint_itv_bigcup oU);
-apply: sigma_algebra_bigcup => k.
-have /is_intervalP -> := @open_disjoint_itv_is_interval _ U oU k.
-exact : measurable_itv.
-Qed.
-
-Lemma ocitv_open_measurable a b : <<s G>> `]a,b[%classic.
-Proof. by apply: sub_sigma_algebra; rewrite/G. Qed.
-
-Lemma measuralbeE : (@ocitv R).-sigma.-measurable = G.-sigma.-measurable.
-Proof.
-rewrite eqEsubset; split; [rewrite RGenOpens.measurableE|];
-  apply: sigma_algebra_subl=> U.
-  rewrite/RGenOpens.G/= => [[a [b ->]]]; exact: ocitv_open_measurable.
-by move=> /open_ocitv_measurable.
-Qed.
-
-End rgenopensets.
-End RGenOpenSets.
 
 Section erealwithrays.
 Variable R : realType.
@@ -1213,7 +1184,7 @@ Module NGenCInfty.
 Section ngencinfty.
 Implicit Types x y z : nat.
 
-Definition G : set_system nat := [set A | exists x, A = `[x, +oo[%classic].
+Definition G : set (set nat) := [set A | exists x, A = `[x, +oo[%classic].
 
 Lemma measurable_itv_bnd_infty b x :
   G.-sigma.-measurable [set` Interval (BSide b x) +oo%O].
