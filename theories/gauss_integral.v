@@ -41,6 +41,8 @@ by apply: (cvg_comp (fun x => x ^+ 2) (fun x => expR (- x)));
   [exact: cvgr_expr2|exact: cvgr_expR].
 Qed.
 
+Import MeasurableR.
+
 Lemma measurable_gauss_fun : measurable_fun setT gauss_fun.
 Proof. by apply: measurableT_comp => //; exact: measurableT_comp. Qed.
 
@@ -62,6 +64,8 @@ Local Open Scope ring_scope.
 Implicit Type x : R.
 
 Let mu : {measure set _ -> \bar R} := @lebesgue_measure R.
+
+Import MeasurableR.
 
 Definition integral0y_gauss := \int[mu]_(x in `[0%R, +oo[) gauss_fun x.
 
@@ -349,6 +353,8 @@ Section gauss_integral.
 Context {R : realType}.
 Import gauss_integral_proof.
 Let mu := @lebesgue_measure R.
+
+Import MeasurableR.
 
 Lemma integral0y_gauss :
   (\int[mu]_(x in `[0%R, +oo[) (gauss_fun x)%:E)%E = (Num.sqrt pi / 2)%:E.

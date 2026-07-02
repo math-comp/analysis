@@ -235,6 +235,18 @@ Qed.
 
 End set_ereal.
 
+Lemma set1_bigcap_oo {R : realType} (x : R) :
+  [set x] = \bigcap_(k : nat) `]x - k.+1%:R^-1, x + k.+1%:R^-1[%classic.
+Proof.
+apply/seteqP; split => [_ -> k _|y xy] /=.
+  by rewrite in_itv/= ltrBlDr andbb ltrDl invr_gt0 ltr0n.
+apply/eqP; rewrite eq_sym -subr_eq0 -normr_eq0 eq_le normr_ge0 andbT.
+apply/ler_addgt0Pl => e e0; rewrite addr0.
+have /= := xy (truncn e^-1) I.
+rewrite in_itv/= -ltr_distlC => /ltW/le_trans; apply.
+by rewrite invf_ple ?posrE ?ltr0n ?invr_gt0//; apply/ltW/truncnS_gt.
+Qed.
+
 Lemma set1_bigcap_oc (R : realType) (r : R) :
   [set r] = \bigcap_i `]r - i.+1%:R^-1, r]%classic.
 Proof.
