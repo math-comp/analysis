@@ -218,10 +218,7 @@ Qed.
 Lemma emeasurable_set1 (x : \bar R) : measurable [set x].
 Proof.
 case: x => [r| |].
-- rewrite -image_set1; apply: measurable_image_EFin; apply: newmeasurable_set1.
-  split.
-    exact: sigma_algebra_measurable.
-  by rewrite /measurableR.
+- by rewrite -image_set1; apply: measurable_image_EFin; apply: newmeasurable_set1.
 - exists set0 => //; [exists [set +oo%E]; [by constructor|]].
   by rewrite image_set0 set0U.
 - exists set0 => //; [exists [set -oo%E]; [by constructor|]].
@@ -253,35 +250,29 @@ rewrite set_interval.setCitv /=; apply: measurableU => [|].
 - by move: i => [i1 [b2 i2|[|]]] /=; rewrite ?set_interval.set_itvE.
 Qed.
 
-Import OcitvMeasurable.
-
 Lemma measurable_image_fine (X : set \bar R) : measurable X ->
   measurable [set fine x | x in X `\` [set -oo; +oo]%E].
 Proof.
 case => Y mY [X' [ | <-{X} | <-{X} | <-{X} ]].
 - rewrite setU0 => <-{X}.
-  rewrite [X in measurable X](_ : _ = Y) //; last first.
-    move: mY.
-    rewrite RGenOpenSets.measurableE//=.
-    admit.
-(*  rewrite predeqE => r; split.
+  rewrite [X in measurable X](_ : _ = Y) -?RGenOpenSets.measurableE// predeqE => r; split.
     by move=> [x [[x' Yx' <-{x}/= _ <-//]]].
   by move=> Yr; exists r%:E; split => [|[]//]; exists r.
-- rewrite [X in measurable X](_ : _ = Y) // predeqE => r; split.
+- rewrite [X in measurable X](_ : _ = Y) -?RGenOpenSets.measurableE// predeqE => r; split.
     move=> [x [[[x' Yx' <- _ <-//]|]]].
     by move=> <-; rewrite not_orP => -[]/(_ erefl).
   by move=> Yr; exists r%:E => //; split => [|[]//]; left; exists r.
-- rewrite [X in measurable X](_ : _ = Y) // predeqE => r; split.
+- rewrite [X in measurable X](_ : _ = Y) -?RGenOpenSets.measurableE// predeqE => r; split.
     move=> [x [[[x' Yx' <-{x} _ <-//]|]]].
     by move=> ->; rewrite not_orP => -[_]/(_ erefl).
   by move=> Yr; exists r%:E => //; split => [|[]//]; left; exists r.
-- rewrite [X in measurable X](_ : _ = Y) // predeqE => r; split.
+- rewrite [X in measurable X](_ : _ = Y) -?RGenOpenSets.measurableE// predeqE => r; split.
     by rewrite setDUl setDv setU0 => -[_ [[x' Yx' <-]] _ <-].
   by move=> Yr; exists r%:E => //; split => [|[]//]; left; exists r.
-Qed.*) Admitted.
+Qed.
 
 Lemma measurable_ball (x : R) e : measurable (ball x e).
-Proof. by rewrite ball_itv (*;exact: measurable_itv. Qed.*). Admitted.
+Proof. by rewrite ball_itv -?RGenOpenSets.measurableE//. Qed.
 
 Lemma measurable_closed_ball (x : R) r : measurable (closed_ball x r).
 Proof.
@@ -569,7 +560,7 @@ End ErealGenInftyO.
 
 Lemma is_interval_measurable (R : realType) (I : set R) :
   is_interval I -> measurable I.
-Proof. by move/is_intervalP => -> (*;exact: measurable_itv. Qed.*). Admitted.
+Proof. by move/is_intervalP => ->; rewrite -?RGenOpenSets.measurableE//. Qed.
 
 Section coutinuous_measurable.
 Variable R : realType.
@@ -599,10 +590,13 @@ Qed.
 Lemma subspace_continuous_measurable_fun (D : set R) (f : subspace D -> R) :
   measurable D -> continuous f -> measurable_fun D f.
 Proof.
-(*move=> mD /continuousP cf; apply: (measurability _ (RGenOpens.measurableE R)).
+move=> mD /continuousP cf.
+rewrite /measurable_fun.
+rewrite -?RGenOpenSets.measurableE.
+apply: (measurability _ (RGenOpens.measurableE R)).
 move=> _ [_ [a [b ->] <-]]; apply: open_measurable_subspace => //.
-exact/cf/interval_open.
-Qed.*) Admitted.
+  exact/cf/interval_open.
+Admitted.
 
 Corollary open_continuous_measurable_fun (D : set R) (f : R -> R) :
   open D -> {in D, continuous f} -> measurable_fun D f.

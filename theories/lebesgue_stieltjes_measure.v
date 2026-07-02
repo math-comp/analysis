@@ -246,7 +246,7 @@ Definition measurableR : set_system R :=
   (R.-open.-measurable).
 
 Definition measurableTypeR (R : realType) :=
-  g_sigma_algebraType R.-open.-measurable.
+  g_sigma_algebraType (@open R).
 
 HB.instance Definition _ : Measurable (*lebesgue_display*)_ (measurableTypeR R) :=
    Measurable.on (measurableTypeR R).
@@ -460,8 +460,6 @@ Lemma newmeasurable_set1 (r : R) : measurable [set r].
 Proof.
 rewrite singleton_bigcap; apply: bigcap_measurable => // k _.
 rewrite /lebesgue_display.
-rewrite measurable_g_measurableTypeE//.
-  by apply:sigma_algebra_measurable.
 red.
 simpl.
 apply: sub_sigma_algebra.
@@ -474,10 +472,7 @@ Proof.
 have := measurable_itv i.
 rewrite /OcitvMeasurableOld.lebesgue_display.
 rewrite /lebesgue_display.
-rewrite RGenOpenSets.measurableE//=.
-move=> H.
-rewrite measurable_g_measurableTypeE//=.
-by apply: sigma_algebra_measurable.
+by rewrite RGenOpenSets.measurableE.
 Qed.
 #[local] Hint Resolve newmeasurable_itv : core.
 
@@ -900,13 +895,7 @@ move=> muE A mA.
 apply: measure_extension_unique => //=.
   exact: wlength_sigma_finite.
 by move=> X mX; rewrite -muE// -measurable_mu_extE.
-(* TODO: rewrite with was is in realfun*)
-rewrite /lebesgue_display in mA.
-rewrite RGenOpens.measurableE.
-rewrite measurable_g_measurableTypeE//= in mA.
-  by apply: sigma_algebra_measurable.
-rewrite -RGenOpens.measurableE.
-by rewrite RGenOpenSets.measurableE//.
+by rewrite RGenOpenSets.measurableE.
 Qed.
 
 Section completed_lebesgue_stieltjes_measure.
