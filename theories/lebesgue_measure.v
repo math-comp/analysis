@@ -348,7 +348,8 @@ Lemma lebesgue_measure_unique {R : realType}
     (mu : {measure set (measurableTypeR R) -> \bar R}) :
     (forall X, ocitv X -> lebesgue_measure X = mu X) ->
   forall A, measurable A -> lebesgue_measure A = mu A.
-Proof. (*exact: lebesgue_stieltjes_measure_unique. Qed.*) Admitted.
+Proof. rewrite RGenOpenSets.measurableE; 
+exact: lebesgue_stieltjes_measure_unique. Qed.
 
 Definition completed_lebesgue_measure {R : realType} : set _ -> \bar R :=
   completed_lebesgue_stieltjes_measure idfun.
@@ -561,9 +562,11 @@ apply: (@measure_semi_sigma_additive _ _ _ (@lebesgue_measure R)
   move=> [X mX [X' mX']] XX'Fn.
   apply: measurable_image_fine.
   rewrite -XX'Fn.
-(*  apply: measurableU; first exact: measurable_image_EFin.
-  by case: mX' => //; exact: measurableU.*) admit.
-  admit.
+ apply: measurableU; first by apply: measurable_image_EFin; 
+  rewrite RGenOpenSets.measurableE/= in mX.
+  by case: mX' => //; exact: measurableU.
+  split; first by exact: sigma_algebra_measurable.
+  by rewrite RGenOpenSets.measurableE; apply: sub_sigma_algebra.
 - move=> i j _ _ [x [[a [Fia aoo ax] [b [Fjb boo] bx]]]].
   move: tF => /(_ i j Logic.I Logic.I); apply.
   suff ab : a = b by exists a; split => //; rewrite ab.
@@ -609,7 +612,7 @@ apply: (@measure_semi_sigma_additive _ _ _ (@lebesgue_measure R)
       by rewrite -h => -[[x' Xx' <-//]|].
     have [n _ Fnr] : (\bigcup_n F n) r%:E by rewrite -h; left; exists r.
     by exists n => //; exists r%:E => //; split => //; case.
-Admitted.
+Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ elebesgue_measure
   elebesgue_measure0 elebesgue_measure_ge0
@@ -816,8 +819,9 @@ move=> /[dup]/compact_measurable => mA /compact_bounded[N [_ N1x]].
 have AN1 : A `<=` `[- (`|N| + 1), `|N| + 1].
   by move=> z Az; rewrite set_itvcc /= -ler_norml N1x// ltr_pwDr// ler_norm.
 rewrite (le_lt_trans (le_measure _ _ _ AN1)) ?inE//=.
-(*by rewrite lebesgue_measure_itv/= lte_fin gtrN// EFinD ltry.
-Qed.*) Admitted.
+  by rewrite RGenOpenSets.measurableE.
+by rewrite lebesgue_measure_itv/= lte_fin gtrN// EFinD ltry.
+Qed.
 
 End compact_finite_measure.
 
@@ -904,8 +908,9 @@ split=> [[/= A [mA mA0 NA]]|N0].
 - by apply/eqP; rewrite eq_le outer_measure_ge0 andbT -mA0 le_outer_measure.
 - have := @outer_measure_Gdelta N; rewrite N0 => -[F [oF NF mF0]].
   exists (\bigcap_i F i); split => //=.
-(*  by apply: bigcapT_measurable => i; exact: open_measurable.
-Qed.*) Admitted.
+ apply: bigcapT_measurable => i. rewrite RGenOpenSets.measurableE.
+exact: sub_sigma_algebra.
+Qed.
 
 End negligible_outer_measure.
 
@@ -937,7 +942,8 @@ have muM n : mu (M n) <= mu (M' n) + (e2 n)%:E.
     by rewrite propeqE; split=> /orP.
   rewrite measureU/=.
   - by apply: sub_sigma_algebra; exact: is_ocitv.
-(*  - by apply: open_measurable; exact: interval_open.*) admit.
+ -  rewrite RGenOpenSets.measurableE. 
+    apply: open_measurable; exact: interval_open.
   - rewrite eqEsubset; split => // r []/andP [_ +] /andP[+ _] /=.
     by rewrite !bnd_simp => /le_lt_trans /[apply]; rewrite ltxx.
   - rewrite !lebesgue_measure_itv/= !lte_fin alb ltr_pwDr//=.
@@ -952,7 +958,8 @@ exists U; have DU : D `<=` U.
   by rewrite ax/= (le_lt_trans xb)// ltr_pwDr.
 have mM n : measurable (M n).
   rewrite /M; case: pselect; first by move=> /= _; exact: measurable0.
-(*  by move=> /= _; apply: open_measurable; apply: interval_open.*) admit.
+ by move=> /= _; rewrite RGenOpenSets.measurableE; apply: open_measurable; 
+  apply: interval_open.
 have muU : mu U < mu D + eps%:E.
   apply: (@le_lt_trans _ _ (\sum_(n <oo) mu (M n))).
     exact: outer_measure_sigma_subadditive.
@@ -974,7 +981,7 @@ rewrite measureD//=.
 - by apply: bigcup_measurable => k _; exact: mM.
 - by rewrite (lt_le_trans muU)// leey.
 - by rewrite setIidr// lte_subel_addl// ge0_fin_numE// (lt_le_trans muU)// leey.
-Admitted.
+Qed.
 
 Lemma lebesgue_nearly_bounded (D : set R) (eps : R) :
     measurable D -> mu D < +oo -> (0 < eps)%R ->
@@ -1028,7 +1035,8 @@ wlog : eps epspos D mD finD / exists ab : R * R, D `<=` `[ab.1, ab.2]%classic.
     move=> z ; rewrite setDE setCI setCK => -[?|?];
     by apply/propext; split => [[]|[[]]].
   have mV : measurable V.
-(*    by apply: closed_measurable; apply: compact_closed => //; exact: Rhausdorff.*) admit.
+  rewrite RGenOpenSets.measurableE.
+   by apply: closed_measurable; apply: compact_closed => //; exact: Rhausdorff.
   rewrite [eps]splitr EFinD (measureU mu) // ?lteD //.
   - by apply: measurableD => //; exact: measurableI.
   - exact: measurableD.
@@ -1048,11 +1056,14 @@ exists (`[a, b] `&` ~` U); split.
   rewrite [_ `&` ~` _ ](iffRL (disjoints_subset _ _)) ?setCK // set0U.
   move: mDeps; rewrite /D' ?setDE setCI setIUr setCK [U `&` D]setIC.
   move => /(le_lt_trans _); apply; apply: le_measure; last by move => ?; right.
-(*    by rewrite inE; apply: measurableI => //; exact: open_measurable.*) admit.
+   rewrite RGenOpenSets.measurableE inE; apply: measurableI => //;
+   last by apply: open_measurable. by rewrite /= -RGenOpenSets.measurableE.
   rewrite inE; apply: measurableU.
-(*    by apply: measurableI; [exact: open_measurable|exact: measurableC].
-  by apply: measurableI => //; exact: open_measurable.
-Qed.*) Admitted.
+  rewrite RGenOpenSets.measurableE.
+   by apply: measurableI; [exact: open_measurable|exact: measurableC].
+apply: measurableI => //. rewrite RGenOpenSets.measurableE; 
+exact: sub_sigma_algebra.
+Qed.
 
 Let lebesgue_regularity_innerE_bounded (A : set R) : measurable A ->
   mu A < +oo ->
@@ -1092,9 +1103,10 @@ rewrite (@le_trans _ _ (mu V))//; last first.
   apply: ereal_sup_ubound; exists V => //=; split => //.
   exact: (subset_trans VFND (@subIsetr _ _ _)).
 rewrite -(@leeD2rE _ 1)// -EFinD (le_trans M1FD)//.
-(*rewrite /mu (@measureDI _ _ _ _ (F N `&` D) _ _ mV)/=; first exact: measurableI.
+rewrite -RGenOpenSets.measurableE in mV.
+rewrite /mu (@measureDI _ _ _ _ (F N `&` D) _ _ mV)/=; first exact: measurableI.
 by rewrite addeC leeD//; [rewrite measureIr//; exact: measurableI|exact/ltW].
-Qed.*) Admitted.
+Qed.
 
 End lebesgue_regularity.
 
@@ -1159,15 +1171,18 @@ have EBr2 n : E n -> closure (B n) `<=` (ball (0:R) (r%:num + 2))%R.
   have := is_ball_closureP (ABV.1 n) Bnx.
   by move=> /le_trans; apply; rewrite VB1//; exact: DV.
 have measurable_closure (C : set R) : is_ball C -> measurable (closure C).
-(*  by move=> ballC; rewrite is_ball_closure//; exact: measurable_closed_ball.*) admit.
+ by move=> ballC; rewrite is_ball_closure// RGenOpenSets.measurableE;
+ apply: measurable_closed_ball.
 move: ABV => [is_ballB ABV].
 have {}EBr2 : \esum_(i in E) mu (closure (B i)) <=
               mu (ball (0:R) (r%:num + 2))%R.
   rewrite -(set_mem_set E) -nneseries_esum// -measure_bigcup//.
     by move=> *; exact: measurable_closure.
     by apply: sub_trivIset tDB => ? [].
-(*  apply/le_measure; rewrite ?inE; [|exact: measurable_ball|exact: bigcup_sub].
-  by apply: bigcup_measurable => *; exact: measurable_closure.*) admit.
+ apply/le_measure; rewrite ?inE ?RGenOpenSets.measurableE;
+  [|exact: measurable_ball|exact: bigcup_sub].
+  by rewrite -RGenOpenSets.measurableE;
+  apply: bigcup_measurable => *; apply: measurable_closure=>//.
 have finite_set_F i : finite_set (F i).
   apply: contrapT.
   pose M := (truncn ((r%:num + 2) *+ 2 / (1 / (2 ^ i.+1)%:R))).+1.
@@ -1361,7 +1376,7 @@ apply: lee_nneseries => // m mFn.
 rewrite (ballE (is_ballB m))// closure_ballE lebesgue_measure_closed_ball//.
 rewrite scale_ballE// closure_ballE lebesgue_measure_closed_ball//.
 by rewrite -EFinM mulrnAr.
-Admitted.
+Qed.
 
 End vitali_theorem.
 
@@ -1398,12 +1413,15 @@ Let vitali_cover_mclosure (F : set nat) k :
   vitali_cover A B F -> (R.-ocitv.-measurable).-sigma.-measurable (closure (B k)).
 Proof.
 case => + _ => /(_ k)/ballE ->.
-(*by rewrite closure_ballE; exact: measurable_closed_ball.
-Qed.*) Admitted.
+rewrite RGenOpenSets.measurableE/=.
+by rewrite closure_ballE; exact: measurable_closed_ball.
+Qed.
 
 Let vitali_cover_measurable (F : set nat) k :
   vitali_cover A B F -> (R.-ocitv.-measurable).-sigma.-measurable (B k).
-(*Proof. by case => + _ => /(_ k)/ballE ->; exact: measurable_ball. Qed.*) Admitted.
+Proof. case => + _ => /(_ k)/ballE ->; rewrite RGenOpenSets.measurableE; 
+exact: measurable_ball. 
+Qed.
 
 Let vitali_cover_ballE (F : set nat) n :
   vitali_cover A B F -> B n = ball (cpoint (B n)) (radius (B n))%:num.
@@ -1569,7 +1587,7 @@ have bigBG_fin (r : {posnum R}) : finite_set (bigB G r%:num).
     by rewrite lebesgue_measure_closed_ball// lebesgue_measure_ball.
   rewrite le_measure? inE//.
   + by apply: bigcup_measurable => k _; exact: vitali_cover_measurable ABF.
-(*  + exact: open_measurable.*) admit.
+  + by rewrite RGenOpenSets.measurableE; exact: open_measurable.
   + by apply: bigcup_sub => i [/GV'[? ?] cBi].
 exists (fset_set (bigB G c%:num)); split.
 - by move=> /= k; rewrite in_fset_set// inE /bigB /= => -[] /GV'[].
@@ -1586,6 +1604,6 @@ exists (fset_set (bigB G c%:num)); split.
   apply: (le_trans _ (outer_measureU2 _ _ _)) => //=; apply: le_outer_measure.
   rewrite !(setDE A) -setIUr; apply: setIS.
   by rewrite setDE setUIl setUv setTI -setCI; exact: subsetC.
-Admitted.
+Qed.
 
 End vitali_theorem_corollary.
