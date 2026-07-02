@@ -514,14 +514,15 @@ End wlength_extension.
 Arguments lebesgue_stieltjes_measure {R}.
 
 Definition measurableTypeR (R : realType) :=
-  g_sigma_algebraType R.-ocitv.-measurable.
+  g_sigma_algebraType (@ocitv R).
 
 Section lebesgue_stieltjes_measure.
 Context {R : realType}.
 
-Definition lebesgue_display : measure_display := (R.-ocitv.-measurable).-sigma.
-Definition measurableR : set_system R :=
-  (R.-ocitv.-measurable).-sigma.-measurable.
+Definition lebesgue_display : measure_display :=
+  (@ocitv R).-sigma.
+Definition measurableR : set (set R) :=
+  (@ocitv R).-sigma.-measurable.
 
 HB.instance Definition _ : Measurable lebesgue_display (measurableTypeR R) :=
    Measurable.on (measurableTypeR R).
