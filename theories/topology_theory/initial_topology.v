@@ -113,7 +113,6 @@ rewrite nbhs_simpl; exists (f @^-1` A); first exact: filterS FB.
 by exact: image_preimage.
 Qed.
 
-(* TODO: shorten this proof*)
 Lemma continuous_initial_topology (U : topologicalType) (g : U -> W):
   continuous g <-> (continuous (f \o g)).
 Proof.
@@ -122,8 +121,7 @@ split => cont x.
   by apply: initial_continuous.
 move => A [B/=]; rewrite /initial_topology /= => -[[C] oC fBC] Bgx BA.
 apply: filterS; first by exact: BA.
-rewrite -fBC /nbhs /=.
-rewrite -comp_preimage.
+rewrite -fBC /nbhs -comp_preimage.
 apply: cont; apply: open_nbhs_nbhs; split => //.
 have : f @` B `<=` C by move => z /= [t]; rewrite -fBC //= => ? <-.
 by apply => /=; exists (g x).
@@ -382,5 +380,3 @@ HB.instance Definition _ (S : pointedType) (T : topologicalType)  (I : pointedTy
 
 
 (* TODO : uniform and pseudometric structure for initial fam topology, tvs structure for initial and initial_fam topology *)
-
-
