@@ -243,6 +243,23 @@
     `within_continuousMl`, and `within_continuousMr`
 - in `pseudometric_normed_Zmodule.v`
   + new lemma `within_continuousN`
+- in `lebesgue_stieltjes_measure.v`:
+  + module `MeasurableRocitv`
+  + definition `open_type`
+  + notations `.-open`, `.-open.-measurable`
+  + module `MeasurableRopen`
+    * definition `measurableTypeR`
+    + definition `lebesgue_display`
+    * definition `measurableR`
+    + lemmas `measurable_set1`, `measurable_itv` (also declared as hints)
+    + definition `ocitv_measure`, lemma `ocitv_measure_ext`
+  + module `MeasurableR`
+  + module `RGenOpenSets`
+    * lemma `measurableE`
+  + lemma `open_lebesgue_stieltjes_measure_unique`
+
+- in `real_interval.v`:
+  + lemma `set1_bigcap_oo`
 
 ### Changed
 
@@ -366,6 +383,14 @@
 
 - moved from `realfun.v` to `derive.v` and generalized:
   + lemmas `is_deriveV`, `is_derive1_comp`
+- moved from `measurable_realfun.v` to `lebesgue_stieltjes_measure.v`
+  + module `RGenOInfty`
+  + module `RGenInftyO`
+  + module `RGenCInfty`
+  + module `RGenOpens`
+
+- moved inside module `MeasurableRocitv` (`lebesgue_stieltjes_measure.v`):
+  + lemmas `measurable_set1`, `measurable_itv`
 
 ### Renamed
 
@@ -419,6 +444,9 @@
 
 - in `functions.v`
   + lemma `scalrfctE` -> `scalerfctE` (deprecating `scalrfctE`)
+
+- in `lebesgue_stieltjes_measure.v`:
+  + lemma `lebesgue_stieltjes_measure_unique` -> `ocitv_lebesgue_stieltjes_measure_unique`
 
 ### Generalized
 

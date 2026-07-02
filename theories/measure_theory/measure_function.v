@@ -1786,11 +1786,11 @@ have ndE : ndseq_closed E.
   - exact: bigcupT_measurable.
   - transitivity (limn (m1 \o A)).
       apply/esym/cvg_lim=>//.
-      exact/(nondecreasing_cvg_mu mA _ ndA)/bigcupT_measurable.
+      exact/(nondecreasing_cvg_measure mA _ ndA)/bigcupT_measurable.
     transitivity (limn (m2 \o A)).
       by apply/congr_lim/funext => n; have [] := EA n.
     apply/cvg_lim => //.
-    exact/(nondecreasing_cvg_mu mA _ ndA)/bigcupT_measurable.
+    exact/(nondecreasing_cvg_measure mA _ ndA)/bigcupT_measurable.
   - by apply: bigcup_sub => n; have [] := EA n.
 have sDHE : <<s D, H >> `<=` E.
   by apply: lambda_system_subset => //; split => //; [move=> ? []|split].
@@ -1821,7 +1821,7 @@ Lemma lim_sup_set_cvg F : (forall k, measurable (F k)) ->
   mu (\bigcup_(k >= 0) F k) < +oo ->
   mu (\bigcup_(k >= n) F k) @[n --> \oo] --> mu (lim_sup_set F).
 Proof.
-move=> mF mFoo; apply: nonincreasing_cvg_mu => //.
+move=> mF mFoo; apply: nonincreasing_cvg_measure => //.
 - by move=> i; apply: bigcup_measurable => k /= _; exact: mF.
 - apply: bigcap_measurable => // k _.
   by apply: bigcup_measurable => j /= _; exact: mF.
@@ -1936,13 +1936,13 @@ have nd_g' : nondecreasing_seq g'.
 move=> A gA.
 have -> : A = \bigcup_n (g' n `&` A) by rewrite -setI_bigcupl g'_cover setTI.
 transitivity (lim (m1 (g' n `&` A) @[n --> \oo])).
-  apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
+  apply/esym/cvg_lim => //; apply: nondecreasing_cvg_measure.
   - by move=> n; apply: measurableI; exact/sGm.
   - by apply: bigcupT_measurable => k; apply: measurableI; exact/sGm.
   - by move=> ? ? ?; apply/subsetPset; apply: setSI; exact/subsetPset/nd_g'.
 transitivity (lim (m2 (g' n `&` A) @[n --> \oo])).
   by apply/congr_lim/funext => x; apply: sG'm1m2 => //; exact/sGm.
-apply/cvg_lim => //; apply: nondecreasing_cvg_mu.
+apply/cvg_lim => //; apply: nondecreasing_cvg_measure.
 - by move=> k; apply: measurableI => //; exact/sGm.
 - by apply: bigcupT_measurable => k; apply: measurableI; exact/sGm.
 - by move=> a b ab; apply/subsetPset; apply: setSI; exact/subsetPset/nd_g'.

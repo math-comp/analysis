@@ -57,6 +57,8 @@ Implicit Types m s x : R.
 
 Definition normal_fun m s x := expR (- (x - m) ^+ 2 / (s ^+ 2 *+ 2)).
 
+Import MeasurableR.
+
 Lemma measurable_normal_fun m s : measurable_fun [set: R] (normal_fun m s).
 Proof.
 apply: measurableT_comp => //=; apply: measurable_funM => //=.
@@ -106,6 +108,8 @@ Proof. by rewrite mulr_ge0 ?normal_peak_ge0 ?expR_ge0. Qed.
 
 Lemma normal_pdf0_gt0 m s x : s != 0 -> 0 < normal_pdf0 m s x.
 Proof. by move=> s0; rewrite mulr_gt0 ?expR_gt0// normal_peak_gt0. Qed.
+
+Import MeasurableR.
 
 Lemma measurable_normal_pdf0 m s : measurable_fun setT (normal_pdf0 m s).
 Proof. by apply: measurable_funM => //=; exact: measurable_normal_fun. Qed.
@@ -169,6 +173,8 @@ Lemma normal_pdf_sym m s x : s != 0 ->
   normal_pdf m s x = normal_pdf x s m.
 Proof. by move=> s0; rewrite !normal_pdfE// normal_fun_sym. Qed.
 
+Import MeasurableR.
+
 Lemma measurable_normal_pdf m s : measurable_fun setT (normal_pdf m s).
 Proof.
 rewrite /normal_pdf; have [_|s0] := eqVneq s 0; first exact: measurable_indic.
@@ -191,6 +197,8 @@ exact: normal_pdf0_ub.
 Qed.
 
 End normal_density.
+
+Import MeasurableR.
 
 Definition normal_prob {R : realType} (m : R) (s : R) : set _ -> \bar R :=
   fun V => (\int[lebesgue_measure]_(x in V) (normal_pdf m s x)%:E)%E.

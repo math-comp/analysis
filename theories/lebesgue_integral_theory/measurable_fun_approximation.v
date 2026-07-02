@@ -92,9 +92,8 @@ Qed.
 End dyadic_interval.
 
 Section approximation.
-Context d (T : measurableType d) (R : realType).
-Variables (D : set T) (mD : measurable D).
-Variables (f : T -> \bar R) (mf : measurable_fun D f).
+Context {d} {T : measurableType d} {R : realType}
+  (D : set T) (mD : measurable D) (f : T -> \bar R) (mf : measurable_fun D f).
 
 Local Notation I := (@dyadic_itv R).
 
@@ -113,7 +112,7 @@ Definition approx : (T -> R)^nat := fun n x =>
 Let mA n k : measurable (A n k).
 Proof.
 rewrite /A; case: ifPn => [kn|_]//; rewrite -preimage_comp.
-by apply: mf => //; apply/measurable_image_EFin; exact: measurable_itv.
+by apply: mf => //; exact/measurable_image_EFin.
 Qed.
 
 Let trivIsetA n : trivIset setT (A n).
@@ -411,6 +410,7 @@ Context d (T : measurableType d) (R : realType).
 Implicit Types (D : set T) (f g : T -> \bar R).
 
 Import HBSimple.
+Import MeasurableR.
 
 Lemma emeasurable_funD D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \+ g).
@@ -563,6 +563,8 @@ Section measurable_sum.
 Context d (T : measurableType d) (R : realType).
 Implicit Types (D : set T) (f g : T -> R).
 
+Import MeasurableR.
+
 Lemma measurable_sum D I s (h : I -> T -> R) :
   (forall i, measurable_fun D (h i)) ->
   measurable_fun D (fun x => \sum_(i <- s) h i x).
@@ -660,6 +662,8 @@ Qed.
 
 End emeasurable_fun_comparison.
 
+Import MeasurableR.
+
 Lemma measurable_poweR (R : realType) r :
   measurable_fun [set: \bar R] (poweR ^~ r).
 Proof.
@@ -711,9 +715,11 @@ Let lusin_simple (f : {sfun R >-> rT}) (eps : rT) : (0 < eps)%R ->
 Proof.
 move: eps=> _/posnumP[eps]; have [N /card_fset_set rfN] := fimfunP f.
 pose Af x : set R := A `&` f @^-1` [set x].
-have mAf x : measurable (Af x) by exact: measurableI.
+have mAf x : (@open R).-sigma.-measurable (Af x).
+   exact: measurableI.
 have finAf x : mu (Af x) < +oo.
-  by rewrite (le_lt_trans _ finA)// le_measure// ?inE//; exact: subIsetl.
+  rewrite (le_lt_trans _ finA)// le_measure// ?inE//.
+  - exact: subIsetl.
 have eNpos : (0 < eps%:num / N.+1%:R)%R by [].
 have dK' x := lebesgue_regularity_inner (mAf x) (finAf x) eNpos.
 pose dK x : set R := projT1 (cid (dK' x)); pose J i : set R := Af i `\` dK i.
@@ -732,7 +738,8 @@ exists (\bigcup_(i in range f) dK i); split.
     case => ? [? _ <-] [[zab /= <- nfz]] ? [r _ <-]; split => //.
     by move: nfz; apply: contra_not => /[dup] /dKsub ->.
   apply: (@le_lt_trans _ _ (\sum_(i \in range f) mu (J i))).
-    by apply: content_sub_fsum => //; exact: fin_bigcup_measurable.
+    apply: content_sub_fsum => //.
+    exact: fin_bigcup_measurable.
   apply: le_lt_trans.
     apply: (@lee_fsum _ _ _ _ (fun=> (eps%:num / N.+1%:R)%:E * 1%:E)) => //.
     by move=> i ?; rewrite mule1; apply: ltW; have [_ _] := dkP i.
