@@ -96,7 +96,7 @@ Section salgebra_ereal.
 Variables (R : realType) (G : set_system R).
 Let measurableR : set_system R := G.-sigma.-measurable.
 
-Definition emeasurable : set_system \bar R :=
+Definition emeasurable : set_system (\bar R) :=
   [set EFin @` A `|` B | A in measurableR & B in ps_infty].
 
 Lemma emeasurable0 : emeasurable set0.
