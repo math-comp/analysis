@@ -238,14 +238,17 @@ Context {R : realType}.
 
 Local Open Scope measure_display_scope.
 
-Definition lebesgue_display : measure_display := (R.-open.-measurable).-sigma.
+(*Definition lebesgue_display : measure_display := (R.-open.-measurable).-sigma.*)
+Definition lebesgue_display : measure_display := R.-open.
+(*Definition measurableR : set_system R :=
+  (R.-open.-measurable).-sigma.-measurable.*)
 Definition measurableR : set_system R :=
-  (R.-open.-measurable).-sigma.-measurable.
+  (R.-open.-measurable).
 
 Definition measurableTypeR (R : realType) :=
   g_sigma_algebraType R.-open.-measurable.
 
-HB.instance Definition _ : Measurable lebesgue_display (measurableTypeR R) :=
+HB.instance Definition _ : Measurable (*lebesgue_display*)_ (measurableTypeR R) :=
    Measurable.on (measurableTypeR R).
 (* Presumably it is safe to use NFI here because morally R is unique
    and nothing else can be used here *)

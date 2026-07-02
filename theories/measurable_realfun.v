@@ -212,9 +212,7 @@ Lemma measurable_image_EFin (A : set R) :
 Proof.
 move=> mA; exists A => //.
   red in mA.
-  rewrite RGenOpenSets.measurableE//.
-  rewrite measurable_g_measurableTypeE// in mA.
-  exact: sigma_algebra_measurable.
+  by rewrite RGenOpenSets.measurableE//.
 by exists set0; [constructor|rewrite setU0].
 Qed.
 
