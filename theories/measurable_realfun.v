@@ -496,8 +496,6 @@ Qed.
 
 End rgenopens.
 End RGenOpens.
-
-
 Section erealwithrays.
 Variable R : realType.
 Implicit Types (x y z : \bar R) (r s : R).
