@@ -69,7 +69,7 @@ Proof.
 move=> F ndF; rewrite /B /= => BF; split.
   by apply: bigcupT_measurable => n; have [] := BF n.
 have phiF x : phi (F i) x @[i \oo] --> phi (\bigcup_i F i) x.
-  rewrite /phi /= xsection_bigcup; apply: nondecreasing_cvg_mu.
+  rewrite /phi /= xsection_bigcup; apply: nondecreasing_cvg_measure.
   - by move=> n; apply: measurable_xsection; case: (BF n).
   - by apply: bigcupT_measurable => i; apply: measurable_xsection; case: (BF i).
   - by move=> m n mn; exact/subsetPset/le_xsection/subsetPset/ndF.
@@ -89,7 +89,7 @@ Proof.
 move=> F ndF; rewrite /B /= => BF; split.
   by apply: bigcupT_measurable => n; have [] := BF n.
 have psiF x : psi (F i) x @[i \oo] --> psi (\bigcup_i F i) x.
-  rewrite /psi /= ysection_bigcup; apply: nondecreasing_cvg_mu.
+  rewrite /psi /= ysection_bigcup; apply: nondecreasing_cvg_measure.
   - by move=> n; apply: measurable_ysection; case: (BF n).
   - by apply: bigcupT_measurable => i; apply: measurable_ysection; case: (BF i).
   - by move=> m n mn; exact/subsetPset/le_ysection/subsetPset/ndF.

@@ -496,7 +496,6 @@ Qed.
 
 End rgenopens.
 End RGenOpens.
-
 Section erealwithrays.
 Variable R : realType.
 Implicit Types (x y z : \bar R) (r s : R).
@@ -1729,7 +1728,7 @@ have Ek0 k : \bigcap_n (E k n) = set0.
 have badn' k : exists n, mu (E k n) < ((eps / 2) / (2 ^ k.+1)%:R)%:E.
   pose ek : R := (eps / 2 / (2 ^ k.+1)%:R)%R.
   have : mu \o E k @ \oo --> mu set0.
-    rewrite -(Ek0 k); apply: nonincreasing_cvg_mu => //.
+    rewrite -(Ek0 k); apply: nonincreasing_cvg_measure => //.
     - by rewrite (le_lt_trans _ finA)// le_measure// ?inE// => ? [? _ []].
     - exact: bigcap_measurable.
   rewrite measure0; case/fine_cvg/(_ (interior (ball 0%R ek))).
