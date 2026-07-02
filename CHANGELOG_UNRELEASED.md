@@ -256,6 +256,7 @@
   + module `MeasurableR`
   + module `RGenOpenSets`
     * lemma `measurableE`
+  + lemma `open_lebesgue_stieltjes_measure_unique`
 
 - in `real_interval.v`:
   + lemma `set1_bigcap_oo`
@@ -446,6 +447,9 @@
 
 - in `functions.v`
   + lemma `scalrfctE` -> `scalerfctE` (deprecating `scalrfctE`)
+
+- in `lebesgue_stieltjes_measure.v`:
+  + lemma `lebesgue_stieltjes_measure_unique` -> `ocitv_lebesgue_stieltjes_measure_unique`
 
 ### Generalized
 

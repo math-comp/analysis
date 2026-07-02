@@ -81,7 +81,6 @@ Lemma notin_range_measure d d' (T : measurableType d) (T' : measurableType d')
 Proof. by rewrite notin_setE => hr; rewrite preimage10. Qed.
 
 Section probability_range.
-
 Import MeasurableR.
 
 Lemma probability_range d d' (T : measurableType d) (T' : measurableType d')

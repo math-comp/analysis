@@ -235,6 +235,8 @@ under eq_Rintegral do rewrite XMonemX0n.
 by rewrite Rintegral_onemXn// prednK.
 Qed.
 
+Import MeasurableR.
+
 Lemma beta_fun00 : beta_fun 0 0 = 1%R.
 Proof.
 rewrite -[LHS]Rintegral_mkcond.
