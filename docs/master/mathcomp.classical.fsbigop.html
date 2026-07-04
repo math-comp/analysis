@@ -281,17 +281,18 @@
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#tt">tt</a></span>. Qed.</div></details>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="finite_support" class="id"><div name="finite_support" class=" tooltip">finite_support<span class='tooltip-area'><p>Internals.exists_nProp :
-forall [A : Type] [tP : bool] [nP : A -> Prop],
-(forall x : A, Internals.negatedProp tP (nP x)) ->
-Internals.properNegatedProp (forall x : A, nP x)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="finite_support" class="id"><div name="finite_support" class=" tooltip">finite_support<span class='tooltip-area'><p>Internals.imply_nProp :
+forall [b : bool] [P nQ PnQ : Prop] [tR : bool]
+  [nR : Internals.andRHS b P nQ PnQ],
+Internals.negatedProp tR (Internals.and_RHS nR) ->
+Internals.properNegatedProp PnQ
 
-Internals.exists_nProp is not universe polymorphic
-Arguments Internals.exists_nProp [A]%_type_scope [tP]%_bool_scope
-  [nP]%_function_scope P%_function_scope
-Internals.exists_nProp is transparent
-Expands to: Constant mathcomp.classical.contra.Internals.exists_nProp
-Declared in library mathcomp.classical.contra, line 362, characters 10-22
+Internals.imply_nProp is not universe polymorphic
+Arguments Internals.imply_nProp [b]%_bool_scope [P nQ PnQ]%_type_scope
+  [tR]%_bool_scope [nR] R
+Internals.imply_nProp is transparent
+Expands to: Constant mathcomp.classical.contra.Internals.imply_nProp
+Declared in library mathcomp.classical.contra, line 353, characters 10-21
 </p></span></div></span><span class="id"> {</span><span id="I:5" class="id"><a name="I:5" class="">I</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.choice.html#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span><span class="id"> {</span><span id="T:6" class="id"><a name="T:6" class="">T</a></span><span class="id"> :</span><span class="id"> Type}</span> (<span id="idx:7" class="id"><a name="idx:7" class="">idx</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#T:6">T</a></span>) (<span id="D:8" class="id"><a name="D:8" class="">D</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#I:5">I</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="F:9" class="id"><a name="F:9" class="">F</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#I:5">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.fsbigop.html#T:6">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.seq.html#seq">seq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#I:5">I</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#locked_with">locked_with</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#finite_index_key">finite_index_key</a></span> (<span class="id"><a href="mathcomp.classical.cardinality.html#fset_set">fset_set</a></span> (<span class="id"><a href="mathcomp.classical.fsbigop.html#D:8">D</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.classical.fsbigop.html#F:9">F</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3dde060273a7d21198e50a79e780aafd">[set~</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3dde060273a7d21198e50a79e780aafd"> </a></span><span class="id"><a href="mathcomp.classical.fsbigop.html#idx:7">idx</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3dde060273a7d21198e50a79e780aafd">]</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#I:5">I</a></span>)).<br/>
