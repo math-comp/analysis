@@ -337,29 +337,34 @@ End hlength_extension.
 
 End LebesgueMeasure.
 
-Definition lebesgue_measure {R : realType} : set R -> \bar R :=
-  lebesgue_stieltjes_measure idfun.
-Import MeasurableRopen.
-HB.instance Definition _ (R : realType) := Measure.on (@lebesgue_measure R).
-HB.instance Definition _ (R : realType) :=
-  SigmaFiniteMeasure.on (@lebesgue_measure R).
+Section lebesgue_measure.
+Context {R : realType}.
 
-Lemma lebesgue_measure_unique {R : realType}
-    (mu : {measure set (MeasurableRopen.measurableTypeR R) -> \bar R}) :
+Definition lebesgue_measure : set R -> \bar R :=
+  lebesgue_stieltjes_measure idfun.
+
+Import MeasurableR.
+
+HB.instance Definition _ := Measure.on lebesgue_measure.
+HB.instance Definition _ := SigmaFiniteMeasure.on lebesgue_measure.
+
+Lemma lebesgue_measure_unique
+    (mu : {measure set (measurableTypeR R) -> \bar R}) :
     (forall X, ocitv X -> lebesgue_measure X = mu X) ->
   forall A, measurable A -> lebesgue_measure A = mu A.
-Proof. exact: open_lebesgue_stieltjes_measure_unique. Qed.
+Proof. exact: lebesgue_stieltjes_measure_unique. Qed.
 
-Definition completed_lebesgue_measure {R : realType} : set _ -> \bar R :=
+Definition completed_lebesgue_measure : set _ -> \bar R :=
   completed_lebesgue_stieltjes_measure idfun.
-HB.instance Definition _ (R : realType) :=
-  Measure.on (@completed_lebesgue_measure R).
-HB.instance Definition _ (R : realType) :=
-  SigmaFiniteMeasure.on (@completed_lebesgue_measure R).
 
-Lemma completed_lebesgue_measure_is_complete {R : realType} :
-  measure_is_complete (@completed_lebesgue_measure R).
+HB.instance Definition _ := Measure.on completed_lebesgue_measure.
+HB.instance Definition _ := SigmaFiniteMeasure.on completed_lebesgue_measure.
+
+Lemma completed_lebesgue_measure_is_complete :
+  measure_is_complete completed_lebesgue_measure.
 Proof. exact: measure_is_complete_caratheodory. Qed.
+
+End lebesgue_measure.
 
 (* the completed sigma-algebra is the same as the caratheodory sigma-algebra *)
 Section completed_algebra_caratheodory.
@@ -369,6 +374,8 @@ Local Open Scope ereal_scope.
 Notation hlength := (@wlength R idfun).
 Notation mu := (@lebesgue_measure R).
 Notation completed_mu := (@completed_lebesgue_measure R).
+
+Import MeasurableR.
 
 Let cara_sub_calgebra : hlength^*%mu.-cara.-measurable `<=`
   (completed_algebra_gen mu).-sigma.-measurable.
@@ -539,18 +546,20 @@ Qed.
 End completed_algebra_caratheodory.
 
 Section elebesgue_measure.
-Variable R : realType.
+Context {R : realType}.
 
 Definition elebesgue_measure : set \bar R -> \bar R :=
   fun S => lebesgue_measure (fine @` (S `\` [set -oo; +oo]%E)).
 
-Lemma elebesgue_measure0 : elebesgue_measure set0 = 0%E.
+Let elebesgue_measure0 : elebesgue_measure set0 = 0%E.
 Proof. by rewrite /elebesgue_measure set0D image_set0 measure0. Qed.
 
-Lemma elebesgue_measure_ge0 X : (0 <= elebesgue_measure X)%E.
+Let elebesgue_measure_ge0 X : (0 <= elebesgue_measure X)%E.
 Proof. exact/measure_ge0. Qed.
 
-Lemma semi_sigma_additive_elebesgue_measure :
+Import MeasurableR.
+
+Let semi_sigma_additive_elebesgue_measure :
   semi_sigma_additive elebesgue_measure.
 Proof.
 move=> /= F mF tF mUF; rewrite /elebesgue_measure.
@@ -565,8 +574,9 @@ apply: (@measure_semi_sigma_additive _ _ _ (@lebesgue_measure R)
   move=> [X mX [X' mX']] XX'Fn.
   apply: measurable_image_fine.
   rewrite -XX'Fn.
- apply: measurableU; first by apply: measurable_image_EFin; 
-  rewrite RGenOpenSets.measurableE/= in mX.
+  apply: measurableU.
+    apply: measurable_image_EFin.
+    by rewrite RGenOpenSets.measurableE/= in mX.
   by case: mX' => //; exact: measurableU.
 - move=> i j _ _ [x [[a [Fia aoo ax] [b [Fjb boo] bx]]]].
   move: tF => /(_ i j Logic.I Logic.I); apply.
@@ -584,36 +594,36 @@ apply: (@measure_semi_sigma_additive _ _ _ (@lebesgue_measure R)
   + by rewrite not_orP => -[]/(_ erefl).
 - move: mUF.
   rewrite {1}/measurable /emeasurable /= => -[X mX [Y []]] {Y};
-  have moX : measurable X by rewrite -RGenOpenSets.measurableE.
-  - rewrite setU0 => h.
+    have moX : measurable X by rewrite -RGenOpenSets.measurableE.
+  + rewrite setU0 => h.
     rewrite [X in measurable X](_ : _ = X) // predeqE => r; split => [|Xr].
       move=> -[n _ [x [Fnx xoo <-{r}]]].
       have : (\bigcup_n F n) x by exists n.
       by rewrite -h => -[x' Xx' <-].
     have [n _ Fnr] : (\bigcup_n F n) r%:E by rewrite -h; exists r.
-    by exists n => //; exists r%:E => //; split => //; case.
-  - move=> h.
+    by exists n => //; exists r%:E => //; split => // -[].
+  + move=> h.
     rewrite [X in measurable X](_ : _ = X) // predeqE => r; split => [|Xr].
       move=> -[n _ [x [Fnx xoo <-]]].
       have : (\bigcup_n F n) x by exists n.
       by rewrite -h => -[[x' Xx' <-//]|xoo']; move/not_orP : xoo => -[].
     have [n _ Fnr] : (\bigcup_n F n) r%:E by rewrite -h; left; exists r.
-    by exists n => //; exists r%:E => //; split => //; case.
-  - (* NB: almost the same as the previous one, factorize?*)
+    by exists n => //; exists r%:E => //; split => // -[].
+  + (* NB: almost the same as the previous one, factorize?*)
     move=> h.
     rewrite [X in measurable X](_ : _ = X) // predeqE => r; split => [|Xr].
       move=> -[n _ [x [Fnx xoo <-]]].
       have : (\bigcup_n F n) x by exists n.
       by rewrite -h => -[[x' Xx' <-//]|xoo']; move/not_orP : xoo => -[].
     have [n _ Fnr] : (\bigcup_n F n) r%:E by rewrite -h; left; exists r.
-    by exists n => //; exists r%:E => //; split => //; case.
-  - move=> h.
+    by exists n => //; exists r%:E => //; split => // -[].
+  + move=> h.
     rewrite [X in measurable X](_ : _ = X) // predeqE => r; split => [|Xr].
       move=> -[n _ [x [Fnx xoo <-]]].
       have : (\bigcup_n F n) x by exists n.
       by rewrite -h => -[[x' Xx' <-//]|].
     have [n _ Fnr] : (\bigcup_n F n) r%:E by rewrite -h; left; exists r.
-    by exists n => //; exists r%:E => //; split => //; case.
+    by exists n => //; exists r%:E => //; split => // -[].
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ elebesgue_measure
@@ -666,6 +676,8 @@ suff : (lebesgue_measure (`]a - 1, a]%classic%R : set R) =
 rewrite -setU_itvob1; first by rewrite bnd_simp ltrBlDr ltrDl.
 by rewrite measureU// -setDidPl setDitv1r.
 Qed.
+
+Import MeasurableR.
 
 Lemma countable_lebesgue_measure0 (A : set R) :
   countable A -> lebesgue_measure A = 0.
@@ -809,6 +821,7 @@ End lebesgue_measure_itv.
 Section compact_finite_measure.
 Context (rT : realType).
 Let mu : measure _ _ := @lebesgue_measure rT.
+Import MeasurableR.
 Let R  : measurableType _ := measurableTypeR rT.
 
 Lemma compact_finite_measure (A : set R) : compact A -> (mu A < +oo)%E.
@@ -838,7 +851,7 @@ Section negligible_outer_measure.
 Context {R : realType}.
 Implicit Types (A : set R).
 Local Open Scope ereal_scope.
-
+Import MeasurableR.
 Let l := (@wlength R idfun).
 Let mu := (@lebesgue_measure R).
 
@@ -913,6 +926,7 @@ End negligible_outer_measure.
 Section lebesgue_regularity.
 Local Open Scope ereal_scope.
 Context {R : realType}.
+Import MeasurableR.
 Let mu : measure _ _ := @lebesgue_measure R.
 
 Lemma lebesgue_regularity_outer (D : set R) (eps : R) :
@@ -1104,6 +1118,7 @@ Definition vitali_cover {R : numFieldType} (E : set R) I
 Section vitali_theorem.
 Context {R : realType} (A : set R) (B : nat -> set R).
 Hypothesis B0 : forall i, (0 < (radius (B i))%:num)%R.
+Import MeasurableR.
 Notation mu := (@lebesgue_measure R).
 Local Open Scope ereal_scope.
 
@@ -1419,6 +1434,8 @@ Proof. by move=> i []. Qed.
 
 Let bigB0 (G : set nat) : bigB G 0%R = G.
 Proof. by apply/seteqP; split => [//|x Gx]; split => //=. Qed.
+
+Import MeasurableR.
 
 (* references:
    - https://angyansheng.github.io/notes/measure-theory-xvi

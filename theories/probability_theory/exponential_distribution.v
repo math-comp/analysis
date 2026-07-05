@@ -91,16 +91,16 @@ Unshelve. end_near. Qed.
 
 End exponential_pdf.
 
-Import MeasurableR.
-
-Definition exponential_prob {R : realType} (rate : R) :=
-  fun V => (\int[lebesgue_measure]_(x in V) (exponential_pdf rate x)%:E)%E.
-
 Section exponential_prob.
 Context {R : realType}.
 Local Open Scope ring_scope.
 Notation mu := lebesgue_measure.
 Variable rate : R.
+
+Import MeasurableR.
+
+Definition exponential_prob (rate : R) :=
+  fun V => (\int[lebesgue_measure]_(x in V) (exponential_pdf rate x)%:E)%E.
 
 Lemma derive1_exponential_pdf :
   {in `]0, +oo[%R, (fun x => - expR (- rate * x))^`()%classic

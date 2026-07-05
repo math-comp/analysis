@@ -72,8 +72,14 @@ From mathcomp Require Import realfun.
 (* ```                                                                        *)
 (*                  wlength f A := f b - f a with the hull of the set of real *)
 (*                                 numbers A being delimited by a and b       *)
+(* ocitv_lebesgue_stieltjes_measure f == Lebesgue-Stieltjes measure for f     *)
+(*                                       f is a cumulative function.          *)
+(*                                       The sigma algebra is generated from  *)
+(*                                       ocitv.                               *)
 (* lebesgue_stieltjes_measure f == Lebesgue-Stieltjes measure for f           *)
 (*                                 f is a cumulative function.                *)
+(*                                 The sigma algebra is generated from open   *)
+(*                                 sets.                                      *)
 (* completed_lebesgue_stieltjes_measure f == the completed Lebesgue-Stieltjes *)
 (*                                 measure                                    *)
 (* ```                                                                        *)
@@ -132,7 +138,7 @@ by rewrite opprB ltrBlDl; exact: ltW.
 Qed.
 
 Section id_is_cumulative.
-Variable R : realFieldType.
+Context {R : realFieldType}.
 
 Let id_nd : {homo @idfun R : x y / x <= y}.
 Proof. by []. Qed.
@@ -155,7 +161,7 @@ Arguments cumulativeNy {R l r} s.
 Arguments cumulativey {R l r} s.
 
 Section itv_semiRingOfSets.
-Variable R : realType.
+Context (R : realType).
 Implicit Types (I J K : set R).
 Definition ocitv_type : Type := R.
 
@@ -449,10 +455,8 @@ Lemma measurableE : (@ocitv R).-sigma.-measurable = open.-sigma.-measurable.
 Proof.
 rewrite eqEsubset; split; [rewrite RGenOpens.measurableE|];
   apply: sigma_algebra_subl=> U.
-- rewrite /RGenOpens.G/= => -[a [b ->]].
-  exact: sub_sigma_algebra.
-- move=> oU.
-  rewrite (open_disjoint_itv_bigcup oU).
+- by rewrite /RGenOpens.G/= => -[a [b ->]]; exact: sub_sigma_algebra.
+- move=> oU; rewrite (open_disjoint_itv_bigcup oU).
   apply: sigma_algebra_bigcup => k.
   have /is_intervalP -> := @open_disjoint_itv_is_interval _ U oU k.
   exact: measurable_itv.
@@ -542,9 +546,11 @@ Notation measurable_sfun_inP := measurable_funP1 (only parsing).
 Section ocitv_measure.
 Context {R : realType} (mu : measure (measurableTypeR R) R).
 
-Definition ocitv_measure : set (MeasurableRocitv.measurableTypeR R) -> \bar R := mu.
+Definition ocitv_measure : set (MeasurableRocitv.measurableTypeR R) -> \bar R :=
+  mu.
 
-Let measure0 : ocitv_measure set0 = 0. Proof. by rewrite /ocitv_measure measure0. Qed.
+Let measure0 : ocitv_measure set0 = 0.
+Proof. by rewrite /ocitv_measure measure0. Qed.
 
 Let measure_ge0 x : (0 <= ocitv_measure x)%E.
 Proof. by rewrite /ocitv_measure measure_ge0. Qed.
@@ -570,13 +576,11 @@ Module MeasurableR.
 Export MeasurableRopen.
 End MeasurableR.
 
-Import MeasurableR.
-
-(* NB: Lebesgue-Stieltjes measure actually starts here... *)
+(** The construction of the Lebesgue-Stieltjes measure actually starts here. *)
 
 Section wlength.
-Context {R : realType}.
-Variable (f : R -> R).
+Context {R : realType} (f : R -> R).
+Import MeasurableR.
 Local Open Scope ereal_scope.
 Implicit Types i j : interval R.
 
@@ -891,7 +895,8 @@ Qed.
 
 Definition ocitv_lebesgue_stieltjes_measure (f : cumulative R R) :=
   measure_extension (wlength f).
-HB.instance Definition _ (f : cumulative R R) := Measure.on (ocitv_lebesgue_stieltjes_measure f).
+HB.instance Definition _ (f : cumulative R R) :=
+  Measure.on (ocitv_lebesgue_stieltjes_measure f).
 
 Let ocitv_sigmaT_finite_lebesgue_stieltjes_measure (f : cumulative R R) :
   sigma_finite setT (ocitv_lebesgue_stieltjes_measure f).
@@ -909,17 +914,16 @@ Definition lebesgue_stieltjes_measure (f : cumulative R R) :
   measure_extension (wlength f).
 
 Let lsm0 (f : cumulative R R) : lebesgue_stieltjes_measure f set0 = 0.
-Proof. by[]. Qed.
+Proof. by []. Qed.
 
 Let lsm_ge0 (f : cumulative R R) x : (0 <= lebesgue_stieltjes_measure f x)%E.
-Proof. by[]. Qed.
+Proof. by []. Qed.
 
 Let lsm_semi_sigma_additive (f : cumulative R R) :
   semi_sigma_additive (lebesgue_stieltjes_measure f).
 Proof.
 by move=> /= F mF tF mbF; apply: measure_semi_sigma_additive=>//;
-rewrite RGenOpenSets.measurableE/=; [move=> i; apply: (mF i)|apply: mbF];
-split=>//; exact: sigma_algebra_measurable.
+  rewrite RGenOpenSets.measurableE//=.
 Qed.
 
 HB.instance Definition _ (f : cumulative R R) :=
@@ -941,10 +945,10 @@ End wlength_extension.
 Arguments lebesgue_stieltjes_measure {R}.
 
 Section lebesgue_stieltjes_measure_unique.
-Context {R : realType}.
+Context {R : realType} (f : cumulative R R).
+Import MeasurableR.
 
-Lemma ocitv_lebesgue_stieltjes_measure_unique
-    (f : cumulative R R)
+Let ocitv_lebesgue_stieltjes_measure_unique
     (mu : {measure set (MeasurableRocitv.measurableTypeR R) -> \bar R}) :
     (forall X, ocitv X -> lebesgue_stieltjes_measure f X = mu X) ->
   forall A : set R, measurable A -> lebesgue_stieltjes_measure f A = mu A.
@@ -956,17 +960,13 @@ by move=> X mX; rewrite -muE// -measurable_mu_extE.
 by rewrite RGenOpenSets.measurableE.
 Qed.
 
-Lemma open_lebesgue_stieltjes_measure_unique
-    (f : cumulative R R)
+Lemma lebesgue_stieltjes_measure_unique
     (mu : {measure set (MeasurableRopen.measurableTypeR R) -> \bar R}) :
     (forall X, ocitv X -> lebesgue_stieltjes_measure f X = mu X) ->
   forall A : set R, measurable A -> lebesgue_stieltjes_measure f A = mu A.
 Proof.
 move=> muE A mA; rewrite -ocitv_measure_ext.
-apply: measure_extension_unique => //=.
-- exact: wlength_sigma_finite.
-- by move=> X mX; rewrite -muE// -measurable_mu_extE.
-- by rewrite RGenOpenSets.measurableE.
+exact: ocitv_lebesgue_stieltjes_measure_unique.
 Qed.
 
 End lebesgue_stieltjes_measure_unique.
