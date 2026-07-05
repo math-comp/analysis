@@ -1144,6 +1144,14 @@ Arguments inf {R} E%_classical_set_scope
 inf is transparent
 Expands to: Constant mathcomp.reals.reals.inf
 Declared in library mathcomp.reals.reals, line 137, characters 11-14
+Rint_pred : forall {R : realFieldType}, R -> bool
+
+Rint_pred is not universe polymorphic
+Arguments Rint_pred {R} x%_ring_scope /
+The reduction tactics unfold Rint_pred when applied to 2 arguments
+Rint_pred is transparent
+Expands to: Constant mathcomp.reals.reals.Rint_pred
+Declared in library mathcomp.reals.reals, line 152, characters 11-20
 </p></span></div></span><span class="id"> </span><span id="n:206" class="id"><a name="n:206" class="">n</a></span> (<span id="f:207" class="id"><a name="f:207" class="">f</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.finfun.html#31493a873acc18a8368490ef56022c0c">{ffun</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.finfun.html#31493a873acc18a8368490ef56022c0c"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.fintype.html#:::'''I_'_x">'I_</a></span><span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#n:206">n</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.ssrnat.html#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#ssreal_struct_contd.bigmaxr.R">R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.finfun.html#31493a873acc18a8368490ef56022c0c">}</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#bigmaxr">bigmaxr</a></span> (<span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#f:207">f</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.fintype.html#ord0">ord0</a></span>) (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.fintype.html#codom">codom</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#f:207">f</a></span>).<br/>
 <br/>
@@ -1179,14 +1187,13 @@ Qed.</div></details>
 <br/>
 <span class="id">#[deprecated</span>(<span class="id">note=</span><span class="id">&quot;To be removed. Use order.v's bigmax/min lemmas instead.&quot;</span>)<span class="id">]</span><br/>
 <span class="id">#[warning=</span><span class="id">&quot;-deprecated&quot;</span><span class="id">]</span><br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="index_bmaxrf" class="id"><div name="index_bmaxrf" class=" tooltip">index_bmaxrf<span class='tooltip-area'><p>Rint_pred : forall {R : realFieldType}, R -> bool
+<span class="vernacular">Definition</span><span class="id"> </span><span id="index_bmaxrf" class="id"><div name="index_bmaxrf" class=" tooltip">index_bmaxrf<span class='tooltip-area'><p>Rint : forall {R : realFieldType}, qualifier 1 R
 
-Rint_pred is not universe polymorphic
-Arguments Rint_pred {R} x%_ring_scope /
-The reduction tactics unfold Rint_pred when applied to 2 arguments
-Rint_pred is transparent
-Expands to: Constant mathcomp.reals.reals.Rint_pred
-Declared in library mathcomp.reals.reals, line 152, characters 11-20
+Rint is not universe polymorphic
+Arguments Rint {R}
+Rint is transparent
+Expands to: Constant mathcomp.reals.reals.Rint
+Declared in library mathcomp.reals.reals, line 154, characters 11-15
 </p></span></div></span><span class="id"> </span><span id="n:214" class="id"><a name="n:214" class="">n</a></span><span class="id"> </span><span id="f:215" class="id"><a name="f:215" class="">f</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.fintype.html#Ordinal">Ordinal</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#bmaxrf_index">bmaxrf_index</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#n:214">n</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#f:215">f</a></span>).<br/>
 <br/>
 <span class="id">#[deprecated</span>(<span class="id">note=</span><span class="id">&quot;To be removed. Use order.v's bigmax/min lemmas instead.&quot;</span>)<span class="id">]</span><br/>
