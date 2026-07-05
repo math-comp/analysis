@@ -37,26 +37,27 @@ Local Open Scope ring_scope.
 
 Section binomial_pmf.
 Local Open Scope ring_scope.
-Context {R : realType} (n : nat) (p : R).
+Context {R : realType}.
 
-Definition binomial_pmf k := p ^+ k * p.~ ^+ (n - k) *+ 'C(n, k).
+Definition binomial_pmf n (p : R) k :=
+  p ^+ k * p.~ ^+ (n - k) *+ 'C(n, k).
 
-Lemma binomial_pmf_ge0 k : 0 <= p <= 1 -> 0 <= binomial_pmf k.
+Lemma binomial_pmf_ge0 n (p : R) k : 0 <= p <= 1 -> 0 <= binomial_pmf n p k.
 Proof.
 by move=> /andP[p0 p1]; rewrite mulrn_wge0// mulr_ge0 ?exprn_ge0// onem_ge0.
 Qed.
 
-End binomial_pmf.
-
 Import MeasurableR.
 
-Lemma measurable_binomial_pmf {R : realType} D n k :
-  measurable_fun D (@binomial_pmf R n ^~ k).
+Lemma measurable_binomial_pmf D n k :
+  measurable_fun D (binomial_pmf n ^~ k).
 Proof.
 apply: (@measurableT_comp _ _ _ _ _ _ (fun x : R => x *+ 'C(n, k))%R) => /=.
   exact: natmul_measurable.
 by apply: measurable_funM => //; apply: measurable_funX; exact: measurable_funB.
 Qed.
+
+End binomial_pmf.
 
 Definition binomial_prob {R : realType} (n : nat) (p : R) : set nat -> \bar R :=
   fun U => if 0 <= p <= 1 then
@@ -184,7 +185,12 @@ transitivity (\sum_(i < n.+1) (p.~ ^+ (n - i) * p ^+ i *+ 'C(n, i))%:E -
 by rewrite sumEFin -(@exprDn _ p.~ p n)// subrK expr1n.
 Qed.
 
-Lemma measurable_binomial_prob (R : realType) (n : nat) :
+Section measurable_binomial_prob.
+Context {R : realType}.
+
+Import MeasurableR.
+
+Lemma measurable_binomial_prob n :
   measurable_fun setT (binomial_prob n : R -> pprobability _ _).
 Proof.
 apply: (measurability (@pset _ _ _ : set_system (pprobability _ R))) => //.
@@ -200,3 +206,5 @@ apply: ge0_emeasurable_sum.
   by move=> k x/= [_ x01] _; rewrite lee_fin binomial_pmf_ge0.
 by move=> k Ysk; apply/measurableT_comp => //; exact: measurable_binomial_pmf.
 Qed.
+
+End measurable_binomial_prob.
