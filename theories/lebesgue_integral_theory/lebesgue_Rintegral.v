@@ -106,7 +106,7 @@ Lemma Rintegral_ge0 D f : (forall x, D x -> 0 <= f x) ->
   0 <= \int[mu]_(x in D) f x.
 Proof. by move=> f0; rewrite fine_ge0// integral_ge0. Qed.
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Lemma le_normr_Rintegral D f : measurable D -> mu.-integrable D (EFin \o f) ->
   `|\int[mu]_(t in D) f t| <= \int[mu]_(t in D) `|f t|.
@@ -199,7 +199,7 @@ Context {R : realType}.
 Notation mu := (@lebesgue_measure R).
 Implicit Type f : R -> R.
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Lemma Rintegral_itvbo_itvbc (a : itv_bound R) (r : R) f :
   mu.-integrable [set` Interval a (BLeft r)] (EFin \o f) ->

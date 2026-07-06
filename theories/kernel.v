@@ -655,11 +655,11 @@ Qed.
 End measurable_fun_xsection_finite_kernel.
 
 Section measurable_fun_integral_finite_sfinite.
-Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
-Variable k : X * Y -> \bar R.
+Context {d d'} {X : measurableType d} {Y : measurableType d'} {R : realType}
+  (k : X * Y -> \bar R).
 
 Import HBNNSimple.
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Lemma measurable_fun_xsection_integral
     (l : X -> {measure set Y -> \bar R})
@@ -756,15 +756,15 @@ Arguments measurable_fun_integral_finite_kernel {_ _ _ _ _} k l.
 Arguments measurable_fun_integral_sfinite_kernel {_ _ _ _ _} k l.
 
 Section kdirac.
-Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
-Variable f : X -> Y.
+Context {d d'} {X : measurableType d} {Y : measurableType d'} {R : realType}
+ (f : X -> Y).
 
 Definition kdirac (mf : measurable_fun [set: X] f) (x : X) :
   {measure set Y -> \bar R} := dirac (f x).
 
 Hypothesis mf : measurable_fun [set: X] f.
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Let measurable_fun_kdirac U : measurable U ->
   measurable_fun [set: X] (kdirac mf ^~ U).
@@ -882,13 +882,13 @@ HB.instance Definition _ t :=
 End fkadd.
 
 Section knormalize.
-Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
-Variable f : R.-ker X ~> Y.
+Context {d d'} {X : measurableType d} {Y : measurableType d'} {R : realType}
+ (f : R.-ker X ~> Y).
 
 Definition knormalize (P : probability Y R) : X -> {measure set Y -> \bar R} :=
   fun x => mnormalize (f x) P.
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Let measurable_knormalize (P : probability Y R) U :
   measurable U -> measurable_fun [set: X] (knormalize P ^~ U).
@@ -931,7 +931,7 @@ HB.instance Definition _ (P : probability Y R):=
 
 End knormalize.
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Lemma measurable_fun_mnormalize d d' (X : measurableType d)
     (Y : pmeasurableType d') (R : realType) (k : R.-ker X ~> Y) :

@@ -96,12 +96,12 @@ End giry_def.
 Arguments giry_ev {d T R} mu A.
 
 Section giry_integral.
-Context d (T : measurableType d) (R : realType).
+Context {d} {T : measurableType d} {R : realType}.
 
 Definition giry_int (mu : giry T R) (f : T -> \bar R) := \int[mu]_x f x.
 
 Import HBNNSimple.
-Import OcitvMeasurable.
+Import MeasurableR.
 
 (**md The idea is to reconstruct f from simple functions, then use measurability
   of giry_ev. Reference: Tom Avery. Codensity and the Giry monad.
@@ -288,7 +288,7 @@ by apply: measurable_giry_int => //; exact: measurable_giry_ev.
 Qed.
 
 Import HBNNSimple.
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Lemma sintegral_giry_join (M : giry (giry T R) R) (h : {nnsfun T >-> R}) :
   sintegral (giry_join M) h = \int[M]_mu sintegral mu h.
@@ -453,8 +453,7 @@ End measurable_giry_prod.
 
 Section giry_prod_int.
 Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
-  {R : realType}.
-Variables (m1 : giry T1 R) (m2 : giry T2 R) (h : T1 * T2 -> \bar R).
+  {R : realType} (m1 : giry T1 R) (m2 : giry T2 R) (h : T1 * T2 -> \bar R).
 Hypotheses (mh : measurable_fun [set: T1 * T2] h) (h0 : forall x, 0 <= h x).
 
 Lemma giry_int_prod1 : giry_int (giry_prod (m1, m2)) h =

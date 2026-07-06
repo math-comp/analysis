@@ -249,14 +249,14 @@ Qed.
 End dominated_convergence_theorem.
 
 Section simple_density_L1.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (E : set T) (mE : measurable E).
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (E : set T) (mE : measurable E).
 
 Local Open Scope ereal_scope.
 
 Import HBSimple.
 Import HBNNSimple.
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Let sfun_dense_L1_pos (f : T -> \bar R) :
   mu.-integrable E f -> (forall x, E x -> 0 <= f x) ->

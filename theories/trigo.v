@@ -1127,7 +1127,7 @@ End oneDsqr.
 Hint Extern 0 (is_true (1 <= oneDsqr _)) => solve [apply: oneDsqr_ge1] : core.
 
 Section Atan.
-Variable R : realType.
+Context {R : realType}.
 Implicit Type x : R.
 
 (* Did not see how to use ITV like in the other *)
@@ -1290,7 +1290,7 @@ rewrite /Rintegral (@continuous_FTC2 _ _ atan)//.
 - by rewrite atan0 sube0.
 Qed.
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Lemma integral0y_oneDsqr :
   (\int[mu]_(x in `[0%R, +oo[) (oneDsqr x)^-1%:E = (pi / 2)%:E)%E.

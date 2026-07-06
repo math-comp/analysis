@@ -55,9 +55,9 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section continuous_compact_integrable.
-Context (rT : realType).
+Context {rT : realType}.
 Let mu : measure _ _ := @lebesgue_measure rT.
-Import OcitvMeasurable.
+Import MeasurableR.
 Let R  : measurableType _ := measurableTypeR rT.
 Local Open Scope ereal_scope.
 
@@ -77,7 +77,7 @@ End continuous_compact_integrable.
 Section continuous_density_L1.
 Context (rT : realType).
 Let mu : measure _ _ := @lebesgue_measure rT.
-Import OcitvMeasurable.
+Import MeasurableR.
 Let R  : measurableType _ := measurableTypeR rT.
 Local Open Scope ereal_scope.
 
@@ -177,9 +177,9 @@ Qed.
 End continuous_density_L1.
 
 Section lebesgue_differentiation_continuous.
-Context (rT : realType).
+Context {rT : realType}.
 Let mu : measure _ _ := @lebesgue_measure rT.
-Import OcitvMeasurable.
+Import MeasurableR.
 Let R  : measurableType _ := measurableTypeR rT.
 
 Let ballE (x : R) (r : {posnum rT}) :
@@ -215,7 +215,7 @@ have cptxr : compact `[x - r, x + r] := @segment_compact _ _ _.
 rewrite distrC subr0.
 have -> : \int[mu]_(z in ball x r) f z = \int[mu]_(z in `[x - r, x + r]) f z.
   rewrite ball_itv2 //; congr (fine _); rewrite -negligible_integral //.
-  - by apply/measurableU; exact: measurable_set1.
+  - exact/measurableU.
   - exact: (integrableS mA).
   - by rewrite measureU0//; exact: lebesgue_measure_set1.
 have r20 : 0 <= (r *+ 2)^-1 by rewrite invr_ge0 mulrn_wge0.
@@ -263,7 +263,7 @@ Local Open Scope ereal_scope.
 
 Local Notation mu := lebesgue_measure.
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Definition locally_integrable D f := [/\ measurable_fun D f, open D &
   forall K, K `<=` D -> compact K -> \int[mu]_(x in K) `|f x|%:E < +oo].
@@ -370,7 +370,7 @@ Local Open Scope ereal_scope.
 
 Local Notation mu := lebesgue_measure.
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Definition iavg f A := (mu A)^-1 * \int[mu]_(y in A) `| (f y)%:E |.
 
@@ -426,7 +426,7 @@ Definition HL_maximal f (x : R) : \bar R :=
 
 Local Notation HL := HL_maximal.
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Lemma HL_maximal_ge0 f D : locally_integrable D f ->
   forall x, 0 <= HL (f \_ D) x.
@@ -620,7 +620,7 @@ Proof. by move=> r0; rewrite /davg/= (ball0 _ _).2//= iavg0. Qed.
 
 Lemma davg_ge0 f x (r : R) : 0 <= davg f x r. Proof. exact: iavg_ge0. Qed.
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Lemma davgD f g (x r : R) :
   measurable_fun (ball x r) f -> measurable_fun (ball x r) g ->
@@ -745,7 +745,7 @@ Local Notation "f ^*" := (lim_sup_davg f).
 Lemma lim_sup_davg_ge0 f x : 0 <= f^* x.
 Proof. by apply: limf_esup_ge0 => // => y; exact: iavg_ge0. Qed.
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Lemma lim_sup_davg_le f g x (U : set R) : open_nbhs x U -> measurable U ->
   measurable_fun U f -> measurable_fun U g ->
@@ -849,7 +849,7 @@ End lim_sup_davg.
 Definition lebesgue_pt {R : realType} (f : R -> R) (x : R) :=
   davg f x r @[r --> (0%R:R)^'+] --> 0%E.
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Lemma continuous_lebesgue_pt {R : realType} (f : R -> R) x (U : set R) :
   open_nbhs x U -> measurable U -> measurable_fun U f ->

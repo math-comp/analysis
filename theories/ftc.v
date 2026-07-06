@@ -68,7 +68,7 @@ Notation mu := (@lebesgue_measure R).
 Local Open Scope ereal_scope.
 Implicit Types (f : R -> R) (a : itv_bound R).
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Let FTC0 f a : mu.-integrable setT (EFin \o f) ->
   let F x := (\int[mu]_(t in [set` Interval a (BRight x)]) f t)%R in
@@ -330,7 +330,7 @@ End FTC.
 #[deprecated(since="mathcomp-analysis 1.17.0", note="renamed to `integrable_locally_restrict`")]
 Notation integrable_locally := integrable_locally_restrict (only parsing).
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Definition parameterized_integral {R : realType}
     (mu : {measure set (measurableTypeR R) -> \bar R})
@@ -528,7 +528,7 @@ rewrite mem_set ?mulr1 /=; first exact: subset_itv_oo_cc.
 exact: cvg_patch.
 Qed.
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Corollary continuous_FTC2 f F a b : (a < b)%R ->
   {within `[a, b], continuous f} ->
@@ -778,7 +778,7 @@ Notation mu := lebesgue_measure.
 Local Open Scope ereal_scope.
 Implicit Types (F G f g : R -> R) (a b : R).
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Lemma integration_by_parts F G f g a b : (a < b)%R ->
     {within `[a, b], continuous f} ->
@@ -832,7 +832,7 @@ Context {R : realType}.
 Notation mu := lebesgue_measure.
 Implicit Types (F G f g : R -> R) (a b : R).
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Lemma Rintegration_by_parts F G f g a b :
     (a < b)%R ->
@@ -1040,7 +1040,7 @@ Context {R : realType}.
 Notation mu := lebesgue_measure.
 Implicit Types (F G f : R -> R) (a b : R).
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Lemma integration_by_substitution_decreasing F G a b : (a <= b)%R ->
   {in `[a, b] &, {homo F : x y /~ (x < y)%R}} ->
@@ -1369,7 +1369,7 @@ transitivity (limn (fun n =>
   rewrite -integral_bigsetU_EFin/=.
   - by move=> k; apply: measurableD => //; exact: bigsetU_measurable.
   - exact: iota_uniq.
-  - exact: (@sub_trivIset _ _ _ [set: nat]).
+  - exact: (@sub_trivIset _ _ _ setT).
   - apply/measurable_EFinP.
     apply: (measurable_funS (measurable_itv `]a, (a + n.+1%:R)%R[)).
       rewrite big_mkord -bigsetU_seqDU.
@@ -1792,7 +1792,7 @@ Section ge0_integration_by_substitution_shift.
 Context {R : realType}.
 Notation mu := (@lebesgue_measure R).
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Lemma ge0_integration_by_substitution_shift_itvy (f : R -> R) (r e : R) :
   {within `[r + e, +oo[, continuous f} ->
@@ -1841,7 +1841,7 @@ Context {R : realType}.
 Let mu := (@lebesgue_measure R).
 Local Open Scope ereal_scope.
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Lemma integration_by_substitution_onem (G : R -> R) (r : R) :
   (0 <= r <= 1)%R ->
@@ -1884,7 +1884,7 @@ Context {R : realType}.
 Let mu := @lebesgue_measure R.
 Local Open Scope ereal_scope.
 
-Import OcitvMeasurable.
+Import MeasurableR.
 
 Lemma ge0_symfun_integralT (f : R -> R) : (forall x, 0 <= f x)%R ->
   continuous f -> f =1 f \o -%R ->
@@ -1894,10 +1894,10 @@ move=> f0 cf evenf.
 have mf : measurable_fun [set: R] f by exact: continuous_measurable_fun.
 have mposnums : measurable [set x : R | 0 <= x]%R by rewrite -set_itvcy.
 rewrite -(setUv [set x : R | 0 <= x]%R) ge0_integral_setU//=.
-  exact: measurableC.
-  by apply/measurable_EFinP; rewrite setUv.
-  by move=> x _; rewrite lee_fin.
-  exact/disj_setPCl.
+- exact: measurableC.
+- by apply/measurable_EFinP; rewrite setUv.
+- by move=> x _; rewrite lee_fin.
+- exact/disj_setPCl.
 rewrite mule_natl mule2n; congr +%E.
 rewrite -set_itvcy// setCitvr.
 rewrite integral_itvbo_itvbc; first exact/measurable_EFinP/measurable_funTS.
