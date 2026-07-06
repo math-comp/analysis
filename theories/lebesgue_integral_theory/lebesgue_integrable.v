@@ -283,6 +283,8 @@ case: fi => mf; apply: le_lt_trans; apply: ge0_le_integral => //.
 - by move=> x Dx; rewrite -/((abse \o f) x) -funeposDneg leeDl.
 Qed.
 
+Import MeasurableR.
+
 Lemma integrableMr (h : T -> R) g :
   measurable_fun D h -> [bounded h x | x in D] ->
   mu_int g -> mu_int ((EFin \o h) \* g).
@@ -346,9 +348,11 @@ End integrable_theory.
 Arguments eq_integrable {d T R mu D} mD f.
 
 Section Rintegrable.
-Context d {T : measurableType d} {R : realType}.
-Variable mu : {measure set T -> \bar R}.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}).
 Implicit Types (D A B : set T) (f : T -> R).
+
+Import MeasurableR.
 
 Lemma integrable_norm D f : mu.-integrable D (EFin \o f) ->
   mu.-integrable D (EFin \o (normr \o f)).
@@ -379,6 +383,8 @@ Lemma integrable_funrneg A f : measurable A ->
 Proof. by move/integrable_funeneg => /[apply]; rewrite funerneg. Qed.
 
 End Rintegrable.
+
+Import MeasurableR.
 
 Lemma integrable_indic_itv {R : realType} (a b : R) (b0 b1 : bool) :
   let mu := lebesgue_measure in
@@ -1068,7 +1074,7 @@ have nd_E : {homo E : n0 m / (n0 <= m)%N >-> (n0 <= m)%O}.
 rewrite set_lte_bigcup.
 have /cvg_lim h1 : (mu \o E) x @[x --> \oo]--> 0.
   by apply: cvg_near_cst; exact: nearW.
-have := @nondecreasing_cvg_mu _ _ _ mu E mE (bigcupT_measurable E mE) nd_E.
+have := @nondecreasing_cvg_measure _ _ _ mu E mE (bigcupT_measurable E mE) nd_E.
 by move/cvg_lim => h2; rewrite setI_bigcupr -h2// h1.
 Qed.
 

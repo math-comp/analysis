@@ -69,7 +69,7 @@ Proof.
 move=> F ndF; rewrite /B /= => BF; split.
   by apply: bigcupT_measurable => n; have [] := BF n.
 have phiF x : phi (F i) x @[i \oo] --> phi (\bigcup_i F i) x.
-  rewrite /phi /= xsection_bigcup; apply: nondecreasing_cvg_mu.
+  rewrite /phi /= xsection_bigcup; apply: nondecreasing_cvg_measure.
   - by move=> n; apply: measurable_xsection; case: (BF n).
   - by apply: bigcupT_measurable => i; apply: measurable_xsection; case: (BF i).
   - by move=> m n mn; exact/subsetPset/le_xsection/subsetPset/ndF.
@@ -89,7 +89,7 @@ Proof.
 move=> F ndF; rewrite /B /= => BF; split.
   by apply: bigcupT_measurable => n; have [] := BF n.
 have psiF x : psi (F i) x @[i \oo] --> psi (\bigcup_i F i) x.
-  rewrite /psi /= ysection_bigcup; apply: nondecreasing_cvg_mu.
+  rewrite /psi /= ysection_bigcup; apply: nondecreasing_cvg_measure.
   - by move=> n; apply: measurable_ysection; case: (BF n).
   - by apply: bigcupT_measurable => i; apply: measurable_ysection; case: (BF i).
   - by move=> m n mn; exact/subsetPset/le_ysection/subsetPset/ndF.
@@ -293,10 +293,11 @@ End product_measure1.
 
 Section product_measure1E.
 Local Open Scope ereal_scope.
-Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variable m1 : {measure set T1 -> \bar R}.
-Variable m2 : {sigma_finite_measure set T2 -> \bar R}.
+Context {d1 d2} {T1 : measurableType d1} {T2 : measurableType d2} {R : realType}
+  (m1 : {measure set T1 -> \bar R}) (m2 : {sigma_finite_measure set T2 -> \bar R}).
 Implicit Types A : set (T1 * T2).
+
+Import MeasurableR.
 
 Lemma product_measure1E (A1 : set T1) (A2 : set T2) :
   measurable A1 -> measurable A2 -> (m1 \x m2) (A1 `*` A2) = m1 A1 * m2 A2.
@@ -448,9 +449,11 @@ End product_measure2.
 
 Section product_measure2E.
 Local Open Scope ereal_scope.
-Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variable m1 : {sigma_finite_measure set T1 -> \bar R}.
-Variable m2 : {measure set T2 -> \bar R}.
+Context {d1 d2} {T1 : measurableType d1} {T2 : measurableType d2} {R : realType}
+  (m1 : {sigma_finite_measure set T1 -> \bar R})
+  (m2 : {measure set T2 -> \bar R}).
+
+Import MeasurableR.
 
 Lemma product_measure2E (A1 : set T1) (A2 : set T2)
     (mA1 : measurable A1) (mA2 : measurable A2) :
@@ -567,9 +570,10 @@ Qed.
 End indic_fubini_tonelli.
 
 Section sfun_fubini_tonelli.
-Variable f : {nnsfun T1 * T2 >-> R}.
+Context (f : {nnsfun T1 * T2 >-> R}).
 
 Import HBNNSimple.
+Import MeasurableR.
 
 Let F := fubini_F m2 (EFin \o f).
 Let G := fubini_G m1 (EFin \o f).
@@ -684,7 +688,7 @@ Qed.
 End sfun_fubini_tonelli.
 
 Section fubini_tonelli.
-Variable f : T1 * T2 -> \bar R.
+Context (f : T1 * T2 -> \bar R).
 Hypothesis mf : measurable_fun setT f.
 Hypothesis f0 : forall x, 0 <= f x.
 Let T : measurableType _ := (T1 * T2)%type.
@@ -693,6 +697,7 @@ Let F := fubini_F m2 f.
 Let G := fubini_G m1 f.
 
 Import HBNNSimple.
+Import MeasurableR.
 
 Let F_ (g : {nnsfun T >-> R}^nat) n x := \int[m2]_y (g n (x, y))%:E.
 Let G_ (g : {nnsfun T >-> R}^nat) n y := \int[m1]_x (g n (x, y))%:E.
