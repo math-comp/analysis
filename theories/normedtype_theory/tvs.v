@@ -97,38 +97,16 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-
-
-Module DDist.
-Section dDist.
-Context (R: numDomainType) (n : nat).
-
-Record d :=  {
-   t :> n.-tuple R ;
-   le1 : \sum_(a <- t) `|a| <= 1}.
-
-End dDist.
-End DDist.
-Coercion DDist.t : DDist.d >-> tuple_of.
-
-
-Reserved Notation "{ 'ddist' n }" (at level 0, format "{ 'ddist'  n }").
-Reserved Notation "R '.-ddist' n" (at level 2, format "R '.-ddist'  n").
-
-Notation "R '.-ddist' n" := (DDist.d R n%type).
-Notation "{ 'ddist' n }" := (_.-ddist n).
-
-
 Section absolutely_convex.
 Context (K : numDomainType) (V : lmodType K).
 
-Definition balanced_set (A : set V) := forall r, `|r| <= 1 ->  (fun x => r *: x) @`A `<=` A.
+Definition balanced_set (A : set V) := forall r, `|r| <= 1 -> (fun x => r *: x) @`A `<=` A.
 
-Definition absolutely_convex_set  (A : set V) := convex_set A /\ balanced_set A.
+Definition absolutely_convex_set (A : set V) := convex_set A /\ balanced_set A.
 
-Definition absorbing_set (A : set V) := forall x : V, exists a, exists2 r, a \in A & x = r *:a.
+Definition absorbing_set (A : set V) := forall x : V, exists a, exists2 r, a \in A & x = r *: a.
 
-Definition pabsorbing_set (A : set V) := forall x : V, exists2 r, 0 < r & r*: x \in A.
+Definition pabsorbing_set (A : set V) := forall x : V, exists2 r, 0 < r & r *: x \in A.
 
 Definition absolutely_convex_hull  (A : set V) := smallest absolutely_convex_set A.
 
@@ -161,7 +139,7 @@ apply: (Hconv A HA r r1) => //.
 by exists t; first by apply: Ht.
 Qed.
 
-Lemma absolutely_convex_hull_set  (A : set V) : absolutely_convex_set (absolutely_convex_hull A).
+Lemma absolutely_convex_hull_set (A : set V) : absolutely_convex_set (absolutely_convex_hull A).
 Proof.
 apply: bigcap_closed_smallest => H Habs.
 split.
@@ -169,17 +147,10 @@ split.
 - by apply: bigcap_balanced; apply: (subset_trans Habs); apply: subIsetr.
 Qed.
 
-Lemma absolutely_convex_hullE  (A : set V):
-  absolutely_convex_hull A = [set a | exists n  (t: {ddist n}) (l : n.-tuple V),
-                             [set` l] `<=` A  /\  a = \sum_(i < n) t`_i *: l`_i].
-Abort.
+Lemma absolutely_convex_hull_subset (A : set V) : A `<=` absolutely_convex_hull A.
+Proof. exact: sub_gen_smallest. Qed.
 
-Lemma absolutely_convex_hull_subset  (A : set V): A `<=` absolutely_convex_hull A.
-Proof.
-by exact: sub_gen_smallest.
-Qed.
-
-Lemma absolutely_convex0 (B : set V) :  B !=set0 -> absolutely_convex_set B  ->  B 0.
+Lemma absolutely_convex0 (B : set V) : B !=set0 -> absolutely_convex_set B -> B 0.
 Proof.
 move => [] x Bx []  _ /(_ 0); rewrite normr0 ler01 // => /(_ isT) /(_ 0); apply.
 by exists x; rewrite //= scale0r.
@@ -1945,7 +1916,7 @@ Definition seminorm_of :=
 
 #[local] Lemma seminorm_ofneq0 : seminorm_of !=set0.
 Proof.
-have [_ /(_ [set: E] filterT)] := basis_opennbhsbasis; move=> [/= b Bb _].
+have [_ /(_ [set: E] filterT)] := basis_opennbhsbasis E; move=> [/= b Bb _].
 exists (gauge_fun_basis Bb).
 by exists b; exists Bb.
 Qed.
@@ -2005,13 +1976,13 @@ split=> x a.
   move=> [/=b [?]] [I /= Ig] /= <- <- /filterS; apply.
   apply/addx_nbhs.
   apply: filter_bigI => /= i /Ig /set_mem /= => -[? [b' [nb']]] -> [/= r r0 ->].
-  have [/(_ b' nb') nbhsB _] := basis_opennbhsbasis.
+  have [/(_ b' nb') nbhsB _] := basis_opennbhsbasis E.
   set p := (X in nbhs 0 (X @^-1` ball 0 r)).
   have -> : (p @^-1` ball (0 : R) r) = (fun y : E =>  r^-1 *: y) @^-1` b'.
     by apply: ball_gauge_fun => //; exact: (open_absconvex_opennbhsbasis nb').1.
   by apply: scalexr_continuous; rewrite scaler0.
 move => /nbhsE0 /=  [ax] /= [b n0b ba].
-have [_  /(_ b n0b) /= [b'/=]] := basis_opennbhsbasis.
+have [_  /(_ b n0b) /= [b'/=]] := basis_opennbhsbasis E.
 move=> Bb' bb'.
 pose p:= gauge_fun  (open_absconvex_opennbhsbasis Bb').2 (absorbing_opennbhsbasis Bb').
 have  /open_absconvex_opennbhsbasis [ob' absconvb'] := Bb'.
@@ -2055,7 +2026,7 @@ We simplify these arguments using the linearity of l to get rid of the absolute 
 Lemma linear_continuous_seminorm (l : {scalar E}): (* TODO : be more explicit in the statement *)
 continuous l -> (exists2 p : SemiNorm.type E, (seminorm_of p /\ continuous p) & (forall x, l x <= p x)).
 Proof.
-have [Bnbhs Bbasis] := basis_opennbhsbasis.
+have [Bnbhs Bbasis] := basis_opennbhsbasis E.
 move => /[dup] cl /(_ 0 (ball (0 : R) 1)); rewrite linear0.
 move  => /(_ (nbhsx_ballx (0 : R) 1 ltr01 )).
 have lem : 2^-1 !=0 :>R by [].

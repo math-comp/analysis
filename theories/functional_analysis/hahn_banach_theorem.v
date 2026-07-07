@@ -443,6 +443,8 @@ pose g' : {linear_continuous V -> R | *%R} := HB.pack (g : V -> R) lcg.
 by exists g'.
 Qed.
 
+End hahn_banach_extension_ctvs.
+
 Section hahn_banach_separation_ctvs.
 (* TODO *)
 End hahn_banach_separation_ctvs.
