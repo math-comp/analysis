@@ -349,7 +349,7 @@ HB.instance Definition _ := Measure.on lebesgue_measure.
 HB.instance Definition _ := SigmaFiniteMeasure.on lebesgue_measure.
 
 Lemma lebesgue_measure_unique
-    (mu : {measure set (measurableTypeR R) -> \bar R}) :
+    (mu : {measure set R -> \bar R}) :
     (forall X, ocitv X -> lebesgue_measure X = mu X) ->
   forall A, measurable A -> lebesgue_measure A = mu A.
 Proof. exact: lebesgue_stieltjes_measure_unique. Qed.
@@ -415,7 +415,7 @@ have mF_ m : mu (F_ m) < completed_mu E + m.+1%:R^-1%:E.
   apply: lee_nneseries => // n _.
   by rewrite -((measurable_mu_extE hlength) (A m n))//; have [/(_ n)] := mA m.
 pose F := \bigcap_n (F_ n).
-have FM : @measurable _ (measurableTypeR R) F.
+have FM : @measurable _ R F.
   apply: bigcapT_measurable => k; apply: bigcupT_measurable => i.
   have [/(_ i)] := mA k; rewrite -RGenOpenSets.measurableE=> maki _;
     exact: sub_sigma_algebra.
@@ -451,7 +451,7 @@ have mG_ m : mu (G_ m) < completed_mu (F `\` E) + m.+1%:R^-1%:E.
   apply: lee_nneseries => // n _.
   by rewrite -((measurable_mu_extE hlength) (B m n))//; have [/(_ n)] := mB m.
 pose G := \bigcap_n (G_ n).
-have GM : @measurable _ (measurableTypeR R) G.
+have GM : @measurable _ R G.
   apply: bigcapT_measurable => k; apply: bigcupT_measurable => i.
   have [/(_ i)] := mB k; rewrite -RGenOpenSets.measurableE=> mbki _;
     exact: sub_sigma_algebra.
@@ -822,9 +822,8 @@ Section compact_finite_measure.
 Context (rT : realType).
 Let mu : measure _ _ := @lebesgue_measure rT.
 Import MeasurableR.
-Let R  : measurableType _ := measurableTypeR rT.
 
-Lemma compact_finite_measure (A : set R) : compact A -> (mu A < +oo)%E.
+Lemma compact_finite_measure (A : set rT) : compact A -> (mu A < +oo)%E.
 Proof.
 move=> /[dup]/compact_measurable => mA /compact_bounded[N [_ N1x]].
 have AN1 : A `<=` `[- (`|N| + 1), `|N| + 1].

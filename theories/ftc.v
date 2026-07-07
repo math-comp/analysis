@@ -333,8 +333,7 @@ Notation integrable_locally := integrable_locally_restrict (only parsing).
 Import MeasurableR.
 
 Definition parameterized_integral {R : realType}
-    (mu : {measure set (measurableTypeR R) -> \bar R})
-    a x (f : R -> R) : R :=
+    (mu : {measure set R -> \bar R}) a x (f : R -> R) : R :=
   (\int[mu]_(t in `[a, x]) f t)%R.
 
 Section parameterized_integral_continuous.

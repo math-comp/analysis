@@ -955,9 +955,9 @@ Let ocitv_lebesgue_stieltjes_measure_unique
 Proof.
 move=> muE A mA.
 apply: measure_extension_unique => //=.
-  exact: wlength_sigma_finite.
-by move=> X mX; rewrite -muE// -measurable_mu_extE.
-by rewrite RGenOpenSets.measurableE.
+- exact: wlength_sigma_finite.
+- by move=> X mX; rewrite -muE// -measurable_mu_extE.
+- by rewrite RGenOpenSets.measurableE.
 Qed.
 
 Lemma lebesgue_stieltjes_measure_unique

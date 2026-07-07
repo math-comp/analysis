@@ -870,7 +870,7 @@ Import numFieldNormedType.Exports HBNNSimple.
 
 HB.mixin Record isFinLebesgue d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E)
-    (f : {mfun_ mu, T >-> measurableTypeR R}) := {
+    (f : {mfun_ mu, T >-> R}) := {
   Lebesgue_finite : finite_norm mu p f
 }.
 
