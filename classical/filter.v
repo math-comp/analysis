@@ -1251,7 +1251,7 @@ move=> near_hom fFG; apply/cvg_to_withinP; split.
 Qed.
 
 Lemma filter_bigI_within T (I : choiceType) (D : {fset I}) (f : I -> set T)
-    (F : set_system T) (P : set T) :
+  (F : set_system T) (P : set T) :
   Filter F -> (forall i, i \in D -> F [set j | P j -> f i j]) ->
   F ([set j | P j -> (\bigcap_(i in [set` D]) f i) j]).
 Proof. move=> FF FfD; exact: (@filter_bigI T I D f _ (within_filter P FF)). Qed.
@@ -1519,6 +1519,7 @@ End UltraFilters.
 Section filter_supremums.
 
 Global Instance smallest_filter_filter {T : Type} (F : set_system T) :
+Global Instance smallest_filter_filter {T : Type} (F : set_system T) :
   Filter (smallest Filter F).
 Proof.
 split.
@@ -1528,11 +1529,13 @@ split.
 Qed.
 
 Fixpoint filterI_iter {T : Type} (F : set_system T) (n : nat) :=
+Fixpoint filterI_iter {T : Type} (F : set_system T) (n : nat) :=
   if n is m.+1
   then [set P `&` Q |
     P in filterI_iter F m & Q in filterI_iter F m]
   else setT |` F.
 
+Lemma filterI_iter_sub {T : Type} (F : set_system T) :
 Lemma filterI_iter_sub {T : Type} (F : set_system T) :
   {homo filterI_iter F : i j / (i <= j)%N >-> i `<=` j}.
 Proof.
@@ -1541,6 +1544,7 @@ move=> j IH i; rewrite leq_eqVlt => /predU1P[->//|].
 by move=> /IH/subset_trans; apply=> A ?; do 2 exists A => //; rewrite setIid.
 Qed.
 
+Lemma filterI_iterE {T : Type} (F : set_system T) :
 Lemma filterI_iterE {T : Type} (F : set_system T) :
   smallest Filter F = filter_from (\bigcup_n (filterI_iter F n)) id.
 Proof.
