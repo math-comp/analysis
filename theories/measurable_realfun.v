@@ -340,6 +340,163 @@ Qed.
 
 End measurable_fun_measurable.
 
+<<<<<<< HEAD
+=======
+Module RGenOInfty.
+Section rgenoinfty.
+Variable R : realType.
+Implicit Types x y z : R.
+
+Definition G := [set A | exists x, A = `]x, +oo[%classic].
+
+Lemma measurable_itv_bnd_infty b x :
+  G.-sigma.-measurable [set` Interval (BSide b x) +oo%O].
+Proof.
+case: b; last by apply: sub_sigma_algebra; eexists; reflexivity.
+rewrite itvcyEbigcap; apply: bigcapT_measurable => k.
+by apply: sub_sigma_algebra; eexists; reflexivity.
+Qed.
+
+Lemma measurable_itv_bounded a b x : a != +oo%O ->
+  G.-sigma.-measurable [set` Interval a (BSide b x)].
+Proof.
+case: a => [a r _|[_|//]].
+  by rewrite set_itv_splitD; apply: measurableD => //;
+    exact: measurable_itv_bnd_infty.
+by rewrite -setCitvr; apply: measurableC; exact: measurable_itv_bnd_infty.
+Qed.
+
+Lemma measurableE : (@ocitv R).-sigma.-measurable = G.-sigma.-measurable.
+Proof.
+rewrite eqEsubset; split => A.
+  apply: smallest_sub; first exact: smallest_sigma_algebra.
+  by move=> I [x _ <-]; exact: measurable_itv_bounded.
+by apply: smallest_sub; [exact: smallest_sigma_algebra|move=> A' /= [x ->]].
+Qed.
+
+End rgenoinfty.
+End RGenOInfty.
+
+Module RGenInftyO.
+Section rgeninftyo.
+Variable R : realType.
+Implicit Types x y z : R.
+
+Definition G := [set A | exists x, A = `]-oo, x[%classic].
+
+Lemma measurable_itv_bnd_infty b x :
+  G.-sigma.-measurable [set` Interval -oo%O (BSide b x)].
+Proof.
+case: b; first by apply sub_sigma_algebra; eexists; reflexivity.
+rewrite -setCitvr itvoyEbigcup; apply/measurableC/bigcupT_measurable => n.
+rewrite -setCitvl; apply: measurableC.
+by apply: sub_sigma_algebra; eexists; reflexivity.
+Qed.
+
+Lemma measurable_itv_bounded a b x : a != -oo%O ->
+  G.-sigma.-measurable [set` Interval (BSide b x) a].
+Proof.
+case: a => [a r _|[//|_]].
+  by rewrite set_itv_splitD; apply/measurableD => //;
+     rewrite -setCitvl; apply: measurableC; exact: measurable_itv_bnd_infty.
+by rewrite -setCitvl; apply: measurableC; exact: measurable_itv_bnd_infty.
+Qed.
+
+Lemma measurableE : (@ocitv R).-sigma.-measurable = G.-sigma.-measurable.
+Proof.
+rewrite eqEsubset; split => A.
+  apply: smallest_sub; first exact: smallest_sigma_algebra.
+  by move=> I [x _ <-]; exact: measurable_itv_bounded.
+by apply: smallest_sub; [exact: smallest_sigma_algebra|move=> A' /= [x ->]].
+Qed.
+
+End rgeninftyo.
+End RGenInftyO.
+
+Module RGenCInfty.
+Section rgencinfty.
+Variable R : realType.
+Implicit Types x y z : R.
+
+Definition G : set_system R := [set A | exists x, A = `[x, +oo[%classic].
+
+Lemma measurable_itv_bnd_infty b x :
+  G.-sigma.-measurable [set` Interval (BSide b x) +oo%O].
+Proof.
+case: b; first by apply: sub_sigma_algebra; exists x; rewrite set_itvcy.
+rewrite itvoyEbigcup; apply: bigcupT_measurable => k.
+by apply: sub_sigma_algebra; eexists; reflexivity.
+Qed.
+
+Lemma measurable_itv_bounded a b y : a != +oo%O ->
+  G.-sigma.-measurable [set` Interval a (BSide b y)].
+Proof.
+case: a => [a r _|[_|//]].
+  rewrite set_itv_splitD.
+  by apply: measurableD; exact: measurable_itv_bnd_infty.
+by rewrite -setCitvr; apply: measurableC; exact: measurable_itv_bnd_infty.
+Qed.
+
+Lemma measurableE : (@ocitv R).-sigma.-measurable = G.-sigma.-measurable.
+Proof.
+rewrite eqEsubset; split => A.
+  apply: smallest_sub; first exact: smallest_sigma_algebra.
+  by move=> I [x _ <-]; exact: measurable_itv_bounded.
+by apply: smallest_sub; [exact: smallest_sigma_algebra|move=> A' /= [x ->]].
+Qed.
+
+End rgencinfty.
+End RGenCInfty.
+
+Module RGenOpens.
+Section rgenopens.
+Variable R : realType.
+Implicit Types x y z : R.
+
+Definition G := [set A | exists x y, A = `]x, y[%classic].
+
+Local Lemma measurable_itvoo x y : G.-sigma.-measurable `]x, y[%classic.
+Proof. by apply sub_sigma_algebra; eexists; eexists; reflexivity. Qed.
+
+Local Lemma measurable_itv_o_infty x : G.-sigma.-measurable `]x, +oo[%classic.
+Proof.
+rewrite itvbndyEbigcup; apply: bigcupT_measurable => i.
+exact: measurable_itvoo.
+Qed.
+
+Lemma measurable_itv_bnd_infty b x :
+  G.-sigma.-measurable [set` Interval (BSide b x) +oo%O].
+Proof.
+case: b; last exact: measurable_itv_o_infty.
+rewrite itvcyEbigcap; apply: bigcapT_measurable => k.
+exact: measurable_itv_o_infty.
+Qed.
+
+Lemma measurable_itv_infty_bnd b x :
+  G.-sigma.-measurable [set` Interval -oo%O (BSide b x)].
+Proof.
+by rewrite -setCitvr; apply: measurableC; exact: measurable_itv_bnd_infty.
+Qed.
+
+Lemma measurable_itv_bounded a x b y :
+  G.-sigma.-measurable [set` Interval (BSide a x) (BSide b y)].
+Proof.
+move: a b => [] []; rewrite -[X in measurable X]setCK setCitv;
+  apply: measurableC; apply: measurableU; try solve[
+    exact: measurable_itv_infty_bnd|exact: measurable_itv_bnd_infty].
+Qed.
+
+Lemma measurableE : (@ocitv R).-sigma.-measurable = G.-sigma.-measurable.
+Proof.
+rewrite eqEsubset; split => A.
+  apply: smallest_sub; first exact: smallest_sigma_algebra.
+  by move=> I [x _ <-]; exact: measurable_itv_bounded.
+by apply: smallest_sub; [exact: smallest_sigma_algebra|move=> A' /= [x [y ->]]].
+Qed.
+
+End rgenopens.
+End RGenOpens.
+>>>>>>> 2fdb72603 (rebase)
 Section erealwithrays.
 Variable R : realType.
 Implicit Types (x y z : \bar R) (r s : R).

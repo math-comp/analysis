@@ -646,8 +646,14 @@ Let lebesgue_measure_itvoo_subr1 (a : R) :
 Proof.
 rewrite itv_bnd_open_bigcup//; transitivity (limn (lebesgue_measure \o
     (fun k => `]a - 1, a - k.+1%:R^-1]%classic : set R))).
+<<<<<<< HEAD
   apply/esym/cvg_lim => //; apply: nondecreasing_cvg_measure => //.
   - exact: bigcup_measurable.
+=======
+  apply/esym/cvg_lim => //; apply: nondecreasing_cvg_measure.
+  - by move=> ?; exact: measurable_itv.
+  - by apply: bigcup_measurable => k _; exact: measurable_itv.
+>>>>>>> 2fdb72603 (rebase)
   - move=> n m nm; apply/subsetPset => x /=; rewrite !in_itv/= => /andP[->/=].
     by move/le_trans; apply; rewrite lerB// lef_pV2 ?ler_nat ?posrE.
 rewrite (_ : _ \o _ = (fun n => (1 - n.+1%:R^-1)%:E)).
@@ -744,8 +750,14 @@ Let lebesgue_measure_itv_bnd_infty x (a : R) :
 Proof.
 rewrite itv_bndy_bigcup_BRight; transitivity (limn (lebesgue_measure \o
     (fun k => [set` Interval (BSide x a) (BRight (a + k%:R))] : set R))).
+<<<<<<< HEAD
   apply/esym/cvg_lim => //; apply: nondecreasing_cvg_measure => //.
   + exact: bigcup_measurable.
+=======
+  apply/esym/cvg_lim => //; apply: nondecreasing_cvg_measure.
+  + by move=> k; exact: measurable_itv.
+  + by apply: bigcup_measurable => k _; exact: measurable_itv.
+>>>>>>> 2fdb72603 (rebase)
   + move=> m n mn; apply/subsetPset => r/=; rewrite !in_itv/= => /andP[->/=].
     by move=> /le_trans; apply; rewrite lerD// ler_nat.
 rewrite (_ : _ \o _ = (fun k => k%:R%:E))//.
@@ -759,8 +771,14 @@ Let lebesgue_measure_itv_infty_bnd y (b : R) :
 Proof.
 rewrite itvNy_bnd_bigcup_BLeft; transitivity (limn (lebesgue_measure \o
     (fun k => [set` Interval (BLeft (b - k%:R)) (BSide y b)] : set R))).
+<<<<<<< HEAD
   apply/esym/cvg_lim => //; apply: nondecreasing_cvg_measure => //.
   + exact: bigcup_measurable.
+=======
+  apply/esym/cvg_lim => //; apply: nondecreasing_cvg_measure.
+  + by move=> k; exact: measurable_itv.
+  + by apply: bigcup_measurable => k _; exact: measurable_itv.
+>>>>>>> 2fdb72603 (rebase)
   + move=> m n mn; apply/subsetPset => r/=; rewrite !in_itv/= => /andP[+ ->].
     by rewrite andbT; apply: le_trans; rewrite lerB// ler_nat.
 rewrite (_ : _ \o _ = (fun k : nat => k%:R%:E))//.
