@@ -66,6 +66,7 @@
   + definition `absolutely_convex_set`
   + lemma `absolutely_convex0`
   + definition `absorbing_set`
+  + definition `pabsorbing_set`
   + lemma `absolutely_convex_setX`
   + notation `... `+ ...`
   + lemmas `addsetS`, `add0set`, `addsetI`, `addsetA`
