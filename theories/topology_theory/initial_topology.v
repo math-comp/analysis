@@ -101,11 +101,10 @@ rewrite nbhs_filterE; apply: filterS FC.
 by apply: subset_trans sBfA; rewrite -fCeB; apply: preimage_image.
 Qed.
 
-Lemma initial_nbhs (x : W) b : nbhs (f x) b -> nbhs x (f @^-1` b).
+Lemma initial_nbhs_preimage (w : W) A : nbhs (f w) A -> nbhs w (f @^-1` A).
 Proof.
-rewrite nbhsE /= => -[b' [b0 ob]] bb'.
-exists (f @^-1` b'); split => //= ; first by exists b'.
-by move => z /= /bb'.
+rewrite nbhsE /= => -[B [oB Bfx]] BA.
+by exists (f @^-1` B); split => //= ; [exists B|move=> z /= /BA].
 Qed.
 
 End Initial_Topology.
