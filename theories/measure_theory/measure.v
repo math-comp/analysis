@@ -8,3 +8,4 @@ From mathcomp Require Export measure_negligible.
 From mathcomp Require Export measure_extension.
 From mathcomp Require Export measurable_function.
 From mathcomp Require Export signed_measure.
+From mathcomp Require Export measurable_topology.
