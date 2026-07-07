@@ -443,6 +443,10 @@ pose g' : {linear_continuous V -> R | *%R} := HB.pack (g : V -> R) lcg.
 by exists g'.
 Qed.
 
+Lemma hahn_banach_extension_hausdorff :
+(hausdorff_space V) <-> (forall x : V, exists l : {linear_continuous V -> R^o}, l(x) != 0).
+Proof.
+Admitted.
 End hahn_banach_extension_ctvs.
 
 Section hahn_banach_separation_ctvs.
