@@ -234,6 +234,43 @@
 - in `measurable_structure.v`:
   + lemmas `countable_bigcap_measurable`, `countable_bigcup_measurable`
 
+- in `unstable.v`:
+  + lemma `seminorm_normrB`
+
+- in `initial_topology.v`:
+  + lemma `initial_nbhs_preimage`
+
+- in `topology_structure.v`:
+  + definition `nbhs_basis`
+  + definition `open_from`
+
+- in `normed_module.v`:
+  + lemma `ball_convex_set` (was a `Let`)
+
+- in `tvs.v`:
+  + definition `balanced_set`
+  + definition `absolutely_convex_set`
+  + lemma `absolutely_convex0`
+  + definition `pabsorbing_set`
+  + lemma `absolutely_convex_setX`
+  + notation `... `+ ...`
+  + lemmas `addsetS`, `add0set`, `addsetI`, `addsetA`
+  + lemma `continuous_shift`
+  + lemma `nbhs_add1set`
+  + definition `init_subconvextvs`
+  + factory `NbhsBasisAt0_isConvexTvs`
+  + definition `filter_from_basis0`
+  + factory `NbhsSubbasisAt0_isConvexTvs`
+  + definition `finI_fromsubbasis0`
+  + lemma `openD`
+  + lemma `openB`
+  + lemma `nbhsE0`
+  + lemma `openZ`
+  + lemma `scalerx_continuous`
+  + lemma `scalexr_continuous`
+  + definition `nbhsbasis_convextvs`
+  + definition `open_nbhsbasis_convextvs`
+
 ### Changed
 
 - in `realsum.v`:
@@ -354,6 +391,9 @@
 - in `classical_sets.v`
   + lemma `bigcupDr` -> `setD_bigcupr` (deprecating `bigcupDr`)
 
+- from `normed_module.v` to `tvs.v`:
+  + lemma `continuousfor0_continuous` (moved and generalized)
+
 ### Renamed
 
 - in `tvs.v`:
@@ -406,6 +446,13 @@
 
 - in `functions.v`
   + lemma `scalrfctE` -> `scalerfctE` (deprecating `scalrfctE`)
+
+- in `tvs.v`:
+  + lemma `nbhsT_subproof` -> `nbhsD_subproof`
+
+- in `tvs.v`:
+  + lemma `nbhsT` -> `nbhsD0`
+  + lemma `nbhsB` -> `nbhsD`
 
 ### Generalized
 

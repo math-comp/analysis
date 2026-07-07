@@ -158,8 +158,8 @@ Let locally_convex_set :
     (forall b, b \in B -> absolutely_convex_set b) & (nbhs_basis 0) B.
 Proof.
 exists [set B | exists2 r, 0 < r &  B = ball 0 r].
-  move=> b; rewrite inE /= => -[r _ ->]; split; first by exact: ball_convex_set.
-  by exact: ball_balanced_set.
+  move=> b; rewrite inE /= => -[r _ ->]; split; first exact: ball_convex_set.
+  exact: ball_balanced_set.
 split; first by move=> /= a [r r0 ->]; apply: nbhsx_ballx.
 move=> /= b; rewrite -nbhs_ballE => -[r /= r0] b0r /=.
 by exists (ball 0 r)=> //; exists r.

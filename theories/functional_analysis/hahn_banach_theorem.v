@@ -4,7 +4,7 @@ From mathcomp Require Import interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp contra classical_sets filter.
-From mathcomp Require Import topology convex reals normedtype unstable.
+From mathcomp Require Import topology convex reals normedtype.
 
 (**md**************************************************************************)
 (* # The Hahn-Banach theorem                                                  *)
@@ -394,16 +394,16 @@ Qed.
 (* A second version where F is a subspace of V, meaning endowed with the initial topology wrt to val*)
 (* 7.2.1 Jarchow *)
 Theorem hahn_banach_extension_initialsubctvs  (F' : subLmodType F)
- (f : {linear_continuous (init_subctvs F') -> R^o}) :
+ (f : {linear_continuous (init_subconvextvs F') -> R^o}) :
   exists g : {linear_continuous V -> R}, forall x : F', g (val x) = f x.
 Proof.
 have [[openBasisV BasisV] _] := has_open_nbhs_basis V.
 have [p' ps' fp'] : exists2 p : SemiNorm.type V, seminorm_of p & forall z : F', f z <= p (val z).
-  have /linear_continuous_seminorm: continuous (f : (init_subctvs F') -> R^o) by apply: continuous_fun.
+  have /linear_continuous_seminorm: continuous (f : (init_subconvextvs F') -> R^o) by apply: continuous_fun.
   move=> [p [cp ps] /= fp].
   have [/= nF] := cp.
   move=> [] onF /= pF.
-  have [/(_ nF onF) + _] := basis_opennbhsbasis (init_subctvs F').
+  have [/(_ nF onF) + _] := basis_opennbhsbasis (init_subconvextvs F').
   move=> [oF [[/= oV] ooV oVF] oF0 oFn].
   have /BasisV [/= bV obV boV] : nbhs 0 oV.
     rewrite nbhsE; exists oV => //; split => //.

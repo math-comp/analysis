@@ -671,11 +671,6 @@ Proof.
 by elim/big_ind2 : _ => *; rewrite ?norm0// (le_trans (ler_normD _ _))// lerD.
 Qed.
 
-Lemma distC (v w : L) : norm (v - w) = norm (w - v).
-Proof.
-by rewrite -(normN (v - w)) opprB.
-Qed.
-
 End Theory.
 
 Section realTheory.

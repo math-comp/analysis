@@ -5,7 +5,8 @@ From mathcomp Require Import interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality.
-From mathcomp Require Import convex set_interval reals initial_topology topology num_normedtype.
+From mathcomp Require Import convex set_interval reals topology.
+From mathcomp Require Import initial_topology  num_normedtype.
 From mathcomp Require Import pseudometric_normed_Zmodule.
 
 (**md**************************************************************************)
@@ -78,7 +79,6 @@ From mathcomp Require Import pseudometric_normed_Zmodule.
 (*   and F are convexTvs.                                                     *)
 (******************************************************************************)
 
-
 Reserved Notation "'{' 'linear_continuous' U '->' V '|' s '}'"
   (at level 0, U at level 98, V at level 99,
    format "{ 'linear_continuous'  U  ->  V  |  s }").
@@ -100,65 +100,24 @@ Local Open Scope ring_scope.
 Section absolutely_convex.
 Context (K : numDomainType) (V : lmodType K).
 
-Definition balanced_set (A : set V) := forall r, `|r| <= 1 -> (fun x => r *: x) @`A `<=` A.
+Definition balanced_set (A : set V) :=
+  forall r, `|r| <= 1 -> ( *:%R r) @` A `<=` A.
 
 Definition absolutely_convex_set (A : set V) := convex_set A /\ balanced_set A.
 
-Definition absorbing_set (A : set V) := forall x : V, exists a, exists2 r, a \in A & x = r *: a.
-
-Definition pabsorbing_set (A : set V) := forall x : V, exists2 r, 0 < r & r *: x \in A.
-
-Definition absolutely_convex_hull  (A : set V) := smallest absolutely_convex_set A.
-
-(* TODO : move to convex.v *)
-Lemma setI_convex : setI_closed (@convex_set K V).
+Lemma absolutely_convex0 (A : set V) : A !=set0 -> absolutely_convex_set A ->
+  A 0.
 Proof.
-move=> A B cA cB x y r /[!inE] -[xA xB] [yA yB]; split; apply/set_mem.
-by apply/cA; apply/mem_set.
-by apply/cB; apply/mem_set.
-Qed.
-
-Lemma bigcap_convex : bigcap_closed (@convex_set K V).
-Proof.
-move=> H Hconv x y r /[!inE] /= Hx Hy A /[dup] HA /Hconv /(_ _ _ _ _ _ )/set_mem; apply.
-- by apply: mem_set; apply: Hx.
-- by apply: mem_set; apply: Hy.
-Qed.
-
-Lemma setI_balanced : setI_closed balanced_set.
-Proof.
-move=> A B bA bB x r /=; rewrite subsetI; split => z /= [t [At Bt] <-].
-- by apply: (bA _ r)  => //; exists t.
-- by apply: (bB _ r)  => //; exists t.
-Qed.
-
-Lemma bigcap_balanced : bigcap_closed balanced_set.
-Proof.
-move=> H Hconv /= r r1; apply: sub_bigcap => A HA x /= [t Ht <-].
-apply: (Hconv A HA r r1) => //.
-by exists t; first by apply: Ht.
-Qed.
-
-Lemma absolutely_convex_hull_set (A : set V) : absolutely_convex_set (absolutely_convex_hull A).
-Proof.
-apply: bigcap_closed_smallest => H Habs.
-split.
-- by apply: bigcap_convex; apply: (subset_trans Habs); apply: subIsetl.
-- by apply: bigcap_balanced; apply: (subset_trans Habs); apply: subIsetr.
-Qed.
-
-Lemma absolutely_convex_hull_subset (A : set V) : A `<=` absolutely_convex_hull A.
-Proof. exact: sub_gen_smallest. Qed.
-
-Lemma absolutely_convex0 (B : set V) : B !=set0 -> absolutely_convex_set B -> B 0.
-Proof.
-move => [] x Bx []  _ /(_ 0); rewrite normr0 ler01 // => /(_ isT) /(_ 0); apply.
+move => [] x Ax []  _ /(_ 0); rewrite normr0 ler01 // => /(_ isT) /(_ 0); apply.
 by exists x; rewrite //= scale0r.
 Qed.
 
+Definition pabsorbing_set (A : set V) :=
+  forall x : V, exists2 r, 0 < r & r *: x \in A.
+
 End absolutely_convex.
 
-Lemma absolutely_convex_setX (K : numFieldType) (E F : lmodType K)
+Lemma absolutely_convex_setX (K : numDomainType) (E F : lmodType K)
     (A : set E) (B : set F) :
   absolutely_convex_set A -> absolutely_convex_set B ->
   absolutely_convex_set (A `*` B).
@@ -173,49 +132,44 @@ move=> [convA balA] [convB balB]; split.
 Qed.
 
 Notation "A `+ B" := [set x + y | x in A & y in B] (at level 54).
-Notation "r `*: B" := [set r *: x | x  in B] (at level 54).
 
 Section addsetTheory.
+Context {E : zmodType}.
+Implicit Types A B C D : set E.
 
-Lemma addsubset (E : zmodType) (A B C D: set E):
-  A `<=` B -> C `<=` D -> (A `+ C) `<=` (B `+ D).
+Lemma addsetS A B C D : A `<=` B -> C `<=` D -> A `+ C `<=` B `+ D.
 Proof.
 by move=> AB CD z [a /AB Ba [c /CD Dc <-]]; exists a => //; exists c.
 Qed.
 
-Lemma addset0 (E : zmodType) (A: set E):
- ([set 0] `+ A) = A.
+Lemma add0set A : [set 0] `+ A = A.
 Proof.
 apply/seteqP; split => z /=.
   by move=> [+ -> [y]]; rewrite add0r => + + <-.
 by move=> Az; exists 0 => //; exists z; rewrite ?add0r.
 Qed.
 
-Lemma addsetI (E : zmodType) (A B : set E) (x : E) :
-[set x] `+ (A `&` B) = ([set x] `+ A) `&` ([set x] `+ B).
+Lemma addsetI A B (x : E) :
+  [set x] `+ (A `&` B) = ([set x] `+ A) `&` ([set x] `+ B).
 Proof.
 apply/seteqP; split => z.
-   by move => [r Cr] [y [Ay By] <- {z}]; split => /=; exists r => //; exists y => //.
-move => /= [[r ->] [y Ay] <- {z}] [x' ->] [y' By'].
-move=> /(congr1 (fun h => h - x)).
+  by move => [r Cr] [y [Ay By] <- {z}]; split => /=; exists r => //;
+    exists y.
+move=> /= [[r ->] [y Ay] <- {z}] [x' ->] [y' By'] /(congr1 (fun h => h - x)).
 rewrite addrAC subrr add0r addrAC subrr add0r => yy'.
-rewrite yy' in By' *.
-by exists x  => //;  exists y' => //; rewrite ?yy'; first by split.
+move: By'; rewrite yy' {y' yy'} => By.
+by exists x => //;  exists y.
 Qed.
 
-Lemma addsubsetA (E : zmodType) p c (D : set E) :
-  [set p + c] `+ D `<=` [set p] `+ ([set c] `+ D).
+Lemma addsetA p c D : [set p + c] `+ D `<=` [set p] `+ ([set c] `+ D).
 Proof.
 move=> x/= [y ->{y}] [z Dz <-{x}].
-exists p => //.
-exists (c + z) => //.
-  exists c => //.
-  by exists z.
+exists p => //; exists (c + z) => //.
+  by exists c => //; exists z.
 by rewrite addrA.
 Qed.
 
 End addsetTheory.
-
 
 (* HB.structure Definition PointedNmodule := {M of Pointed M & GRing.Nmodule M}. *)
 (* HB.structure Definition PointedZmodule := {M of Pointed M & GRing.Zmodule M}. *)
@@ -265,13 +219,12 @@ Lemma sum_continuous (I : Type) (r : seq I) (P : pred I) (f : I -> E -> F) :
   continuous (fun x1 : E => \sum_(i <- r | P i) f i x1).
 Proof. by move=> FC0; apply: continuous_big => //; apply: add_continuous. Qed.
 
-Lemma continuous_shift (x y: F) :
- {for x, continuous (+%R^~ y)}.
+Lemma continuous_shift (x y : F) : {for x, continuous (+%R^~ y)}.
 Proof.
-have -> : +%R^~ y = (fun z => z.1 + z.2) \o (fun z => (z,y)) by apply: funext.
+have -> : +%R^~ y = (fun z => z.1 + z.2) \o (fun z => (z, y)) by exact: funext.
 apply: continuous_comp.
-by apply: cvg_pair => //=; exact: cvg_cst.
-exact: (@add_continuous _ (x,y)).
+  by apply: cvg_pair => //=; exact: cvg_cst.
+exact: (@add_continuous _ (x, y)).
 Qed.
 
 End TopologicalNmodule_theory.
@@ -287,7 +240,7 @@ HB.structure Definition TopologicalZmodule :=
         & TopologicalNmodule_isTopologicalZmodule M}.
 
 Section TopologicalZmoduleTheory.
-Variables (M : topologicalZmodType) (E : topologicalType).
+Variables (M : topologicalZmodType).
 
 Lemma sub_continuous : continuous (fun x : M * M => x.1 - x.2).
 Proof.
@@ -302,20 +255,19 @@ Lemma fun_cvgN (F : topologicalZmodType) (U : set_system M) {FF : Filter U}
   f @ U --> a -> \- f @ U --> - a.
 Proof. by move=> ?; apply: continuous_cvg => //; exact: opp_continuous. Qed.
 
-
-Lemma addx_nbhs x (b : set M): nbhs 0 b <-> nbhs x ([set x] `+ b).
+Lemma nbhs_add1set x (A : set M) : nbhs 0 A <-> nbhs x ([set x] `+ A).
 Proof.
-split.
+split=> [|nx].
   rewrite -(subrr x) => /continuous_shift.
-  suff -> : [set x] `+  b = +%R^~ (- x) @^-1` b by [].
-  apply: funext => z /=; apply: propext; split.
+  suff -> : [set x] `+  A = +%R^~ (- x) @^-1` A by [].
+  apply: funext => z /=; apply: propext; split => [|Azx].
     by move=> [? -> [y By] <-]; rewrite addrAC subrr add0r.
-  by move=> byx; exists x => //; exists (z - x) => //; rewrite addrCA subrr addr0.
-move=> nx.
-suff -> : b =  +%R^~ (x) @^-1` ([set x] `+  b ) by apply: continuous_shift; rewrite add0r.
-apply: funext => z /=; apply: propext; split.
-  by move=> bz; exists x => //; exists z => //; rewrite addrC.
-by move=> [? -> [y By]]; rewrite addrC => /addIr <-.
+  by exists x => //; exists (z - x) => //; rewrite addrCA subrr addr0.
+suff -> : A =  +%R^~ (x) @^-1` ([set x] `+  A).
+  by apply: continuous_shift; rewrite add0r.
+apply: funext => z /=; apply: propext; split=> [Az|[_ -> [y By]]].
+  by exists x => //; exists z => //; rewrite addrC.
+by rewrite addrC => /addIr <-.
 Qed.
 
 End TopologicalZmoduleTheory.
@@ -372,7 +324,7 @@ HB.structure Definition TopologicalLmodule (K : numDomainType) :=
         & TopologicalZmodule_isTopologicalLmodule K M}.
 
 Section TopologicalLmodule_theory.
-Variables (R : numFieldType) (E : topologicalType) (F G: topologicalLmodType R).
+Variables (R : numFieldType) (E : topologicalType) (F G : topologicalLmodType R).
 
 Lemma fun_cvgZ (U : set_system E) {FF : Filter U} (l : E -> R) (f : E -> F)
     (r : R) a :
@@ -387,26 +339,28 @@ Lemma fun_cvgZr (U : set_system E) {FF : Filter U} k (f : E -> F) a :
 Proof. by apply: fun_cvgZ => //; exact: cvg_cst. Qed.
 
 Lemma continuousfor0_continuous (f : {linear F -> G}) :
- {for 0, continuous f} -> continuous f.
+  {for 0, continuous f} -> continuous f.
 Proof.
 move=> cont0 x.
 suff: (f y - f x)@[y --> x] --> (0 : G).
   have -> : (fun y : F => f y - f x) = (fun y : F => f (y - x) : G).
     by apply: funext => y; rewrite linearB.
   move=> fxfy /= A nA /=.
-  pose B := [set z | exists2 y : G, A y & z = y - f x].
+  pose B := [set y - f x | y in A].
   have /fxfy : nbhs 0 B.
-    have -> : B = (+%R^~ (-( - (f x)))) @^-1` A.
+    have -> : B = (+%R^~ (- (- f x))) @^-1` A.
       rewrite opprK; apply/seteqP; split.
-        by move=> y /= [z] ? ->; rewrite subrK //; exists z.
-      by move=> z /= ?; exists (z + f x)=> //; rewrite addrK.
-    have:= (@continuous_shift  _  (0 : G)  (f x) A).
-    by rewrite opprK add0r => /(_ nA); apply.
+        by move=> y [/= g Ag <-]; rewrite subrK.
+       move=> g/= Agfx; eexists; first exact: Agfx.
+       by rewrite addrK.
+    have:= @continuous_shift _ (0 : G) (f x) A.
+    by rewrite opprK add0r => /(_ nA); exact.
   rewrite /nbhs /=; apply/filterS => z /=; rewrite /B /=.
-  by move => -[y] Ay; rewrite linearD linearN => /(subIr (f x)) ->.
-have -> : (fun y => f y - f x) = (fun y => f(y -x)) by apply: funext => y; rewrite linearB.
-apply: cvg_comp; last by rewrite -(linear0 f); apply: cont0.
-by move => A nA /=;  apply: continuous_shift; rewrite subrr.
+  by move=> [y Ay]; rewrite linearB => /subIr <-.
+have -> : (fun y => f y - f x) = (fun y => f (y - x)).
+  by apply: funext => y; rewrite linearB.
+apply: cvg_comp; last by rewrite -(linear0 f); exact: cont0.
+by move => A nA /=; apply: continuous_shift; rewrite subrr.
 Qed.
 
 End TopologicalLmodule_theory.
@@ -496,7 +450,7 @@ HB.instance Definition _ :=
 HB.end.
 
 Section UniformZmoduleTheory.
-Variables (M: UniformZmodule.type).
+Variables (M : UniformZmodule.type).
 
 Lemma sub_unif_continuous : unif_continuous (fun x : M * M => x.1 - x.2).
 Proof.
@@ -512,8 +466,6 @@ apply: (@filterS _ _ entourage_filter
 exists (U1, ((fun xy : M * M => (- xy.1, - xy.2)) @^-1` U2)); first by split.
 by move=> /= [] [] a1 a2 [] b1 b2/= [] aU bU; exists (a1, b1, (a2, b2)).
 Qed.
-
-
 
 End UniformZmoduleTheory.
 
@@ -578,11 +530,12 @@ HB.structure Definition SubConvexTvs (R : numDomainType) (V : convexTvsType R)
 Section SubLmodule_isSubConvexTvs.
 Context (R : numFieldType) (V : convexTvsType R) (S : pred V) (U : subLmodType S).
 
-Definition init_subctvs := (sub_initial_topology U).
-HB.instance Definition _ := Uniform.on init_subctvs.
-HB.instance Definition _ := GRing.Lmodule.on init_subctvs.
+Definition init_subconvextvs := sub_initial_topology U.
+HB.instance Definition _ := Uniform.on init_subconvextvs.
+HB.instance Definition _ := GRing.Lmodule.on init_subconvextvs.
 
-Let add_sub: continuous (fun x : init_subctvs * init_subctvs => x.1 + x.2).
+Let add_sub : continuous
+  (fun x : init_subconvextvs * init_subconvextvs => x.1 + x.2).
 Proof.
 apply: continuous_comp_initial => -[/= x y].
 pose h := fun xy : U * U => (\val xy.1, \val xy.2).
@@ -591,28 +544,25 @@ rewrite (_ : _ \o _ = g \o h).
   by apply/funext => i /=; rewrite GRing.valD.
 apply: continuous_comp; last exact: add_continuous.
 apply: cvg_pair => //=.
-- apply: (cvg_comp _ _ cvg_fst).
-  exact: (continuous_valE (x : init_subctvs)).
-- apply: (cvg_comp _ _ cvg_snd).
-  exact: (continuous_valE (y : init_subctvs)).
+- exact/(cvg_comp _ _ cvg_fst)/continuous_valE.
+- exact/(cvg_comp _ _ cvg_snd)/continuous_valE.
 Qed.
 
 HB.instance Definition _ :=
-  @PreTopologicalNmodule_isTopologicalNmodule.Build init_subctvs add_sub.
+  @PreTopologicalNmodule_isTopologicalNmodule.Build init_subconvextvs add_sub.
 
-Let opp_sub : continuous (-%R : init_subctvs -> init_subctvs).
+Let opp_sub : continuous (-%R : init_subconvextvs -> init_subconvextvs).
 Proof.
 apply: continuous_comp_initial => x.
 rewrite (_ : _ \o _ = -%R \o \val).
   by apply/funext=> i /=; rewrite GRing.valN.
-apply: continuous_comp; first exact: continuous_valE.
-exact: opp_continuous.
+by apply: continuous_comp; [exact: continuous_valE|exact: opp_continuous].
 Qed.
 
 HB.instance Definition _ :=
-  TopologicalNmodule_isTopologicalZmodule.Build init_subctvs opp_sub.
+  TopologicalNmodule_isTopologicalZmodule.Build init_subconvextvs opp_sub.
 
-Let scale_sub : continuous (fun z : R^o * init_subctvs => z.1 *: z.2).
+Let scale_sub : continuous (fun z : R^o * init_subconvextvs => z.1 *: z.2).
 Proof.
 apply: continuous_comp_initial => - [] /= x /= y.
 pose h := fun xy : R * U => (xy.1, \val xy.2).
@@ -620,7 +570,7 @@ pose g := fun xy : R * V => xy.1 *: xy.2.
 rewrite (_ : _ \o _ = g \o h); first by apply/funext=> i /=; rewrite GRing.valZ.
 apply: continuous_comp; last exact: scale_continuous.
 move=> /= A [/= [/= B C]] [[r/= r0 xrB]].
-move/(continuous_valE (y : init_subctvs)) => [/= C' [woC' C'y C'C] BCA].
+move/(continuous_valE (y : init_subconvextvs)) => [/= C' [woC' C'y C'C] BCA].
 apply: filterS; first exact: BCA.
 exists (ball x r, C') => /=.
   by split; [exact: nbhsx_ballx|exists C'; split].
@@ -628,36 +578,36 @@ by move=> su/= [xru C'u]; split; [exact: xrB|exact: C'C].
 Qed.
 
 HB.instance Definition _ :=
-  TopologicalZmodule_isTopologicalLmodule.Build R init_subctvs scale_sub.
+  TopologicalZmodule_isTopologicalLmodule.Build R init_subconvextvs scale_sub.
 
 Local Open Scope convex_scope.
 
-Let locally_convex_sub : exists2 B : set_system init_subctvs,
+Let locally_convex_sub : exists2 B : set_system init_subconvextvs,
   (forall b, b \in B -> absolutely_convex_set b) & nbhs_basis 0 B.
 Proof.
 have [B absconvB [B0 nbhsb]] := @locally_convex R V.
 rewrite /filter_from /= in nbhsb.
-exists [set a | exists2 b, B b & \val @^-1` b = a].
+exists [set \val @^-1` b | b in B].
   move=> a; rewrite inE /= => -[b] /mem_set/absconvB [convb balb] <-; split.
     move => r s l ra sa; suff : \val (r <|l|> s) \in b by [].
     by rewrite !GRing.valD !GRing.valZ convb.
-  move=> /= r r1 x /= [rx] ? <-; apply: balb => /=; first by exact: r1.
-  by exists (\val rx); last by rewrite GRing.valZ.
+  move=> /= r r1 x /= [rx] ? <-; apply: balb => /=; first exact: r1.
+  by exists (\val rx); rewrite ?GRing.valZ.
 split.
   move=> ? /= [b /B0] + <-.
-  by rewrite -[X in nbhs X _ ->  _](linear0 (\val : U -> V)); exact: initial_nbhs.
+  rewrite -[X in nbhs X _ ->  _](linear0 (\val : U -> V)).
+  exact: initial_nbhs_preimage.
 move=> /= A [a' [/= [/= b ob <-] /= b0 ba]].
 have /nbhsb  [b' Bb bb'] : nbhs 0 b.
   by apply: open_nbhs_nbhs; split; rewrite -?(linear0 (\val : U -> V)).
-exists (val @^-1` b') => /=; last by move => x /= /bb' /ba.
-by exists b'.
+by exists (val @^-1` b') => /=; [exists b'|move => x /= /bb' /ba].
 Qed.
 
 Local Close Scope convex_scope.
 
 HB.instance Definition _ :=
-  @Uniform_isConvexTvs.Build R init_subctvs locally_convex_sub.
-HB.instance Definition _ := GRing.SubLmodule.on init_subctvs.
+  @Uniform_isConvexTvs.Build R init_subconvextvs locally_convex_sub.
+HB.instance Definition _ := GRing.SubLmodule.on init_subconvextvs.
 
 End SubLmodule_isSubConvexTvs.
 
@@ -793,72 +743,74 @@ HB.instance Definition _ := Nbhs_isUniform_mixin.Build E
     entourage_inv entourage_split_ex
     nbhsE.
 
-HB.instance Definition _ := PreTopologicalNmodule_isTopologicalNmodule.Build E add_continuous.
+HB.instance Definition _ :=
+  PreTopologicalNmodule_isTopologicalNmodule.Build E add_continuous.
 
-HB.instance Definition _ := TopologicalNmodule_isTopologicalLmodule.Build R E scale_continuous.
+HB.instance Definition _ :=
+  TopologicalNmodule_isTopologicalLmodule.Build R E scale_continuous.
 
 HB.instance Definition _ := Uniform_isConvexTvs.Build R E locally_convex.
 
 HB.end.
 
-
-HB.factory Record Nbhsbasisat0_isConvexTvs (R: numFieldType) E & GRing.Lmodule R E  := {
-  nbhsbasis_at0 : set_system E ; (*TODO rename to filterbasis_at0*)
-  nonempty_nbhsbasisat0 : exists U, nbhsbasis_at0 U;
-  nbhsbasis_at0I : forall U V, nbhsbasis_at0 U -> nbhsbasis_at0 V ->
-    exists2 W, nbhsbasis_at0 W & W `<=` U `&` V ;
+HB.factory Record NbhsBasisAt0_isConvexTvs (R : numFieldType) E
+    & GRing.Lmodule R E := {
+  nbhsbasis_at0 : set_system E ;
+  nonempty_nbhsbasisat0 : nbhsbasis_at0 !=set0 ;
   mem0_nbhsbasisat0 : forall B, nbhsbasis_at0 B -> B 0 ;
-  expand_nbhsbasisat0 : forall B r, nbhsbasis_at0 B -> (*0 <= r ->*)
-    exists2 U, nbhsbasis_at0 U & r `*: U `<=` B ; (* implies circled *)
-  absorbing_nbhsbasisat0 : forall B , nbhsbasis_at0 B -> pabsorbing_set B;
-  absconvex_nbhsbasisat0 : forall B, nbhsbasis_at0 B -> absolutely_convex_set B }.
+  absorbing_nbhsbasisat0 : nbhsbasis_at0 `<=` @pabsorbing_set _ E ;
+  absconvex_nbhsbasisat0 : nbhsbasis_at0 `<=` @absolutely_convex_set _ E ;
+  expand_nbhsbasisat0 : forall B r, nbhsbasis_at0 B ->
+    exists2 U, nbhsbasis_at0 U & ( *:%R r) @` U `<=` B (* implies circled *) ;
+  (* *)
+  nbhsbasis_at0I : forall U V, nbhsbasis_at0 U -> nbhsbasis_at0 V ->
+    exists2 W, nbhsbasis_at0 W & W `<=` U `&` V
+  (* *) }.
 
-Definition nbhs_frombasis0 (R : numFieldType) (E : zmodType)
+Definition filter_from_basis0 (R : numFieldType) (E : zmodType)
     (nbhsbasis_at0 : set_system E) (x : E) :=
   filter_from [set U | exists2 V, nbhsbasis_at0 V & [set x] `+ V = U] id.
 
-HB.builders Context R E & Nbhsbasisat0_isConvexTvs R E.
+HB.builders Context R E & NbhsBasisAt0_isConvexTvs R E.
 
-Let nbhs_fromfilter0 := @nbhs_frombasis0 R E (nbhsbasis_at0).
+Let nbhs_fromfilter0 := @filter_from_basis0 R E (nbhsbasis_at0).
 
-Lemma split_nbhsbasisat0 : forall B, nbhsbasis_at0 B ->
-    exists2 C, nbhsbasis_at0 C & C `+ C `<=` B.
+#[local] Lemma split_nbhsbasisat0 : forall B, nbhsbasis_at0 B ->
+  exists2 C, nbhsbasis_at0 C & C `+ C `<=` B.
 Proof.
-move => B /(@expand_nbhsbasisat0 _ (2)) [U fU UB].
+move => B /(@expand_nbhsbasisat0 _ 2)[U fU UB].
 exists U => //.
-move => /= x [u] Uu [v] Uv <-.
+move=> /= x [u Uu] [v Uv] <-.
 apply: UB.
-exists (2^-1 *: (u+v)); last by by rewrite scalerA mulfV // scale1r.
+exists (2^-1 *: (u + v)); last by rewrite scalerA mulfV// scale1r.
 rewrite scalerDr.
 have [convU _] := absconvex_nbhsbasisat0 fU.
 have H : (0 : R) <= 2^-1 by [].
-have G : (2^-1 : R) <= 1 by rewrite invf_le1 ?lerDl //.
+have G : (2^-1 : R) <= 1 by rewrite invf_le1 ?lerDl.
 pose r := Itv01 H G.
-have := (convU u v r).
-rewrite !inE => /(_ Uu Uv); rewrite /conv /=.
-suff -> :  (2^-1).~ = 2^-1 :> R by []. (* should be a lemma in convex *)
-apply: (@mulIf _ 2%:R); rewrite /((_).~) //.
-by rewrite mulrBl mulVf // mul1r // addrK.
+have := convU u v r.
+rewrite !inE => /(_ Uu Uv); rewrite /conv/=.
+suff -> :  (2^-1).~ = 2^-1 :> R by [].
+by rewrite /onem [X in X - _](splitr 1) div1r addrK.
 Qed.
 
-#[local] Lemma nbhs_filter : forall p : E, ProperFilter (nbhs_fromfilter0 p).
+#[local] Lemma nbhs_filter (p : E) : ProperFilter (nbhs_fromfilter0 p).
 Proof.
-rewrite /nbhs_fromfilter0 => p.
 apply: filter_from_proper.
   apply: filter_from_filter => /=.
-  have [U fU] := nonempty_nbhsbasisat0.
-  by exists ([set p] `+ U) => //=; exists U.
+    have [U fU] := nonempty_nbhsbasisat0.
+    by exists ([set p] `+ U) => //=; exists U.
   move=> _ _ /= [U0 FU <-] [V0 FV <-].
   have [W FW WUV] := nbhsbasis_at0I FU FV.
   exists ([set p] `+ W); first by exists W.
-  rewrite -addsetI; exact: addsubset.
+  by rewrite -addsetI; exact: addsetS.
 move=> _ /= [V FV]  <-.
-by exists p; exists p => //; exists 0; rewrite ?addr0//; exact: mem0_nbhsbasisat0.
+by exists p, p => //; exists 0; rewrite ?addr0//; exact: mem0_nbhsbasisat0.
 Qed.
 
-#[local] Lemma nbhs_singleton : forall (p : E) (A : set E), nbhs_fromfilter0 p A -> A p.
+#[local] Lemma nbhs_singleton (p : E) (A : set E) : nbhs_fromfilter0 p A -> A p.
 Proof.
-move=> p A [_/= [C f0C <-]]; apply; exists p => //; exists 0; rewrite ?addr0//.
+move=> [_/= [C f0C <-]]; apply; exists p => //; exists 0; rewrite ?addr0//.
 exact: mem0_nbhsbasisat0.
 Qed.
 
@@ -872,15 +824,15 @@ exists ([set p] `+ D); first by exists D.
 move=> _ [/= _] -> [c Cc <-] /=.
 exists ([set p + c] `+ D) => //; first by exists D.
 apply: (subset_trans _ pCA).
-apply: (@subset_trans _ ([set p] `+ ([set c] `+ D))); first by exact: addsubsetA.
-apply: addsubset => //; apply: subset_trans DDC; apply: addsubset => //.
+apply: (@subset_trans _ ([set p] `+ ([set c] `+ D))); first by exact: addsetA.
+apply: addsetS => //; apply: subset_trans DDC; apply: addsetS => //.
 by move=> x ->.
 Qed.
 
-HB.instance Definition _ := @hasNbhs.Build E (nbhs_fromfilter0).
+HB.instance Definition _ := @hasNbhs.Build E nbhs_fromfilter0.
 
-HB.instance Definition _ := @Nbhs_isNbhsTopological.Build E nbhs_filter nbhs_singleton nbhs_nbhs.
-
+HB.instance Definition _ :=
+  @Nbhs_isNbhsTopological.Build E nbhs_filter nbhs_singleton nbhs_nbhs.
 
 #[local] Lemma add_continuous : continuous (fun x : E * E => x.1 + x.2).
 Proof.
@@ -893,7 +845,7 @@ move => [z1 z2] /= [[x ->]] =>  [[y1] Vy <-{z1}].
 move => [t ->{t}] [y2 Wy2 <-].
 apply: VA => //=.
 exists (x1 + x2) => //; exists (y1 + y2).
-apply: WV =>/=; exists y1 => //; exists y2 =>//.
+apply: WV =>/=; exists y1 => //; exists y2 => //.
 by rewrite addrACA.
 Qed.
 
@@ -901,46 +853,47 @@ Qed.
 Proof.
 move => /= [r x] /= A /= [_] /= [V fV <-] VA.
 have [r0|] := eqVneq r 0.
-have [V0 fV0 rV0] := (split_nbhsbasisat0 fV).
-have [/= s [s0]] := (absorbing_nbhsbasisat0 fV0 x).
+  have [V0 fV0 rV0] := split_nbhsbasisat0 fV.
+  have [/= s [s0]] := absorbing_nbhsbasisat0 fV0 x.
+  rewrite inE => xV''.
+  have [convV'' balV''] := absconvex_nbhsbasisat0 fV0.
+  exists ((ball_ normr 0 (minr 1 s)), [set x] `+ V0) => //=.
+    split.
+      exists (minr 1 s) => //=. rewrite /minr; case: ifPn => //.
+      by rewrite r0.
+     by exists ([set x] `+ V0) => //; exists V0.
+  move => [z1 z2] /=; rewrite sub0r normrN => -[z1s].
+  move=> [_ ->] [y] Vy <- {z2}; apply: VA => /=.
+  rewrite r0; exists 0; rewrite ?scale0r//.
+  exists (z1 *: (x + y)); rewrite ?add0r//.
+  apply: rV0 => /=; exists (z1 *: x).
+    apply: (balV'' (z1 * s^-1)).
+      rewrite normrM normfV ltW// ltr_pdivrMr ?normr_gt0 ?gt_eqF//.
+      rewrite mul1r [ltRHS]gtr0_norm // (lt_le_trans z1s) //.
+      by rewrite /minr; case: ifPn => // /ltW.
+    by exists (s *: x) => //; rewrite !scalerA divfK// gt_eqF //.
+  exists (z1 *: y) => //; last by rewrite -scalerDr.
+  apply: (balV'' z1); last by exists y.
+  by rewrite (le_trans (ltW z1s)) // /minr; case: real_ltP => //;
+    rewrite gtr0_real.
+have [V0 fV0 rV0] := split_nbhsbasisat0 fV.
+have [V' fV' rV'] := split_nbhsbasisat0 fV0.
+have [V'' fV'' rV''] := expand_nbhsbasisat0 r fV'.
+have [/= s [s0]] := absorbing_nbhsbasisat0 fV'' x.
 rewrite inE => xV''.
-have [convV'' balV''] := (absconvex_nbhsbasisat0 fV0 ).
-exists ((ball_ normr 0 (minr 1 s)) (*[set t | `|t| < r]*), [set x] `+ V0) => //=.
-  split.
-   exists (minr 1 s) => //=. rewrite /minr; case: ifPn => //.
-     by rewrite r0.
-   by exists ([set x] `+ V0) => //; exists V0.
-move => [z1 z2] /=; rewrite sub0r normrN => -[z1s].
-move=> [_ ->] [y] Vy <- {z2}; apply: VA => /=; rewrite r0; exists 0; rewrite ?scale0r //.
-exists (z1 *: (x + y)); rewrite ?add0r //.
-apply: rV0 => /=; exists (z1 *: x).
-  apply: (balV'' (z1 * s^-1)).
-    rewrite normrM normfV ltW // ltr_pdivrMr ?normr_gt0 ?gt_eqF //.
-    rewrite mul1r [ltRHS]gtr0_norm // (lt_le_trans z1s) //.
-    by rewrite /minr; case: ifPn => // /ltW //.
-  by exists (s *: x) => //; rewrite !scalerA divfK// gt_eqF //.
-exists (z1 *: y) => //; last by rewrite -scalerDr.
-apply: (balV'' z1); last by exists y.
-rewrite (le_trans (ltW z1s)) // /minr; case: real_ltP => //;
-by rewrite gtr0_real.
-have [V0 fV0 rV0] := (split_nbhsbasisat0 fV).
-have [V' fV' rV'] := (split_nbhsbasisat0 fV0).
-have [V'' fV'' rV''] := (expand_nbhsbasisat0 r fV').
-have [/= s [s0 (*xV'' xx'*)]] := (absorbing_nbhsbasisat0 fV'' x).
-rewrite inE => xV''.
-have [convV'' balV''] := (absconvex_nbhsbasisat0 fV'').
-exists ([set r] `+ (ball_ normr 0 (Num.min `|r| (`|r * s|))) , [set x] `+ V'') => //=.
-  split; last  by exists ([set x] `+ V'') => //; exists V''.
-  exists ((Num.min `|r| (`|r * s|))) => //=.
-  rewrite /minr; case: ifPn; first by rewrite normr_gt0 //.
+have [convV'' balV''] := absconvex_nbhsbasisat0 fV''.
+exists ([set r] `+ (ball_ normr 0 (Num.min `|r| `|r * s|)), [set x] `+ V'') => //=.
+  split; last by exists ([set x] `+ V'') => //; exists V''.
+  exists (Num.min `|r| `|r * s|) => //=.
+  rewrite /minr; case: ifPn; first by rewrite normr_gt0.
     by rewrite normr_gt0 => _ ; rewrite mulf_neq0 // gt_eqF.
   move=> u/= rur; exists r => //; exists (u - r); last by rewrite subrKC.
-  by rewrite sub0r normrN distrC (lt_le_trans rur)//.
+  by rewrite sub0r normrN distrC (lt_le_trans rur).
 move => [z1 z2] /= => [] [[x0] -> {x0}] [y]; rewrite add0r normrN => yr.
 move => <- [H ->] [t] Vt <-; apply: VA => /=.
 exists (r *: x) => //; exists (r *: t + y *: x + y *: t); last first.
   by rewrite !addrA -scalerDr -addrA -scalerDr scalerDl.
-apply: rV0; exists (r *:t) => //.
+apply: rV0; exists (r *: t) => //.
   apply: rV'; exists 0; first by apply: mem0_nbhsbasisat0.
   exists (r *: t); first by apply: rV''; exists t.
   by rewrite add0r.
@@ -950,13 +903,13 @@ apply: rV''.
    exists ((r^-1 * y) *: x).
       apply: (balV'' (r^-1 * y * s^-1)).
       rewrite -mulrA normrM normfV // ler_pdivrMl ?normr_gt0 // mulr1.
-      rewrite normrM -ler_pdivlMr ?normr_gt0 // ?gt_eqF // ?invr_gt0 //.
-      rewrite (le_trans (ltW yr)) //; rewrite /minr.
+      rewrite normrM -ler_pdivlMr ?normr_gt0 // ?gt_eqF // ?invr_gt0//.
+      rewrite (le_trans (ltW yr))//; rewrite /minr.
       case: ifPn; last by move=> _; rewrite normfV normrM invrK.
       by move/ltW; rewrite normrM normfV invrK.
-   exists (s *: x); rewrite // !scalerA divfK//  gt_eqF //.
+   exists (s *: x); rewrite // !scalerA divfK// gt_eqF//.
    by rewrite scalerA mulrA divff// mul1r.
-exists (y *: t) => //;  apply: rV''; exists ((r^-1 * y) *: t); last first.
+exists (y *: t) => //; apply: rV''; exists ((r^-1 * y) *: t); last first.
   by rewrite scalerA mulrA divff// mul1r.
 apply: (balV'' (r^-1 * y)); last by exists t.
 rewrite normrM normfV// ler_pdivrMl ?normr_gt0// mulr1.
@@ -966,162 +919,165 @@ Qed.
 #[local] Lemma locally_convex : exists2 B : set_system E,
     (forall b, b \in B -> absolutely_convex_set b) & nbhs_basis 0 B.
 Proof.
-exists nbhsbasis_at0; first by move=> b; rewrite inE; apply: absconvex_nbhsbasisat0.
-split; first by move=> /= A nA; exists A => //; exists A => //; rewrite addset0.
-move => b [a] /= [a'] fa; rewrite addset0 => <- ab /=.
+exists nbhsbasis_at0.
+  by move=> b; rewrite inE; apply: absconvex_nbhsbasisat0.
+split; first by move=> /= A nA; exists A => //; exists A => //; rewrite add0set.
+move => b [a] /= [a'] fa; rewrite add0set => <- ab /=.
 by exists a' => //=; split => //; exact: mem0_nbhsbasisat0.
 Qed.
 
-HB.instance Definition _ := @PreTopologicalLmod_isConvexTvs.Build R E add_continuous scale_continuous locally_convex.
+HB.instance Definition _ := @PreTopologicalLmod_isConvexTvs.Build R E
+  add_continuous scale_continuous locally_convex.
 
 HB.end.
 
-HB.factory Record Nbhssubbasis0_isConvexTvs (R: numFieldType) E & GRing.Lmodule R E := {
-  nbhssubbasis0 : set_system E ;
-  nonempty_nbhssubbasisat0 : exists U, nbhssubbasis0 U;
-  mem0_nbhssubbasisat0 : forall B, nbhssubbasis0 B -> B 0 ;
-  expand_nbhssubbasisat0 : forall B r, nbhssubbasis0 B -> (*0 <= r ->*)
-    exists2 U, nbhssubbasis0 U & r `*: U `<=` B ; (* implies circled *)
-  absorbing_nbhssubbasisat0 : forall B , nbhssubbasis0 B -> pabsorbing_set B;
-  absconvex_nbhssubbasisat0 : forall B, nbhssubbasis0 B -> absolutely_convex_set B }.
+HB.factory Record NbhsSubbasisAt0_isConvexTvs (R : numFieldType) E
+    & GRing.Lmodule R E := {
+  nbhssubbasis_at0 : set_system E ;
+  nonempty_nbhssubbasisat0 : nbhssubbasis_at0 !=set0 ;
+  mem0_nbhssubbasisat0 : forall B, nbhssubbasis_at0 B -> B 0 ;
+  absorbing_nbhssubbasisat0 : nbhssubbasis_at0 `<=` @pabsorbing_set _ E ;
+  absconvex_nbhssubbasisat0 : nbhssubbasis_at0 `<=` @absolutely_convex_set _ E ;
+  expand_nbhssubbasisat0 : forall B r, nbhssubbasis_at0 B ->
+    exists2 U, nbhssubbasis_at0 U & ( *:%R r) @` U `<=` B  (* implies circled *) }.
 
-Definition nbhs_fromsubbasis0 (R : numFieldType) (E : zmodType)
+Definition finI_fromsubbasis0 (R : numFieldType) (E : zmodType)
     (nbhssubbasis0 : set_system E)  :=
   finI_from nbhssubbasis0 id.
 
-HB.builders Context R E & Nbhssubbasis0_isConvexTvs R E.
+HB.builders Context R E & NbhsSubbasisAt0_isConvexTvs R E.
 
 From mathcomp Require Import finmap.
 
-Let nbhsbasis_at0 := @nbhs_fromsubbasis0 R E nbhssubbasis0.
+Let nbhsbasis_at0 := @finI_fromsubbasis0 R E nbhssubbasis_at0.
 
-#[local] Lemma nonempty_nbhsbasisat0 : exists U, nbhsbasis_at0 U.
+#[local] Lemma nonempty_nbhsbasisat0 : nbhsbasis_at0 !=set0.
 Proof.
 have [U fU] := nonempty_nbhssubbasisat0; exists U.
-rewrite /nbhsbasis_at0 /nbhs_fromsubbasis0 /finI_from /=.
+rewrite /nbhsbasis_at0 /finI_fromsubbasis0 /finI_from /=.
 exists [fset U]%fset => /=.
   by move=> _ /fset1P ->; rewrite mem_set //=; exists U; rewrite ?addset0.
-rewrite /bigcap /=; apply/seteqP; split => z /=; first by apply; rewrite inE. (*bigcap_set1 not working*) by move=> Uz i /fset1P ->.
+by rewrite bigcap_fset big_seq_fset1.
 Qed.
 
-#[local] Lemma nbhsbasis_at0I : forall U V, nbhsbasis_at0 U -> nbhsbasis_at0 V ->
-    exists2 W, nbhsbasis_at0 W & W `<=` U `&` V.
+#[local] Lemma nbhsbasis_at0I U V : nbhsbasis_at0 U -> nbhsbasis_at0 V ->
+  exists2 W, nbhsbasis_at0 W & W `<=` U `&` V.
 Proof.
-move=> U V [/= I fI IV] [/=J fJ JU].
-exists (U `&` V) => //.
-exists (I `|` J)%fset.
- move => /= W; rewrite inE => /orP [WI|WJ]; rewrite mem_set //=.
-   by have := (fI _ WI); rewrite asboolE //=.
-(* extremely hard to understand that asboolE is to be used here *)
- by have := (fJ _ WJ); rewrite asboolE //=.
-rewrite -IV -JU /bigcap /=; apply/seteqP; split => z /=.
-  by move=> H; split => i iI; apply: H; rewrite inE; apply/orP; [left|right]. (*bigcapI does not work*)
-move => [Iz Jz] i; rewrite inE => /orP [|]; first by apply: Iz.
-by apply: Jz.
+move=> [/= I fI IV] [/=J fJ JU].
+exists (U `&` V) => //; exists (I `|` J)%fset.
+  move => /= W; rewrite inE => /orP [WI|WJ]; rewrite mem_set //=.
+  (* extremely hard to understand that asboolE is to be used here *)
+    by have := fI _ WI; rewrite asboolE.
+  by have := fJ _ WJ; rewrite asboolE.
+by rewrite -IV -JU -bigcap_setU set_fsetU.
 Qed.
 
-#[local] Lemma mem0_nbhsbasisat0 : forall B, nbhsbasis_at0 B -> B 0.
+#[local] Lemma mem0_nbhsbasisat0 B : nbhsbasis_at0 B -> B 0.
 Proof.
-by move => B [/= I fI <-] U /= /fI /=; rewrite asboolE /= => /mem0_nbhssubbasisat0.
+by move=> [/= I fI <-] U /= /fI /=; rewrite asboolE /= => /mem0_nbhssubbasisat0.
 Qed.
 
-#[local] Lemma expand_nbhsbasisat0 : forall B r, nbhsbasis_at0 B ->
-  exists2 U, nbhsbasis_at0 U & r `*: U `<=` B.
+#[local] Lemma expand_nbhsbasisat0 B r : nbhsbasis_at0 B ->
+  exists2 U, nbhsbasis_at0 U & ( *:%R r) @` U `<=` B.
 Proof.
-move => B r [/= I fI BI]. (* Change to a type I'*)
-have H : forall i, (i \in I) -> exists2 V, nbhssubbasis0 V & r `*: V `<=` i.
-  move => i /(fI i); rewrite asboolE => /(expand_nbhssubbasisat0 r) /=  [V nV rVi].
+move=> [/= I fI BI]. (* Change to a type I'*)
+have H i : (i \in I) -> exists2 V, nbhssubbasis_at0 V & ( *:%R r) @` V `<=` i.
+  move=> /(fI i); rewrite asboolE => /(expand_nbhssubbasisat0 r) /=  [V nV rVi].
   by exists V.
-pose f i := if (i \in I) =P true is ReflectT h then (sval (cid2 (H _ h))) else setT.
-have Hn i : i \in I -> nbhssubbasis0 (f i).
+pose f i := if (i \in I) =P true is ReflectT h then sval (cid2 (H _ h)) else setT.
+have Hn i : i \in I -> nbhssubbasis_at0 (f i).
  by rewrite /f; case: eqP => // h _; case: cid2.
-have Hr i : i \in I -> r `*: (f i) `<=` i.
+have Hr i : i \in I -> ( *:%R r) @` f i `<=` i.
  by rewrite /f; case: eqP => // h _; case: cid2.
 pose U := \bigcap_(i in [set` I])(f i).
 exists U. exists (f @` I)%fset => /=.
-  - by move => _ /imfsetP[/= b bi ->]; apply/mem_set/Hn.
+  - by move => _ /imfsetP[/= b bi ->]; exact/mem_set/Hn.
   - by rewrite set_imfset bigcap_image.
 rewrite -BI => x /= [y]; rewrite /U /= => Uy rx i /= j.
 apply: Hr => //=.
-by exists y => //; apply: Uy.
+by exists y => //; exact: Uy.
 Qed.
 
-#[local] Lemma absorbing_nbhsbasisat0 : forall B , nbhsbasis_at0 B -> pabsorbing_set B.
+#[local] Lemma absorbing_nbhsbasisat0 : nbhsbasis_at0 `<=` @pabsorbing_set _ E.
 Proof.
-move => B [/= I fI BI] /= x.
-have /= H : forall i, (i \in I) -> exists r : {posnum R}, r%:num *: x \in i.
-  move => i /(fI i); rewrite asboolE => /absorbing_nbhssubbasisat0/(_ x) [r r0 rx].
+move=> B [/= I fI BI] /= x.
+have /= H : forall i, i \in I -> exists r : {posnum R}, r%:num *: x \in i.
+  move => i /(fI i); rewrite asboolE => /absorbing_nbhssubbasisat0/(_ x)[r r0 rx].
   by exists (PosNum r0).
-pose f (i : set E)  : {posnum R} := [elaborate if (i \in I) =P true is ReflectT h then (sval (cid (H i h))) else 1%:pos]. (*elaborate???*)
+pose f (i : set E) : {posnum R} :=
+  [elaborate if (i \in I) =P true is ReflectT h then sval (cid (H i h)) else 1%:pos].
+  (*elaborate???*)
 have /= Hr i : i \in I -> (f i)%:num *: x \in i.
  by rewrite /f; case: eqP => // h _; case: cid.
 pose r0 : {posnum R} := [elaborate \big[Order.min/1%:pos]_(i <- I) f i].
-exists r0%:num  => //. (* waouh *)
+exists r0%:num => //.
 rewrite -BI asboolE /= => i /= iI.
-have ni : nbhssubbasis0 i by apply/set_mem/fI.
-have [_ bali] := (absconvex_nbhssubbasisat0 ni).
+have ni : nbhssubbasis_at0 i by apply/set_mem/fI.
+have [_ bali] := absconvex_nbhssubbasisat0 ni.
 apply: (bali (r0%:num / (f i)%:num)).
  rewrite ger0_norm // ler_pdivrMr // mul1r /r0 num_le //.
- by apply: ge_bigmin_seq.
-exists ((f i)%:num *: x); first apply/set_mem/Hr => //.
-by rewrite scalerA mulfVK //.
+ exact: ge_bigmin_seq.
+exists ((f i)%:num *: x); first exact/set_mem/Hr.
+by rewrite scalerA mulfVK.
 Qed.
 
-#[local] Lemma absconvex_nbhsbasisat0 : forall B, nbhsbasis_at0 B -> absolutely_convex_set B.
+#[local] Lemma absconvex_nbhsbasisat0 :
+  nbhsbasis_at0 `<=` @absolutely_convex_set _ E.
 Proof.
-move => B [/= I fI <-]; split.
+move=> B [/= I fI <-]; split.
   move=> x y r; rewrite !asboolE /= => xb yb => // i /= iI.
   have /fI := iI; rewrite asboolE; move/absconvex_nbhssubbasisat0 => [+ _].
-  move=> /(_ x y r); rewrite !asboolE; apply; first by apply: xb.
-  by apply: yb => /=.
+  move=> /(_ x y r); rewrite !asboolE; apply; first exact: xb.
+  exact: yb.
 move=> r r1 x /= [y] capy <- i /= iI.
-have /fI := iI; rewrite asboolE; move/absconvex_nbhssubbasisat0 => [_ +].
-by move=> /(_ r r1 (r *: y)); apply => /=; exists y => //; apply: capy.
+have /fI := iI; rewrite asboolE => /absconvex_nbhssubbasisat0[_ +].
+by move=> /(_ r r1 (r *: y)); apply => /=; exists y => //; exact: capy.
 Qed.
 
-
-HB.instance Definition _ := @Nbhsbasisat0_isConvexTvs.Build R E
-  nbhsbasis_at0 nonempty_nbhsbasisat0 nbhsbasis_at0I mem0_nbhsbasisat0
-  expand_nbhsbasisat0 absorbing_nbhsbasisat0 absconvex_nbhsbasisat0.
+HB.instance Definition _ := @NbhsBasisAt0_isConvexTvs.Build R E
+  nbhsbasis_at0 nonempty_nbhsbasisat0 mem0_nbhsbasisat0 absorbing_nbhsbasisat0
+  absconvex_nbhsbasisat0 expand_nbhsbasisat0 nbhsbasis_at0I.
 
 HB.end.
-
 
 Section ConvexTvs_numDomain.
 Context (R : numDomainType) (E : convexTvsType R).
 
-Lemma nbhs0N  (U : set E) : nbhs 0 U -> nbhs 0 (-%R @` U).
+Lemma nbhs0N (U : set E) : nbhs 0 U -> nbhs 0 (-%R @` U).
 Proof. exact/nbhs0N_subproof/scale_continuous. Qed.
 
-Lemma nbhsD0  (U : set E) (x :E) : nbhs 0 U -> nbhs x (+%R x @` U).
+Lemma nbhsD0 (U : set E) (x : E) : nbhs 0 U -> nbhs x (+%R x @` U).
 Proof. exact/nbhsD_subproof/add_continuous. Qed.
 
-Lemma nbhsD  (U : set E) (z x : E) : nbhs z U -> nbhs (x + z) (+%R x @` U).
+Lemma nbhsD (U : set E) (z x : E) : nbhs z U -> nbhs (x + z) (+%R x @` U).
 Proof. exact/nbhsB_subproof/add_continuous. Qed.
 
-Lemma openD  (V : set E) (x : E) : open V -> open ((+%R x @` V)).
+Lemma openD (V : set E) (x : E) : open V -> open (+%R x @` V).
 Proof.
 rewrite openE /= => openV z /= [y uy <-]; rewrite /interior /=.
 by apply: nbhsD; rewrite nbhsE /=; exists V => //; split => //; rewrite openE.
 Qed.
 
-Lemma openB (U : set E) (x : E) : open ((+%R x @` U)) -> open U.
+Lemma openB (U : set E) (x : E) : open (+%R x @` U) -> open U.
 Proof.
-suff  : U = ((+%R (-x) @` (+%R x @` U))) by move => + H; move => ->; apply: openD.
+suff  : U = ((+%R (-x) @` (+%R x @` U))).
+  by move => + H => ->; exact: openD.
 apply/seteqP; split => z /=.
   move=> Uz; exists (z + x); first by exists z => //; rewrite addrC.
   by rewrite -addrCA [X in (_ + X = _)]addrC subrr addr0.
 by move=> [y [y' Uy' <-] <-]; rewrite addrCA addrA subrr add0r.
 Qed.
 
-Lemma nbhsE0 (x : E) (b : set E): nbhs x b <-> b x /\ exists2 a, nbhs 0 a & ([set x + x0 | x0 in a]) `<=` b.
+Lemma nbhsE0 (x : E) (b : set E): nbhs x b <-> b x /\
+  exists2 a, nbhs 0 a & [set x + x0 | x0 in a] `<=` b.
 Proof.
 split.
-  move => /[dup] /(nbhsD (-x)); rewrite addNr => nb0 nb; split; first by apply: nbhs_singleton.
+  move => /[dup] /(nbhsD (-x)); rewrite addNr => nb0 nb; split.
+    exact: nbhs_singleton.
   exists [set - x + x0 | x0 in b] => // z /=.
   by move=> [y /= [y' by']] <- <-; rewrite addrA addrN add0r.
-move=> [bx [a n0a xab]]; apply: filterS; first by exact: xab.
-by apply: nbhsD0.
+move=> [bx [a n0a xab]]; apply: filterS; first exact: xab.
+exact: nbhsD0.
 Qed.
 
 End ConvexTvs_numDomain.
@@ -1137,7 +1093,7 @@ near=> x => //=; exists (r^-1 *: x); last by rewrite scalerA divff// scale1r.
 by apply: (BU (r^-1, x)); split => //=;[exact: nbhs_singleton|near: x].
 Unshelve. all: by end_near. Qed.
 
-Lemma nbhsZ  (R : numFieldType) (E : convexTvsType R) (U : set E) (r : R) (x :E) :
+Lemma nbhsZ (R : numFieldType) (E : convexTvsType R) (U : set E) (r : R) (x :E) :
   r != 0 -> nbhs x U -> nbhs (r *:x) ( *:%R r @` U ).
 Proof.
 move=> r0 U0; have /= := scale_continuous ((r^-1, r *: x)) U.
@@ -1149,39 +1105,37 @@ Unshelve. all: by end_near. Qed.
 Lemma openZ (R : numFieldType) (E : convexTvsType R) (U : set E) (r : R) :
   r != 0 -> open U -> open ( *:%R r @` U ).
 Proof.
-move=> r0; rewrite openE /interior /= => openU z /= [x Ux <-]; apply: nbhsZ => //.
+move=> r0; rewrite openE /interior /= => openU z /= [x Ux <-].
+apply: nbhsZ => //.
 by rewrite nbhsE => /=; exists U => //; split; rewrite // openE.
 Qed.
 
 End ConvexTvs_numField.
 
-
 Section ConvexTvs_realType.
 
 (*better naming ?*)
 Lemma scalerx_continuous (R : realType) (E : convexTvsType R) (x : E) (s : R) :
-  {for s, continuous (fun t : R^o =>  t *: x)}.
+  {for s, continuous (fun t : R^o => t *: x)}.
 Proof.
-have -> : (fun t : R^o =>  t *: x) = (fun z => z.1 *: z.2) \o (fun r => (r,x)) by apply: funext.
+have -> : (fun t : R^o => t *: x) = (fun z => z.1 *: z.2) \o (fun r => (r,x)).
+  exact: funext.
 apply: continuous_comp.
-apply: (@cvg_pair _ R^o _ _ (nbhs (s : R^o))) => //=; first by exact: cvg_cst.
-by exact: (scale_continuous (s : R^o,x)).
+apply: (@cvg_pair _ _ _ _ (nbhs s)) => //=; first exact: cvg_cst.
+exact: (scale_continuous (s, x)).
 Qed.
-
-(* why is cvg_cst defined only on realtypes ? *)
 
 Lemma scalexr_continuous (R : realType) (E : convexTvsType R) (x : E) (s : R) :
   {for x, continuous (fun y : E =>  s *: y)}.
 Proof.
-have -> : (fun y: E =>  s *: y ) = (fun z => z.1 *: z.2) \o (fun y => (s, y)).
-  by apply: funext.
+have -> : (fun y : E => s *: y) = (fun z => z.1 *: z.2) \o (fun y => (s, y)).
+  exact: funext.
 apply: continuous_comp.
-apply: (@cvg_pair _ R^o _ _ (nbhs (s : R^o))) => //=; first by exact: cvg_cst.
-by exact: (scale_continuous (s: R^o, x)).
+apply: (@cvg_pair _ _ _ _ (nbhs s)) => //=; first exact: cvg_cst.
+exact: (scale_continuous (s, x)).
 Qed.
 
 End ConvexTvs_realType.
-
 
 Section standard_topology.
 Variable R : numFieldType.
@@ -1473,23 +1427,24 @@ Proof. move => *; exact: linearP. Qed.
 End lcfunproperties.
 
 Section openbasis.
-Context (R : realType) (E: convexTvsType R).
+Context (R : realType) (E : convexTvsType R).
 
-Definition nbhsbasis_ctvs := sval (cid2 (@locally_convex _ E)).
+Definition nbhsbasis_convextvs := sval (cid2 (@locally_convex _ E)).
 
-Definition open_nbhsbasis_ctvs := [set b| exists2 b', nbhsbasis_ctvs b' & b = interior b'].
+Definition open_nbhsbasis_convextvs := [set interior b | b in nbhsbasis_convextvs].
 
 (* TODO : convex is enough and then take balanced closure *)
 Lemma has_open_nbhs_basis :
-  nbhs_basis 0 open_nbhsbasis_ctvs /\ ( forall b, open_nbhsbasis_ctvs b -> (open b /\ absolutely_convex_set b)).
+  nbhs_basis 0 open_nbhsbasis_convextvs /\
+  (forall b, open_nbhsbasis_convextvs b -> open b /\ absolutely_convex_set b).
 Proof.
-have [absconv [] nbhs0 basis] :=  (svalP (cid2 (@locally_convex _ E))).
+have [absconv [] nbhs0 basis] := svalP (cid2 (@locally_convex _ E)).
 split.
-  split; move=> a /=; first by move => [b /nbhs0 nbhsb ->]; apply: nbhs_interior.
-  move=> /basis /= [b /= nbhsb ba]; exists (interior b); first by exists b => //.
-  apply: subset_trans; last by exact: ba.
+  split; move=> a /=; first by move=> [b /nbhs0] nbhsb <-; exact: nbhs_interior.
+  move=> /basis /= [b /= nbhsb ba]; exists (interior b); first by exists b.
+  apply: subset_trans; last exact: ba.
   exact: interior_subset.
-move=> ? /=  [b nb ->]; split; first by exact: open_interior.
+move=> ? /= [b nb <-]; split; first exact: open_interior.
 have [convb balb] := absconv b (mem_set nb).
 split; rewrite /interior.
   move => x y t; rewrite !inE.
@@ -1512,7 +1467,7 @@ move=> t0 t1 ? /= [x] /= + <-; move/nbhsE0 => [bx [a na0 ab]].
 apply/nbhsE0; split.
   apply: balb; first by exact: t1.
   by exists x.
-exists (t `*: a).
+exists (( *:%R t) @` a).
   by rewrite -(@scaler0 _ _ t); apply: nbhsZ => // ? /= [y ay] <-; apply: ab; exists y.
 move => z /= [?] [y] ax <- <-; rewrite -scalerDr; apply: balb; first by exact: t1.
 by exists (x + y)=> //; apply: ab; exists y.
@@ -1527,15 +1482,15 @@ Proof.
 by move=> /(_ [set: E]) /(_ filterT) [b ? _]; exists b.
 Qed.
 
-Lemma absorbing_opennbhsbasis : forall b, open_nbhsbasis_ctvs b -> pabsorbing_set b.
+Lemma absorbing_opennbhsbasis b : open_nbhsbasis_convextvs b -> pabsorbing_set b.
 Proof.
-move=> b Bb x.
-have [/(_ b Bb) n0b _] := (basis_opennbhsbasis ).
+move=> Bb x.
+have [/(_ b Bb) n0b _] := basis_opennbhsbasis.
 move: n0b; rewrite -(scale0r x) => n0b.
 have := scalerx_continuous => /(_ _ _ x 0 b n0b) [r] /= r0 b0rb.
-exists (r/2); first by apply: divr_gt0.
+exists (r / 2); first exact: divr_gt0.
 rewrite inE.
-apply: b0rb; rewrite /ball_ /= sub0r normrN normrM !gtr0_norm //.
+apply: b0rb; rewrite /ball_ /= sub0r normrN normrM !gtr0_norm//.
 by rewrite gtr_pMr // invf_lt1 // ltrDl.
 Qed.
 
@@ -1616,7 +1571,8 @@ Qed.
 Proof.
 have A0 : A 0 by move: (absorbA 0)=> [??]; rewrite scaler0 inE.
 have :=  absA; rewrite /absolutely_convex_set => -[] convA /= balA.
-have lem (w : V) : (exists2 r, (0 < r) & A (r *: w)) -> has_inf [set t | 0 < t /\ w \in t `*: A].
+have lem (w : V) : (exists2 r, (0 < r) & A (r *: w)) ->
+    has_inf [set t | 0 < t /\ w \in ( *:%R t) @` A].
   move => [r r0 Aw]; split => /=; rewrite /set0P; last by exists 0 => z [z0 _]; rewrite ltW.
   exists r^-1 => //=; split=> //.
   rewrite ?invr_gt0 //.
@@ -1714,17 +1670,6 @@ End gauge.
 
 Definition seminorm_on {R : realFieldType} {E : lmodType R} {P : set (SemiNorm.type E)} (Hp : P !=set0) : Type := E.
 
-
-(* TBD squeeze_cvgr once available *)
-Section foo.
-Context {T : Type} {a : set_system T} {Fa : Filter a} {R : realFieldType}.
-Implicit Types f g h : T -> R.
-
-Lemma squeeze_cvgr f h g : (\near a, f a <= g a <= h a) ->
-  forall (l : R), f @ a --> l -> h @ a --> l -> g @ a --> l.
-Admitted.
-End foo.
-
 Section convex_topology_seminorm.
 Context (R : realFieldType) (E : lmodType R) (P : set (SemiNorm.type E)) (H : P !=set0).
 
@@ -1762,7 +1707,7 @@ by rewrite ger0_le_norm ?nnegrE ?addr_ge0 ?norm_ge0.
 Qed.
 
 Lemma expand_seminorm_subbasis :
-  forall B r, seminorm_subbasis B -> exists2 U, seminorm_subbasis U & (r `*: U `<=` B).
+  forall B r, seminorm_subbasis B -> exists2 U, seminorm_subbasis U & ( ( *:%R r ) @` U `<=` B).
 move=> B r ; rewrite /seminorm_subbasis /= => -[p Pp [e e0 ->]] /=.
 case: (eqVneq r (0 : R)).
   move => ->; exists (p @^-1` (ball (0 : R) (e))); first by exists p => //; exists e.
@@ -1845,7 +1790,9 @@ rewrite !normfV -mulrA mulVf ?normr_eq0 ? mulr1//.
 by rewrite ltr_pdivrMr !gtr0_norm ?ltr_pMr // ltrDr.
 Qed.
 
-HB.instance Definition _ :=  @Nbhssubbasis0_isConvexTvs.Build R (seminorm_on H) seminorm_subbasis nonempty_subbasis mem0_seminorm_subbasis expand_seminorm_subbasis absorbing_seminorm absolutely_convex_seminorm_subbasis.
+HB.instance Definition _ :=  @NbhsSubbasisAt0_isConvexTvs.Build R (seminorm_on H)
+  seminorm_subbasis nonempty_subbasis mem0_seminorm_subbasis absorbing_seminorm
+  absolutely_convex_seminorm_subbasis expand_seminorm_subbasis.
 
 (* NB: Using init-fam (see initial_topology.v) doesn't work as we strongly need a 0 basis. With init-fam we are considering nbhs a = [ [A : set E |, exists e , A = [x | |p(x) - p(a)| <e]], while working from a 0 basis gives us nbhs a = [A : set E |, exists e , A = [x | p(x -a) < e]]. In particular, the continuity of the addition can't be proved in the first case*)
 
@@ -1907,11 +1854,11 @@ End convex_topology_seminorm.
 Section generating_seminorm.
 Context (R : realType) (E : convexTvsType R).
 
-Definition gauge_fun_basis (b : set E)  (h : (open_nbhsbasis_ctvs b)) :=
+Definition gauge_fun_basis (b : set E)  (h : (open_nbhsbasis_convextvs b)) :=
 gauge_fun (open_absconvex_opennbhsbasis h).2 (absorbing_opennbhsbasis h).
 
 Definition seminorm_of :=
-[set p : SemiNorm.type E | exists b, exists h : (open_nbhsbasis_ctvs b),
+[set p : SemiNorm.type E | exists b, exists h : open_nbhsbasis_convextvs b,
  p = gauge_fun_basis h].
 
 #[local] Lemma seminorm_ofneq0 : seminorm_of !=set0.
@@ -1938,7 +1885,7 @@ apply/seteqP; split => y /=; rewrite /ball /= sub0r normrN ger0_norm ?gauge_ge0 
     by rewrite gtr0_norm ?divr_gt0 // ler_pdivrMr // mul1r ltW.
   by exists y' => //; rewrite scalerA mulrC.
   move=> Ary.
-  have: exists2 t : R , (0 < t < 1) & (r^-1 *: y \in t `*: A).
+  have: exists2 t : R , (0 < t < 1) & (r^-1 *: y \in ( *:%R t) @` A).
   have /scalerx_continuous : nbhs (1 *: (r^-1 *: y)) A.
     by rewrite scale1r; apply: open_nbhs_nbhs; split => //.
   move => [s /= s0] b1s.
@@ -1953,7 +1900,7 @@ apply/seteqP; split => y /=; rewrite /ball /= sub0r normrN ger0_norm ?gauge_ge0 
     - by rewrite gtr0_norm ?gtr_pMr ?invf_lt1 ?ltrDl //.
   by rewrite scalerA mulVf ?scale1r //.
 move=> [t /andP [t0 t1] rytb].
-have lepr:  - (t*r) <= sup [set - x | x in [set r1 | 0 < r1 /\ y \in r1 `*: A]].
+have lepr:  - (t*r) <= sup [set - x | x in [set r1 | 0 < r1 /\ y \in ( *:%R r1) @` A]].
   set B := ( X in _ <= sup  X).
   have Br : B (- (t * r)).
     exists (t * r); split => //; rewrite ?mulr_gt0 //.
@@ -1971,10 +1918,10 @@ From mathcomp Require Import finmap. (* how to do without *)
 (* TODO : uniformise the usage of `+ or (+%R~ @) withine lemmas *)
 Theorem seminorm_convextvs : continuous (id : E -> seminormE) /\ (continuous (id : seminormE -> E)).
 Proof.
-pose B := open_nbhsbasis_ctvs.
+pose B := open_nbhsbasis_convextvs.
 split=> x a.
   move=> [/=b [?]] [I /= Ig] /= <- <- /filterS; apply.
-  apply/addx_nbhs.
+  apply/nbhs_add1set.
   apply: filter_bigI => /= i /Ig /set_mem /= => -[? [b' [nb']]] -> [/= r r0 ->].
   have [/(_ b' nb') nbhsB _] := basis_opennbhsbasis E.
   set p := (X in nbhs 0 (X @^-1` ball 0 r)).
@@ -2053,7 +2000,7 @@ case : (eqVneq (q x) 0).
     rewrite linearZ /= normrM normfV ltr_pdivrMl ?normr_gt0 ?lt0r_neq0 //.
     rewrite (gtr0_norm e0) => lem; apply : lt_trans.
     apply: lem.
-    have hasinf :  has_inf [set r | 0 < r /\ x \in r `*: b].
+    have hasinf :  has_inf [set r | 0 < r /\ x \in ( *:%R r) @` b].
       split; last by exists 0 => z /= [] z0 _; apply: ltW.
       have [r r0] := absorbing_opennbhsbasis Bb x.
       move/set_mem => bx.
