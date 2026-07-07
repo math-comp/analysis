@@ -238,11 +238,15 @@
   + module `MeasurableRocitv`
   + definition `open_type`
   + notations `.-open`, `.-open.-measurable`
-  + module `MeasurableRopen`
+  + module `MeasurableOpen`
+    * definition `measurableTypeO`
+    + definition `borel_display`
+    * definition `measurableO`
     * definition `measurableTypeR`
     + definition `lebesgue_display`
     * definition `measurableR`
     + lemmas `measurable_set1`, `measurable_itv` (also declared as hints)
+    + lemma `measurable_ball_norm`
     + definition `ocitv_measure`, lemma `ocitv_measure_ext`
   + module `MeasurableR`
   + module `RGenOpenSets`
