@@ -35,7 +35,6 @@ Variables (mu : {measure set T -> \bar R}) (f : T -> \bar R)
 Hypothesis f0 : forall x, 0 <= f x.
 Hypothesis mf : measurable_fun setT f.
 
-Import HBNNSimple.
 
 Hypothesis nd_g : forall x, nondecreasing_seq (g^~x).
 Hypothesis gf : forall x, EFin \o g^~ x @ \oo --> f x.
@@ -90,7 +89,6 @@ Hypothesis f10 : forall x, D x -> 0 <= f1 x.
 Hypothesis mf1 : measurable_fun D f1.
 Hypothesis mf2 : measurable_fun D f2.
 
-Import HBNNSimple.
 
 Lemma ge0_le_integral : (forall x, D x -> f1 x <= f2 x) ->
   \int[mu]_(x in D) f1 x <= \int[mu]_(x in D) f2 x.
@@ -163,7 +161,6 @@ Local Definition max_g2' : (T -> R)^nat :=
 Local Definition max_g2 : {nnsfun T >-> R}^nat :=
   fun k => bigmax_nnsfun (g2^~ k) k.
 
-Import HBNNSimple.
 
 Let is_cvg_g2 n t : cvgn (EFin \o (g2 n ^~ t)).
 Proof.

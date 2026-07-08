@@ -603,7 +603,10 @@ Section expectationM.
 Context {R : realType} {d} {T : measurableType d} (P : probability T R).
 Local Open Scope ereal_scope.
 
+<<<<<<< HEAD:theories/probability_theory/independence.v
 Import HBNNSimple.
+=======
+>>>>>>> aedb2e9ad (merge with measurableTypeNormed):theories/independence.v
 Import MeasurableR.
 
 #[local] Lemma expectationM_nnsfun (f g : {nnsfun T >-> R}) :

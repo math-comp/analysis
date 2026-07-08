@@ -94,6 +94,9 @@ Local Open Scope ring_scope.
 Reserved Notation "R .-ocitv" (at level 1, format "R .-ocitv").
 Reserved Notation "R .-ocitv.-measurable"
  (at level 2, format "R .-ocitv.-measurable").
+Reserved Notation "R .-open" (at level 1, format "R .-open").
+Reserved Notation "R .-open.-measurable"
+ (at level 2, format "R .-open.-measurable").
 
 Notation right_continuous f :=
   (forall x, f%function @ at_right x --> f%function x).

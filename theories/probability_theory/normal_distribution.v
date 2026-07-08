@@ -219,6 +219,8 @@ HB.instance Definition _ m s := Measure.on (normal_prob m s).
 
 End normal_prob_def.
 
+End normal_prob_def.
+
 Section normal_probability.
 Context {R : realType} (m sigma : R).
 Local Open Scope ring_scope.
@@ -588,7 +590,6 @@ Section normal_prob_lemmas.
 Context {R : realType}.
 Local Notation mu := lebesgue_measure.
 Local Open Scope ereal_scope.
-
 Import MeasurableR.
 
 Lemma integral_normal_prob (m s : R) f U : measurable U ->

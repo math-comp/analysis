@@ -573,7 +573,8 @@ apply: (@measure_semi_sigma_additive _ _ _ (@lebesgue_measure R)
   move=> [X mX [X' mX']] XX'Fn.
   apply: measurable_image_fine.
   rewrite -XX'Fn.
-  apply: measurableU; first exact: measurable_image_EFin.
+  apply: measurableU.
+    exact: measurable_image_EFin.
   by case: mX' => //; exact: measurableU.
 - move=> i j _ _ [x [[a [Fia aoo ax] [b [Fjb boo] bx]]]].
   move: tF => /(_ i j Logic.I Logic.I); apply.

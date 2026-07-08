@@ -351,7 +351,6 @@ Definition nnsfun_approx : {nnsfun T >-> R}^nat := fun n => locked (add_nnsfun
       else nnsfun0) (n * 2 ^ n)%N)
   (scale_nnsfun (indic_nnsfun _ (mB n)) (ler0n _ n))).
 
-Import HBNNSimple.
 
 Lemma nnsfun_approxE n : nnsfun_approx n = approx n :> (T -> R).
 Proof.
@@ -377,13 +376,11 @@ End approximation.
 Section approximation_sfun.
 Context d (T : measurableType d) (R : realType) (f : T -> \bar R).
 Variables (D : set T) (mD : measurable D) (mf : measurable_fun D f).
-
-Import HBSimple.
+Import MeasurableR.
 (* NB: already instantiated in cardinality.v *)
 (*HB.instance Definition _ x : @FImFun T R (cst x) := FImFun.on (cst x).*)
 (* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 
-Import HBNNSimple.
 (* NB: already instantiated in lebesgue_integral.v *)
 (*HB.instance Definition _ x : @NonNegFun T R (cst x%:num) :=
   NonNegFun.on (cst x%:num).*)
@@ -709,7 +706,6 @@ Let R  : measurableType _ := rT(*measurableTypeR rT*).
 Hypothesis mA : measurable A.
 Hypothesis finA : mu A < +oo.
 
-Import HBSimple.
 
 Let lusin_simple (f : {sfun R >-> rT}) (eps : rT) : (0 < eps)%R ->
   exists K, [/\ compact K, K `<=` A, mu (A `\` K) < eps%:E &
