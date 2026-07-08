@@ -96,6 +96,10 @@ DOCDIR=html
 
 GIT_HASH := $(shell git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD)
 
+TIMESTAMP=$(shell date +%Y.%m.%d-%H:%M)
+
+GITHUB_URL="https://github.com/math-comp/analysis/tree/$(shell git rev-parse HEAD)"
+
 $(DOCDIR)/dependency_graph.pre:
 	mkdir -p $(DOCDIR)
 	coqdep -f _CoqProject | perl etc/builddoc_dependency_dot.pl > $(DOCDIR)/dependency_graph.pre
@@ -106,7 +110,7 @@ $(DOCDIR)/dependency_graph.dot: $(DOCDIR)/dependency_graph.pre
 html: build $(DOCDIR)/dependency_graph.dot
 	etc/rocqnavi_generate-hierarchy-graph.sh $(DOCDIR)/hierarchy_graph.dot
 	find . -name "*.v" -or -name "*.glob" | grep -v "/\." | grep -v "_opam/" | xargs rocqnavi \
-	-title "Mathcomp Analysis $(GIT_HASH)" \
+	-title "Mathcomp Analysis $(GIT_HASH) $(TIMESTAMP)" \
 	-d $(DOCDIR) -Q theories mathcomp.analysis \
 	-Q classical mathcomp.classical \
 	-Q reals mathcomp.reals \
@@ -118,6 +122,7 @@ html: build $(DOCDIR)/dependency_graph.dot
 	-structure-graph $(DOCDIR)/hierarchy_graph.dot \
         -index-blacklist etc/rocqnavi_index-blacklist \
         -show-type-information-using-coqtop-process \
+	-doc-source-url $(GITHUB_URL) \
 	-external https://math-comp.github.io/htmldoc_2_5_0/ mathcomp.order \
 	-external https://math-comp.github.io/htmldoc_2_5_0/ mathcomp.boot \
 	-external https://math-comp.github.io/htmldoc_2_5_0/ mathcomp.algebra
