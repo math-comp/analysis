@@ -2140,10 +2140,10 @@ Qed.
 Lemma nonincreasing_sups u : has_ubound (range u) ->
   nonincreasing_seq (sups u).
 Proof.
-move=> u_ub m n mn; apply: sup_le => [_ /= [p np] <-| |].
-- by apply/downP; exists (u p) => //=; exists p => //; exact: leq_trans np.
+move=> u_ub m n mn; apply: supS => [| |_ [p /= np] <-].
 - by exists (u n) => /=; exists n => /=.
-- by split; [exists (u m); exists m => //=|exact/has_ubound_sdrop].
+- by split; [exists (u m); exists m => /=|exact/has_ubound_sdrop].
+- by exists p => //=; exact: leq_trans np.
 Qed.
 
 Lemma nondecreasing_infs u : has_lbound (range u) ->

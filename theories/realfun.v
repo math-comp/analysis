@@ -2064,14 +2064,14 @@ rewrite ereal_sup_EFin//; first exact: variations_neq0.
 rewrite -EFinD -sup_sumE.
 - by split => //; exact: variations_neq0.
 - by split => //; exact: variations_neq0.
-apply: sup_le.
-- move=> r/= [s [l' acl' <-{s}]] [t [l cbl] <-{t} <-{r}].
-  exists (variation a b f (l' ++ l)); split; last by rewrite -variation_cat// ltW.
-  exact/variations_variation/(itv_partition_cat acl' cbl).
+apply: supS.
 - have [r acfr] := variations_neq0 f ac.
   have [s cbfs] := variations_neq0 f cb.
   by exists (r + s); exists r => //; exists s.
 - by split => //; apply: variations_neq0; rewrite (lt_trans ac).
+- move=> r/= [s [l' acl' <-{s}]] [t [l cbl] <-{t} <-{r}].
+  exists (l' ++ l); last by rewrite -variation_cat// ltW.
+  exact/(itv_partition_cat acl' cbl).
 Qed.
 
 Let total_variationD2 a b c f : a <= c -> c <= b ->
