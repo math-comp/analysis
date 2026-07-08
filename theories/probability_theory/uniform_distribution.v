@@ -149,7 +149,6 @@ case: ifPn => //.
 by rewrite inE/= in_itv/= => axb; rewrite indicE (negbTE xE) mule0.
 Qed.
 
-Import HBNNSimple.
 
 Let integral_uniform_nnsfun (f : {nnsfun _ >-> R}) :
   (\int[uniform_prob ab]_x (f x)%:E =

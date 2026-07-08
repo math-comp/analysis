@@ -290,7 +290,10 @@ apply: measurable_giry_codensity => //= B mB.
 by apply: measurable_giry_int => //; exact: measurable_giry_ev.
 Qed.
 
+<<<<<<< HEAD
 Import HBNNSimple.
+=======
+>>>>>>> 1d806e2cf (sigma-algebra for normed modules + sfun codomain sigma ring & module structure)
 Import MeasurableR.
 
 Lemma sintegral_giry_join (M : giry (giry T R) R) (h : {nnsfun T >-> R}) :
