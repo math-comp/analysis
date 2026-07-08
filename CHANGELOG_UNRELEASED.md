@@ -235,7 +235,7 @@
   + lemmas `countable_bigcap_measurable`, `countable_bigcup_measurable`
 
 - in `reals.v`:
-  + lemmas `supS, `infS`
+  + lemmas `supS`, `infS`
 
 ### Changed
 

@@ -603,16 +603,13 @@ Qed.
 
 Lemma supS A B : A !=set0 -> has_sup B -> A `<=` B -> sup A <= sup B.
 Proof.
-move=> A0 supB AB; apply: sup_le => //.
-by apply: (subset_trans AB); exact: le_down.
+by move=> ? ? AB; apply: sup_le => //; apply: (subset_trans AB (@le_down _)).
 Qed.
 
 Lemma infS A B : has_inf A -> B !=set0 -> B `<=` A -> inf A <= inf B.
 Proof.
-move=> infA B0 AB; rewrite /inf lerN2.
-apply: supS; first exact/nonemptyN.
-- exact/has_inf_supN.
-- exact: image_subset.
+by move=> infA B0 AB; rewrite /inf lerN2 supS//;
+  [exact/nonemptyN|exact/has_inf_supN|exact/image_subset].
 Qed.
 
 Lemma sup_down A : sup (down A) = sup A.
@@ -621,7 +618,7 @@ have [supA|supNA] := pselect (has_sup A); last first.
   by rewrite !sup_out // => /has_sup_down.
 have supDA : has_sup (down A) by apply/has_sup_down.
 apply/eqP; rewrite eq_le !sup_le //.
-- by case: supA => -[x xA] _; exists x; apply/le_down.
+- by case: supA => -[x xA] _; exists x; exact/le_down.
 - by rewrite downK; exact: le_down.
 - by case: supA.
 Qed.
