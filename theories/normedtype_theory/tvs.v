@@ -8,6 +8,7 @@ From mathcomp Require Import boolp classical_sets functions cardinality.
 From mathcomp Require Import convex set_interval reals topology.
 From mathcomp Require Import initial_topology num_normedtype.
 From mathcomp Require Import pseudometric_normed_Zmodule.
+From mathcomp Require Import contra.
 
 (**md**************************************************************************)
 (* # Topological vector spaces                                                *)
@@ -291,6 +292,19 @@ rewrite add0r => /(_ na) /= -[[b1 b2] /= [n1 n2] ba].
 exists (b1 `&` b2); first by apply: filterI.
 by move => z /= [x [x1 _]] [y [_ y2]] <-; apply (ba (x,y)); split => /=.
 Qed.
+(*
+have clv : forall v : E, closed [set v].
+  move=> v z /= clxz. apply: subr0_eq. apply: cl => a nzxa.
+  rewrite /closure /= in clxz.
+  have : nbhs z ([set v] `+ a).
+   have -> : ([set v] `+ a) = [set z] `+ ([set (v - z)] `+ a).
+     by rewrite -addsetA addrCA subrr addr0.
+   apply/nbhs_add1set; apply/(nbhs_add1set (z - v)).
+   by rewrite -addsetA addrCA addrAC subrr sub0r subrr add0set.
+  move=> /(clxz ([set v] `+ a)) [? [-> /= [? ->]]] [y' ay'].
+  move=> /(congr1 (fun z => - v + z)).
+  rewrite addrA [X in X + _ = _]addrC [RHS]addrC subrr add0r => y0.
+  by exists y'.*)
 
 End TopologicalZmoduleTheory.
 
@@ -391,6 +405,26 @@ have -> : (fun y => f y - f x) = (fun y => f (y - x)).
   by apply: funext => y; rewrite linearB.
 apply: cvg_comp; last by rewrite -(linear0 f); exact: cont0.
 by move => A nA /=; apply: continuous_shift; rewrite subrr.
+Qed.
+
+
+Lemma hausdorff_convextvs : (hausdorff_space F) <-> closed ([set 0 : F]).
+Proof.
+split.
+  move=> /(_ (0:F)) hF x /= cl; apply/eqP; rewrite eq_sym; apply/eqP; apply: hF.
+  move=> a b n0a /(cl b) [? [-> b0]].
+  exists 0; split => //; exact: nbhs_singleton.
+move => cl.
+(* simpler proof using the closed subbasis ?*)
+move=> x y H; apply: subr0_eq; have := H.
+contra => xy0.
+have nxy : nbhs (x-y) (~`[set 0]).
+  apply: open_nbhs_nbhs; split => /=; first by apply: closed_openC.
+  by apply/eqP.
+have /(_ (~`[set 0]) nxy) [] : continuous_at (x,y) (fun z => (z.1 - z.2)).
+  by exact: sub_continuous.
+move=> [a b] /= [na nb] ab0; exists a; exists b => //; split => // z az bz.
+by have := ab0 (z,z) => /=; rewrite subrr; apply.
 Qed.
 
 End TopologicalLmodule_theory.
@@ -1553,8 +1587,6 @@ Qed.
 
 End openbasis.
 
-From mathcomp Require Import field_tactic.
-
 Section closedbasis.
 Context (R : realFieldType) (E: convexTvsType R).
 
@@ -1618,30 +1650,6 @@ rewrite ytz; apply: balc; first by exact: t1.
 by exists z.
 Qed.
 
-Lemma hausdorff_convextvs : (hausdorff_space E) <-> closed ([set 0 : E]).
-Proof.
-split.
-  move=> /(_ (0:E)) hF x /= cl; apply/eqP; rewrite eq_sym; apply/eqP; apply: hF.
-  move=> a b n0a /(cl b) [? [-> b0]].
-  exists 0; split => //; exact: nbhs_singleton.
-move => cl.
-rewrite open_hausdorff => x y.
-have clv : forall v : E, closed [set v].
-  move=> v z /= clxz. apply: subr0_eq. apply: cl => a nzxa.
-  rewrite /closure /= in clxz.
-  have : nbhs z ([set v] `+ a).
-   have -> : ([set v] `+ a) = [set z] `+ ([set (v - z)] `+ a).
-     by rewrite -addsetA addrCA subrr addr0.
-   apply/nbhs_add1set; apply/(nbhs_add1set (z - v)).
-   by rewrite -addsetA addrCA addrAC subrr sub0r subrr add0set.
-  move=> /(clxz ([set v] `+ a)) [? [-> /= [? ->]]] [y' ay'].
-  move=> /(congr1 (fun z => - v + z)).
-  rewrite addrA [X in X + _ = _]addrC [RHS]addrC subrr add0r => y0.
-  by exists y'.
-rewrite /closed /closure /= in clv.
-move => H.
-(*use closed basis *)
-Admitted.
 End closedbasis.
 
 Import Norm.
@@ -1994,8 +2002,6 @@ apply: (@squeeze_cvgr _ (nbhs x)) => /=; first exact: nearp.
   exact: lem.
 exact: lem.
 Qed.
-
-From mathcomp Require Import contra.
 
 Lemma hausdorff_seminorm_on :
 hausdorff_space (seminorm_on H) <-> (forall x : E, x != 0 -> exists2 p, P p & 0 < p x).
