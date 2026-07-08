@@ -1841,6 +1841,10 @@ by rewrite [X in _ + X*_]ger0_norm ?onem_ge0 // lt_conv.
 Qed.
 
 Lemma balanced_seminorm_subbasis : seminorm_subbasis `<=` @balanced_set _ E.
+Proof.
+move => _ [p Pp [r r0] ->] /= s s1 z /= [x].
+rewrite /ball /ball_ /= !sub0r !normrN => pixr <-.
+rewrite normZ normrM normr_id.
 apply: le_lt_trans pixr.
 by rewrite ler_piMl ?normr_ge0.
 Qed.
