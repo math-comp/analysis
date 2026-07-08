@@ -1608,7 +1608,15 @@ split; rewrite /closure.
   apply: aB => /=; rewrite -acy -acx; exists (conv t (ax : convex_lmodType E) ay).
     by apply: aa'; apply/set_mem; apply: conva; rewrite !inE.
   by rewrite addrACA -!scalerDr.
-Admitted.
+move=> t t1 ? /= [x Bx] <- B.
+have [->|t0] := eqVneq t 0.
+  by rewrite scale0r => /nbhs_singleton B0; exists 0; split => //; apply: nbhs_singleton; apply: nbhs0.
+move/(nbhsZ (invr_neq0 t0)); rewrite scalerA mulrC divff // scale1r.
+move/Bx => [z [cz [y by']]] /(congr1 (fun x => t *: x)).
+rewrite scalerA divff // scale1r => ytz; exists y; split => //.
+rewrite ytz; apply: balc; first by exact: t1.
+by exists z.
+Qed.
 
 Lemma hausdorff_convextvs : (hausdorff_space E) <-> closed ([set 0 : E]).
 Proof.
