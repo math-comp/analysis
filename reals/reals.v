@@ -652,6 +652,12 @@ have [[_ Aub]|supA] := pselect (has_sup A); last by rewrite sup_out.
 by rewrite (le_trans (A0 _ Aa))// ub_le_sup.
 Qed.
 
+Lemma inf_ge0 A : (forall x, A x -> 0 <= x) -> 0 <= inf A.
+Proof.
+move=> BA; have [->|A0] := eqVneq A set0; first by rewrite inf0.
+by apply: lb_le_inf => //; exact/set0P.
+Qed.
+
 Lemma has_sup_wpZl A (a : R) : 0 <= a -> has_sup A ->
   has_sup [set a * x | x in A ].
 Proof.
@@ -666,7 +672,7 @@ move=> a0 [[_ [x Ax _]] [b ub]]; split; first by exists x.
 by exists (b / a) => y Ay; rewrite ler_pdivlMr// mulrC ub//; exists y.
 Qed.
 
-Lemma ge0_supZl A (a : R) : 0 <= a -> sup [set a * x  | x in A ] = a * sup A.
+Lemma ge0_supZl A (a : R) : 0 <= a -> sup [set a * x | x in A ] = a * sup A.
 Proof.
 rewrite le_eqVlt => /predU1P[<-|an0].
   have [->|A0] := eqVneq A set0; first by rewrite image_set0 sup0 mulr0.
@@ -684,6 +690,20 @@ rewrite -ler_pdivlMl// ge_sup//; first exact/set0P.
 move=> x0 Ax0; rewrite ler_pdivlMl// ub_le_sup//; last by exists x0.
 have [x1 ubx1] := ubA.
 by exists (a * x1) => _ [x2 Ax2 <-]; rewrite ler_pM2l// ubx1.
+Qed.
+
+Lemma ge0_infZl A (a : R) : 0 <= a -> inf [set a * x | x in A] = a * inf A.
+Proof.
+move=> a0; rewrite /inf mulrN -(ge0_supZl (-%R @` A) a0); congr (- sup _).
+by rewrite !image_comp/=; apply: eq_imagel => //= ? _; rewrite mulrN.
+Qed.
+
+Lemma inf_pos : inf [set r : R | 0 < r] = 0.
+Proof.
+apply/eqP; rewrite eq_le; apply/andP; split; last first.
+  by apply: inf_ge0 => x /ltW.
+apply/ler_addgt0Pr => e e0; rewrite add0r; apply: ge_inf => //=.
+by exists 0 => r /ltW.
 Qed.
 
 Lemma has_sup_Mn A n : has_sup A -> has_sup [set x *+n | x in A].
