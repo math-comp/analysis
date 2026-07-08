@@ -251,7 +251,7 @@
   + definition `balanced_set`
   + definition `absolutely_convex_set`
   + lemma `absolutely_convex0`
-  + definition `pabsorbing_set`
+  + definition `absorbing_set`
   + lemma `absolutely_convex_setX`
   + notation `... `+ ...`
   + lemmas `addsetS`, `add0set`, `addsetI`, `addsetA`
@@ -270,6 +270,24 @@
   + lemma `scalexr_continuous`
   + definition `nbhsbasis_convextvs`
   + definition `open_nbhsbasis_convextvs`
+  + definition `open_absconvex_opennbhsbasis`
+  + definition `basis_opennbhsbasis`
+  + lemma `basis_neqset0`
+  + lemma `absorbing_opennbhsbasis`
+  + definition `gauge_fun`
+  + definition `seminorm_on`
+  + definition `seminorm_subbasis`
+  + lemmas `nonempty_subbasis`, `mem0_seminorm_subbasis`, `split_seminorm_subbasis`,
+    `expand_seminorm_subbasis`
+  + lemmas `convex_seminorm_subbasis`, `balanced_seminorm_subbasis`,
+    `absolutely_convex_seminorm_subbasis`, `absorbing_seminorm`, `continuous_at0_seminorm`,
+    `continuous_seminorm`
+  + definitions `gauge_fun_basis`, `seminorm_of`
+  + theorem `seminorm_convextvs`
+  + lemma `continuous_seminorm_of`
+  + lemma `linear_continuous_seminorm`
+  + lemma `linear_seminorm_continuous`
+  + proposition `lcfun_seminorm`
 
 ### Changed
 
