@@ -29,9 +29,8 @@ From mathcomp Require Import borel_hierarchy.
 (*                                                                            *)
 (* Detailed contents:                                                         *)
 (* ````                                                                       *)
-(*         {sfun aT >-> bT} == type of simple functions                       *)
-(*                           They can form a ring or a module depending on    *)
-(*                            the structure of bT                             *)
+(*         {sfun T >-> R} == type of simple functions                         *)
+(*                           They form a (potentially zero) ring.             *)
 (*       {nnsfun T >-> R} == type of non-negative simple functions            *)
 (*          indic_sfun mD := mindic _ mD                                      *)
 (*             cst_sfun r == constant simple function                         *)
@@ -93,8 +92,7 @@ HB.structure Definition NonNegSimpleFun
 
 End HBNNSimple.
 
-Notation "{ 'nnsfun' aT >-> T }" :=
-  (@HBNNSimple.NonNegSimpleFun.type _ aT%type T) : form_scope.
+Notation "{ 'nnsfun' aT >-> T }" := (@HBNNSimple.NonNegSimpleFun.type _ aT%type T) : form_scope.
 Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
 Section sfun_pred.
@@ -107,18 +105,17 @@ Lemma sub_sfun_fimfun : {subset sfun <= fimfun}. Proof. by move=> x /andP[]. Qed
 End sfun_pred.
 
 Section sfun.
-Context {d} {aT : measurableType d} {d'} {bT : sigmaRingType d'}.
-Notation T := {sfun aT >-> bT}.
-Notation sfun := (@sfun d aT d' bT).
+Context {d} {aT : measurableType d} {d'} {rT : sigmaRingType d'}.
+Notation T := {sfun aT >-> rT}.
+Notation sfun := (@sfun d aT d' rT).
 Section Sub.
-Context (f : aT -> bT) (fP : f \in sfun).
+Context (f : aT -> rT) (fP : f \in sfun).
+Import HBSimple.
 Definition sfun_Sub1_subproof :=
-  @isMeasurableFun.Build d d' aT bT f (set_mem (sub_sfun_mfun fP)).
+  @isMeasurableFun.Build d d' aT rT f (set_mem (sub_sfun_mfun fP)).
 #[local] HB.instance Definition _ := sfun_Sub1_subproof.
 Definition sfun_Sub2_subproof :=
-  @FiniteImage.Build aT bT f (set_mem (sub_sfun_fimfun fP)).
-
-Import HBSimple.
+  @FiniteImage.Build aT rT f (set_mem (sub_sfun_fimfun fP)).
 
 #[local] HB.instance Definition _ := sfun_Sub2_subproof.
 Definition sfun_Sub := [sfun of f].
@@ -140,15 +137,15 @@ Proof. by []. Qed.
 
 HB.instance Definition _ := isSub.Build _ _ T sfun_rect sfun_valP.
 
-Lemma sfuneqP (f g : {sfun aT >-> bT}) : f = g <-> f =1 g.
+Lemma sfuneqP (f g : {sfun aT >-> rT}) : f = g <-> f =1 g.
 Proof. by split=> [->//|fg]; exact/val_inj/funext. Qed.
 
-HB.instance Definition _ := [Choice of {sfun aT >-> bT} by <:].
+HB.instance Definition _ := [Choice of {sfun aT >-> rT} by <:].
 
 (* NB: already in cardinality.v *)
-HB.instance Definition _ x : @FImFun aT bT (cst x) := FImFun.on (cst x).
+HB.instance Definition _ x : @FImFun aT rT (cst x) := FImFun.on (cst x).
 
-Definition cst_sfun x : {sfun aT >-> bT} := cst x.
+Definition cst_sfun x : {sfun aT >-> rT} := cst x.
 
 Lemma cst_sfunE x : @cst_sfun x =1 cst x. Proof. by []. Qed.
 
@@ -185,7 +182,6 @@ Implicit Types (f g : {sfun aT >-> rT}).
 
 Import HBSimple.
 
-Lemma sfun0 : (0 : {sfun aT >-> rT}) =1 cst 0. Proof. by []. Qed.
 Lemma sfun1 : (1 : {sfun aT >-> rT}) =1 cst 1. Proof. by []. Qed.
 Lemma sfunM f g : f * g =1 f \* g. Proof. by []. Qed.
 Lemma sfunX f n : f ^+ n =1 (fun x => f x ^+ n).
@@ -204,10 +200,8 @@ HB.instance Definition _ (D : set aT) (mD : measurable D) :
 Definition indic_sfun (D : set aT) (mD : measurable D) : {sfun aT >-> rT} :=
   mindic rT mD.
 
-HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst_sfun k).
-Definition scale_sfun k f : {sfun aT >-> rT} := k \o* f.
-
 End ring.
+
 Arguments indic_sfun {d aT rT} _.
 
 Section sfun_lmodType.
@@ -218,10 +212,9 @@ HB.instance Definition _ (V : normedModType R) := GRing.Lmodule.on (borel_type V
 Import MeasurableNormedModuleOpen.
 Import HBSimple.
 
-Lemma sfun_op (U V W : normedModType R)
-    (f : {sfun aT >-> U}) (g : {sfun aT >-> V})
-    (h : U * V -> W) :
-  (fun x => h (f x, g x)) \in @sfun _ aT _ (borel_type W).
+Lemma mem_sfun_comp_pair (U V W : normedModType R) (f : {sfun aT >-> U})
+    (g : {sfun aT >-> V}) (h : U * V -> W) :
+  (fun x => h (f x, g x)) \in @sfun _ aT _ W.
 Proof.
 rewrite inE; apply/andP; split; rewrite inE/=.
   move=> _ Y mY; rewrite setTI.
@@ -250,7 +243,7 @@ Lemma sfun_submod_closed (V : normedModType R) :
   submod_closed (@sfun _ aT _ (borel_type V)).
 Proof.
 split=> [|k f g sf sg]; first exact: (valP (cst_sfun (0 : V))).
-exact: (sfun_op (sfun_Sub sf) (sfun_Sub sg) (fun t => k *: t.1 + t.2)).
+exact: (mem_sfun_comp_pair (sfun_Sub sf) (sfun_Sub sg) (fun t => k *: t.1 + t.2)).
 Qed.
 
 HB.instance Definition _ (V : normedModType R) :=

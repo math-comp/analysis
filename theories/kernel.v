@@ -1062,7 +1062,9 @@ HB.export KCOMP_SFINITE_KERNEL.
 
 Section measurable_fun_preimage_integral.
 Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
+
 Import HBNNSimple.
+
 Variables (k : Y -> \bar R)
   (k_ : ({nnsfun Y >-> R}) ^nat)
   (ndk_ : nondecreasing_seq (k_ : (Y -> R)^nat))
