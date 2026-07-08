@@ -1263,13 +1263,12 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
   by apply: ge_sup => //; exists 0, 0 => //; exact: atan0.
 have -> : pi / 2 = sup `[0, pi / 2[ :> R.
   by rewrite real_interval.sup_itv// bnd_simp divr_gt0// pi_gt0.
-apply: sup_le; last 2 first.
+apply: supS.
 - by exists 0; rewrite /= in_itv/= lexx/= divr_gt0// pi_gt0.
 - split; first by exists 0, 0 => //; rewrite atan0.
   by exists (pi / 2) => _ [x _ <-]; exact/ltW/atan_ltpi2.
-move=> x/= /[!in_itv]/= /andP[x0 xpi2].
-apply/downP; exists (atan (tan x)) => /=; first by exists (tan x).
-rewrite tanK// in_itv/= xpi2 andbT (lt_le_trans _ x0)//.
+move=> x/= /itvP x0pi2; exists (tan x) => //=.
+rewrite tanK// in_itv/= x0pi2 andbT (@lt_le_trans _ _ 0) ?x0pi2//.
 by rewrite ltrNl oppr0 divr_gt0// pi_gt0.
 Qed.
 

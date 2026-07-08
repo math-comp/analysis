@@ -290,16 +290,13 @@ have [J0|/set0P J0] := eqVneq J set0.
 move=> /subset_itvP ij; apply: leeB => /=.
   have [ui|ui] := asboolP (has_ubound I).
     have [uj /=|uj] := asboolP (has_ubound J); last by rewrite leey.
-    rewrite lee_fin; apply: ndf; apply: sup_le => //.
-    by move=> r Ir; exists r; split => //; apply: ij.
+    by rewrite lee_fin ndf// supS.
   have [uj /=|//] := asboolP (has_ubound J).
   by move: ui; have := subset_has_ubound ij uj.
 have [lj /=|lj] := asboolP (has_lbound J); last by rewrite leNye.
 have [li /=|li] := asboolP (has_lbound I); last first.
   by move: li; have := subset_has_lbound ij lj.
-rewrite lee_fin; apply/ndf/inf_le => //.
-move=> r [r' Ir' <-{r}]; exists (- r')%R.
-by split => //; exists r' => //; apply: ij.
+by rewrite lee_fin; exact/ndf/infS.
 Qed.
 
 Lemma le_wlength (ndf : {homo f : x y / (x <= y)%R}) :

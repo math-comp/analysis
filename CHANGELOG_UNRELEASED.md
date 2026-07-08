@@ -234,6 +234,10 @@
 - in `measurable_structure.v`:
   + lemmas `countable_bigcap_measurable`, `countable_bigcup_measurable`
 
+- in `reals.v`:
+  + lemmas `supS`, `infS`
+  + lemmas `ge0_infZl`, `inf_ge0`, `inf_pos`
+
 ### Changed
 
 - in `realsum.v`:
