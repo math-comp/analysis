@@ -1555,9 +1555,10 @@ Lemma has_closed_nbhs_basis :
 Proof.
 have [absconv [] nbhs0 basis] :=  (svalP (cid2 (@locally_convex _ E))).
 split.
-(*
-  split; move=> a /=; first by move => [b /nbhs0 nbhsb ->]; apply: nbhs_closure.
-  move=> /basis /= [b /= nbhsb ba]; exists (closure b); first by exists b => //.
+  split; move=> /= a /=.
+    by move=> [b /nbhs0 nbhsb <-]; apply: filterS; first by apply: subset_closure.
+  move=> /basis /= [b /= nbhsb ba] /=. rewrite /nbhs /= /filter_from /=. 
+(*exists (closure b); first by exists b => //.
   apply: subset_trans; last by exact: ba.
   exact: interior_subset.
 move=> ? /=  [b nb ->]; split; first by exact: open_interior.
