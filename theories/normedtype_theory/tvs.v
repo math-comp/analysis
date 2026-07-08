@@ -166,7 +166,7 @@ move: By'; rewrite yy' {y' yy'} => By.
 by exists x => //;  exists y.
 Qed.
 
-Lemma addsetA p c D : [set p + c] `+ D `<=` [set p] `+ ([set c] `+ D).
+Lemma addsubsetA p c D : [set p + c] `+ D `<=` [set p] `+ ([set c] `+ D).
 Proof.
 move=> x/= [y ->{y}] [z Dz <-{x}].
 exists p => //; exists (c + z) => //.
@@ -174,7 +174,7 @@ exists p => //; exists (c + z) => //.
 by rewrite addrA.
 Qed.
 
-Lemma addsetA (E : zmodType) p c (D : set E) :
+Lemma addsetA p c (D : set E) :
   [set p + c] `+ D = [set p] `+ ([set c] `+ D).
 Proof.
 apply/seteqP; split; first by exact: addsubsetA.
@@ -862,7 +862,7 @@ exists ([set p] `+ D); first by exists D.
 move=> _ [/= _] -> [c Cc <-] /=.
 exists ([set p + c] `+ D) => //; first by exists D.
 apply: (subset_trans _ pCA).
-apply: (@subset_trans _ ([set p] `+ ([set c] `+ D))); first by exact: addsetA.
+apply: (@subset_trans _ ([set p] `+ ([set c] `+ D))); first by exact: addsubsetA.
 apply: addsetS => //; apply: subset_trans DDC; apply: addsetS => //.
 by move=> x ->.
 Qed.
@@ -1153,7 +1153,7 @@ End ConvexTvs_numField.
 Section ConvexTvs_realType.
 
 (*better naming ?*)
-Lemma scalerx_continuous (R : realType) (E : convexTvsType R) (x : E) (s : R) :
+Lemma scalerx_continuous (R : realFieldType) (E : convexTvsType R) (x : E) (s : R) :
   {for s, continuous (fun t : R^o => t *: x)}.
 Proof.
 have -> : (fun t : R^o => t *: x) = (fun z => z.1 *: z.2) \o (fun r => (r,x)).
@@ -1163,7 +1163,7 @@ apply: (@cvg_pair _ _ _ _ (nbhs s)) => //=; first exact: cvg_cst.
 exact: (scale_continuous (s, x)).
 Qed.
 
-Lemma scalexr_continuous (R : realType) (E : convexTvsType R) (x : E) (s : R) :
+Lemma scalexr_continuous (R : realFieldType) (E : convexTvsType R) (x : E) (s : R) :
   {for x, continuous (fun y : E =>  s *: y)}.
 Proof.
 have -> : (fun y : E => s *: y) = (fun z => z.1 *: z.2) \o (fun y => (s, y)).
@@ -1477,7 +1477,7 @@ by rewrite [in X in (_ =  _ +  ( _ + X))]addrCA addrN addr0 scale1r addrA.
 Qed.
 
 Section openbasis.
-Context (R : realType) (E : convexTvsType R).
+Context (R : realFieldType) (E : convexTvsType R).
 
 Definition nbhsbasis_convextvs := sval (cid2 (@locally_convex _ E)).
 
@@ -1545,9 +1545,9 @@ Qed.
 End openbasis.
 
 Section closedbasis.
-Context (R : realType) (E: convexTvsType R).
+Context (R : realFieldType) (E: convexTvsType R).
 
-Definition closed_nbhsbasis_ctvs := [set closure b | b in  (@nbhsbasis_ctvs R E)].
+Definition closed_nbhsbasis_ctvs := [set closure b | b in  (@nbhsbasis_convextvs R E)].
 
 (* TODO : convex is enough and then take balanced closure *)
 Lemma has_closed_nbhs_basis :
@@ -1589,7 +1589,7 @@ exists (t `*: a).
 move => z /= [?] [y] ax <- <-; rewrite -scalerDr; apply: balb; first by exact: t1.
 by exists (x + y)=> //; apply: ab; exists y.
 Qed. *)
-Admitted
+Admitted.
 
 Lemma hausdorff_convextvs : (hausdorff_space E) <-> closed ([set 0 : E]).
 Proof.
@@ -1605,8 +1605,8 @@ have clv : forall v : E, closed [set v].
   have : nbhs z ([set v] `+ a).
    have -> : ([set v] `+ a) = [set z] `+ ([set (v - z)] `+ a).
      by rewrite -addsetA addrCA subrr addr0.
-   apply/addx_nbhs; apply/(addx_nbhs (z - v)).
-   by rewrite -addsetA addrCA addrAC subrr sub0r subrr addset0.
+   apply/nbhs_add1set; apply/(nbhs_add1set (z - v)).
+   by rewrite -addsetA addrCA addrAC subrr sub0r subrr add0set.
   move=> /(clxz ([set v] `+ a)) [? [-> /= [? ->]]] [y' ay'].
   move=> /(congr1 (fun z => - v + z)).
   rewrite addrA [X in X + _ = _]addrC [RHS]addrC subrr add0r => y0.
@@ -1988,14 +1988,12 @@ split.
 move=> P0; apply/hausdorff_convextvs => x /=; contra => /P0 [p Pp px0].
 exists (p @^-1` ball (p x) (p x)); last first.
   by move=> /= ? ->; rewrite norm0 /ball /= subr0 ger0_norm ?norm_ge0 // ltxx.
-rewrite /nbhs /= /nbhs_frombasis0 /filter_from /=.
 exists ([set x] `+ p @^-1` ball (0 : R) (p x)); last first.
   move=> z /= [? ->  [y + <-]].
   rewrite /ball /= sub0r normrN ger0_norm ?norm_ge0 // => pyx.
   apply: le_lt_trans; first by apply: Theory.seminorm_normrB.
   by rewrite opprD addrA subrr sub0r Theory.normN.
 exists (p @^-1` ball (0 : R) (p x)) => //.
-rewrite /nbhs_fromsubbasis0 /= /finI_from /=.
 exists ([fset (p @^-1` ball (0 : R) (p x))]%fset).
   move=> ? ; rewrite inE =>  /eqP ->; apply/mem_set.
   rewrite /seminorm_subbasis /=; exists p => //; exists (p x) => //.
