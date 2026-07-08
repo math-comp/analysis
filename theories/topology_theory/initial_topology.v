@@ -117,8 +117,7 @@ Lemma continuous_initial_topology (U : topologicalType) (g : U -> W):
   continuous g <-> (continuous (f \o g)).
 Proof.
 split => cont x.
-  apply: continuous_comp; first by apply: cont.
-  by apply: initial_continuous.
+  by apply: (continuous_comp (cont x)); apply: initial_continuous.
 move => A [B/=]; rewrite /initial_topology /= => -[[C] oC fBC] Bgx BA.
 apply: filterS; first by exact: BA.
 rewrite -fBC /nbhs -comp_preimage.
@@ -359,8 +358,8 @@ Lemma continuous_init_fam (V : topologicalType) (f : V -> W) :
  (forall i, continuous ((F i) \o (f : V -> S))) <-> continuous f.
 Proof.
 split=> cont; last first.
-  move=> i x; apply: continuous_comp; first by apply: cont.
-  apply: initial_fam_continuous.
+  move=> i x; apply: (continuous_comp (cont x)).
+  by apply: initial_fam_continuous.
 move => x A; rewrite /nbhs /= => -[/= B] [Bfrom Bfx BA] /=.
 apply: filterS; first by apply: preimage_subset BA.
 apply: open_nbhs_nbhs; split => //.
@@ -504,8 +503,8 @@ Lemma continuous_init_sup (V : topologicalType) (f : V -> W) :
  (forall i, continuous ((F i) \o (f : V -> S))) <-> continuous f.
 Proof.
 split=> cont; last first.
-  move=> i x; apply: continuous_comp; first by apply: cont.
-  apply: initial_sup_continuous.
+  move=> i x; apply: (continuous_comp (cont x)).
+  by apply: initial_sup_continuous.
 move => x A; rewrite /nbhs /= => -[/= B] [Bfrom Bfx BA] /=.
 apply: filterS; first by apply: preimage_subset BA.
 apply: open_nbhs_nbhs; split => //.
