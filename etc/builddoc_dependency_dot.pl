@@ -1,50 +1,99 @@
-print "digraph depend {\n";
+my %clusters = ( #         directory => [ Cluster Name, Color, URL ]
+    classical                        => [ "Classical", 1, "" ],
+    'experimental_reals'             => [ "ExperimentalReals", 1, "" ],
+    reals                            => [ "Reals", 2,  "" ],
+    reals_stdlib                     => [ "Reals", 2,  "" ],
+    analysis_stdlib                  => [ "AnalysisStdlib", 5, "" ],
+    'analysis_stdlib/showcase'       => [ "AnalysisStdlib", 5, "" ],
+    theories                         => [ "Analysis", 5, "analysis.%s" ],
+    'theories/showcase'              => [ "Analysis", 5, "analysis.showcase.%s" ],
+
+    'theories/topology_theory'       => [ "Topology", 4,
+                                          "analysis.topology_theory.%s" ],
+    'theories/homotopy_theory'       => [ "Topology", 4,
+                                          "analysis.homotopy_theory.%s" ],
+
+    'theories/normedtype_theory'     => [ "Normedtype", 9,
+                                          "analysis.normedtype_theory.%s" ],
+
+    'theories/lebesgue_integral_theory'
+                                     => [ "LebesgueIntegral", 10,
+                                          "analysis.lebesgue_integral_theory.%s" ],
+
+    'theories/measure_theory'        => [ "Measure", 11,
+                                          "analysis.measure_theory.%s" ],
+
+    'theories/probability_theory'    => [ "Probability", 12,
+                                          "analysis.probability_theory.%s" ],
+
+    'theories/functional_analysis'   => [ "FunctionalAnalysis", 3,
+                                          "analysis.functional_analysis.%s"],
+);
+
+print "digraph dependencies {\n";
 print "  node [shape = ellipse,style=filled,colorscheme = paired12];\n";
-print "  subgraph cluster_analysis { label=\"Analysis\" }\n";
-print "  subgraph cluster_classical { label=\"Classical\" }\n";
-print "  subgraph cluster_reals { label=\"Reals\" }\n";
-print "  subgraph cluster_experimental_reals { label=\"ExperimentalReals\" }\n";
-print "  subgraph cluster_analysis { label=\"Analysis\" }\n";
-print "  subgraph cluster_topology { label=\"Topology\" }\n";
-print "  subgraph cluster_normedtype { label=\"NormedType\" }\n";
-print "  subgraph cluster_measure { label=\"Measure\" }\n";
-print "  subgraph cluster_lebesgue_integral { label=\"Lebesgue_integral\" }\n";
-print "  subgraph cluster_probability { label=\"Probability\" }\n";
-while (<>) {
-  if (m/([^\s]*)\.vo.*:(.*)/) {
-    $dests = $2 ;
-    ($path,$src) = ($1 =~ s/\//\//rg =~ m/^(?:(.*)\/)?([^.]*)$/);
-    $url="mathcomp.$path.$src.html";
-    if ($path =~ m/classical/) {
-        print "subgraph cluster_classical { \"$path\/$src\"[label=\"$src\",URL=\"$url\",fillcolor=1]}\n";
-    }elsif ($path =~ m/reals/ or $path =~ m/reals_stdlib/) {
-        print "subgraph cluster_reals { \"$path\/$src\"[label=\"$src\",URL=\"$url\",fillcolor=2,fontcolor=white]}";
-    }elsif ($path =~ m/theories\/topology_theory/) {
-        $url="mathcomp.analysis.topology_theory.$src.html";
-        print "subgraph cluster_topology { \"$path\/$src\"[label=\"$src\",URL=\"$url\",fillcolor=4,fontcolor=white]}";
-    }elsif ($path =~ m/theories\/normedtype_theory/) {
-        $url="mathcomp.analysis.normedtype_theory.$src.html";
-        print "subgraph cluster_normedtype { \"$path\/$src\"[label=\"$src\",URL=\"$url\",fillcolor=9]}";
-    }elsif ($path =~ m/theories\/lebesgue_integral_theory/) {
-        $url="mathcomp.analysis.lebesgue_integral_theory.$src.html";
-        print "subgraph cluster_lebesgue_integral { \"$path\/$src\"[label=\"$src\",URL=\"$url\",fillcolor=10,fontcolor=white]}";
-    }elsif ($path =~ m/theories\/measure_theory/) {
-        $url="mathcomp.analysis.measure_theory.$src.html";
-        print "subgraph cluster_measure { \"$path\/$src\"[label=\"$src\",URL=\"$url\",fillcolor=11]}";
-    }elsif ($path =~ m/theories\/probability_theory/) {
-        $url="mathcomp.analysis.probability_theory.$src.html";
-        print "subgraph cluster_probability { \"$path\/$src\"[label=\"$src\",URL=\"$url\",fillcolor=12]}";
-    }elsif ($path =~ m/theories/) {
-       $url="mathcomp.analysis.$src.html";
-       print "subgraph cluster_analysis { \"$path\/$src\"[label=\"$src\",URL=\"$url\",fillcolor=5]}";
-    }elsif ($path =~ m/analysis_stdlib/) {
-       print "subgraph cluster_analysis { \"$path\/$src\"[label=\"$src\",URL=\"$url\",fillcolor=5]}";
-    }else {
-        print "\"$path\/$src\"[label=\"$path=$src\",fillcolor=6,fontcolor=white]";
-    }
-    for my $dest (split(" ", $dests)) {
-        print "  \"$1\" -> \"$path\/$src\";\n" if ($dest =~ m/(.*)\.vo/);
-    }
-  }
+
+my %seen;
+for my $k (sort keys %clusters) {
+    my ($cluster) = @{ $clusters{$k} };
+    next if $seen{$cluster}++;
+
+    my $cluster_name = "cluster_".$cluster;
+    print qq{  subgraph $cluster_name { label="$cluster" }\n};
 }
+
+while (<>) {
+    if (m/([^\s]*)\.vo.*:(.*)/) {
+
+        my $dests = $2;
+
+        my ($path,$src)
+            = ($1 =~ s/\//\//rg =~ m/^(?:(.*)\/)?([^.]*)$/);
+
+        my $url = "mathcomp.$path.$src.html";
+
+        my ($cluster_label, $color, $urltmpl);
+
+        if (exists $clusters{$path}) {
+            ($cluster_label, $color, $urltmpl) = @{ $clusters{$path} };
+        }
+
+        if (defined $cluster_label) {
+
+            if ($urltmpl ne "") {
+                $url = "mathcomp."
+                     . sprintf($urltmpl,$src)
+                     . ".html";
+            }
+
+            my $fontcolor =
+                ($color == 2 || $color == 4 || $color == 10)
+                ? "white"
+                : "black";
+
+            my $cluster = "cluster_".$cluster_label;
+            print qq{
+subgraph $cluster {
+    "$path/$src"[
+        label="$src",
+        URL="$url",
+        fillcolor=$color
+    ]
+}
+};
+
+        } else {
+
+            my $unknown = $path;
+            $unknown =~ s#[^A-Za-z0-9_]#_#g;
+
+        }
+
+        for my $dest (split " ", $dests) {
+            print qq{  "$1" -> "$path/$src";\n}
+                if $dest =~ /(.*)\.vo/;
+        }
+    }
+}
+
 print "}\n";
