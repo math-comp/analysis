@@ -125,6 +125,7 @@ theories/real_measure/real_measure.v
 theories/borel_hierarchy.v
 
 theories/lebesgue_integral_theory/simple_functions.v
+theories/lebesgue_integral_theory/bochner.v
 theories/lebesgue_integral_theory/lebesgue_integral_definition.v
 theories/lebesgue_integral_theory/measurable_fun_approximation.v
 theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence.v
