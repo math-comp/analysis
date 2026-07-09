@@ -443,6 +443,45 @@ apply: le_lt_trans ifoo; apply: ge0_subset_integral => //.
 exact: measurableT_comp.
 Qed.
 
+Lemma integrable_setU (E D : set T) (f : T -> \bar R) :
+  d.-measurable E ->
+  d.-measurable D ->
+  mu.-integrable (E `|` D) f <-> mu.-integrable E f /\ mu.-integrable D f.
+Proof.
+move=> ??; split=> [fi|[]].
+  by split; apply: (integrableS _ _ _ fi) => //; apply: measurableU.
+move=> /integrableP[] fmE fiE /integrableP[] fmD fiD.
+apply/integrableP; split; first exact/measurable_funU.
+have ED: E `|` D = E `|` (D `\` E).
+  by rewrite -(setDUK (@subsetUl _ E D)) setDUD setDv set0U.
+rewrite ED ge0_integral_setU//.
+- exact: measurableD.
+- apply: (measurable_comp measurableT) => //.
+  by rewrite -ED; apply/measurable_funU.
+- by apply/disj_setPRL; apply: subIsetr.
+apply: lte_add_pinfty => //.
+apply/(le_lt_trans _ fiD); apply/ge0_subset_integral => //.
+  exact: measurableD.
+exact: (measurable_comp measurableT).
+Qed.
+
+(* TOTHINK: The equivalence is painful to state because I need to filter s.
+   However, the reciprocal is a consequence of `integrableS`, so maybe we do
+   not care. *)
+Lemma integrable_bigsetU (I : Type) (s : seq I) (P : pred I) (D : I -> set T)
+  (f : T -> \bar R) :
+  (forall i, P i -> d.-measurable (D i)) ->
+  (forall i, P i -> mu.-integrable (D i) f) ->
+  mu.-integrable (\big[setU/set0]_(i <- s | P i) D i) f.
+Proof.
+move=> Dm fi.
+elim: s => [|i s IHs]; first by rewrite big_nil; apply: integrable_set0.
+rewrite big_cons; case: ifP => // iP.
+apply/integrable_setU; first exact: Dm.
+  by apply: bigsetU_measurable.
+by split=> //; apply: fi.
+Qed.
+
 Lemma integrable_mkcond D f : measurable D ->
   mu.-integrable D f <-> mu.-integrable setT (f \_ D).
 Proof.

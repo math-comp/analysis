@@ -322,3 +322,24 @@ Proof.
 rewrite -subTset => x _ /=; exists (Num.bound x) => //=.
 by rewrite in_itv lteifNl 2?lteifS// (ltr_bound, ltrNbound).
 Qed.
+
+Lemma itvzz_bnd_bigcupD1 (R : realType) (x y : int) :
+  (x <= y)%R ->
+  `[x%:~R, y%:~R[%classic = 
+  (\bigcup_(i < `|(y - x)%R|)
+    `[(x + i%:R)%:~R, (x + i.+1%:R)%:~R[)%classic :> set R.
+Proof.
+rewrite predeqE => xy z/=. rewrite in_itv/=.
+split=> [/andP[xz zy]|[] i /=]; last first.
+  rewrite -(ltr_nat int) [(`|_|%:R)%R]natz gez0_abs ?subr_ge0//.
+  rewrite -lezD1 natr1 => iyx; rewrite in_itv/= => /andP[xz zx].
+  apply/andP; split; first by apply: (le_trans _ xz); rewrite ler_int lerDl.
+  by apply: (lt_le_trans zx); rewrite ler_int -lerBrDl.
+exists (`|floor (z - x%:~R)|)%N => /=.
+  rewrite -(ltr_nat int) !natz !gez0_abs ?floor_ge0 ?subr_ge0//.
+  rewrite -(ltr_int R) intrB.
+  by apply/(le_lt_trans (floor_le _)); rewrite ltrD2r.
+rewrite -natr1 natz gez0_abs; first by rewrite floor_ge0 subr_ge0.
+rewrite -[X in X \in _](subrK x%:~R) addrC in_itv/= 2!intrD.
+by rewrite lerD2l ltrD2l floor_itv.
+Qed.

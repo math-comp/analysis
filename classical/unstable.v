@@ -50,7 +50,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import Order.TTheory GRing.Theory Num.Theory.
+Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Local Open Scope ring_scope.
 
 Lemma sub_row_mx {V : zmodType} m n1 n2 (A1 : 'M[V]_(m, n1)) (A2 : 'M[V]_(m, n2))
@@ -677,3 +677,11 @@ End Theory.
 Module Import Exports. HB.reexport. End Exports.
 End Norm.
 Export Norm.Exports.
+
+Lemma floor_nat (R : archiNumDomainType) n : floor (n%:R : R) = n.
+Proof. by apply/(@intr_inj R)/eqP; rewrite -[_ == _]intrEfloor. Qed.
+
+Lemma absz_floor_nat (R : archiNumDomainType) n : `|floor (n%:R : R)|%N = n.
+Proof.
+by apply: (can_inj absz_nat); rewrite gez0_abs ?real_floor_ge0// floor_nat.
+Qed.

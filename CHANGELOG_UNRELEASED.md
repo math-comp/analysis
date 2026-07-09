@@ -41,6 +41,14 @@
 
 - in `tvs.v`:
   + lemmas `cvg_sum`, `sum_continuous`
+- in `real_interval.v`
+  + lemma `itvzz_bnd_bigcupD1`
+
+- in `lebesgue_integrable.v`
+  + lemmas `integrable_setU`, `integrable_bigsetU`
+
+- in `pnt.v`
+  + lemmas `Abel_discrete`, `Abel_continuous`
 
 - in `classical_sets.v`:
   + lemmas `setI_closed_setT`, `setI_closed_set0`
