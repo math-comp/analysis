@@ -32,51 +32,48 @@ Qed.
 
 (* Should be moved in topology_structure.v *)
 Section separability.
+
+Section topology_lemmas.
 Context {T : topologicalType}.
-
-Definition separable :=
-exists D: set T, countable D /\ dense D.
-
-Definition separable_set (A : set T) :=
-exists D,
-  [/\ countable D, D `<=` A & forall O, A`&`O !=set0 -> open O -> O`&`D !=set0].
-
-Lemma separableTE : separable = separable_set [set:T].
-Proof.
-apply: eq_exists=>A. rewrite [X in [/\ _, _ & X]] (_:_ = dense A)//.
-  by under eq_forall do rewrite setTI.
-by rewrite propeqE; split=>[[cA dA]|[cA _ dA]].
-Qed.
-
-Lemma separable_set0 : separable_set set0.
-Proof. by exists set0; split=>// U; rewrite set0I =>[[x]]. Qed.
-#[local] Hint Resolve separable_set0 : core.
 
 Lemma countable_separable (A : set T) (cA : countable A) : separable_set A.
 Proof. by exists A; split=>// U H _; rewrite setIC. Qed.
 
-Lemma bigcupT_separable [A : (set T)^nat] : (forall n, separable_set (A n)) ->
-separable_set (\bigcup_n A n).
+Lemma countable_basis_to_seq {B : set_system T} :
+countable B -> basis B -> [set:T] !=set0 -> exists f : nat -> _, range f = B /\
+forall U : set T, open U -> U = \bigcup_(n in [set m| f m `<=`U]) (f n).
 Proof.
-move=>/choice [D_ /all_and3 [cDx DAx dDx]]. exists (\bigcup_n D_ n); split.
-  exact: bigcup_countable. exact: subset_bigcup. move=> O [x [[n _ Anx] Ox] oO].
-have /(dDx n O) /(_ oO) [y [Oy Dny]] : A n `&` O !=set0 by exists x.
-by exists y; split=>//; exists n.
+move=> /pfcard_geP /=. case=> [->/basisP[_ /(_ setT openT) /= d0]
+  /set0P/eqP T0|/surjfunPex [f ->]/basisP[Bo dec]]; first exfalso.
+  move: d0; rewrite (_ : [set _ | False /\ _] = set0) ?bigcup0//.
+    by apply: eq_set=> y; apply: notTE=>[[]].
+exists f; split=>//. move=> U /(dec U) ->; apply:eq_set=>x/=.
+rewrite !exists2E propeqE; split=>//=[[A [[[n _ <- fnU] fnx]]]| [n [fni fnx]]].
+  exists n; split=>//= y fny/=. exists (f n)=>//. split=>//. by exists n.
+exists (f n); split=>//; split=>[|y /fni/= [V [_ VU /VU//]]]. by exists n.
 Qed.
 
-Lemma bigcup_separable [A : (set T)^nat] [P : set nat] :
-(forall n, P n -> separable_set (A n))
--> separable_set (\bigcup_(i in P) A i).
+Lemma salgebra_second_countable {B : set_system T} :
+countable B -> basis B -> open.-sigma.-measurable = B.-sigma.-measurable.
 Proof.
-rewrite bigcup_mkcond => nsPA. apply: bigcupT_separable=>n.
-case: ifPn=>[|_]. rewrite in_setE. apply: (nsPA n).
-by exists set0; split=>// U [x [F]].
+move=> cB bB; have [T0|/set0P/(countable_basis_to_seq cB bB) [f [rfb dec]]] :=
+  eqVneq [set:T] set0.
+  have o0 : @open T = [set set0]. rewrite eqEsubset; split=> [U _| A ->] /=;
+      first by rewrite -subset0 -T0. exact: open0.
+  rewrite/measurable/= eqEsubset; split; first rewrite o0.
+    apply: sigma_algebra_subl=> x ->. exact: sigma_algebra0.
+  by have [/sigma_algebra_sub P _] := bB.
+rewrite eqEsubset =>/=; split. apply: sigma_algebra_subl => U /(dec U)->.
+  rewrite bigcup_mkcond -rfb; apply: sigma_algebra_bigcup => i /=.
+  case: ifP=> _//. exact: sub_sigma_algebra. exact: sigma_algebra0.
+by apply: sigma_algebra_sub; have [] := bB.
 Qed.
 
-End separability.
+End topology_lemmas.
 
 Section uniform_lemmas.
 Context {U : choiceType} {V : uniformType}.
+
 Lemma cvg_uniform_fin_bigcup [f : U -> V] [F : set_system (U -> V)] {I}
     [D : set I] {A : I -> set U} : Filter F -> finite_set D ->
 (forall i, D i -> {uniform A i, F --> f}) ->
@@ -89,6 +86,8 @@ elim:n=>/=[D|n Ih D /eq_cardSP [x Dx /Ih Dxn] UD].
 apply: cvg_uniformU. exact: (UD x). by apply: Dxn=>i [/UD Di//].
 Qed.
 End uniform_lemmas.
+
+End separability.
 
 (* TODO: move all of this to metric spaces *)
 Section norm_lemmas.
@@ -142,7 +141,7 @@ Qed.
 but normedModType doesn't inherit from metricType yet*)
 Lemma closed_dist0 {R:realType} {N:normedModType R} {F : set N}
 (cF : closed F) (x:N) :
-F x = forall eps:R, 0<eps -> exists f:N, F f /\ `|x - f| < eps.
+F x = forall e:R, 0 < e -> exists f:N, F f /\ `|x - f| < e.
 Proof.
   rewrite propeqE; split=>[Fx e|Cx]. exists x; split=>//=. by rewrite subrr normr0.
   have Q : forall n:nat, exists f:N, F f /\ `|x-f| < n.+1%:R^-1.
@@ -237,6 +236,18 @@ Proof.
 Qed.
 
 Import MeasurableR.
+
+(*Cannot be generalized yet as it is for a different display from normr_continuous*)
+Lemma normr_measurable_gen {R : realType} {N : normedModType R} {A : set N} :
+measurable_fun A normr.
+Proof.
+move=> /[dup] mA.
+apply: (@measurability _ _ _ _ _ (@normr R N) _
+  (eq_trans (esym (RGenOpenSets.measurableE R)) (RGenOInfty.measurableE R))).
+move=> U [I [x] ->] <-. have [/(_ norm_continuous) nopen _] :=
+  continuousP (normr: N-> R). apply: measurableI => //.
+apply: sub_sigma_algebra; exact: nopen.
+Qed.
 
 Lemma measurable_fun_dist {d} {A : measurableType d} {R : realType}
 {N : normedModType R} {f g : A -> N} {D : set A}: separable_set (image D f)
@@ -482,6 +493,16 @@ Import HBSimple.
 Definition bochner_measurable (f: T -> X) :=
   exists f_ : ({sfun T >-> X} : lmodType _)^nat,
 \forall x \ae mu, f_ n x @[n --> \oo]--> f x.
+
+Lemma bmeas_meas (f : T -> X) : bochner_measurable f -> measure_is_complete mu
+ -> measurable_fun [set:T] f.
+Proof.
+move=> [F [A [mA mA0 /subsetCl cv]]] cmu. rewrite -(setvU A).
+apply/measurable_funU=>//. exact: measurableC. split=>[|_ Y mY].
+  apply: measurable_fun_cv _ cv=>m. apply: measurable_funP.
+apply: cmu. apply: (negligibleS (@subIsetl _ A (f@^-1`Y))).
+by exists A; split.
+Qed.
 
 Lemma bmeasD (f g : T -> X) : bochner_measurable f -> bochner_measurable g ->
 bochner_measurable (f + g).
@@ -777,7 +798,6 @@ countable (range g) & \forall t \ae mu, `|f t - g t| < eps].
 Proof. by split=>[/bmeas_meas_ess_sepP/ess_sep_lim_count|/lim_count_bmeas]. Qed.
 
 End bochner_measurable_function.
-
 
 (** Definition of simple integrals: *)
 Section simple_fun_raw_integral.
