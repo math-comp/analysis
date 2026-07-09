@@ -273,7 +273,14 @@ by apply/funext=> x; rewrite/indic_lmod/= indicE;
 case: ifPn=> _ /=; rewrite ?scale0r ?scale1r.
 Qed.
 
-Lemma preimage_indic_mod A (B : set L) (z : L) :
+Lemma image_indic_lmod_sub A z D : (indic_lmod A z) @` D `<=` [set 0;z].
+Proof.
+rewrite -image_comp; apply: (subset_trans (image_subset ( *:%R ^~ z) _));
+  first exact: image_indic_sub.
+move=> y /= [x [->|->]]; rewrite ?scale0r ?scale1r=> ->; first by left. by right.
+Qed.
+
+Lemma preimage_indic_lmod A (B : set L) (z : L) :
   (indic_lmod A z) @^-1` B = if z  \in B then if 0  \in B then [set: T] else A
   else if 0  \in B then ~` A else set0.
 Proof.
@@ -297,7 +304,7 @@ Definition mindic_lmod (A : set aT) (mA : measurable A) :=
 Lemma measurable_indic_lmod {D} (A : set aT) (mA : d.-measurable A) (z:nT) :
 measurable_fun D (mindic_lmod mA z).
 Proof.
-move=> mD Y mY; rewrite preimage_indic_mod //.
+move=> mD Y mY; rewrite preimage_indic_lmod //.
 do 2 (case: ifP => _); apply: measurableI=>//; exact: measurableC.
 Qed.
 
