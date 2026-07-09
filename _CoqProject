@@ -99,6 +99,7 @@ theories/derive.v
 theories/numfun.v
 
 theories/measure_theory/measurable_structure.v
+theories/measure_theory/measurable_topology.v
 theories/measure_theory/measure_function.v
 theories/measure_theory/counting_measure.v
 theories/measure_theory/dirac_measure.v

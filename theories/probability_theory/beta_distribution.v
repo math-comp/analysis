@@ -52,6 +52,8 @@ apply: (@continuous_comp _ _ _ (@onem R) (fun x => x ^+ n)).
 exact: exprn_continuous.
 Qed.
 
+Import MeasurableR.
+
 Lemma onemXn_derivable n x : derivable (fun y => y.~ ^+ n) x 1.
 Proof.
 have := @derivableX _ _ (@onem R) n x 1.
@@ -147,6 +149,8 @@ Qed.
 Lemma within_continuous_XMonemX A a b : {within A, continuous (XMonemX a b)}.
 Proof. by apply: continuous_in_subspaceT => x _; exact: continuous_XMonemX. Qed.
 
+Import MeasurableR.
+
 Lemma measurable_XMonemX A a b : measurable_fun A (XMonemX a b).
 Proof.
 apply/measurable_funM => //; apply/measurable_funX => //.
@@ -201,6 +205,8 @@ Definition beta_fun a b : R := \int[mu]_x (XMonemX a.-1 b.-1 \_`[0,1]) x.
 
 Local Open Scope ereal_scope.
 
+Import MeasurableR.
+
 Lemma EFin_beta_fun a b :
   (beta_fun a b)%:E = \int[mu]_x (XMonemX a.-1 b.-1 \_`[0,1] x)%:E.
 Proof.
@@ -233,7 +239,11 @@ Lemma beta_fun00 : beta_fun 0 0 = 1%R.
 Proof.
 rewrite -[LHS]Rintegral_mkcond.
 under eq_Rintegral do rewrite XMonemX00.
-by rewrite Rintegral_cst//= mul1r lebesgue_measure_itv/= lte01 EFinN sube0.
+rewrite Rintegral_cst//=.
+rewrite mul1r.
+(* TODO: fixme *)
+rewrite -/(lebesgue_measure).
+by rewrite lebesgue_measure_itv/= lte01 EFinN sube0.
 Qed.
 
 Lemma beta_fun1Sn b : beta_fun 1 b.+1 = b.+1%:R^-1.
@@ -340,12 +350,13 @@ End beta_fun.
 
 Section beta_pdf.
 Local Open Scope ring_scope.
-Context {R : realType}.
-Variables a b : nat.
+Context {R : realType} (a b : nat).
 
 Local Notation XMonemX := (@XMonemX R).
 
 Definition beta_pdf t : R := XMonemX a.-1 b.-1 \_`[0, 1] t / beta_fun a b.
+
+Import MeasurableR.
 
 Lemma measurable_beta_pdf : measurable_fun [set: R] beta_pdf.
 Proof.
@@ -413,16 +424,17 @@ End beta_pdf.
 
 Section beta.
 Local Open Scope ring_scope.
-Context {R : realType}.
-Variables a b : nat.
+Context {R : realType} (a b : nat).
 
 Local Notation mu := (@lebesgue_measure R).
 Local Notation XMonemX := (@XMonemX R).
 
-Let beta_num (U : set (measurableTypeR R)) : \bar R :=
+Import MeasurableR.
+
+Let beta_num (U : set R) : \bar R :=
   \int[mu]_(x in U) (XMonemX a.-1 b.-1 \_`[0,1] x)%:E.
 
-Let beta_numT : beta_num [set: (measurableTypeR R)] = (beta_fun a b)%:E.
+Let beta_numT : beta_num [set: R] = (beta_fun a b)%:E.
 Proof. by rewrite /beta_num/= EFin_beta_fun. Qed.
 
 Let beta_num_lty U : measurable U -> (beta_num U < +oo)%E.
@@ -527,8 +539,10 @@ Qed.
 End beta.
 Arguments beta_prob {R}.
 
-Lemma beta_prob_uniform {R : realType} :
-  beta_prob 1 1 = uniform_prob (@ltr01 R).
+Section beta_prob.
+Context {R : realType}.
+
+Lemma beta_prob_uniform : beta_prob 1 1 = uniform_prob (@ltr01 R).
 Proof.
 apply/funext => U.
 rewrite /beta_prob /uniform_prob.
@@ -540,9 +554,11 @@ rewrite /XMonemX !expr0 mul1r.
 by rewrite /uniform_pdf x10 subr0 invr1.
 Qed.
 
+Import MeasurableR.
+
 Local Open Scope ereal_scope.
 
-Lemma integral_beta_prob_bernoulli_prob_lty {R : realType} a b (f : R -> R) U :
+Lemma integral_beta_prob_bernoulli_prob_lty a b (f : R -> R) U :
   measurable_fun [set: R] f ->
   (forall x : R, x \in `[0, 1]%R -> 0 <= f x <= 1)%R ->
   \int[beta_prob a b]_x `|bernoulli_prob (f x) U| < +oo.
@@ -558,7 +574,7 @@ Qed.
 
 Local Close Scope ereal_scope.
 
-Lemma integral_beta_prob_bernoulli_prob_onemX_lty {R : realType} n a b U :
+Lemma integral_beta_prob_bernoulli_prob_onemX_lty n a b U :
   (\int[beta_prob a b]_x `|bernoulli_prob (x.~ ^+ n) U| < +oo :> \bar R)%E.
 Proof.
 apply: integral_beta_prob_bernoulli_prob_lty => //=.
@@ -568,7 +584,7 @@ rewrite exprn_ge0 ?subr_ge0//= exprn_ile1// ?subr_ge0//.
 by rewrite lerBlDl -lerBlDr subrr.
 Qed.
 
-Lemma integral_beta_prob_bernoulli_prob_onem_lty {R : realType} n a b U :
+Lemma integral_beta_prob_bernoulli_prob_onem_lty n a b U :
   (\int[beta_prob a b]_x `|bernoulli_prob (1 - x.~ ^+ n) U| < +oo :> \bar R)%E.
 Proof.
 apply: integral_beta_prob_bernoulli_prob_lty => //=.
@@ -580,9 +596,8 @@ rewrite exprn_ge0 ?subr_ge0//= exprn_ile1// ?subr_ge0//.
 by rewrite lerBlDl -lerBlDr subrr.
 Qed.
 
-Lemma beta_prob_integrable {R :realType} a b a' b' :
-  (beta_prob a b).-integrable `[0, 1]
-    (fun x : measurableTypeR R => (XMonemX a' b' x)%:E).
+Lemma beta_prob_integrable a b a' b' :
+  (beta_prob a b).-integrable `[0, 1] (fun x : R => (XMonemX a' b' x)%:E).
 Proof.
 apply/integrableP; split.
   by apply/measurableT_comp => //; exact: measurable_XMonemX.
@@ -595,12 +610,10 @@ apply: (@le_lt_trans _ _ (\int[beta_prob a b]_(x in `[0%R, 1%R]) 1)%E).
 by rewrite integral_cst//= mul1e -ge0_fin_numE// beta_prob_fin_num.
 Qed.
 
-Lemma beta_prob_integrable_onem {R : realType} a b a' b' :
-  (beta_prob a b).-integrable `[0, 1]
-    (fun x : measurableTypeR R => (XMonemX a' b' x).~%:E).
+Lemma beta_prob_integrable_onem a b a' b' :
+  (beta_prob a b).-integrable `[0, 1] (fun x : R => (XMonemX a' b' x).~%:E).
 Proof.
-apply: (eq_integrable _ (cst 1 \- (fun x : measurableTypeR R =>
-  (XMonemX a' b' x)%:E))%E) => //.
+apply: (eq_integrable _ (cst 1 \- (fun x : R => (XMonemX a' b' x)%:E))%E) => //.
 apply: integrableB => //=; last exact: beta_prob_integrable.
 apply/integrableP; split => //.
 rewrite (eq_integral (fun x => (\1_setT x)%:E))/=.
@@ -621,9 +634,9 @@ under eq_integral.
 by [].
 Qed.
 
-Lemma beta_prob_integrable_dirac {R : realType} a b a' b' (c : bool) U :
+Lemma beta_prob_integrable_dirac a b a' b' (c : bool) U :
   (beta_prob a b).-integrable `[0, 1]
-    (fun x : measurableTypeR R => (XMonemX a' b' x)%:E * \d_c U)%E.
+    (fun x : R => (XMonemX a' b' x)%:E * \d_c U)%E.
 Proof.
 apply: integrableMl => //=; last first.
   exists 1; split => // x x1/= _ _; rewrite (le_trans _ (ltW x1))//.
@@ -631,9 +644,9 @@ apply: integrableMl => //=; last first.
 exact: beta_prob_integrable.
 Qed.
 
-Lemma beta_prob_integrable_onem_dirac {R : realType} a b a' b' (c : bool) U :
+Lemma beta_prob_integrable_onem_dirac a b a' b' (c : bool) U :
   (beta_prob a b).-integrable `[0, 1]
-    (fun x : measurableTypeR R => (XMonemX a' b' x).~%:E * \d_c U)%E.
+    (fun x : R => (XMonemX a' b' x).~%:E * \d_c U)%E.
 Proof.
 apply: integrableMl => //=.
   exact: beta_prob_integrable_onem.
@@ -641,9 +654,13 @@ exists 1; split => // x x1/= _ _; rewrite (le_trans _ (ltW x1))//.
 by rewrite ger0_norm// indicE; case: (_ \in _).
 Qed.
 
+End beta_prob.
+
 Section integral_beta_prob.
 Context {R : realType}.
 Local Notation mu := (@lebesgue_measure R).
+
+Import MeasurableR.
 
 Lemma integral_beta_prob a b f U : measurable U -> measurable_fun U f ->
   (\int[beta_prob a b]_(x in U) `|f x| < +oo)%E ->
@@ -709,6 +726,8 @@ rewrite [_.+1.-1]/=.
 rewrite addSn addnS.
 by rewrite leq_fact2// leq_addr.
 Qed.
+
+Import MeasurableR.
 
 Definition beta_prob_bernoulli_prob a b c d U : \bar R :=
   \int[beta_prob a b]_(y in `[0, 1])
@@ -779,7 +798,7 @@ rewrite integralZr//=.
   - exact: integrableS (integrable_XMonemX_restrict _ _).
 transitivity ((\int[mu]_x ((@XMonemX R a.-1 b.-1 \_`[0,1] x)%:E -
    (@XMonemX R (a + c).-1 (b + d).-1 \_`[0,1] x)%:E)) * (beta_fun a b)^-1%:E)%E.
-  congr (_ * _)%E; rewrite [LHS]integral_mkcond/=; apply eq_integral => x _.
+  congr (_ * _)%E; rewrite [LHS]integral_mkcond/=; apply: eq_integral => x _.
   rewrite !patchE; case: ifPn => [->|]; last by rewrite EFinN subee.
   rewrite /onem -EFinM mulrBl mul1r EFinB EFinN; congr (_ - _)%E.
   rewrite XMonemXM.

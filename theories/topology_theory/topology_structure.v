@@ -45,6 +45,8 @@ From mathcomp Require Export filter.
 (*               isolated A == the set of isolated points of A                *)
 (*                  dense S == the set (S : set T) is dense in T, with T of   *)
 (*                             type topologicalType                           *)
+(*              separable T == T has a countable dense subset                 *)
+(*          separable_set A == A : set T has a countable dense subset         *)
 (*           continuousType == type of continuous functions                   *)
 (*                             The HB structures is Continuous.               *)
 (*              mkcts f_cts == object of type continuousType corresponding to *)
@@ -121,11 +123,6 @@ Section Topological1.
 Context {T : topologicalType}.
 
 Definition open_nbhs (p : T) (A : set T) := open A /\ A p.
-
-Definition basis (B : set_system T) :=
-  B `<=` open /\ forall x, filter_from [set U | B U /\ U x] id --> x.
-
-Definition second_countable := exists2 B, countable B & basis B.
 
 Global Instance nbhs_pfilter (p : T) : ProperFilter (nbhs p).
 Proof. by apply: nbhs_pfilter_subproof; case: T p => ? []. Qed.
@@ -997,6 +994,88 @@ apply/not_implyP; split; first exact/set0P/setT0.
 apply/not_implyP; split; first exact: openT.
 by rewrite setTI => -[].
 Qed.
+
+Section basis.
+Context {T : topologicalType}.
+
+Definition basis (B : set (set T)) :=
+  B `<=` open /\ forall x, filter_from [set U | B U /\ U x] id --> x.
+
+(* Maybe rename separable_space*)
+Definition separable := exists D : set T, 
+  countable D /\ dense D.
+
+Definition separable_set (A : set T) :=
+exists D, 
+  [/\ countable D, D `<=` A & forall O, A`&`O !=set0 -> open O -> O`&`D !=set0].
+
+Definition second_countable := exists2 B, countable B & basis B.
+
+Lemma basisP {B : set_system T} : basis B <-> B `<=`open 
+/\ (forall U: set T, open U -> U = \bigcup_(V in [set W | B W /\ W `<=`U]) V).
+Proof.
+split=> [[oB bB]|[Bo dec]]. split=> //U oU.
+  rewrite eqEsubset /bigcup; split=>[x Ux/=|x [A/= [BA AU] /AU //]].
+  have:= bB x. rewrite/cvg_to {2}/nbhs/filter_from/= => /(_ U)/=.
+  have nT: \near x, U x by apply: (open_in_nearW oU)=>[y|]; rewrite in_setE. 
+  rewrite nbhs_nearE !exists2E/= => /(_ nT). 
+  by under eq_exists=>x0 do rewrite -andA {1}(andC (x0 x) _) andA.
+split=>// x. rewrite/cvg_to/=nbhsE/open_nbhs => P /= 
+  [U [/(dec U)->] [A [BA AU] Ax] UP]. exists A=>// t At; apply: UP. by exists A.
+Qed.
+
+(* Could be renamed to separableTE*)
+Lemma separableE : separable = separable_set [set:T].
+Proof.
+apply: eq_exists=>A. rewrite [X in [/\ _, _ & X]] (_:_ = dense A)//.
+  by under eq_forall do rewrite setTI.
+by rewrite propeqE; split=>[[cA dA]|[cA _ dA]].  
+Qed.
+
+Lemma second_countable_separable :
+  second_countable -> separable.
+Proof.
+move=> [B] /(sub_countable (card_le_setD B [set set0])).
+rewrite/countable=> /pfcard_geP. case=> [|[f] /basisP [oB bB]].
+  rewrite setD_eq0=> /subset_set1. case=> -> /basisP [oB bB];
+  have:= (bB [set:T]) openT. rewrite [X in \bigcup_(_ in X) _] (_:_ = set0).
+      by apply: eq_set=>x/=; rewrite andB. rewrite bigcup0=>//.
+    move=> T0; exists set0; split=>// O [x /(subsetT O)]. by rewrite T0.
+  rewrite [X in \bigcup_(_ in X) _] (_:_ = [set set0]).
+    apply: eq_set=>x/=; rewrite [X in _/\ X] (_:_ = True). 
+      by apply: propT; exact: subsetT. by rewrite andB.1.2. rewrite bigcup_set1.
+  move=> T0; exists set0; split=>// O [x /(subsetT O)]. by rewrite T0.
+have:= image_eq f. rewrite eqEsubset=> [[rfbs bsrf]].
+have: forall n, exists x:T, B (f n) /\ f n x.
+  move:rfbs=>/[swap] n. rewrite/subset/= => /(_ (f n)).
+  have:exists2 x, True & f x = f n by exists n. 
+  move=> /[swap] /[apply] [[bfn /eqP /set0P [x fnx]]]. by exists x.
+move=> /choice [g gP]. exists (range g).
+split=> [|U /[swap] /(bB U) -> /bigcup_nonempty [A/= [BA AU] /set0P /eqP An0]].
+  apply: card_image_le. have: (B `\ set0) A by[]. move=> /bsrf [n _ fnA].
+exists (g n). split=>/=. by exists A=>//; rewrite -fnA;
+have [_] := gP n. by exists n.
+Qed.
+
+Lemma bigcupT_separable [A : (set T)^nat] : (forall n, separable_set (A n)) -> 
+separable_set (\bigcup_n A n).
+Proof.
+move=>/choice [D_ /all_and3 [cDx DAx dDx]]. exists (\bigcup_n D_ n); split.
+  exact: bigcup_countable. exact: subset_bigcup. move=> O [x [[n _ Anx] Ox] oO].
+have /(dDx n O) /(_ oO) [y [Oy Dny]] : A n `&` O !=set0 by exists x.
+by exists y; split=>//; exists n.
+Qed.
+
+Lemma bigcup_separable [A : (set T)^nat] [P : set nat] : 
+(forall n, P n -> separable_set (A n)) 
+-> separable_set (\bigcup_(i in P) A i).
+Proof.
+rewrite bigcup_mkcond => nsPA. apply: bigcupT_separable=>n.
+case: ifPn=>[|_]. rewrite in_setE. apply: (nsPA n). 
+by exists set0; split=>// O [x [F]].
+Qed.
+
+End basis.
 
 Section ClopenSets.
 Implicit Type T : topologicalType.

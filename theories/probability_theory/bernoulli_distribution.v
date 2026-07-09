@@ -52,11 +52,18 @@ Qed.
 
 End bernoulli_pmf.
 
-Lemma measurable_bernoulli_pmf {R : realType} D n :
+Section bernoulli_pmf.
+Context {R : realType}.
+
+Import MeasurableR.
+
+Lemma measurable_bernoulli_pmf D n :
   measurable_fun D (@bernoulli_pmf R ^~ n).
 Proof.
 by apply/measurable_funTS/measurable_fun_if => //=; exact: measurable_funB.
 Qed.
+
+End bernoulli_pmf.
 
 Definition bernoulli_prob {R : realFieldType} (p : R) : set bool -> \bar R :=
   fun A => if 0 <= p <= 1 then
@@ -181,9 +188,11 @@ Qed.
 End integral_bernoulli.
 
 Section measurable_bernoulli.
+Context {R : realType}.
 Local Open Scope ring_scope.
-Variable R : realType.
 Implicit Type p : R.
+
+Import MeasurableR.
 
 Lemma measurable_bernoulli_prob :
   measurable_fun setT (bernoulli_prob : R -> pprobability bool R).

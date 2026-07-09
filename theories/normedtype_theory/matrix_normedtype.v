@@ -253,6 +253,9 @@ HB.instance Definition _ (K : numFieldType) m n :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build K 'M[K]_(m, n)
     (@mx_normZ K m n).
 
+HB.instance Definition _ (K : numFieldType) m n :=
+  isNormedModule.Build _ 'M[K]_(m, n).
+
 End matrix_NormedModule.
 
 Lemma continuous_mx {V : topologicalType} {R : realFieldType} {m n : nat}
