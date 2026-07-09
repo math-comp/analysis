@@ -2047,7 +2047,7 @@ Definition gauge_fun_basis (b : set E) (h : open_nbhsbasis_convextvs b) :=
 Definition seminorm_of := [set p : SemiNorm.type E |
   exists b, exists h : open_nbhsbasis_convextvs b, p = gauge_fun_basis h].
 
-#[local] Lemma seminorm_ofneq0 : seminorm_of !=set0.
+Lemma seminorm_ofneq0 : seminorm_of !=set0.
 Proof.
 have [_ /(_ [set: E] filterT)] := basis_opennbhsbasis E; move=> [/= b Bb _].
 exists (gauge_fun_basis Bb).

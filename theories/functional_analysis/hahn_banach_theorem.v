@@ -443,10 +443,38 @@ pose g' : {linear_continuous V -> R | *%R} := HB.pack (g : V -> R) lcg.
 by exists g'.
 Qed.
 
+(* 7.2.3 in Jarchow *)
 Lemma hahn_banach_extension_hausdorff :
-(hausdorff_space V) <-> (forall x : V, exists l : {linear_continuous V -> R^o}, l(x) != 0).
+(hausdorff_space V) <-> (forall x : V,  x != 0 -> exists l : {linear_continuous V -> R^o}, l(x) != 0).
 Proof.
-Admitted.
+split; last first.
+(* proof in here is different than in the book - Jarchow mentions "a" continuous seminorm in 7.2.3 but refers to 2.7.1 which proves the results for a seminorm of the set of seminorm generating the topology - its probably lacks an argument saying that continuous seminorms are always bounded by this set of seminorms, which we haven't formalised here *)
+  move => H. pose P := (@seminorm_of R V).
+  pose P0 := (@seminorm_ofneq0 R V).
+  suff : hausdorff_space (seminorm_on P0).
+    have [contVs _ ] := (seminorm_convextvs V).
+    by move=> + x y cs; apply => a b /contVs nsa /contVs nsb; apply: cs => //.
+  apply/hausdorff_seminorm_on=> x /H [l].
+  have [l0|l0|] := ltrgtP (l x) (0 : R) => //.
+    have /linear_continuous_seminorm [p [sp _] /= lp] :=  (@continuous_fun _ _ (-1 *: l)).
+    exists p => //; apply: lt_le_trans; last by apply: lp.
+    by rewrite scaleN1r ltrNr oppr0.
+  have /linear_continuous_seminorm [p [sp _] /= lp] :=  (@continuous_fun _ _ l).
+  by exists p => //; apply: lt_le_trans; last by apply: lp.
+
+(* todo : construct the sublmodtype structures on lines and hyerplanes inside a lmodtype *)
+(*
+pose vectx := {y | exists t : R, y = t *: x}.
+pose val_subdef := fun y : vectx => (svalP y).
+have Sub : forall y, (exists t : R, y = t *: x) -> vectx. admit.
+have Sub_rect : forall K (_ : forall x Px, K (@Sub x Px)) u, K u;
+  SubK_subproof : forall x Px, val_subdef (@Sub x Px) = x
+}.*) admit.
+
+
+#[short(type="subType")]
+HB.structure Definition SubType (T : Type) (P : pred T) := { S of isSub T P S }.
+Check (vectx : subType V).
 End hahn_banach_extension_ctvs.
 
 Section hahn_banach_separation_ctvs.
