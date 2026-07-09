@@ -470,11 +470,8 @@ have Sub : forall y, (exists t : R, y = t *: x) -> vectx. admit.
 have Sub_rect : forall K (_ : forall x Px, K (@Sub x Px)) u, K u;
   SubK_subproof : forall x Px, val_subdef (@Sub x Px) = x
 }.*) admit.
+Admitted.
 
-
-#[short(type="subType")]
-HB.structure Definition SubType (T : Type) (P : pred T) := { S of isSub T P S }.
-Check (vectx : subType V).
 End hahn_banach_extension_ctvs.
 
 Section hahn_banach_separation_ctvs.
