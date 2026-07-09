@@ -1149,15 +1149,14 @@ apply/seteqP; split => z /=.
 by move=> [y [y' Uy' <-] <-]; rewrite addrCA addrA subrr add0r.
 Qed.
 
-Lemma nbhsE0 (x : E) (b : set E): nbhs x b <-> b x /\
+Lemma nbhsE0 (x : E) (b : set E): nbhs x b <->
   exists2 a, nbhs 0 a & [set x + x0 | x0 in a] `<=` b.
 Proof.
 split.
-  move => /[dup] /(nbhsD (-x)); rewrite addNr => nb0 nb; split.
-    exact: nbhs_singleton.
+  move => /[dup] /(nbhsD (-x)); rewrite addNr => nb0 nb.
   exists [set - x + x0 | x0 in b] => // z /=.
   by move=> [y /= [y' by']] <- <-; rewrite addrA addrN add0r.
-move=> [bx [a n0a xab]]; apply: filterS; first exact: xab.
+move=> [a n0a xab]; apply: filterS; first exact: xab.
 exact: nbhsD0.
 Qed.
 
@@ -1543,23 +1542,19 @@ move=> ? /= [b nb <-]; split; first exact: open_interior.
 have [convb balb] := absconv b (mem_set nb).
 split.
   move => x y t; rewrite !inE.
-  move=> /nbhsE0 [bx [ax nax axb]] /nbhsE0 [by' [ay nay ayb]]; apply/nbhsE0; split.
-    by apply/set_mem/convb; rewrite !inE.
+  move=> /nbhsE0 [ax nax axb] /nbhsE0 [ay nay ayb]; apply/nbhsE0.
   exists (ax `&` ay); first by apply: filterI.
   move=> z /= [z' [xz xz'] <-].
   rewrite convD.
   apply/set_mem/convb; rewrite inE; first by apply: axb; exists z'.
   by apply: ayb; exists z'.
 move=> /= t.
-have [->|t0] := eqVneq t 0. (*disctinction overlooked in the literature*)
-  by move=> _ ? /= [?]  _; rewrite scale0r => <-; apply: nbhs0 => /=; exact: nb.
-move=> t1 ? /= [x] /= + <-; move/nbhsE0 => [bx [a na0 ab]].
-apply/nbhsE0; split.
-  apply: balb; first exact: t1.
-  by exists x.
-exists (( *:%R t) @` a).
-  by rewrite -(@scaler0 _ _ t); apply: nbhsZ => // ? /= [y ay] <-.
-move => z /= [?] [y] ax <- <-; rewrite -scalerDr; apply: balb; first exact: t1.
+case: (eqVneq t 0). (*disctinction overlooked in the literature*)
+  by move=> -> _ ? /= [?]  _; rewrite scale0r => <-; apply: nbhs0 => /=; exact: nb.
+move=> t0 t1 ? /= [x] /= + <-; move/nbhsE0 => [a na0 ab].
+apply/nbhsE0; exists (( *:%R t) @` a).
+  by rewrite -(@scaler0 _ _ t); apply: nbhsZ => // ? /= [y ay] <-; apply: ab; exists y.
+move => z /= [?] [y] ax <- <-; rewrite -scalerDr; apply: balb; first by exact: t1.
 by exists (x + y)=> //; apply: ab; exists y.
 Qed.
 
@@ -1594,19 +1589,31 @@ Definition closed_nbhsbasis_ctvs := [set closure b | b in  (@nbhsbasis_convextvs
 
 (* TODO : convex is enough and then take balanced closure *)
 
-Lemma closure_convextvs ( b : set E) : closure b = \bigcap_(a in (nbhs (0 : E))) (b `+ a).
+Lemma closure_convextvs ( b : set E) :
+  closure b = \bigcap_(a in (nbhs (0 : E))) (b `+ a).
 Proof.
-apply/seteqP; split => z.
-Admitted.
+have [absconv [] nbhs0 basis] :=  (svalP (cid2 (@locally_convex _ E))).
+apply/seteqP; split => z H.
+  move=> a' /basis [/=a /[dup] /mem_set /absconv [_ bala]].
+  move=> /nbhs0 /[dup] na /(nbhs_add1set z)/H  [y [by' [? -> [t ta zty]]]] aa'.
+  exists y => //; exists (-t); last by apply: (addrI t); rewrite addrCA subrr addr0 addrC.
+  by rewrite -scaleN1r; apply/aa'/(bala (-1)); rewrite ?normrN ?normr1 //=; exists t.
+move=> d; rewrite nbhsE0=>  -[c /basis [/=a /[dup] /mem_set /absconv [_ bala]]].
+move=> /nbhs0 /H [x bx [y ay]] xyz ac zcd.
+exists x; split => //; apply: zcd; exists (-y).
+  by rewrite -scaleN1r; apply/ac/(bala (-1)); rewrite ?normrN ?normr1 //=; exists y.
+by apply: (addrI y); rewrite addrCA subrr addr0 addrC.
+Qed.
 
-#[local] Lemma closure_addsetset (b : set E) : (nbhs 0 b) ->  closure b `<=` b `+ b.
+Lemma closure_addsetset (b : set E) : (nbhs 0 b) ->  closure b `<=` b `+ b.
 Proof.
 move=> nb z. rewrite closure_convextvs /bigcap /= => /(_ b nb) [x bx [y by' <-]].
 by exists x => //; exists y.
 Qed.
 
 Lemma has_closed_nbhs_basis :
-  nbhs_basis 0 closed_nbhsbasis_ctvs /\ ( forall b, closed_nbhsbasis_ctvs b -> (closed b /\ absolutely_convex_set b)).
+  nbhs_basis 0 closed_nbhsbasis_ctvs
+  /\ (forall b, closed_nbhsbasis_ctvs b -> (closed b /\ absolutely_convex_set b)).
 Proof.
 have [absconv [] nbhs0 basis] :=  (svalP (cid2 (@locally_convex _ E))).
 split.
@@ -1621,19 +1628,13 @@ move=> ? [c nc <-]; split; first by exact: closed_closure.
 have [convc balc] := absconv c (mem_set nc).
 split; rewrite /closure.
   move => x y t; rewrite !inE /= => Bx By B.
-  move/nbhsE0 => [Bxy [a /basis [/= a' na' aa'] aB]].
+  move/nbhsE0 => [a /basis [/= a' na' aa'] aB].
   have [conva _] := absconv a' (mem_set na').
   have [cx [ccx [? /= -> [ax aax acx]]]] : c `&` ([set x] `+ a') !=set0.
-    apply: (Bx ([set x] `+ a')); rewrite nbhsE0; split.
-      exists x => //; exists 0; rewrite ?addr0 //.
-      by apply: nbhs_singleton; apply: nbhs0.
-    exists a'; first by apply: nbhs0.
+    apply: (Bx ([set x] `+ a')); rewrite nbhsE0; exists a'; first by apply: nbhs0.
     by move=> z /= [s sa <-]; exists x => //; exists s.
   have [cy [ccy [? /= -> [ay aay acy]]]] : c `&` ([set y] `+ a') !=set0.
-    apply: (By ([set y] `+ a')); rewrite nbhsE0; split.
-      exists y => //; exists 0; rewrite ?addr0 //.
-      by apply: nbhs_singleton; apply: nbhs0.
-    exists a'; first by apply: nbhs0.
+    apply: (By ([set y] `+ a')); rewrite nbhsE0; exists a'; first by apply: nbhs0.
     by move=> // z /= [s sa <-]; exists y => //; exists s.
   exists (conv t (cx : convex_lmodType E) cy); split.
     by apply/set_mem; apply: convc; rewrite !inE.
@@ -2114,7 +2115,7 @@ split=> x a.
   have -> : (p @^-1` ball (0 : R) r) = (fun y : E =>  r^-1 *: y) @^-1` b'.
     by apply: ball_gauge_fun => //; exact: (open_absconvex_opennbhsbasis nb').1.
   by apply: scalexr_continuous; rewrite scaler0.
-move => /nbhsE0 /=  [ax] /= [b n0b ba].
+move => /nbhsE0 /= [b n0b ba].
 have [_  /(_ b n0b) /= [b'/=]] := basis_opennbhsbasis E.
 move=> Bb' bb'.
 pose p := gauge_fun (open_absconvex_opennbhsbasis Bb').2 (absorbing_opennbhsbasis Bb').
