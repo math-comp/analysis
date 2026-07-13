@@ -1398,6 +1398,15 @@ move=> df dg; apply/cvg_ex; exists (- (f x) ^- 2 *: 'D_v f x).
 exact: der_inv.
 Qed.
 
+Lemma is_deriveV f (x v : V) (df : R) :
+  f x != 0 -> is_derive x v f df ->
+  is_derive x v (fun y => (f y)^-1) (- (f x) ^- 2 *: df).
+Proof.
+move=> fxNZ Df.
+constructor; first by apply: derivableV => //; case: Df.
+by rewrite deriveV //; case: Df => _ ->.
+Qed.
+
 End Derive_lemmasVR.
 
 Lemma derive_shift {R : numFieldType} (v k : R) :
@@ -2066,6 +2075,15 @@ move=> /derivable1_diffP df /derivable1_diffP dg.
 rewrite derive1E'; first exact/differentiable_comp.
 rewrite diff_comp // !derive1E' //= -[X in 'd  _ _ X = _]mulr1.
 by rewrite [LHS]linearZ mulrC.
+Qed.
+
+Global Instance is_derive1_comp (R : realFieldType) (f g : R -> R) (x a b : R) :
+  is_derive (g x) 1 f a -> is_derive x 1 g b -> is_derive x 1 (f \o g) (a * b).
+Proof.
+move=> [fgxv <-{a}] [gv <-{b}]; apply: (@DeriveDef _ _ _ _ _ (f \o g)).
+  apply/derivable1_diffP/differentiable_comp; first exact/derivable1_diffP.
+  by move/derivable1_diffP in fgxv.
+by rewrite -derive1E (derive1_comp gv fgxv) 2!derive1E.
 Qed.
 
 Lemma near_eq_growth_rate (R : numFieldType) (V W : normedModType R)
