@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.homotopy_theory.wedge_sigT</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis e340551 2026.07.12-19:27" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis e340551 2026.07.13-19:53" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -521,6 +521,17 @@ wedge is opaque but may be made transparent
 Expands to: Constant mathcomp.analysis.homotopy_theory.wedge_sigT.wedge
 Declared in
 library mathcomp.analysis.homotopy_theory.wedge_sigT, line 84, characters 11-16
+wedge_lift :
+forall {I : choiceType} [X : I -> topologicalType] 
+  (p0 : forall i : I, X i) [i : I],
+X i -> wedge (X:=X) p0
+
+wedge_lift is not universe polymorphic
+Arguments wedge_lift {I} [X]%_function_scope p0%_function_scope [i] _
+wedge_lift is transparent
+Expands to: Constant mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_lift
+Declared in
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 85, characters 11-21
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/homotopy_theory/wedge_sigT.v#L239' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.function_spaces.html#prod_topology">prod_topology</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.X">X</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_fun">wedge_fun</a></span> (<span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwith">dfwith</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="wedge_prod_pointE" class="id"><div name="wedge_prod_pointE" class=" tooltip">wedge_prod_pointE<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/homotopy_theory/wedge_sigT.v#L241' target='_blank'>Source code</a></span></div></span> (<span id="i:60" class="id"><div name="i:60" class=" tooltip">i<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/homotopy_theory/wedge_sigT.v#L241' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="j:61" class="id"><div name="j:61" class=" tooltip">j<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/homotopy_theory/wedge_sigT.v#L241' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.I">I</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwith">dfwith</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:60">i</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:60">i</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.mathcomp_extra.html#dfwith">dfwith</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#j:61">j</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge.p0">p0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#j:61">j</a></span>).<br/>
@@ -678,18 +689,7 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> pwedge</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="pwedge.I" class="id"><div name="pwedge.I" class=" tooltip">I<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/homotopy_theory/wedge_sigT.v#L382' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#Pointed.Exports.pointedType">pointedType</a></span><span class="id">}</span> (<span id="pwedge.X" class="id"><div name="pwedge.X" class=" tooltip">X<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/homotopy_theory/wedge_sigT.v#L382' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#I:86">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#PointedTopological.Exports.ptopologicalType">ptopologicalType</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="pwedge" class="id"><div name="pwedge" class=" tooltip">pwedge<span class='tooltip-area'><p>wedge_lift :
-forall {I : choiceType} [X : I -> topologicalType] 
-  (p0 : forall i : I, X i) [i : I],
-X i -> wedge (X:=X) p0
-
-wedge_lift is not universe polymorphic
-Arguments wedge_lift {I} [X]%_function_scope p0%_function_scope [i] _
-wedge_lift is transparent
-Expands to: Constant mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_lift
-Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 85, characters 11-21
-wedge_fun :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="pwedge" class="id"><div name="pwedge" class=" tooltip">pwedge<span class='tooltip-area'><p>wedge_fun :
 forall {I : choiceType} [X : I -> topologicalType] 
   [p0 : forall i : I, X i] {Z : Type},
 (forall i : I, X i -> Z) -> wedge (X:=X) p0 -> Z
@@ -701,6 +701,16 @@ wedge_fun is transparent
 Expands to: Constant mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_fun
 Declared in
 library mathcomp.analysis.homotopy_theory.wedge_sigT, line 206, characters 11-20
+wedge_prod :
+forall {I : choiceType} [X : I -> topologicalType] [p0 : forall i : I, X i],
+wedge (X:=X) p0 -> prod_topology (fun x : I => X x)
+
+wedge_prod is not universe polymorphic
+Arguments wedge_prod {I} [X p0]%_function_scope _ i
+wedge_prod is transparent
+Expands to: Constant mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_prod
+Declared in
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 239, characters 11-21
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/homotopy_theory/wedge_sigT.v#L384' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="i:88" class="id"><div name="i:88" class=" tooltip">i<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/homotopy_theory/wedge_sigT.v#L384' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span><span class="id"> @</span><span class="id"><a href="mathcomp.classical.classical_sets.html#point">point</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#pwedge.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#i:88">i</a></span>)).<br/>
 <br/>
 <span class="vernacular">Let</span><span class="id"> </span><span id="pwedge.pwedge_point" class="id"><div name="pwedge.pwedge_point" class=" tooltip">pwedge_point<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/homotopy_theory/wedge_sigT.v#L386' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#pwedge">pwedge</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge_lift">wedge_lift</a></span><span class="id"> _</span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.classical_sets.html#point">point</a></span> (<span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#pwedge.X">X</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.classical_sets.html#point">point</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#pwedge.I">I</a></span>))).<br/>
@@ -714,16 +724,14 @@ library mathcomp.analysis.homotopy_theory.wedge_sigT, line 206, characters 11-20
 <span class="vernacular">Section</span><span class="id"> bpwedge</span>.<br/>
 <span class="vernacular">Context</span> (<span id="bpwedge.X" class="id"><div name="bpwedge.X" class=" tooltip">X<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/homotopy_theory/wedge_sigT.v#L395' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="bpwedge.Y" class="id"><div name="bpwedge.Y" class=" tooltip">Y<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/homotopy_theory/wedge_sigT.v#L395' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#BiPointedTopological.Exports.bpTopologicalType">bpTopologicalType</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="bpwedge_shared_pt" class="id"><div name="bpwedge_shared_pt" class=" tooltip">bpwedge_shared_pt<span class='tooltip-area'><p>wedge_prod :
-forall {I : choiceType} [X : I -> topologicalType] [p0 : forall i : I, X i],
-wedge (X:=X) p0 -> prod_topology (fun x : I => X x)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="bpwedge_shared_pt" class="id"><div name="bpwedge_shared_pt" class=" tooltip">bpwedge_shared_pt<span class='tooltip-area'><p>pwedge : forall {I : pointedType}, (I -> ptopologicalType) -> Type
 
-wedge_prod is not universe polymorphic
-Arguments wedge_prod {I} [X p0]%_function_scope _ i
-wedge_prod is transparent
-Expands to: Constant mathcomp.analysis.homotopy_theory.wedge_sigT.wedge_prod
+pwedge is not universe polymorphic
+Arguments pwedge {I} X%_function_scope
+pwedge is transparent
+Expands to: Constant mathcomp.analysis.homotopy_theory.wedge_sigT.pwedge
 Declared in
-library mathcomp.analysis.homotopy_theory.wedge_sigT, line 239, characters 11-21
+library mathcomp.analysis.homotopy_theory.wedge_sigT, line 384, characters 11-17
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/homotopy_theory/wedge_sigT.v#L397' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="b:91" class="id"><div name="b:91" class=" tooltip">b<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/homotopy_theory/wedge_sigT.v#L397' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'return'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'return'_x_'then'_x_'else'_x"> </a></span><span id="b:95" class="id"><span id="b:94" class="id"><span id="b:93" class="id"><span id="b:92" class="id"><div name="b:95" class=" tooltip">b<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/homotopy_theory/wedge_sigT.v#L398' target='_blank'>Source code</a></span></div></span></span></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'return'_x_'then'_x_'else'_x"> return</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#b:92">b</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#bpwedge.X">X</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#bpwedge.Y">Y</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'return'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'return'_x_'then'_x_'else'_x"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.classical.classical_sets.html#one">one</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#bpwedge.X">X</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'return'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'return'_x_'then'_x_'else'_x"> </a></span><span class="id">@</span><span class="id"><a href="mathcomp.classical.classical_sets.html#zero">zero</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#bpwedge.Y">Y</a></span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="bpwedge" class="id"><div name="bpwedge" class=" tooltip">bpwedge<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/homotopy_theory/wedge_sigT.v#L399' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#wedge">wedge</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#bool">bool</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.homotopy_theory.wedge_sigT.html#bpwedge_shared_pt">bpwedge_shared_pt</a></span>).<br/>
