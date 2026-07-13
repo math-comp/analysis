@@ -632,7 +632,7 @@ Lemma cvg_app_within {T} {U : ptopologicalType} (f : T -> U) (F : set_system T)
   (D : set T): Filter F -> cvg (f @ F) -> cvg (f @ within D F).
 Proof.
 by move => FF /cvg_ex [l H]; apply/cvg_ex; exists l; exact: cvg_within_filter.
-Qed.
+Qed. 
 
 (** meets *)
 

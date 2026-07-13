@@ -517,6 +517,16 @@ under eq_cvg do rewrite -mulNrn -mulr_natr expRM_natr; apply: cvg_expr.
 by rewrite ger0_norm ?expR_ge0// expRN invf_lt1 ?expR_gt1// expR_gt0.
 Qed.
 
+Lemma cvgy_expR : @expR R @ +oo --> +oo.
+Proof.
+apply: ger_cvgy.
+- apply: nearW; exact: expR_ge1Dx.
+- exact: cvg_addrl.
+Qed. 
+
+Lemma cvgNy_expR : @expR R @ -oo --> 0.
+Proof. apply/cvgNy_compNP; exact: cvgr_expR. Qed.
+
 Lemma expR_inj : injective (@expR R).
 Proof.
 move=> x y exE.
@@ -819,6 +829,13 @@ apply/cvgrNyPle => y; near=> x; rewrite -ler_expR lnK; first by rewrite posrE.
 by near: x; apply: nbhs_right_le; exact: expR_gt0.
 Unshelve. end_near. Qed.
 
+Lemma lny : ln @ +oo --> +oo.
+Proof.
+apply/cvgryPgey.
+near=> A; near=> x.
+by rewrite -[leLHS]expRK ler_ln ?posrE// expR_gt0.
+Unshelve. all: by end_near. Qed.
+
 End Ln.
 
 Section PowR.
@@ -1089,6 +1106,19 @@ apply: (@cvg_comp _ _ _ _ _ _ (@ninfty_nbhs R)).
 exact/cvgNy_compNP/cvgr_expR.
 Unshelve. end_near. Qed.
 
+Lemma Nlt1_powR_cvg0 (z : R) : 
+  0 <= z -> z < 1 -> z `^ x @[x --> +oo] --> 0.
+Proof.
+rewrite le_eqVlt => /predU1P[<- _|z_gt0 z_lt1].
+  apply: cvg_near_cst.
+  near do by rewrite powR0// gt_eqF.
+rewrite /powR gt_eqF//.
+apply: cvg_comp (@cvgNy_expR R).
+apply: lt0_cvgMlNy.
+apply: ln_lt0.
+by apply/andP.
+Unshelve. all: by end_near. Qed.
+
 Lemma derivable_powR v x : {in `]0, +oo[, forall a, derivable (powR ^~ x) a v}.
 Proof.
 have [-> y _|] := eqVneq v 0; first exact/derivable0.
@@ -1124,6 +1154,14 @@ Proof.
 move=> x_gt0; split.
   by apply: derivable_powR; rewrite ?in_itv/= ?andbT.
 by rewrite -derive1E powR_derive1// in_itv andbT.
+Qed.
+
+Global Instance is_derive1_powRl (a x : R) : 0 < a -> 
+  is_derive x 1 (powR a) (ln a * a `^ x).
+Proof.
+move=> a_gt0; rewrite /powR gt_eqF//.
+apply: is_derive_eq.
+by rewrite scaler0 add0r scaler1 mulrC.
 Qed.
 
 Lemma lt0_powR1 x p : x < 0 -> x `^ p = 1.
@@ -1476,3 +1514,94 @@ by move/contra_not; apply; exact: dvg_harmonic.
 Qed.
 
 End riemannR_series.
+
+Section exponential_domination.
+Context (R : realType).
+
+Lemma expMexpR_cvgr0 (n : nat) (b : R) : 
+  b < 0 -> x ^+ n * expR (b * x) @[x --> +oo] --> 0.
+Proof.
+move=> b_lt0.
+apply: cvg_trans.
+  apply: (near_eq_cvg (f := fun x => x ^+ n / expR (- (b * x)))).
+  near=> x.
+  by rewrite expRN invrK.
+elim: n => [|n IHn].
+  under eq_cvg do rewrite expr0 div1r expRN invrK.
+  apply: cvg_comp (@cvgNy_expR _).
+  by apply: lt0_cvgMrNy.
+apply: lhopital_pinfty_at_pinfty.
+- near do exact: is_derive_exp.
+- near do exact: is_derive1_comp.
+- apply: cvg_comp (@cvgy_expR _).
+  apply/cvgNry.
+  by apply: lt0_cvgMrNy.
+- near=> x.
+  apply: mulf_neq0.
+  + by rewrite expR_eq0.
+  + by rewrite scaler1 gt_eqF// oppr_gt0.
+- apply: cvg_trans.
+    apply: near_eq_cvg.
+    near=> x.
+    by rewrite !scaler1/= (mulrC _ (- _)) -mulf_div.
+  by apply: cvgCM0.
+Unshelve. all: by end_near. Qed.
+
+Lemma powRMexpR_cvgr0 (a b : R) : b < 0 -> 
+  x `^ a * expR (b * x) @[x --> +oo] --> 0.
+Proof.
+move=> bt_gt0.
+case: (ler0P a) => [a_le0|a_gt0].
+  apply: (squeeze_cvgr (f := fun=> 0) (h := fun x => expR (b * x))).
+  - near=> x.
+    apply/andP; split.
+    + by apply: mulr_ge0 => //; exact: powR_ge0.
+    + apply: ler_piMl => //.
+      rewrite -(powRr0 x).
+      by apply: ler_powR.
+  - exact: cvg_cst.
+  - apply: cvg_comp (@cvgNy_expR _).
+    by apply: lt0_cvgMrNy.
+near \oo => n.
+apply: (squeeze_cvgr (f := fun=>0) (h := fun x => x ^+ n * expR (b * x))).
+- near=> x.
+  apply/andP; split.
+  + by apply: mulr_ge0 => //; exact: powR_ge0.
+  + rewrite -powR_mulrn// ler_pM2r ?expR_gt0//.
+    apply: ler_powR => //.
+    by near: n; exact: nbhs_infty_ger.
+- exact: cvg_cst.
+- by apply: expMexpR_cvgr0.
+Unshelve. all: by end_near. Qed.
+
+Lemma expMpowR_cvgr0 (n : nat) (z : R) : 
+  0 <= z -> z < 1 -> x ^+ n * z `^ x @[x --> +oo] --> 0.
+Proof.
+rewrite le_eqVlt => /predU1P[<- _|z_gt0 z_lt1].
+  apply: cvg_near_cst.
+  near=> x.
+  by rewrite powR0 ?mulr0// gt_eqF.
+apply: cvg_trans (expMexpR_cvgr0 n (b := ln z) _).
+- apply: near_eq_cvg.
+  near=> x.
+  congr (_ * _).
+    by rewrite /powR ifN ?(mulrC x)// gt_eqF.
+- by rewrite ln_lt0// z_gt0 z_lt1.
+Unshelve. all: by end_near. Qed.
+
+Lemma expMexpr_cvgn0 (n : nat) (z : R) : 
+  `|z| < 1 -> k%:R ^+ n * z ^+ k @[k --> \oo] --> 0.
+Proof.
+move=> Nz_lt1.
+apply: norm_cvg0.
+apply: cvg_trans.
+  apply: near_eq_cvg.
+  near=> k.
+  rewrite normrM !normrX ger0_norm => [//|].
+  by rewrite -[X in _ * X]powR_mulrn.
+apply: (cvg_comp _ (fun x => x ^+ n * `|z| `^ x)).
+  exact: cvgr_idn.
+by apply: expMpowR_cvgr0.
+Unshelve. all: by end_near. Qed.
+
+End exponential_domination.
