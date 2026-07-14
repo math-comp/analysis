@@ -323,6 +323,18 @@ Corollary continuous_FTC1_closed f (a x : R) (u : R) : (x < u)%R ->
   derivable F x 1 /\ F^`() x = f x.
 Proof. by move=> xu locf F ax fx; exact: (@continuous_FTC1 _ _ _ u). Qed.
 
+Lemma continuous_FTC1_is_derive f a x (u : R) :
+  (x < u)%R -> mu.-integrable [set` Interval a (BRight u)] (EFin \o f) ->
+  let F := fun y => (\int[mu]_(t in [set` Interval a (BRight y)]) f t)%R in
+  (a < BRight x)%E -> {for x, continuous f} ->
+  is_derive x 1%R F (f x).
+Proof.
+move=> x_lt_u f_int F a_lt_x cf.
+have [derF val_derF] := continuous_FTC1 x_lt_u f_int a_lt_x cf.
+constructor; first by [].
+by rewrite -derive1E.
+Qed.
+
 End FTC.
 
 #[deprecated(since="mathcomp-analysis 1.17.0", note="renamed to `integrable_locally_restrict`")]
@@ -1776,6 +1788,137 @@ Qed.
 
 End integration_by_substitution.
 
+Lemma continuous_FTC1y (R : realType) (mu := @lebesgue_measure R) 
+    f (b1 : bool) (u : R) :
+  mu.-integrable `]u, +oo[ (EFin \o f) ->
+  {within `[u, +oo[, continuous f} -> let F := 
+    fun x : R => \int[mu]_(t in [set` Interval (BSide b1 x) +oo%O]) f t in
+  forall (x : R), u < x -> is_derive x 1 F (- f x).
+Proof.
+move=> f_int cf F x u_lt_x.
+near (+oo%R :> set_system R) => M.
+apply: (near_eq_is_derive (f := fun x => 
+    Rintegral mu [set` Interval (BSide b1 x) (BRight M)] f 
+    + Rintegral mu `]M, +oo[ f)).
+  near=> y; symmetry.
+  apply: Rintegral_itvDy.
+  - rewrite bnd_simp.
+    apply: ltW.
+    near: y.
+    apply: lt_nbhsl.
+    near: M.
+    apply: nbhs_pinfty_gt.
+    exact: num_real.
+  - apply: integrableS f_int => //.
+    apply: subset_itvr.
+    apply: ltW.
+    near: y.
+    by apply: lt_nbhsr.
+rewrite -(addr0 (- f x)).
+apply: is_deriveD; last exact: is_derive_cst.
+have cont_opp_opp y : u <= y -> {within `[-M, -y], continuous f \o -%R}.
+  move=> u_le_y.
+  apply/subspace_continuousP => /= t t_itv.
+  rewrite /from_subspace.
+  apply: (cvg_comp _ _ (G := within `[y, M] (nbhs (-t)))) => /=; last first.
+    have : (-t) \in `[y, M].
+      move: t_itv => /=.
+      by rewrite !in_itv/= lerNl lerNr andbC.
+    move: (-t) {t_itv}.
+    apply/subspace_continuousP.
+    apply: continuous_subspaceW cf.
+    by apply: subset_itv.
+  apply: within_cvg_to_within; last exact: oppr_continuous.
+  near=> t' => /=.
+  by rewrite !in_itv/= lerNl lerNr andbC.
+apply: (near_eq_is_derive (f := fun x => \int[mu]_(t in `[-M, -x]) f (- t))).
+  near=> y; symmetry.
+  transitivity (\int[mu]_(t in `[y, M]) (f \o -%R \o -%R) t).
+    apply: Rintegral_itvbb_itvbb => //.
+    apply/measurable_EFinP.
+    apply: (measurable_int mu).
+    apply: integrableS f_int => //.
+    - apply: subset_itv => //.
+      rewrite bnd_simp ltW//.
+      near: y.
+      by apply: lt_nbhsr.
+    - by move=> ? _ /=; rewrite opprK.
+  symmetry; congr fine.
+  apply: integration_by_substitution_oppr => //.
+  - apply: ltW.
+    near: y; apply: lt_nbhsl.
+    near: M.
+    apply: nbhs_pinfty_gt.
+    exact: num_real.
+  - apply: cont_opp_opp.
+    apply: ltW.
+    near: y.
+    by apply: lt_nbhsr.
+apply: is_derive_eq.
+  apply (is_derive1_comp 
+      (f := fun x => \int[mu]_(t in `[- M, x]) (f (-t))) (g := -%R)
+  ); last exact: is_deriveNid.
+  apply: (continuous_FTC1_is_derive (u := -u)).
+  - by rewrite ltrN2.
+  - apply: continuous_compact_integrable; first exact: segment_compact.
+    by apply: cont_opp_opp.
+  - rewrite [X in is_true X]ltrN2; near: M.
+    apply: nbhs_pinfty_gt.
+    exact: num_real.
+  - apply: continuous_comp; first exact: oppr_continuous.
+    have : {within `]u, +oo[, continuous f}.
+      apply: continuous_subspaceW cf.
+      by apply: subset_itvr; rewrite bnd_simp.
+    rewrite continuous_open_subspace//; apply.
+    by rewrite opprK inE/= in_itv/= andbT.
+rewrite opprK mulrN1.
+Unshelve. all: by end_near. Qed.
+
+Lemma continuous_near_pinfty_le_integrable (R : realType) 
+  (mu := @lebesgue_measure R) (a : R) (f g : R -> R) :
+{within `[a, +oo[, continuous f} -> 
+(\forall x \near +oo, `|f x| <= `|g x|) ->
+mu.-integrable `[a, +oo[ (EFin \o g) -> mu.-integrable `[a, +oo[ (EFin \o f).
+Proof.
+move=> cf f_le_g int_g.
+near (+oo :> set_system R) => M.
+apply/integrableP; split.
+  apply/measurable_EFinP.
+  by apply: subspace_continuous_measurable_fun.
+have a_le_M : a <= M.
+  near: M.
+  apply: nbhs_pinfty_ge.
+  exact: num_real.
+rewrite (itv_bndbnd_setU (x := BRight M))// integral_setU//=.
+- rewrite -itv_bndbnd_setU//.
+  apply/measurable_EFinP.
+  apply: measurableT_comp => //.
+  by apply: subspace_continuous_measurable_fun.
+- apply/disj_setPS => x /= [].
+  rewrite !in_itv/= andbT => /andP[_ +] => /le_lt_trans /[apply].
+  by rewrite ltxx.
+apply: lte_add_pinfty.
+- apply: integrable_lty => //=.
+  apply: continuous_compact_integrable; first exact: segment_compact.
+  apply: within_continuous_comp.
+  + by move=> ? _; exact: norm_continuous.
+  + apply: continuous_subspaceW cf.
+    by apply: subset_itvl.
+- apply: integrable_lty => //=.
+apply: (le_integrable (mu := mu) _ (g := EFin \o g)) => //.
+- apply/measurable_EFinP.
+  apply: measurableT_comp => //.
+  apply: subspace_continuous_measurable_fun => //.
+  apply: continuous_subspaceW cf.
+  by apply: subset_itvr.
+- move=> /= x.
+  rewrite in_itv/= andbT normr_id lee_fin => /ltW.
+  move: x.
+  near: M.
+  by apply: (iffLR (near_pinfty_after _)).
+- apply: integrableS int_g => //.
+  by apply: subset_itvr.
+Unshelve. all: by end_near. Qed.
 
 Section ge0_integration_by_substitution_shift.
 Context {R : realType}.
