@@ -1881,7 +1881,7 @@ Lemma continuous_near_pinfty_le_integrable (R : realType)
 mu.-integrable `[a, +oo[ (EFin \o g) -> mu.-integrable `[a, +oo[ (EFin \o f).
 Proof.
 move=> cf f_le_g int_g.
-near (+oo :> set_system R) => M.
+near +oo_R => M.
 apply/integrableP; split.
   apply/measurable_EFinP.
   by apply: subspace_continuous_measurable_fun.

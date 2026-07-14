@@ -1218,8 +1218,8 @@ Qed.
 
 End within.
 
-Lemma cvg_to_withinP (T U : Type) {F : set_system T} {FF : Filter F} {G : set_system U} {FG : Filter G} 
-    (f : T -> U) (A : set U) :
+Lemma cvg_to_withinP (T U : Type) {F : set_system T} {FF : Filter F} 
+    {G : set_system U} {FG : Filter G} (f : T -> U) (A : set U) :
   (f @ F --> within A G) <-> (f @ F --> G /\ \forall x \near F, A (f x)).
 Proof.
   split.
@@ -1251,9 +1251,10 @@ Qed.
 Canonical within_filter_on T D (F : filter_on T) :=
   FilterType (within D F) (within_filter _ _).
 
-Lemma within_cvg_to_within (T U : Type) {F : set_system T} {FF : Filter F} {G : set_system U} {FG : Filter G}
-    (f : T -> U) (A : set T) (B : set U) :
-  (\forall x \near F, A x -> B (f x)) -> f @ F --> G -> f @ within A F --> within B G.
+Lemma within_cvg_to_within (T U : Type) {F : set_system T} {FF : Filter F} 
+    {G : set_system U} {FG : Filter G} (f : T -> U) (A : set T) (B : set U) :
+  (\forall x \near F, A x -> B (f x)) -> 
+  f @ F --> G -> f @ within A F --> within B G.
 Proof.
   move=> near_hom cvgT.
   apply/cvg_to_withinP; split.

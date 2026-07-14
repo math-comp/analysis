@@ -292,6 +292,26 @@ apply/seteqP; split=> [A [M [Mreal MA]]|A [r /= r0 rA]].
   by rewrite /= distrC subr0 ltr0_norm ?invr_lt0// -invrN.
 Qed.
 
+Lemma near_pinfty_after (R : numFieldType) (P : set R) :
+  (\forall x \near +oo, P x) <-> (\forall x \near +oo, forall y, y >= x -> P y).
+Proof.
+split=> [[M [Mr hM]]|[M [Mr hM]]].
+- by exists M; split=> // x /[swap] y /lt_le_trans /[apply] /hM.
+- exists (M + 1); split; first by apply: realD.
+  move=> + /ltW; apply: hM.
+  by rewrite ltrDl.
+Qed.
+
+Lemma near_ninfty_before (R : numFieldType) (P : set R) :
+  (\forall x \near -oo, P x) <-> (\forall x \near -oo, forall y, y <= x -> P y).
+Proof.
+split=> [[M [Mr hM]]|[M [Mr hM]]].
+- by exists M; split=> // x /[swap] y /le_lt_trans /[apply] /hM.
+- exists (M - 1); split; first by apply: realB.
+  move=> + /ltW; apply: hM.
+  by rewrite gtrBl.
+Qed.
+
 Section infty_nbhs_instances.
 Context {R : numFieldType}.
 Implicit Types r : R.

@@ -637,7 +637,7 @@ Lemma Rintegral_bound_infty_continuous :
   \int[mu]_(z in [set` Interval (BSide b1 (x_ e)) +oo%O]) (f z)
   @[e --> 0^'+] --> \int[mu]_(z in [set` Interval (BSide b1' x) +oo%O]) (f z).
 Proof.
-near (+oo :> set_system R) => M.
+near +oo_R => M.
 apply: cvg_trans.
   apply: near_eq_cvg.
   near=> e.

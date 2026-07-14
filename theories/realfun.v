@@ -3010,28 +3010,10 @@ have [b a_lt_b in_ab] : exists2 b : R, a < b &
       is_derive x 1 g (dg x) &
       dg x != 0
     ]}.
-  have [/= r1 r1_gt0 hr1] := near_der_f.
-  have [/= r2 r2_gt0 hr2] := near_der_g.
-  have [/= r3 r3_gt0 hr3] := near_dg_neq0.
-  pose r := Num.min r1 (Num.min r2 r3).
-  exists (a + r) => [|x]. 
-    by rewrite ltrDl /r lt_min r1_gt0/= lt_min; apply/andP.
-  rewrite in_itv/= => /andP[a_lt_x x_lt_ar]; split.
-  - apply: hr1 => //=.
-    rewrite ltr_distlC; apply/andP; split.
-    + by apply: lt_trans a_lt_x; rewrite gtrBl.
-    + apply: (lt_le_trans x_lt_ar).
-      by rewrite lerD2l ge_min lexx.
-  - apply: hr2 => //=.
-    rewrite ltr_distlC; apply/andP; split.
-    + by apply: lt_trans a_lt_x; rewrite gtrBl.
-    + apply: (lt_le_trans x_lt_ar).
-      by rewrite lerD2l !ge_min lexx orbT.
-  - apply: hr3 => //=.
-    rewrite ltr_distlC; apply/andP; split.
-    + by apply: lt_trans a_lt_x; rewrite gtrBl.
-    + apply: (lt_le_trans x_lt_ar).
-      by rewrite lerD2l !ge_min lexx !orbT.
+  near a^'+ => b.
+  exists b => //.
+  near: b; apply/near_right_in_itv.
+  by near do split.
 apply/cvgrPdistC_lt => /= eps eps0.
 near (0 :> R)^'+ => d.
 move: dfdg_cvg => /cvgrPdistC_lt /(_ d) [] //=.
@@ -3055,8 +3037,8 @@ have /[swap] /[apply] : {within `[x, y], continuous g}.
   apply/derivable1_diffP.
   apply: ex_derive.
   by apply in_ab.
-have xy_and : forall z, z \in `]x, y[%R -> [/\ is_derive z 1 f (df z), is_derive z 1 g (dg z) & dg z != 0].
-  move=> z.
+have xy_and z : z \in `]x, y[%R -> 
+    [/\ is_derive z 1 f (df z), is_derive z 1 g (dg z) & dg z != 0].
   rewrite in_itv/= => /andP[x_lt_z z_lt_y].
   apply: in_ab.
   rewrite in_itv/=.
@@ -3071,8 +3053,7 @@ move=> [c + +].
 rewrite in_itv/= => /andP[x_lt_c c_lt_y] dfdgc.
 have : `|(f y - f x) / (g y - g x) - l| < d.
   rewrite -dfdgc.
-  have a_lt_c : a < c.
-    by apply: (lt_trans (y := x)).
+  have a_lt_c : a < c by apply: (lt_trans (y := x)).
   apply: withinr_withind => //=.
   rewrite ltr0_norm ?subr_lt0// opprB ltrBlDl.
   apply: (lt_trans c_lt_y).
@@ -3138,7 +3119,7 @@ Lemma lhopital_pinfty_at_pinfty : f x / g x @[x --> +oo] --> l.
 Proof.
 apply: cvg_trans.
   apply: (near_eq_cvg (f := fun x => f x^-1^-1 / g x^-1^-1)).
-  by near do by rewrite !invrK.
+  by near=> x; rewrite !invrK.
 apply: (cvg_comp _ (fun x => f x^-1 / g x^-1)); first by rewrite pinftyV.
 apply: lhopital_pinfty_at_right.
 - near=> x.
@@ -3169,9 +3150,8 @@ apply: lhopital_pinfty_at_right.
   rewrite -pinftyV -fmap_comp.
   apply: near_eq_cvg.
   near=> x => /=.
-  rewrite !invrK scaler1 !(mulrN, divrN, mulNr) opprK -mulf_div divrr ?mulr1// unitrV.
-  apply: unitrX.
-  by rewrite unitf_gt0// invr_gt0.
+  rewrite !invrK scaler1 !(mulrN, divrN, mulNr) opprK -mulf_div divrr ?mulr1//.
+  by rewrite unitrV unitrX// unitrV unitf_gt0.
 Unshelve. all: by end_near. Qed.
 
 End lhopital_pinfty_at_pinfty.
