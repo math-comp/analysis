@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.reals.reals</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis e340551 2026.07.13-19:53" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis e340551 2026.07.14-19:45" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -1274,14 +1274,6 @@ eq_ereal is transparent
 Expands to: Constant mathcomp.reals.constructive_ereal.eq_ereal
 Declared in
 library mathcomp.reals.constructive_ereal, line 195, characters 11-19
-code : forall [R : choiceType], \bar R -> GenTree.tree R
-
-code is not universe polymorphic
-Arguments code [R] x%_ereal_scope
-code is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.code
-Declared in
-library mathcomp.reals.constructive_ereal, line 215, characters 11-15
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/reals/reals.v#L785' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#rational.R">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.rat.html#ratr">ratr</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.rat.html#rat">rat</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="rationalP" class="id"><div name="rationalP" class=" tooltip">rationalP<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/reals/reals.v#L787' target='_blank'>Source code</a></span></div></span> (<span id="r:251" class="id"><div name="r:251" class=" tooltip">r<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/reals/reals.v#L787' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#rational.R">R</a></span>)<span class="id"> :</span><br/>
@@ -1295,14 +1287,14 @@ library mathcomp.reals.constructive_ereal, line 215, characters 11-15
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.divalg.html#GRing.Theory.fmorph_div">fmorph_div</a></span><span class="id">/=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.rat.html#ratr_nat">ratr_nat</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.rat.html#ratr_int">ratr_int</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="irrational" class="id"><div name="irrational" class=" tooltip">irrational<span class='tooltip-area'><p>decode : forall [R : choiceType], GenTree.tree R -> option \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="irrational" class="id"><div name="irrational" class=" tooltip">irrational<span class='tooltip-area'><p>code : forall [R : choiceType], \bar R -> GenTree.tree R
 
-decode is not universe polymorphic
-Arguments decode [R] x
-decode is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.decode
+code is not universe polymorphic
+Arguments code [R] x%_ereal_scope
+code is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.code
 Declared in
-library mathcomp.reals.constructive_ereal, line 222, characters 11-17
+library mathcomp.reals.constructive_ereal, line 215, characters 11-15
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/reals/reals.v#L796' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#rational.R">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1">~`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#rational">rational</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="irrationalE" class="id"><div name="irrationalE" class=" tooltip">irrationalE<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/reals/reals.v#L798' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#irrational">irrational</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9cb6036901aff0cb53f30093328452cb">\bigcap_</a></span>(<span id="q:254" class="id"><div name="q:254" class=" tooltip">q<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/reals/reals.v#L798' target='_blank'>Source code</a></span></div></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9cb6036901aff0cb53f30093328452cb"> :</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9cb6036901aff0cb53f30093328452cb"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.rat.html#rat">rat</a></span>)<span class="id"><a href="mathcomp.classical.classical_sets.html#9cb6036901aff0cb53f30093328452cb"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1">~`</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.rat.html#ratr">ratr</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#q:254">q</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span>).<br/>
