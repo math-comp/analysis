@@ -262,6 +262,10 @@
     `near_eq_derive1n_near`, `near_eq_derive1_near`, `near_eq_derive1n`, and 
     `near_eq_derive1`.
 
+- in file `realfun.v`,
+  + new lemmas `lhopital_pinfty_at_right`, and 
+    `lhopital_pinfty_at_pinfty`.
+
 - in file `exp.v`,
   + new lemmas `cvgy_expR`, `cvgNy_expR`, `lny`, `Nlt1_powR_cvg0`, 
     `expMexpR_cvgr0`, `powRMexpR_cvgr0`, `expMpowR_cvgr0`, and 
