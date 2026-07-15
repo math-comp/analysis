@@ -249,6 +249,11 @@
     `near_eq_derive1n_near`, `near_eq_derive1_near`, `near_eq_derive1n`, and 
     `near_eq_derive1`.
 
+- in file `realfun.v`,
+  + new lemmas `derivable_oo_LRcontinuousZ`, `derivable_oo_LRcontinuousD`, 
+    `derivable_oo_LRcontinuousN`, `derivable_oo_LRcontinuous_shift`, and 
+    `derivable_oo_LRcontinuousS`.
+
 ### Changed
 
 - in `realsum.v`:
