@@ -2824,7 +2824,7 @@ have gt_sub_neq : [set u : R | a < u] `<=` [set u : R | u != a].
 have lt_sub_neq : [set u : R | u < a] `<=` [set u : R | u != a].
   move=> u /= u_lt_a.
   by rewrite neq_lt u_lt_a.
-apply: cvg_right_left_dnbhs.
+apply: cvg_at_right_left_dnbhs.
 - apply: (right_derivative_limit (df := df)).
   + move: is_df.
     rewrite -!nbhs_nearE/= /nbhs/= /dnbhs /at_right/=.
