@@ -126,6 +126,8 @@
 
 - in `filter.v`:
   + mixin `isSubNbhs`, structure `SubNbhs`, notation `subNbhsType`
+  + new lemmas `near_eq_cvgE`, `near_eq_is_cvg`, `near_eq_lim`, 
+    `cvg_to_eq`, `cvg_to_withinP`, and `within_cvg_to_within`.
 
 - in `topology_structure.v`:
   + structure `SubTopological`, notation `subTopologicalType`
