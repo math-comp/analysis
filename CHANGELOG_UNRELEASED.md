@@ -236,18 +236,6 @@
 - in `measurable_structure.v`:
   + lemmas `countable_bigcap_measurable`, `countable_bigcup_measurable`
 
-- in file `normed_module.v`,
-  + new lemmas `cvg1MC`, `cvg1M`, `cvgCM1`, `cvgM1`, `cvg0MC`, `cvg0M`, 
-    `cvgCM0`, and `cvgM0`.
-- in file `pseudometric_normed_Zmodule.v`,
-  + new lemmas `cvgDl`, `cvgDr`, `cvgBl`, `cvgBr`, `cvg0D`, `cvg0DC`, 
-    `cvgD0`, `cvgCD0`, `cvg0B`, `cvg0BC`, `cvgB0`, `cvgCB0`, and `cvgN0`.
-
-- in `derive.v`
-  + new lemmas `derive1Dn`, `der1_scaleLR`, `deriveZLR`, `derivableZLR`, 
-    `derivable_shiftf`, `derive_shiftf`, `is_derive_shiftf`, `derive1_shiftf`, 
-    `near_eq_derive1n_near`, `near_eq_derive1_near`, `near_eq_derive1n`, and 
-    `near_eq_derive1`.
 - in file `function_spaces.v`,
   + new lemma `within_continuous_big`.
 - in file `nat_topology.v`,
@@ -256,13 +244,28 @@
   + new lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
     `at_left_shift`, `at_right_shift`, `near_right_in_itv`, and `near_left_in_itv`.
 
+- in file `normed_module.v`,
+  + new lemmas `cvg1MC`, `cvg1M`, `cvgCM1`, `cvgM1`, `cvg0MC`, `cvg0M`, 
+    `cvgCM0`, and `cvgM0`.
 - in file `num_normedtype.v`,
   + new lemmas `pinftyV`, `ninftyV`, `cvgryV`, `cvgrNyV`, `lt0_cvgMlNy`, 
     `lt0_cvgMrNy`, `lt0_cvgMly`, and `lt0_cvgMry`.
 - in file `pseudometric_normed_Zmodule.v`,
-  + new lemmas `fmap_at_left0P`, and `fmap_at_right0E`.
+  + new lemmas `cvgDl`, `cvgDr`, `cvgBl`, `cvgBr`, `cvg0D`, `cvg0DC`, 
+    `cvgD0`, `cvgCD0`, `cvg0B`, `cvg0BC`, `cvgB0`, `cvgCB0`, `cvgN0`, `fmap_at_left0P`, and `fmap_at_right0E`.
 - in file `tvs.v`,
   + new lemmas `near_shiftE`, and `nearZE`.
+
+- in `derive.v`
+  + new lemmas `derive1Dn`, `der1_scaleLR`, `deriveZLR`, `derivableZLR`, 
+    `derivable_shiftf`, `derive_shiftf`, `is_derive_shiftf`, `derive1_shiftf`, 
+    `near_eq_derive1n_near`, `near_eq_derive1_near`, `near_eq_derive1n`, and 
+    `near_eq_derive1`.
+
+- in file `exp.v`,
+  + new lemmas `cvgy_expR`, `cvgNy_expR`, `lny`, `Nlt1_powR_cvg0`, 
+    `expMexpR_cvgr0`, `powRMexpR_cvgr0`, `expMpowR_cvgr0`, and 
+    `expMexpr_cvgn0`.
 
 ### Changed
 
