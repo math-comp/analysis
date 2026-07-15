@@ -245,6 +245,53 @@ apply/seteqP; split => [A [M [Mreal MA]]|A [M [Mreal MA]]].
 by exists (- M); rewrite ?realN; split=> // x; rewrite ltrNl => /MA.
 Qed.
 
+Lemma pinftyV (R : numFieldType) : x^-1 @[x --> +oo] = (0 : R)^'+.
+Proof.
+apply/seteqP; split=> [A [M [Mreal MA]]|A [r /= r0 rA]].
+- have mM1_gt0 : 0 < Num.max M 1.
+    case: (@real_leP _ M 1) => //.
+    by apply: lt_trans.
+  exists (Num.max M 1)^-1; first by rewrite /= invr_gt0.
+  move=> x /= /[swap] x_gt0.
+  rewrite distrC subr0 gtr0_norm// invf_pgt ?posrE// => mM1_lt_xV.
+  rewrite -(invrK x); apply: MA.
+  apply: le_lt_trans mM1_lt_xV.
+  by case: (@real_leP _ M 1).
+- exists r^-1; split; first by rewrite realV gtr0_real.
+  move=> x /[dup] rV_lt_x.
+  have x_gt0 : x > 0.
+    apply: lt_trans rV_lt_x.
+    by rewrite invr_gt0.
+  rewrite invf_plt// => xV_lt_r.
+  apply: rA; last by rewrite invr_gt0.
+  by rewrite /= distrC subr0 gtr0_norm// invr_gt0.
+Qed.
+
+Lemma ninftyV (R : numFieldType) : x^-1 @[x --> -oo] = (0 : R)^'-.
+Proof.
+apply/seteqP; split=> [A [M [Mreal MA]]|A [r /= r0 rA]].
+- pose M' := Num.min M (-1).
+  have M'_lt0 : M' < 0.
+    rewrite /M'.
+    case: (@real_leP _ M (-1)) => // /le_lt_trans.
+    by apply.
+  exists (-M')^-1; first by rewrite /= invr_gt0 oppr_gt0.
+  move=> x /= /[swap] x_lt0.
+  rewrite distrC subr0 ltr0_norm// invrN ltrN2 => x_gt_VM'.
+  rewrite -(invrK x); apply: MA.
+  apply: (lt_le_trans (y := M')).
+  + by rewrite invf_nlt.
+  + by rewrite /M'; case: (@real_ltP _ M (-1)).
+- exists (- r^-1); split; first by rewrite realN realV gtr0_real.
+  move=> x /[dup] x_lt_NrV.
+  have x_lt0 : x < 0.
+    apply: (lt_trans x_lt_NrV).
+    by rewrite oppr_lt0 invr_gt0.
+  rewrite ltrNr invf_plt// ?posrE ?oppr_gt0// => NxV_lt_r.
+  apply: rA; last by rewrite invr_lt0.
+  by rewrite /= distrC subr0 ltr0_norm ?invr_lt0// -invrN.
+Qed.
+
 Section infty_nbhs_instances.
 Context {R : numFieldType}.
 Implicit Types r : R.
@@ -441,6 +488,20 @@ Unshelve. all: end_near. Qed.
 Lemma cvgNrNy f : (- f @ F --> -oo) <-> (f @ F --> +oo).
 Proof. by rewrite -cvgNry opprK. Qed.
 
+Lemma cvgryV f : f @ F --> +oo -> (f x)^-1 @[x --> F] --> (0 : R).
+Proof.
+move=> cvgy.
+apply: cvg_comp; first exact: cvgy.
+by rewrite pinftyV; exact: cvg_within.
+Qed.
+
+Lemma cvgrNyV f : f @ F --> -oo -> (f x)^-1 @[x --> F] --> (0 : R).
+Proof.
+move=> cvgNy.
+apply: cvg_comp; first exact: cvgNy.
+by rewrite ninftyV; exact: cvg_within.
+Qed.
+
 End cvg_infty_numField.
 
 Section cvg_infty_realField.
@@ -525,6 +586,31 @@ Lemma gt0_cvgMry : f r @[r --> F] --> +oo -> (M * f r)%R @[r --> F] --> +oo.
 Proof. by move=> fy; under eq_fun do rewrite mulrC; exact: gt0_cvgMly. Qed.
 
 End gt0_cvg.
+
+Section lt0_cvg.
+Context {R : realFieldType} {F : set_system R} {FF : Filter F}.
+Variables (M : R) (f : R -> R).
+Hypothesis M0 : M < 0.
+
+Lemma lt0_cvgMlNy : (f r) @[r --> F] --> +oo -> (f r * M)%R @[r --> F] --> -oo.
+Proof.
+move=> /cvgryPge fy; apply/cvgrNyPle => A.
+by apply: filterS (fy (A / M)) => x; rewrite ler_ndivrMr.
+Qed.
+
+Lemma lt0_cvgMrNy : (f r) @[r --> F] --> +oo -> (M * f r)%R @[r --> F] --> -oo.
+Proof. by move=> fy; under eq_fun do rewrite mulrC; exact: lt0_cvgMlNy. Qed.
+
+Lemma lt0_cvgMly : f r @[r --> F] --> -oo -> (f r * M)%R @[r --> F] --> +oo.
+Proof.
+move=> /cvgrNyPle fNy; apply/cvgryPge => A.
+by apply: filterS (fNy (A / M)) => x; rewrite ler_ndivlMr.
+Qed.
+
+Lemma lt0_cvgMry : f r @[r --> F] --> -oo -> (M * f r)%R @[r --> F] --> +oo.
+Proof. by move=> fy; under eq_fun do rewrite mulrC; exact: lt0_cvgMly. Qed.
+
+End lt0_cvg.
 
 Lemma cvgNy_compNP {T : topologicalType} {R : numFieldType} (f : R -> T)
     (l : set_system T) :
