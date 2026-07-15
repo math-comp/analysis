@@ -251,6 +251,21 @@
   + definitions `clamp`, `clamp_gele`
   + lemmas `clamp_gemin`, `clamp_lemax`, `minmax_clamp`,
     `clamp_id`, `clamp_min`, `clamp_max`
+- in file `function_spaces.v`,
+  + new lemma `within_continuous_big`.
+- in file `nat_topology.v`,
+  + new lemma `near_infty_after`.
+- in file `num_topology.v`,
+  + new lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
+    `at_left_shift`, and `at_right_shift`.
+
+- in file `num_normedtype.v`,
+  + new lemmas `pinftyV`, `ninftyV`, `cvgryV`, `cvgrNyV`, `lt0_cvgMlNy`, 
+    `lt0_cvgMrNy`, `lt0_cvgMly`, and `lt0_cvgMry`.
+- in file `pseudometric_normed_Zmodule.v`,
+  + new lemmas `fmap_at_left0P`, and `fmap_at_right0E`.
+- in file `tvs.v`,
+  + new lemmas `near_shiftE`, and `nearZE`.
 
 - in `sequences.v`,
   + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
@@ -320,6 +335,8 @@
     `edist_closeP`, `edist_refl`, `edist_closel`
   + lemmas `edist_inf_ge0`, `edist_inf_neqNy`, `edist_inf_triangle`,
     `edist_inf_continuous`, `edist_inf0`
+- moved from `metric_structure.v` to `num_topology.v`: 
+  + lemma `cvg_at_right_left_dnbhs`, generalized to `topologicalType` from `metricType`.
 
 ### Renamed
 
