@@ -1118,6 +1118,85 @@ apply/differentiable_continuous; rewrite -derivable1_diffP.
 by apply: df; rewrite in_itv.
 Qed.
 
+Lemma derivable_oo_LRcontinuousZ (a b k : R) (f : R -> V) :
+  derivable_oo_LRcontinuous f a b -> derivable_oo_LRcontinuous (k \*: f) a b.
+Proof.
+move=> [der_oo liml limr].
+split.
+- move=> x x_ab.
+  apply: derivableZ.
+  by apply: der_oo.
+- by apply: cvgZl_tmp.
+- by apply: cvgZl_tmp.
+Qed.
+
+Lemma derivable_oo_LRcontinuousD (a b : R) (f g : R -> V) :
+  derivable_oo_LRcontinuous f a b -> derivable_oo_LRcontinuous g a b -> derivable_oo_LRcontinuous (f \+ g) a b.
+Proof.
+move=> [fder_oo f_contl f_contr] [gder_oo g_contl g_contr].
+split.
+- move=> x x_ab.
+  apply: derivableD.
+  + by apply: fder_oo.
+  + by apply: gder_oo.
+- by apply: cvgD.
+- by apply: cvgD.
+Qed.
+
+Lemma derivable_oo_LRcontinuousN (a b : R) (f : R -> V) :
+  derivable_oo_LRcontinuous f a b -> derivable_oo_LRcontinuous (\- f) a b.
+Proof.
+move=> [fder_oo f_contl f_contr].
+split.
+- move=> x x_ab.
+  apply: derivableN.
+  by apply: fder_oo.
+- by apply: cvgN.
+- by apply: cvgN.
+Qed.
+
+Lemma derivable_oo_LRcontinuous_shift (a b c : R) (f : R -> V) :
+  derivable_oo_LRcontinuous f (a + c) (b + c) -> derivable_oo_LRcontinuous (f \o shift c) a b.
+Proof.
+move=> [fder_oo f_contl f_contr].
+split.
+- move=> x x_ab.
+  apply: derivable_shiftf.
+  apply: fder_oo.
+  move: x_ab.
+  by rewrite !in_itv/= !ltrD2r.
+- apply: cvg_comp f_contl.
+  apply: within_cvg_to_within (cvgDr _) => //.
+  by near=> x; rewrite ltrD2r.
+- apply: cvg_comp f_contr.
+  apply: within_cvg_to_within (cvgDr _) => //.
+  by near=> x; rewrite ltrD2r.
+Unshelve. all: by end_near. Qed.
+
+Lemma derivable_oo_LRcontinuousS (a b : R) (A : set R) (f : R -> V) :
+  {in A, forall x, derivable f x 1} -> `[a, b] `<=` A -> a <= b -> derivable_oo_LRcontinuous f a b.
+Proof.
+move=> df ab_sub_A a_le_b.
+split.
+- move=> x x_ab.
+  apply: df.
+  apply: mem_set.
+  apply: ab_sub_A => /=.
+  by apply: subset_itv x_ab; rewrite bnd_simp.
+- apply: cvg_at_right_filter.
+  apply: differentiable_continuous; apply/derivable1_diffP.
+  apply: df.
+  apply: mem_set.
+  apply: ab_sub_A.
+  by rewrite /= bound_itvE.
+- apply: cvg_at_left_filter.
+  apply: differentiable_continuous; apply/derivable1_diffP.
+  apply: df.
+  apply: mem_set.
+  apply: ab_sub_A.
+  by rewrite /= bound_itvE.
+Qed.
+
 End derivable_oo_LRcontinuous.
 #[deprecated(since="mathcomp-analysis 1.14.0", note="use `derivable_oo_LRcontinuous` instead")]
 Notation derivable_oo_continuous_bnd := derivable_oo_LRcontinuous (only parsing).
