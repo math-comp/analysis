@@ -1098,6 +1098,45 @@ Qed.
 Lemma is_cvgDrE f g : cvg (f @ F) -> cvg ((f + g) @ F) = cvg (g @ F).
 Proof. by rewrite addrC; apply: is_cvgDlE. Qed.
 
+Lemma cvgDl f a b : f @ F --> b -> a + f x @[x --> F] --> a + b.
+Proof. apply: cvgD; exact: cvg_cst. Qed.
+
+Lemma cvgDr f a b : f @ F --> a -> f x + b @[x --> F] --> a + b.
+Proof. move/cvgD; apply; exact: cvg_cst. Qed.
+
+Lemma cvgBl f a b : f @ F --> b -> a - f x @[x --> F] --> a - b.
+Proof. by move/cvgN; apply: cvgDl. Qed.
+
+Lemma cvgBr f a b : f @ F --> a -> f x - b @[x --> F] --> a - b.
+Proof. exact: cvgDr. Qed.
+
+Lemma cvg0D f g a : f @ F --> 0 -> g @ F --> a -> f x + g x @[x --> F] --> a.
+Proof. by move=> /cvgD /[apply]; rewrite add0r. Qed.
+
+Lemma cvg0DC f a : f @ F --> 0 -> f x + a @[x --> F] --> a.
+Proof. by move=> /(cvgDr (b := a)); rewrite add0r. Qed.
+
+Lemma cvgD0 f g a : f @ F --> a -> g @ F --> 0 -> f x + g x @[x --> F] --> a.
+Proof. by move=> /cvgD /[apply]; rewrite addr0. Qed.
+
+Lemma cvgCD0 f a : f @ F --> 0 -> a + f x @[x --> F] --> a.
+Proof. by move/(@cvgDl _ a); rewrite addr0. Qed.
+
+Lemma cvg0B f g a : f @ F --> 0 -> g @ F --> a -> f x - g x @[x --> F] --> -a.
+Proof. by move=> /cvgB /[apply]; rewrite add0r. Qed.
+
+Lemma cvg0BC f a : f @ F --> 0 -> f x - a @[x --> F] --> -a.
+Proof. by move=> /(cvgBr (b := a)); rewrite add0r. Qed.
+
+Lemma cvgB0 f g a : f @ F --> a -> g @ F --> 0 -> f x - g x @[x --> F] --> a.
+Proof. by move=> /cvgB /[apply]; rewrite subr0. Qed.
+
+Lemma cvgCB0 f a : f @ F --> 0 -> a - f x @[x --> F] --> a.
+Proof. by move/(@cvgBl _ a); rewrite subr0. Qed.
+
+Lemma cvgN0 f : f @ F --> 0 -> - f @ F --> 0.
+Proof. by rewrite -{2}oppr0; exact: cvgN. Qed.
+
 Lemma cvg_sub0 f g a : (f - g) @ F --> (0 : V) -> g @ F --> a -> f @ F --> a.
 Proof.
 by move=> Cfg Cg; have := cvgD Cfg Cg; rewrite subrK add0r; apply.

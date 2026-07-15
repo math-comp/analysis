@@ -126,6 +126,8 @@
 
 - in `filter.v`:
   + mixin `isSubNbhs`, structure `SubNbhs`, notation `subNbhsType`
+  + new lemmas `near_eq_cvgE`, `near_eq_is_cvg`, `near_eq_lim`, 
+    `cvg_to_eq`, `cvg_to_withinP`, and `within_cvg_to_within`.
 
 - in `topology_structure.v`:
   + structure `SubTopological`, notation `subTopologicalType`
@@ -233,6 +235,24 @@
 
 - in `measurable_structure.v`:
   + lemmas `countable_bigcap_measurable`, `countable_bigcup_measurable`
+
+- in file `normed_module.v`,
+  + new lemmas `cvg1MC`, `cvg1M`, `cvgCM1`, `cvgM1`, `cvg0MC`, `cvg0M`, 
+    `cvgCM0`, and `cvgM0`.
+- in file `pseudometric_normed_Zmodule.v`,
+  + new lemmas `cvgDl`, `cvgDr`, `cvgBl`, `cvgBr`, `cvg0D`, `cvg0DC`, 
+    `cvgD0`, `cvgCD0`, `cvg0B`, `cvg0BC`, `cvgB0`, `cvgCB0`, and `cvgN0`.
+
+- in `derive.v`
+  + new lemmas `derive1Dn`, `der1_scaleLR`, `deriveZLR`, `derivableZLR`, 
+    `derivable_shiftf`, `derive_shiftf`, `is_derive_shiftf`, `derive1_shiftf`, 
+    `near_eq_derive1n_near`, `near_eq_derive1_near`, `near_eq_derive1n`, and 
+    `near_eq_derive1`.
+
+- in file `realfun.v`,
+  + new lemmas `derivable_oo_LRcontinuousZ`, `derivable_oo_LRcontinuousD`, 
+    `derivable_oo_LRcontinuousN`, `derivable_oo_LRcontinuous_shift`, and 
+    `derivable_oo_LRcontinuousS`.
 
 ### Changed
 
@@ -353,6 +373,9 @@
 
 - in `classical_sets.v`
   + lemma `bigcupDr` -> `setD_bigcupr` (deprecating `bigcupDr`)
+
+- moved from `realfun.v` to `derive.v`: 
+  + lemmas `is_deriveV`, `is_derive1_comp`.
 
 ### Renamed
 

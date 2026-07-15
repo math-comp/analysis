@@ -77,7 +77,6 @@ Lemma derive_onemXn n x :
   (fun y => y.~ ^+ n)^`()%classic x = - n%:R * x.~ ^+ n.-1.
 Proof.
 rewrite (@derive1_comp _ (@onem _) (fun x => x ^+ n))//.
-  exact: exprn_derivable.
 rewrite derive1E exp_derive// derive1E deriveB// -derive1E.
 by rewrite derive1_cst derive_id sub0r mulrN1 [in RHS]mulNr scaler1.
 Qed.
