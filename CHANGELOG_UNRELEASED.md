@@ -140,6 +140,13 @@
   + new lemmas `lhopital_pinfty_at_right`, and 
     `lhopital_pinfty_at_pinfty`.
 
+- in file `normed_module.v`,
+  + new lemmas `cvg1MC`, `cvg1M`, `cvgCM1`, `cvgM1`, `cvg0MC`, `cvg0M`, 
+    `cvgCM0`, and `cvgM0`.
+- in file `pseudometric_normed_Zmodule.v`,
+  + new lemmas `cvgDl`, `cvgDr`, `cvgBl`, `cvgBr`, `cvg0D`, `cvg0DC`, 
+    `cvgD0`, `cvgCD0`, `cvg0B`, `cvg0BC`, `cvgB0`, `cvgCB0`, and `cvgN0`.
+
 ### Changed
 
 - in `esum.v`:
