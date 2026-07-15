@@ -241,50 +241,6 @@ split=> [pPf e|ex_notPx].
   by rewrite /ball/= ltr0_norm ?subr_lt0// opprB ltrBlDl.
 Unshelve. all: by end_near. Qed.
 
-Lemma at_rightD x a : (x + a)^'+ = (y + a @[y --> x^'+]).
-Proof.
-apply/seteqP; split=> P /=.
-- move=> [/= r r0 br_sub].
-  exists r => // y bxy x_lt_y.
-  apply: br_sub => /=.
-  + by rewrite (addrC y) addrKA.
-  + by rewrite ltrD2r.
-- move=> [/= r r0 br_sub].
-  exists r => // y bxay xDa_lt_y.
-  rewrite -(subrK a y).
-  apply: br_sub => /=.
-  + by rewrite opprB addrA.
-  + by rewrite ltrBrDr.
-Qed.
-
-Lemma at_leftD x a : (x + a)^'- = (y + a @[y --> x^'-]).
-Proof.
-apply/seteqP; split=> P /=.
-- move=> [/= r r0 br_sub].
-  exists r => // y bxy x_gt_y.
-  apply: br_sub => /=.
-  + by rewrite (addrC y) addrKA.
-  + by rewrite ltrD2r.
-- move=> [/= r r0 br_sub].
-  exists r => // y bxay xDa_gt_y.
-  rewrite -(subrK a y).
-  apply: br_sub => /=.
-  + by rewrite opprB addrA.
-  + by rewrite ltrBlDr.
-Qed.
-
-Lemma near_at_rightD x a (P : set R) : (\forall y \near (x + a)^'+, P y) = (\forall y \near x^'+, P (y + a)).
-Proof. by rewrite at_rightD near_map. Qed.
-
-Lemma near_at_leftD x a (P : set R) : (\forall y \near (x + a)^'-, P y) = (\forall y \near x^'-, P (y + a)).
-Proof. by rewrite at_leftD near_map. Qed.
-
-Lemma at_left_shift (T : Type) x a (f : R -> T) : (f @ (x + a)^'-) = (f (y + a) @[y --> x^'-]).
-Proof. by rewrite at_leftD. Qed.
-
-Lemma at_right_shift (T : Type) x a (f : R -> T) : (f @ (x + a)^'+) = (f (y + a) @[y --> x^'+]).
-Proof. by rewrite at_rightD. Qed.
-
 End at_left_right.
 #[global] Typeclasses Opaque at_left at_right.
 Notation "x ^'-" := (at_left x) : classical_set_scope.
@@ -295,16 +251,6 @@ Notation "x ^'+" := (at_right x) : classical_set_scope.
 
 #[global] Hint Extern 0 (Filter (nbhs _^'-)) =>
   (apply: at_left_proper_filter) : typeclass_instances.
-
-Lemma cvg_at_right_left_dnbhs (R : realFieldType) (T : topologicalType) (f : R -> T) (p : R) (l : T) :
-  f x @[x --> p^'+] --> l -> f x @[x --> p^'-] --> l -> f x @[x --> p^'] --> l.
-Proof.
-move=> + + U Uz => /(_ U Uz) + /(_ U Uz); near_simpl.
-rewrite !near_withinE !near_nbhs => lf rf.
-apply: filter_app lf; apply: filter_app rf.
-near=> t => xlt xgt.
-by case/lt_total/orP.
-Unshelve. all: by end_near. Qed.
 
 Lemma left_right_continuousP {R : realFieldType} {T : topologicalType}
     (f : R -> T) x :

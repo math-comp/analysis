@@ -1600,11 +1600,6 @@ Proof.
 by move=> F_cont x; apply: cvg_big => // i /F_cont; exact.
 Qed.
 
-Lemma within_continuous_big (T : topologicalType) (A : set T) (r : seq I) (F : I -> T -> U) :
-	(forall (i : I), P i -> {within A, continuous (F i)}) ->
-	{within A, continuous (fun x : T => \big[op/x0]_(i <- r | P i) F i x)}.
-Proof. by move=> cont_F x; apply: continuous_big. Qed.
-
 End big_continuous.
 
 Definition eval {X Y : topologicalType} : continuousType X Y * X -> Y :=
