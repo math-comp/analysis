@@ -234,6 +234,14 @@
 - in `measurable_structure.v`:
   + lemmas `countable_bigcap_measurable`, `countable_bigcup_measurable`
 
+- in file `function_spaces.v`,
+  + new lemma `within_continuous_big`.
+- in file `nat_topology.v`,
+  + new lemma `near_infty_after`.
+- in file `num_topology.v`,
+  + new lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
+    `at_left_shift`, and `at_right_shift`.
+
 ### Changed
 
 - in `realsum.v`:
@@ -353,6 +361,9 @@
 
 - in `classical_sets.v`
   + lemma `bigcupDr` -> `setD_bigcupr` (deprecating `bigcupDr`)
+
+- moved from `metric_structure.v` to `num_topology.v`: 
+  + lemma `cvg_at_right_left_dnbhs`, generalized to `topologicalType` from `metricType`.
 
 ### Renamed
 
