@@ -188,6 +188,41 @@ move=> mD if1 if2.
 by rewrite /Rintegral integralB_EFin// fineB//; exact: integrable_fin_num.
 Qed.
 
+Lemma Rintegral_patch_negligible (f g : T -> R) (A D : set T) :
+  d.-measurable A -> d.-measurable D -> mu D = 0 -> measurable_fun A f -> measurable_fun D g -> Rintegral mu A (patch f D g) = Rintegral mu A f.
+Proof.
+move=> mA mD muD0 mf mg.
+wlog D_sub_A : D A mA mD muD0 mf mg / D `<=` A.
+  move=> sub_case.
+  transitivity (Rintegral mu A (patch f (D `&` A) g)).
+    apply: eq_Rintegral => x.
+    by rewrite in_setI andbC => ->.
+  apply: sub_case => //.
+  - by apply: measurableI.
+  - apply: subset_measure0 muD0 => //.
+    by apply: measurableI.
+  - by apply: measurable_funS mg.   
+congr (fine _).
+apply: ae_eq_integral => //; [| exact/measurable_EFinP |].
+  change (measurable_fun A (EFin \o patch f D g)).
+  rewrite comp_patch /patch/=.
+  rewrite -(setDUK D_sub_A).
+  apply/measurable_funU => //; first by apply: measurableD.
+  split.
+  - apply: (eq_measurable_fun (EFin \o g)).
+    + by move=> ? ->.
+    + by apply/measurable_EFinP.
+  - apply: (eq_measurable_fun (EFin \o f)).
+    + move=> x.
+      by rewrite in_setD => /andP[_ /negbTE ->].
+    + apply/measurable_EFinP.
+      by apply: measurable_funS mf.
+rewrite /ae_eq /prop_near1 /nbhs/= /almost_everywhere/=.
+exists D; split=> //.
+apply: subsetCl => x /= nDx Ax.
+by rewrite /patch ifN// notin_setE.
+Qed.
+
 End Rintegral.
 #[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `le_normr_Rintegral`")]
 Notation le_normr_integral := le_normr_Rintegral (only parsing).
@@ -240,6 +275,149 @@ rewrite Rintegral_itvbo_itvbc//.
   by rewrite (le_trans _ xb)// bnd_simp.
 rewrite addrC addKr Rintegral_itvob_itvcb//.
 by apply: integrableS itf => //; exact/subset_itvr/ltW.
+Qed.
+
+Lemma Rintegral_itvbb_itvoo (x y : R) f (b1 b2 : bool) :
+  measurable_fun `]x, y[ (EFin \o f) ->
+  \int[mu]_(z in [set` Interval (BSide b1 x) (BSide b2 y)]) f z =
+  \int[mu]_(z in `]x, y[) f z.
+Proof. by move=> mf /=; congr fine; rewrite integral_itvbb_itvoo. Qed.
+
+Lemma Rintegral_itvby_itvoy (x : R) f (b1 : bool) :
+  measurable_fun `]x, +oo[ (EFin \o f) ->
+  \int[mu]_(z in [set` Interval (BSide b1 x) +oo%O]) f z =
+  \int[mu]_(z in `]x, +oo[) f z.
+Proof.
+move=> mf /=; congr fine.
+case: b1 => [|//]; symmetry.
+by apply: integral_itvob_itvcb.
+Qed.
+
+Lemma Rintegral_itvbb_itvbb (x y : R) (f g : R -> R) (b1 b2 b1' b2' : bool) :
+  measurable_fun `]x, y[ f ->
+  {in `]x, y[%R, f =1 g} ->
+  \int[mu]_(z in [set` Interval (BSide b1 x) (BSide b2 y)]) f z =
+  \int[mu]_(z in [set` Interval (BSide b1' x) (BSide b2' y)]) g z.
+Proof.
+move=> mf eqfg.
+transitivity (\int[mu]_(z in `]x, y[) f z).
+  apply: Rintegral_itvbb_itvoo.
+  by apply/measurable_EFinP.
+transitivity (\int[mu]_(z in `]x, y[) g z).
+  by apply: eq_Rintegral; move=> + /set_mem.
+symmetry; apply: Rintegral_itvbb_itvoo.
+apply/measurable_EFinP.
+by apply: (eq_measurable_fun f); first by move=> + /set_mem.
+Qed.
+
+Lemma Rintegral_itvby_itvby (x : R) (f g : R -> R) (b1 b1' : bool) :
+  measurable_fun `]x, +oo[ f ->
+  {in `]x, +oo[, f =1 g} ->
+  \int[mu]_(z in [set` Interval (BSide b1 x) +oo%O]) f z =
+  \int[mu]_(z in [set` Interval (BSide b1' x) +oo%O]) g z.
+Proof.
+move=> mf eqfg.
+transitivity (\int[mu]_(z in `]x, +oo[) f z).
+  apply: Rintegral_itvby_itvoy.
+  by apply/measurable_EFinP.
+transitivity (\int[mu]_(z in `]x, +oo[) g z).
+  by apply: eq_Rintegral; move=> + /set_mem.
+symmetry; apply: Rintegral_itvby_itvoy.
+apply/measurable_EFinP.
+by apply: (eq_measurable_fun f); first by move=> + /set_mem.
+Qed.
+
+Lemma Rintegral_itv0 f (a b : R) (b1 b2 : bool) :
+    a >= b -> Rintegral mu [set` Interval (BSide b1 a) (BSide b2 b)] f = 0.
+Proof.
+rewrite le_eqVlt => /predU1P[->|b_lt_a].
+- case: b1 b2 => [] []; rewrite set_itvE ?Rintegral_set0//.
+  exact: Rintegral_set1.
+- rewrite set_itv_ge -?leNgt; first by apply: lteifS.
+  exact: Rintegral_set0.
+Qed.  
+
+Lemma Rintegral_itvD f (a c : R) (b1 b2 b1' b2' : bool) (b : itv_bound R) :
+  (BLeft a <= b <= BRight c)%O ->
+  mu.-integrable `]a, c[ (EFin \o f) ->
+  Rintegral mu [set` Interval (BSide b1 a) (BSide b2 c)] f = Rintegral mu [set` Interval (BSide b1' a) b] f + Rintegral mu [set` Interval b (BSide b2' c)] f.
+Proof.
+case: b => [b3 b|[] //].
+rewrite !bnd_simp => /andP[a_le_b b_le_c] f_int.
+have mf : measurable_fun `]a, c[ f.
+  apply/measurable_EFinP.
+  by apply: (measurable_int mu).
+move: a_le_b; rewrite le_eqVlt => /predU1P[<-|a_lt_b].
+  rewrite [X in _ = X + _]Rintegral_itv0// add0r.
+  by apply: Rintegral_itvbb_itvbb.
+move: b_le_c; rewrite le_eqVlt => /predU1P[->|b_lt_c].
+  rewrite [X in _ = _ + X]Rintegral_itv0// addr0.
+  by apply: Rintegral_itvbb_itvbb.
+transitivity (Rintegral mu `]a, c[ f); first by apply: Rintegral_itvbb_itvbb.
+rewrite (itv_bndbnd_setU (x := BSide b3 b)); [ by apply: lteifS .. |].
+rewrite [LHS]Rintegral_setU; [ exact: measurable_itv .. | | |].
+- by rewrite -itv_bndbnd_setU//; apply: lteifS.
+- apply/disj_setPS => x /=[/andP[_ +] /andP[+ _]].
+  move/le_trans/[apply].
+  by rewrite bnd_simp ltxx.
+congr (_ + _); apply: Rintegral_itvbb_itvbb => //.
+- apply: (measurable_funS (E := `]a, c[)) => //.
+  by apply: subset_itvl; rewrite bnd_simp ltW.
+- apply: (measurable_funS (E := `]a, c[)) => //.
+  by apply: subset_itvr; rewrite bnd_simp ltW.
+Qed.
+
+Lemma Rintegral_itvDy f (a : R) (b : itv_bound R) (b1 b1' : bool) :
+  (BLeft a <= b)%O ->
+  mu.-integrable `]a, +oo[ (EFin \o f) ->
+  Rintegral mu [set` Interval (BSide b1 a) +oo%O] f 
+  = Rintegral mu [set` Interval (BSide b1' a) b] f + Rintegral mu [set` Interval b +oo%O] f.
+Proof.
+move=> /[swap] int_f.
+case: b => [b2 b|[] // _]; last first.
+  rewrite set_itvxx Rintegral_set0 addr0.
+  apply: Rintegral_itvby_itvby => //.
+  apply/measurable_EFinP.
+  exact: measurable_int int_f.
+rewrite !bnd_simp => a_le_b.
+have mf : measurable_fun `]a, +oo[ f.
+  apply/measurable_EFinP.
+  by apply: (measurable_int mu).
+move: a_le_b; rewrite le_eqVlt => /predU1P[<-|a_lt_b].
+  rewrite [X in _ = X + _]Rintegral_itv0// add0r.
+  by apply: Rintegral_itvby_itvby.
+transitivity (Rintegral mu `]a, +oo[ f); first by apply: Rintegral_itvby_itvby.
+rewrite (itv_bndbnd_setU (x := BSide b2 b))//; [by apply: lteifS .. |].
+rewrite [LHS]Rintegral_setU; [ exact: measurable_itv .. | | |].
+- by rewrite -itv_bndbnd_setU//; apply: lteifS.
+- apply/disj_setPS => x /=[/andP[_ +] /andP[+ _]].
+  move/le_trans/[apply].
+  by rewrite bnd_simp ltxx.
+congr (_ + _); apply: Rintegral_itvbb_itvbb => //.
+apply: measurable_funS mf => //.
+by apply: subset_itvl.
+Qed.
+
+Lemma Rintegral_patch_finite (f g : R -> R) (A D : set R) :
+  lebesgue_display.-measurable A -> finite_set D -> measurable_fun A f -> Rintegral mu A (patch f D g) = Rintegral mu A f.
+Proof.
+move=> mA finD mf.
+case: (finD) => n; rewrite card_eq_sym => /pcard_eqP[indexD].
+have bij_indexD := bij (f := indexD).
+have D_bigcup : D = \bigcup_(i < n) [set indexD i].
+  by rewrite -{1}(fsbig_setU_set1 finD) (reindex_fsbig indexD _ _ _ bij_indexD)/= fsbig_setU.
+have mfD (h : R -> R) : measurable_fun D h.
+  rewrite D_bigcup bigcup_mkcond.
+  apply/measurable_fun_bigcup => i; first by case: ifP.
+  case: ifP => // _.
+  - exact: measurable_fun_set1.
+  - exact: measurable_fun_set0.
+apply: Rintegral_patch_negligible => //.
+- rewrite D_bigcup bigcup_mkcond.
+  apply: bigcup_measurable => k _.
+  by case: ifP.
+- apply: countable_lebesgue_measure0.
+  exact: finite_set_countable finD.
 Qed.
 
 End Rintegral_lebesgue_measure.
