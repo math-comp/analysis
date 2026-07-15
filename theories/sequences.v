@@ -558,7 +558,7 @@ Proof. by rewrite telescopeK/= addrC addrNK. Qed.
 
 Section series_patched.
 Variables (N : nat) (K : numFieldType) (V : normedModType K).
-Implicit Types (f : nat -> V) (u : V ^nat)  (l : set_system V).
+Implicit Types (f : nat -> V) (u : V ^nat) (l : set_system V).
 
 Lemma is_cvg_series_restrict u_ :
   cvgn [sequence \sum_(N <= k < n) u_ k]_n = cvgn (series u_).
@@ -570,6 +570,25 @@ suff -> : (fun n => \sum_(N <= k < n) u_ k) =
 rewrite funeqE => n; case: leqP => // ltNn; apply: (canRL (addrK _)).
 by rewrite seriesEnat addrC -big_cat_nat// ltnW.
 Qed.
+
+Lemma is_cvg_series_shiftn u_ :
+  cvgn (series u_) <-> cvgn [series u_ (n + N)]_n.
+Proof.
+split.
+- rewrite -is_cvg_series_restrict => /cvg_ex[/= l +].
+  rewrite -(cvg_shiftn N)/= => cvgs.
+  apply: cvgP; apply: cvg_trans cvgs.
+  apply: near_eq_cvg.
+  near=> n.
+  by rewrite -{1}(add0n N) big_addn addnK.
+- move=> cvgs; rewrite -is_cvg_series_restrict.
+  apply: cvgP.
+  rewrite -(cvg_shiftn N)/=.
+  apply: cvg_trans cvgs.
+  apply: near_eq_cvg.
+  near=> n => /=.
+  by rewrite -{2}(add0n N) big_addn addnK. 
+Unshelve. all: by end_near. Qed.
 
 End series_patched.
 
@@ -986,6 +1005,32 @@ apply: nondecreasing_is_cvgn; first exact: nondecreasing_series.
 exists M => _ [n _ <-].
 by apply: le_trans (v_M (series v_ n) _); [apply: ler_sum | exists n].
 Qed.
+
+Lemma series_near_le_cvg (R : realType) (u_ v_ : R^nat) :
+  (\forall n \near \oo, 0 <= u_ n) -> (\forall n \near \oo, 0 <= v_ n) -> 
+  (\forall n \near \oo, u_ n <= v_ n) -> cvgn (series v_) -> cvgn (series u_).
+Proof.
+move=> u_ge0 v_ge0 u_le_v cvg_v.
+near \oo => N.
+have u_ge0N : forall (n : nat), (n >= N)%N -> 0 <= u_ n.
+  near: N.
+  by apply: (iffLR (near_infty_after _)).
+have v_ge0N : forall (n : nat), (n >= N)%N -> 0 <= v_ n.
+  near: N.
+  by apply: (iffLR (near_infty_after _)).
+have u_le_vN : forall (n : nat), (n >= N)%N -> u_ n <= v_ n.
+  near: N.
+  by apply: (iffLR (near_infty_after _)).
+apply/(is_cvg_series_shiftn N).
+move: cvg_v => /(is_cvg_series_shiftn N).
+apply: series_le_cvg => /= n.
+- apply: u_ge0N.
+  exact: leq_addl.  
+- apply: v_ge0N.
+  exact: leq_addl.
+- apply: u_le_vN.
+  exact: leq_addl.
+Unshelve. all: by end_near. Qed. 
 
 Lemma normed_cvg {R : realType} (V : completeNormedModType R) (u_ : V ^nat) :
   cvgn [normed series u_] -> cvgn (series u_).

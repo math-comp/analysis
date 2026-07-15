@@ -242,6 +242,9 @@
   + new lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
     `at_left_shift`, and `at_right_shift`.
 
+- in file `sequences.v`,
+  + new lemmas `is_cvg_series_shiftn`, and `series_near_le_cvg`
+
 ### Changed
 
 - in `realsum.v`:
