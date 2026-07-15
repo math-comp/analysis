@@ -1532,18 +1532,18 @@ elim: n => [|n IHn].
 apply: lhopital_pinfty_at_pinfty.
 - near do exact: is_derive_exp.
 - near do exact: is_derive1_comp.
-- apply: cvg_comp (@cvgy_expR _).
-  apply/cvgNry.
-  by apply: lt0_cvgMrNy.
 - near=> x.
   apply: mulf_neq0.
   + by rewrite expR_eq0.
   + by rewrite scaler1 gt_eqF// oppr_gt0.
+- apply: cvg_comp (@cvgy_expR _).
+  apply/cvgNry.
+  by apply: lt0_cvgMrNy.
 - apply: cvg_trans.
     apply: near_eq_cvg.
     near=> x.
     by rewrite !scaler1/= (mulrC _ (- _)) -mulf_div.
-  by apply: cvgCM0.
+  by apply: cvgM0.
 Unshelve. all: by end_near. Qed.
 
 Lemma powRMexpR_cvgr0 (a b : R) : b < 0 -> 
@@ -1551,7 +1551,7 @@ Lemma powRMexpR_cvgr0 (a b : R) : b < 0 ->
 Proof.
 move=> bt_gt0.
 case: (ler0P a) => [a_le0|a_gt0].
-  apply: (squeeze_cvgr (f := fun=> 0) (h := fun x => expR (b * x))).
+  apply: (squeeze_cvgr (fun=> 0) _ (fun x => expR (b * x))).
   - near=> x.
     apply/andP; split.
     + by apply: mulr_ge0 => //; exact: powR_ge0.
@@ -1562,7 +1562,7 @@ case: (ler0P a) => [a_le0|a_gt0].
   - apply: cvg_comp (@cvgNy_expR _).
     by apply: lt0_cvgMrNy.
 near \oo => n.
-apply: (squeeze_cvgr (f := fun=>0) (h := fun x => x ^+ n * expR (b * x))).
+apply: (squeeze_cvgr (fun=>0) _ (fun x => x ^+ n * expR (b * x))).
 - near=> x.
   apply/andP; split.
   + by apply: mulr_ge0 => //; exact: powR_ge0.
