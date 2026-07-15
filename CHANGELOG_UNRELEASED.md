@@ -11,6 +11,14 @@
 
 - in `lebesgue_integral_nonneg.v`, generalized and deprecated:
   + lemma `ge0_integralZl_EFin` (no condition on `k`)
+- in file `function_spaces.v`,
+  + new lemma `within_continuous_big`.
+- in file `nat_topology.v`,
+  + new lemma `near_infty_after`.
+- in file `num_topology.v`,
+  + new lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
+    `at_left_shift`, and `at_right_shift`.
+
 - in file `normed_module.v`,
   + new lemmas `cvg1MC`, `cvg1M`, `cvgCM1`, `cvgM1`, `cvg0MC`, `cvg0M`, 
     `cvgCM0`, and `cvgM0`.
@@ -146,6 +154,8 @@
 
 - moved from `realfun.v` to `derive.v`: 
   + lemmas `is_deriveV`, `is_derive1_comp`.
+- moved from `metric_structure.v` to `num_topology.v`: 
+  + lemma `cvg_at_right_left_dnbhs`, generalized to `topologicalType` from `metricType`.
 
 ### Renamed
 
