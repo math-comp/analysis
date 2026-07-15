@@ -43,6 +43,11 @@
 
 - in `topology_structure.v`:
   + lemma `id_continuous`
+- in `derive.v`
+  + new lemmas `derive1Dn`, `der1_scaleLR`, `deriveZLR`, `derivableZLR`, 
+    `derivable_shiftf`, `derive_shiftf`, `is_derive_shiftf`, `derive1_shiftf`, 
+    `near_eq_derive1n_near`, `near_eq_derive1_near`, `near_eq_derive1n`, and 
+    `near_eq_derive1`.
 
 ### Changed
 
@@ -57,6 +62,9 @@
 
 - moved from `trigo.v` to `trigonometry_functions.v`:
   + all contents except lemmas `integral0_oneDsqr`, `integral0y_oneDsqr`
+
+- moved from `realfun.v` to `derive.v`: 
+  + lemmas `is_deriveV`, `is_derive1_comp`.
 
 ### Renamed
 
