@@ -628,6 +628,22 @@ Proof.
 by rewrite at_leftN -?fmap_comp; under [_ \o _]eq_fun => ? do rewrite /= opprK.
 Qed.
 
+Lemma fmap_at_left0P {T : Type} {R : numFieldType} x (f : R -> T) : (f (x - e) @[e --> 0^'+]) = (f @ x^'-).
+Proof.
+rewrite -(subrr (-x)) at_right_shift at_rightN -fmap_comp.
+apply: near_eq_cvgE.
+apply: (nearW (F := x^'-)) => y /=.
+by rewrite opprB addNKr opprK.
+Qed.
+
+Lemma fmap_at_right0E {T : Type} {R : numFieldType} (x : R) (f : R -> T) : (f (x + e) @[e --> 0^'+]) = (f @ x^'+).
+Proof.
+rewrite -(subrr x) at_right_shift.
+apply: near_eq_cvgE.
+apply: (nearW (F := x^'+)) => y.
+by rewrite addrC subrK.
+Qed.
+
 Section at_left_right_pseudoMetricNormedZmod.
 Variables (R : numFieldType) (V : pseudoMetricNormedZmodType R).
 
