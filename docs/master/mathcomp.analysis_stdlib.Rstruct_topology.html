@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis_stdlib.Rstruct_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis e340551 2026.07.14-19:45" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis e340551 2026.07.15-19:37" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -361,18 +361,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="RexpE" class="id"><div name="RexpE" class=" tooltip">RexpE<span class='tooltip-area'><p>ItvInstances.adde_inum :
-forall {R : numDomainType} [xi yi : Itv.t],
-Itv.def ext_num_sem xi ->
-Itv.def ext_num_sem yi -> Itv.def ext_num_sem (Itv.real2 add xi yi)
-
-ItvInstances.adde_inum is not universe polymorphic
-Arguments ItvInstances.adde_inum {R} [xi yi] x y
-ItvInstances.adde_inum is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.ItvInstances.adde_inum
-Declared in
-library mathcomp.reals.constructive_ereal, line 4096, characters 10-19
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/analysis_stdlib/Rstruct_topology.v#L112' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="RexpE" class="id"><div name="RexpE" class=" tooltip">RexpE<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/analysis_stdlib/Rstruct_topology.v#L112' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RlnE" class="id"><div name="RlnE" class=" tooltip">RlnE<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/analysis_stdlib/Rstruct_topology.v#L114' target='_blank'>Source code</a></span></div></span> (<span id="x:22" class="id"><div name="x:22" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/analysis_stdlib/Rstruct_topology.v#L114' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rdefinitions.html#RbaseSymbolsImpl.R">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln">Rpower</a></span>.<span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln">ln</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#x:22">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.exp.html#ln">exp</a></span>.<span class="id"><a href="mathcomp.analysis.exp.html#ln">ln</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#x:22">x</a></span>.<br/>
 <details>
@@ -385,18 +374,7 @@ library mathcomp.reals.constructive_ereal, line 4096, characters 10-19
 <span class="gallina-kwd">by</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln_exists">ln_exists</a></span><span class="id"> =&gt;</span><span class="id"> y</span><span class="id"> -&gt;;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.exp.html#expRK">exp</a></span>.<span class="id"><a href="mathcomp.analysis.exp.html#expRK">expRK</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="RealsE" class="id"><div name="RealsE" class=" tooltip">RealsE<span class='tooltip-area'><p>ItvInstances.dEFin_inum :
-forall {R : numDomainType} [i : Itv.t],
-Itv.def (Itv.num_sem (R:=R)) i -> Itv.def ext_num_sem i
-
-ItvInstances.dEFin_inum is not universe polymorphic
-Arguments ItvInstances.dEFin_inum {R} [i] x
-ItvInstances.dEFin_inum is transparent
-Expands to: Constant
-            mathcomp.reals.constructive_ereal.ItvInstances.dEFin_inum
-Declared in
-library mathcomp.reals.constructive_ereal, line 4107, characters 10-20
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/analysis_stdlib/Rstruct_topology.v#L124' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#RealsE">RealsE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RlnE">RlnE</a></span>).<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="RealsE" class="id"><div name="RealsE" class=" tooltip">RealsE<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/analysis_stdlib/Rstruct_topology.v#L124' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#RealsE">RealsE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RlnE">RlnE</a></span>).<br/>
 
       <div class="footer"><hr/>Generated by <a href="https://github.com/affeldt-aist/rocqnavi/">rocqnavi</a></div>
     </div>

@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.topology_theory.order_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis e340551 2026.07.14-19:45" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis e340551 2026.07.15-19:37" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -462,17 +462,27 @@ Qed.</div></details>
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> rray_closed</span><span class="id"> :</span><span class="id"> core</span>.<br/>
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> itv_closed</span><span class="id"> :</span><span class="id"> core</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="order_topology" class="id"><div name="order_topology" class=" tooltip">order_topology<span class='tooltip-area'><p>nbhs_subspace :
-forall {T : topologicalType} [A : set T],
-subspace A -> set_system (subspace A)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="order_topology" class="id"><div name="order_topology" class=" tooltip">order_topology<span class='tooltip-area'><p>near_covering :
+forall {X : topology_structure.Topological.type},
+set (topology_structure.Topological.sort X) -> Prop
 
-nbhs_subspace is not universe polymorphic
-Arguments nbhs_subspace {T} [A]%_classical_set_scope x _
-nbhs_subspace is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.subspace_topology.nbhs_subspace
+near_covering is not universe polymorphic
+Arguments near_covering {X} K%_classical_set_scope
+near_covering is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.near_covering
 Declared in
-library mathcomp.analysis.topology_theory.subspace_topology, line 51, characters 11-24
+library mathcomp.analysis.topology_theory.compact, line 147, characters 11-24
+near_covering_within :
+forall {X : topology_structure.Topological.type},
+set (topology_structure.Topological.sort X) -> Prop
+
+near_covering_within is not universe polymorphic
+Arguments near_covering_within {X} K%_classical_set_scope
+near_covering_within is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.near_covering_within
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 198, characters 11-31
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/topology_theory/order_topology.v#L197' target='_blank'>Source code</a></span></div></span> (<span id="T:61" class="id"><div name="T:61" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e340551bbd7b65fc2ed7b15c2182b6c660e8ad6d/theories/topology_theory/order_topology.v#L197' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.order_topology.html#T:61">T</a></span>.<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> induced_order_topology</span>.<br/>
