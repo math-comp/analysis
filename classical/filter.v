@@ -1222,21 +1222,20 @@ Lemma cvg_to_withinP (T U : Type) {F : set_system T} {FF : Filter F} {G : set_sy
     (f : T -> U) (A : set U) :
   (f @ F --> within A G) <-> (f @ F --> G /\ \forall x \near F, A (f x)).
 Proof.
-  split.
-    move=> cvg_w; split.
-    - apply: (cvg_trans cvg_w).
-      exact: cvg_within.
-    - apply: cvg_w.
-      exact: withinT.
-  move=> [cvgT nearfA] P. 
-  rewrite !nbhs_nearE near_withinE.
-  move: cvgT => /[apply].
-  rewrite near_map appfilter nbhs_nearE => nearF_AP.
-  near=> x.
-  suff : A (f x) by near: x.
-  by near: x.
-  Unshelve. all: by end_near.
-Qed.
+split.
+  move=> cvg_w; split.
+  - apply: (cvg_trans cvg_w).
+    exact: cvg_within.
+  - apply: cvg_w.
+    exact: withinT.
+move=> [cvgT nearfA] P. 
+rewrite !nbhs_nearE near_withinE.
+move: cvgT => /[apply].
+rewrite near_map appfilter nbhs_nearE => nearF_AP.
+near=> x.
+suff : A (f x) by near: x.
+by near: x.
+Unshelve. all: by end_near. Qed.
 
 Global Instance within_filter T D F : Filter F -> Filter (@within T D F).
 Proof.
@@ -1255,12 +1254,12 @@ Lemma within_cvg_to_within (T U : Type) {F : set_system T} {FF : Filter F} {G : 
     (f : T -> U) (A : set T) (B : set U) :
   (\forall x \near F, A x -> B (f x)) -> f @ F --> G -> f @ within A F --> within B G.
 Proof.
-  move=> near_hom cvgT.
-  apply/cvg_to_withinP; split.
-  - apply: cvg_trans cvgT.
-    apply: cvg_app.
-    exact: cvg_within.
-  - by rewrite near_withinE.
+move=> near_hom cvgT.
+apply/cvg_to_withinP; split.
+- apply: cvg_trans cvgT.
+  apply: cvg_app.
+  exact: cvg_within.
+- by rewrite near_withinE.
 Qed. 
 
 Lemma filter_bigI_within T (I : choiceType) (D : {fset I}) (f : I -> set T)
