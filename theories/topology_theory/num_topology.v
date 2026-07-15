@@ -474,6 +474,46 @@ move=> r/=; rewrite ltr_pdivlMr// -ltrBlDr; apply: le_lt_trans.
 by rewrite -lerBlDr opprK addrC (le_trans (ler_norm _))// ler_peMr// ler1n.
 Qed.
 
+Lemma near_right_in_itv (R : realFieldType) (a : R) (P : set R) : 
+  (\forall b \near a^'+, {in `]a, b[, forall x, P x}) 
+  <-> {near a^'+, forall x, P x}.
+Proof.
+split=> [[/= r r0 hr]|[/= r r0 hr]].
+- exists (r / 2) => [|x /= /ltr_distlCDr x_lt_aDr2 a_lt_x].
+    by apply: divr_gt0.
+  apply: (hr (a + r / 2)) => /=.
+  + rewrite opprD addNKr normrN gtr0_norm// ?divr_gt0//.
+    by rewrite gtr_pMr// invf_plt ?posrE// invr1 ltrDl.
+  + by rewrite ltrDl divr_gt0.
+  + by rewrite in_itv/= a_lt_x/=.
+- exists r => // x /= /ltr_distlCDr x_lt_aDr a_lt_x y.
+  rewrite in_itv/= => /andP[a_lt_y y_lt_x].
+  apply: hr => //=.
+  rewrite distrC gtr0_norm ?subr_gt0// ltrBlDl.
+  by apply: lt_trans x_lt_aDr.
+Qed.
+
+Lemma near_left_in_itv (R : realFieldType) (b : R) (P : set R) : 
+  (\forall a \near b^'-, {in `]a, b[, forall x, P x}) 
+  <-> {near b^'-, forall x, P x}.
+Proof.
+split=> [[/= r r0 hr]|[/= r r0 hr]].
+- exists (r / 2) => [|x /= /ltr_distlDr b_lt_xDr2 x_lt_b].
+    by apply: divr_gt0.
+  apply: (hr (b - r / 2)) => /=.
+  + rewrite subKr gtr0_norm ?divr_gt0//.
+    by rewrite gtr_pMr// invf_plt ?posrE// invr1 ltrDl.
+  + by rewrite gtrBl divr_gt0.
+  + by rewrite in_itv/= x_lt_b andbT ltrBlDr.
+- exists r => // x /= /ltr_distlDr b_lt_xDr x_lt_b y.
+  rewrite in_itv/= => /andP[x_lt_y y_lt_b].
+  apply: hr => //=.
+  rewrite gtr0_norm ?subr_gt0//.
+  rewrite ltrBlDl.
+  apply: (lt_trans b_lt_xDr).
+  by rewrite ltrD2r.
+Qed.
+
 Section nbhs_lt_le.
 Context {R : numFieldType}.
 Implicit Types x z : R.

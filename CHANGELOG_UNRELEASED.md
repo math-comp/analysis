@@ -242,7 +242,7 @@
   + new lemma `near_infty_after`.
 - in file `num_topology.v`,
   + new lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
-    `at_left_shift`, and `at_right_shift`.
+    `at_left_shift`, `at_right_shift`, `near_right_in_itv`, and `near_left_in_itv`.
 
 - in file `num_normedtype.v`,
   + new lemmas `pinftyV`, `ninftyV`, `cvgryV`, `cvgrNyV`, `lt0_cvgMlNy`, 
