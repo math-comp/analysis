@@ -247,7 +247,9 @@
   + new lemmas `derive1Dn`, `der1_scaleLR`, `deriveZLR`, `derivableZLR`, 
     `derivable_shiftf`, `derive_shiftf`, `is_derive_shiftf`, `derive1_shiftf`, 
     `near_eq_derive1n_near`, `near_eq_derive1_near`, `near_eq_derive1n`, and 
-    `near_eq_derive1`.
+    `near_eq_derive1`, `right_derivative_limit`, `left_derivative_limit`, and 
+    `dnbhs_derivative_limit`.
+  + new theorem `derivative_limit_theorem`.
 
 ### Changed
 
