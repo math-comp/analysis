@@ -2965,8 +2965,7 @@ have /[swap] /[apply] : {within `[x, y], continuous f}.
   apply: (continuous_subspaceW (B := `]a, b[)).
     by apply: subset_itv; rewrite bnd_simp.
   rewrite continuous_open_subspace// => /= z /set_mem/= z_ab.
-  apply: differentiable_continuous.
-  apply/derivable1_diffP.
+  apply: differentiable_continuous; apply/derivable1_diffP.
   apply: ex_derive.
   by apply in_ab.
 have /[swap] /[apply] : {within `[x, y], continuous g}.

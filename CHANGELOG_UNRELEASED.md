@@ -252,6 +252,10 @@
 - in file `tvs.v`,
   + new lemmas `near_shiftE`, and `nearZE`.
 
+- in file `realfun.v`,
+  + new lemmas `lhopital_pinfty_at_right`, and 
+    `lhopital_pinfty_at_pinfty`.
+
 ### Changed
 
 - in `realsum.v`:
