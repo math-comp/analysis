@@ -603,6 +603,12 @@ by under [_ \*: _]funext => x /= do rewrite scalerK//; apply: cvgP.
 Qed.
 
 End cvg_composition_normed.
+
+Lemma within_continuousZ (T : topologicalType) (A : set T) (K : numFieldType) (V : normedModType K)
+    (k : K) (f : T -> V) :
+  {within A, continuous f} -> {within A, continuous k *: f}.
+Proof. by move=> cf x; apply: cvgZl_tmp; exact: cf. Qed.
+
 #[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `cvgZr_tmp`")]
 Notation cvgZl := cvgZr_tmp (only parsing).
 #[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `is_cvgZr_tmp`")]
@@ -664,6 +670,19 @@ exact: is_cvgMlE_tmp.
 Qed.
 
 End cvg_composition_field.
+
+Lemma within_continuousM (T : topologicalType) (K : numFieldType) (A : set T) (f g : T -> K) :
+  {within A, continuous f} -> {within A, continuous g} -> {within A, continuous f * g}.
+Proof. by move=> cf cg x; apply: cvgM; [exact: cf | exact: cg]. Qed.
+
+Lemma within_continuousMl (T : topologicalType) (K : numFieldType) (A : set T) (c : K) (f : T -> K) :
+  {within A, continuous f} -> {within A, continuous (fun=> c) * f}.
+Proof. by move=> cf x; apply: cvgMl_tmp; exact: cf. Qed.
+
+Lemma within_continuousMr (T : topologicalType) (K : numFieldType) (A : set T) (c : K) (f : T -> K) :
+  {within A, continuous f} -> {within A, continuous f * (fun=> c)}.
+Proof. by move=> cf x; apply: cvgMr_tmp; exact: cf. Qed.
+
 #[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `cvgMr_tmp`")]
 Notation cvgMl := cvgMr_tmp (only parsing).
 #[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `cvgMl_tmp`")]

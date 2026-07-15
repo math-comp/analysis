@@ -1142,6 +1142,11 @@ Lemma within_continuousD {T : topologicalType} {K : numFieldType}
   {within A, continuous (f + g)}.
 Proof. by move=> cf cg x; apply: cvgD; [exact: cf|exact: cg]. Qed.
 
+Lemma within_continuousN {T : topologicalType} {K : numFieldType}
+    {V : pseudoMetricNormedZmodType K} (A : set T) (f : T -> V) :
+  {within A, continuous f} -> {within A, continuous -f}.
+Proof. move=> cf x; apply: cvgN; exact: cf. Qed.
+
 Section Closed_Ball.
 
 Definition closed_ball_ (R : numDomainType) (V : zmodType) (norm : V -> R)
