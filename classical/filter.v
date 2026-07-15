@@ -1280,8 +1280,7 @@ Qed.
 
 (* For using near on sets in a filter *)
 Section NearSet.
-Context {Y : Type}.
-Context (F : set_system Y) (PF : ProperFilter F).
+Context {Y : Type} (F : set_system Y) (PF : ProperFilter F).
 
 Definition powerset_filter_from : set_system (set Y) := filter_from
   [set M | [/\ M `<=` F,
