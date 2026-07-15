@@ -13,8 +13,6 @@ From mathcomp Require Import discrete_topology.
 (* Natural numbers `nat` are endowed with the structure of topology.          *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
-
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope classical_set_scope.
@@ -101,6 +99,18 @@ split => [[N _ /= NP]|].
   by exists N => // n/= Nn m /(leq_trans Nn); exact: NP.
 by apply: filterS => N; exact.
 Qed.
+
+Lemma near_infty_after (P : set nat) :
+  (\forall n \near \oo, P n) <-> (\forall N \near \oo, forall n, (n >= N)%N -> P n).
+Proof.
+split.
+- move=> [N _ afterN].
+  exists N => // n /= /[swap] n' /leq_trans /[apply].
+  exact: afterN.
+- move=> [N _ afterN].
+  exists N => // n /=.
+  by apply: afterN => /=.
+Qed.  
 
 Section infty_nat.
 Local Open Scope nat_scope.
