@@ -426,20 +426,6 @@ Notation Rintegral_itv_bndo_bndc := Rintegral_itvbo_itvbc (only parsing).
 #[deprecated(since="mathcomp-analysis 1.17.0", use=Rintegral_itvob_itvcb)]
 Notation Rintegral_itv_obnd_cbnd := Rintegral_itvob_itvcb (only parsing).
 
-Section Rintegral_bound_continuity.
-Context (R : realType) (mu := @lebesgue_measure R) (f : R -> R).
-Context  (a b x y : R) (x_ y_ : R -> R) (b1 b2 b1' b2' : bool).
-
-Hypothesis a_lt_b : a < b.
-Hypothesis f_int : 
-  mu.-integrable [set` Interval (BSide b1 a) (BSide b2 b)] (EFin \o f).
-Hypotheses (a_le_x : a <= x) (y_le_b : y <= b).
-Hypothesis near_x_ge_a : \forall e \near 0^'+, a <= x_ e.
-Hypothesis near_y_le_b : \forall e \near 0^'+, y_ e <= b.
-Hypotheses (cvg_x : x_ @ 0^'+ --> x) (cvg_y : y_ @ 0^'+ --> y).
-
-
-
 Section Rdominated_convergence.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
@@ -482,6 +468,18 @@ by move/fine_cvg.
 Qed.
 
 End Rdominated_convergence.
+
+Section Rintegral_bound_continuity.
+Context (R : realType) (mu := @lebesgue_measure R) (f : R -> R).
+Context  (a b x y : R) (x_ y_ : R -> R) (b1 b2 b1' b2' : bool).
+
+Hypothesis a_lt_b : a < b.
+Hypothesis f_int : 
+  mu.-integrable [set` Interval (BSide b1 a) (BSide b2 b)] (EFin \o f).
+Hypotheses (a_le_x : a <= x) (y_le_b : y <= b).
+Hypothesis near_x_ge_a : \forall e \near 0^'+, a <= x_ e.
+Hypothesis near_y_le_b : \forall e \near 0^'+, y_ e <= b.
+Hypotheses (cvg_x : x_ @ 0^'+ --> x) (cvg_y : y_ @ 0^'+ --> y).
 
 Lemma Rintegral_bound_continuous :
   \int[mu]_(z in [set` Interval (BSide b1 (x_ e)) (BSide b2 (y_ e))]) (f z)
