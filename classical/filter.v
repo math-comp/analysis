@@ -925,9 +925,22 @@ Lemma near_eq_cvg {T U} {F : set_system T} {FF : Filter F} (f g : T -> U) :
   {near F, f =1 g} -> g @ F `=>` f @ F.
 Proof. by move=> eq_fg P /=; apply: filterS2 eq_fg => x /= <-. Qed.
 
+Lemma near_eq_cvgE {T U} {F : set_system T} {FF : Filter F} (f g : T -> U) :
+  {near F, f =1 g} -> f @ F = g @ F.
+Proof.
+move=> eq_fg.
+apply/seteqP; split; apply: near_eq_cvg => //.
+by near do symmetry.
+Unshelve. all: by end_near.
+Qed.
+
 Lemma eq_cvg (T T' : Type) (F : set_system T) (f g : T -> T') (x : set_system T') :
   f =1 g -> (f @ F --> x) = (g @ F --> x).
 Proof. by move=> /funext->. Qed.
+
+Lemma near_eq_is_cvg (T : Type) (T' : pnbhsType) (F : set_system T) (f g : T -> T') : 
+  Filter F -> {near F, g =1 f} -> cvg (f x @[x --> F]) -> cvg(g x @[x --> F]).
+Proof. by move=> /@near_eq_cvgE /[apply] ->. Qed.
 
 Lemma eq_is_cvg_in (T T' : Type) (fT : pfilteredType T') (F : set_system T) (f g : T -> T') :
   f =1 g -> [cvg (f @ F) in fT] = [cvg (g @ F) in fT].
@@ -936,6 +949,14 @@ Proof. by move=> /funext->. Qed.
 Lemma eq_is_cvg (T : Type) (T' : pnbhsType) (F : set_system T) (f g : T -> T') :
   f =1 g -> cvg (f @ F) = cvg (g @ F).
 Proof. by move=> /funext->. Qed.
+
+Lemma near_eq_lim (T : Type) (T' : pnbhsType) {F : set_system T} {FF : Filter F} (f g : T -> T') :
+  {near F, f =1 g} -> lim (f @ F) = lim (g @ F).
+Proof. by move=> /near_eq_cvgE ->. Qed.
+
+Lemma cvg_to_eq {T : nbhsType} {F : set_system T} (l l' : T) :
+  F --> l' -> l = l' -> F --> l.
+Proof. by move=> + ->. Qed.
 
 Lemma neari_eq_loc {T U} {F : set_system T} {FF : Filter F} (f g : T -> set U) :
   {near F, f =2 g} -> g `@ F `=>` f `@ F.
@@ -1197,6 +1218,25 @@ Qed.
 
 End within.
 
+Lemma cvg_to_withinP (T U : Type) {F : set_system T} {FF : Filter F} {G : set_system U} {FG : Filter G} 
+    (f : T -> U) (A : set U) :
+  (f @ F --> within A G) <-> (f @ F --> G /\ \forall x \near F, A (f x)).
+Proof.
+split.
+  move=> cvg_w; split.
+  - apply: (cvg_trans cvg_w).
+    exact: cvg_within.
+  - apply: cvg_w.
+    exact: withinT.
+move=> [cvgT nearfA] P. 
+rewrite !nbhs_nearE near_withinE.
+move: cvgT => /[apply].
+rewrite near_map appfilter nbhs_nearE => nearF_AP.
+near=> x.
+suff : A (f x) by near: x.
+by near: x.
+Unshelve. all: by end_near. Qed.
+
 Global Instance within_filter T D F : Filter F -> Filter (@within T D F).
 Proof.
 move=> FF; rewrite /within; constructor => /=.
@@ -1209,6 +1249,18 @@ Qed.
 
 Canonical within_filter_on T D (F : filter_on T) :=
   FilterType (within D F) (within_filter _ _).
+
+Lemma within_cvg_to_within (T U : Type) {F : set_system T} {FF : Filter F} {G : set_system U} {FG : Filter G}
+    (f : T -> U) (A : set T) (B : set U) :
+  (\forall x \near F, A x -> B (f x)) -> f @ F --> G -> f @ within A F --> within B G.
+Proof.
+move=> near_hom cvgT.
+apply/cvg_to_withinP; split.
+- apply: cvg_trans cvgT.
+  apply: cvg_app.
+  exact: cvg_within.
+- by rewrite near_withinE.
+Qed. 
 
 Lemma filter_bigI_within T (I : choiceType) (D : {fset I}) (f : I -> set T)
   (F : set_system T) (P : set T) :
