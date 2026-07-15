@@ -425,3 +425,205 @@ End Rintegral_lebesgue_measure.
 Notation Rintegral_itv_bndo_bndc := Rintegral_itvbo_itvbc (only parsing).
 #[deprecated(since="mathcomp-analysis 1.17.0", use=Rintegral_itvob_itvcb)]
 Notation Rintegral_itv_obnd_cbnd := Rintegral_itvob_itvcb (only parsing).
+
+Section Rintegral_bound_continuity.
+Context (R : realType) (mu := @lebesgue_measure R) (f : R -> R).
+Context  (a b x y : R) (x_ y_ : R -> R) (b1 b2 b1' b2' : bool).
+
+Hypothesis a_lt_b : a < b.
+Hypothesis f_int : 
+  mu.-integrable [set` Interval (BSide b1 a) (BSide b2 b)] (EFin \o f).
+Hypotheses (a_le_x : a <= x) (y_le_b : y <= b).
+Hypothesis near_x_ge_a : \forall e \near 0^'+, a <= x_ e.
+Hypothesis near_y_le_b : \forall e \near 0^'+, y_ e <= b.
+Hypotheses (cvg_x : x_ @ 0^'+ --> x) (cvg_y : y_ @ 0^'+ --> y).
+
+Lemma Rintegral_bound_continuous :
+  \int[mu]_(z in [set` Interval (BSide b1 (x_ e)) (BSide b2 (y_ e))]) (f z)
+  @[e --> 0^'+] --> 
+  \int[mu]_(z in [set` Interval (BSide b1' x) (BSide b2' y)]) (f z).
+Proof.
+have mf_oo x' y' : a <= x' -> y' <= b -> measurable_fun `]x', y'[ f.
+  move=> a_le_x' y'_le_b.
+  apply: measurable_funS; last first.
+  - apply/measurable_EFinP.
+      apply: (measurable_int mu).
+    exact: f_int.
+  - by apply: subset_itvW.
+  - exact: measurable_itv.
+wlog suff oo_cvg : / \int[mu]_(z in `]x_ e, y_ e[) f z 
+    @[e --> 0^'+] --> \int[mu]_(z in `]x, y[) f z.
+apply: cvg_trans; last apply: (cvg_to_eq oo_cvg).
+- apply: near_eq_cvg.
+  near=> e.
+  apply: Rintegral_itvbb_itvbb => //.
+  by apply: mf_oo; near: e.
+- apply: Rintegral_itvbb_itvbb => //.
+  by apply: mf_oo. 
+apply: cvg_trans.
+  apply: near_eq_cvg.
+  near=> e.
+  by rewrite Rintegral_mkcond.
+apply/cvg_at_rightP => u [u_gt0 u_to0].
+wlog x_u_gea : u u_gt0 u_to0 / forall n, a <= x_ (u n).
+  move=> gea_case.
+  have [/= r r0 br_gea] := near_x_ge_a.
+  have [/= N _ geN_Nr] := u_to0 _ (nbhsx_ballx 0 r r0).
+  rewrite -(cvg_shiftn N).
+  apply: gea_case.
+  - by move=> ?; exact: u_gt0.
+  - by rewrite cvg_shiftn.
+  - move=> n.
+    apply: br_gea => //.
+    apply: geN_Nr => /=.
+    exact: leq_addl.
+wlog y_u_leb : u u_gt0 u_to0 x_u_gea / forall n, y_ (u n) <= b.
+  move=> leb_case.
+  have [/= r r0 br_leb] := near_y_le_b.
+  have [/= N _ geN_Nr] := u_to0 _ (nbhsx_ballx 0 r r0).
+  rewrite -(cvg_shiftn N).
+  apply: leb_case.
+  - by move=> ?; exact: u_gt0.
+  - by rewrite cvg_shiftn.
+  - by move=> ?; exact: x_u_gea. 
+  - move=> n.
+    apply: br_leb => //.
+    apply: geN_Nr => /=.
+    exact: leq_addl.
+rewrite Rintegral_mkcond.
+wlog suff patch_cvg : / 
+    \int[mu]_z patch (f \_ `]x_ (u n), y_ (u n)[) [set x; y] 0 z 
+    @[n --> \oo] --> \int[mu]_z patch (f \_ `]x, y[) [set x; y] 0 z.
+  apply: cvg_trans; last apply: (cvg_to_eq patch_cvg).
+  - apply: near_eq_cvg.
+    near=> n.
+    apply: Rintegral_patch_finite => //.
+    apply: (iffLR (measurable_restrictT _ _)) => //.
+    by apply: mf_oo.
+  - apply: Rintegral_patch_finite => //.
+    apply: (iffLR (measurable_restrictT _ _)) => //.
+    by apply: mf_oo.
+unshelve apply: Rdominated_cvg => /=.
+- exact: (fun z => `|(f \_ `]a, b[) z|).
+- by [].  
+- move=> n.
+  apply: (eq_measurable_fun ((f \_ `]x_ (u n), y_ (u n)[) \_ ~` [set x; y])).
+    move=> z _ /=.
+    by rewrite /patch /= /in_mem/= /in_set/= asbool_neg if_neg.
+  have mxy : measurable (~` [set x; y]).
+    apply: measurableC.
+    by apply/measurableU.
+  apply: (iffLR (measurable_restrictT _ _)) => //.
+  apply/measurable_restrict => //.
+  rewrite setIC -setDE.
+  apply/measurable_EFinP.
+  apply: (measurable_int mu).
+  apply: integrableS f_int => //.
+  + by apply: measurableI.
+  + apply: subset_trans; first exact: subDsetl.
+    by apply: subset_itvW.   
+- move=> z _ /=.
+  apply/cvgrPdist_lt => /= eps eps0.
+  under eq_near => ?. 
+    rewrite /patch in_setU !in_set1 !set_itvE /in_mem/= /in_set/= !asboolb.
+    over.
+  case: (ltgtP x z) => [x_lt_z|z_lt_x|_] /=; last first.
+  + by apply: nearW; rewrite subrr normr0. 
+  + near=> n.
+    case: (eqVneq z y) => _; first by rewrite subrr normr0.
+    rewrite ifN ?subrr ?normr0// negb_and -leNgt.
+    apply/orP; left.
+    near: n.
+    apply: (cvgr_ge x) => //.
+    move: u {u_gt0 u_to0 x_u_gea y_u_leb} (conj u_gt0 u_to0).
+    by apply/cvg_at_rightP.
+  case: (ltgtP z y) => [z_lt_y|y_lt_z|_]; last first.
+  + by apply: nearW; rewrite subrr normr0.
+  + near=> n.
+    rewrite ifN ?subrr ?normr0// negb_and -!leNgt.
+    apply/orP; right.
+    near: n.
+    apply: (cvgr_le y) => //.
+    move: u {u_gt0 u_to0 x_u_gea y_u_leb} (conj u_gt0 u_to0).
+    by apply/cvg_at_rightP.
+  + near=> n.
+    rewrite ifT ?subrr ?normr0//.
+    apply/andP; split; near: n.
+    * apply: (cvgr_lt x) => //.
+      move: u {u_gt0 u_to0 x_u_gea y_u_leb} (conj u_gt0 u_to0).
+      by apply/cvg_at_rightP.
+    * apply: (cvgr_gt y) => //.
+      move: u {u_gt0 u_to0 x_u_gea y_u_leb} (conj u_gt0 u_to0).
+      by apply/cvg_at_rightP.
+- apply: eq_integrable; first by [].
+    move=> z _ /=.
+    rewrite -abse_EFin.
+    transitivity (`|((EFin \o f) \_ `]a, b[) z|%E) => //.
+    by rewrite restrict_EFin.
+  apply: integrable_abse.
+  apply: (iffLR (integrable_mkcond _ _)) => //.
+  apply: integrableS; last exact: f_int; [ exact: measurable_itv .. |].
+  by apply: subset_itvW.
+- move=> n z _ /=.
+  rewrite /patch /point/=.
+  case: (ifP (z \in `]a, b[%classic)) => [_|/negbT z_not_itv].
+  + by repeat (case: ifP => _); rewrite ?normr0.
+  + rewrite normr0 normr_le0; apply/eqP.
+    case: ifP => // /negbT z_not_xy.
+    rewrite ifN// notin_setE set_itvE/= => /andP[xu_lt_z z_lt_yu].
+    move: z_not_itv => /negP; apply.
+    rewrite inE/= in_itv/=.
+    apply/andP; split.
+    * by apply: le_lt_trans; last exact: xu_lt_z.
+    * by apply: lt_le_trans; first exact: z_lt_yu.
+Unshelve. all: by end_near. Qed.
+
+End Rintegral_bound_continuity.
+
+Section Rintegral_bound_infty_continuity.
+Context (R : realType) (f : R -> R) (mu := @lebesgue_measure R).
+Context (a x : R) (x_ : R -> R) (b1 b1' : bool).
+Hypothesis f_int : 
+  mu.-integrable [set` Interval (BSide b1 a) +oo%O] (EFin \o f).
+Hypothesis a_le_x : a <= x.
+Hypothesis near_x_ge_a : \forall e \near 0^'+, a <= x_ e.
+Hypotheses cvg_x : x_ @ 0^'+ --> x.
+
+Lemma Rintegral_bound_infty_continuous :
+  \int[mu]_(z in [set` Interval (BSide b1 (x_ e)) +oo%O]) (f z)
+  @[e --> 0^'+] --> \int[mu]_(z in [set` Interval (BSide b1' x) +oo%O]) (f z).
+Proof.
+near +oo_R => M.
+apply: cvg_trans.
+  apply: near_eq_cvg.
+  near=> e.
+  rewrite (Rintegral_itvDy (b := BRight M) b1 b1)// ?bnd_simp.
+  - near: e.
+    apply: (cvgr_le x) => //.
+    near: M.
+    apply: nbhs_pinfty_gt.
+    exact: num_real.
+  - apply: integrableS f_int => //.
+    apply: subset_itvr.
+    by near: e.
+apply: cvg_to_eq.
+  apply: cvgDr.
+  apply: (@Rintegral_bound_continuous _ _ a M x M _ _ _ _ b1' false) => //. 
+  - apply: integrableS f_int => //.
+    by apply: subset_itvl.
+  - by near=> y.
+  - exact: cvg_cst.
+transitivity (\int[mu]_(z in `]x, +oo[) f z).
+  apply: Rintegral_itvby_itvoy.
+  apply: (measurable_int mu).
+  apply: integrableS f_int => //.
+  by apply: subset_itvr.
+rewrite (Rintegral_itvDy (b := BRight M) _ b1')// ?bnd_simp.
+- near: M.
+  apply: nbhs_pinfty_ge.
+  exact: num_real.
+- apply: integrableS f_int => //.
+  by apply: subset_itvr.
+Unshelve. all: by end_near. Qed.
+
+End Rintegral_bound_infty_continuity.
