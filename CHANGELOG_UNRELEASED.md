@@ -84,6 +84,10 @@
 
 - in `sequences.v`,
   + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
+- in `filter.v`:
+  + mixin `isSubNbhs`, structure `SubNbhs`, notation `subNbhsType`
+  + new lemmas `near_eq_cvgE`, `near_eq_is_cvg`, `near_eq_lim`, 
+    `cvg_to_eq`, `cvg_to_withinP`, and `within_cvg_to_within`.
 
 - new file `edist.v`
 
