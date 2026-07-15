@@ -1336,8 +1336,8 @@ apply: cvg_trans.
 apply: cvgD.
 - apply: cvgZ; first exact: der_k.
   apply: (cvg_comp _ _ (G := nbhs x)).
-  + apply: cvg0DC.
-    apply: cvg0MC.
+  + apply: cvg0D => //.
+    apply: (@cvg0M _ _ _ _ _ _ 1) => //.
     by apply: cvg_within_filter.
   + change (continuous_at x f).
     by apply/differentiable_continuous/derivable1_diffP.
@@ -1346,15 +1346,12 @@ apply: cvgD.
 Unshelve. all: by end_near. Qed.
 
 Global Instance is_derive1ZLR (k : R -> R) (f : R -> V) (x dk : R) (df : V) :
-  is_derive x 1 k dk -> is_derive x 1 f df -> is_derive x 1 (fun x => k x *: f x) (dk *: f x + k x *: df).
+  is_derive x 1 k dk -> is_derive x 1 f df ->
+  is_derive x 1 (fun x => k x *: f x) (dk *: f x + k x *: df).
 Proof.
-move=> [der_k vdk] [der_f vdf].
-constructor.
-- apply: cvgP.
-  by apply: der1_scaleLR.
-- apply: norm_cvg_lim.
-  apply: cvg_to_eq; first by apply: der1_scaleLR.
-  by rewrite vdk vdf.
+move=> [der_k <-] [der_f <-]/=; apply: DeriveDef.
+- exact: cvgP (der1_scaleLR _ _).
+- by apply: norm_cvg_lim; exact: cvg_trans (der1_scaleLR _ _).
 Qed.
 
 Lemma deriveZLR (k : R -> R) (f : R -> V) (x : R) : 
