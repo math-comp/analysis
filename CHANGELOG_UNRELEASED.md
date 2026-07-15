@@ -244,11 +244,15 @@
   + new lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
     `at_left_shift`, `at_right_shift`, `near_right_in_itv`, and `near_left_in_itv`.
 
+- in file `normed_module.v`,
+  + new lemmas `cvg1MC`, `cvg1M`, `cvgCM1`, `cvgM1`, `cvg0MC`, `cvg0M`, 
+    `cvgCM0`, and `cvgM0`.
 - in file `num_normedtype.v`,
   + new lemmas `pinftyV`, `ninftyV`, `cvgryV`, `cvgrNyV`, `lt0_cvgMlNy`, 
     `lt0_cvgMrNy`, `lt0_cvgMly`, and `lt0_cvgMry`.
 - in file `pseudometric_normed_Zmodule.v`,
-  + new lemmas `fmap_at_left0P`, and `fmap_at_right0E`.
+  + new lemmas `cvgDl`, `cvgDr`, `cvgBl`, `cvgBr`, `cvg0D`, `cvg0DC`, 
+    `cvgD0`, `cvgCD0`, `cvg0B`, `cvg0BC`, `cvgB0`, `cvgCB0`, `cvgN0`, `fmap_at_left0P`, and `fmap_at_right0E`.
 - in file `tvs.v`,
   + new lemmas `near_shiftE`, and `nearZE`.
 
