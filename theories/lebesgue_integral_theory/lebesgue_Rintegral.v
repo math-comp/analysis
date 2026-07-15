@@ -438,6 +438,51 @@ Hypothesis near_x_ge_a : \forall e \near 0^'+, a <= x_ e.
 Hypothesis near_y_le_b : \forall e \near 0^'+, y_ e <= b.
 Hypotheses (cvg_x : x_ @ 0^'+ --> x) (cvg_y : y_ @ 0^'+ --> y).
 
+
+
+Section Rdominated_convergence.
+Context d (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
+Variables (f_ : (T -> R)^nat) (f g : T -> R).
+Hypothesis mf_ : forall n, measurable_fun D (f_ n).
+Hypothesis f_f : forall x, D x -> f_ ^~ x @ \oo --> f x.
+Hypothesis ig : integrable.body mu D (EFin \o g).
+Hypothesis absfg : forall n x, D x -> `|f_ n x| <= g x.
+
+Let mf_e n : measurable_fun D (EFin \o f_ n).
+Proof. by apply/measurable_EFinP. Qed.
+
+Let f_fe (x : T) : D x -> (f_ n x)%:E @[n --> \oo] --> (f x)%:E.
+Proof.
+move=> Dx.
+apply/fine_cvgP; split; first by apply: nearW.
+by apply: f_f.
+Qed.
+
+Let egi (x : T) : (g x)%:E \is a fin_num.
+Proof. by []. Qed.
+
+Let absfge (n : nat) (x : T) : D x -> (`|(f_ n x)%:E| <= (g x)%:E)%E.
+Proof.
+move=> Dx.
+rewrite abse_EFin lee_fin.
+by apply: absfg.
+Qed.
+
+Let mf : measurable_fun D (EFin \o f).
+Proof. by apply: emeasurable_fun_cvg; first by exact: mf_e. Qed.
+
+Lemma Rdominated_cvg : \int[mu]_(x in D) f_ n x @[n \oo] --> \int[mu]_(x in D) f x.
+Proof.
+rewrite /Rintegral.
+have := dominated_convergence mD mf_e mf (aeW _ f_fe) ig (aeW _ (fun x n Dx => absfge n Dx)).
+move=> /= [i_f _ +].
+rewrite -[X in _ --> X]fineK; first by apply: integrable_fin_num.
+by move/fine_cvg.
+Qed.
+
+End Rdominated_convergence.
+
 Lemma Rintegral_bound_continuous :
   \int[mu]_(z in [set` Interval (BSide b1 (x_ e)) (BSide b2 (y_ e))]) (f z)
   @[e --> 0^'+] --> 
