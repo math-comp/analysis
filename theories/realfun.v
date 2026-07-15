@@ -2846,7 +2846,7 @@ Qed.
 End lhopital.
 
 Section lhopital_pinfty_at_right.
-Context (R : realType) (f df g dg : R -> R) (a l : R).
+Context {R : realType} (f df g dg : R -> R) (a l : R).
 Hypothesis near_der_f : \forall x \near a^'+, is_derive x (1 :> R) f (df x).
 Hypothesis near_der_g : \forall x \near a^'+, is_derive x (1 :> R) g (dg x).
 Hypothesis g_cvgy : g @ a^'+ --> +oo.
@@ -2855,12 +2855,11 @@ Hypothesis dfdg_cvg : df x / dg x @[x --> a^'+] --> l.
 
 Lemma lhopital_pinfty_at_right : f x / g x @[x --> a^'+] --> l.
 Proof.
-have [b a_lt_b in_ab] : exists2 b : R, a < b & 
-      {in `]a, b[%R, forall (x : R), [/\ 
-      is_derive x 1 f (df x) , 
+have [b a_lt_b in_ab] : exists2 b : R, a < b &
+      {in `]a, b[%R, forall x : R, [/\
+      is_derive x 1 f (df x),
       is_derive x 1 g (dg x) &
-      dg x != 0
-    ]}.
+      dg x != 0 ]}.
   near a^'+ => b.
   exists b => //.
   near: b; apply/near_right_in_itv.
@@ -2873,7 +2872,7 @@ near a^'+ => y; near=> x.
 have := @cauchy_MVT R f df g dg x y.
 have /[swap] /[apply] : x < y by done.
 have /[swap] /[apply] : {within `[x, y], continuous f}.
-  apply: (continuous_subspaceW (B := `]a, b[)).
+  apply: (@continuous_subspaceW _ _ _ `]a, b[).
     by apply: subset_itv; rewrite bnd_simp.
   rewrite continuous_open_subspace// => /= z /set_mem/= z_ab.
   apply: differentiable_continuous; apply/derivable1_diffP.
@@ -2887,14 +2886,11 @@ have /[swap] /[apply] : {within `[x, y], continuous g}.
   apply/derivable1_diffP.
   apply: ex_derive.
   by apply in_ab.
-have xy_and z : z \in `]x, y[%R -> 
+have xy_and z : z \in `]x, y[%R ->
     [/\ is_derive z 1 f (df z), is_derive z 1 g (dg z) & dg z != 0].
   rewrite in_itv/= => /andP[x_lt_z z_lt_y].
   apply: in_ab.
-  rewrite in_itv/=.
-  apply/andP; split.
-  - by apply: lt_trans x_lt_z.
-  - by apply: (lt_trans z_lt_y).
+  by rewrite in_itv/= (lt_trans _ x_lt_z)// (lt_trans z_lt_y).
 move=> /(_ (fun z z_xy => let (h, _, _) := xy_and z z_xy in h)).
 move=> /(_ (fun z z_xy => let (_, h, _) := xy_and z z_xy in h)).
 move=> /(_ (fun z z_xy => let (_, _, h) := xy_and z z_xy in h)).
@@ -2907,15 +2903,12 @@ have : `|(f y - f x) / (g y - g x) - l| < d.
   apply: withinr_withind => //=.
   rewrite ltr0_norm ?subr_lt0// opprB ltrBlDl.
   apply: (lt_trans c_lt_y).
-  near: y.
-  apply: nbhs_right_lt.
+  near: y; apply: nbhs_right_lt.
   by rewrite ltrDl.
 have gx_gt_gy : g x > g y.
-  near: x.
-  by apply: cvgry_gt.
+  by near: x; exact: cvgry_gt.
 have gx_gt0 : 0 < g x.
-  near: x.
-  by apply: cvgry_gt.
+  by near: x; exact: cvgry_gt.
 have -> : (f y - f x) / (g y - g x) = (f x / g x - f y / g x) / (1 - g y / g x).
   rewrite -[LHS]divrNN !opprB.
   rewrite -(@divrr _ (g x)) ?unitf_gt0// -!mulrBl.
@@ -2931,34 +2924,32 @@ apply/andP; split.
   near: x.
   apply: (cvgr_gt (l - d)); last first.
     rewrite ltrD2l ltrN2.
-    near: d.
-    by apply: nbhs_right_lt.
+    by near: d; exact: nbhs_right_lt.
   apply: cvgD0.
-  + apply: cvgCM1.
-    apply: cvgCB0.
-    apply: cvgCM0.
-    by apply: cvgryV.
-  + apply: cvgCM0.
-    by apply: cvgryV.
+  + apply: cvgM1 => //.
+    apply: cvgB0 => //.
+    apply: cvgM0 => //.
+    exact: cvgryV.
+  + apply: cvgM0 => //.
+    exact: cvgryV.
 - apply: (lt_trans fg_lt).
   near: x.
   apply: (cvgr_lt (l + d)); last first.
     rewrite ltrD2l.
-    near: d.
-    by apply: nbhs_right_lt.
+    by near: d; exact: nbhs_right_lt.
   apply: cvgD0.
-  + apply: cvgCM1.
-    apply: cvgCB0.
-    apply: cvgCM0.
-    by apply: cvgryV.
-  + apply: cvgCM0.
-    by apply: cvgryV.
+  + apply: cvgM1 => //.
+    apply: cvgB0 => //.
+    apply: cvgM0 => //.
+    exact: cvgryV.
+  + apply: cvgM0 => //.
+    exact: cvgryV.
 Unshelve. all: by end_near. Qed.
 
 End lhopital_pinfty_at_right.
 
 Section lhopital_pinfty_at_pinfty.
-Context (R : realType) (f df g dg : R -> R) (a l : R).
+Context {R : realType} (f df g dg : R -> R) (a l : R).
 Hypothesis near_der_f : \forall x \near +oo, is_derive x (1 :> R) f (df x).
 Hypothesis near_der_g : \forall x \near +oo, is_derive x (1 :> R) g (dg x).
 Hypothesis g_cvgy : g @ +oo --> +oo.
@@ -2977,7 +2968,7 @@ apply: lhopital_pinfty_at_right.
     near: x.
     rewrite -pinftyV near_map.
     by near do rewrite invrK.
-  by apply: is_deriveV.
+  exact: is_deriveV.
 - near=> x.
   apply: (is_derive1_comp (a := dg x^-1)).
     near: x.
@@ -2990,8 +2981,7 @@ apply: lhopital_pinfty_at_right.
   rewrite -pinftyV -fmap_comp /comp.
   by under eq_cvg do rewrite invrK.
 - near=> x.
-  rewrite scaler1 mulrN oppr_eq0.
-  apply: mulf_neq0.
+  rewrite scaler1 mulrN oppr_eq0 mulf_neq0//.
   + near: x.
     rewrite -pinftyV near_map.
     by near do rewrite invrK.
