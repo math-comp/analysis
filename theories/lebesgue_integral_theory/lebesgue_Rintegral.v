@@ -543,7 +543,7 @@ wlog suff patch_cvg : /
     apply: Rintegral_patch_finite => //.
     apply: (iffLR (measurable_restrictT _ _)) => //.
     by apply: mf_oo.
-  - apply: Rintegral_patch_finite => //.
+  - symmetry; apply: Rintegral_patch_finite => //.
     apply: (iffLR (measurable_restrictT _ _)) => //.
     by apply: mf_oo.
 unshelve apply: Rdominated_cvg => /=.
