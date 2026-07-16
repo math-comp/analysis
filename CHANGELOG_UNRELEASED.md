@@ -234,6 +234,9 @@
 - in `measurable_structure.v`:
   + lemmas `countable_bigcap_measurable`, `countable_bigcup_measurable`
 
+- in file `lebesgue_Rintegral.v`,
+  + new lemma `Rdominated_cvg`.
+
 ### Changed
 
 - in `realsum.v`:
