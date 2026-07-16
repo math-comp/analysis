@@ -2905,13 +2905,12 @@ Unshelve. all: by end_near. Qed.
 End lhopital_at_left.
 
 Section lhopital.
-Context {R : realType}.
-Variables (f df g dg : R -> R) (a b c : R) (l : R).
-Hypothesis cab : c \in `]a, b[.
-Hypotheses (fdf : forall x, x \in `]a, b[ `\ c -> is_derive x 1 f (df x))
-           (gdg : forall x, x \in `]a, b[ `\ c -> is_derive x 1 g (dg x)).
-Hypotheses (fa0 : f x @[x --> c] --> 0) (ga0 : g x @[x --> c] --> 0)
-           (cdg : forall x, x \in `]a, b[ `\ c -> dg x != 0).
+Context {R : realType} (f df g dg : R -> R) (a b c : R) (l : R).
+Hypotheses (cab : c \in `]a, b[)
+  (fdf : forall x, x \in `]a, b[ `\ c -> is_derive x 1 f (df x))
+  (gdg : forall x, x \in `]a, b[ `\ c -> is_derive x 1 g (dg x))
+  (fa0 : f x @[x --> c] --> 0) (ga0 : g x @[x --> c] --> 0)
+  (cdg : forall x, x \in `]a, b[ `\ c -> dg x != 0).
 
 Lemma lhopital :
   df x / dg x @[x --> c] --> l -> f x / g x @[x --> c^'] --> l.
