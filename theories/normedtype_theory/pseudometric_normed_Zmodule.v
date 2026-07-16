@@ -148,10 +148,44 @@ HB.mixin Record NormedZmod_PseudoMetric_eq (R : numDomainType) T
   pseudo_metric_ball_norm : ball = ball_ (fun x : T => `| x |)
 }.
 
-#[short(type="pseudoMetricNormedZmodType")]
-HB.structure Definition PseudoMetricNormedZmod (R : numDomainType) :=
+HB.structure Definition PseudoMetricNormedZmod0 (R : numDomainType) :=
   {T of Num.NormedZmodule R T & PseudoMetric R T
    & NormedZmod_PseudoMetric_eq R T & isPointed T}.
+
+#[short(type="pseudoMetricNormedZmodType")]
+HB.structure Definition PseudoMetricNormedZmod (R : numDomainType) :=
+  {T of PseudoMetricNormedZmod0 R T & Metric R T}.
+
+Section pseudoMetricNormedZmod_numDomainType.
+Context {K : numDomainType} {V : PseudoMetricNormedZmod0.type K}.
+
+(**md Balls defined by the norm: *)
+Local Notation ball_norm := (ball_ (@Num.norm K V)).
+
+Lemma ball_normE : ball_norm = ball.
+Proof. by rewrite pseudo_metric_ball_norm. Qed.
+
+End pseudoMetricNormedZmod_numDomainType.
+
+HB.factory Record isPseudoMetricNormedZmod
+  (K : numDomainType) T & PseudoMetricNormedZmod0 K T := { }.
+
+HB.builders Context K T & isPseudoMetricNormedZmod K T.
+
+Let mdist (x y : T) : K := `|x - y|.
+
+Let mdist_ge0 x y : 0 <= mdist x y. Proof. by rewrite /mdist. Qed.
+
+Let mdist_positivity x y : mdist x y = 0 -> x = y.
+Proof. by move=> /normr0_eq0/subr0_eq. Qed.
+
+Let ballEmdist x d : ball x d = [set y | mdist x y < d].
+Proof. by rewrite -ball_normE. Qed.
+
+HB.instance Definition _ :=
+  @PseudoMetric_isMetric.Build K T mdist mdist_ge0 mdist_positivity ballEmdist.
+
+HB.end.
 
 (* alternative definition of a PseudoMetricNormedZmod *)
 HB.factory Record NormedZmoduleMetric (R : numDomainType) T
@@ -175,12 +209,6 @@ HB.end.
 Section pseudoMetricNormedZmod_numDomainType.
 Context {K : numDomainType} {V : pseudoMetricNormedZmodType K}.
 
-(**md Balls defined by the norm: *)
-Local Notation ball_norm := (ball_ (@Num.norm K V)).
-
-Lemma ball_normE : ball_norm = ball.
-Proof. by rewrite pseudo_metric_ball_norm. Qed.
-
 Lemma ball_open (x : V) (r : K) : open (ball x r).
 Proof.
 rewrite openE/= -ball_normE/= /interior => y /= bxy; rewrite -nbhs_ballE.
@@ -193,6 +221,7 @@ Lemma ball_open_nbhs (x : V) (r : K) : 0 < r -> open_nbhs x (ball x r).
 Proof. by move=> e0; split; [exact: ball_open|exact: ballxx]. Qed.
 
 (**md Neighborhoods defined by the norm: *)
+Local Notation ball_norm := (ball_ (@Num.norm K V)).
 Local Notation nbhs_norm := (nbhs_ball_ ball_norm).
 
 (* if we do not give the V argument to nbhs, the universally quantified set that
