@@ -221,6 +221,9 @@ HB.instance Definition _ :=
 
 End matrix_pseudoMetricNormedZmod.
 
+HB.instance Definition _ (K : numFieldType) m n :=
+  isPseudoMetricNormedZmod.Build _ 'M[K]_(m, n).
+
 Section within_continuous_coord.
 Context {T : topologicalType} {R : realFieldType} {n : nat}.
 Import numFieldNormedType.Exports.
@@ -274,9 +277,6 @@ Qed.
 HB.instance Definition _ (K : numFieldType) m n :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build K 'M[K]_(m, n)
     (@mx_normZ K m n).
-
-HB.instance Definition _ (K : numFieldType) m n :=
-  isNormedModule.Build _ 'M[K]_(m, n).
 
 End matrix_NormedModule.
 

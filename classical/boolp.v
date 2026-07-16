@@ -6,7 +6,9 @@
 (* -------------------------------------------------------------------- *)
 From HB Require Import structures.
 From mathcomp Require Import boot order.
-From mathcomp Require Import mathcomp_extra unstable.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
+From mathcomp Require Import mathcomp_extra.
 From mathcomp Require internal_Eqdep_dec.
 
 (**md**************************************************************************)
