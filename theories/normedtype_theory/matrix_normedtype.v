@@ -219,6 +219,9 @@ HB.instance Definition _ :=
 
 End matrix_pseudoMetricNormedZmod.
 
+HB.instance Definition _ (K : numFieldType) m n :=
+  isPseudoMetricNormedZmod.Build _ 'M[K]_(m, n).
+
 Lemma bounded_closed_compact (R : realType) n (A : set 'rV[R]_n) :
   bounded_set A -> closed A -> compact A.
 Proof.
@@ -250,9 +253,6 @@ Qed.
 HB.instance Definition _ (K : numFieldType) m n :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build K 'M[K]_(m, n)
     (@mx_normZ K m n).
-
-HB.instance Definition _ (K : numFieldType) m n :=
-  isNormedModule.Build _ 'M[K]_(m, n).
 
 End matrix_NormedModule.
 

@@ -92,32 +92,10 @@ HB.mixin Record PseudoMetricNormedZmod_ConvexTvs_isNormedModule K V
   normrZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
 
-HB.structure Definition NormedModule0 (K : numDomainType) :=
-  {T of PseudoMetricNormedZmod K T & ConvexTvs K T
-   & PseudoMetricNormedZmod_ConvexTvs_isNormedModule K T}.
-
 #[short(type="normedModType")]
 HB.structure Definition NormedModule (K : numDomainType) :=
-  {T of NormedModule0 K T & Metric K T}.
-
-HB.factory Record isNormedModule (K : numDomainType) T & NormedModule0 K T := { }.
-
-HB.builders Context K T & isNormedModule K T.
-
-Let mdist (x y : T) : K := `|x - y|.
-
-Let mdist_ge0 x y : 0 <= mdist x y. Proof. by rewrite /mdist. Qed.
-
-Let mdist_positivity x y : mdist x y = 0 -> x = y.
-Proof. by move=> /normr0_eq0/subr0_eq. Qed.
-
-Let ballEmdist x d : ball x d = [set y | mdist x y < d].
-Proof. by rewrite -ball_normE. Qed.
-
-HB.instance Definition _ :=
-  @PseudoMetric_isMetric.Build K T mdist mdist_ge0 mdist_positivity ballEmdist.
-
-HB.end.
+  {T of PseudoMetricNormedZmod K T & ConvexTvs K T
+   & PseudoMetricNormedZmod_ConvexTvs_isNormedModule K T}.
 
 #[short(type="subNormedModType")]
 HB.structure Definition SubNormedModule (R : numDomainType)
@@ -390,6 +368,20 @@ HB.instance Definition _ := PseudoMetric.copy M (pseudoMetric_normed M).
 HB.instance Definition _ := isPointed.Build M 0.
 
 HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R M erefl.
+
+(* TODO: why do we have to repeat this while we already have isPseudoMetricNormedZmod? *)
+Let mdist (x y : M) : R := `|x - y|.
+
+Let mdist_ge0 x y : 0 <= mdist x y. Proof. by rewrite /mdist. Qed.
+
+Let mdist_positivity x y : mdist x y = 0 -> x = y.
+Proof. by move=> /normr0_eq0/subr0_eq. Qed.
+
+Let ballEmdist x d : ball x d = [set y | mdist x y < d].
+Proof. by rewrite -ball_normE. Qed.
+
+HB.instance Definition _ :=
+  @PseudoMetric_isMetric.Build R M mdist mdist_ge0 mdist_positivity ballEmdist.
 
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R M normrZ.
@@ -1740,6 +1732,10 @@ apply/connected_intervalP/connected_continuous_connected => //.
 exact: segment_connected.
 Qed.
 
+(* TODO: move to pseudometric_normed_Zmodule.v *)
+HB.instance Definition _ (R : numDomainType) (U V' : pseudoMetricNormedZmodType R) :=
+  isPseudoMetricNormedZmod.Build _ (U * V')%type.
+
 Section prod_NormedModule.
 Context {K : numFieldType} {U V : normedModType K}.
 
@@ -1753,10 +1749,11 @@ HB.instance Definition _ :=
 End prod_NormedModule.
 
 HB.instance Definition _ (R : numFieldType) (U V' : normedModType R) :=
-  isNormedModule.Build _ (U * V')%type.
+  NormedModule.on (U * V')%type.
 
+(* TODO: move to pseudometric_normed_Zmodule.v *)
 Section prod_NormedModule_lemmas.
-Context {T : Type} {K : numDomainType} {U V : normedModType K}.
+Context {T : Type} {K : numDomainType} {U V : pseudoMetricNormedZmodType K}.
 
 Lemma fcvgr2dist_ltP {F : set_system U} {G : set_system V}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V) :
@@ -2679,11 +2676,11 @@ HB.instance Definition _ (V : vectType R) :=
   NormedZmod_PseudoMetric_eq.Build R (max_space V) erefl.
 
 HB.instance Definition _ (V : vectType R) :=
-  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R (max_space V)
-    (@Norm.normZ _ _ (@max_norm V)).
+  isPseudoMetricNormedZmod.Build _ (max_space V).
 
 HB.instance Definition _ (V : vectType R) :=
-  isNormedModule.Build _ (max_space V).
+  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R (max_space V)
+    (@Norm.normZ _ _ (@max_norm V)).
 
 (* NB: Get Trocq to prove the continuity part automatically. *)
 Lemma sup_closed_ball_compact (V : vectType R) :
