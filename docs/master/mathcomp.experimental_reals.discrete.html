@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.experimental_reals.discrete</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 8f2c3e7 2026.07.16-19:37" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 8f2c3e7 2026.07.17-19:34" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -364,9 +364,7 @@ rpickle is transparent
 Expands to: Constant mathcomp.experimental_reals.discrete.rpickle
 Declared in
 library mathcomp.experimental_reals.discrete, line 80, characters 11-18
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/8f2c3e71be7acc4d1d974e6ced3c19e67316a162/experimental_reals/discrete.v#L110' target='_blank'>Source code</a></span></div></span> <span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.choice.html#Countable.copy">Countable</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.choice.html#Countable.copy">copy</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.E">E</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span><br/>
-&nbsp;&nbsp;(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.eqtype.html#pcan_type">pcan_type</a></span> (<span class="id"><a href="mathcomp.experimental_reals.discrete.html#rpickleK">rpickleK</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.c">c</a></span>)).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="countable_choiceMixin" class="id"><div name="countable_choiceMixin" class=" tooltip">countable_choiceMixin<span class='tooltip-area'><p>runpickle :
+runpickle :
 forall [T : Type] [E : pred T], countable (T:=T) E -> nat -> option [psub E]
 
 runpickle is not universe polymorphic
@@ -375,6 +373,19 @@ runpickle is transparent
 Expands to: Constant mathcomp.experimental_reals.discrete.runpickle
 Declared in
 library mathcomp.experimental_reals.discrete, line 83, characters 11-20
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/8f2c3e71be7acc4d1d974e6ced3c19e67316a162/experimental_reals/discrete.v#L110' target='_blank'>Source code</a></span></div></span> <span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.choice.html#Countable.copy">Countable</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.choice.html#Countable.copy">copy</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.E">E</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span><br/>
+&nbsp;&nbsp;(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.eqtype.html#pcan_type">pcan_type</a></span> (<span class="id"><a href="mathcomp.experimental_reals.discrete.html#rpickleK">rpickleK</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.c">c</a></span>)).<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="countable_choiceMixin" class="id"><div name="countable_choiceMixin" class=" tooltip">countable_choiceMixin<span class='tooltip-area'><p>countable_countMixin :
+forall [T : eqType] [E : pred T],
+countable (T:=T) E -> Countable.axioms_ [psub E]
+
+countable_countMixin is not universe polymorphic
+Arguments countable_countMixin [T E] c
+countable_countMixin is transparent
+Expands to: Constant
+            mathcomp.experimental_reals.discrete.countable_countMixin
+Declared in
+library mathcomp.experimental_reals.discrete, line 110, characters 11-31
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/8f2c3e71be7acc4d1d974e6ced3c19e67316a162/experimental_reals/discrete.v#L112' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.choice.html#Choice.copy">Choice</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.choice.html#Choice.copy">copy</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.E">E</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.eqtype.html#pcan_type">pcan_type</a></span> (<span class="id"><a href="mathcomp.experimental_reals.discrete.html#rpickleK">rpickleK</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.c">c</a></span>)).<br/>
 <span class="vernacular">End</span><span class="id"> CountType</span>.<br/>
