@@ -354,6 +354,9 @@
 - in `classical_sets.v`
   + lemma `bigcupDr` -> `setD_bigcupr` (deprecating `bigcupDr`)
 
+- moved from `realfun.v` to `derive.v` and generalized:
+  + lemmas `is_deriveV`, `is_derive1_comp`
+
 ### Renamed
 
 - in `tvs.v`:

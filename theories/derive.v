@@ -1287,7 +1287,7 @@ by apply/funext => x; rewrite derive1E deriveB// derive_id derive_cst sub0r.
 Qed.
 
 Section Derive_lemmasVR.
-Variables (R : numFieldType) (V : normedModType R).
+Context {R : numFieldType} {V : normedModType R}.
 Implicit Types (f g : V -> R) (x v : V).
 
 Fact der_mult f g x v :
@@ -1398,7 +1398,18 @@ move=> df dg; apply/cvg_ex; exists (- (f x) ^- 2 *: 'D_v f x).
 exact: der_inv.
 Qed.
 
+Lemma is_deriveV f x v (df : R) :
+  f x != 0 -> is_derive x v f df ->
+  is_derive x v (fun y => (f y)^-1) (- (f x) ^- 2 *: df).
+Proof.
+move=> fxNZ Df; apply: DeriveDef; first exact: derivableV.
+by rewrite deriveV//; case: Df => _ ->.
+Qed.
+
 End Derive_lemmasVR.
+
+#[global] Hint Extern 0 (is_derive _ _ (fun _ => (_ _)^-1) _) =>
+  (apply: is_deriveV; first by []) : typeclass_instances.
 
 Lemma derive_shift {R : numFieldType} (v k : R) :
   'D_v (shift k : R -> R) = cst v.
@@ -2066,6 +2077,15 @@ move=> /derivable1_diffP df /derivable1_diffP dg.
 rewrite derive1E'; first exact/differentiable_comp.
 rewrite diff_comp // !derive1E' //= -[X in 'd  _ _ X = _]mulr1.
 by rewrite [LHS]linearZ mulrC.
+Qed.
+
+Global Instance is_derive1_comp (R : realFieldType) (f g : R -> R) (x a b : R) :
+  is_derive (g x) 1 f a -> is_derive x 1 g b -> is_derive x 1 (f \o g) (a * b).
+Proof.
+move=> [fgxv <-{a}] [gv <-{b}]; apply: (@DeriveDef _ _ _ _ _ (f \o g)).
+  apply/derivable1_diffP/differentiable_comp; first exact/derivable1_diffP.
+  by move/derivable1_diffP in fgxv.
+by rewrite -derive1E (derive1_comp gv fgxv) 2!derive1E.
 Qed.
 
 Lemma near_eq_growth_rate (R : numFieldType) (V W : normedModType R)
