@@ -358,3 +358,122 @@ by exists g'.
 Qed.
 
 End hahn_banach_normed.
+
+Section hahn_banach_extension_ctvs.
+Variable (R : realType) (V : convexTvsType R) (F : pred V).
+(* In contrary to the normed case, the extention thm is not true for any subtopology on F,
+ but only for the finest one *)
+
+Import Norm.
+
+(* A first version specifying the seminorm bounding the function *)
+(* 7.1.2 Jarchow *)
+Theorem hahn_banach_extension_subctvs  (F' : subConvexTvsType F)
+ (f : {linear F' -> R}) :
+  (exists2 p : SemiNorm.type V, seminorm_of p & forall z : F', f z <= p (val z)) ->
+  exists g : {linear_continuous V -> R}, forall x : F', g (val x) = f x.
+Proof.
+move=> [p ps fp].
+have convp : @convex_function _ _ [set: V] p.
+  rewrite /convex_function /conv => l v1 v2 _ _ /=.
+  rewrite [in leRHS]/conv /=.
+  apply: le_trans; first by exact : @ler_normD _ _ p (l%:num *: v1) (l%:num.~ *: v2).
+  rewrite  !normZ -![_ *: _]/(_ * _) (@ger0_norm _ l%:num)//.
+  by rewrite (@ger0_norm _ l%:num.~)// ?mulrA// onem_ge0.
+have := (@hahn_banach_extension R V _ F' f p convp fp).
+move=> [g majgp F_eqgf].
+have ling : linear (g : V -> R) by exact: linearP.
+have contg : continuous (g : V -> R).
+  by apply/lcfun_seminorm; exists p; first by apply: continuous_seminorm_of.
+pose lcg := isLinearContinuous.Build _ _ _ _ g ling contg.
+pose g' : {linear_continuous V -> R | *%R} := HB.pack (g : V -> R) lcg.
+by exists g'.
+Qed.
+
+
+(* A second version where F is a subspace of V, meaning endowed with the initial topology wrt to val*)
+(* 7.2.1 Jarchow *)
+Theorem hahn_banach_extension_initialsubctvs  (F' : subLmodType F)
+ (f : {linear_continuous (init_subconvextvs F') -> R^o}) :
+  exists g : {linear_continuous V -> R}, forall x : F', g (val x) = f x.
+Proof.
+have [[openBasisV BasisV] _] := has_open_nbhs_basis V.
+have [p' ps' fp'] : exists2 p : SemiNorm.type V, seminorm_of p & forall z : F', f z <= p (val z).
+  have /linear_continuous_seminorm: continuous (f : (init_subconvextvs F') -> R^o) by apply: continuous_fun.
+  move=> [p [cp ps] /= fp].
+  have [/= nF] := cp.
+  move=> [] onF /= pF.
+  have [/(_ nF onF) + _] := basis_opennbhsbasis (init_subconvextvs F').
+  move=> [oF [[/= oV] ooV oVF] oF0 oFn].
+  have /BasisV [/= bV obV boV] : nbhs 0 oV.
+    rewrite nbhsE; exists oV => //; split => //.
+    apply: (@image_preimage_subset _ _ (val : F'-> V)).
+    by rewrite oVF; exists 0; rewrite ?linear0.
+  exists (gauge_fun_basis obV).
+    by exists bV; exists obV => //.
+  move=> z.
+  set pVz := (X in _ <= X).
+  apply: le_trans; first by apply: fp.
+  rewrite pF; apply: inf_le.
+  - move=> x /= [r [r0]]; rewrite inE => -[v bVv rvalz] <-; exists (- r); split => //; exists r; split => //.
+    rewrite inE; exists (r^-1 *: z).
+      apply: oFn; rewrite -oVF /=; apply: boV.
+      by rewrite linearZ /= -rvalz scalerA mulrC divff ?scale1r ?lt0r_neq0.
+    by rewrite scalerA divff ?scale1r ?lt0r_neq0.
+  - have [/= s s0 szbV]:= absorbing_opennbhsbasis obV (val z).
+    exists s^-1; split; rewrite ?invr_gt0 // inE /=; exists (s *: val z); first by apply/set_mem.
+    by rewrite scalerA mulrC divff ?scale1r ?lt0r_neq0.
+  - split; last by exists 0 => r [? _]; rewrite ltW.
+    have [/= s s0 sznF]:= absorbing_opennbhsbasis onF z.
+    exists s^-1; split; rewrite ?invr_gt0 // inE /=; exists (s *: z); first by apply/set_mem.
+    by rewrite scalerA mulrC divff ?scale1r ?lt0r_neq0.
+have convp : @convex_function _ _ [set: V] p'. (* or apply the previous thm but typing *)
+  rewrite /convex_function /conv => l v1 v2 _ _ /=.
+  rewrite [in leRHS]/conv /=.
+  apply: le_trans; first by exact : @ler_normD _ _ p' (l%:num *: v1) (l%:num.~ *: v2).
+  rewrite  !normZ -![_ *: _]/(_ * _) (@ger0_norm _ l%:num)//.
+  by rewrite (@ger0_norm _ l%:num.~)// ?mulrA// onem_ge0.
+have := (@hahn_banach_extension R V _ F' f p' convp fp').
+move=> [g majgp F_eqgf].
+have ling : linear (g : V -> R) by exact: linearP.
+have contg : continuous (g : V -> R).
+  by apply/lcfun_seminorm; exists p'; first by apply: continuous_seminorm_of.
+pose lcg := isLinearContinuous.Build _ _ _ _ g ling contg.
+pose g' : {linear_continuous V -> R | *%R} := HB.pack (g : V -> R) lcg.
+by exists g'.
+Qed.
+
+(* 7.2.3 in Jarchow *)
+Lemma hahn_banach_extension_hausdorff :
+(hausdorff_space V) <-> (forall x : V,  x != 0 -> exists l : {linear_continuous V -> R^o}, l(x) != 0).
+Proof.
+split; last first.
+(* proof in here is different than in the book - Jarchow mentions "a" continuous seminorm in 7.2.3 but refers to 2.7.1 which proves the results for a seminorm of the set of seminorm generating the topology - its probably lacks an argument saying that continuous seminorms are always bounded by this set of seminorms, which we haven't formalised here *)
+  move => H. pose P := (@seminorm_of R V).
+  pose P0 := (@seminorm_ofneq0 R V).
+  suff : hausdorff_space (seminorm_on P0).
+    have [contVs _ ] := (seminorm_convextvs V).
+    by move=> + x y cs; apply => a b /contVs nsa /contVs nsb; apply: cs => //.
+  apply/hausdorff_seminorm_on=> x /H [l].
+  have [l0|l0|] := ltrgtP (l x) (0 : R) => //.
+    have /linear_continuous_seminorm [p [sp _] /= lp] :=  (@continuous_fun _ _ (-1 *: l)).
+    exists p => //; apply: lt_le_trans; last by apply: lp.
+    by rewrite scaleN1r ltrNr oppr0.
+  have /linear_continuous_seminorm [p [sp _] /= lp] :=  (@continuous_fun _ _ l).
+  by exists p => //; apply: lt_le_trans; last by apply: lp.
+
+(* todo : construct the sublmodtype structures on lines and hyerplanes inside a lmodtype *)
+(*
+pose vectx := {y | exists t : R, y = t *: x}.
+pose val_subdef := fun y : vectx => (svalP y).
+have Sub : forall y, (exists t : R, y = t *: x) -> vectx. admit.
+have Sub_rect : forall K (_ : forall x Px, K (@Sub x Px)) u, K u;
+  SubK_subproof : forall x Px, val_subdef (@Sub x Px) = x
+}.*) admit.
+Admitted.
+
+End hahn_banach_extension_ctvs.
+
+Section hahn_banach_separation_ctvs.
+(* TODO *)
+End hahn_banach_separation_ctvs.

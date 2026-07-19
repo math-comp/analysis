@@ -101,6 +101,12 @@ rewrite nbhs_filterE; apply: filterS FC.
 by apply: subset_trans sBfA; rewrite -fCeB; apply: preimage_image.
 Qed.
 
+Lemma initial_nbhs_preimage (w : W) A : nbhs (f w) A -> nbhs w (f @^-1` A).
+Proof.
+rewrite nbhsE /= => -[B [oB Bfx]] BA.
+by exists (f @^-1` B); split => //= ; [exists B|move=> z /= /BA].
+Qed.
+
 End Initial_Topology.
 (*#[deprecated(since="mathcomp-analysis 1.17.0", note="renamed `initial_open`")]
 Notation wopen := initial_open (only parsing).*)

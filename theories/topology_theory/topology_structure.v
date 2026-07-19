@@ -125,6 +125,9 @@ Definition open_nbhs (p : T) (A : set T) := open A /\ A p.
 Definition basis (B : set_system T) :=
   B `<=` open /\ forall x, filter_from [set U | B U /\ U x] id --> x.
 
+Definition nbhs_basis (x : T) (B : set (set T)) :=
+  (B `<=` nbhs x) /\ filter_from [set U | B U] id --> x.
+
 Definition second_countable := exists2 B, countable B & basis B.
 
 Global Instance nbhs_pfilter (p : T) : ProperFilter (nbhs p).
@@ -496,6 +499,9 @@ HB.instance Definition _ := Nbhs_isTopological.Build T
 
 HB.end.
 
+Definition open_from (T I : Type) (D : set I) (f : I -> set T) :=
+  [set \bigcup_(i in D') f i | D' in subset^~ D].
+
 (** Topology defined by a base of open sets *)
 
 HB.factory Record isBaseTopological T & Choice T := {
@@ -509,7 +515,7 @@ HB.factory Record isBaseTopological T & Choice T := {
 
 HB.builders Context T & isBaseTopological T.
 
-Definition open_from := [set \bigcup_(i in D') b i | D' in subset^~ D].
+Local Notation open_from := (open_from D b).
 
 Let open_fromT : open_from setT.
 Proof. exists D => //; exact: b_cover. Qed.
