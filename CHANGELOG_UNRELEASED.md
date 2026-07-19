@@ -126,6 +126,8 @@
 
 - in `filter.v`:
   + mixin `isSubNbhs`, structure `SubNbhs`, notation `subNbhsType`
+  + new lemmas `near_eq_cvgE`, `near_eq_is_cvg`, `near_eq_lim`, 
+    `cvg_to_eq`, `cvg_to_withinP`, and `within_cvg_to_within`.
 
 - in `topology_structure.v`:
   + structure `SubTopological`, notation `subTopologicalType`
@@ -233,6 +235,22 @@
 
 - in `measurable_structure.v`:
   + lemmas `countable_bigcap_measurable`, `countable_bigcup_measurable`
+
+- in file `function_spaces.v`,
+  + new lemma `within_continuous_big`.
+- in file `nat_topology.v`,
+  + new lemma `near_infty_after`.
+- in file `num_topology.v`,
+  + new lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
+    `at_left_shift`, `at_right_shift`, `near_right_in_itv`, and `near_left_in_itv`.
+
+- in file `num_normedtype.v`,
+  + new lemmas `pinftyV`, `ninftyV`, `cvgryV`, `cvgrNyV`, `lt0_cvgMlNy`, 
+    `lt0_cvgMrNy`, `lt0_cvgMly`, and `lt0_cvgMry`.
+- in file `pseudometric_normed_Zmodule.v`,
+  + new lemmas `fmap_at_left0P`, and `fmap_at_right0E`.
+- in file `tvs.v`,
+  + new lemmas `near_shiftE`, and `nearZE`.
 
 ### Changed
 
@@ -353,6 +371,9 @@
 
 - in `classical_sets.v`
   + lemma `bigcupDr` -> `setD_bigcupr` (deprecating `bigcupDr`)
+
+- moved from `metric_structure.v` to `num_topology.v`: 
+  + lemma `cvg_at_right_left_dnbhs`, generalized to `topologicalType` from `metricType`.
 
 ### Renamed
 
