@@ -192,10 +192,10 @@
 
 - in `functions.v`:
   + lemmas `zerofctE`, `onefctE`
+
 - in `matrix_normedtype.v`:
   + lemma `within_continuous_coord`
 
-### Changed
 
 - in `functions.v`:
   + lemmas `linfunP`, `linfun_eqP`

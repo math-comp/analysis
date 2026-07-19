@@ -221,11 +221,11 @@ HB.instance Definition _ :=
 
 End matrix_pseudoMetricNormedZmod.
 
-Section vector_continuous.
-Context {R : realFieldType} {n : nat}.
+Section within_continuous_coord.
+Context {T : topologicalType} {R : realFieldType} {n : nat}.
 Import numFieldNormedType.Exports.
 
-Lemma within_continuous_coord A (f : R -> 'rV[R]_n) :
+Lemma within_continuous_coord A (f : T -> 'rV[R]_n) :
   {within A, continuous f} <->
   forall i, {within A, continuous (fun x => f x ord0 i)}.
 Proof.
@@ -241,7 +241,7 @@ split=> [Af i|Af].
   by rewrite near_withinE.
 Unshelve. all: by end_near. Qed.
 
-End vector_continuous.
+End within_continuous_coord.
 
 Lemma bounded_closed_compact (R : realType) n (A : set 'rV[R]_n) :
   bounded_set A -> closed A -> compact A.
