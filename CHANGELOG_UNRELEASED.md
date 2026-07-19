@@ -234,6 +234,12 @@
 - in `measurable_structure.v`:
   + lemmas `countable_bigcap_measurable`, `countable_bigcup_measurable`
 
+- in `normed_module.v`,
+  + new lemmas `within_continuousZ`, `within_continuousM`, 
+    `within_continuousMl`, and `within_continuousMr`
+- in `pseudometric_normed_Zmodule.v`
+  + new lemma `within_continuousN`
+
 ### Changed
 
 - in `realsum.v`:
