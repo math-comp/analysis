@@ -670,7 +670,6 @@ exact: is_cvgMlE_tmp.
 Qed.
 
 End cvg_composition_field.
-
 #[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `cvgMr_tmp`")]
 Notation cvgMl := cvgMr_tmp (only parsing).
 #[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `cvgMl_tmp`")]
