@@ -1931,9 +1931,6 @@ Lemma derive_sqrt {K : realType} (r : K) : 0 < r ->
   'D_1 Num.sqrt r = (2 * Num.sqrt r)^-1.
 Proof. by move=> r0; exact/derive_val/is_derive1_sqrt. Qed.
 
-#[global] Hint Extern 0 (is_derive _ _ (fun _ => (_ _)^-1) _) =>
-  (eapply is_deriveV; first by []) : typeclass_instances.
-
 Section total_variation_realFieldType.
 Context {R : realFieldType}.
 Implicit Types (a b : R) (f : R -> R).
