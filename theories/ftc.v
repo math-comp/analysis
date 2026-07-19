@@ -519,7 +519,7 @@ Let within_continuous_restrict f a b : (a < b)%R ->
 Proof.
 move=> ab + x xab; move=> /(_ x).
 rewrite {1}/continuous_at => xf.
-rewrite /prop_for /continuous_at  patchE.
+rewrite /prop_for /continuous_at patchE.
 rewrite mem_set ?mulr1 /=; first exact: subset_itv_oo_cc.
 exact: cvg_patch.
 Qed.
