@@ -369,19 +369,7 @@ HB.instance Definition _ := isPointed.Build M 0.
 
 HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R M erefl.
 
-(* TODO: why do we have to repeat this while we already have isPseudoMetricNormedZmod? *)
-Let mdist (x y : M) : R := `|x - y|.
-
-Let mdist_ge0 x y : 0 <= mdist x y. Proof. by rewrite /mdist. Qed.
-
-Let mdist_positivity x y : mdist x y = 0 -> x = y.
-Proof. by move=> /normr0_eq0/subr0_eq. Qed.
-
-Let ballEmdist x d : ball x d = [set y | mdist x y < d].
-Proof. by rewrite -ball_normE. Qed.
-
-HB.instance Definition _ :=
-  @PseudoMetric_isMetric.Build R M mdist mdist_ge0 mdist_positivity ballEmdist.
+HB.instance Definition _ := isPseudoMetricNormedZmodule.Build R M.
 
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R M normrZ.
@@ -389,7 +377,7 @@ HB.instance Definition _ :=
 HB.end.
 
 Definition subLmodule_isSubNormedmodule (R : realFieldType)
-    (V : normedModType R) (S : pred V) (U : Type) : Type := U.
+  (V : normedModType R) (S : pred V) (U : Type) : Type := U.
 
 Section SubLmodule_isSubNormedmodule.
 Context (R : realFieldType) (V : normedModType R) (S : pred V)
@@ -1732,10 +1720,6 @@ apply/connected_intervalP/connected_continuous_connected => //.
 exact: segment_connected.
 Qed.
 
-(* TODO: move to pseudometric_normed_Zmodule.v *)
-HB.instance Definition _ (R : numDomainType) (U V' : pseudoMetricNormedZmodType R) :=
-  isPseudoMetricNormedZmod.Build _ (U * V')%type.
-
 Section prod_NormedModule.
 Context {K : numFieldType} {U V : normedModType K}.
 
@@ -1747,41 +1731,6 @@ HB.instance Definition _ :=
   prod_norm_scale.
 
 End prod_NormedModule.
-
-HB.instance Definition _ (R : numFieldType) (U V' : normedModType R) :=
-  NormedModule.on (U * V')%type.
-
-(* TODO: move to pseudometric_normed_Zmodule.v *)
-Section prod_NormedModule_lemmas.
-Context {T : Type} {K : numDomainType} {U V : pseudoMetricNormedZmodType K}.
-
-Lemma fcvgr2dist_ltP {F : set_system U} {G : set_system V}
-  {FF : Filter F} {FG : Filter G} (y : U) (z : V) :
-  (F, G) --> (y, z) <->
-  forall eps, 0 < eps ->
-   \forall y' \near F & z' \near G, `| (y, z) - (y', z') | < eps.
-Proof. exact: fcvgrPdist_lt. Qed.
-
-Lemma cvgr2dist_ltP {I J} {F : set_system I} {G : set_system J}
-  {FF : Filter F} {FG : Filter G} (f : I -> U) (g : J -> V) (y : U) (z : V) :
-  (f @ F, g @ G) --> (y, z) <->
-  forall eps, 0 < eps ->
-   \forall i \near F & j \near G, `| (y, z) - (f i, g j) | < eps.
-Proof.
-rewrite fcvgr2dist_ltP; split=> + e e0 => /(_ e e0);
-  by rewrite !near_simpl// => ?; rewrite !near_simpl.
-Qed.
-
-Lemma cvgr2dist_lt {I J} {F : set_system I} {G : set_system J}
-  {FF : Filter F} {FG : Filter G} (f : I -> U) (g : J -> V) (y : U) (z : V) :
-  (f @ F, g @ G) --> (y, z) ->
-  forall eps, 0 < eps ->
-   \forall i \near F & j \near G, `| (y, z) - (f i, g j) | < eps.
-Proof. by rewrite cvgr2dist_ltP. Qed.
-
-End prod_NormedModule_lemmas.
-Arguments cvgr2dist_ltP {_ _ _ _ _ F G FF FG}.
-Arguments cvgr2dist_lt {_ _ _ _ _ F G FF FG}.
 
 (* Local properties in R *)
 
@@ -2676,7 +2625,7 @@ HB.instance Definition _ (V : vectType R) :=
   NormedZmod_PseudoMetric_eq.Build R (max_space V) erefl.
 
 HB.instance Definition _ (V : vectType R) :=
-  isPseudoMetricNormedZmod.Build _ (max_space V).
+  isPseudoMetricNormedZmodule.Build _ (max_space V).
 
 HB.instance Definition _ (V : vectType R) :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R (max_space V)

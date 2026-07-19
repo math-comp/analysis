@@ -186,12 +186,6 @@
   + lemma `ge0_integration_by_substitution_shift_itvy`,
     `ge0_integration_by_substitution_shift_itvNy`
 
-### Changed
-
-- moved from `measurable_structure.v` to `classical_sets.v`:
-  + definition `preimage_set_system`
-  + lemmas `preimage_set_system0`, `preimage_set_systemU`, `preimage_set_system_comp`,
-    `preimage_set_system_id`
 - in `functions.v`:
   + lemmas `linfunP`, `linfun_eqP`
   + instances of `SubLmodule` and `pointedType` on `{linear _->_ | _ }`
@@ -223,6 +217,10 @@
 
 - in `realsum.v`:
   + lemma `__admitted__psumB` proved and renamed to `psumB`
+
+- in `pseudometric_normed_Zmodule.v`:
+  + factory `isPseudoMetricNormedZmodule`
+  + structure `PseudoMetricNormedZmod0`
 
 ### Changed
 
@@ -334,6 +332,12 @@
   + lemmas `seqDU_bigcup_eq`, `trivIset_seqDU`
   + definition `seqD`
   + lemmas `eq_bigcup_seqD`, `trivIset_seqD`, `seqDU_seqD`, `bigcup_bigsetU_bigcup`
+
+- in `pseudometric_normed_Zmodule.v`:
+  + structure `PseudoMetricNormedZmod` not inherits from `Metric`
+
+- moved form `normed_module.v` to `pseudometric_normed_Zmodule.v` and generalized:
+  + lemmas `fcvgr2dist_ltP`, `cvgr2dist_ltP`, `cvgr2dist_lt`
 
 ### Renamed
 
