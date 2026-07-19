@@ -259,6 +259,11 @@
 
 - in `real_interval.v`:
   + lemma `set1_bigcap_oo`
+- in `normed_module.v`,
+  + new lemmas `within_continuousZ`, `within_continuousM`, 
+    `within_continuousMl`, and `within_continuousMr`
+- in `pseudometric_normed_Zmodule.v`
+  + new lemma `within_continuousN`
 
 ### Changed
 
