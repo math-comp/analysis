@@ -193,6 +193,10 @@
 - in `functions.v`:
   + lemmas `zerofctE`, `onefctE`
 
+- in `matrix_normedtype.v`:
+  + lemma `within_continuous_coord`
+
+
 - in `functions.v`:
   + lemmas `linfunP`, `linfun_eqP`
   + instances of `SubLmodule` and `pointedType` on `{linear _->_ | _ }`
