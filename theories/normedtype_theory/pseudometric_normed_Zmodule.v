@@ -29,8 +29,9 @@ From mathcomp Require Import prodnormedzmodule num_normedtype.
 (*                                                                            *)
 (* ## Normed topological abelian groups                                       *)
 (* ```                                                                        *)
-(*  pseudoMetricNormedZmodType R == interface type for a normed topological   *)
+(*     PseudoMetricNormedZmod0 R == interface type for a normed topological   *)
 (*                                  abelian group equipped with a norm        *)
+(*  pseudoMetricNormedZmodType R == PseudoMetricNormedZmod0 R + Metric R      *)
 (*                                  The HB class is PseudoMetricNormedZmod.   *)
 (*           NormedZmoduleMetric == factory for pseudoMetricNormedZmodType    *)
 (*                                  based on metric structures                *)
@@ -149,14 +150,10 @@ HB.mixin Record NormedZmod_PseudoMetric_eq (R : numDomainType) T
 }.
 
 HB.structure Definition PseudoMetricNormedZmod0 (R : numDomainType) :=
-  {T of Num.NormedZmodule R T & PseudoMetric R T
-   & NormedZmod_PseudoMetric_eq R T & isPointed T}.
+  {T of Num.NormedZmodule R T & PseudoPointedMetric R T
+   & NormedZmod_PseudoMetric_eq R T }.
 
-#[short(type="pseudoMetricNormedZmodType")]
-HB.structure Definition PseudoMetricNormedZmod (R : numDomainType) :=
-  {T of PseudoMetricNormedZmod0 R T & Metric R T}.
-
-Section pseudoMetricNormedZmod_numDomainType.
+Section PseudoMetricNormedZmod0_numDomainType.
 Context {K : numDomainType} {V : PseudoMetricNormedZmod0.type K}.
 
 (**md Balls defined by the norm: *)
@@ -165,12 +162,16 @@ Local Notation ball_norm := (ball_ (@Num.norm K V)).
 Lemma ball_normE : ball_norm = ball.
 Proof. by rewrite pseudo_metric_ball_norm. Qed.
 
-End pseudoMetricNormedZmod_numDomainType.
+End PseudoMetricNormedZmod0_numDomainType.
 
-HB.factory Record isPseudoMetricNormedZmod
+#[short(type="pseudoMetricNormedZmodType")]
+HB.structure Definition PseudoMetricNormedZmod (R : numDomainType) :=
+  {T of PseudoMetricNormedZmod0 R T & Metric R T}.
+
+HB.factory Record isPseudoMetricNormedZmodule
   (K : numDomainType) T & PseudoMetricNormedZmod0 K T := { }.
 
-HB.builders Context K T & isPseudoMetricNormedZmod K T.
+HB.builders Context K T & isPseudoMetricNormedZmodule K T.
 
 Let mdist (x y : T) : K := `|x - y|.
 
@@ -498,13 +499,46 @@ rewrite /ball /= /prod_ball -!ball_normE /ball_ /=.
 by rewrite comparable_gt_max// ?real_comparable//; split=> /andP.
 Qed.
 
-Lemma prod_norm_ball : @ball _ (U * V)%type = ball_ (fun x => `|x|).
+Let prod_norm_ball : @ball _ (U * V)%type = ball_ (fun x => `|x|).
 Proof. by rewrite /= - ball_prod_normE. Qed.
 
 HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build K (U * V)%type
   prod_norm_ball.
 
+HB.instance Definition _ := isPseudoMetricNormedZmodule.Build _ (U * V)%type.
+
 End prod_pseudoMetricNormedZmod.
+
+Section prod_NormedModule_lemmas.
+Context {T : Type} {K : numDomainType} {U V : pseudoMetricNormedZmodType K}.
+
+Lemma fcvgr2dist_ltP {F : set_system U} {G : set_system V}
+  {FF : Filter F} {FG : Filter G} (y : U) (z : V) :
+  (F, G) --> (y, z) <->
+  forall eps, 0 < eps ->
+   \forall y' \near F & z' \near G, `| (y, z) - (y', z') | < eps.
+Proof. exact: fcvgrPdist_lt. Qed.
+
+Lemma cvgr2dist_ltP {I J} {F : set_system I} {G : set_system J}
+  {FF : Filter F} {FG : Filter G} (f : I -> U) (g : J -> V) (y : U) (z : V) :
+  (f @ F, g @ G) --> (y, z) <->
+  forall eps, 0 < eps ->
+   \forall i \near F & j \near G, `| (y, z) - (f i, g j) | < eps.
+Proof.
+rewrite fcvgr2dist_ltP; split=> + e e0 => /(_ e e0);
+  by rewrite !near_simpl// => ?; rewrite !near_simpl.
+Qed.
+
+Lemma cvgr2dist_lt {I J} {F : set_system I} {G : set_system J}
+  {FF : Filter F} {FG : Filter G} (f : I -> U) (g : J -> V) (y : U) (z : V) :
+  (f @ F, g @ G) --> (y, z) ->
+  forall eps, 0 < eps ->
+   \forall i \near F & j \near G, `| (y, z) - (f i, g j) | < eps.
+Proof. by rewrite cvgr2dist_ltP. Qed.
+
+End prod_NormedModule_lemmas.
+Arguments cvgr2dist_ltP {_ _ _ _ _ F G FF FG}.
+Arguments cvgr2dist_lt {_ _ _ _ _ F G FF FG}.
 
 Section standard_topology_pseudoMetricNormedZmod.
 Variable R : numFieldType.

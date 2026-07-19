@@ -219,10 +219,9 @@ Qed.
 HB.instance Definition _ :=
   NormedZmod_PseudoMetric_eq.Build K 'M[K]_(m, n) mx_norm_ball.
 
-End matrix_pseudoMetricNormedZmod.
+HB.instance Definition _ := isPseudoMetricNormedZmodule.Build _ 'M[K]_(m, n).
 
-HB.instance Definition _ (K : numFieldType) m n :=
-  isPseudoMetricNormedZmod.Build _ 'M[K]_(m, n).
+End matrix_pseudoMetricNormedZmod.
 
 Section within_continuous_coord.
 Context {T : topologicalType} {R : realFieldType} {n : nat}.
