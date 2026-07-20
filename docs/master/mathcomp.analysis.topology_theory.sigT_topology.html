@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.topology_theory.sigT_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 673e908 2026.07.19-19:25" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 673e908 2026.07.20-19:58" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
@@ -261,16 +261,19 @@
 <span class="vernacular">Section</span><span class="id"> sigT_topology</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="sigT_topology.I" class="id"><div name="sigT_topology.I" class=" tooltip">I<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/673e9082f732e81b4d518ec21d47c198a237199c/theories/topology_theory/sigT_topology.v#L24' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.choice.html#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span><span class="id"> {</span><span id="sigT_topology.X" class="id"><div name="sigT_topology.X" class=" tooltip">X<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/673e9082f732e81b4d518ec21d47c198a237199c/theories/topology_theory/sigT_topology.v#L24' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#I:1">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Topological.Exports.topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sigT_nbhs" class="id"><div name="sigT_nbhs" class=" tooltip">sigT_nbhs<span class='tooltip-area'><p>uniform_fun_family : forall {U : Type}, Type -> (set U -> Prop) -> Type
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sigT_nbhs" class="id"><div name="sigT_nbhs" class=" tooltip">sigT_nbhs<span class='tooltip-area'><p>connected_component :
+forall {T : topology_structure.Topological.type},
+set (topology_structure.Topological.sort T) ->
+topology_structure.Topological.sort T ->
+set (topology_structure.Topological.sort T)
 
-uniform_fun_family is not universe polymorphic
-Arguments uniform_fun_family {U}%_type_scope V%_type_scope
-  fam%_function_scope
-uniform_fun_family is transparent
+connected_component is not universe polymorphic
+Arguments connected_component {T} A%_classical_set_scope x _
+connected_component is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.function_spaces.uniform_fun_family
+            mathcomp.analysis.topology_theory.connected.connected_component
 Declared in
-library mathcomp.analysis.topology_theory.function_spaces, line 701, characters 11-29
+library mathcomp.analysis.topology_theory.connected, line 160, characters 11-30
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/673e9082f732e81b4d518ec21d47c198a237199c/theories/topology_theory/sigT_topology.v#L26' target='_blank'>Source code</a></span></div></span> (<span id="x:4" class="id"><div name="x:4" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/673e9082f732e81b4d518ec21d47c198a237199c/theories/topology_theory/sigT_topology.v#L26' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">{</a></span><span id="i:3" class="id"><div name="i:3" class=" tooltip">i<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/673e9082f732e81b4d518ec21d47c198a237199c/theories/topology_theory/sigT_topology.v#L26' target='_blank'>Source code</a></span></div></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:3">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">}</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set_system">set_system</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">{</a></span><span id="i:5" class="id"><div name="i:5" class=" tooltip">i<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/673e9082f732e81b4d518ec21d47c198a237199c/theories/topology_theory/sigT_topology.v#L26' target='_blank'>Source code</a></span></div></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#sigT_topology.X">X</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#i:5">i</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#e6a434cae860987d1c5f61b342cc9e57">}</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#projT2">projT2</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.sigT_topology.html#x:4">x</a></span>).<br/>
 <br/>
