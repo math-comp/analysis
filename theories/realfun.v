@@ -1872,25 +1872,6 @@ apply/continuous_subspaceT=> r.
 exact/differentiable_continuous/derivable1_diffP.
 Qed.
 
-Global Instance is_derive1_comp (f g : R -> R) (x a b : R) :
-  is_derive (g x) 1 f a -> is_derive x 1 g b ->
-  is_derive x 1 (f \o g) (a * b).
-Proof.
-move=> [fgxv <-{a}] [gv <-{b}]; apply: (@DeriveDef _ _ _ _ _ (f \o g)).
-  apply/derivable1_diffP/differentiable_comp; first exact/derivable1_diffP.
-  by move/derivable1_diffP in fgxv.
-by rewrite -derive1E (derive1_comp gv fgxv) 2!derive1E.
-Qed.
-
-Lemma is_deriveV (f : R -> R) (x t v : R) :
-  f x != 0 -> is_derive x v f t ->
-  is_derive x v (fun y => (f y)^-1) (- (f x) ^- 2 *: t).
-Proof.
-move=> fxNZ Df.
-constructor; first by apply: derivableV => //; case: Df.
-by rewrite deriveV //; case: Df => _ ->.
-Qed.
-
 Lemma is_derive_inverse (f g : R -> R) l x :
   {near x, cancel f g}  ->
   {near x, continuous f}  ->
@@ -1949,9 +1930,6 @@ Proof.  by move=> x0; exact/ex_derive/is_derive1_sqrt. Qed.
 Lemma derive_sqrt {K : realType} (r : K) : 0 < r ->
   'D_1 Num.sqrt r = (2 * Num.sqrt r)^-1.
 Proof. by move=> r0; exact/derive_val/is_derive1_sqrt. Qed.
-
-#[global] Hint Extern 0 (is_derive _ _ (fun _ => (_ _)^-1) _) =>
-  (eapply is_deriveV; first by []) : typeclass_instances.
 
 Section total_variation_realFieldType.
 Context {R : realFieldType}.

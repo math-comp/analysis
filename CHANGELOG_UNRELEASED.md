@@ -193,6 +193,10 @@
 - in `functions.v`:
   + lemmas `zerofctE`, `onefctE`
 
+- in `matrix_normedtype.v`:
+  + lemma `within_continuous_coord`
+
+
 - in `functions.v`:
   + lemmas `linfunP`, `linfun_eqP`
   + instances of `SubLmodule` and `pointedType` on `{linear _->_ | _ }`
@@ -233,6 +237,12 @@
 
 - in `measurable_structure.v`:
   + lemmas `countable_bigcap_measurable`, `countable_bigcup_measurable`
+
+- in `normed_module.v`,
+  + new lemmas `within_continuousZ`, `within_continuousM`, 
+    `within_continuousMl`, and `within_continuousMr`
+- in `pseudometric_normed_Zmodule.v`
+  + new lemma `within_continuousN`
 
 - in file `function_spaces.v`,
   + new lemma `within_continuous_big`.
@@ -364,6 +374,8 @@
 
 - moved from `metric_structure.v` to `num_topology.v`: 
   + lemma `cvg_at_right_left_dnbhs`, generalized to `topologicalType` from `metricType`.
+- moved from `realfun.v` to `derive.v` and generalized:
+  + lemmas `is_deriveV`, `is_derive1_comp`
 
 ### Renamed
 
