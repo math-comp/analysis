@@ -1,14 +1,10 @@
 From HB Require Import structures.
 From mathcomp Require Import boot order ssralg ssrnum ssrint interval finmap.
-From mathcomp Require Import rat interval_inference.
-From mathcomp Require Import mathcomp_extra boolp classical_sets.
-From mathcomp Require Import functions cardinality fsbigop.
-From mathcomp Require Import reals ereal topology normedtype sequences.
-From mathcomp Require Import esum measure lebesgue_measure numfun.
-From mathcomp Require Import measurable_realfun.
-From mathcomp Require Import lebesgue_integral exp kernel trigo prob_lang.
-From mathcomp Require Import realfun charge probability derive ftc.
-From mathcomp Require Import gauss_integral.
+From mathcomp Require Import interval_inference.
+From mathcomp Require Import boolp classical_sets reals ereal topology
+  normedtype measure lebesgue_measure measurable_realfun lebesgue_integral exp
+  kernel probability.
+From mathcomp Require Import prob_lang.
 
 (**md**************************************************************************)
 (* wip waiting for the Poisson distribution                                   *)

@@ -5,12 +5,12 @@ From mathcomp Require Import interval_inference archimedean rat ring_tactic.
 From mathcomp Require Import field_tactic arithmetic_tactic.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets.
-From mathcomp Require Import functions cardinality fsbigop.
-From mathcomp Require Import reals ereal topology normedtype sequences.
-From mathcomp Require Import esum measure lebesgue_measure numfun.
-From mathcomp Require Import measurable_realfun lebesgue_integral exp kernel.
-From mathcomp Require Import probability charge trigo.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions
+  cardinality fsbigop.
+From mathcomp Require Import reals.
+From mathcomp Require Import ereal topology normedtype sequences esum measure
+  lebesgue_measure numfun measurable_realfun lebesgue_integral exp kernel
+  probability trigo.
 
 (**md**************************************************************************)
 (* # Semantics of a probabilistic programming language using s-finite kernels *)
@@ -146,7 +146,7 @@ HB.instance Definition _ (X Y : pointedType) :=
 Section measurable_sum.
 Context d d' (X : measurableType d) (Y : measurableType d').
 
-Definition measurable_sum : set (set (X + Y)) := setT.
+Definition measurable_sum : set_system (X + Y) := setT.
 
 Let sum0 : measurable_sum set0. Proof. by []. Qed.
 
@@ -573,7 +573,7 @@ Lemma measurable_normalize_pt (f : R.-ker X ~> Y) :
   measurable_fun [set: X] (normalize_pt f : X -> pprobability Y R).
 Proof.
 apply: (@measurability _ _ _ _ _ _
-  (@pset _ _ _ : set (set (pprobability Y R)))) => //.
+  (@pset _ _ _ : set_system (pprobability Y R))) => //.
 move=> _ -[_ [r r01] [Ys mYs <-]] <-.
 apply: emeasurable_fun_infty_o => //.
 exact: (measurable_kernel (knormalize f point) Ys).
@@ -1064,7 +1064,7 @@ Reserved Notation "p .-sum.-measurable"
  (at level 2, format "p .-sum.-measurable").
 Notation "p .-sum" := (measure_sum_display p) : measure_display_scope.
 Notation "p .-sum.-measurable" :=
-  ((p.-sum).-measurable : set (set (_ + _))) :
+  ((p.-sum).-measurable : set_system (_ + _)) :
     classical_set_scope.
 
 #[short(type="measurableCountType")]
@@ -2225,11 +2225,13 @@ Section gauss_lebesgue.
 Context d (T : pmeasurableType d) (R : realType).
 Notation mu := (@lebesgue_measure R).
 
-Let f1 (x : measurableTypeR R) := (gauss_pdf x)^-1%R.
+Let f1 (x : R) := (gauss_pdf x)^-1%R.
 
 Let f1E (x : R) : f1 x = (Num.sqrt (pi *+ 2) * expR (- (- x ^+ 2 / 2)))%R.
 Proof.
-rewrite /f1 /gauss_pdf /normal_pdf oner_eq0.
+rewrite /f1 /gauss_pdf.
+rewrite /normal_pdf oner_eq0.
+rewrite /NormalPdf0.normal_pdf0.
 rewrite /normal_peak expr1n mul1r.
 by rewrite /normal_fun subr0 expr1n invfM invrK expRN.
 Qed.

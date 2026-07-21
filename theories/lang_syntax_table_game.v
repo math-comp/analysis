@@ -2,16 +2,17 @@
 From Stdlib Require Import String.
 From HB Require Import structures.
 From mathcomp Require Import boot order ssralg ssrnum ssrint interval.
-From mathcomp Require Import field_tactic arithmetic_tactic.
+From mathcomp Require Import interval_inference field_tactic arithmetic_tactic.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop interval_inference.
-From mathcomp Require Import reals ereal topology normedtype sequences.
-From mathcomp Require Import esum measure charge lebesgue_measure numfun.
-From mathcomp Require Import measurable_realfun realfun lebesgue_integral.
-From mathcomp Require Import probability kernel prob_lang.
-From mathcomp Require Import lang_syntax_util lang_syntax lang_syntax_examples.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions
+  cardinality fsbigop.
+From mathcomp Require Import reals.
+From mathcomp Require Import ereal topology normedtype sequences esum measure
+  lebesgue_measure numfun measurable_realfun realfun lebesgue_integral
+  probability kernel.
+From mathcomp Require Import prob_lang lang_syntax_util lang_syntax
+  lang_syntax_examples.
 
 (**md**************************************************************************)
 (* # Eddy's table game example                                                *)

@@ -6,11 +6,12 @@ From mathcomp Require Import interval_inference ring_tactic field_tactic.
 From mathcomp Require Import arithmetic_tactic.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets.
-From mathcomp Require Import functions cardinality fsbigop.
-From mathcomp Require Import reals ereal topology normedtype sequences esum.
-From mathcomp Require Import measure lebesgue_measure measurable_realfun.
-From mathcomp Require Import numfun lebesgue_integral kernel probability.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions
+  cardinality fsbigop.
+From mathcomp Require Import reals.
+From mathcomp Require Import ereal topology normedtype sequences esum measure
+  lebesgue_measure measurable_realfun numfun lebesgue_integral kernel
+  probability.
 From mathcomp Require Import prob_lang lang_syntax_util lang_syntax.
 
 (**md**************************************************************************)
