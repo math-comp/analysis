@@ -723,6 +723,10 @@ Arguments ktt {d T}.
 Arguments kb {d T}.
 Arguments kn {d T}.
 
+(* TODO: move *)
+HB.instance Definition _ d d' (X : pmeasurableType d) (Y : pmeasurableType d') :=
+  Measurable.on (X * Y)%type.
+
 Section iter_mprod.
 Local Open Scope type_scope.
 
@@ -1661,6 +1665,7 @@ Section staton_bus.
 Context d (T : pmeasurableType d) (R : realType) (h : R -> R).
 Import MeasurableR.
 Hypothesis mh : measurable_fun setT h.
+
 Definition kstaton_bus : R.-sfker T ~> bool :=
   letin (sample_cst (bernoulli_prob (2 / 7)))
   (letin
