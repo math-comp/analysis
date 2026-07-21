@@ -42,6 +42,8 @@ experimental_reals/distr.v
 reals_stdlib/Rstruct.v
 reals_stdlib/nsatz_realtype.v
 
+theories/unstable_analysis.v
+
 theories/ereal.v
 theories/landau.v
 
@@ -97,6 +99,7 @@ theories/trigo.v
 theories/esum.v
 theories/derive.v
 theories/numfun.v
+theories/holomorphy.v
 
 theories/measure_theory/measurable_structure.v
 theories/measure_theory/measure_function.v
@@ -149,6 +152,7 @@ theories/charge.v
 theories/kernel.v
 theories/pi_irrational.v
 theories/gauss_integral.v
+theories/holomorphy.v
 
 theories/all_analysis.v
 

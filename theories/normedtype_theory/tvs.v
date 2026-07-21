@@ -20,7 +20,6 @@ From mathcomp Require Import pseudometric_normed_Zmodule.
 (*    PreTopologicalNmodule == HB class, join of Topological and Nmodule      *)
 (*       TopologicalNmodule == HB class, PreTopologicalNmodule with a         *)
 (*                             continuous addition                            *)
-(*    PreTopologicalZmodule == HB class, join of Topological and Zmodule      *)
 (*      topologicalZmodType == topological abelian group                      *)
 (*       TopologicalZmodule == HB class, join of TopologicalNmodule and       *)
 (*                             Zmodule with a continuous opposite operator    *)
@@ -342,6 +341,27 @@ apply: (@filterS _ _ entourage_filter
   by rewrite inE/= => [] [] [] [] c1 c2 [] d1 d2/= cd [] <- <- <- <-.
 exists (U1, ((fun xy : M * M => (- xy.1, - xy.2)) @^-1` U2)); first by split.
 by move=> /= [] [] a1 a2 [] b1 b2/= [] aU bU; exists (a1, b1, (a2, b2)).
+Qed.
+
+Lemma entourage_nbhsE : @entourage M = filter_from (nbhs 0) (fun X => [set x | x.2 - x.1 \in X]).
+Proof.
+have map_uniform (T U : uniformType) (S : set (U * U)%type) (f : T * T -> U) : unif_continuous f -> entourage S -> exists ST : set (T * T)%type, entourage ST /\ {in ST, forall x, forall y, (f (x.1, y), f (x.2, y)) \in S}.
+  move=> fu /fu [[]]/= ST1 ST2 [] ? ? /subsetP STf.
+  exists ST1; split=> // x xST1 y.
+  have /STf: (x, (y, y)) \in ST1 `*` ST2.
+    rewrite in_setX xST1/= unfold_in/=.
+    apply/asboolT.
+    exact: entourage_refl.
+  rewrite in_setE/= => -[] [] [] a1 a2 [] b1 b2 /= abS [] <- {2}<- <-/=.
+  exact: asboolT.
+rewrite eqEsubset; split; apply/subsetP => U; rewrite !inE /filter_from/=.
+  move=> /(map_uniform _ _ _ _ sub_unif_continuous)/= [] V [] Ve VU.
+  exists (xsection V 0); first exact: nbhs_entourage.
+  apply/subsetP => [] [] x y; rewrite inE/= mem_xsection => /VU/(_ (-x))/=.
+  by rewrite opprK -addrA addNr add0r addr0.
+move=> [] V /nbhsP[] U' /(map_uniform _ _ _ _ add_unif_continuous)/= [] W [] We WU' /subsetP U'V /subsetP VU.
+apply/(filterS _ We)/subsetP => -[] a b /WU'/=/(_ (-a)); rewrite subrr => abU'.
+by apply/VU; rewrite inE/=; apply: U'V; rewrite mem_xsection.
 Qed.
 
 End UniformZmoduleTheory.
@@ -708,7 +728,6 @@ Qed.
 
 Let standard_locally_convex_set :
   exists2 B : set_system R^o, (forall b, b \in B -> convex_set b) & basis B.
-Proof.
 exists [set B | exists x r, B = ball x r].
   by move=> B/= /[!inE]/= [[x]] [r] ->; exact: standard_ball_convex_set.
 split; first by move=> B [x] [r] ->; exact: ball_open.
@@ -716,8 +735,19 @@ move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
 by exists (ball x r) => //=; split; [exists x, r|exact: ballxx].
 Qed.
 
+Local Lemma standard_sub_unif_continuous : unif_continuous (fun x : R^o * R^o => x.1 - x.2).
+Proof.
+move=> /= U; rewrite /nbhs/= -!entourage_ballE => -[]/= e e0 /subsetP eU.
+exists (e / 2) => /=; first exact: divr_gt0.
+apply/subsetP => -[] [] a1 a2 [] b1 b2/=; rewrite inE/= => -[]/=.
+rewrite /ball/= => abe1 abe2.
+apply: eU => /=; rewrite inE/= /ball/= opprD addrACA -opprD.
+by rewrite (le_lt_trans (ler_normB _ _))// (splitr e) ltrD.
+Qed.
+
 HB.instance Definition _ :=
   PreTopologicalNmodule_isTopologicalNmodule.Build R^o standard_add_continuous.
+HB.instance Definition _ := PreUniformNmodule_isUniformZmodule.Build R^o standard_sub_unif_continuous.
 HB.instance Definition _ :=
   TopologicalNmodule_isTopologicalLmodule.Build R R^o standard_scale_continuous.
 HB.instance Definition _ :=

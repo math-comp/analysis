@@ -8,8 +8,6 @@ let
     mathcomp-analysis-stdlib.job = true;
     ssprove.override.version = "main";
     mathcomp-infotheo.override.version = "master";
-    interval.override.version = "master";
-    coquelicot.override.version = "master";
   };
 in {
   ## DO NOT CHANGE THIS
@@ -57,6 +55,7 @@ in {
       mathcomp.override.version = "master";
       mathcomp-bigenough.override.version = "master";
       mathcomp-finmap.override.version = "master";
+      mathcomp-real-closed.override.version = "master";
       micromega-plugin.override.version = "master";
     };
     coqPackages = common-bundle // {
@@ -64,6 +63,7 @@ in {
       mathcomp.override.version = "master";
       mathcomp-bigenough.override.version = "master";
       mathcomp-finmap.override.version = "master";
+      mathcomp-real-closed.override.version = "master";
       ssprove.job = false;  # not yet available for 9.1
     };
   };
@@ -85,6 +85,7 @@ in {
       mathcomp.override.version = "master";
       mathcomp-bigenough.override.version = "master";
       mathcomp-finmap.override.version = "master";
+      mathcomp-real-closed.override.version = "master";
       micromega-plugin.override.version = "master";
     };
     coqPackages = common-bundle // {
@@ -92,6 +93,7 @@ in {
       mathcomp.override.version = "master";
       mathcomp-bigenough.override.version = "master";
       mathcomp-finmap.override.version = "master";
+      mathcomp-real-closed.override.version = "master";
       ssprove.job = false;  # not yet available for 9.1
     };
   };
@@ -106,6 +108,7 @@ in {
       mathcomp.override.version = "master";
       mathcomp-bigenough.override.version = "master";
       mathcomp-finmap.override.version = "master";
+      mathcomp-real-closed.override.version = "master";
       micromega-plugin.override.version = "master";
     };
     coqPackages = common-bundle // {
@@ -116,6 +119,7 @@ in {
       mathcomp.override.version = "master";
       mathcomp-bigenough.override.version = "master";
       mathcomp-finmap.override.version = "master";
+      mathcomp-real-closed.override.version = "master";
       ssprove.job = false;
       mathcomp-infotheo.job = false;
     };
