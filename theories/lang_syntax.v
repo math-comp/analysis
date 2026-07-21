@@ -263,6 +263,7 @@ by rewrite le_eqVlt => /predU1P[->//|/dF] => /(_ x01 y01)/ltW.
 Qed.
 
 Local Close Scope ereal_scope.
+(* TODO: PR? use in continuous_comp_cvg?*)
 Lemma cvg_comp_filter {R : realType} (f g : R -> R) (r l : R) :
   continuous f ->
   (f \o g) x @[x --> r] --> l ->
@@ -903,6 +904,7 @@ Section eval.
 Context {R : realType}.
 Implicit Type (g : ctx) (str : string).
 Local Open Scope lang_scope.
+Import MeasurableR.
 
 Import MeasurableR.
 
