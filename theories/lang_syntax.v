@@ -1,7 +1,8 @@
-Require Import String.
+From Stdlib Require Import String.
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
-From mathcomp Require Import interval_inference ring lra.
+From mathcomp Require Import boot order ssralg ssrnum ssrint interval.
+From mathcomp Require Import interval_inference ring_tactic.
+From mathcomp Require Import arithmetic_tactic.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
@@ -90,22 +91,22 @@ move=> cf f0.
 have := (derive_shift 1 e).
 have <- := (funext (@derive1E R _ (shift e : R^o -> R^o))).
 move=> dshiftE.
-rewrite (@increasing_ge0_integration_by_substitutionNy _ (shift e))//; first last.
-- exact: cvg_addrr_Ny.
+rewrite (@increasing_ge0_integration_by_substitutionNy _ (shift e))//.
+- by move=> x y _ _ xy; rewrite ltr_leD.
+- rewrite dshiftE.
+  by move=> ? _; apply: cst_continuous.
+- rewrite dshiftE.
+  exact: is_cvg_cst.
+- rewrite dshiftE.
+  exact: cvg_cst.
 - split.
     move=> x _.
     exact/ex_derive.
   apply: cvg_at_left_filter.
   apply: cvgD => //.
   exact: cvg_cst.
-- rewrite dshiftE.
-  exact: cvg_cst.
-- rewrite dshiftE.
-  exact: is_cvg_cst.
-- rewrite dshiftE.
-  move=> ? _; apply: cst_continuous.
-- by move=> x y _ _ xy; rewrite ltr_leD.
-by rewrite dshiftE mulr1/=.
+- exact: cvg_addrr_Ny.
+by rewrite dshiftE mulr1.
 Qed.
 
 Lemma ge0_integration_by_substitution_shift_itvy (f : R -> R) (r e : R) :
@@ -118,22 +119,22 @@ move=> cf f0.
 have := (derive_shift 1 e).
 have <- := (funext (@derive1E R _ (shift e : R^o -> R^o))).
 move=> dshiftE.
-rewrite (@increasing_ge0_integration_by_substitutiony _ (shift e))//=; first last.
-- exact: cvg_addrr.
+rewrite (@increasing_ge0_integration_by_substitutiony _ (shift e))//=.
+- by move=> x y _ _ xy; rewrite ltr_leD.
+- rewrite dshiftE.
+  by move=> ? _; apply: cst_continuous.
+- rewrite dshiftE.
+  exact: is_cvg_cst.
+- rewrite dshiftE.
+  exact: is_cvg_cst.
 - split.
     move=> x _.
     exact/ex_derive.
   apply: cvg_at_right_filter.
   apply: cvgD => //.
   exact: cvg_cst.
-- rewrite dshiftE.
-  exact: is_cvg_cst.
-- rewrite dshiftE.
-  exact: is_cvg_cst.
-- rewrite dshiftE.
-  move=> ? _; apply: cst_continuous.
-- by move=> x y _ _ xy; rewrite ltr_leD.
-by rewrite dshiftE mulr1/=.
+- exact: cvg_addrr.
+by rewrite dshiftE mulr1.
 Qed.
 
 End shift_properties.
@@ -167,7 +168,7 @@ apply/integrableP; split.
 apply/abse_integralP => //.
   apply: measurableT_comp => //.
   exact: measurable_indic.
-rewrite -ge0_fin_numE; last exact: abse_ge0.
+rewrite -ge0_fin_numE; first exact: abse_ge0.
 rewrite abse_fin_num integral_indic// setIT.
 by rewrite /= lebesgue_measure_itv ifT.
 Qed.
@@ -183,7 +184,7 @@ apply/continuous_within_itvP => //; split.
   apply: subset_itv_oo_cc.
   near: z.
   exact: near_in_itvoo.
-- rewrite (_: uni 0 = 1%R); last first.
+- rewrite (_: uni 0 = 1%R).
     rewrite /uni indic_restrict patchE ifT//.
     by rewrite inE/= boundl_in_itv bnd_simp/=.
   apply: cvg_near_cst.
@@ -191,7 +192,7 @@ apply/continuous_within_itvP => //; split.
   rewrite /uni indic_restrict patchE ifT// inE/= in_itv/=; apply/andP; split => //.
   near: z.
   exact: nbhs_right_le.
-- rewrite (_:uni 1 = 1%R); last first.
+- rewrite (_:uni 1 = 1%R).
     rewrite /uni indic_restrict patchE ifT//.
     by rewrite inE/= boundr_in_itv bnd_simp/=.
   apply: cvg_near_cst.
@@ -215,7 +216,7 @@ rewrite not_implyE; split; first by rewrite invr_gt0.
 move=> [e /= e0].
 move/(_ (-(e / 2))%R).
 apply/not_implyP; split.
-  rewrite /= sub0r opprK ger0_norm; last by rewrite divr_ge0// ltW.
+  rewrite /= sub0r opprK ger0_norm; first by rewrite divr_ge0// ltW.
   rewrite -{1}(add0r e).
   exact: (midf_lt e0).2.
 apply/not_implyP; split.
@@ -223,8 +224,8 @@ apply/not_implyP; split.
   exact: divr_gt0.
 apply/negP; rewrite -ltNge.
 rewrite /uni !indic_restrict !patchE.
-rewrite ifT; last by rewrite inE/= boundl_in_itv/= bnd_simp.
-rewrite ifF; last first.
+rewrite ifT; first by rewrite inE/= boundl_in_itv/= bnd_simp.
+rewrite ifF.
   apply: negbTE; apply/negP.
   rewrite inE/= in_itv/=.
   apply/negP; rewrite negb_and; apply/orP; left.
@@ -294,7 +295,7 @@ move=> ab cf.
 - split; rewrite -ltrN2 in ab.
   + move=> x xab.
     move/continuous_within_itvP : cf => /(_ ab) [cf _ _].
-    rewrite (_ : f = (f \o -%R) \o -%R); last first.
+    rewrite (_ : f = (f \o -%R) \o -%R).
       by apply/funext => y; rewrite /= opprK.
     apply: continuous_comp; first exact: opp_continuous.
     by apply: cf; rewrite -oppr_itvoo opprK.
@@ -327,11 +328,11 @@ have dcF : derivable_oo_LRcontinuous F 0 1.
     by apply/cvg_at_left_filter/cX; rewrite in_itv/= lexx ler01.
 have dFE : {in `]0%R, 1%R[, F^`() =1 (fun x : R => x ^+ n : R)%R}.
   move=> x x01.
-  rewrite derive1Ml; last exact: exprn_derivable.
+  rewrite derive1Ml; first exact: exprn_derivable.
   by rewrite derive1E exp_derive !mulrA mulVf// mulr1 mul1r.
 rewrite (@continuous_FTC2 _ (fun x : R => x ^+ n)%R F)//.
-  by rewrite /F/= expr1n expr0n/= mulr1 mulr0 subr0.
-by apply: continuous_subspaceT; exact: exprn_continuous.
+  by apply: continuous_subspaceT; exact: exprn_continuous.
+by rewrite /F/= expr1n expr0n/= mulr1 mulr0 subr0.
 Qed.
 
 Local Open Scope ereal_scope.
@@ -351,20 +352,20 @@ Inductive typ :=
 
 HB.instance Definition _ := gen_eqMixin typ.
 
-Fixpoint measurable_of_typ (t : typ) : {d & measurableType d} :=
+Fixpoint measurable_of_typ (t : typ) : {d & pmeasurableType d} :=
   match t with
   | Unit => existT _ _ munit
   | Bool => existT _ _ mbool
-  | Nat => existT _ _ (nat : measurableType _)
+  | Nat => existT _ _ mnat
   | Real => existT _ _
-    [the measurableType _ of (@measurableTypeR R)]
+    [the pmeasurableType _ of (@measurableTypeR R)]
     (* (Real_sort__canonical__measure_Measurable R) *)
   | Pair A B => existT _ _
-      [the measurableType (projT1 (measurable_of_typ A),
+      [the pmeasurableType (projT1 (measurable_of_typ A),
                            projT1 (measurable_of_typ B)).-prod%mdisp of
       (projT2 (measurable_of_typ A) *
        projT2 (measurable_of_typ B))%type]
-  | Prob A => existT _ _ (pprobability (projT2 (measurable_of_typ A)) R)
+  | Prob A => existT _ _ [the pmeasurableType _ of pprobability (projT2 (measurable_of_typ A)) R]
   end.
 
 Definition mtyp_disp t : measure_display := projT1 (measurable_of_typ t).
@@ -372,7 +373,7 @@ Definition mtyp_disp t : measure_display := projT1 (measurable_of_typ t).
 Definition mtyp t : measurableType (mtyp_disp t) :=
   projT2 (measurable_of_typ t).
 
-Definition measurable_of_seq (l : seq typ) : {d & measurableType d} :=
+Definition measurable_of_seq (l : seq typ) : {d & pmeasurableType d} :=
   iter_mprod (List.map measurable_of_typ l).
 
 End syntax_of_types.
@@ -771,9 +772,9 @@ apply/measurable_fun_pairP; split.
 - rewrite [X in measurable_fun _ X](_ : _ = fst)//.
   by apply/funext => -[].
 - rewrite [X in measurable_fun _ X](_ : _ = @mctx_strong g h x0 \o snd).
-    apply: measurableT_comp; last exact: measurable_snd.
-    exact: ih.
-  by apply/funext => -[].
+    by apply/funext => -[].
+  apply: measurableT_comp; last exact: measurable_snd.
+  exact: ih.
 Qed.
 
 Lemma measurable_weak g h x t (f : dval R (g ++ h) t) :
@@ -998,21 +999,21 @@ Let continuous_g' (a e : R) : 0 <= e -> continuous (g' a e).
 Proof.
 move=> e0.
 have aNe k : k < a - e -> (`|k - a| - e) ^+ 2 = (k - (a - e)) ^+ 2.
-  move=> kae; rewrite ler0_norm; first by rewrite -sqrrN !opprB addrCA.
+  move=> kae; rewrite ler0_norm; last by rewrite -sqrrN !opprB addrCA.
   by rewrite subr_le0 (le_trans (ltW kae))// lerBlDl lerDr.
 have aDe k : a + e < k -> (`|k - a| - e) ^+ 2 = (k - (a + e)) ^+ 2.
   move=> kae; rewrite opprD addrA.
   by rewrite ger0_norm// subr_ge0 (le_trans _ (ltW kae))// lerDl.
 apply: (@in1TT R).
-rewrite -continuous_open_subspace; last exact: openT.
+rewrite -continuous_open_subspace; first exact: openT.
 rewrite (_ : [set: R] =
-    `]-oo, (a - e)%R] `|` `[(a - e)%R, a + e] `|` `[a + e, +oo[); last first.
-  rewrite -(setUitv1 true)// -setUA setUAC setUA -itv_bndbnd_setU//; last first.
+    `]-oo, (a - e)%R] `|` `[(a - e)%R, a + e] `|` `[a + e, +oo[).
+  rewrite -(setUitv1 true)// -setUA setUAC setUA -itv_bndbnd_setU//.
     by rewrite bnd_simp lerD// ge0_cp.
   rewrite -(setUitv1 true)// -setUA setUAC setUA -itv_bndbnd_setU//.
   by rewrite set_itvE !setTU.
 apply: withinU_continuous.
-- rewrite -(setUitv1 true)// -setUA setUCA -itv_bndbnd_setU//; last first.
+- rewrite -(setUitv1 true)// -setUA setUCA -itv_bndbnd_setU//.
     by rewrite bnd_simp lerD// ge0_cp.
   by rewrite setUidr// sub1set inE/= in_itv/= lerD// ge0_cp.
 - exact: interval_closed.
@@ -1049,10 +1050,10 @@ apply: withinU_continuous.
   apply/continuous_within_itvP; first by rewrite -(opprK e) ler_ltB// opprK gtrN.
   split.
   + move=> x xae.
-    rewrite /continuous_at /g' ifT; last by rewrite ball_itv inE.
+    rewrite /continuous_at /g' ifT; first by rewrite ball_itv inE.
     apply/cvgrPdist_le => eps eps0.
     near=> t.
-    rewrite ifT; first by rewrite subrr normr0 ltW.
+    rewrite ifT; last by rewrite subrr normr0 ltW.
     rewrite ball_itv inE/= in_itv/=; apply/andP; split.
     - near: t; apply: lt_nbhsr.
       by move: xae; rewrite in_itv/= => /andP[].
@@ -1060,7 +1061,7 @@ apply: withinU_continuous.
       by move: xae; rewrite in_itv/= => /andP[].
   + apply/(@cvgrPdist_le _ R^o) => eps eps0.
     near=> t.
-    rewrite /g' (negPf (ballFE_le _))// ifT; last first.
+    rewrite /g' (negPf (ballFE_le _))// ifT.
       rewrite ball_itv inE/= in_itv/=; apply/andP => []; split => //.
       near: t; apply: nbhs_right_lt.
       by rewrite ltrBlDr -addrA ltrDl// addr_gt0.
@@ -1068,7 +1069,7 @@ apply: withinU_continuous.
     by rewrite normal_peak_funxx subrr normr0 ltW.
   + apply/cvgrPdist_le => eps eps0.
     near=> t.
-    rewrite /g' (negPf (ballFE_ge _))// ifT; last first.
+    rewrite /g' (negPf (ballFE_ge _))// ifT.
       rewrite ball_itv inE/= in_itv/=; apply/andP => []; split => //.
       near: t; apply: nbhs_left_gt.
       by rewrite ltrBlDr -addrA ltrDl// addr_gt0.
@@ -1103,15 +1104,15 @@ Let gE_Ny a e : 0 <= e ->
    \int[mu]_(x in `]-oo, a]) `|normal_pdf a s x|%:E)%E.
 Proof.
 move=> e0.
-rewrite ge0_integration_by_substitution_shift_itvNy => /=; first last.
-- by move=> ? _; exact: normr_ge0.
+rewrite ge0_integration_by_substitution_shift_itvNy => /=.
 - apply/continuous_subspaceT => x.
   apply: continuous_comp; first exact: continuous_g'.
   exact: (@norm_continuous _ R^o) .
+- by move=> ? _; exact: normr_ge0.
 under eq_integral.
   move=> x.
   rewrite inE/= in_itv/= => xae.
-  rewrite /g' (negPf (ballFE_le _)); last exact: lerB.
+  rewrite /g' (negPf (ballFE_le _)); first exact: lerB.
   rewrite -(normrN (x - e - a)) !opprB addrA.
   have /normr_idP -> : 0 <= a + e - x by rewrite subr_ge0 ler_wpDr.
   rewrite /normal_peak_fun /normal_fun.
@@ -1126,15 +1127,15 @@ Let gE_y a e : 0 <= e ->
    \int[mu]_(x in `[a, +oo[) `|normal_pdf a s x|%:E)%E.
 Proof.
 move=> e0.
-rewrite ge0_integration_by_substitution_shift_itvy => /=; first last.
-- by move=> ? _; exact: normr_ge0.
+rewrite ge0_integration_by_substitution_shift_itvy => /=.
 - apply/continuous_subspaceT => x.
   apply: continuous_comp; first exact: continuous_g'.
   exact: (@norm_continuous _ R^o).
+- by move=> ? _; exact: normr_ge0.
 under eq_integral.
   move=> x.
   rewrite inE/= in_itv/= andbT => aex.
-  rewrite /g' (negPf (ballFE_ge _))//; last exact: lerD.
+  rewrite /g' (negPf (ballFE_ge _))//; first exact: lerD.
   have /normr_idP -> : 0 <= x + e - a by rewrite subr_ge0 ler_wpDr.
   rewrite /normal_peak_fun /normal_fun -(addrAC _ (- a)) addrK.
   over.
@@ -1161,7 +1162,7 @@ apply: (@continuity_under_integral _ _ _ mu _ _ _ (a - e) (a + e) _ _ g) => //=.
   exact: continuous_normal_peak_fun.
 - apply: (integrableS measurableT) => //=.
   apply/integrableP; split; first exact/measurable_EFinP.
-  rewrite -(setUv (ball a e)) ge0_integral_setU//=; last 4 first.
+  rewrite -(setUv (ball a e)) ge0_integral_setU//=.
     exact: measurable_ball.
     by apply: measurableC; exact: measurable_ball.
     rewrite setUv.
@@ -1173,27 +1174,27 @@ apply: (@continuity_under_integral _ _ _ mu _ _ _ (a - e) (a + e) _ _ g) => //=.
       rewrite /g /g' xae.
       over.
     rewrite integral_cst/=.
-      apply: lte_mul_pinfty => //.
-      rewrite ball_itv lebesgue_measure_itv/= ifT -?EFinD ?ltry// lte_fin.
-      by rewrite ltrBlDr -addrA -ltrBlDl subrr -mulr2n mulrn_wgt0.
-    exact: measurable_ball.
-  rewrite [ltLHS](_ : _ = \int[mu]_x `|normal_pdf a s x|%:E)%E; last first.
-    rewrite ball_itv setCitv ge0_integral_setU//=; first last.
-        apply/disj_setPRL.
-        rewrite setCitvl.
-        apply: subset_itvr; rewrite bnd_simp.
-        by rewrite -{2}(opprK e) ler_ltB// gtrN.
+      exact: measurable_ball.
+    apply: lte_mul_pinfty => //.
+    rewrite ball_itv lebesgue_measure_itv/= ifT -?EFinD ?ltry// lte_fin.
+    by rewrite ltrBlDr -addrA -ltrBlDl subrr -mulr2n mulrn_wgt0.
+  rewrite [ltLHS](_ : _ = \int[mu]_x `|normal_pdf a s x|%:E)%E.
+    rewrite ball_itv setCitv ge0_integral_setU//=.
       apply: measurable_funTS; apply/measurable_EFinP.
       exact: measurableT_comp.
-    rewrite gE_Ny// gE_y// -integral_itv_obnd_cbnd; last first.
+      apply/disj_setPRL.
+      rewrite setCitvl.
+      apply: subset_itvr; rewrite bnd_simp.
+      by rewrite -{2}(opprK e) ler_ltB// gtrN.
+    rewrite gE_Ny// gE_y// -integral_itvob_itvcb.
       apply/measurable_EFinP.
       apply: measurableT_comp => //; apply: measurable_funTS.
       exact: measurable_normal_pdf.
-    rewrite -ge0_integral_setU/= ?measurable_itv//; first last.
-        by apply/disj_setPRL; rewrite setCitvl.
+    rewrite -ge0_integral_setU/= ?measurable_itv//.
       rewrite -setCitvl setUv.
       apply/measurable_EFinP; apply: measurableT_comp => //.
       exact: measurable_normal_pdf.
+      by apply/disj_setPRL; rewrite setCitvl.
     by rewrite -setCitvl setUv.
   under eq_integral do rewrite -abse_EFin.
   apply/abse_integralP => //=.
@@ -1201,7 +1202,7 @@ apply: (@continuity_under_integral _ _ _ mu _ _ _ (a - e) (a + e) _ _ g) => //=.
   by rewrite integral_normal_pdf ltry.
 - move=> x; rewrite in_itv/= => /andP[aex xae].
   apply: aeW => /= y Vy.
-  rewrite ger0_norm; last exact: normal_pdf_ge0.
+  rewrite ger0_norm; first exact: normal_pdf_ge0.
   rewrite normal_pdfE// /g /g'.
   case: ifPn => [_|]; first exact: normal_peak_fun_ub.
   rewrite notin_setE/= ball_itv/= in_itv/= => aey.
@@ -1210,17 +1211,17 @@ apply: (@continuity_under_integral _ _ _ mu _ _ _ (a - e) (a + e) _ _ g) => //=.
     exact: sqr_ge0.
     by rewrite invr_ge0 mulrn_wge0// sqr_ge0.
   move: aey; move/negP/nandP; rewrite -!leNgt => -[yae|aey].
-    rewrite -normrN opprB ger0_norm; last first.
+    rewrite -normrN opprB ger0_norm.
       by rewrite subr_ge0 (le_trans yae)// gerBl.
     rewrite -[leRHS]sqrrN opprB ler_sqr ?nnegrE; first last.
-      rewrite subr_ge0 ltW// (le_lt_trans yae)//.
-      by rewrite addrAC subr_ge0.
-    by rewrite addrAC lerD2r ltW.
-  rewrite ger0_norm; last first.
+      by rewrite addrAC lerD2r ltW.
+    rewrite subr_ge0 ltW// (le_lt_trans yae)//.
+    by rewrite addrAC subr_ge0.
+  rewrite ger0_norm.
     by rewrite subr_ge0 (le_trans _ aey)// lerDl.
-  rewrite ler_sqr ?nnegrE; last 2 first.
-    by rewrite -addrA -opprD subr_ge0.
-    by rewrite subr_ge0 (le_trans _ aey)// ltW.
+  rewrite ler_sqr ?nnegrE.
+  by rewrite -addrA -opprD subr_ge0.
+  by rewrite subr_ge0 (le_trans _ aey)// ltW.
   by rewrite -addrA -opprD lerD2l lerN2 ltW.
 - by rewrite -ball_itv inE; exact: ballxx.
 Unshelve. end_near. Qed.
@@ -1234,7 +1235,7 @@ move=>_  -[_ [r r01] [Ys mYs <-]]  <-.
 apply: emeasurable_fun_infty_o => //=.
 under [X in _ _ X]eq_fun.
   move=> x.
-  rewrite -(@fineK _ (normal_prob x s Ys)); last first.
+  rewrite -(@fineK _ (normal_prob x s Ys)).
     rewrite ge0_fin_numE => //.
     apply: (@le_lt_trans _ _ (normal_prob x s setT)).
       by rewrite le_measure ?inE.

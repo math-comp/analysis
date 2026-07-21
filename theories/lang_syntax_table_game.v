@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
-Require Import String.
+From Stdlib Require Import String.
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
-From mathcomp Require Import ring lra.
+From mathcomp Require Import boot order ssralg ssrnum ssrint interval.
+From mathcomp Require Import field_tactic arithmetic_tactic.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
@@ -117,8 +117,8 @@ near: M.
 move=> M /=.
 rewrite in_itv/= => /andP[M0 M1].
 rewrite ler_norml (@le_trans _ _ 0%R)//=.
-  by rewrite lerBlDr addrC -lerBlDr subrr.
-by rewrite onem_ge0.
+  by rewrite onem_ge0.
+by rewrite lerBlDr addrC -lerBlDr subrr.
 Unshelve. all: by end_near. Qed.
 
 Lemma bounded_cst_01 (x : R^o) : [bounded x | _ in `[0%R, 1%R]%classic : set R].
@@ -198,10 +198,10 @@ apply: (@le_lt_trans _ _ (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (beta_pdf 6 
   - move=> x _.
     rewrite patchE; case: ifPn => x01.
       rewrite gee0_abs//.
-        rewrite gee_pMl// ?probability_le1//.
-          by rewrite ge0_fin_numE// (le_lt_trans (probability_le1 _ _))// ltry.
-        by rewrite lee_fin beta_pdf_ge0.
-      by rewrite mule_ge0// lee_fin beta_pdf_ge0.
+        by rewrite mule_ge0// lee_fin beta_pdf_ge0.
+      rewrite gee_pMl// ?probability_le1//.
+        by rewrite ge0_fin_numE// (le_lt_trans (probability_le1 _ _))// ltry.
+      by rewrite lee_fin beta_pdf_ge0.
     by rewrite /beta_pdf patchE (negbTE x01) mul0r mule0 abse0.
 apply: (@le_lt_trans _ _
     (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (beta_fun 6 4)^-1%:E)%E); last first.
@@ -333,7 +333,7 @@ Let table12_subproof (y : @mctx R [::]) (V : set (@mtyp R Bool))
 Proof.
 rewrite integral_binomial//=.
 rewrite (bigD1 (inord 5))//=.
-rewrite big1 ?adde0; last first.
+rewrite big1 ?adde0.
   move=> i i5.
   rewrite execP_letin/= execP_if/= execD_rel/=.
   rewrite exp_var'E/= (execD_var_erefl "x")/=.
@@ -416,24 +416,24 @@ apply/integrableP; split.
   apply/measurable_EFinP => //; apply: measurableT_comp => //.
   by apply: measurable_funM => //; exact: measurable_XMonemX.
 rewrite beta_prob_uniform integral_uniform//=.
-  rewrite subr0 invr1 mul1e.
-  suff : lebesgue_measure.-integrable `[0%R, 1%R]
-    (fun y : R => bernoulli_prob (1 - y.~ ^+ 3) U * (normr (56 * XMonemX 5 3 y))%:E).
-    by move=> /integrableP[].
-  apply: integrableMl => //=.
-  - apply/integrableP; split.
-      by apply: measurable_funTS; exact: measurable_bernoulli_onemXn.
-    have := @integral_beta_prob_bernoulli_prob_onem_lty R 3 1%N 1%N U.
-    rewrite beta_prob_uniform integral_uniform//=; last first.
-      by apply: measurableT_comp => //=; exact: measurable_bernoulli_onemXn.
-    by rewrite subr0 invr1 mul1e.
-  - apply: @measurableT_comp => //=; apply: measurable_funM => //.
-      exact: measurable_XMonemX.
-    exact: bounded_norm_XnonemXn.
-apply: @measurableT_comp => //; apply: emeasurable_funM => //=.
-  exact: measurable_bernoulli_onemXn.
-do 2 apply: @measurableT_comp => //=.
-by apply: measurable_funM => //; exact: measurable_XMonemX.
+  apply: @measurableT_comp => //; apply: emeasurable_funM => //=.
+    exact: measurable_bernoulli_onemXn.
+  do 2 apply: @measurableT_comp => //=.
+  by apply: measurable_funM => //; exact: measurable_XMonemX.
+rewrite subr0 invr1 mul1e.
+suff : lebesgue_measure.-integrable `[0%R, 1%R]
+  (fun y : R => bernoulli_prob (1 - y.~ ^+ 3) U * (normr (56 * XMonemX 5 3 y))%:E).
+  by move=> /integrableP[].
+apply: integrableMl => //=.
+- apply/integrableP; split.
+    by apply: measurable_funTS; exact: measurable_bernoulli_onemXn.
+  have := @integral_beta_prob_bernoulli_prob_onem_lty R 3 1%N 1%N U.
+  rewrite beta_prob_uniform integral_uniform//=.
+    by apply: measurableT_comp => //=; exact: measurable_bernoulli_onemXn.
+  by rewrite subr0 invr1 mul1e.
+- apply: @measurableT_comp => //=; apply: measurable_funM => //.
+    exact: measurable_XMonemX.
+  exact: bounded_norm_XnonemXn.
 Qed.
 
 Section from_table2_to_table3.
@@ -494,23 +494,23 @@ under [in RHS]eq_integral => y _.
   rewrite letin'E/=.
   over.
 rewrite /=.
-rewrite [RHS]ge0_integral_mscale//=; last first.
+rewrite [RHS]ge0_integral_mscale//=.
   by move=> _ _; rewrite integral_ge0.
-rewrite integral_beta_prob//=; last 2 first.
+rewrite integral_beta_prob//=.
   - apply: emeasurable_funM => //=.
       exact: measurable_bernoulli_onemXn.
     apply/measurable_EFinP; apply: measurableT_comp => //.
     by apply: measurable_funM => //; exact: measurable_XMonemX.
   - by have /integrableP[] := @integrable_bernoulli_XMonemX R U.
 rewrite ger0_norm// integral_dirac// diracT mul1e.
-rewrite integral_beta_prob/=; [|by []|exact: measurable_bernoulli_onemXn
-    |exact: integral_beta_prob_bernoulli_prob_onem_lty].
-rewrite -integralZl//=; last exact: integrable_bernoulli_beta_pdf.
+rewrite integral_beta_prob/=; [by []|exact: measurable_bernoulli_onemXn
+    |exact: integral_beta_prob_bernoulli_prob_onem_lty|].
+rewrite -integralZl//=; first exact: integrable_bernoulli_beta_pdf.
 apply: eq_integral => y _.
 rewrite [in RHS]muleCA -[in LHS]muleA; congr *%E.
 rewrite /beta_pdf 2!patchE; case: ifPn => [y01|_]; last first.
   by rewrite !mul0r 2!mule0.
-rewrite ger0_norm; last first.
+rewrite ger0_norm.
   by rewrite mulr_ge0// XMonemX_ge0//; rewrite inE in y01.
 rewrite [X in _ = _ * X]EFinM [in RHS]muleCA.
 rewrite /= XMonemX00 mul1r [in LHS](mulrC 56%R) [in LHS]EFinM -[in LHS]muleA; congr *%E.
@@ -528,11 +528,11 @@ Lemma int_beta_prob01 {R : realType} (f : R -> R) a b U :
   \int[beta_prob a b]_(y in `[0%R, 1%R] : set R) bernoulli_prob (f y) U.
 Proof.
 move=> mf f01.
-rewrite [LHS]integral_beta_prob//=; last 2 first.
+rewrite [LHS]integral_beta_prob//=.
   apply: measurable_funTS.
   by apply: (measurableT_comp (measurable_bernoulli_prob2 _)) => //=.
   exact: integral_beta_prob_bernoulli_prob_lty.
-rewrite [RHS]integral_beta_prob//; last 2 first.
+rewrite [RHS]integral_beta_prob//.
   apply/measurable_funTS => //=.
   by apply: (measurableT_comp (measurable_bernoulli_prob2 _)) => //=.
   apply: (le_lt_trans _ (integral_beta_prob_bernoulli_prob_lty a b U mf f01)).
@@ -555,7 +555,7 @@ Lemma int_beta_prob_bernoulli {R : realType} (U : set (@mtyp R Bool)) :
   \int[beta_prob 6 4]_y bernoulli_prob (y.~ ^+ 3) U =
   bernoulli_prob (1 / 11) U :> \bar R.
 Proof.
-rewrite int_beta_prob01//; last 2 first.
+rewrite int_beta_prob01//.
   by apply: measurable_funX => //; exact: measurable_funB.
   exact: expr_onem_01.
 have := @beta_prob_bernoulli_probE R 6 4 0 3 U isT isT.
@@ -581,7 +581,7 @@ have [| | |] := set_bool U => /eqP ->; rewrite !diracE.
 - by rewrite memNset// mem_set//= fsbig_set1 add0e.
 - by rewrite mem_set// memNset//= fsbig_set1 adde0.
 - by rewrite !in_set0 fsbig_set0 adde0.
-- rewrite !in_setT setT_bool fsbigU0//=; last by move=> x [->].
+- rewrite !in_setT setT_bool fsbigU0//=; first by move=> x [->].
   by rewrite !fsbig_set1.
 Qed.
 
@@ -591,31 +591,31 @@ Lemma int_beta_prob_bernoulli_onem {R : realType} (U : set (@mtyp R Bool)) :
 Proof.
 transitivity
     (\d_false U + \d_true U - bernoulli_prob (1 / 11) U : \bar R)%E; last first.
-  rewrite /bernoulli_prob ifT; last lra.
-  rewrite ifT; last lra.
-  apply/eqP; rewrite sube_eq//; last first.
+  rewrite /bernoulli_prob ifT; first lra.
+  rewrite ifT; first lra.
+  apply/eqP; rewrite sube_eq//.
     rewrite ge0_adde_def// inE.
       by apply/sume_ge0 => //= b _; rewrite lee_fin bernoulli_pmf_ge0//; lra.
     by apply/sume_ge0 => //= b _; rewrite lee_fin bernoulli_pmf_ge0//; lra.
   rewrite -fsbig_split//=.
   under eq_fsbigr.
     move=> /= x _.
-    rewrite -EFinD /bernoulli_pmf [X in X%:E](_ : _ = 1%R); last first.
-      case: x => //; lra.
+    rewrite -EFinD /bernoulli_pmf [X in X%:E](_ : _ = 1%R).
+      by case: x => //; lra.
     over.
     by rewrite /= dirac_bool.
 rewrite -int_beta_prob_bernoulli.
-apply/esym/eqP; rewrite sube_eq//; last first.
+apply/esym/eqP; rewrite sube_eq//.
   by rewrite ge0_adde_def// inE; exact: integral_ge0.
-rewrite int_beta_prob01; last 2 first.
+rewrite int_beta_prob01.
   apply: measurable_funB => //; apply: measurable_funX => //.
   exact: measurable_funB.
   move=> x x01.
   by rewrite subr_ge0 andbC lerBlDr -lerBlDl subrr expr_onem_01.
-rewrite [X in _ == _ + X]int_beta_prob01; last 2 first.
+rewrite [X in _ == _ + X]int_beta_prob01.
   by apply: measurable_funX => //; exact: measurable_funB.
   exact: expr_onem_01.
-rewrite -ge0_integralD//=; last 2 first.
+rewrite -ge0_integralD//=.
   apply: (@measurableT_comp _ _ _ _ _ _ (@bernoulli_prob R ^~ U)) => /=.
     exact: measurable_bernoulli_prob2.
   apply: measurable_funB => //=; apply: measurable_funX => //=.
@@ -628,13 +628,13 @@ apply/eqP; transitivity
   by rewrite integral_cst//= beta_prob01 mule1 EFinD.
 apply: eq_integral => /= x x01.
 rewrite /bernoulli_prob subr_ge0 lerBlDr -lerBlDl subrr andbC.
-rewrite (_ : (_ <= _ <= _)%R); last first.
+rewrite (_ : (_ <= _ <= _)%R).
   by apply: expr_onem_01; rewrite inE in x01.
 rewrite -fsbig_split//=.
 under eq_fsbigr.
   move=> /= y yU.
   rewrite -EFinD /bernoulli_pmf.
-  rewrite [X in X%:E](_ : _ = 1%R); last first.
+  rewrite [X in X%:E](_ : _ = 1%R).
     by case: ifPn => _; rewrite subrK.
   over.
 by rewrite /= dirac_bool.

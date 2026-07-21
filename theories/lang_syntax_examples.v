@@ -1,8 +1,9 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
-Require Import String.
+From Stdlib Require Import String.
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
-From mathcomp Require Import interval_inference ring lra.
+From mathcomp Require Import boot order ssralg ssrnum ssrint interval.
+From mathcomp Require Import interval_inference ring_tactic field_tactic.
+From mathcomp Require Import arithmetic_tactic.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
@@ -152,7 +153,7 @@ Proof.
 rewrite !execP_letin !execP_sample !execD_bernoulli !execP_return /=.
 rewrite execD_pair !exp_var'E (execD_var_erefl "x") (execD_var_erefl "y") /=.
 rewrite !execD_real//=.
-do 2 (rewrite letin'E/= integral_bernoulli_prob//=; last lra).
+do 2 (rewrite letin'E/= integral_bernoulli_prob//=; first lra).
 by rewrite letin'E/= integral_bernoulli_prob//=; lra.
 Qed.
 
@@ -182,7 +183,7 @@ Lemma exec_sample_pair1213_TorT :
 Proof.
 rewrite execD_normalize_pt normalizeE/= exec_sample_pair1213'.
 rewrite !diracE; do 4 rewrite mem_set//=.
-rewrite eqe ifF; last by apply/negbTE/negP => /orP[/eqP|//]; lra.
+rewrite eqe ifF; first by apply/negbTE/negP => /predU1P[|//]; lra.
 rewrite exec_sample_pair1213' !diracE; do 3 rewrite mem_set//; rewrite memNset//=.
 by rewrite !mule1; congr (_%:E); field.
 Qed.
@@ -207,9 +208,9 @@ Proof.
 rewrite !execP_letin !execP_sample/= !execD_bernoulli execP_return /=.
 rewrite !(@execD_bin _ _ binop_and) !exp_var'E (execD_var_erefl "x").
 rewrite (execD_var_erefl "y") /= !letin'E/= !execD_real/=.
-rewrite integral_bernoulli_prob//=; last lra.
-rewrite !letin'E/= integral_bernoulli_prob//=; last lra.
-rewrite integral_bernoulli_prob//=; last lra.
+rewrite integral_bernoulli_prob//=; first lra.
+rewrite !letin'E/= integral_bernoulli_prob//=; first lra.
+rewrite integral_bernoulli_prob//=; first lra.
 rewrite /onem.
 rewrite muleDr// -addeA; congr (_ + _)%E.
   by rewrite !muleA; congr (_%:E); congr (_ * _); field.
@@ -230,9 +231,9 @@ Proof.
 rewrite !execP_letin !execP_sample !execD_bernoulli !execP_return /=.
 rewrite !(@execD_bin _ _ binop_and) !exp_var'E (execD_var_erefl "x").
 rewrite (execD_var_erefl "y") (execD_var_erefl "z") /= !execD_real/=.
-do 3 (rewrite !letin'E/= integral_bernoulli_prob//=; last lra).
-do 2 (rewrite integral_bernoulli_prob//=; last lra).
-rewrite !letin'E/= integral_bernoulli_prob//=; last lra.
+do 3 (rewrite !letin'E/= integral_bernoulli_prob//=; first lra).
+do 2 (rewrite integral_bernoulli_prob//=; first lra).
+rewrite !letin'E/= integral_bernoulli_prob//=; first lra.
 rewrite !muleDr// -!addeA; congr (_ + _)%E.
   by rewrite !muleA; congr *%E; congr EFin; field.
 rewrite !muleA -!muleDl//; congr *%E; congr EFin.
@@ -267,22 +268,22 @@ under eq_integral.
   under eq_integral do rewrite retE /=.
   over.
 rewrite /=.
-rewrite integral_bernoulli_prob//=; [|lra|by move=> b; rewrite integral_ge0].
+rewrite integral_bernoulli_prob//=; [lra|by move=> b; rewrite integral_ge0|].
 rewrite iteE/= !ge0_integral_mscale//=.
 rewrite ger0_norm//.
 rewrite !integral_indic//= !iteE/= /mscale/=.
 rewrite setTI !diracT !mule1.
 rewrite ger0_norm//.
-rewrite -EFinD/= eqe ifF; last first.
-  by apply/negbTE/negP => /orP[/eqP|//]; rewrite /onem; lra.
-rewrite integral_bernoulli_prob//=; last lra.
+rewrite -EFinD/= eqe ifF.
+  by apply/negbTE/negP => /predU1P[|//]; rewrite /onem; lra.
+rewrite integral_bernoulli_prob//=; first lra.
 rewrite !letin'E/= !iteE/=.
 rewrite !ge0_integral_mscale//=.
 rewrite ger0_norm//.
 rewrite !integral_dirac//= !diracT !mul1e ger0_norm//.
 rewrite exp_var'E (execD_var_erefl "x")/=.
 rewrite !indicT/= !mulr1.
-rewrite bernoulli_probE//=; last lra.
+rewrite bernoulli_probE//=; first lra.
 by rewrite muleDl//; congr (_ + _)%E;
   rewrite -!EFinM; congr (_%:E);
   rewrite !indicE /onem /=; case: (_ \in _); field.
@@ -307,22 +308,22 @@ under eq_integral.
   rewrite !letin'E.
   under eq_integral do rewrite retE /=.
   over.
-rewrite /= integral_bernoulli_prob//=; [|lra|by move=> b; rewrite integral_ge0].
+rewrite /= integral_bernoulli_prob//=; [lra|by move=> b; rewrite integral_ge0|].
 rewrite iteE/= !ge0_integral_mscale//=.
 rewrite ger0_norm//.
 rewrite !integral_indic//= !iteE/= /mscale/=.
 rewrite setTI !diracT !mule1.
 rewrite ger0_norm//.
-rewrite -EFinD/= eqe ifF; last first.
-  apply/negbTE/negP => /orP[/eqP|//].
+rewrite -EFinD/= eqe ifF.
+  apply/negbTE/negP => /predU1P[|//].
   by rewrite /onem; lra.
-rewrite integral_bernoulli_prob//=; last lra.
+rewrite integral_bernoulli_prob//=; first lra.
 rewrite !letin'E/= !iteE/=.
 rewrite !ge0_integral_mscale//=.
 rewrite ger0_norm//.
 rewrite !integral_dirac//= !diracT !mul1e ger0_norm//.
 rewrite exp_var'E (execD_var_erefl "x")/=.
-rewrite bernoulli_probE//=; last lra.
+rewrite bernoulli_probE//=; first lra.
 rewrite !mul1r.
 rewrite muleDl//; congr (_ + _)%E;
   rewrite -!EFinM;
@@ -351,7 +352,7 @@ under eq_integral.
   rewrite !letin'E.
   under eq_integral do rewrite retE /=.
   over.
-rewrite /= integral_bernoulli_prob//=; [|lra|by move=> b; rewrite integral_ge0].
+rewrite /= integral_bernoulli_prob//=; [lra|by move=> b; rewrite integral_ge0|].
 rewrite iteE/= !ge0_integral_mscale//=.
 rewrite ger0_norm//.
 rewrite !integral_cst//= !diracT !(mule1,mul1e).
@@ -359,15 +360,15 @@ rewrite !indicT/= !mule1.
 rewrite !iteE/= /mscale/=.
 rewrite ger0_norm//.
 rewrite !diracT/= !mul1r.
-rewrite -EFinD/= eqe ifF; last first.
-  apply/negbTE/negP => /orP[/eqP|//].
+rewrite -EFinD/= eqe ifF.
+  apply/negbTE/negP => /predU1P[|//].
   by rewrite /onem; lra.
-rewrite integral_bernoulli_prob//=; last lra.
+rewrite integral_bernoulli_prob//=; first lra.
 rewrite !letin'E/= !iteE/=.
 rewrite !ge0_integral_mscale//=.
 rewrite ger0_norm//.
 rewrite !integral_dirac//= !diracT !mul1e ger0_norm//.
-rewrite bernoulli_probE//=; last lra.
+rewrite bernoulli_probE//=; first lra.
 rewrite !indicT.
 rewrite muleDl//; congr (_ + _)%E;
   rewrite -!EFinM;
@@ -394,7 +395,7 @@ Lemma exec_sample_binomial3 t U : measurable U ->
 Proof.
 move=> mU; rewrite /sample_binomial3 execP_letin execP_sample execP_return.
 rewrite exp_var'E (execD_var_erefl "x") !execD_binomial/= execD_real//=.
-rewrite letin'E/= /= integral_binomial//=; [lra|move=> _].
+rewrite letin'E/= /= integral_binomial//=; [move=> _|lra].
 rewrite !big_ord_recl big_ord0/=.
 rewrite /bump.
 rewrite !binS/= !bin0 bin1 bin2 bin_small// addn0.
@@ -420,10 +421,10 @@ Definition return2 (p : R) : @exp R _ [::] _ :=
   [let "_" := Score {p ^+ 2}:R in return {2}:N].
 
 Definition return1 (p : R) : @exp R _ [::] _ :=
-  [let "_" := Score {p * `1-p *+ 2}:R in return {1}:N].
+  [let "_" := Score {p * p.~ *+ 2}:R in return {1}:N].
 
 Definition return0 (p : R) : @exp R _ [::] _ :=
-  [let "_" := Score {`1-p^+2}:R in return {0}:N].
+  [let "_" := Score {p.~ ^+ 2}:R in return {0}:N].
 
 Lemma exec_binomial2p (p : R) t U : 0 <= p <= 1 -> measurable U ->
   execP (binomial2p p) t U =
@@ -480,7 +481,7 @@ Proof.
 move: r01 => /andP[r0 r1]//.
 rewrite execP_score execD_real /= score_fail' ?r0 ?r1//.
 rewrite execP_letin execP_sample/= execD_bernoulli execP_if execP_return.
-rewrite execD_unit/= exp_var'E /=.
+rewrite execD_unit/= exp_var'E /=; last first.
   exact/ctx_prf_head (* TODO *).
 move=> h.
 apply: eq_sfkernel=> /= -[] U.
@@ -518,7 +519,7 @@ move=> mU.
 rewrite /uniform_syntax execP_letin execP_sample execP_return !execD_uniform.
 rewrite exp_var'E (execD_var_erefl "p")/=.
 rewrite letin'E /=.
-rewrite integral_uniform//=; last exact: measurable_fun_dirac.
+rewrite integral_uniform//=; first exact: measurable_fun_dirac.
 rewrite subr0 invr1 mul1e.
 rewrite {1}/uniform_prob.
 rewrite integral_mkcond//=.
@@ -553,7 +554,7 @@ Proof.
 rewrite /guard 2!execP_letin execP_sample execD_bernoulli execD_real.
 rewrite execP_if/= !execP_return !exp_var'E !(execD_var_erefl "p") execD_unit.
 rewrite execP_score execD_real/=.
-rewrite letin'E/= integral_bernoulli_prob//=; last lra.
+rewrite letin'E/= integral_bernoulli_prob//=; first lra.
 rewrite !letin'E !iteE/= integral_dirac// ge0_integral_mscale//=.
 by rewrite normr0 mul0e !mule0 !adde0 !diracT !mul1e.
 Qed.
@@ -575,7 +576,7 @@ Lemma exec_binomial_le t U :
 Proof.
 rewrite /binomial_le execP_letin execP_sample execP_return execD_rel execD_nat.
 rewrite exp_var'E (execD_var_erefl "a2") execD_binomial/= !execD_real/=.
-rewrite letin'E//= integral_binomial//=; [lra|move=> _].
+rewrite letin'E//= integral_binomial//=; [move=> _|lra].
 rewrite !big_ord_recl big_ord0//=.
 rewrite /bump.
 rewrite !binS/= !bin0 bin1 bin2 bin_small// addn0.
@@ -601,7 +602,7 @@ rewrite /binomial_guard !execP_letin execP_sample execP_return execP_if.
 rewrite !exp_var'E execD_rel !(execD_var_erefl "a1") execP_return.
 rewrite execD_unit execD_binomial execD_nat execP_score !execD_real.
 rewrite !letin'E//=.
-rewrite integral_binomial//=; [lra|move=> _].
+rewrite integral_binomial//=; [move=> _|lra].
 rewrite !big_ord_recl big_ord0.
 rewrite /bump/=.
 rewrite !binS/= !bin0 bin1 bin2 bin_small//.
@@ -663,18 +664,24 @@ rewrite execP_letin !execP_sample execD_beta !execD_bernoulli/=.
 rewrite !execD_real/= exp_var'E (execD_var_erefl "p")/=.
 transitivity (beta_prob_bernoulli_prob 6 4 1 0 U : \bar R).
   rewrite /beta_prob_bernoulli_prob !letin'E/=.
-  rewrite integral_beta_prob//=; last 2 first.
+  rewrite integral_beta_prob//=.
     exact: measurable_bernoulli_prob2.
     exact: integral_beta_prob_bernoulli_prob_lty.
-  rewrite integral_beta_prob//=; last 2 first.
+  rewrite integral_beta_prob//=.
     by apply: measurable_funTS => /=; exact: measurable_bernoulli_XMonemX01.
     rewrite integral_beta_prob//=.
+    + apply/measurableT_comp => //; apply: measurable_funTS => /=.
+      exact: measurable_bernoulli_XMonemX01.
+    + under eq_integral do rewrite gee0_abs//=.
+      have : (beta_prob 6 4 `[0%R, 1%R] < +oo :> \bar R)%E.
+        by rewrite -ge0_fin_numE// beta_prob_fin_num.
+      by move=> /(@integrable_bernoulli_XMonemX01 1 0 _ (beta_prob 6 4) mU) /integrableP[].
     + suff: mu.-integrable `[0%R, 1%R]
           (fun x => bernoulli_prob ((@XMonemX R 1 0) \_`[0,1] x)%R U * (beta_pdf 6 4 x)%:E)%E.
         move=> /integrableP[_].
         under eq_integral.
           move=> x _.
-          rewrite gee0_abs//; last first.
+          rewrite gee0_abs//.
             by rewrite mule_ge0// lee_fin beta_pdf_ge0.
         over.
         move=> ?.
@@ -684,21 +691,15 @@ transitivity (beta_prob_bernoulli_prob 6 4 1 0 U : \bar R).
         by rewrite lebesgue_measure_itv//= lte01 EFinN sube0 ltry.
       * by apply: measurable_funTS; exact: measurable_beta_pdf.
       * exact: bounded_beta_pdf_01.
-    + apply/measurableT_comp => //; apply: measurable_funTS => /=.
-      exact: measurable_bernoulli_XMonemX01.
-    + under eq_integral do rewrite gee0_abs//=.
-      have : (beta_prob 6 4 `[0%R, 1%R] < +oo :> \bar R)%E.
-        by rewrite -ge0_fin_numE// beta_prob_fin_num.
-      by move=> /(@integrable_bernoulli_XMonemX01 1 0 _ (beta_prob 6 4) mU) /integrableP[].
   rewrite [RHS]integral_mkcond.
   apply: eq_integral => x _ /=.
   rewrite patchE.
   case: ifPn => x01.
     by rewrite patchE x01 XMonemXn0 expr1.
   by rewrite /beta_pdf patchE (negbTE x01) mul0r mule0.
-rewrite beta_prob_bernoulli_probE// !bernoulli_probE//=; last 2 first.
-  lra.
+rewrite beta_prob_bernoulli_probE// !bernoulli_probE//=.
   by rewrite div_beta_fun_ge0 div_beta_fun_le1.
+  lra.
 (*by congr (_ * _ + _ * _)%:E;
   rewrite /div_beta_fun/= /onem !beta_funE/=; repeat rewrite !factE/=; field.*)
  (* temporary measure to avoid stack overflow *)
@@ -833,7 +834,7 @@ Proof.
 rewrite exec_staton_bus0' /staton_bus_probability /kstaton_bus'.
 rewrite /sample_bern.
 rewrite letin'E/=.
-rewrite integral_bernoulli_prob//=; last lra.
+rewrite integral_bernoulli_prob//=; first lra.
 rewrite -!muleA; congr (_ * _ + _ * _)%E.
 - rewrite letin'_iteT//.
   rewrite letin'_retk//.
@@ -988,10 +989,6 @@ rewrite 2!(execP_weak [::] g).
 rewrite 2!execP_return/=.
 rewrite 2!execD_pair/=.
 rewrite !exp_var'E.
-- exact/(ctx_prf_tail _ yx)/ctx_prf_head.
-- exact/ctx_prf_head.
-- exact/ctx_prf_head.
-- exact/(ctx_prf_tail _ xy)/ctx_prf_head.
 - move=> h1 h2 h3 h4.
   set g1 := [:: (y, t2), (x, t1) & g].
   set g2 := [:: (x, t1), (y, t2) & g].
@@ -1007,9 +1004,13 @@ rewrite !exp_var'E.
   have -> : measurable_acc_typ [:: t2, t1 & map snd g] 1 = macc1of3' by [].
   rewrite (letin'C _ _ (execP e2)
     [the R.-sfker _ ~> _ of @kweak _ [::] _ (y, t2) _ (execP e1)]);
-    [ |by [] | by [] |by []].
+    [by [] | by [] |by []|].
   have -> : measurable_acc_typ [:: t1, t2 & map snd g] 0 = macc0of3' by [].
   by have -> : measurable_acc_typ [:: t1, t2 & map snd g] 1 = macc1of3' by [].
+- exact/(ctx_prf_tail _ xy)/ctx_prf_head.
+- exact/ctx_prf_head.
+- exact/ctx_prf_head.
+- exact/(ctx_prf_tail _ yx)/ctx_prf_head.
 Qed.
 
 Example letinC_ground_variables g t1 t2 (e1 : @exp R P g t1) (e2 : exp P g t2)

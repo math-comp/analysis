@@ -1,5 +1,5 @@
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
+From mathcomp Require Import boot order ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import rat interval_inference.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop.
@@ -29,7 +29,7 @@ Local Open Scope ereal_scope.
 (* Staton's definition of the counting measure
    [equation (13), Sect. 4.2, Staton ESOP 2017] *)
 Section staton_counting.
-Context d (X : measurableType d).
+Context d (X : pmeasurableType d).
 Variable R : realType.
 Notation mu := (@lebesgue_measure R).
 Import Notations.
