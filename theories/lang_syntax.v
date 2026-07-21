@@ -97,6 +97,8 @@ Local Import set_interval.
 
 Let uni := @indic R R `[0%R, 1%R]%classic.
 
+Import MeasurableR.
+
 Let integrable_uni : mu.-integrable setT (EFin \o uni).
 Proof.
 apply/integrableP; split.
@@ -222,6 +224,9 @@ split.
 - by apply/cvg_at_leftNP; rewrite -compA oppK.
 Qed.
 
+Section continuous_withinN.
+Import MeasurableR.
+
 (* NB: not used *)
 Lemma continuous_withinN {R : realType} (f : R -> R) a b : (a < b)%R ->
   {within `[(- b)%R, (- a)%R], continuous (f \o -%R)} ->
@@ -243,6 +248,11 @@ move=> ab cf.
     apply/cvg_at_leftNP.
     by rewrite /= opprK in cf.
 Qed.
+
+End continuous_withinN.
+
+Section integral_exprn.
+Import MeasurableR.
 
 Lemma integral_exprn {R : realType} n :
   fine (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (x ^+ n)%:E) = n.+1%:R^-1%R :> R.
@@ -272,6 +282,8 @@ rewrite (@continuous_FTC2 _ (fun x : R => x ^+ n)%R F)//.
 by rewrite /F/= expr1n expr0n/= mulr1 mulr0 subr0.
 Qed.
 
+End integral_exprn.
+
 Local Open Scope ereal_scope.
 Local Open Scope ring_scope.
 
@@ -279,7 +291,6 @@ Declare Scope lang_scope.
 Delimit Scope lang_scope with P.
 
 Section syntax_of_types.
-Import Notations.
 Context {R : realType}.
 
 Inductive typ :=
@@ -289,20 +300,17 @@ Inductive typ :=
 
 HB.instance Definition _ := gen_eqMixin typ.
 
+Import MeasurableR.
+
 Fixpoint measurable_of_typ (t : typ) : {d & pmeasurableType d} :=
   match t with
-  | Unit => existT _ _ munit
-  | Bool => existT _ _ mbool
-  | Nat => existT _ _ mnat
-  | Real => existT _ _
-    [the pmeasurableType _ of (@measurableTypeR R)]
-    (* (Real_sort__canonical__measure_Measurable R) *)
-  | Pair A B => existT _ _
-      [the pmeasurableType (projT1 (measurable_of_typ A),
-                           projT1 (measurable_of_typ B)).-prod%mdisp of
-      (projT2 (measurable_of_typ A) *
-       projT2 (measurable_of_typ B))%type]
-  | Prob A => existT _ _ [the pmeasurableType _ of pprobability (projT2 (measurable_of_typ A)) R]
+  | Unit => existT pmeasurableType _ unit
+  | Bool => existT pmeasurableType _ bool
+  | Nat => existT pmeasurableType _ nat
+  | Real => existT pmeasurableType _ R
+  | Pair A B => existT pmeasurableType _
+      (projT2 (measurable_of_typ A) * projT2 (measurable_of_typ B))%type
+  | Prob A => existT pmeasurableType _ (pprobability (projT2 (measurable_of_typ A)) R)
   end.
 
 Definition mtyp_disp t : measure_display := projT1 (measurable_of_typ t).
@@ -808,7 +816,9 @@ rewrite eqEsubset; split => r.
 by move=> [z Uz <-]/=; rewrite subrK.
 Qed.
 
-Lemma pushforward_shift_itv (mu : measure ((*measurableTypeR*) R) R) (a b x : R) :
+Import MeasurableR.
+
+Lemma pushforward_shift_itv (mu : measure R R) (a b x : R) :
   pushforward mu (fun z => z + x) `]a, b] =
   mu `]a - x, b - x]%classic.
 Proof.
@@ -817,7 +827,7 @@ rewrite shift_preimage.
 by rewrite shift_ocitv.
 Qed.
 
-Lemma pushforward_shift_measurable (mu : measure ((*measurableTypeR*) R) R) (x : R)
+Lemma pushforward_shift_measurable (mu : measure R R) (x : R)
     (U : set R) :
   pushforward mu (fun z => z + x) U = mu ((center x) @` U).
 Proof.
@@ -850,6 +860,7 @@ Section eval.
 Context {R : realType}.
 Implicit Type (g : ctx) (str : string).
 Local Open Scope lang_scope.
+Import MeasurableR.
 
 Inductive evalD : forall g t, exp D g t ->
   forall f : dval R g t, measurable_fun setT f -> Prop :=
@@ -1457,6 +1468,8 @@ Lemma execD_pow g (e : exp D g _) n :
 Proof.
 by move=> f mf; apply/execD_evalD/eval_pow/evalD_execD.
 Qed.
+
+Import MeasurableR.
 
 Lemma execD_pow_real g r (e : exp D g _) :
   let f := projT1 (execD e) in let mf := projT2 (execD e) in

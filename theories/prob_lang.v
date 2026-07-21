@@ -190,13 +190,6 @@ move=> mx my; apply: measurable_fun_ifT => //=.
 - exact: measurableT_comp.
 Qed.
 
-Module Notations.
-(* TODO: test -> this should not be necessary *)
-Notation munit := (unit : pmeasurableType _).
-Notation mbool := (bool : pmeasurableType _).
-Notation mnat := (nat : pmeasurableType _).
-End Notations.
-
 Lemma invr_nonneg_proof (R : numDomainType) (p : {nonneg R}) :
   (0 <= (p%:num)^-1)%R.
 Proof. by rewrite invr_ge0. Qed.
@@ -248,6 +241,8 @@ rewrite /mscore/= /mscale/=; have [->|->] := set_unit U.
 by rewrite diracT mule1 (negbTE setT0).
 Qed.
 
+Import MeasurableR.
+
 Lemma measurable_fun_mscore U : measurable_fun setT f ->
   measurable_fun setT (mscore ^~ U).
 Proof.
@@ -263,6 +258,7 @@ Module SCORE.
 Section score.
 Context d (T : measurableType d) (R : realType).
 Variable f : T -> R.
+Import MeasurableR.
 
 Definition k (mf : measurable_fun [set: T] f) i t U :=
     if i%:R%:E <= mscore f t U < i.+1%:R%:E then
@@ -346,6 +342,7 @@ End SCORE.
 Section kscore.
 Context d (T : measurableType d) (R : realType).
 Variable f : T -> R.
+Import MeasurableR.
 
 Definition kscore (mf : measurable_fun setT f)
     : T -> {measure set _ -> \bar R} :=
@@ -366,7 +363,7 @@ Let sfinite_kscore : exists k : (R.-fker T ~> _)^nat,
   forall x U, measurable U ->
     kscore mf x U = mseries (k ^~ x) 0 U.
 Proof.
-rewrite /=; exists (fun i => [the R.-fker _ ~> _ of mk mf i]) => /= t U mU.
+rewrite /=; exists (mk mf) => /= t U mU.
 rewrite /mseries /kscore/= mscoreE; case: ifPn => [/eqP U0|U0].
   by apply/esym/eseries0 => i _; rewrite U0 measure0.
 rewrite /mk /= /k /= mscoreE (negbTE U0).
@@ -432,7 +429,7 @@ Let sfinite_kiteT : exists2 k_ : (R.-ker _ ~> _)^nat,
   forall x U, measurable U -> kiteT k x U = mseries (k_ ^~ x) 0 U.
 Proof.
 have [k_ hk /=] := sfinite_kernel k.
-exists (fun n => [the _.-ker _ ~> _ of kiteT (k_ n)]) => /=.
+exists (fun n => kiteT (k_ n)) => /=.
   move=> n; have /measure_fam_uubP[r k_r] := measure_uub (k_ n).
   by exists r%:num => /= -[x []]; rewrite /kiteT//= /mzero//.
 move=> [x b] U mU; rewrite /kiteT; case: ifPn => hb; first by rewrite hk.
@@ -489,7 +486,7 @@ Let sfinite_kiteF : exists2 k_ : (R.-ker _ ~> _)^nat,
   forall x U, measurable U -> kiteF k x U = mseries (k_ ^~ x) 0 U.
 Proof.
 have [k_ hk /=] := sfinite_kernel k.
-exists (fun n => [the _.-ker _ ~> _ of kiteF (k_ n)]) => /=.
+exists (fun n => kiteF (k_ n)) => /=.
   move=> n; have /measure_fam_uubP[r k_r] := measure_uub (k_ n).
   by exists r%:num => /= -[x []]; rewrite /kiteF//= /mzero//.
 move=> [x b] U mU; rewrite /kiteF; case: ifPn => hb; first by rewrite hk.
@@ -646,7 +643,7 @@ Section insn3_lemmas.
 Context d d' d3 (X : measurableType d) (Y : measurableType d')
   (Z : measurableType d3) (R : realType).
 
-Lemma letinE (l : R.-sfker X ~> Y) (k : R.-sfker [the measurableType _ of (X * Y)%type] ~> Z) x U :
+Lemma letinE (l : R.-sfker X ~> Y) (k : R.-sfker (X * Y)%type ~> Z) x U :
   letin l k x U = \int[l x]_y k (x, y) U.
 Proof. by []. Qed.
 
@@ -687,6 +684,7 @@ End letin_return2.
 
 Section insn1.
 Context d (X : measurableType d) (R : realType).
+Import MeasurableR.
 
 Definition score (f : X -> R) (mf : measurable_fun setT f) : R.-sfker X ~> _ :=
   [the R.-sfker X ~> _ of kscore mf].
@@ -695,6 +693,7 @@ End insn1.
 
 Section hard_constraint.
 Context d d' (X : measurableType d) (Y : pmeasurableType d') (R : realType).
+Import MeasurableR.
 
 Definition fail : R.-sfker X ~> Y :=
   letin (score (measurable_cst (0%R : R)))
@@ -708,6 +707,7 @@ Arguments fail {d d' X Y R}.
 
 Section cst_fun.
 Context d (T : measurableType d) (R : realType).
+Import MeasurableR.
 
 Definition kr (r : R) := @measurable_cst _ _ T _ setT r.
 Definition k3 : measurable_fun _ _ := kr 3%:R.
@@ -741,11 +741,10 @@ Fixpoint iter_mprod (l : seq {d & pmeasurableType d}) : {d & pmeasurableType d} 
 End iter_mprod.
 
 Section acc.
-Import Notations.
 Context {R : realType}.
 
 Fixpoint acc (l : seq {d & pmeasurableType d}) k :
-  projT2 (iter_mprod l) -> projT2 (nth (existT _ _ munit) l k) :=
+  projT2 (iter_mprod l) -> projT2 (nth (existT pmeasurableType _ unit) l k) :=
   match l with
   | [::] => match k with O => id | _ => id end
   | _ :: _ => match k with
@@ -803,7 +802,6 @@ Arguments pairAi {d0 d1 d2 T0 T1 T2}.
   solve [apply: mpairAi] : core.
 
 Section rpair_pairA_comp.
-Import Notations.
 Context d0 d1 d2 d3 (T0 : measurableType d0) (T1 : measurableType d1)
   (T2 : measurableType d2) (T3 : measurableType d3) (R : realType).
 
@@ -846,7 +844,6 @@ Arguments pairAArAi {d0 d1 d2 T0 T1 T2}.
 Arguments pairAAArAAi {d0 d1 d2 d3 T0 T1 T2 T3}.
 
 Section accessor_functions.
-Import Notations.
 Context d0 d1 d2 d3 (T0 : pmeasurableType d0) (T1 : pmeasurableType d1)
   (T2 : pmeasurableType d2) (T3 : pmeasurableType d3) (R : realType).
 
@@ -1236,8 +1233,7 @@ Let sfkcounting : exists2 k_ : (R.-ker _ ~> _)^nat,
   forall n, measure_fam_uub (k_ n) &
   forall x U, measurable U -> kcounting x U = mseries (k_ ^~ x) 0 U.
 Proof.
-exists (fun n => [the R.-fker _ ~> _ of
-  @kdirac _ _ G nat R _ (@measurable_cst _ _ _ _ setT n)]).
+exists (fun n => @kdirac _ _ G nat R _ (@measurable_cst _ _ _ _ setT n)).
   by move=> n /=; exact: measure_uub.
 by move=> g U mU; rewrite /kcounting/= counting_dirac.
 Qed.
@@ -1433,11 +1429,10 @@ Definition lift_neq : R.-sfker G ~> bool := ret measurable_fun_flift_neq.
 End lift_neq.
 
 Section insn1_lemmas0.
-Import Notations.
 Context d (T : measurableType d) (R : realType).
 
 Lemma kcomp_scoreE d1 d2 (T1 : measurableType d1) (T2 : measurableType d2)
-  (g : R.-sfker [the measurableType _ of (T1 * unit)%type] ~> T2)
+  (g : R.-sfker (T1 * unit)%type ~> T2)
   f (mf : measurable_fun setT f) r U :
   (score mf \; g) r U = `|f r|%:E * g (r, tt) U.
 Proof.
@@ -1448,8 +1443,8 @@ Qed.
 End insn1_lemmas0.
 
 Section insn1_lemmas.
-Import Notations.
 Context d (T : pmeasurableType d) (R : realType).
+Import MeasurableR.
 
 Lemma scoreE d' (T' : pmeasurableType d') (x : T * T') (U : set T') (f : R -> R)
     (r : R) (r0 : (0 <= r)%R)
@@ -1490,7 +1485,7 @@ Section letin_ite.
 Context d d2 d3 (T : measurableType d) (T2 : measurableType d2)
   (Z : pmeasurableType d3) (R : realType).
 Variables (k1 k2 : R.-sfker T ~> Z)
-  (u : R.-sfker [the measurableType _ of (T * Z)%type] ~> T2)
+  (u : R.-sfker (T * Z)%type ~> T2)
   (f : T -> bool) (mf : measurable_fun setT f)
   (t : T) (U : set T2).
 
@@ -1513,7 +1508,6 @@ Section letinA.
 Context d d' d1 d2 d3 (X : measurableType d) (Y : measurableType d')
   (T1 : measurableType d1) (T2 : measurableType d2) (T3 : measurableType d3)
   (R : realType).
-Import Notations.
 Variables (t : R.-sfker X ~> T1)
           (u : R.-sfker (X * T1) ~> T2)
           (v : R.-sfker (X * T2) ~> Y)
@@ -1542,13 +1536,11 @@ Section letinC.
 Context d d1 d' (X : pmeasurableType d) (Y : pmeasurableType d1)
   (Z : pmeasurableType d') (R : realType).
 
-Import Notations.
-
 Variables (t : R.-sfker Z ~> X)
-          (t' : R.-sfker [the measurableType _ of (Z * Y)%type] ~> X)
+          (t' : R.-sfker (Z * Y)%type ~> X)
           (tt' : forall y, t =1 fun z => t' (z, y))
           (u : R.-sfker Z ~> Y)
-          (u' : R.-sfker [the measurableType _ of (Z * X)%type] ~> Y)
+          (u' : R.-sfker (Z * X)%type ~> Y)
           (uu' : forall x, u =1 fun z => u' (z, x)).
 
 Definition T z : set X -> \bar R := t z.
@@ -1588,10 +1580,8 @@ under eq_integral.
   rewrite letinE -uu'.
   under eq_integral do rewrite retE /=.
   over.
-rewrite (sfinite_Fubini
-  [the {sfinite_measure set X -> \bar R} of T z]
-  [the {sfinite_measure set Y -> \bar R} of U z]
-  (fun x => \d_(x.1, x.2) A ))//.
+rewrite (sfinite_Fubini (T z) (U z)
+  (fun x => \d_(x.1, x.2) A))//.
   apply/measurable_EFinP => /=; rewrite (_ : (fun x => _) = mindic R mA)//.
   by apply/funext => -[].
 rewrite /=.
@@ -1605,14 +1595,13 @@ End letinC.
 
 Lemma letin_sample_bernoulli_prob d d' (T : measurableType d)
     (T' : measurableType d') (R : realType) (r : R)
-    (u : R.-sfker [the measurableType _ of (T * bool)%type] ~> T') x y :
+    (u : R.-sfker (T * bool)%type ~> T') x y :
   (0 <= r <= 1)%R ->
   letin (sample_cst (bernoulli_prob r)) u x y =
   r%:E * u (x, true) y + r.~%:E * u (x, false) y.
 Proof. by move=> r01; rewrite letinE/= integral_bernoulli_prob. Qed.
 
 Section sample_and_return.
-Import Notations.
 Context d (T : pmeasurableType d) (R : realType).
 
 Definition sample_and_return : R.-sfker T ~> _ :=
@@ -1630,8 +1619,8 @@ Qed.
 End sample_and_return.
 
 Section sample_and_branch.
-Import Notations.
 Context d (T : pmeasurableType d) (R : realType).
+Import MeasurableR.
 
 (* let x = sample (bernoulli (2/7)) in
    let r = case x of {(1, _) => return (k3()), (2, _) => return (k10())} in
@@ -1652,9 +1641,8 @@ End sample_and_branch.
 
 Section bernoulli_and.
 Context d (T : pmeasurableType d) (R : realType).
-Import Notations.
 
-Definition bernoulli_and : R.-sfker T ~> mbool :=
+Definition bernoulli_and : R.-sfker T ~> bool :=
     (letin (sample_cst (bernoulli_prob (1 / 2)))
      (letin (sample_cst (bernoulli_prob (1 / 2)))
         (ret (measurable_and macc1of3 macc2of3)))).
@@ -1678,10 +1666,10 @@ Qed.
 End bernoulli_and.
 
 Section staton_bus.
-Import Notations.
 Context d (T : pmeasurableType d) (R : realType) (h : R -> R).
+Import MeasurableR.
 Hypothesis mh : measurable_fun setT h.
-Definition kstaton_bus : R.-sfker T ~> mbool :=
+Definition kstaton_bus : R.-sfker T ~> bool :=
   letin (sample_cst (bernoulli_prob (2 / 7)))
   (letin
     (letin (ite macc1of2 (ret k3) (ret k10))
@@ -1697,12 +1685,12 @@ End staton_bus.
    let _ = score (1/4! r^4 e^-r) in
    return x *)
 Section staton_bus_poisson.
-Import Notations.
 Context d (T : measurableType d) (R : realType).
 Let poisson4 r := @poisson_pmf R r 4%N.
+Import MeasurableR.
 Let mpoisson4 := @measurable_poisson_pmf R setT 4%N measurableT.
 
-Definition kstaton_bus_poisson : R.-sfker R ~> mbool :=
+Definition kstaton_bus_poisson : R.-sfker R ~> bool :=
   kstaton_bus _ mpoisson4.
 
 Let kstaton_bus_poissonE t U : kstaton_bus_poisson t U =
@@ -1745,14 +1733,14 @@ End staton_bus_poisson.
    let _ = score (r e^-(15/60 r)) in
    return x *)
 Section staton_bus_exponential.
-Import Notations.
 Context d (T : measurableType d) (R : realType).
 Let exp1560 := @exponential_pdf R (ratr (15%:Q / 60%:Q)).
 Let mexp1560 := @measurable_exponential_pdf R (ratr (15%:Q / 60%:Q)).
 
 (* 15/60 = 0.25 *)
+Import MeasurableR.
 
-Definition kstaton_bus_exponential : R.-sfker R ~> mbool :=
+Definition kstaton_bus_exponential : R.-sfker R ~> bool :=
   kstaton_bus _ mexp1560.
 
 Let kstaton_bus_exponentialE t U : kstaton_bus_exponential t U =
@@ -2023,7 +2011,6 @@ Proof. by rewrite /letin'; unlock. Qed.
 End letin'.
 
 Section letin'C.
-Import Notations.
 Context d d1 d' (X : pmeasurableType d) (Y : pmeasurableType d1)
   (Z : pmeasurableType d') (R : realType).
 Variables (t : R.-sfker Z ~> X)
@@ -2086,7 +2073,6 @@ Section letin'A.
 Context d d' d1 d2 d3 (X : measurableType d) (Y : measurableType d')
   (T1 : measurableType d1) (T2 : measurableType d2) (T3 : measurableType d3)
   (R : realType).
-Import Notations.
 Variables (t : R.-sfker X ~> T1)
           (u : R.-sfker T1 * X ~> T2)
           (v : R.-sfker T2 * X ~> Y)
@@ -2169,6 +2155,8 @@ End letin'_ite.
 Section hard_constraint'.
 Context d d' (X : measurableType d) (Y : pmeasurableType d') (R : realType).
 
+Import MeasurableR.
+
 Definition fail' : R.-sfker X ~> Y :=
   letin' (score (measurable_cst (0%R : R)))
          (ret (measurable_cst point)).
@@ -2211,6 +2199,8 @@ Definition gauss_prob := @normal_prob R 0 1.
 
 HB.instance Definition _ := Probability.on gauss_prob.
 
+Import MeasurableR.
+
 Lemma gauss_prob_dominates : gauss_prob `<< lebesgue_measure.
 Proof. exact: normal_prob_dominates. Qed.
 
@@ -2238,6 +2228,8 @@ Qed.
 
 Let f1_gt0 (x : R) : (0 < f1 x)%R.
 Proof. by rewrite f1E mulr_gt0 ?expR_gt0// sqrtr_gt0 mulrn_wgt0// pi_gt0. Qed.
+
+Import MeasurableR.
 
 Lemma measurable_fun_f1 : measurable_fun setT f1.
 Proof.

@@ -74,7 +74,6 @@ Local Open Scope string_scope.
 Module bidi_tests.
 Section bidi_tests.
 Local Open Scope lang_scope.
-Import Notations.
 Context (R : realType).
 
 Definition bidi_test1 x : @exp R P [::] _ := [
@@ -116,12 +115,12 @@ End bidi_tests.
 
 Section trivial_example.
 Local Open Scope lang_scope.
-Import Notations.
 Context {R : realType}.
+Import MeasurableR.
 
 Lemma exec_normalize_return g x r :
   projT1 (@execD _ g _ [Normalize return r:R]) x =
-  @dirac _ (measurableTypeR R) r _ :> probability _ R.
+  @dirac _ R r _ :> probability _ R.
   (* NB: \d_r notation? *)
 Proof.
 by rewrite execD_normalize_pt execP_return execD_real//=; exact: normalize_kdirac.
@@ -132,7 +131,6 @@ End trivial_example.
 Section sample_pair.
 Local Open Scope lang_scope.
 Local Open Scope ring_scope.
-Import Notations.
 Context {R : realType}.
 
 Definition sample_pair1213' : @exp R _ [::] _ :=
@@ -194,7 +192,6 @@ End sample_pair.
 Section sample_and.
 Local Open Scope lang_scope.
 Local Open Scope ring_scope.
-Import Notations.
 Context {R : realType}.
 
 Definition sample_and1213' : @exp R _ [::] _ :=
@@ -214,9 +211,8 @@ rewrite !letin'E/= integral_bernoulli_prob//=; first lra.
 rewrite integral_bernoulli_prob//=; first lra.
 rewrite /onem.
 rewrite muleDr// -addeA; congr (_ + _)%E.
-  by rewrite !muleA; congr (_%:E); congr (_ * _); field.
-rewrite -muleDl// !muleA -muleDl//.
-by congr (_%:E); congr (_ * _); field.
+  by rewrite !muleA; congr ((_ * _)%:E); field.
+by rewrite -muleDl// !muleA -muleDl//;congr ((_ * _)%:E); field.
 Qed.
 
 Definition sample_and121212 : @exp R _ [::] _ :=
@@ -246,7 +242,6 @@ End sample_and.
 Section sample_score.
 Local Open Scope ring_scope.
 Local Open Scope lang_scope.
-Import Notations.
 Context {R : realType}.
 
 Definition bernoulli13_score : @exp R _ [::] _ := [Normalize
@@ -460,7 +455,6 @@ End nondeterminism_and_weights.
 Section hard_constraint.
 Local Open Scope ring_scope.
 Local Open Scope lang_scope.
-Import Notations.
 Context {R : realType} {str : string}.
 
 Definition hard_constraint g : @exp R _ g _ :=
@@ -626,9 +620,11 @@ Local Open Scope lang_scope.
 Context (R : realType).
 Local Notation mu := (@lebesgue_measure R).
 
+Import MeasurableR.
+
 (* TODO: move? *)
 Lemma integrable_bernoulli_XMonemX01 a b U
-  (mu : {measure set (g_sigma_algebraType R.-ocitv.-measurable) -> \bar R}) :
+  (mu : {measure set R -> \bar R}) :
   measurable U -> (mu `[0%R, 1%R]%classic < +oo)%E ->
   mu.-integrable `[0, 1] (fun x => bernoulli_prob ((@XMonemX R a b) \_`[0,1] x) U).
 Proof.
@@ -762,7 +758,6 @@ End letinA.
 Section staton_bus.
 Local Open Scope ring_scope.
 Local Open Scope lang_scope.
-Import Notations.
 Context {R : realType}.
 
 Definition staton_bus_syntax0 : @exp R _ [::] _ :=
@@ -773,15 +768,15 @@ Definition staton_bus_syntax0 : @exp R _ [::] _ :=
 
 Definition staton_bus_syntax := [Normalize {staton_bus_syntax0}].
 
-Let sample_bern : R.-sfker munit ~> mbool :=
+Import MeasurableR.
+
+Let sample_bern : R.-sfker unit ~> bool :=
   sample _ (measurableT_comp measurable_bernoulli_prob (measurable_cst (2 / 7 : R)%R)).
 
-Let ite_3_10 : R.-sfker mbool * munit ~> measurableTypeR R :=
-  ite macc0of2 (@ret _ _ _ (measurableTypeR R) R _ (kr 3)) (@ret _ _ _ (measurableTypeR R) R _ (kr 10)).
+Let ite_3_10 : R.-sfker bool * unit ~> R := ite macc0of2 (ret (kr 3)) (ret (kr 10)).
 
-Let score_poisson4 : R.-sfker measurableTypeR R * (mbool * munit) ~> munit :=
-  score (measurableT_comp (measurable_poisson_pmf 4 measurableT)
-                          (@macc0of2 _ _ (measurableTypeR R) _)).
+Let score_poisson4 : R.-sfker R * (bool * unit) ~> unit :=
+  score (measurableT_comp (measurable_poisson_pmf 4 measurableT) macc0of2).
 
 Let kstaton_bus' :=
   letin' sample_bern
@@ -856,7 +851,6 @@ End staton_bus.
 Section staton_busA.
 Local Open Scope ring_scope.
 Local Open Scope lang_scope.
-Import Notations.
 Context {R : realType}.
 
 Definition staton_busA_syntax0 : @exp R _ [::] _ :=
@@ -869,16 +863,16 @@ Definition staton_busA_syntax0 : @exp R _ [::] _ :=
 Definition staton_busA_syntax : exp _ [::] _ :=
   [Normalize {staton_busA_syntax0}].
 
-Let sample_bern : R.-sfker munit ~> mbool :=
+Import MeasurableR.
+
+Let sample_bern : R.-sfker unit ~> bool :=
   sample _ (measurableT_comp measurable_bernoulli_prob (measurable_cst (2 / 7 : R)%R)).
 
-Let ite_3_10 : R.-sfker mbool * munit ~> measurableTypeR R :=
-  ite macc0of2 (@ret _ _ _ (measurableTypeR R) R _ (kr 3))
-    (@ret _ _ _ (measurableTypeR R) R _ (kr 10)).
+Let ite_3_10 : R.-sfker bool * unit ~> R :=
+  ite macc0of2 (ret (kr 3)) (ret (kr 10)).
 
-Let score_poisson4 : R.-sfker measurableTypeR R * (mbool * munit) ~> munit :=
-  score (measurableT_comp (measurable_poisson_pmf 4 measurableT)
-                          (@macc0of3' _ _ _ (measurableTypeR R) _ _)).
+Let score_poisson4 : R.-sfker R * (bool * unit) ~> unit :=
+  score (measurableT_comp (measurable_poisson_pmf 4 measurableT) macc0of3').
 
 (* same as kstaton_bus _ (measurable_poisson 4) but expressed with letin'
    instead of letin *)

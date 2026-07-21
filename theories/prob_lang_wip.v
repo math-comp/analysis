@@ -28,9 +28,9 @@ Section staton_counting.
 Context d (X : pmeasurableType d).
 Variable R : realType.
 Notation mu := (@lebesgue_measure R).
-Import Notations.
+Import MeasurableR.
 Hypothesis integral_poisson_density : forall k,
-  (\int[mu]_x (@poisson_pmf R x k)%:E = 1%E)%E.
+  (\int[mu]_x (@poisson_pmf R x k)%:E = 1)%E.
 
 Let f1 n := (@poisson_pmf R 1%R n)^-1%R.
 

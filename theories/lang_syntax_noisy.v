@@ -91,6 +91,8 @@ Local Notation mu := lebesgue_measure.
 
 Local Open Scope charge_scope.
 
+Import MeasurableR.
+
 Lemma normal_pdf_uniq_ae (m s : R) (s0 : (s != 0)%R) :
   ae_eq mu setT
    ('d ((charge_of_finite_measure (@normal_prob R m s))) '/d mu)
@@ -245,6 +247,8 @@ Local Definition noisyA_semantics_normal
   \int[normal_prob 0 1]_x (fun z =>
     (expR (- ((y.1 - z) ^+ 2%R / 2)) / Num.sqrt (2 * pi))%:E *
      normal_prob z 1 V) x.
+
+Import MeasurableR.
 
 Lemma noisyA_semantics_normalE y V : measurable V ->
   noisyA_semantics_normal y V =

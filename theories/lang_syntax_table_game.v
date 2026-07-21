@@ -52,9 +52,11 @@ Local Open Scope string_scope.
 Section execP_letin_uniform.
 Local Open Scope ereal_scope.
 
+Import MeasurableR.
+
 Let letin'_sample_uniform {R : realType} d d' (T : measurableType d)
     (T' : measurableType d') (a b : R) (ab : (a < b)%R)
-    (u : R.-sfker [the measurableType _ of (_ * T)%type] ~> T') x y :
+    (u : R.-sfker (_ * T)%type ~> T') x y :
   measurable y ->
   letin' (sample_cst (uniform_prob ab)) u x y =
   (b - a)^-1%:E * \int[lebesgue_measure]_(x0 in `[a, b]) u (x0, x) y.
@@ -166,22 +168,23 @@ Qed.
 
 End bounded.
 
+Section measurable_bernoulli.
+Import MeasurableR.
+
 (* TODO: move? *)
 Lemma measurable_bernoulli_expn {R : realType} U n :
-  measurable_fun [set: g_sigma_algebraType R.-ocitv.-measurable]
-    (fun x : R => bernoulli_prob (x.~ ^+ n) U).
+  measurable_fun [set: R] (fun x : R => bernoulli_prob (x.~ ^+ n) U).
 Proof.
 apply: (measurableT_comp (measurable_bernoulli_prob2 _)) => //=.
 by apply: measurable_funX => //=; exact: measurable_funB.
 Qed.
 
 Lemma integrable_bernoulli_beta_pdf {R : realType} U : measurable U ->
-  (@lebesgue_measure R).-integrable [set: g_sigma_algebraType R.-ocitv.-measurable]
+  (@lebesgue_measure R).-integrable [set: R]
     (fun x => bernoulli_prob (1 - x.~ ^+ 3) U * (beta_pdf 6 4 x)%:E)%E.
 Proof.
 move=> mU.
-have ? : measurable_fun [set: g_sigma_algebraType R.-ocitv.-measurable]
-    (fun x => bernoulli_prob (1 - x.~ ^+ 3) U).
+have ? : measurable_fun [set: R] (fun x => bernoulli_prob (1 - x.~ ^+ 3) U).
   apply: (measurableT_comp (measurable_bernoulli_prob2 _)) => //=.
   apply: measurable_funB => //; apply: measurable_funX => //.
   exact: measurable_funB.
@@ -212,6 +215,8 @@ apply: ge0_le_integral => //=.
 - by apply/measurable_funTS/measurableT_comp => //; exact: measurable_beta_pdf.
 - by move=> x _; rewrite lee_fin beta_pdf_le_beta_funV.
 Qed.
+
+End measurable_bernoulli.
 
 Section table_game_programs.
 Local Open Scope ring_scope.
@@ -395,18 +400,21 @@ End from_table1_to_table2.
 
 Local Open Scope ereal_scope.
 
+Lemma bounded_norm_XnonemXn {R : realType} :
+  [bounded normr (56 * XMonemX 5 3 x)%R : R^o | x in `[0%R, 1%R] : set R].
+Proof. exact/(bounded_norm _).1/boundedMl/bounded_XMonemX. Qed.
+
+Section measurable_bernoulli.
+Import MeasurableR.
+
 Lemma measurable_bernoulli_onemXn {R : realType} U :
-  measurable_fun [set: g_sigma_algebraType R.-ocitv.-measurable]
+  measurable_fun [set: R]
     (fun x => bernoulli_prob (1 - x.~ ^+ 3) U).
 Proof.
 apply: (measurableT_comp (measurable_bernoulli_prob2 _)) => //=.
 apply: measurable_funB => //.
 by apply: measurable_funX; exact: measurable_funB.
 Qed.
-
-Lemma bounded_norm_XnonemXn {R : realType} :
-  [bounded normr (56 * XMonemX 5 3 x)%R : R^o | x in `[0%R, 1%R] : set R].
-Proof. exact/(bounded_norm _).1/boundedMl/bounded_XMonemX. Qed.
 
 Lemma integrable_bernoulli_XMonemX {R : realType} U :
   (beta_prob 1 1).-integrable [set: R]
@@ -437,6 +445,8 @@ apply: integrableMl => //=.
   exact: bounded_norm_XnonemXn.
 Qed.
 
+End measurable_bernoulli.
+
 Section from_table2_to_table3.
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
@@ -451,6 +461,8 @@ apply: congr_letinl => // y V.
 rewrite !execP_sample execD_uniform/= execD_beta/=.
 by rewrite beta_prob_uniform.
 Qed.
+
+Import MeasurableR.
 
 Lemma table23 : execD (@table2' R) = execD (@table3 R).
 Proof.
@@ -521,6 +533,29 @@ Qed.
 End from_table2_to_table3.
 
 Local Open Scope ereal_scope.
+
+Lemma expr_onem_01 {R : realType} (x : R) : x \in `[0%R, 1%R] ->
+  (0 <= x.~ ^+ 3 <= 1)%R.
+Proof.
+rewrite in_itv/= => /andP[x0 x1].
+rewrite exprn_ge0 ?subr_ge0//= exprn_ile1// ?subr_ge0//.
+by rewrite lerBlDl -lerBlDr subrr.
+Qed.
+
+Lemma dirac_bool {R : realType} (U : set bool) :
+  \d_false U + \d_true U = (\sum_(x \in U) (1%E : \bar R))%R.
+Proof.
+have [| | |] := set_bool U => /eqP ->; rewrite !diracE.
+- by rewrite memNset// mem_set//= fsbig_set1 add0e.
+- by rewrite mem_set// memNset//= fsbig_set1 adde0.
+- by rewrite !in_set0 fsbig_set0 adde0.
+- rewrite !in_setT setT_bool fsbigU0//=; first by move=> x [->].
+  by rewrite !fsbig_set1.
+Qed.
+
+Section int_beta_prob01.
+Import MeasurableR.
+
 (* TODO: move? *)
 Lemma int_beta_prob01 {R : realType} (f : R -> R) a b U :
   measurable_fun [set: R] f ->
@@ -544,14 +579,6 @@ rewrite !patchE; case: ifPn => // x01.
 by rewrite /beta_pdf patchE (negbTE x01) mul0r mule0.
 Qed.
 
-Lemma expr_onem_01 {R : realType} (x : R) : x \in `[0%R, 1%R] ->
-  (0 <= x.~ ^+ 3 <= 1)%R.
-Proof.
-rewrite in_itv/= => /andP[x0 x1].
-rewrite exprn_ge0 ?subr_ge0//= exprn_ile1// ?subr_ge0//.
-by rewrite lerBlDl -lerBlDr subrr.
-Qed.
-
 Lemma int_beta_prob_bernoulli {R : realType} (U : set (@mtyp R Bool)) :
   \int[beta_prob 6 4]_y bernoulli_prob (y.~ ^+ 3) U =
   bernoulli_prob (1 / 11) U :> \bar R.
@@ -573,17 +600,6 @@ rewrite mulrAC -mulrA mulrAC 2!invfM 3!mulrA mulfV ?gt_eqF// 2!div1r.
 rewrite !addnS !addn0.
 rewrite (factS 11) (factS 10) (factS 9).
 by rewrite !factE; field.
-Qed.
-
-Lemma dirac_bool {R : realType} (U : set bool) :
-  \d_false U + \d_true U = (\sum_(x \in U) (1%E : \bar R))%R.
-Proof.
-have [| | |] := set_bool U => /eqP ->; rewrite !diracE.
-- by rewrite memNset// mem_set//= fsbig_set1 add0e.
-- by rewrite mem_set// memNset//= fsbig_set1 adde0.
-- by rewrite !in_set0 fsbig_set0 adde0.
-- rewrite !in_setT setT_bool fsbigU0//=; first by move=> x [->].
-  by rewrite !fsbig_set1.
 Qed.
 
 Lemma int_beta_prob_bernoulli_onem {R : realType} (U : set (@mtyp R Bool)) :
@@ -640,6 +656,8 @@ under eq_fsbigr.
   over.
 by rewrite /= dirac_bool.
 Qed.
+
+End int_beta_prob01.
 
 Local Close Scope ereal_scope.
 
