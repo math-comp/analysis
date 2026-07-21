@@ -44,7 +44,12 @@ Qed.
 
 End poisson_pmf.
 
-Lemma measurable_poisson_pmf {R : realType} D k : measurable D ->
+Section poisson_pmf.
+Context {R : realType}.
+
+Import MeasurableR.
+
+Lemma measurable_poisson_pmf D k : measurable D ->
   measurable_fun D (@poisson_pmf R ^~ k).
 Proof.
 move=> mD; rewrite /poisson_pmf; apply: measurable_fun_if => //.
@@ -53,10 +58,12 @@ apply: measurable_funM; first exact: measurable_funM.
 by apply: measurable_funTS; exact: measurableT_comp.
 Qed.
 
-Definition poisson_prob {R : realType} (rate : R) (k : nat)
+Definition poisson_prob (rate : R) (k : nat)
    : set nat -> \bar R :=
   fun U => if 0 < rate then
     \esum_(k in U) (poisson_pmf rate k)%:E else \d_0%N U.
+
+End poisson_pmf.
 
 Section poisson.
 Context {R : realType} (rate : R) (k : nat).
@@ -109,7 +116,12 @@ HB.instance Definition _ :=
 
 End poisson.
 
-Lemma measurable_poisson_prob {R : realType} n :
+Section measurable_poisson_prob.
+Context {R : realType}.
+
+Import MeasurableR.
+
+Lemma measurable_poisson_prob n :
   measurable_fun setT (poisson_prob ^~ n : R -> pprobability _ _).
 Proof.
 apply: (measurability (@pset _ _ _ : set_system (pprobability _ R))) => //.
@@ -126,3 +138,5 @@ apply: measurable_poisson_pmf => //.
 rewrite setTI (_ : _ @^-1` _ = `]0, +oo[%classic)//.
 by apply/seteqP; split => /= x /=; rewrite in_itv/= andbT.
 Qed.
+
+End measurable_poisson_prob.

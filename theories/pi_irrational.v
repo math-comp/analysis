@@ -25,6 +25,8 @@ Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldNormedType.Exports.
 
 (* TODO: move *)
+Import MeasurableR.
+
 Lemma measurable_poly {R : realType} (p : {poly R}) (A : set R) :
   measurable_fun A (horner p).
 Proof.
