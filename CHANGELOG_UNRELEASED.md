@@ -260,6 +260,10 @@
 - in `real_interval.v`:
   + lemma `set1_bigcap_oo`
 
+- in `filter.v`:
+  + new lemmas `near_eq_cvgE`, `near_eq_is_cvg`, `near_eq_lim`, 
+    `cvg_to_eq`, `cvg_to_withinP`, and `within_cvg_to_within`.
+
 ### Changed
 
 - in `realsum.v`:
