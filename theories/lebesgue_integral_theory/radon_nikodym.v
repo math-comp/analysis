@@ -133,14 +133,15 @@ Qed.
 End dominates_induced.
 
 Section integral_normr_continuous.
-Context d (T : measurableType d) {R : realType} (mu : {measure set T -> \bar R}).
 Local Open Scope ereal_scope.
-
-Variable f : T -> R.
+Context d (T : measurableType d) {R : realType} (mu : {measure set T -> \bar R})
+  (f : T -> R).
 Hypothesis intf : mu.-integrable setT (EFin \o f).
 
 Let intnf : mu.-integrable setT (abse \o EFin \o f).
 Proof. exact: integrable_abse. Qed.
+
+Import MeasurableR.
 
 Lemma integral_normr_continuous (e : R) : (0 < e)%R ->
   exists d : R, (0 < d)%R /\
@@ -843,15 +844,16 @@ Proof. by rewrite /f; case: pselect => // numu _; case: cid => x []. Qed.
 End radon_nikodym_sigma_finite_def.
 
 Section integrableM.
-Context d (T : measurableType d) (R : realType).
-Variables (nu : {finite_measure set T -> \bar R})
-          (mu : {sigma_finite_measure set T -> \bar R}).
+Context {d} {T : measurableType d} {R : realType}
+  (nu : {finite_measure set T -> \bar R})
+  (mu : {sigma_finite_measure set T -> \bar R}).
 Hypothesis numu : nu `<< mu.
 Implicit Types f : T -> \bar R.
 
 Local Notation "'d nu '/d mu" := (f nu mu).
 
 Import HBNNSimple.
+Import MeasurableR.
 
 Lemma change_of_variables f E : (forall x, 0 <= f x) ->
     measurable E -> measurable_fun E f ->
@@ -1105,10 +1107,9 @@ Qed.
 End radon_nikodym_lemmas.
 
 Section Radon_Nikodym_chain_rule.
-Context d (T : measurableType d) (R : realType).
-Variables (nu : {charge set T -> \bar R})
-          (la : {sigma_finite_measure set T -> \bar R})
-          (mu : {finite_measure set T -> \bar R}).
+Context {d} {T : measurableType d} {R : realType}
+  (nu : {charge set T -> \bar R}) (la : {sigma_finite_measure set T -> \bar R})
+  (mu : {finite_measure set T -> \bar R}).
 
 Lemma Radon_Nikodym_chain_rule : nu `<< mu -> mu `<< la ->
   ae_eq la setT ('d nu '/d la)

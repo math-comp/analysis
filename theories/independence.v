@@ -427,8 +427,8 @@ Qed.
 End independent_generators.
 
 Section independent_RVs2.
-Context {R : realType} d d' (T : measurableType d) (T' : measurableType d').
-Variable P : probability T R.
+Context {R : realType} {d d'} {T : measurableType d} {T' : measurableType d'}
+ (P : probability T R).
 
 Definition independent_RVs2 (X Y : {mfun T >-> T'}) :=
   independent_RVs P [set: bool] (fun b => if b then Y else X).
@@ -436,9 +436,11 @@ Definition independent_RVs2 (X Y : {mfun T >-> T'}) :=
 End independent_RVs2.
 
 Section independent_RVs2_properties.
-Context {R : realType} d d' (T : measurableType d) (T' : measurableType d').
-Variable P : probability T R.
+Context {R : realType} {d d'} {T : measurableType d} {T' : measurableType d'}
+  (P : probability T R).
 Local Open Scope ring_scope.
+
+Import MeasurableR.
 
 Lemma independent_RVs2_comp (X Y : {RV P >-> R}) (f g : {mfun R >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P (f \o X) (g \o Y).
@@ -517,9 +519,10 @@ HB.instance Definition _ (X Y : {RV P >-> T'}) :=
 End pairRV.
 
 Section independent_RVs2_properties_realType.
-Context {R : realType} d (T : measurableType d).
-Variable P : probability T R.
+Context {R : realType} {d} {T : measurableType d} (P : probability T R).
 Local Open Scope ereal_scope.
+
+Import MeasurableR.
 
 Lemma independent_RVs2_setI_preimage (X Y : {mfun T >-> R}) (A1 A2 : set R) :
   measurable A1 -> measurable A2 ->
@@ -551,9 +554,10 @@ Qed.
 End independent_RVs2_properties_realType.
 
 Section product_expectation_over_product_measure.
-Context {R : realType} d (T : measurableType d).
-Variable P : probability T R.
+Context {R : realType} {d} {T : measurableType d} (P : probability T R).
 Local Open Scope ereal_scope.
+
+Import MeasurableR.
 
 Lemma independent_Lfun1_expectation_product_measure_lty (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y ->
@@ -598,11 +602,11 @@ Qed.
 End product_expectation_over_product_measure.
 
 Section expectationM.
-Context {R : realType} d (T : measurableType d).
-Variable P : probability T R.
+Context {R : realType} {d} {T : measurableType d} (P : probability T R).
 Local Open Scope ereal_scope.
 
 Import HBNNSimple.
+Import MeasurableR.
 
 #[local] Lemma expectationM_nnsfun (f g : {nnsfun T >-> R}) :
   (forall y y', y \in range f -> y' \in range g ->
@@ -773,11 +777,11 @@ Qed.
 End expectationM.
 
 Section product_expectation.
-Context {R : realType} d (T : measurableType d).
-Variable P : probability T R.
+Context {R : realType} {d} {T : measurableType d} (P : probability T R).
 Local Open Scope ereal_scope.
 
 Import HBNNSimple.
+Import MeasurableR.
 
 Lemma independent_Lfun1_expectationM_lty (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y ->

@@ -357,10 +357,12 @@ Qed.
 End hoelder_conjugate.
 
 Section hoelder.
-Context d {T : measurableType d} {R : realType}.
-Variable mu : {measure set T -> \bar R}.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}).
 Local Open Scope ereal_scope.
 Implicit Types (p q : R) (f g : T -> R).
+
+Import MeasurableR.
 
 Let measurableT_comp_powR f p :
   measurable_fun [set: T] f -> measurable_fun setT (fun x => f x `^ p)%R.
@@ -498,6 +500,8 @@ Section hoelder2.
 Context {R : realType}.
 Local Open Scope ring_scope.
 
+Import MeasurableR.
+
 Lemma hoelder2 (a1 a2 b1 b2 : R) (p q : R) :
   0 <= a1 -> 0 <= a2 -> 0 <= b1 -> 0 <= b2 ->
   0 < p -> 0 < q -> p^-1 + q^-1 = 1 ->
@@ -533,6 +537,8 @@ Section convex_powR.
 Context {R : realType}.
 Local Open Scope ring_scope.
 Local Open Scope convex_scope.
+
+Import MeasurableR.
 
 Lemma convex_powR p : 1 <= p ->
   convex_function (`[0, +oo[%classic : set R) (@powR R ^~ p).
@@ -579,8 +585,8 @@ Qed.
 End convex_powR.
 
 Section minkowski.
-Context d (T : measurableType d) (R : realType).
-Variable mu : {measure set T -> \bar R}.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}).
 Implicit Types (f g : T -> R) (p : R).
 
 Let convex_powR_abs_half f g p x : 1 <= p ->
@@ -594,6 +600,8 @@ rewrite {2 4}(_ : 2^-1 = 1 - 2^-1); first by rewrite {2}(splitr 1) div1r addrK.
 by apply: (convex_powR p1 (Itv01 _ _)) => //=;
   rewrite ?inE/= ?in_itv/= ?normr_ge0// ?invr_ge0// invf_le1 ?ler1n.
 Qed.
+
+Import MeasurableR.
 
 Let measurableT_comp_powR f p :
   measurable_fun setT f -> measurable_fun setT (fun x => f x `^ p)%R.
@@ -788,6 +796,8 @@ Definition finite_norm d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) (p : \bar R) (f : T -> R) :=
   ('N[ mu ]_p [ EFin \o f ] < +oo)%E.
 
+Import MeasurableR.
+
 HB.mixin Record isLfunction d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E) (f : T -> R)
   & @MeasurableFun d _ T R f := {
@@ -860,7 +870,7 @@ Import numFieldNormedType.Exports HBNNSimple.
 
 HB.mixin Record isFinLebesgue d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E)
-    (f : {mfun_ mu, T >-> measurableTypeR R}) := {
+    (f : {mfun_ mu, T >-> R}) := {
   Lebesgue_finite : finite_norm mu p f
 }.
 

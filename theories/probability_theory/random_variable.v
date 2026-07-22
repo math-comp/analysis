@@ -80,10 +80,16 @@ Lemma notin_range_measure d d' (T : measurableType d) (T' : measurableType d')
   r \notin range X -> P (X @^-1` [set r]) = 0%E.
 Proof. by rewrite notin_setE => hr; rewrite preimage10. Qed.
 
+Section probability_range.
+
+Import MeasurableR.
+
 Lemma probability_range d d' (T : measurableType d) (T' : measurableType d')
     (R : realType) (P : probability T R) (X : {RV P >-> R}) :
   P (X @^-1` range X) = 1%E.
 Proof. by rewrite preimage_range probability_setT. Qed.
+
+End probability_range.
 
 Definition distribution d d' (T : measurableType d) (T' : measurableType d')
     (R : realType) (P : probability T R) (X : {mfun T >-> T'}) :=
@@ -139,6 +145,7 @@ End transfer_probability.
 
 Section pmf_definition.
 Context {d} {T : measurableType d} {R : realType} (P : probability T R).
+Import MeasurableR.
 
 Definition pmf (X : {RV P >-> R}) (r : R) : R := fine (P (X @^-1` [set r])).
 
@@ -149,6 +156,7 @@ End pmf_definition.
 
 Section pmf_measurable.
 Local Open Scope ereal_scope.
+Import MeasurableR.
 Context d (T : measurableType d) (R : realType)
   (P : probability T R) (X : {RV P >-> R}).
 
@@ -203,6 +211,7 @@ End pmf_measurable.
 
 Section lebesgue_integral_pmf.
 Local Open Scope ereal_scope.
+Import MeasurableR.
 Context d (T : measurableType d) (R : realType)
   (P : probability T R) (X : {RV P >-> R}).
 
@@ -235,12 +244,18 @@ Qed.
 
 End lebesgue_integral_pmf.
 
+Section cdf.
+Import MeasurableR.
+
 Definition cdf d (T : measurableType d) (R : realType) (P : probability T R)
   (X : {RV P >-> R}) (r : R) := distribution P X `]-oo, r].
 
+End cdf.
+
 Section cumulative_distribution_function.
-Context d {T : measurableType d} {R : realType} (P : probability T R).
-Variable X : {RV P >-> R}.
+Import MeasurableR.
+Context d {T : measurableType d} {R : realType} (P : probability T R)
+  (X : {RV P >-> R}).
 Local Open Scope ereal_scope.
 
 Lemma cdf_ge0 r : 0 <= cdf X r. Proof. by []. Qed.
@@ -271,7 +286,7 @@ have cdf_n1 : cdf X n%:R @[n --> \oo] --> 1.
   have <- : \bigcup_n F n = setT.
     rewrite -preimage_bigcup -subTset => t _/=.
     by exists (truncn (X t)).+1; rewrite //= in_itv/= ltW// truncnS_gt.
-  apply: nondecreasing_cvg_mu => //; first exact: bigcup_measurable.
+  apply: nondecreasing_cvg_measure => //; first exact: bigcup_measurable.
   move=> n m nm; apply/subsetPset => x/=; rewrite !in_itv/= => /le_trans.
   by apply; rewrite ler_nat.
 by rewrite -(cvg_unique _ cdf_ns cdf_n1).
@@ -293,7 +308,7 @@ have cdf_opp_n0 : (cdf X \o -%R) n%:R @[n --> \oo] --> 0.
   have <- : \bigcap_n F n = set0.
     rewrite -subset0 => t /(_ (Num.bound (X t)) I).
     by rewrite /F/= in_itv/= leNgt => /negP; apply; rewrite ltrNl ltrNbound.
-  apply: nonincreasing_cvg_mu => //=.
+  apply: nonincreasing_cvg_measure => //=.
   + by rewrite (le_lt_trans (probability_le1 _ _)) ?ltry.
   + exact: bigcap_measurable.
   + move=> m n mn; apply/subsetPset => x/=; rewrite !in_itv => /le_trans; apply.
@@ -322,7 +337,7 @@ have cdf_na : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> cdf X a.
   pose F n := X @^-1` `]-oo, (a + n.+1%:R^-1)%R].
   suff : P (F n) @[n --> \oo] --> P (\bigcap_n F n).
     by rewrite [in X in _ --> X -> _]/F -preimage_bigcap -itvNycEbigcap.
-  apply: nonincreasing_cvg_mu => [| | |m n mn].
+  apply: nonincreasing_cvg_measure => [| | |m n mn].
   - by rewrite -ge0_fin_numE// fin_num_measure//; exact: measurable_funPTI.
   - by move=> ?; exact: measurable_funPTI.
   - by apply: bigcap_measurable => // ? _; exact: measurable_funPTI.
@@ -339,6 +354,7 @@ End cumulative_distribution_function.
 Section cdf_of_lebesgue_stieltjes_measure.
 Context {R : realType} (f : cumulativeBounded (0:R) (1:R)).
 Local Open Scope measure_display_scope.
+Import MeasurableR.
 
 Let idTR : measurableTypeR R -> R := idfun.
 
@@ -360,7 +376,7 @@ have : lsf `]-n%:R, r] @[n --> \oo] --> (f r)%:E.
   apply: (cvg_comp _ _ (cvg_comp _ _ _ (cumulativeNy f))) => //.
   by apply: (cvg_comp _ _ cvgr_idn); rewrite ninfty.
 have : lsf `]- n%:R, r] @[n --> \oo] --> lsf (\bigcup_n `]-n%:R, r]%classic).
-  apply: nondecreasing_cvg_mu => //; first exact: bigcup_measurable.
+  apply: nondecreasing_cvg_measure => //; first exact: bigcup_measurable.
   by move=> *; apply/subsetPset/subset_itv; rewrite leBSide//= lerN2 ler_nat.
 exact: cvg_unique.
 Unshelve. all: by end_near. Qed.
@@ -368,6 +384,7 @@ Unshelve. all: by end_near. Qed.
 End cdf_of_lebesgue_stieltjes_measure.
 
 Section lebesgue_stieltjes_measure_of_cdf.
+Import MeasurableR.
 Context {R : realType} (P : probability (measurableTypeR R) R).
 Local Open Scope measure_display_scope.
 
@@ -420,12 +437,18 @@ Qed.
 
 End lebesgue_stieltjes_measure_of_cdf.
 
+Section ccdf.
+Import MeasurableR.
+
 Definition ccdf d (T : measurableType d) (R : realType) (P : probability T R)
   (X : {RV P >-> R}) (r : R) := distribution P X `]r, +oo[.
 
+End ccdf.
+
 Section complementary_cumulative_distribution_function.
-Context d {T : measurableType d} {R : realType} (P : probability T R).
-Variable X : {RV P >-> R}.
+Import MeasurableR.
+Context d {T : measurableType d} {R : realType} (P : probability T R)
+  (X : {RV P >-> R}).
 Local Open Scope ereal_scope.
 
 Lemma cdf_ccdf_1 r : cdf X r + ccdf X r = 1.
@@ -486,6 +509,7 @@ Notation "''E_' P [ X ]" := (@expectation _ _ _ P X) : ereal_scope.
 Section expectation_lemmas.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
+Import MeasurableR.
 
 Lemma expectation_def (X : {RV P >-> R}) : 'E_P[X] = (\int[P]_w (X w)%:E)%E.
 Proof. by rewrite unlock. Qed.
@@ -563,6 +587,7 @@ End expectation_lemmas.
 Section tail_expectation_formula.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
+Import MeasurableR.
 
 Let mu : {measure set _ -> \bar R} := @lebesgue_measure R.
 
@@ -1014,6 +1039,7 @@ Notation "'M_ P X" := (@mmt_gen_fun _ _ _ P X).
 Section markov_chebyshev_cantelli.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
+Import MeasurableR.
 
 Lemma markov (X : {RV P >-> R}) (f : R -> R) (eps : R) : (0 < eps)%R ->
     measurable_fun [set: R] f -> (forall r, 0 <= r -> 0 <= f r)%R ->
@@ -1240,7 +1266,8 @@ End distribution_dRV.
 
 Section discrete_distribution.
 Local Open Scope ereal_scope.
-Context d (T : pmeasurableType d) (R : realType) (P : probability T R).
+Context {d} {T : pmeasurableType d} {R : realType} (P : probability T R).
+Import MeasurableR.
 
 Lemma dRV_expectation (X : {dRV P >-> R}) :
   P.-integrable [set: T] (EFin \o X) ->

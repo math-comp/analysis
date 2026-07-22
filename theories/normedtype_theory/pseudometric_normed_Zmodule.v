@@ -1169,17 +1169,26 @@ Proof. by rewrite norm_cvg0P. Qed.
 
 End cvg_composition_pseudometric.
 
-Lemma within_continuousB {T : topologicalType} {K : numFieldType}
-    {V : pseudoMetricNormedZmodType K} (A : set T) (f g : T -> V) :
+Section within_continuous_lemmas.
+Context {T : topologicalType} {K : numFieldType}
+  {V : pseudoMetricNormedZmodType K} (A : set T).
+Implicit Types f g : T -> V.
+
+Lemma within_continuousB f g :
   {within A, continuous f} -> {within A, continuous g} ->
   {within A, continuous (f - g)}.
 Proof. by move=> cf cg x; apply: cvgB; [exact: cf|exact: cg]. Qed.
 
-Lemma within_continuousD {T : topologicalType} {K : numFieldType}
-    {V : pseudoMetricNormedZmodType K} (A : set T) (f g : T -> V) :
+Lemma within_continuousD f g :
   {within A, continuous f} -> {within A, continuous g} ->
   {within A, continuous (f + g)}.
 Proof. by move=> cf cg x; apply: cvgD; [exact: cf|exact: cg]. Qed.
+
+Lemma within_continuousN f :
+  {within A, continuous f} -> {within A, continuous - f}.
+Proof. move=> cf x; apply: cvgN; exact: cf. Qed.
+
+End within_continuous_lemmas.
 
 Section Closed_Ball.
 
