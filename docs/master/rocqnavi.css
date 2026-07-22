@@ -25,11 +25,6 @@ body {
   font-size: large;
 }
 
-* {
-    margin: 0em;
-    padding: 0em;
-}
-
 h1 {
     font-size: 1.5em;
     font-weight: bold;
@@ -63,8 +58,8 @@ div.content {
   max-width: 80ch;
 }
 
-div.coq, code {
-    padding: 1em;
+div.coq code {
+    padding: 0.3em;
     font-family: "Fira Code", monospace;
 }
 div.coq li {
