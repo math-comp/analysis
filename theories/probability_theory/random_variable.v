@@ -331,7 +331,7 @@ have cdf_s : cdf X r @[r --> a^'+] --> s%:E.
   by exists (a + 1)%R => //; rewrite in_itv /=; apply/andP; rewrite ltrDl.
 have cdf_ns : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> s%:E.
   move/cvge_at_rightP : cdf_s; apply; split=> [n|]; rewrite ?ltrDl //.
-  rewrite -[X in _ --> X]addr0; apply: (@cvgD _ R^o); first exact: cvg_cst.
+  rewrite -[X in _ --> X]addr0; apply: cvgD => //.
   by rewrite gtr0_cvgV0 ?cvg_shiftS; [near=> n | exact: cvgr_idn].
 have cdf_na : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> cdf X a.
   pose F n := X @^-1` `]-oo, (a + n.+1%:R^-1)%R].
@@ -372,7 +372,7 @@ have : lsf `]-n%:R, r] @[n --> \oo] --> (f r)%:E.
     rewrite /lsf /lebesgue_stieltjes_measure /measure_extension/=.
     rewrite measurable_mu_extE/= ?wlength_itv_bnd//; first exact: is_ocitv.
     by rewrite lerNl; near: n; exact: nbhs_infty_ger.
-  rewrite -[X in _ --> X](sube0 (f r)%:E); apply: (cvgeB _ (cvg_cst _ )) => //.
+  rewrite -[X in _ --> X](sube0 (f r)%:E); apply: cvgeB => //.
   apply: (cvg_comp _ _ (cvg_comp _ _ _ (cumulativeNy f))) => //.
   by apply: (cvg_comp _ _ cvgr_idn); rewrite ninfty.
 have : lsf `]- n%:R, r] @[n --> \oo] --> lsf (\bigcup_n `]-n%:R, r]%classic).
@@ -479,14 +479,14 @@ Qed.
 Lemma cvg_ccdfy0 : ccdf X @ +oo%R --> 0.
 Proof.
 have : 1 - cdf X r @[r --> +oo%R] --> 1 - 1.
-  by apply: cvgeB; [| exact: cvg_cst | exact: cvg_cdfy1].
+  by apply: cvgeB => //; exact: cvg_cdfy1.
 by rewrite subee// (eq_cvg _ _ ccdf_1_cdf).
 Qed.
 
 Lemma cvg_ccdfNy1 : ccdf X @ -oo%R --> 1.
 Proof.
 have : 1 - cdf X r @[r --> -oo%R] --> 1 - 0.
-  by apply: cvgeB; [| exact: cvg_cst | exact: cvg_cdfNy0].
+  by apply: cvgeB => //; exact: cvg_cdfNy0.
 by rewrite sube0 (eq_cvg _ _ ccdf_1_cdf).
 Qed.
 
@@ -494,7 +494,7 @@ Lemma ccdf_right_continuous : right_continuous (ccdf X).
 Proof.
 move=> r.
 have : 1 - cdf X s @[s --> r^'+] --> 1 - cdf X r.
-  by apply: cvgeB; [| exact: cvg_cst | exact: cdf_right_continuous].
+  by apply: cvgeB => //; exact: cdf_right_continuous.
 by rewrite ccdf_1_cdf (eq_cvg _ _ ccdf_1_cdf).
 Qed.
 

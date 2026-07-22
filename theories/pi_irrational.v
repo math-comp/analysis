@@ -368,7 +368,7 @@ apply: (@le_lt_trans _ _
     (\int[mu]_(x in `[0, pi]) (pi ^+ n * a ^+ n / n`!%:R))).
   apply: le_Rintegral => //=.
   - apply/continuous_compact_integrable; first exact: segment_compact.
-    by apply/continuous_subspaceT => x; exact: cvg_cst.
+    exact: within_continuous_cst.
   - move=> x.
     have ? : 0 <= pi ^+ n * a ^+ n / n`!%:R :> R.
       by rewrite mulr_ge0// mulr_ge0// exprn_ge0// pi_ge0.

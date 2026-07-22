@@ -1117,7 +1117,7 @@ Canonical oneDsqr_inum x : {itv R & `[1, +oo[} := @ItvReal R (oneDsqr x)
 Lemma oneDsqrV_le1 x : (oneDsqr\^-1) x <= 1. Proof. by rewrite invf_le1. Qed.
 
 Lemma continuous_oneDsqr : continuous oneDsqr.
-Proof. by move=> x; apply: cvgD; [exact: cvg_cst|exact: exprn_continuous]. Qed.
+Proof. by move=> x; apply: cvgD => //; exact: exprn_continuous. Qed.
 
 Lemma continuous_oneDsqrV : continuous (oneDsqr\^-1).
 Proof. by move=> x; apply: cvgV => //; exact: continuous_oneDsqr. Qed.

@@ -156,9 +156,8 @@ suff: `| \int[mu]_(x in D) f_ n x - \int[mu]_(x in D) f x | @[n \oo] --> 0.
    rewrite fin_numElt (_ : -oo = - +oo)// -lte_absl.
    move: dominated_integrable => /integrableP[?]; apply: le_lt_trans.
    by apply: (le_trans _ (@le_abse_integral _ _ _ mu D f mD _)).
-apply: (@squeeze_cvge _ _ _ _ (cst 0) _ (fun n => \int[mu]_(x in D) g_ n x)).
+apply: (@squeeze_cvge _ _ _ _ (cst 0) _ (fun n => \int[mu]_(x in D) g_ n x)) => //.
 - by apply: nearW => n; rewrite abse_ge0//=; exact: h.
-- exact: cvg_cst.
 - exact: dominated_cvg0.
 Qed.
 
@@ -193,7 +192,7 @@ pose f' := f \_ (D `\` N); pose g' := g \_ (D `\` N).
 pose f_' := fun n => f_ n \_ (D `\` N).
 have f_f' x : D x -> f_' ^~ x @ \oo --> f' x.
   move=> Dx; rewrite /f_' /f' /restrict in_setD mem_set//=.
-  have [/= xN|/= xN] := boolP (x \in N); first exact: cvg_cst.
+  have [//=|/= xN] := boolP (x \in N).
   apply: contraPP (xN) => h; apply/negP; rewrite negbK inE; left; left.
   by apply: subN1 => /= /(_ Dx); exact: contra_not h.
 have f_g' n x : D x -> `|f_' n x| <= g' x.

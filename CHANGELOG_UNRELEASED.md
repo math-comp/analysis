@@ -260,6 +260,9 @@
 - in `real_interval.v`:
   + lemma `set1_bigcap_oo`
 
+- in `subspace_topology.v`:
+  + lemma `within_continuous_cst`
+
 ### Changed
 
 - in `realsum.v`:

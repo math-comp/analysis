@@ -753,9 +753,9 @@ exists (\bigcup_(i in range f) dK i); split.
   + by move=> ? ? [? ?][? ?]; split; [exact: closedU|exact: withinU_continuous].
   + move=> i _; split; first by apply: compact_closed; have [] := dkP i.
     apply: (continuous_subspaceW (dKsub i)).
-    apply: (@subspace_eq_continuous _ _ _ (fun=> i)).
+    apply: (@subspace_eq_continuous _ _ _ (cst i)).
       by rewrite /from_subspace => ? /set_mem ->.
-    by apply: continuous_subspaceT => ?; exact: cvg_cst.
+    exact: cst_continuous.
 Qed.
 
 Let measurable_almost_continuous' (f : rT -> rT) (eps : rT) :

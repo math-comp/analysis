@@ -319,7 +319,7 @@ have [eps exy] : exists (eps : {posnum R}),
   move=> x y Ax By bxy; have divxy := epsdiv (x, y) bxy.
   by have : set0 (x, y) by rewrite -AB0; split.
 have [->|/set0P[a A0]] := eqVneq A set0.
-  exists (fun=> 1); split; first by move => ?; exact: cvg_cst.
+  exists (cst 1); split; first exact: cst_continuous.
   - by move=> ? [? _ <-]; rewrite /= in_itv /=; apply/andP; split => //.
   - by rewrite image_set0.
   - by move=> ? [? ? <-].
@@ -330,12 +330,12 @@ have dfin x : @edist_inf R T' A x \is a fin_num.
   exact: countable_uniform.countable_uniform_bounded.
 pose f' := (fun z => fine (@edist_inf R T' A z)) \min (fun=> eps%:num).
 pose f z := (f' z)/eps%:num; exists f; split.
-- move=> x; rewrite /f; apply: (@cvgM R T (nbhs x)); last exact: cvg_cst.
+- move=> x; rewrite /f; apply: (@cvgM R T (nbhs x)) => //.
   suff : {for x, continuous (f' : T' -> R)}.
     move=> Q U; rewrite nbhs_simpl /= => f'U.
     have [J /(gauge.gauge_ent entE) entJ/filterS] := Q _ f'U; apply.
     by rewrite nbhs_simpl /= -nbhs_entourageE /=; exists J.
-  apply: continuous_min; last by apply: cvg_cst; exact: nbhs_filter.
+  apply: continuous_min; last exact: cst_continuous.
   apply: fine_cvg; first exact: nbhs_filter.
   rewrite fineK //; first exact: edist_inf_continuous.
 - move=> _ [x _ <-]; rewrite set_itvE /=; apply/andP; split.
@@ -366,9 +366,9 @@ Local Lemma Urysohn' (A B : set T) : exists (f : T -> R),
 Proof.
 have [[? [E [entE ABE0 coarseT]]]|nP] := pselect (uniform_separator A B).
   have [f] := @urysohn_separation _ R _ _ _ entE ABE0.
-  by case=> ctsf ? ? ?; exists f; split => // ? ? /= ?; apply/coarseT/ctsf.
-exists (fun=>1); split => //; first by move=> ?; exact: cvg_cst.
-by move=> ? [? _ <-]; rewrite /= in_itv /=; apply/andP; split => //.
+  by case=> ctsf ? ? ?; exists f; split => // ? ? /= ?; exact/coarseT/ctsf.
+exists (cst 1); split => //; first exact: cst_continuous.
+by move=> ? [? _ <-]/=; rewrite bound_itvE.
 Qed.
 
 Definition Urysohn (A B : set T) : T -> R := projT1 (cid (Urysohn' A B)).

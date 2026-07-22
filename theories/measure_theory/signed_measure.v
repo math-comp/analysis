@@ -374,7 +374,7 @@ Proof. by []. Qed.
 
 Let czero_sigma_additive : semi_sigma_additive czero.
 Proof.
-move=> F mF tF mUF; rewrite [X in X @ _ --> _](_ : _ = cst 0); last exact: cvg_cst.
+move=> F mF tF mUF; rewrite [X in X @ _ --> _](_ : _ = cst 0)//.
 by apply/funext => n; rewrite big1.
 Qed.
 
@@ -416,7 +416,7 @@ move=> F mF tF mUF; rewrite /cscale; rewrite [X in X @ _ --> _](_ : _ =
   apply/funext => k; rewrite fin_num_sume_distrr// => i j _ _.
   by rewrite fin_num_adde_defl// fin_num_measure.
 rewrite /mscale; have [->|r0] := eqVneq r 0%R.
-  rewrite mul0e [X in X @ _ --> _](_ : _ = (fun=> 0)); last exact: cvg_cst.
+  rewrite mul0e [X in X @ _ --> _](_ : _ = cst 0)//.
   by under eq_fun do rewrite mul0e.
 by apply: cvgeZl => //; exact: charge_semi_sigma_additive.
 Qed.
@@ -738,10 +738,9 @@ have A_cvg_0 : nu (A_ (v n)) @[n --> \oo] --> 0.
   move: cvg_nuA; rewrite -(@fineK _ (nu Aoo)) ?fin_num_measure//.
   by move=> /fine_cvgP[_ ?]; apply/cvg_ex; exists (fine (nu Aoo)).
 have mine_cvg_0 : (mine (g_ (v n) * 2^-1%:E) 1) @[n --> \oo] --> 0.
-  apply: (@squeeze_cvge _ _ _ _ _ _ (fun n => nu (A_ (v n))));
-    [|exact: cvg_cst|by []].
+  apply: (@squeeze_cvge _ _ _ _ _ _ (fun n => nu (A_ (v n)))) => //.
   by apply: nearW => n /=; rewrite nuA_g_ andbT le_min lee01 andbT mule_ge0.
-have g_cvg_0 : (g_ \o v) n @[n --> \oo] --> 0 by apply: mine2_cvg_0_cvg_0 => //=.
+have g_cvg_0 : (g_ \o v) n @[n --> \oo] --> 0 by apply: mine2_cvg_0_cvg_0 => /=.
 have nuDAoo : nu D >= nu (D `\` Aoo).
   rewrite -[in leRHS](@setDUK _ Aoo D).
     by apply: bigcup_sub => i _; exact: A_D.
@@ -898,8 +897,7 @@ apply: not_s_cvg_0.
 rewrite (_ : _ \o _ = (fun n => z_ (v n) * 2^-1%:E) \* cst 2%:E).
   by apply/funext => n/=; rewrite -muleA -EFinM mulVf ?mule1.
 rewrite (_ : 0 = 0 * 2%:E); first by rewrite mul0e.
-apply: cvgeM; [by rewrite mule_def_fin| |exact: cvg_cst].
-apply/fine_cvgP; split.
+apply: cvgeM => //; apply/fine_cvgP; split.
   move/cvgrPdist_lt : maxe_cvg_0 => /(_ _ ltr01)[M _ hM]; near=> n.
   have /hM : (M <= n)%N by near: n; exists M.
   rewrite sub0r normrN ltNge => maxe_lt1; rewrite fin_numE; apply/andP; split.

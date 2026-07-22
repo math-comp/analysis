@@ -225,15 +225,15 @@ have intRf : mu.-integrable `[x - r, x + r] (EFin \o f).
   exact: (@integrableS _ _ _ mu _ _ _ _ _ xrA intf).
 rewrite /= -mulrBr -fineB.
 - by rewrite integrable_fin_num.
-- rewrite integrable_fin_num// continuous_compact_integrable// => ?.
-  exact: cvg_cst.
+- rewrite integrable_fin_num// continuous_compact_integrable//.
+  exact: within_continuous_cst.
 rewrite -integralB_EFin //.
-  by apply: continuous_compact_integrable => // ?; exact: cvg_cst.
+  by apply: continuous_compact_integrable => //; exact: within_continuous_cst.
 under [fun _ => _ + _ ]eq_fun => ? do rewrite -EFinD.
 have int_fx : mu.-integrable `[x - r, x + r] (fun z => (f z - f x)%:E).
   under [fun z => (f z - _)%:E]eq_fun => ? do rewrite EFinB.
-  rewrite integrableB// continuous_compact_integrable// => ?.
-  exact: cvg_cst.
+  rewrite integrableB// continuous_compact_integrable//.
+  exact: within_continuous_cst.
 rewrite normrM ger0_norm // -fine_abse //.
   by rewrite integrable_fin_num.
 suff : (\int[mu]_(z in `[(x - r)%R, (x + r)%R]) `|f z - f x|%:E <=
@@ -1130,7 +1130,7 @@ apply: (sube_cvg0 _ _).1 => //.
 move: Ax; rewrite /lebesgue_pt /davg /= -/mu => Ax.
 have : (mu (ball x r))^-1 *
        `|\int[mu]_(y in ball x r) (\1_A y - \1_A x)%:E | @[r --> 0^'+] --> 0.
-  apply: (@squeeze_cvge _ _ _ R (cst 0) _ _ _ _ _ Ax) => //; [|exact: cvg_cst].
+  apply: (@squeeze_cvge _ _ _ R (cst 0) _ _ _ _ _ Ax) => //.
   near=> a; rewrite mule_ge0 ?inve_ge0///= lee_pmul2l//.
     by rewrite lebesgue_measure_ball// fin_numV// eqe mulrn_eq0/= gt_eqF.
     rewrite lebesgue_measure_ball// inver mulrn_eq0/= gt_eqF// lte_fin.
@@ -1243,11 +1243,10 @@ have E_r_ n : E x n `<=` ball x (r_ x n)%:num.
 have muEr_ n : mu (ball x (r_ x n)%:num) <= C%:E * mu (E x n).
   by rewrite /C /r_ /sval/=; case: cid => -[? ?] [].
 apply: (@squeeze_cvge _ _ _ _ (cst 0) _
-  (fun n => C%:E * davg f x (r_ x n)%:num)); last 2 first.
-  exact: cvg_cst.
+    (fun n => C%:E * davg f x (r_ x n)%:num)) => //; last first.
   move/cvge_at_rightP: fx => /(_ (fun r => (r_ x r)%:num)) fx.
-  by rewrite -(mule0 C%:E); apply: cvgeM => //;
-    [exact: cvg_cst | apply: fx; split => //; exact: r_0].
+  by rewrite -(mule0 C%:E); apply: cvgeM => //; apply: fx; split => //;
+    exact: r_0.
 near=> n.
 apply/andP; split => //=.
 apply: (@le_trans _ _ ((mu (E x n))^-1 *

@@ -348,18 +348,19 @@ Lemma cvg_cst (U : topologicalType) (x : U) (T : Type)
   (fun _ : T => x) @ F --> x.
 Proof. by apply: cvg_near_cst; near=> x0. Unshelve. all: by end_near. Qed.
 Arguments cvg_cst {U} x {T F FF}.
-#[global] Hint Resolve cvg_cst : core.
+#[global] Hint Extern 0 (_ @ _ --> _) => solve [apply: cvg_cst] : core.
 
 Lemma is_cvg_cst (U : ptopologicalType) (x : U) (T : Type)
   (F : set_system T) {FF : Filter F} :
   cvg ((fun _ : T => x) @ F).
-Proof. by apply: cvgP; apply: cvg_cst. Qed.
+Proof. exact: cvgP (cvg_cst _). Qed.
 Arguments is_cvg_cst {U} x {T F FF}.
-#[global] Hint Resolve is_cvg_cst : core.
+#[global] Hint Extern 0 (cvg (_ @ _)) => solve [apply: is_cvg_cst] : core.
+#[global] Hint Extern 0 (cvgn (_ @ _)) => solve [apply: is_cvg_cst] : core.
 
 Lemma cst_continuous {T U : topologicalType} (x : U) :
   continuous (fun _ : T => x).
-Proof. by move=> t; apply: cvg_cst. Qed.
+Proof. by move=> t; exact: cvg_cst. Qed.
 
 Section within_topologicalType.
 Context {T : topologicalType} (A : set T).
@@ -1084,7 +1085,7 @@ Section continuous_const.
 Context {X Y : topologicalType} (y : Y).
 
 #[local] Lemma cts_const : continuous (@cst X Y y).
-Proof. by move=> ?; exact: cvg_cst. Qed.
+Proof. by move=> x; exact: cvg_cst. Qed.
 
 HB.instance Definition _ := @isContinuous.Build X Y (cst y) cts_const.
 
