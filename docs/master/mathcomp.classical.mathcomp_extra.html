@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.classical.mathcomp_extra</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 8d9538a 2026.07.22-19:39" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 8d9538a 2026.07.23-19:39" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -269,7 +269,17 @@ MathComp 2.3 additions
 <br/>
 <span class="vernacular">Module</span><span class="id"> </span><span id="Order" class="id"><div name="Order" class=" tooltip">Order<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/8d9538acc348d7079d2b5b3abc8c68992a327893/classical/mathcomp_extra.v#L31' target='_blank'>Source code</a></span></div></span>.<br/>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.order.html#Order">Order</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Order.default_display" class="id"><div name="Order.default_display" class=" tooltip">default_display<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/8d9538acc348d7079d2b5b3abc8c68992a327893/classical/mathcomp_extra.v#L33' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.preorder.html#Order.disp_t">disp_t</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Order.default_display" class="id"><div name="Order.default_display" class=" tooltip">default_display<span class='tooltip-area'><p>sigT_fun :
+forall {I : Type} {X : I -> Type} {T : Type},
+(forall i : I, X i -> T) -> {i : I & X i} -> T
+
+sigT_fun is not universe polymorphic
+Arguments sigT_fun {I}%_type_scope {X}%_function_scope 
+  {T}%_type_scope f%_function_scope x
+sigT_fun is transparent
+Expands to: Constant mathcomp.classical.unstable.sigT_fun
+Declared in library mathcomp.classical.unstable, line 504, characters 11-19
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/8d9538acc348d7079d2b5b3abc8c68992a327893/classical/mathcomp_extra.v#L33' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.order.preorder.html#Order.disp_t">disp_t</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">

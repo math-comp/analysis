@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.hoelder</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 8d9538a 2026.07.22-19:39" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 8d9538a 2026.07.23-19:39" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -301,24 +301,7 @@ Lp-spaces and properties of Lp-norms:
 <span class="vernacular">Declare</span><span class="vernacular"> Scope</span><span class="id"> Lnorm_scope</span>.<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
-<span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>Lnorm_unlock_subterm :
-unlockable
-  (fun (d : measure_display) (T : measurableType d) 
-     (R : realType) (mu : measure T R) (p : \bar R) 
-     (f : T -> \bar R) =>
-   match p with
-   | p0%:E => ((\int[mu]_x `|f x| `^ p0) `^ p0^-1)%E
-   | +oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_sup mu (abse \o f) else 0%R
-   | -oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_inf mu (abse \o f) else 0%R
-   end)
-
-Lnorm_unlock_subterm is not universe polymorphic
-Lnorm_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.hoelder.Lnorm_unlock_subterm
-Declared in library mathcomp.analysis.hoelder, line 66, characters 0-389
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/8d9538acc348d7079d2b5b3abc8c68992a327893/theories/hoelder.v#L66' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span>.<span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>Lnorm_unlock_subterm :
+<span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/8d9538acc348d7079d2b5b3abc8c68992a327893/theories/hoelder.v#L66' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span>.<span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>Lnorm_unlock_subterm :
 unlockable
   (fun (d : measure_display) (T : measurableType d) 
      (R : realType) (mu : measure T R) (p : \bar R) 
@@ -393,7 +376,7 @@ Declared in library mathcomp.analysis.hoelder, line 66, characters 0-389
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span><span class="id">%E</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#mu:4">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#T:2">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'&gt;'_x"> &gt;</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'&gt;'_x"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.ess_sup_inf.html#ess_sup">ess_sup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#mu:4">mu</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#abse">abse</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#f:6">f</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">0</span><br/>
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-oo'">-oo</a></span><span class="id">%E</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#mu:4">mu</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#T:2">T</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'&gt;'_x"> &gt;</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'&gt;'_x"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.ess_sup_inf.html#ess_inf">ess_inf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#mu:4">mu</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#abse">abse</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#f:6">f</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">0</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">end</span>.<br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_Lnorm" class="id"><div name="locked_Lnorm" class=" tooltip">locked_Lnorm<span class='tooltip-area'><p>locked_Lnorm :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="locked_Lnorm" class="id"><div name="locked_Lnorm" class=" tooltip">locked_Lnorm<span class='tooltip-area'><p>Lnorm_unlock_subterm :
 unlockable
   (fun (d : measure_display) (T : measurableType d) 
      (R : realType) (mu : measure T R) (p : \bar R) 
@@ -406,10 +389,10 @@ unlockable
        if (0%R < mu [set: T]%classic)%E then ess_inf mu (abse \o f) else 0%R
    end)
 
-locked_Lnorm is not universe polymorphic
-locked_Lnorm is transparent
-Expands to: Constant mathcomp.analysis.hoelder.locked_Lnorm
-Declared in library mathcomp.analysis.hoelder, line 74, characters 10-22
+Lnorm_unlock_subterm is not universe polymorphic
+Lnorm_unlock_subterm is transparent
+Expands to: Constant mathcomp.analysis.hoelder.Lnorm_unlock_subterm
+Declared in library mathcomp.analysis.hoelder, line 66, characters 0-389
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/8d9538acc348d7079d2b5b3abc8c68992a327893/theories/hoelder.v#L74' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#Unlockable">Unlockable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#unlock">Lnorm</a></span>.<span class="id"><a href="mathcomp.analysis.hoelder.html#unlock">unlock</a></span>.<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.hoelder.html#body">Lnorm</a></span><span class="id"> {d</span><span class="id"> T</span><span class="id"> R}</span><span class="id"> mu</span><span class="id"> p</span><span class="id"> f</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Close</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
@@ -554,13 +537,23 @@ Qed.</div></details>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="hoelder_conjugate" class="id"><div name="hoelder_conjugate" class=" tooltip">hoelder_conjugate<span class='tooltip-area'><p>hoelder_conjugate : forall {R : realType}, \bar R -> \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="hoelder_conjugate" class="id"><div name="hoelder_conjugate" class=" tooltip">hoelder_conjugate<span class='tooltip-area'><p>locked_Lnorm :
+unlockable
+  (fun (d : measure_display) (T : measurableType d) 
+     (R : realType) (mu : measure T R) (p : \bar R) 
+     (f : T -> \bar R) =>
+   match p with
+   | p0%:E => ((\int[mu]_x `|f x| `^ p0) `^ p0^-1)%E
+   | +oo%E =>
+       if (0%R < mu [set: T]%classic)%E then ess_sup mu (abse \o f) else 0%R
+   | -oo%E =>
+       if (0%R < mu [set: T]%classic)%E then ess_inf mu (abse \o f) else 0%R
+   end)
 
-hoelder_conjugate is not universe polymorphic
-Arguments hoelder_conjugate {R} p%_ereal_scope
-hoelder_conjugate is transparent
-Expands to: Constant mathcomp.analysis.hoelder.hoelder_conjugate
-Declared in library mathcomp.analysis.hoelder, line 197, characters 11-28
+locked_Lnorm is not universe polymorphic
+locked_Lnorm is transparent
+Expands to: Constant mathcomp.analysis.hoelder.locked_Lnorm
+Declared in library mathcomp.analysis.hoelder, line 74, characters 10-22
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/8d9538acc348d7079d2b5b3abc8c68992a327893/theories/hoelder.v#L197' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="p:58" class="id"><div name="p:58" class=" tooltip">p<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/8d9538acc348d7079d2b5b3abc8c68992a327893/theories/hoelder.v#L197' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#hoelder_conjugate.R">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#p:58">p</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.eqtype.html#df45e8c2e8370fd4f0f7c4fdaf208180"> ==</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.eqtype.html#df45e8c2e8370fd4f0f7c4fdaf208180"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">1</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.hoelder.html#p:58">p</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.eqtype.html#df45e8c2e8370fd4f0f7c4fdaf208180"> ==</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.eqtype.html#df45e8c2e8370fd4f0f7c4fdaf208180"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-oo'">-oo</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><br/>

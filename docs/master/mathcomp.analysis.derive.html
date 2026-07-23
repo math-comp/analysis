@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.derive</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 8d9538a 2026.07.22-19:39" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 8d9538a 2026.07.23-19:39" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -447,8 +447,8 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> jacobian</span>.<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="jacobian" class="id"><div name="jacobian" class=" tooltip">jacobian<span class='tooltip-area'><p>diff :
-forall {K : numDomainType} {V W : normedModType K} [F : filter.filter_on V],
-phantom (set_system V) (filter.filter F) ->
+forall {K : numDomainType} {V W : normedModType K} [F : filter_on V],
+phantom (set_system V) F ->
 (V -> W) -> Linear_type__canonical__classical_sets_Pointed (R:=K) V W
 
 diff is not universe polymorphic
@@ -517,10 +517,7 @@ Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="derive" class="id"><div name="derive" class=" tooltip">derive<span class='tooltip-area'><p>jacobian :
 forall [n m : nat] [R : numFieldType],
 ('rV_n -> 'rV_m) ->
-filter.Filtered.sort
-  (topology_structure.Topological.Exports.topology_structure_Topological__to__filter_Filtered
-     (matrix_matrix__canonical__normed_module_NormedModule R 1 n)) ->
-'M_(n, m)
+matrix_matrix__canonical__normed_module_NormedModule R 1 n -> 'M_(n, m)
 
 jacobian is not universe polymorphic
 Arguments jacobian [n m]%_nat_scope [R] f%_function_scope p
@@ -538,10 +535,8 @@ forall {R : numFieldType} {V W : normedModType R},
 (V -> W) ->
 V ->
 V ->
-filter.PointedFiltered.Exports.filter_PointedFiltered__to__classical_sets_Pointed
-  (filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_PointedFiltered
-     (join_normed_module_NormedModule_between_GRing_LSemiModule_and_filter_PointedNbhs
-        W))
+join_normed_module_NormedModule_between_GRing_LSemiModule_and_filter_PointedNbhs
+  W
 
 derive is not universe polymorphic
 Arguments derive {R V W} f%_function_scope (a v)%_ring_scope
@@ -733,10 +728,8 @@ Qed.</div></details>
 forall [R : numFieldType] [V : normedModType R],
 (R -> V) ->
 R ->
-filter.PointedFiltered.Exports.filter_PointedFiltered__to__classical_sets_Pointed
-  (filter.PointedNbhs.Exports.filter_PointedNbhs__to__filter_PointedFiltered
-     (join_normed_module_NormedModule_between_GRing_LSemiModule_and_filter_PointedNbhs
-        V))
+join_normed_module_NormedModule_between_GRing_LSemiModule_and_filter_PointedNbhs
+  V
 
 derive1 is not universe polymorphic
 Arguments derive1 [R V] f%_function_scope a%_ring_scope
