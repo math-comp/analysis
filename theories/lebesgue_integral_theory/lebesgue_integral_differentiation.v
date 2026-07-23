@@ -226,16 +226,15 @@ have intRf : mu.-integrable `[x - r, x + r] (EFin \o f).
 rewrite /= -mulrBr -fineB.
 - by rewrite integrable_fin_num.
 - rewrite integrable_fin_num// continuous_compact_integrable//.
-  exact: within_continuous_cst.
+  exact: cst_within_continuous.
 rewrite -integralB_EFin //.
-  by apply: continuous_compact_integrable => //; exact: within_continuous_cst.
+  by apply: continuous_compact_integrable => //; exact: cst_within_continuous.
 under [fun _ => _ + _ ]eq_fun => ? do rewrite -EFinD.
 have int_fx : mu.-integrable `[x - r, x + r] (fun z => (f z - f x)%:E).
   under [fun z => (f z - _)%:E]eq_fun => ? do rewrite EFinB.
   rewrite integrableB// continuous_compact_integrable//.
-  exact: within_continuous_cst.
-rewrite normrM ger0_norm // -fine_abse //.
-  by rewrite integrable_fin_num.
+  exact: cst_within_continuous.
+rewrite normrM ger0_norm// -fine_abse//; first by rewrite integrable_fin_num.
 suff : (\int[mu]_(z in `[(x - r)%R, (x + r)%R]) `|f z - f x|%:E <=
     (r *+ 2 * eps)%:E)%E.
   move=> intfeps; apply: le_trans.
@@ -1288,7 +1287,7 @@ rewrite muleA lee_pmul//.
   rewrite -(@invrK _ C) -invfM lee_fin lef_pV2//.
     rewrite posrE fine_gt0// (nicely_shrinking_gt0 (hE x))//=.
     by rewrite (nicely_shrinking_lty (hE x)).
-    by rewrite posrE mulr_gt0// ?invr_gt0// fine_gt0//.
+    by rewrite posrE mulr_gt0 ?invr_gt0 ?fine_gt0.
   rewrite lter_pdivrMl // -lee_fin EFinM fineK.
     by rewrite (nicely_shrinking_fin_num (hE x)).
   by have := muEr_ n; rewrite lebesgue_measure_ball.

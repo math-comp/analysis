@@ -373,7 +373,7 @@ move=> ctsf; rewrite continuous_subspace_in => ? ?.
 exact: continuous_in_subspaceT.
 Qed.
 
-Lemma within_continuous_cst {U} A u : {within A, continuous (@cst T U u)}.
+Lemma cst_within_continuous {U} A u : {within A, continuous (@cst T U u)}.
 Proof. by apply: continuous_subspaceT; exact: cst_continuous. Qed.
 
 Lemma continuous_open_subspace {U} A (f : T -> U) :

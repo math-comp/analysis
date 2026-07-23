@@ -261,7 +261,7 @@
   + lemma `set1_bigcap_oo`
 
 - in `subspace_topology.v`:
-  + lemma `within_continuous_cst`
+  + lemma `cst_within_continuous`
 
 ### Changed
 

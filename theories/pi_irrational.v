@@ -368,7 +368,7 @@ apply: (@le_lt_trans _ _
     (\int[mu]_(x in `[0, pi]) (pi ^+ n * a ^+ n / n`!%:R))).
   apply: le_Rintegral => //=.
   - apply/continuous_compact_integrable; first exact: segment_compact.
-    exact: within_continuous_cst.
+    exact: cst_within_continuous.
   - move=> x.
     have ? : 0 <= pi ^+ n * a ^+ n / n`!%:R :> R.
       by rewrite mulr_ge0// mulr_ge0// exprn_ge0// pi_ge0.
@@ -403,7 +403,7 @@ move/rationalP => [a [b]]; have [->|b0 piratE] := eqVneq b O.
   by rewrite invr0 mulr0; apply/eqP; rewrite gt_eqF// pi_gt0.
 have [na ana] : exists na, (a%:~R = na%:R :> R)%R.
   exists `|a|%N; rewrite natr_absz gtr0_norm//.
-  by have := @pi_gt0 R; rewrite piratE pmulr_lgt0 ?invr_gt0 ?ltr0n ?lt0n// ltr0z.
+  by have := @pi_gt0 R; rewrite piratE pmulr_lgt0 ?invr_gt0 ?ltr0n ?lt0n ?ltr0z.
 rewrite {}ana in piratE.
 have [N _] := pi_irrational.intfsin_small b0 (esym piratE) (@ltr01 R).
 near \oo%classic => n.

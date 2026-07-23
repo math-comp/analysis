@@ -298,7 +298,7 @@ rewrite fine_le//.
   by apply: continuous_in_subspaceT => z _; exact: continuous_u.
 - apply: integrable_fin_num => //=.
   apply: continuous_compact_integrable; first exact: segment_compact.
-  exact: within_continuous_cst.
+  exact: cst_within_continuous.
 apply: ge0_le_integral => //=.
 - by move=> y _; rewrite lee_fin u_ge0.
 - by apply/measurable_EFinP => /=; apply/measurable_funTS; exact: measurable_u.
