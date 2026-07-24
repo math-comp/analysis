@@ -1064,57 +1064,50 @@ End PSumPair.
 (* -------------------------------------------------------------------- *)
 (* FIXME: MOVE ME                                                       *)
 Section SupInterchange.
-Context {R : realType} {T U : Type}.
-Variable S : T -> U -> R.
+Context {R : realType} {X Y : Type}.
+Variable S : X -> Y -> R.
 
 Local Open Scope classical_set_scope.
 
-Let row x := [set r | exists y, r = S x y].
-Let col y := [set r | exists x, r = S x y].
-Let rows := [set r | exists x, r = sup (row x)].
-Let cols := [set r | exists y, r == sup (col y)].
+Let row x := range (S x).
+Let col y := range (S ^~ y).
+Let rows := range (sup \o row).
+Let cols := range (sup \o col).
 
-Lemma interchange_sup :
-  (forall x, has_sup [set r | exists y, r = S x y])
-  -> has_sup [set r | exists x, r = sup [set r | exists y, r = S x y]]
-  -> sup [set r | exists x, r = sup [set r | exists y, r = S x y]]
-  = sup [set r | exists y, r == sup [set r | exists x, r = S x y]].
+Lemma interchange_sup : (forall x, has_sup (row x)) -> has_sup rows ->
+  sup rows = sup cols.
 Proof.
 move=> row_sup rows_sup.
-change (forall x, has_sup (row x)) in row_sup.
-change (has_sup rows) in rows_sup.
-change (sup rows = sup cols).
 have col_nonempty y : col y !=set0.
-  case: rows_sup => + _ => -[_ [x _]].
-  by exists (S x y); exists x.
-have col_bound y : ubound (col y) (sup rows).
-  move=> _ [x ->]; apply: le_trans.
-  - have /sup_upper_bound := row_sup x.
-    by apply; exists y.
+  by case: rows_sup => -[_ [x _ _]] _; eexists; exact/imageT.
+have col_bound u : ubound (col u) (sup rows).
+  move=> r [t _ <-]; apply: le_trans.
+  - have /sup_upper_bound := row_sup t.
+    by apply; exists u.
   - have /sup_upper_bound := rows_sup.
-    by apply; exists x.
+    by apply; exists t.
 have col_le_rows y : sup (col y) <= sup rows.
   by apply: ge_sup; [exact: col_nonempty|exact: col_bound].
 have cols_sup : has_sup cols.
   split.
-  - case: rows_sup => + _ => -[_ [x _]].
-    case: (row_sup x) => + _ => -[_ [y _]].
-    by exists (sup (col y)); exists y; rewrite eqxx.
-  - by exists (sup rows) => _ [y /eqP ->]; exact: col_le_rows.
+  - case: rows_sup => -[_ [x _ _]] _.
+    case: (row_sup x) => -[_ [y _ _]] _.
+    by exists (sup (col y)), y.
+  - by exists (sup rows) => _ [y _ <-]; exact: col_le_rows.
 apply/eqP; rewrite eq_le; apply/andP; split.
 - apply: ge_sup; first by case: rows_sup.
-  move=> _ [x ->].
-  apply: ge_sup; first by have [] := row_sup x.
-  move=> ? [y ->]; apply: le_trans.
+  move=> _ [x _ <-].
+  apply: ge_sup; first by case: (row_sup x).
+  move=> _ [y _ <-]; apply: le_trans.
     suff col_y_sup : has_sup (col y).
       move: col_y_sup => /sup_upper_bound.
       by apply; exists x.
     split; first exact: col_nonempty.
     by exists (sup rows).
   move: cols_sup => /sup_upper_bound.
-  by apply; exists y; rewrite eqxx.
-- apply: ge_sup; first by have [] := cols_sup.
-  by move=> _ [y /eqP ->]; exact: col_le_rows.
+  by apply; exists y.
+- apply: ge_sup; first by case: cols_sup.
+  by move=> _ [y _ <-]; exact: col_le_rows.
 Qed.
 
 End SupInterchange.
