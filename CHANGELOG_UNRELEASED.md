@@ -263,6 +263,15 @@
 - in `subspace_topology.v`:
   + lemma `cst_within_continuous`
 
+- in `realsum.v`:
+  + lemmas `interchange_sup` is no longer
+    deprecated and moved to `reals.v`
+  + lemma `interchange_psum` is no longer deprecated
+- in `distr.v`:
+  + lemmas `dlet_dlet`, `dmargin_dlet`, `dlet_dmargin`, `dfst_dswap`,
+    `dsnd_dswap`, `dsndE`, `pr_dlet` are no longer deprecated
+
+
 ### Changed
 
 - in `realsum.v`:

@@ -505,7 +505,7 @@ End BindTheory.
 Section DLetDLet.
 Context {T U V : choiceType} (f1 : T -> distr U) (f2 : U -> distr V).
 
-Lemma __deprecated__dlet_dlet (mu : {distr T / R}) :
+Lemma dlet_dlet (mu : {distr T / R}) :
      \dlet_(x <- \dlet_(y <- mu) f1 y) f2 x
   =1 \dlet_(y <- mu) (\dlet_(x <- f1 y) f2 x).
 Proof.
@@ -513,7 +513,7 @@ move=> z; unlock dlet => /=; rewrite /mlet /=.
 pose S y x := mu x * (f1 x y * f2 y z).
 rewrite (eq_psum (F2 := fun y => PosSum.psum (S^~ y))) => [x|].
   by rewrite -psumZ //; apply/eq_psum => y /=.
-rewrite __admitted__interchange_psum.
+rewrite interchange_psum.
 + by move=> x; apply/summableZ/summable_mlet.
 + rewrite {}/S; apply/(le_summable (F2 := mu)) => //.
   move=> x; rewrite ge0_psum /= psumZ ?ler_piMr //.
@@ -522,7 +522,11 @@ rewrite __admitted__interchange_psum.
 apply/eq_psum=> y /=; rewrite -psumZr //.
 by apply/eq_psum=> x /=; rewrite {}/S mulrA.
 Qed.
+
 End DLetDLet.
+
+#[deprecated(since="1.17.0", note="use `dlet_dlet` instead")]
+Notation __deprecated__dlet_dlet := dlet_dlet (only parsing).
 
 (* -------------------------------------------------------------------- *)
 Section DLetAlg.
@@ -719,16 +723,16 @@ rewrite dmarginE dletE; apply/eq_psum => x //=.
 by rewrite mulrC dunit1E.
 Qed.
 
-Lemma __deprecated__dlet_dmargin (mu : {distr T / R}) (f : T -> U) (g : U -> {distr V / R}):
+Lemma dlet_dmargin (mu : {distr T / R}) (f : T -> U) (g : U -> {distr V / R}):
   \dlet_(u <- dmargin f mu) g u =1 \dlet_(t <- mu) (g (f t)).
 Proof.
-move=> x; rewrite __deprecated__dlet_dlet; apply: eq_in_dlet=> //.
+move=> x; rewrite dlet_dlet; apply: eq_in_dlet=> //.
 by move=> y _ z; rewrite dlet_unit.
 Qed.
 
-Lemma __deprecated__dmargin_dlet (mu : {distr T / R}) (f : U -> V) (g : T -> {distr U / R}):
+Lemma dmargin_dlet (mu : {distr T / R}) (f : U -> V) (g : T -> {distr U / R}):
   dmargin f (\dlet_(t <- mu) g t) =1 \dlet_(t <- mu) (dmargin f (g t)).
-Proof. by apply/__deprecated__dlet_dlet. Qed.
+Proof. by apply/dlet_dlet. Qed.
 
 Lemma dmargin_dunit (t : T) (f : T -> U):
   dmargin f (dunit t) =1 dunit (f t) :> {distr U / R}.
@@ -736,15 +740,10 @@ Proof. by apply/dlet_unit. Qed.
 End MarginalsTh.
 End Std.
 
-#[deprecated(since="mathcomp-analysis 0.6.2",
-  note="relies on admitted, use __deprecated__dlet_dlet explicitly if you really want to use this lemma")]
-Notation dlet_dlet := __deprecated__dlet_dlet.
-#[deprecated(since="mathcomp-analysis 0.6.2",
-  note="relies on admitted, use __deprecated__dmargin_dlet explicitly if you really want to use this lemma")]
-Notation dmargin_dlet := __deprecated__dmargin_dlet.
-#[deprecated(since="mathcomp-analysis 0.6.2",
-  note="relies on admitted, use __deprecated__dlet_dmargin explicitly if you really want to use this lemma")]
-Notation dlet_dmargin := __deprecated__dlet_dmargin.
+#[deprecated(since="1.17.0", note="use `dmargin_dlet` instead")]
+Notation __deprecated__dmargin_dlet := dmargin_dlet (only parsing).
+#[deprecated(since="1.17.0", note="use `dlet_dmargin` instead")]
+Notation __deprecated__dlet_dmargin := dlet_dmargin (only parsing).
 
 Notation dfst mu := (dmargin fst mu).
 Notation dsnd mu := (dmargin snd mu).
@@ -787,25 +786,23 @@ Proof.
 by move=> h; apply/dinsuppP; rewrite dswapE; apply/dinsuppPn.
 Qed.
 
-Lemma __deprecated__dfst_dswap : dfst (dswap mu) =1 dsnd mu.
+Lemma dfst_dswap : dfst (dswap mu) =1 dsnd mu.
 Proof.
-move=> z; rewrite __deprecated__dlet_dlet; apply/eq_in_dlet => // -[x y].
+move=> z; rewrite dlet_dlet; apply/eq_in_dlet => // -[x y].
 by move=> _ t /=; rewrite dlet_unit /=.
 Qed.
 
-Lemma __deprecated__dsnd_dswap : dsnd (dswap mu) =1 dfst mu.
+Lemma dsnd_dswap : dsnd (dswap mu) =1 dfst mu.
 Proof.
-move=> z; rewrite __deprecated__dlet_dlet; apply/eq_in_dlet => // -[x y].
+move=> z; rewrite dlet_dlet; apply/eq_in_dlet => // -[x y].
 by move=> _ t /=; rewrite dlet_unit /=.
 Qed.
 End DSwapTheory.
 
-#[deprecated(since="mathcomp-analysis 0.6.2",
-  note="relies on admitted, use __deprecated__dfst_dswap explicitly if you really want to use this lemma")]
-Notation dfst_dswap := __deprecated__dfst_dswap.
-#[deprecated(since="mathcomp-analysis 0.6.2",
-  note="relies on admitted, use __deprecated__dsnd_dswap explicitly if you really want to use this lemma")]
-Notation dsnd_dswap := __deprecated__dsnd_dswap.
+#[deprecated(since="1.17.0", note="use `dfst_dswap` instead")]
+Notation __deprecated__dfst_dswap := dfst_dswap (only parsing).
+#[deprecated(since="1.17.0", note="use `dsnd_dswap` instead")]
+Notation __deprecated__dsnd_dswap := dsnd_dswap (only parsing).
 
 (* -------------------------------------------------------------------- *)
 Section DFst.
@@ -836,9 +833,9 @@ End DFst.
 Section DSnd.
 Context {R : realType} {T U : choiceType}.
 
-Lemma __deprecated__dsndE (mu : {distr (T * U) / R}) y :
+Lemma dsndE (mu : {distr (T * U) / R}) y :
   dsnd mu y = PosSum.psum (fun x => mu (x, y)).
-Proof. by rewrite -__deprecated__dfst_dswap dfstE; apply/eq_psum=> x; rewrite dswapE. Qed.
+Proof. by rewrite -dfst_dswap dfstE; apply/eq_psum=> x; rewrite dswapE. Qed.
 
 Lemma summable_snd (mu : {distr (T * U) / R}) y :
   summable (fun x => mu (x, y)).
@@ -848,9 +845,8 @@ by move=> x /=; rewrite dswapE.
 Qed.
 End DSnd.
 
-#[deprecated(since="mathcomp-analysis 0.6.2",
-  note="relies on admitted, use __deprecated__dsndE explicitly if you really want to use this lemma")]
-Notation dsndE := __deprecated__dsndE.
+#[deprecated(since="1.17.0", note="use `dsndE` instead")]
+Notation __deprecated__dsndE := dsndE (only parsing).
 
 (* -------------------------------------------------------------------- *)
 Section PrCoreTheory.
@@ -957,7 +953,7 @@ Context {R : realType} {T U : choiceType} {I : eqType}.
 
 Implicit Types (mu : {distr T / R}) (A B E : pred T).
 
-Lemma __deprecated__pr_dlet E f (mu : {distr U / R}) :
+Lemma pr_dlet E f (mu : {distr U / R}) :
   \P_[dlet f mu] E = \E_[mu] (fun x => \P_[f x] E).
 Proof.
 rewrite /esp -psum_sum => [x|]; first by rewrite mulr_ge0 ?ge0_pr.
@@ -965,7 +961,7 @@ rewrite /pr; unlock dlet => /=; rewrite /mlet /=.
 pose F x y := (E x)%:R * (mu y * f y x).
 transitivity (PosSum.psum (fun x => PosSum.psum (fun y => F x y))); rewrite {}/F.
   by apply/eq_psum => x; rewrite -psumZ ?ler0n.
-rewrite __admitted__interchange_psum /=; last first.
+rewrite interchange_psum /=; last first.
   apply/eq_psum=> y /=; rewrite mulrC -psumZ //.
   by apply/eq_psum=> x /=; rewrite mulrCA.
 + have := summable_pr E (dlet f mu); apply/eq_summable.
@@ -976,7 +972,7 @@ Qed.
 Lemma pr_dmargin E f (mu : {distr U / R}) :
   \P_[dmargin f mu] E = \P_[mu] [pred x | f x \in E].
 Proof.
-by rewrite /dmargin __deprecated__pr_dlet pr_exp; apply/eq_exp=> x _; rewrite pr_dunit.
+by rewrite /dmargin pr_dlet pr_exp; apply/eq_exp=> x _; rewrite pr_dunit.
 Qed.
 
 Lemma eq0_pr A mu :
@@ -1208,9 +1204,9 @@ Lemma __admitted__exp_dlet mu (nu : T -> {distr U / R}) F :
 Proof using Type*. Admitted.
 End PrTheory.
 
-#[deprecated(since="mathcomp-analysis 0.6.2",
-  note="relies on admitted, use __deprecated__pr_dlet explicitly if you really want to use this lemma")]
-Notation pr_dlet := __deprecated__pr_dlet.
+#[deprecated(since="1.17.0", note="use `pr_dlet` instead")]
+Notation __deprecated__pr_dlet := pr_dlet (only parsing).
+
 #[deprecated(since="mathcomp-analysis 0.6.2",
   note="lacks proof, use __admitted__exp_split explicitly if you really want to use this lemma")]
 Notation exp_split := __admitted__exp_split.
