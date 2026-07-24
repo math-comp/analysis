@@ -141,6 +141,7 @@ theories/probability_theory/exponential_distribution.v
 theories/probability_theory/poisson_distribution.v
 theories/probability_theory/beta_distribution.v
 theories/probability_theory/probability.v
+theories/probability_theory/counting_distr.v
 
 theories/independence.v
 
@@ -154,6 +155,8 @@ theories/all_analysis.v
 
 theories/showcase/summability.v
 theories/showcase/pnt.v
+
+theories/esum_counting.v
 
 analysis_stdlib/Rstruct_topology.v
 analysis_stdlib/showcase/uniform_bigO.v
