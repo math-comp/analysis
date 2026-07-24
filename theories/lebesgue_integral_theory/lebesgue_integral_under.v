@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat ssralg ssrnum ssrint interval.
 From mathcomp Require Import interval_inference archimedean finmap.
@@ -270,11 +270,10 @@ apply: norm_cvg0.
 have {}g_d1f_0 : (\int[mu]_(y in B) `|g_ n y - ('d1 f) a y|) @[n --> \oo] --> 0.
   exact/fine_cvg.
 apply: (@squeeze_cvgr _ _ _ _ (cst 0) _ _ _ _ _ g_d1f_0) => //.
-- apply/nearW => n.
-  rewrite /= normr_ge0/= le_normr_Rintegral//.
-  rewrite /comp; under eq_fun do rewrite EFinB.
-  by apply: integrableB => //; exact: intg_.
-- exact: cvg_cst.
+apply/nearW => n.
+rewrite /= normr_ge0/= le_normr_Rintegral//.
+rewrite /comp; under eq_fun do rewrite EFinB.
+by apply: integrableB => //; exact: intg_.
 Unshelve. all: end_near. Qed.
 
 Lemma differentiation_under_integral :

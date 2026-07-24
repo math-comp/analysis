@@ -48,7 +48,7 @@ Implicit Types x y : R.
 Lemma continuous_onemXn n x : {for x, continuous (fun y => y.~ ^+ n)}.
 Proof.
 apply: (@continuous_comp _ _ _ (@onem R) (fun x => x ^+ n)).
-  by apply: (@cvgB _ R^o); [exact: cvg_cst|exact: cvg_id].
+  exact: (@cvgB _ R^o).
 exact: exprn_continuous.
 Qed.
 
@@ -65,11 +65,11 @@ Lemma derivable_oo_LRcontinuous_onemXnMr n x :
 Proof.
 split.
 - by move=> y y01; apply: derivableM => //=; exact: onemXn_derivable.
-- apply: cvgM; last exact: cvg_cst.
+- apply: cvgM => //.
   apply: cvg_at_right_filter; apply: (@cvg_comp _ _ _ onem (fun x => x ^+ n)).
     by apply: cvgB; [exact: cvg_cst|exact: cvg_id].
   exact: exprn_continuous.
-- apply: cvg_at_left_filter; apply: cvgM; last exact: cvg_cst.
+- apply: cvg_at_left_filter; apply: cvgM => //.
   apply: (@cvg_comp _ _ _ onem (fun x => x ^+ n)).
     by apply: cvgB; [exact: cvg_cst|exact: cvg_id].
   exact: exprn_continuous.
@@ -264,7 +264,7 @@ rewrite (@Rintegration_by_parts _ _ (fun x => x.~ ^+ b.+1 / - b.+1%:R)
     (fun x => a.+1%:R * x ^+ a)).
 - exact: ltr01.
 - apply/continuous_subspaceT => x.
-  by apply: cvgM; [exact: cvg_cst|exact: exprn_continuous].
+  by apply: cvgM => //; exact: exprn_continuous.
 - split.
     by move=> x x01; exact: exprn_derivable.
     exact/cvg_at_right_filter/exprn_continuous.

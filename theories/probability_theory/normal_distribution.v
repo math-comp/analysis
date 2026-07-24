@@ -116,12 +116,12 @@ Proof. by apply: measurable_funM => //=; exact: measurable_normal_fun. Qed.
 
 Lemma continuous_normal_pdf0 m s : continuous (normal_pdf0 m s).
 Proof.
-move=> x; apply: cvgM; first exact: cvg_cst.
+move=> x; apply: cvgM => //.
 apply: (cvg_comp _ expR); last exact: continuous_expR.
-apply: cvgM; last exact: cvg_cst.
-apply: (@cvgN _ R^o).
+apply: cvgM => //.
+apply: cvgN.
 apply: (cvg_comp (fun x => x - m) (fun x => x ^+ 2)).
-  by apply: (@cvgB _ R^o) => //; [exact: cvg_id|exact: cvg_cst].
+  by apply: cvgB => //; exact: cvg_id.
 exact: sqr_continuous.
 Qed.
 
@@ -248,9 +248,9 @@ congr *%E; last by rewrite -(mulr_natr (_ ^+ 2)) sqrtrM ?sqr_ge0.
 rewrite -increasing_ge0_integration_by_substitutionT//.
 - move=> x y xy; rewrite /F ltr_pM2r ?ltr_leB ?gt_eqF//.
   by rewrite invr_gt0 ?sqrtr_gt0 ?pmulrn_lgt0 ?exprn_even_gt0.
-- by rewrite F'E => ?; exact: cvg_cst.
-- by rewrite F'E; exact: is_cvg_cst.
-- by rewrite F'E; exact: is_cvg_cst.
+- by rewrite F'E; exact: cst_continuous.
+- by rewrite F'E.
+- by rewrite F'E.
 - apply/gt0_cvgMlNy; last exact: cvg_addrr_Ny.
   by rewrite invr_gt0// sqrtr_gt0 -mulr_natr mulr_gt0// exprn_even_gt0.
 - apply/gt0_cvgMly; last exact: cvg_addrr.

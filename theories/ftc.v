@@ -1181,11 +1181,11 @@ Lemma integration_by_substitution_oppr G a b : (a <= b)%R ->
 Proof.
 move=> ab cG; have Dopp: (@GRing.opp R)^`() = cst (-1)%R.
   by apply/funext => z; rewrite derive1E derive_val.
-rewrite (@integration_by_substitution_decreasing -%R)//.
+rewrite (@integration_by_substitution_decreasing -%R _ _ _ ab _ _ _ _ _ cG).
 - by move=> ? ? _ _; rewrite ltrN2.
-- by rewrite Dopp => ? _; exact: cvg_cst.
-- by rewrite Dopp; apply: is_cvgN; exact: is_cvg_cst.
-- by rewrite Dopp; apply: is_cvgN; exact: is_cvg_cst.
+- by rewrite Dopp//; apply: in1W; exact: cst_continuous.
+- by rewrite Dopp.
+- by rewrite Dopp.
 - split => //.
   + by rewrite -at_leftN; exact: cvg_at_left_filter.
   + by rewrite -at_rightN; exact: cvg_at_right_filter.
@@ -1426,19 +1426,17 @@ Proof.
 move=> /continuous_within_itvNycP[cG GNa] G0.
 have Dopp : (@GRing.opp R)^`() = cst (- 1)%R.
   by apply/funext => z; rewrite derive1E derive_val.
-rewrite decreasing_ge0_integration_by_substitutiony//.
+rewrite (decreasing_ge0_integration_by_substitutiony _ _ _ _ _ _ _ G0).
 - by move=> x y _ _; rewrite ltrN2.
-- by rewrite Dopp => ? _; exact: cst_continuous.
-- by rewrite Dopp; apply: is_cvgN; exact: is_cvg_cst.
-- by rewrite Dopp; apply: is_cvgN; exact: is_cvg_cst.
-- split.
-  + by [].
-  + by apply: cvgN; exact: cvg_at_right_filter.
-  exact/cvgNrNy.
+- by rewrite Dopp; apply: in1W; exact: cst_continuous.
+- by rewrite Dopp.
+- by rewrite Dopp.
+- by split => //; apply: cvgN; exact: cvg_at_right_filter.
+- exact/cvgNrNy.
 - exact/continuous_within_itvNycP.
-apply: eq_integral => x _; congr EFin.
-rewrite fctE -[RHS]mulr1; congr *%R.
-by rewrite fctE derive1E deriveN// opprK derive_id.
+- apply: eq_integral => x _; congr EFin.
+  rewrite fctE -[RHS]mulr1; congr *%R.
+  by rewrite fctE derive1E deriveN// opprK derive_id.
 Qed.
 
 Lemma increasing_ge0_integration_by_substitutiony F G a :
@@ -1804,11 +1802,11 @@ have dshiftE : (shift e)^`() = cst 1.
   by apply/funext => x; rewrite derive1E -(derive_shift 1 e).
 rewrite (@increasing_ge0_integration_by_substitutiony _ (shift e))//=.
 - by move=> x y _ _ xy; rewrite ltr_leD.
-- by rewrite dshiftE => ? _; exact: cst_continuous.
-- by rewrite dshiftE; exact: is_cvg_cst.
-- by rewrite dshiftE; exact: is_cvg_cst.
+- by rewrite dshiftE; apply: in1W; exact: cst_continuous.
+- by rewrite dshiftE.
+- by rewrite dshiftE.
 - split; first by move=> x _; exact: ex_derive.
-  by apply/cvg_at_right_filter; apply: cvgD => //; exact: cvg_cst.
+  by apply/cvg_at_right_filter; exact: cvgD.
 - exact: cvg_addrr.
 by rewrite dshiftE mulr1.
 Qed.
@@ -1824,11 +1822,11 @@ have dshiftE : (shift e)^`() = cst 1.
   by apply/funext => x; rewrite derive1E -(derive_shift 1 e).
 rewrite (@increasing_ge0_integration_by_substitutionNy _ (shift e))//.
 - by move=> x y _ _ xy; rewrite ltr_leD.
-- by rewrite dshiftE => ? _; exact: cst_continuous.
-- by rewrite dshiftE; exact: is_cvg_cst.
-- by rewrite dshiftE; exact: cvg_cst.
+- by rewrite dshiftE; apply: in1W; exact: cst_continuous.
+- by rewrite dshiftE.
+- by rewrite dshiftE.
 - split; first by move=> x _; exact: ex_derive.
-  by apply/cvg_at_left_filter; apply: cvgD => //; exact: cvg_cst.
+  by apply/cvg_at_left_filter; exact: cvgD.
 - exact: cvg_addrr_Ny.
 by rewrite dshiftE mulr1.
 Qed.
@@ -1855,16 +1853,16 @@ rewrite onemK onem1 => -> //; last 1 first.
 - by apply: eq_integral => x xr; rewrite !fctE derive1_onem opprK mulr1.
 - by rewrite lerBlDl lerDr ltW.
 - by move=> x y _ _ xy; rewrite ler_ltB.
-- by rewrite derive1_onem; move=> ? ?; exact: cvg_cst.
-- by rewrite derive1_onem; exact: is_cvg_cst.
-- by rewrite derive1_onem; exact: is_cvg_cst.
+- by rewrite derive1_onem; apply: in1W; exact: cst_continuous.
+- by rewrite derive1_onem.
+- by rewrite derive1_onem.
 split => /=.
 - by move=> x xr1; exact: derivableB.
 - apply: cvg_at_right_filter; rewrite onemK.
   apply: (@continuous_comp_cvg _ _ _ _ onem)=> //=.
-    by move=> x; apply: continuousB => //; exact: cvg_cst.
+    by move=> x; apply: continuousB => //; exact: cst_continuous.
   by under eq_fun do rewrite -/(onem _) onemK; exact: cvg_id.
-- by apply: cvg_at_left_filter; apply: cvgB => //; exact: cvg_cst.
+- by apply: cvg_at_left_filter; exact: cvgB.
 Qed.
 
 Lemma Rintegration_by_substitution_onem (G : R -> R) (r : R) :

@@ -404,15 +404,14 @@ Lemma lim_near_cst {U} {F} {FF : ProperFilter F} (l : T) (f : U -> T) :
    (\forall x \near F, f x = l) -> lim (f @ F) = l.
 Proof. by move=> /cvg_near_cst/cvg_lim. Qed.
 
-Lemma lim_cst {U} {F} {FF : ProperFilter F} (k : T) :
-   lim ((fun _ : U => k) @ F) = k.
-Proof. by apply: cvg_lim; apply: cvg_cst. Qed.
+Lemma lim_cst {U} {F} {FF : ProperFilter F} (k : T) : lim (@cst U _ k @ F) = k.
+Proof. exact: cvg_lim. Qed.
 
 Lemma cvgi_lim {U} {F} {FF : ProperFilter F} (f : U -> T -> Prop) (l : T) :
   F (fun x : U => is_subset1 (f x)) ->
   f `@ F --> l -> lim (f `@ F) = l.
 Proof.
-move=> f_prop fl; apply: get_unique => // l' fl'; exact: cvgi_unique _ fl' fl.
+by move=> f_prop fl; apply: get_unique =>// l' fl'; exact: cvgi_unique _ fl' fl.
 Qed.
 
 End hausdorff_ptopologicalType.

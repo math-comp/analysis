@@ -556,7 +556,7 @@ Arguments msum {d T R}.
 
 Section measure_zero.
 Local Open Scope ereal_scope.
-Context d (T : sigmaRingType d) (R : realFieldType).
+Context {d} {T : sigmaRingType d} {R : realFieldType}.
 
 Definition mzero (A : set T) : \bar R := 0.
 
@@ -566,9 +566,8 @@ Let mzero_ge0 B : 0 <= mzero B. Proof. by []. Qed.
 
 Let mzero_sigma_additive : semi_sigma_additive mzero.
 Proof.
-move=> F mF tF mUF; rewrite [X in X @ \oo--> _](_ : _ = cst 0).
-  by apply/funext => n; rewrite big1.
-exact: cvg_cst.
+move=> F mF tF mUF; rewrite [X in X @ _ --> _](_ : _ = cst 0)//.
+by apply/funext => n; rewrite big1.
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ mzero
@@ -612,7 +611,7 @@ move=> F mF tF mUF; rewrite [X in X @ \oo --> _](_ : _ =
     (fun n => (r%:num)%:E * \sum_(0 <= i < n) m (F i))).
   by apply/funext => k; rewrite ge0_sume_distrr.
 rewrite /mscale; have [->|r0] := eqVneq r%:num 0%R.
-  rewrite mul0e [X in X @ \oo --> _](_ : _ = cst 0); last exact: cvg_cst.
+  rewrite mul0e [X in X @ \oo --> _](_ : _ = cst 0)//.
   by under eq_fun do rewrite mul0e.
 by apply: cvgeZl => //; exact: measure_semi_sigma_additive.
 Qed.
@@ -1710,7 +1709,7 @@ have F0E r : mu (F 0%N) - (mu (F 0%N) - r) = r.
 rewrite -[x in _ --> x] F0E.
 have -> : mu \o F = fun n => mu (F 0%N) - (mu (F 0%N) - mu (F n)).
   by apply: funext => n; rewrite F0E.
-apply: cvgeB; rewrite ?fin_num_adde_defr//; first exact: cvg_cst.
+apply: cvgeB; rewrite ?fin_num_adde_defr//.
 have -> : \bigcap_n F n = F 0%N `&` \bigcap_n F n.
   by rewrite setIidr//; exact: bigcap_inf.
 rewrite -measureD // setDE setC_bigcap setI_bigcupr -[x in bigcup _ x]/G.

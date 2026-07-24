@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect_compat algebra.
 From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
@@ -199,11 +199,10 @@ Lemma le_outer_measureIC (R : realFieldType) T
 Proof.
 pose B : (set T) ^nat := bigcup2 (X `&` A) (X `&` ~` A).
 have cvg_mu : (fun n => \sum_(i < n) mu (B i)) @ \oo --> mu (B 0%N) + mu (B 1%N).
-  rewrite -2!cvg_shiftS /=.
-  rewrite [X in X @ \oo --> _](_ : _ = (fun=> mu (B 0%N) + mu (B 1%N))).
-    rewrite funeqE => i; rewrite 2!big_ord_recl /= big1 ?adde0 // => j _.
-    by rewrite /B /bigcup2 /=.
-  exact: cvg_cst.
+  set l := (X in _ --> X); rewrite -2!cvg_shiftS -[X in _ --> X]/(nbhs l)/=.
+  rewrite [X in X @ _ --> _](_ : _ = cst l)//.
+  rewrite funeqE => i; rewrite 2!big_ord_recl /= big1 ?adde0 // => j _.
+  by rewrite /B /bigcup2 /=.
 have := outer_measure_sigma_subadditive mu B.
 suff : \bigcup_n B n = X.
   move=> -> /le_trans; apply; under eq_fun do rewrite big_mkord.
@@ -637,18 +636,19 @@ Lemma measurable_mu_extE d (R : realType) (T : semiRingOfSetsType d)
   measurable X -> mu^* X = mu X.
 Proof.
 move=> mX; apply/eqP; rewrite eq_le; apply/andP; split.
-  apply: ereal_inf_lbound; exists (fun n => if n is 0%N then X else set0).
-    by split=> [[]// _|t Xt]; exists 0%N.
-  apply/cvg_lim => //; rewrite -cvg_shiftS.
-  rewrite (_ : [sequence _]_n = cst (mu X)); last exact: cvg_cst.
+  set f := fun n => if n is 0%N then X else set0.
+  apply: ereal_inf_lbound; exists f.
+    by split=> [[]//=|t Xt]; exists 0%N.
+  apply/cvg_lim => //; rewrite -cvg_shiftS -[X in _ --> X]/(nbhs (mu X)).
+  rewrite [X in X @ _](_ : _ = cst (mu X))//.
   by rewrite funeqE => n /=; rewrite big_nat_recl//= big1 ?adde0.
 apply/le_ereal_inf_tmp => x [A [mA XA] <-{x}].
 have XUA : X = \bigcup_n (X `&` A n).
   rewrite predeqE => t; split => [Xt|[i _ []//]].
   by have [i _ Ait] := XA _ Xt; exists i.
 apply: (@le_trans _ _ (\sum_(i <oo) mu (X `&` A i))%E).
-  by rewrite measure_sigma_subadditive//= -?XUA => // i; apply: measurableI.
-apply: lee_lim; [exact: is_cvg_nneseries|exact: is_cvg_nneseries|].
+  by rewrite measure_sigma_subadditive//= -?XUA => // i; exact: measurableI.
+apply: lee_lim; [exact: is_cvg_nneseries..|].
 by apply: nearW => n; apply: lee_sum => i  _; exact: measureIr.
 Qed.
 

@@ -512,7 +512,7 @@ Unshelve. all: by end_near. Qed.
 
 Lemma natmul_continuous n : continuous (fun x : V => x *+ n).
 Proof.
-case: n => [|n] x; first exact: cvg_cst.
+case: n => [|n] x; first exact: cst_continuous.
 apply/cvgrPdist_lt=> _/posnumP[e]; near=> a.
 by rewrite -mulrnBl normrMn -mulr_natr -ltr_pdivlMr.
 Unshelve. all: by end_near. Qed.
@@ -1104,19 +1104,19 @@ by move=> Cfg Cg; have := cvgD Cfg Cg; rewrite subrK add0r; apply.
 Qed.
 
 Lemma cvg_zero f a : (f - cst a) @ F --> (0 : V) -> f @ F --> a.
-Proof. by move=> Cfa; apply: cvg_sub0 Cfa (cvg_cst _). Qed.
+Proof. by move=> Cfa; exact: cvg_sub0 Cfa (cvg_cst _). Qed.
 
 Lemma subr_cvg0 f a : (fun x => f x - a) @ F --> 0 <-> f @ F --> a.
 Proof.
 split=> [?|fFk]; first exact: cvg_zero.
-by rewrite -(@subrr _ a)//; apply: cvgB => //; exact: cvg_cst.
+by rewrite -(@subrr _ a)//; exact: cvgB.
 Qed.
 
 Lemma cvg_norm f a : f @ F --> a -> `|f x| @[x --> F] --> (`|a| : K).
-Proof. by apply: continuous_cvg; apply: norm_continuous. Qed.
+Proof. by apply: continuous_cvg; exact: norm_continuous. Qed.
 
 Lemma is_cvg_norm f : cvg (f @ F) -> cvg ((Num.norm \o f : T -> K) @ F).
-Proof. by have := cvgP _ (cvg_norm _); apply. Qed.
+Proof. by have := cvgP _ (cvg_norm _); exact. Qed.
 
 Lemma norm_cvg0P f : `|f x| @[x --> F] --> (0:K^o) <-> f @ F --> 0.
 Proof.

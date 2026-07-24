@@ -1435,8 +1435,7 @@ Lemma continuous_curry (f : U * V -> W) :
     continuous (curry f) /\ forall u, continuous (curry f u).
 Proof.
 move=> ctsf; split; first last.
-  move=> u z; apply: (continuous_comp _ (ctsf (u, z))).
-  by apply: cvg_pair => //=; exact: cvg_cst.
+  by move=> u z; apply: (continuous_comp _ (ctsf (u, z))); exact: cvg_pair.
 move=> x; apply/compact_open_cvgP => K O /= cptK oO fKO.
 near=> z => w /= [+ + <-]; near: z.
 move/compact_near_coveringP/near_covering_withinP : cptK; apply.
@@ -1579,9 +1578,8 @@ Lemma cvg_big {T : Type} (F : set_system T) (r : seq I)
 Proof.
 move=> FF cvg_f.
 elim: r => [|i r IHr].
-  rewrite big_nil.
-  under eq_cvg do rewrite big_nil.
-  exact: cvg_cst.
+  rewrite big_nil [X in X @ _](_ : _ = cst x0)//.
+  by apply/funext => t; rewrite big_nil.
 rewrite big_cons.
 under eq_cvg do rewrite big_cons.
 case: ifPn => // Pi.

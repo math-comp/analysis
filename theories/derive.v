@@ -348,7 +348,7 @@ rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: cvgD.
   by exists e => //= x _ x0; apply eX; rewrite mulVf//= subrr normr0.
 rewrite /g2.
 have [->|v0] := eqVneq v 0.
-  rewrite (_ : (fun _ => _) = cst 0); last exact: cvg_cst.
+  rewrite (_ : (fun _ => _) = cst 0)//.
   by rewrite funeqE => ?; rewrite scaler0 /k littleo_lim0 // scaler0.
 apply/cvgrPdist_lt => e e0.
 rewrite nearE /=; apply/nbhs_ballP.
@@ -1372,8 +1372,8 @@ have fn0 : 0^' [set h | f (h *: v + x) != 0].
 have : (fun h => - ((f x)^-1 * (f (h *: v + x))^-1) *:
   (h^-1 *: (f (h *: v + x) - f x))) @ 0^' -->
   - (f x) ^- 2 *: 'D_v f x.
-  by apply: cvgM => //; apply: cvgN; rewrite expr2 invfM; apply: cvgM;
-     [exact: cvg_cst|  exact: cvgV].
+  by apply: cvgM => //; apply: cvgN; rewrite expr2 invfM; apply: cvgM => //;
+     exact: cvgV.
 apply: cvg_trans => A [_/posnumP[e] /= Ae].
 move: fn0; apply: filter_app; near=> h => /= fhvxn0.
 have he : ball 0 e%:num (h : R) by near: h; exists e%:num => /=.
@@ -2149,9 +2149,8 @@ move=> fx_lt_gx fg_neq df dg cf cg; case: ifPn => fg /=.
         h (shift x (k *: v)) @[k --> nbhs 0^'] --> h x.
       move=> ch.
       apply: cvg_comp; last exact: ch.
-      rewrite -[in nbhs x](add0r x).
-      apply: cvgD; last exact: cvg_cst.
-      rewrite -(scale0r v); apply: cvgZ; last exact: cvg_cst.
+      rewrite -[in nbhs x](add0r x); apply: cvgD => //.
+      rewrite -(scale0r v); apply: cvgZ => //.
       exact: nbhs_dnbhs.
     apply/(cvgr_lt (f x - g x)); last by rewrite subr_lt0.
     by apply: cvgB; exact: Hf.

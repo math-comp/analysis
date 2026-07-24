@@ -293,8 +293,8 @@ transitivity (\int[mu]_(x in D) limn (g^~ x)).
     near: n; exists (truncn (M / r)).+1 => // m /= Mrm.
     by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
   - rewrite -fx0 mule0 /g -fx0.
-    under eq_fun do rewrite mule0/=. (*TODO: notation broken*)
-    exact: cvg_cst.
+    rewrite [X in X @ _](_ : _ = cst 0)//.
+    by under eq_fun do rewrite mule0.
 rewrite (monotone_convergence mu mD mg g0 nd_g).
 under eq_fun do rewrite /g ge0_integralZl_EFin//.
 have : 0 <= \int[mu]_(x in D) f x by exact: integral_ge0.

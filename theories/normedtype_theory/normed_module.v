@@ -502,12 +502,12 @@ Arguments scale_continuous _ _ : clear implicits.
 
 Lemma scaler_continuous k : continuous (fun x : V => k *: x).
 Proof.
-by move=> x; apply: (cvg_comp2 (cvg_cst _) cvg_id (scale_continuous _ _ (_, _))).
+by move=> x; exact: (cvg_comp2 _ cvg_id (scale_continuous _ _ (_, _))).
 Qed.
 
 Lemma scalel_continuous (x : V) : continuous (fun k : K => k *: x).
 Proof.
-by move=> k; apply: (cvg_comp2 cvg_id (cvg_cst _) (scale_continuous _ _ (_, _))).
+by move=> k; apply: (cvg_comp2 cvg_id _ (scale_continuous _ _ (_, _))).
 Qed.
 
 End NormedModule_numFieldType.
@@ -585,13 +585,13 @@ Lemma is_cvgZ s f : cvg (s @ F) ->
 Proof. by have := cvgP _ (cvgZ _ _); apply. Qed.
 
 Lemma cvgZr_tmp s k a : s @ F --> k -> s x *: a @[x --> F] --> k *: a.
-Proof. by move=> ?; apply: cvgZ => //; exact: cvg_cst. Qed.
+Proof. by move=> ?; exact: cvgZ. Qed.
 
 Lemma is_cvgZr_tmp s a : cvg (s @ F) -> cvg ((fun x => s x *: a) @ F).
 Proof. by have := cvgP _ (cvgZr_tmp  _); apply. Qed.
 
 Lemma cvgZl_tmp k f a : f @ F --> a -> k \*: f @ F --> k *: a.
-Proof. by apply: cvgZ => //; exact: cvg_cst. Qed.
+Proof. exact: cvgZ. Qed.
 
 Lemma is_cvgZl_tmp k f : cvg (f @ F) -> cvg (k *: f  @ F).
 Proof. by have := cvgP _ (cvgZl_tmp  _); apply. Qed.
@@ -928,7 +928,7 @@ move=> kfin; split.
   move=> /cvgeD-/(_ (cst k) _ isT (cvg_cst _)).
   by rewrite add0e; under eq_fun => x do rewrite subeK//.
 move: k kfin => [k _ fk| |]//; rewrite -(@subee _ k%:E)//.
-by apply: cvgeB => //; exact: cvg_cst.
+exact: cvgeB.
 Qed.
 
 Lemma abse_continuous : continuous (@abse R).
@@ -968,7 +968,7 @@ move=> [s||]/=.
 - rewrite -EFinM; apply: cvg_EFin => /=.
     by apply/nbhs_EFin; near do rewrite fin_numM//.
   move=> P /= Prs; apply/nbhs_EFin=> //=.
-  by apply: near_fun => //=; apply: continuousM => //=; apply: cvg_cst.
+  by apply: near_fun => //=; apply: continuousM => //=; exact: cst_continuous.
 - rewrite gt0_muley ?lte_fin// => A [u [realu uA]].
   exists (r^-1 * u)%R; split; first by rewrite realM// realV realE ltW.
   by move=> x rux; apply: uA; move: rux; rewrite EFinM lte_pdivrMl.
@@ -1119,8 +1119,8 @@ Lemma continuous_min (f g : T -> R^o) x :
 Proof.
 move=> ctsf ctsg.
 under [_ \min _]eq_fun => ? do rewrite minr_absE.
-apply: cvgM; [|exact: cvg_cst]; apply: cvgD; first exact: cvgD.
-by apply: cvgN; apply: cvg_norm; apply: cvgB.
+apply: cvgM => //; apply: cvgD; first exact: cvgD.
+by apply: cvgN; apply: cvg_norm; exact: cvgB.
 Qed.
 
 Lemma continuous_max (f g : T -> R^o) x :
@@ -1129,8 +1129,8 @@ Lemma continuous_max (f g : T -> R^o) x :
 Proof.
 move=> ctsf ctsg.
 under [_ \max _]eq_fun => ? do rewrite maxr_absE.
-apply: cvgM; [|exact: cvg_cst]; apply: cvgD; first exact: cvgD.
-by apply: cvg_norm; apply: cvgB.
+apply: cvgM => //; apply: cvgD; first exact: cvgD.
+by apply: cvg_norm; exact: cvgB.
 Qed.
 
 End max_cts.
