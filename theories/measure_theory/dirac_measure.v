@@ -10,9 +10,8 @@ From mathcomp Require Import measurable_structure measure_function.
 (**md**************************************************************************)
 (* # The Dirac Measure                                                        *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*              \d_a == Dirac measure                                         *)
-(* ```                                                                        *)
+(* `\d_a`                                                                     *)
+(*     ~ Dirac measure                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 

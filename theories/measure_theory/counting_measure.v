@@ -8,9 +8,8 @@ From mathcomp Require Import sequences measurable_structure measure_function.
 (**md**************************************************************************)
 (* # The Counting Measure                                                     *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*      counting T R == counting measure                                      *)
-(* ```                                                                        *)
+(* `counting T R`                                                             *)
+(*     ~ counting measure                                                     *)
 (******************************************************************************)
 
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
