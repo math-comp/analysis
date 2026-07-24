@@ -1062,60 +1062,6 @@ Qed.
 End PSumPair.
 
 (* -------------------------------------------------------------------- *)
-(* FIXME: MOVE ME                                                       *)
-Section SupInterchange.
-Context {R : realType} {X Y : Type}.
-Variable S : X -> Y -> R.
-
-Local Open Scope classical_set_scope.
-
-Let row x := range (S x).
-Let col y := range (S ^~ y).
-Let rows := range (sup \o row).
-Let cols := range (sup \o col).
-
-Lemma interchange_sup : (forall x, has_sup (row x)) -> has_sup rows ->
-  sup rows = sup cols.
-Proof.
-move=> row_sup rows_sup.
-have col_nonempty y : col y !=set0.
-  by case: rows_sup => -[_ [x _ _]] _; eexists; exact/imageT.
-have col_bound u : ubound (col u) (sup rows).
-  move=> r [t _ <-]; apply: le_trans.
-  - have /sup_upper_bound := row_sup t.
-    by apply; exists u.
-  - have /sup_upper_bound := rows_sup.
-    by apply; exists t.
-have col_le_rows y : sup (col y) <= sup rows.
-  by apply: ge_sup; [exact: col_nonempty|exact: col_bound].
-have cols_sup : has_sup cols.
-  split.
-  - case: rows_sup => -[_ [x _ _]] _.
-    case: (row_sup x) => -[_ [y _ _]] _.
-    by exists (sup (col y)), y.
-  - by exists (sup rows) => _ [y _ <-]; exact: col_le_rows.
-apply/eqP; rewrite eq_le; apply/andP; split.
-- apply: ge_sup; first by case: rows_sup.
-  move=> _ [x _ <-].
-  apply: ge_sup; first by case: (row_sup x).
-  move=> _ [y _ <-]; apply: le_trans.
-    suff col_y_sup : has_sup (col y).
-      move: col_y_sup => /sup_upper_bound.
-      by apply; exists x.
-    split; first exact: col_nonempty.
-    by exists (sup rows).
-  move: cols_sup => /sup_upper_bound.
-  by apply; exists y.
-- apply: ge_sup; first by case: cols_sup.
-  by move=> _ [y _ <-]; exact: col_le_rows.
-Qed.
-
-End SupInterchange.
-
-#[deprecated(since="1.17.0", note="use `interchange_sup` instead")]
-Notation __admitted__interchange_sup := interchange_sup (only parsing).
-
-(* -------------------------------------------------------------------- *)
 Section PSumInterchange.
 Context {R : realType} {T U : choiceType}.
 
