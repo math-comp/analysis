@@ -23,10 +23,9 @@ From mathcomp Require Import lebesgue_integral_nonneg.
 (* - Daniel Li, Intégration et applications, 2016                             *)
 (*                                                                            *)
 (* Detailed contents:                                                         *)
-(* ```                                                                        *)
-(*     mu.-integrable D f == f is measurable over D and the integral of f     *)
-(*                           w.r.t. D is < +oo                                *)
-(* ```                                                                        *)
+(* `mu.-integrable D f`                                                       *)
+(*     ~ `f` is measurable over `D` and the integral of `f` w.r.t. `D`        *)
+(*       is `< +oo`                                                           *)
 (*                                                                            *)
 (******************************************************************************)
 
