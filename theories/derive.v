@@ -2391,6 +2391,33 @@ pose gL : {linear _ -> _} := HB.pack g glM.
 by apply: (@diff_unique _ _ _ _ gL); have [? ?] := dmx dM.
 Qed.
 
+Global Instance is_derive_mx_coord n m
+    (f : V -> 'M[R]_(n, m)) (f' : 'M[R]_(n,m)) (t : V) w :
+  is_derive t w f f' ->
+  forall i j, is_derive t w (fun x => f x i j) (f' i j).
+Proof.
+move=> fD i j /=.
+have fDer : derivable f t w by case: fD.
+apply/DeriveDef; last by have [_ <-] := fD; rewrite derive_mx// mxE.
+  by move/derivable_mxP : fDer => /(_ i j).
+Qed.
+
+Global Instance is_derive_mulmx n m p
+    (M : V -> 'M[R]_(n, m)) M'
+    (N : V -> 'M[R]_(m, p)) N' (t : V) w :
+  is_derive t w M M'  -> is_derive t w N N' ->
+  is_derive t w (fun t => M t *m N t) ((M' *m N t) + (M t *m N')).
+Proof.
+move=> is_der_M' is_der_N'. 
+apply (@is_derive_mx ) => i j /=.
+rewrite !mxE /=.
+under eq_fun do rewrite mxE /=.
+rewrite -!big_split /= -fct_sumE.
+apply/is_derive_sum => j0.
+rewrite mulrC addrC.
+apply/is_deriveM.
+Qed.
+
 End pointwise_derive.
 
 Section Ris_diff_mx.
@@ -2412,9 +2439,10 @@ have [diffMij dMdM] := MdM i j.
 rewrite -deriveE//.
 move/(congr1 (fun f => f v)) : dMdM.
 rewrite -(deriveE _ diffMij) => <-.
-rewrite derive_mx ?mxE//=.
+rewrite derive_mx ?mxE /=.
 apply/derivable_mxP => i0 j0/=.
 by have [/diff_derivable-/(_ v)] := MdM i0 j0.
+done.
 Qed.
 
 End Ris_diff_mx.
