@@ -1063,47 +1063,43 @@ End PSumPair.
 
 (* -------------------------------------------------------------------- *)
 Section PSumInterchange.
-Context {R : realType} {T U : choiceType}.
+Context {R : realType} {X Y : choiceType}.
 
-Lemma interchange_psum (S : T -> U -> R) : (forall x, summable (S x)) ->
-    summable (fun x => PosSum.psum (fun y => S x y)) ->
-  PosSum.psum (fun x => PosSum.psum (fun y => S x y)) =
-  PosSum.psum (fun y => PosSum.psum (fun x => S x y)).
+Let summable_pair_from_rows_psum (S : X -> Y -> R) :
+    (forall x, summable (S x)) -> summable (PosSum.psum \o S) ->
+  summable (fun xy => S xy.1 xy.2).
+Proof.
+move=> sumS sum_psumS.
+exists (PosSum.psum (PosSum.psum \o S)) => J.
+rewrite (big_fset_seq (fun xy => `|S xy.1 xy.2|))/=.
+rewrite (partition_big_imfset _ fst J (fun xy => `|S xy.1 xy.2|))/=.
+pose J1 := [fset xy.1 | xy in J]%fset.
+have := gerfin_psum J1 sum_psumS.
+rewrite (big_fset_seq (fun x => `|PosSum.psum (S x)|))/=.
+apply: le_trans; apply: ler_sum => x _.
+rewrite ger0_norm ?ge0_psum//.
+pose F := [fset xy in J | xy.1 == x]%fset.
+rewrite [leLHS](_ : _ = \sum_(xy <- F) `|S x xy.2|).
+  by rewrite /F big_fset /=; apply: eq_bigr => xy /eqP ->.
+rewrite -(big_map snd predT (fun y => `|S x y|)).
+apply: gerfinseq_psum => //.
+rewrite map_inj_in_uniq; last exact: uniq_fset_keys.
+move=> [x1 y1] [x2 y2] /[!in_fset] /= /[!inE] /=.
+by move=> /andP[_ /eqP ->] /andP[_ /eqP /= ->] ->.
+Qed.
+
+Lemma interchange_psum (S : X -> Y -> R) :
+    (forall x, summable (S x)) -> summable (PosSum.psum \o S) ->
+  PosSum.psum (PosSum.psum \o S) =
+  PosSum.psum (fun y => PosSum.psum (S ^~ y)).
 Proof.
 move=> row_summable rows_summable.
-have col_summable y : summable (fun x => `|S x y|).
-  apply: (le_summable (F2 := fun x => PosSum.psum (S x))) rows_summable => x.
-  apply/andP; split; first exact: normr_ge0.
-  exact: ger1_psum y (row_summable x).
-have rowE x : (PosSum.psum (S x))%:E =
-    \esum_(y in [set: U]) `|S x y|%:E.
-  by rewrite -psum_abs -esum_psum// summable_abs.
-have colE y : (PosSum.psum (S^~ y))%:E =
-    \esum_(x in [set: T]) `|S x y|%:E.
-  by rewrite -psum_abs -esum_psum.
-have cols_bound :
-    (\esum_(y in [set: U]) (PosSum.psum (S^~ y))%:E < +oo)%E.
-  under eq_esum => y _ do rewrite colE.
-  rewrite exchange_esum; first by move=> ? ?; rewrite lee_fin.
-  under eq_esum => x _ do rewrite -rowE.
-  rewrite esum_psum.
-  - by move=> x; exact: ge0_psum.
-  - exact: rows_summable.
-  - exact: ltey.
-have cols_summable : summable (fun y => PosSum.psum (S^~ y)).
-  apply/esum_summableP; rewrite /esum.summable.
-  apply: le_lt_trans cols_bound; apply: le_esum.
-  - by move=> y _; exact: abse_ge0.
-  - by move=> y _; rewrite /comp /= ger0_norm// ge0_psum.
-apply: EFin_inj.
-rewrite -esum_psum//; first by move=> x; exact: ge0_psum.
-under eq_esum => x _ do rewrite rowE.
-rewrite exchange_esum; first by move=> ? ?; rewrite lee_fin.
-under eq_esum => y _ do rewrite -colE.
-rewrite esum_psum.
-- by move=> y; exact: ge0_psum.
-- exact: cols_summable.
-- reflexivity.
+pose P (xy : X * Y) := S xy.1 xy.2.
+suff sumP : summable P.
+  by rewrite -[LHS](psum_pair sumP)// [LHS](psum_pair_swap sumP).
+apply: summable_pair_from_rows_psum.
+- exact: row_summable.
+- exact: eq_summable rows_summable.
 Qed.
 
 End PSumInterchange.
