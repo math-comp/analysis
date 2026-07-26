@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.probability_theory.poisson_distribution</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis eae4ba7 2026.07.25-19:34" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis eae4ba7 2026.07.26-19:39" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -301,15 +301,16 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_funTS">measurable_funTS</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurableT_comp">measurableT_comp</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="poisson_prob" class="id"><div name="poisson_prob" class=" tooltip">poisson_prob<span class='tooltip-area'><p>poisson_pmf : forall {R : realType}, R -> nat -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="poisson_prob" class="id"><div name="poisson_prob" class=" tooltip">poisson_prob<span class='tooltip-area'><p>poisson_prob : forall {R : realType}, R -> nat -> set nat -> \bar R
 
-poisson_pmf is not universe polymorphic
-Arguments poisson_pmf {R} rate%_ring_scope k%_nat_scope
-poisson_pmf is transparent
+poisson_prob is not universe polymorphic
+Arguments poisson_prob {R} rate%_ring_scope k%_nat_scope
+  _%_classical_set_scope
+poisson_prob is transparent
 Expands to: Constant
-            mathcomp.analysis.probability_theory.poisson_distribution.poisson_pmf
+            mathcomp.analysis.probability_theory.poisson_distribution.poisson_prob
 Declared in
-library mathcomp.analysis.probability_theory.poisson_distribution, line 36, characters 11-22
+library mathcomp.analysis.probability_theory.poisson_distribution, line 61, characters 11-23
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/theories/probability_theory/poisson_distribution.v#L61' target='_blank'>Source code</a></span></div></span> (<span id="rate:9" class="id"><div name="rate:9" class=" tooltip">rate<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/theories/probability_theory/poisson_distribution.v#L61' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.poisson_distribution.html#poisson_pmf.R">R</a></span>) (<span id="k:10" class="id"><div name="k:10" class=" tooltip">k<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/theories/probability_theory/poisson_distribution.v#L61' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;<span class="id">:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.poisson_distribution.html#poisson_pmf.R">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="U:11" class="id"><div name="U:11" class=" tooltip">U<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/theories/probability_theory/poisson_distribution.v#L63' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.poisson_distribution.html#rate:9">rate</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><br/>

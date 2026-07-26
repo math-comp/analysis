@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.probability_theory.normal_distribution</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis eae4ba7 2026.07.25-19:34" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis eae4ba7 2026.07.26-19:39" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -456,15 +456,15 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#NormalPdf0">NormalPdf0</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="normal_pdf" class="id"><div name="normal_pdf" class=" tooltip">normal_pdf<span class='tooltip-area'><p>NormalPdf0.normal_pdf0 : forall {R : realType}, R -> R -> R -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="normal_pdf" class="id"><div name="normal_pdf" class=" tooltip">normal_pdf<span class='tooltip-area'><p>normal_fun : forall {R : realType}, R -> R -> R -> R
 
-NormalPdf0.normal_pdf0 is not universe polymorphic
-Arguments NormalPdf0.normal_pdf0 {R} (m s x)%_ring_scope
-NormalPdf0.normal_pdf0 is transparent
+normal_fun is not universe polymorphic
+Arguments normal_fun {R} (m s x)%_ring_scope
+normal_fun is transparent
 Expands to: Constant
-            mathcomp.analysis.probability_theory.normal_distribution.NormalPdf0.normal_pdf0
+            mathcomp.analysis.probability_theory.normal_distribution.normal_fun
 Declared in
-library mathcomp.analysis.probability_theory.normal_distribution, line 104, characters 11-22
+library mathcomp.analysis.probability_theory.normal_distribution, line 58, characters 11-21
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/theories/probability_theory/normal_distribution.v#L165' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="m:69" class="id"><div name="m:69" class=" tooltip">m<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/theories/probability_theory/normal_distribution.v#L165' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="s:70" class="id"><div name="s:70" class=" tooltip">s<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/theories/probability_theory/normal_distribution.v#L165' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="x:71" class="id"><div name="x:71" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/theories/probability_theory/normal_distribution.v#L165' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:70">s</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.eqtype.html#df45e8c2e8370fd4f0f7c4fdaf208180"> ==</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.eqtype.html#df45e8c2e8370fd4f0f7c4fdaf208180"> </a></span><span class="id">0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#e353122e03268a6eab33cb5af81dd3c6">\1_</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">`[</a></span><span class="id">0</span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">,</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b"> </a></span><span class="id">1</span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">]</a></span><span class="id"><a href="mathcomp.analysis.numfun.html#e353122e03268a6eab33cb5af81dd3c6"> x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#normal_pdf0">normal_pdf0</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#m:69">m</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#s:70">s</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.normal_distribution.html#x:71">x</a></span>.<br/>
 <br/>

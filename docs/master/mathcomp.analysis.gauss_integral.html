@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.gauss_integral</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis eae4ba7 2026.07.25-19:34" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis eae4ba7 2026.07.26-19:39" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -267,17 +267,14 @@
 <span class="vernacular">Context</span><span class="id"> {</span><span id="gauss_fun.R" class="id"><div name="gauss_fun.R" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/theories/gauss_integral.v#L28' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="gauss_fun" class="id"><div name="gauss_fun" class=" tooltip">gauss_fun<span class='tooltip-area'><p>open_fam_of :
-forall [T : topologicalType],
-set T -> forall [I : Type], set I -> (I -> set T) -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="gauss_fun" class="id"><div name="gauss_fun" class=" tooltip">gauss_fun<span class='tooltip-area'><p>cover_compact : forall [T : topologicalType], set T -> Prop
 
-open_fam_of is not universe polymorphic
-Arguments open_fam_of [T] A%_classical_set_scope [I]%_type_scope
-  D%_classical_set_scope f%_function_scope
-open_fam_of is transparent
-Expands to: Constant mathcomp.analysis.topology_theory.compact.open_fam_of
+cover_compact is not universe polymorphic
+Arguments cover_compact [T] A%_classical_set_scope
+cover_compact is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.cover_compact
 Declared in
-library mathcomp.analysis.topology_theory.compact, line 298, characters 11-22
+library mathcomp.analysis.topology_theory.compact, line 293, characters 11-24
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/theories/gauss_integral.v#L31' target='_blank'>Source code</a></span></div></span> (<span id="x:2" class="id"><div name="x:2" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/theories/gauss_integral.v#L31' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.gauss_integral.html#gauss_fun.R">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#expR">expR</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.gauss_integral.html#x:2">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id">2</span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="gauss_fun_ge0" class="id"><div name="gauss_fun_ge0" class=" tooltip">gauss_fun_ge0<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/theories/gauss_integral.v#L33' target='_blank'>Source code</a></span></div></span> (<span id="x:3" class="id"><div name="x:3" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/theories/gauss_integral.v#L33' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.gauss_integral.html#gauss_fun.R">R</a></span>)<span class="id"> :</span><span class="id"> 0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span><span class="id"><a href="mathcomp.analysis.gauss_integral.html#gauss_fun">gauss_fun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.gauss_integral.html#x:3">x</a></span><br/>
