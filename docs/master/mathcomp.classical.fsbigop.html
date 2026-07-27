@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.classical.fsbigop</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis eae4ba7 2026.07.26-19:39" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis eae4ba7 2026.07.27-19:55" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -282,28 +282,14 @@
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#tt">tt</a></span>. Qed.</div></details>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="finite_support" class="id"><div name="finite_support" class=" tooltip">finite_support<span class='tooltip-area'><p>fctE :
-(forall (T T' : Type) (x : T), cst x = (fun=> x)) *
-(forall (T1 T2 T3 : Type) (f : T1 -> T2) (g : T2 -> T3),
- g \o f = (fun x : T1 => g (f x))) *
-(forall (T : Type) (K : GRing.Zmodule.Exports.zmodType) (f : T -> K),
- (- f)%R = (fun x : T => (- f x)%R)) *
-(forall (T : Type) (K : GRing.Nmodule.Exports.nmodType) (f g : T -> K),
- (f + g)%R = (fun x : T => (f x + g x)%R)) *
-(forall (T : Type) (K : pzRingType) (f g : T -> K),
- (f * g)%R = (fun x : T => (f x * g x)%R)) *
-(forall (T : Type) (K : pzRingType) (L : lmodType K) (k : K) (f : T -> L),
- (k *: f)%R = (fun x : T => (k *: f x)%R)) *
-(forall (T : Type) (K : pzRingType) (f : T -> K) (n : nat),
- (f ^+ n)%R = (fun x : T => (f x ^+ n)%R)) *
-(forall (T : Type) (K : GRing.Nmodule.Exports.nmodType) (x : T),
- (0%R : T -> K) x = 0%R) *
-(forall (T : Type) (K : pzRingType) (x : T), (1%R : T -> K) x = 1%R)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="finite_support" class="id"><div name="finite_support" class=" tooltip">finite_support<span class='tooltip-area'><p>Eq_dep_eq : Type -> Prop
 
-fctE is not universe polymorphic
-fctE is transparent
-Expands to: Constant mathcomp.classical.functions.fctE
-Declared in library mathcomp.classical.functions, line 2766, characters 11-15
+Eq_dep_eq is not universe polymorphic
+Arguments Eq_dep_eq U%_type_scope
+Eq_dep_eq is transparent
+Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Eq_dep_eq
+Declared in
+library mathcomp.classical.internal_Eqdep_dec, line 42, characters 11-20
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/classical/fsbigop.v#L42' target='_blank'>Source code</a></span></div></span><span class="id"> {</span><span id="I:5" class="id"><div name="I:5" class=" tooltip">I<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/classical/fsbigop.v#L42' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.choice.html#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span><span class="id"> {</span><span id="T:6" class="id"><div name="T:6" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/classical/fsbigop.v#L42' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> Type}</span> (<span id="idx:7" class="id"><div name="idx:7" class=" tooltip">idx<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/classical/fsbigop.v#L42' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#T:6">T</a></span>) (<span id="D:8" class="id"><div name="D:8" class=" tooltip">D<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/classical/fsbigop.v#L42' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#I:5">I</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="F:9" class="id"><div name="F:9" class=" tooltip">F<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/eae4ba78257a6c0c555ecaa44fb211ebf555de2f/classical/fsbigop.v#L43' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#I:5">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.fsbigop.html#T:6">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.seq.html#seq">seq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#I:5">I</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#locked_with">locked_with</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#finite_index_key">finite_index_key</a></span> (<span class="id"><a href="mathcomp.classical.cardinality.html#fset_set">fset_set</a></span> (<span class="id"><a href="mathcomp.classical.fsbigop.html#D:8">D</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.classical.fsbigop.html#F:9">F</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3dde060273a7d21198e50a79e780aafd">[set~</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3dde060273a7d21198e50a79e780aafd"> </a></span><span class="id"><a href="mathcomp.classical.fsbigop.html#idx:7">idx</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3dde060273a7d21198e50a79e780aafd">]</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#I:5">I</a></span>)).<br/>
