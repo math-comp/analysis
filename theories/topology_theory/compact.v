@@ -324,7 +324,7 @@ Definition closed_fam_of (A : set T) I (D : set I) (f : I -> set T) :=
 End Covers.
 
 Section PCovers.
-Variable T : ptopologicalType.
+Context {T : ptopologicalType}.
 
 Lemma compact_In0 :
   compact = [set A | forall (I : choiceType) (D : set I) (f : I -> set T),
@@ -334,14 +334,15 @@ rewrite predeqE => A; split=> [Aco I D f [g gcl feAg] finIf|Aco F FF FA].
   case: (pselect (exists i, D i)) => [[i Di] | /asboolP]; last first.
     by rewrite asbool_neg => /forallp_asboolPn D0; exists point => ? /D0.
   have [|p [Ap clfinIfp]] := Aco _ (finI_filter finIf).
-    by exists (f i); [apply: finI_from1|rewrite feAg // => ? []].
+    by exists (f i); [exact: open_finI_from1|rewrite feAg // => ? []].
   exists p => j Dj; rewrite feAg //; split=> //; apply: gcl => // B.
-  by apply: clfinIfp; exists (f j); [apply: finI_from1|rewrite feAg // => ? []].
+  apply: clfinIfp.
+  by exists (f j); [exact: open_finI_from1|rewrite feAg // => ? []].
 have finIAclF : finI F (fun B => A `&` closure B).
   apply: (@filter_finI _ F) => B FB.
   by apply: filterI => //; apply: filterS FB; apply: subset_closure.
 have [|p AclFIp] := Aco _ _ _ _ finIAclF.
-  by exists closure=> //; move=> ??; apply: closed_closure.
+  by exists closure=> //; move=> ? ?; exact: closed_closure.
 exists p; split=> [|B C FB p_C]; first by have /AclFIp [] := FA.
 by have /AclFIp [_] := FB; move=> /(_ _ p_C).
 Qed.

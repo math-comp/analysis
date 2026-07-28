@@ -965,7 +965,7 @@ rewrite interchange_psum /=; last first.
   by apply/eq_psum=> x /=; rewrite mulrCA.
 + have := summable_pr E (dlet f mu); apply/eq_summable.
   by move=> x; rewrite /= dletE psumZ ?ler0n.
-+ by move=> y; apply/summable_condl/summable_mlet.
++ by move=> t; exact/summable_condl/summable_mlet.
 Qed.
 
 Lemma pr_dmargin E f (mu : {distr U / R}) :

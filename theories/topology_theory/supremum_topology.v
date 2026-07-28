@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra finmap all_classical.
 From mathcomp Require Import topology_structure uniform_structure.
@@ -62,7 +62,7 @@ HB.instance Definition _ (I : Type) (T : pointedType) (f : I -> Topological T) :
 
 Section sup_uniform.
 Local Open Scope relation_scope.
-Variable (T : choiceType) (Ii : Type) (Tc : Ii -> Uniform T).
+Context {T : choiceType} {Ii : Type} (Tc : Ii -> Uniform T).
 
 Let I : choiceType := {classic Ii}.
 Let TS := fun i => Uniform.Pack (Tc i).
@@ -75,7 +75,7 @@ Local Lemma IEnt_pointT (i : I) : ent_of (i, setT).
 Proof. by apply/asboolP; exact: entourageT. Qed.
 
 Definition sup_ent : set_system (T * T) :=
-  filter_from (finI_from [set: IEnt] (fun p => (projT1 p).2)) id.
+  filter_from (open_finI_from [set: IEnt] (fun p => (projT1 p).2)) id.
 
 Ltac IEntP := move=> [[ /= + + /[dup] /asboolP]].
 
@@ -185,8 +185,9 @@ have [I0 | /set0P [i0 _]] := eqVneq [set: I] set0.
   move=> P [w [A _]] <- subP; exists setT => //.
   apply: subset_trans subP; apply: sub_bigcap => i _ ? _.
   by suff : [set: I] (projT1 i).1 by rewrite I0.
-exists (finI_from (\bigcup_n g n) id); split.
-- by apply/finI_from_countable/bigcup_countable => //i _; case: (projT2 (f i)).
+exists (open_finI_from (\bigcup_n g n) id); split.
+- apply/open_finI_from_countable/bigcup_countable => // i _.
+  by case: (projT2 (f i)).
 - move=> E [A AsubGn AE]; exists E => //.
   have h (w : set (T * T)) : { p : IEnt | w \in A -> w = (projT1 p).2 }.
     apply: cid; have [|] := boolP (w \in A); last first.

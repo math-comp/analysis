@@ -38,7 +38,7 @@ From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
 (*                                The HB class is SubNbhs.                    *)
 (*            filterI_iter F n == nth stage of recursively building the       *)
 (*                                filter of finite intersections of F         *)
-(*               finI_from D f == set of \bigcap_(i in E) f i where E is a    *)
+(*          open_finI_from D f == set of \bigcap_(i in E) f i where E is a    *)
 (*                                a finite subset of D                        *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -185,7 +185,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 (* Making sure that [Program] does not automatically introduce *)
-Obligation Tactic := idtac.
+#[global,export] Obligation Tactic := idtac.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
@@ -1560,41 +1560,42 @@ move=> [P sFP] [Q sFQ] PQB /filterS; apply; rewrite -PQB.
 by apply: (filterI _ _); [exact: (IH _ _ sFP)|exact: (IH _ _ sFQ)].
 Qed.
 
-Definition finI_from (I : choiceType) T (D : set I) (f : I -> set T) :=
+Definition open_finI_from (I : choiceType) T (D : set I) (f : I -> set T) :=
   [set \bigcap_(i in [set` D']) f i |
     D' in [set A : {fset I} | {subset A <= D}]].
 
-Lemma finI_from_cover (I : choiceType) T (D : set I) (f : I -> set T) :
-  \bigcup_(A in finI_from D f) A = setT.
+Lemma open_finI_from_cover (I : choiceType) T (D : set I) (f : I -> set T) :
+  \bigcup_(A in open_finI_from D f) A = setT.
 Proof.
 rewrite predeqE => t; split=> // _; exists setT => //.
 by exists fset0 => //; rewrite set_fset0 bigcap_set0.
 Qed.
 
-Lemma finI_from1 (I : choiceType) T (D : set I) (f : I -> set T) i :
-  D i -> finI_from D f (f i).
+Lemma open_finI_from1 (I : choiceType) T (D : set I) (f : I -> set T) i :
+  D i -> open_finI_from D f (f i).
 Proof.
 move=> Di; exists [fset i]%fset; first by move=> ?; rewrite !inE => /eqP ->.
 by rewrite bigcap_fset big_seq_fset1.
 Qed.
 
-Lemma finI_from_countable (I : pointedType) T (D : set I) (f : I -> set T) :
-  countable D -> countable (finI_from D f).
+Lemma open_finI_from_countable (I : pointedType) T (D : set I)
+    (f : I -> set T) :
+  countable D -> countable (open_finI_from D f).
 Proof.
 move=> ?; apply: (card_le_trans (card_image_le _ _)).
 exact: fset_subset_countable.
 Qed.
 
-Lemma finI_fromI {I : choiceType} T D (f : I -> set T) A B :
-  finI_from D f A -> finI_from D f B -> finI_from D f (A `&` B) .
+Lemma open_finI_fromI {I : choiceType} {T} D (f : I -> set T) :
+  setI_closed (open_finI_from D f).
 Proof.
-case=> N ND <- [M MD <-]; exists (N `|` M)%fset.
+move=> A B; case=> N ND <- [M MD <-]; exists (N `|` M)%fset.
   by move=> ?; rewrite inE => /orP[/ND | /MD].
 by rewrite -bigcap_setU set_fsetU.
 Qed.
 
 Lemma filterI_iter_finI {I : choiceType} T D (f : I -> set T) :
-  finI_from D f = \bigcup_n (filterI_iter (f @` D) n).
+  open_finI_from D f = \bigcup_n (filterI_iter (f @` D) n).
 Proof.
 rewrite eqEsubset; split.
   move=> A [N /= + <-]; have /finite_setP[n] := finite_fset N; elim: n N.
@@ -1613,21 +1614,31 @@ move=> A [n _]; elim: n A.
   - by rewrite set_fset0 bigcap_set0.
   - by move=> ?; rewrite !inE => /eqP ->.
   - by rewrite set_fset1 bigcap_set1.
-by move=> n IH A /= [B snB [C snC <-]]; apply: finI_fromI; apply: IH.
+by move=> n IH A /= [B snB [C snC <-]]; apply: open_finI_fromI; exact: IH.
 Qed.
 
 Lemma smallest_filter_finI {I T : choiceType} (D : set I) (f : I -> set T) :
-  filter_from (finI_from D f) id = smallest (@Filter T) (f @` D).
+  filter_from (open_finI_from D f) id = smallest (@Filter T) (f @` D).
 Proof. by rewrite filterI_iter_finI filterI_iterE. Qed.
 
 End filter_supremums.
+#[deprecated(since="mathcomp-analysis 1.17.0", use=open_finI_from)]
+Notation finI_from := open_finI_from (only parsing).
+#[deprecated(since="mathcomp-analysis 1.17.0", use=open_finI_from_cover)]
+Notation finI_from_cover := open_finI_from_cover (only parsing).
+#[deprecated(since="mathcomp-analysis 1.17.0", use=open_finI_from1)]
+Notation finI_from1 := open_finI_from1 (only parsing).
+#[deprecated(since="mathcomp-analysis 1.17.0", use=open_finI_from_countable)]
+Notation finI_from_countable := open_finI_from_countable (only parsing).
+#[deprecated(since="mathcomp-analysis 1.17.0", use=open_finI_fromI)]
+Notation finI_fromI := open_finI_fromI (only parsing).
 
 Definition finI (I : choiceType) T (D : set I) (f : I -> set T) :=
   forall D' : {fset I}, {subset D' <= D} ->
   \bigcap_(i in [set i | i \in D']) f i !=set0.
 
 Lemma finI_filter (I : choiceType) T (D : set I) (f : I -> set T) :
-  finI D f -> ProperFilter (filter_from (finI_from D f) id).
+  finI D f -> ProperFilter (filter_from (open_finI_from D f) id).
 Proof.
 move=> finIf; apply: (filter_from_proper (filter_from_filter _ _)).
 - by exists setT; exists fset0 => //; rewrite predeqE.

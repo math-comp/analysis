@@ -190,7 +190,7 @@ Lemma accessible_finite_set_closed :
 Proof.
 split => [TT1 A fA|h x y xy].
   rewrite -(fsbig_setU_set1 fA) fsbig_finite//=.
-  by apply: closed_bigsetU => x xA; exact: accessible_closed_set1.
+  by apply: bigsetU_closed => x xA; exact: accessible_closed_set1.
 by exists (~` [set y]); rewrite !inE/=; split;
   [rewrite openC; exact: h|exact/eqP|].
 Qed.

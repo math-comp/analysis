@@ -1285,7 +1285,7 @@ have [N F5e] : exists N, \sum_(N <= n <oo) \esum_(i in F n) mu (closure (B i)) <
   - by rewrite nneseries_esum// set_mem_set.
 pose K := \bigcup_(i in `I_N) \bigcup_(j in F i) closure (B j).
 have closedK : closed K.
-  apply: closed_bigcup => //= i iN; apply: closed_bigcup => //.
+  apply: bigcup_closed => //= i iN; apply: bigcup_closed => //.
   by move=> j Fij; exact: closed_closure.
 have ZNF5 : Z r%:num `<=`
     \bigcup_(i in ~` `I_N) \bigcup_(j in F i) closure (5%:R *` B j).

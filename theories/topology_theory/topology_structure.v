@@ -500,46 +500,48 @@ HB.end.
 (** Topology defined by a base of open sets *)
 
 HB.factory Record isBaseTopological T & Choice T := {
-  I : pointedType;
-  D : set I;
-  b : I -> (set T);
-  b_cover : \bigcup_(i in D) b i = setT;
+  I : pointedType ;
+  D : set I ;
+  b : I -> set T ;
+  b_cover : \bigcup_(i in D) b i = setT ;
   b_join : forall i j t, D i -> D j -> b i t -> b j t ->
-    exists k, [/\ D k, b k t & b k `<=` b i `&` b j];
+    exists k, [/\ D k, b k t & b k `<=` b i `&` b j]
 }.
+
+Definition openU_from T I (D : set I) (b : I -> set T) :=
+  [set \bigcup_(i in D') b i | D' in subset^~ D].
 
 HB.builders Context T & isBaseTopological T.
 
-Definition open_from := [set \bigcup_(i in D') b i | D' in subset^~ D].
+Local Notation openU_from := (openU_from D b).
 
-Let open_fromT : open_from setT.
+Let openU_fromT : openU_from setT.
 Proof. exists D => //; exact: b_cover. Qed.
 
-Let open_fromI (A B : set T) : open_from A -> open_from B ->
-  open_from (A `&` B).
+Let openU_fromI : setI_closed openU_from.
 Proof.
-move=> [DA sDAD AeUbA] [DB sDBD BeUbB].
-have ABU : forall t, (A `&` B) t ->
-  exists it, D it /\ b it t /\ b it `<=` A `&` B.
-  move=> t [At Bt].
-  have [iA [DiA [biAt sbiA]]] : exists i, D i /\ b i t /\ b i `<=` A.
+move=> A B [DA sDAD AeUbA] [DB sDBD BeUbB].
+have ABU t : (A `&` B) t ->
+  exists it, [/\ D it, b it t & b it `<=` A `&` B].
+  move=> [At Bt].
+  have [iA [DiA biAt sbiA]] : exists i, [/\ D i, b i t & b i `<=` A].
     move: At; rewrite -AeUbA => - [i DAi bit]; exists i.
-    by split; [apply: sDAD|split=> // ?; exists i].
-  have [iB [DiB [biBt sbiB]]] : exists i, D i /\ b i t /\ b i `<=` B.
+    by split => //; [exact: sDAD|exact: bigcup_sup].
+  have [iB [DiB biBt sbiB]] : exists i, [/\ D i, b i t & b i `<=` B].
     move: Bt; rewrite -BeUbB => - [i DBi bit]; exists i.
-    by split; [apply: sDBD|split=> // ?; exists i].
+    by split=> //; [exact: sDBD|exact: bigcup_sup].
   have [i [Di bit sbiAB]] := b_join DiA DiB biAt biBt.
-  by exists i; split=> //; split=> // s /sbiAB [/sbiA ? /sbiB].
-set Dt := fun t => [set it | D it /\ b it t /\ b it `<=` A `&` B].
+  by exists i; split=> // s /sbiAB [/sbiA ? /sbiB].
+set Dt := fun t => [set it | [/\ D it, b it t & b it `<=` A `&` B]].
 exists [set get (Dt t) | t in A `&` B].
   by move=> _ [t ABt <-]; have /ABU/getPex [] := ABt.
 rewrite predeqE => t; split=> [[_ [s ABs <-] bDtst]|ABt].
-  by have /ABU/getPex [_ [_]] := ABs; apply.
-by exists (get (Dt t)); [exists t| have /ABU/getPex [? []]:= ABt].
+  by have /ABU/getPex [_ _] := ABs; exact.
+by exists (get (Dt t)); [exists t| have /ABU/getPex [?]:= ABt].
 Qed.
 
-Let open_from_bigU (I0 : Type) (f : I0 -> set T) :
-  (forall i, open_from (f i)) -> open_from (\bigcup_i f i).
+Let openU_from_bigU (I0 : Type) (f : I0 -> set T) :
+  (forall i, openU_from (f i)) -> openU_from (\bigcup_i f i).
 Proof.
 set fop := fun j => [set Dj | Dj `<=` D /\ f j = \bigcup_(i in Dj) b i].
 exists (\bigcup_j get (fop j)).
@@ -554,19 +556,22 @@ by move=> [i]; exists i => //; exists j.
 Qed.
 
 HB.instance Definition _ := isOpenTopological.Build T
-  open_fromT open_fromI open_from_bigU.
+  openU_fromT openU_fromI openU_from_bigU.
 
 HB.end.
 
+#[deprecated(since="mathcomp-analysis 1.17.0", use=openU_from)]
+Notation open_from := openU_from (only parsing).
+
 HB.factory Record isSubBaseTopological T & Choice T := {
-  I : pointedType;
-  D : set I;
-  b : I -> (set T);
+  I : pointedType ;
+  D : set I ;
+  b : I -> set T
 }.
 
 HB.builders Context T & isSubBaseTopological T.
 
-Local Notation finI_from := (finI_from D b).
+Local Notation finI_from := (open_finI_from D b).
 
 Let finI_from_cover : \bigcup_(A in finI_from) A = setT.
 Proof.
@@ -829,25 +834,29 @@ Qed.
 Lemma closedU (T : topologicalType) : setU_closed (@closed T).
 Proof. by move=> E D; rewrite -?openC setCU; exact: openI. Qed.
 
-Lemma closed_bigsetU (T : topologicalType) (I : eqType) (s : seq I)
+Lemma bigsetU_closed {T : topologicalType} {I : eqType} (s : seq I)
     (F : I -> set T) : (forall x, x \in s -> closed (F x)) ->
   closed (\big[setU/set0]_(x <- s) F x).
 Proof.
 move=> scF; rewrite big_seq.
 by elim/big_ind : _ => //; [exact: closed0|exact: closedU].
 Qed.
+#[deprecated(since="mathcomp-analysis 1.17.0", use=bigsetU_closed)]
+Notation closed_bigsetU := bigsetU_closed (only parsing).
 
-Lemma closed_bigcup (T : topologicalType) (I : choiceType) (A : set I)
+Lemma bigcup_closed {T : topologicalType} {I : choiceType} (A : set I)
     (F : I -> set T) :
     finite_set A -> (forall i, A i -> closed (F i)) ->
   closed (\bigcup_(i in A) F i).
 Proof.
-move=> finA cF; rewrite -bigsetU_fset_set//; apply: closed_bigsetU => i.
+move=> finA cF; rewrite -bigsetU_fset_set//; apply: bigsetU_closed => i.
 by rewrite in_fset_set// inE; exact: cF.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.17.0", use=bigcup_closed)]
+Notation closed_bigcup := bigcup_closed (only parsing).
 
 Section closure_lemmas.
-Variable T : topologicalType.
+Context {T : topologicalType}.
 Implicit Types E A B U : set T.
 
 Lemma closureS A B : A `<=` B -> closure A `<=` closure B.
