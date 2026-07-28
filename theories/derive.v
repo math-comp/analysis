@@ -63,7 +63,7 @@ From mathcomp Require Import prodnormedzmodule tvs normedtype landau.
 (*                                                                            *)
 (* For a compound expression, e.g., built from f and g, state the goal with   *)
 (* the expected derivative/differential and let typeclass resolution fill the *)
-(* proof by `apply: is_derive_eq / is_diff_eq.` :                             *)
+(* proof by `apply: is_derive_eq / is_diff_eq.`:                              *)
 (*  `Lemma is_derive_example (W : normedModType R)                            *)
 (*    (t : R^o) (f g : R^o -> W) (f' g' : W) v :                              *)
 (*    is_derive t v f f' ->                                                   *)
