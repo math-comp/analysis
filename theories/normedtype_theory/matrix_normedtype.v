@@ -15,10 +15,9 @@ From mathcomp Require Import normed_module.
 (* the Heine-Borel theorem, more precisely that a closed and bounded set of   *)
 (* vectors in $\bar{R}^n$ is compact and various lemmas about compact sets.   *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*           mx_norm M == norm of the matrix M                                *)
-(*                     := \big[maxr/0]_i `|x i.1 i.2|                         *)
-(* ```                                                                        *)
+(* `mx_norm M`                                                                *)
+(*     ~ norm of the matrix `M`                                               *)
+(*     ~ ``:= \big[maxr/0]_i `|x i.1 i.2|``                                   *)
 (******************************************************************************)
 
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)

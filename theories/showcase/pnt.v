@@ -12,9 +12,8 @@ Import Order.POrderTheory GRing.Theory Num.Theory.
 (* The main theorem proved so far is the divergence of the sum of the         *)
 (* reciprocals of the prime numbers.                                          *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*             prime_seq == the sequence of prime numbers                     *)
-(* ```                                                                        *)
+(* `prime_seq`                                                                *)
+(*     ~ the sequence of prime numbers                                        *)
 (*                                                                            *)
 (******************************************************************************)
 

@@ -46,9 +46,8 @@ From mathcomp Require Import derive.
 (*   with $F$ increasing and $G$ non-negative                                 *)
 (*                                                                            *)
 (* Detailed contents:                                                         *)
-(* ```                                                                        *)
-(* parameterized_integral mu a x f := \int[mu]_(t \in `[a, x] f t)            *)
-(* ```                                                                        *)
+(* `parameterized_integral mu a x f`                                          *)
+(*     ~ ``\int[mu]_(t \in `[a, x] f t)``                                     *)
 (*                                                                            *)
 (******************************************************************************)
 

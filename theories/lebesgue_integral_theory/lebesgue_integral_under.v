@@ -15,10 +15,9 @@ From mathcomp Require Import lebesgue_integral_dominated_convergence.
 (* # Continuity and differentiation under the integral sign                   *)
 (*                                                                            *)
 (* Detailed contents:                                                         *)
-(* ```                                                                        *)
-(*               partial1of2 f == first partial derivative of f               *)
-(*                                f has type R -> T -> R for R : realType     *)
-(* ```                                                                        *)
+(* `partial1of2 f`                                                            *)
+(*     ~ first partial derivative of `f`. `f` has type `R -> T -> R` for      *)
+(*       `R : realType`                                                       *)
 (******************************************************************************)
 
 Reserved Notation "'d1 f" (at level 10, f at next level, format "''d1'  f").

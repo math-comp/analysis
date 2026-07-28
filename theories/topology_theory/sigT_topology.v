@@ -9,10 +9,9 @@ From mathcomp Require Import topology_structure compact subspace_topology.
 (* # sigT topology                                                            *)
 (*  This file equips the type {i & X i} with its standard topology            *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*         sigT_nbhs x == the neighborhoods of the standard topology on the   *)
-(*                        type {i & X i}                                      *)
-(* ```                                                                        *)
+(* `sigT_nbhs x`                                                              *)
+(*     ~ the neighborhoods of the standard topology on the type               *)
+(*       `{i & X i}`                                                          *)
 (******************************************************************************)
 
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
