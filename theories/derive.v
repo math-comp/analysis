@@ -31,7 +31,7 @@ From mathcomp Require Import prodnormedzmodule tvs normedtype landau.
 (*  is_derive x v f df  == the derivative of a function f at point x along v  *)
 (*                         is df and f is derivable at x along v              *)
 (*      is_diff x f df  == the differential of a function f at point x is df  *)
-(*                          and f is differentiable at point x                 *)
+(*                         and f is differentiable at point x                 *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* Naming convention in this file:                                            *)
