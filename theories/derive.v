@@ -75,7 +75,7 @@ From mathcomp Require Import prodnormedzmodule tvs normedtype landau.
 (* `is_diff _` instances matching the pattern of the goal stated.             *)
 (*                                                                            *)
 (* To verify if a given expression is derivable or differentiable, you can use*)
-(* `apply: ex_derive. or `apply: ex_diff`, given the right                    *)
+(* `apply: ex_derive` or `apply: ex_diff`, given the right                    *)
 (* `is_derive _` or `is_diff _` instances are defined such as :               *)
 (* Hypothesis derivable_f : forall t, derivable f t 1.                        *)
 (* Hypothesis derivable_h : forall t, derivable h t 1.                        *)
