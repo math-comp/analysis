@@ -54,7 +54,7 @@ From mathcomp Require Import prodnormedzmodule tvs normedtype landau.
 (* registered via `Instance` declarations with a proof `ex_derive`/`ex_diff   *)
 (* of derivability/differentiability of the expression and a proof            *)
 (* `derive_val`/`diff_val` of the value of the derivative/differential        *)
-(* of the function ; so that typeclass resolution can automatically synthesize*)
+(* of the function; so that typeclass resolution can automatically synthesize *)
 (* the differential/derivative of a compound expression from the              *)
 (* differentials/derivatives of its parts, instead of requiring the user to   *)
 (* prove and compute derivatives by hand.                                     *)
