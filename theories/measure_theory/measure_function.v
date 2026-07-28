@@ -2004,8 +2004,8 @@ apply: (@g_sigma_algebra_measure_unique _ _ _
 Qed.
 
 Section measure_unique.
-Context d (R : realType) (T : measurableType d).
-Variables  (G : set_system T) (g : (set T)^nat).
+Context {d} {R : realType} {T : measurableType d} (G : set_system T)
+  (g : (set T)^nat).
 Hypotheses (mG : measurable = <<s G >>) (setIG : setI_closed G).
 Hypothesis Gg : forall i, G (g i).
 Hypothesis g_cover : \bigcup_k (g k) = setT.
