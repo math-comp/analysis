@@ -68,7 +68,7 @@ From mathcomp Require Import prodnormedzmodule tvs normedtype landau.
 (*    (t : R^o) (f g : R^o -> W) (f' g' : W) v :                              *)
 (*    is_derive t v f f' ->                                                   *)
 (*    is_derive t v g g' ->                                                   *)
-(*    is_derive t v (f + g) (f'+g').                                          *)
+(*    is_derive t v (f + g) (f' + g').                                        *)
 (* Proof. move => is_der_f is_der_g. by apply: is_derive_eq. Qed.`            *)
 (*                                                                            *)
 (* The proof is inferred structurally by chaining declared `is_derive _` or   *)
