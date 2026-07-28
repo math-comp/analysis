@@ -250,53 +250,50 @@ End RealDerivedOps.
 
 (*-------------------------------------------------------------------- *)
 Section RealLemmas.
+Context {R : realType}.
+Implicit Types (A B : set R) (r : R).
 
-Variables (R : realType).
-
-Implicit Types E : set R.
-Implicit Types x : R.
-
-Lemma sup_out E : ~ has_sup E -> sup E = 0. Proof. exact: supremum_out. Qed.
+Lemma sup_out A : ~ has_sup A -> sup A = 0. Proof. exact: supremum_out. Qed.
 
 Lemma sup0 : sup (@set0 R) = 0. Proof. exact: supremum0. Qed.
 
-Lemma sup1 x : sup [set x] = x. Proof. exact: supremum1. Qed.
+Lemma sup1 r : sup [set r] = r. Proof. exact: supremum1. Qed.
 
-Lemma ub_le_sup {E} : has_ubound E -> ubound E (sup E).
+Lemma ub_le_sup {A} : has_ubound A -> ubound A (sup A).
 Proof.
-move=> ubE; apply/ubP=> x x_in_E; move: (x) (x_in_E).
+move=> ubE; apply/ubP=> x x_in_A; move: (x) (x_in_A).
 by apply/ubP/sup_upper_bound=> //; split; first by exists x.
 Qed.
 
-Lemma sup_ub_strict E : has_ubound E ->
-  ~ E (sup E) -> E `<=` [set r | r < sup E].
+Lemma sup_ub_strict A : has_ubound A ->
+  ~ A (sup A) -> A `<=` [set r | r < sup A].
 Proof.
-move=> ubE EsupE r Er; rewrite /mkset lt_neqAle ub_le_sup // andbT.
-by apply/negP => /eqP supEr; move: EsupE; rewrite -supEr.
+move=> ubA AsupA r Ar; rewrite /mkset lt_neqAle ub_le_sup // andbT.
+by apply/negP => /eqP supAr; move: AsupA; rewrite -supAr.
 Qed.
 
-Lemma sup_total {E} x : has_sup E -> down E x \/ sup E <= x.
+Lemma sup_total {A} r : has_sup A -> down A r \/ sup A <= r.
 Proof.
-move=> has_supE; rewrite orC.
-case: (lerP (sup E) x)=> hx /=; [by left|right].
-have /sup_adherent/(_  has_supE) : 0 < sup E - x by rewrite subr_gt0.
-by case=> e Ee; rewrite subKr => /ltW hlte; apply/downP; exists e.
+move=> has_supA; rewrite orC.
+case: (lerP (sup A) r)=> rA /=; [by left|right].
+have /sup_adherent/(_  has_supA) : 0 < sup A - r by rewrite subr_gt0.
+by case=> e Ae; rewrite subKr => /ltW hlte; apply/downP; exists e.
 Qed.
 
-Lemma ge_sup {E} x : E !=set0 -> (ubound E) x -> sup E <= x.
+Lemma ge_sup {A} r : A !=set0 -> (ubound A) r -> sup A <= r.
 Proof.
-move=> hasE leEx; set y := sup E; pose z := (x + y) / 2%:R.
-have Dz: 2%:R * z = x + y by rewrite mulrC divfK// pnatr_eq0.
-have ubE : has_sup E by split => //; exists x.
-have [/downP [t Et lezt] | leyz] := sup_total z ubE.
-  rewrite -(lerD2l x) -Dz -mulr2n -[leRHS]mulr_natl.
+move=> hasA leAr; set y := sup A; pose z := (r + y) / 2%:R.
+have Dz: 2%:R * z = r + y by rewrite mulrC divfK// pnatr_eq0.
+have ubA : has_sup A by split => //; exists r.
+have [/downP [t At lezt] | leyz] := sup_total z ubA.
+  rewrite -(lerD2l r) -Dz -mulr2n -[leRHS]mulr_natl.
   rewrite ler_pM2l ?ltr0Sn //; apply/(le_trans lezt).
-  by move/ubP : leEx; exact.
+  by move/ubP : leAr; exact.
 rewrite -(lerD2r y) -Dz -mulr2n -[leLHS]mulr_natl.
 by rewrite ler_pM2l ?ltr0Sn.
 Qed.
 
-Lemma sup_setU (A B : set R) : has_sup B ->
+Lemma sup_setU A B : has_sup B ->
   (forall a b, A a -> B b -> a <= b) -> sup (A `|` B) = sup B.
 Proof.
 move=> [B0 [l Bl]] AB; apply/eqP; rewrite eq_le; apply/andP; split.
@@ -307,18 +304,67 @@ move=> [B0 [l Bl]] AB; apply/eqP; rewrite eq_le; apply/andP; split.
   by exists l => x [Ax|Bx]; [rewrite (le_trans (AB _ _ Ax Bb)) // Bl|exact: Bl].
 Qed.
 
-Lemma sup_gt (S : set R) (x : R) : S !=set0 ->
-  (x < sup S -> exists2 y, S y & x < y)%R.
+Lemma sup_gt A r : A !=set0 ->
+  (r < sup A -> exists2 y, A y & r < y)%R.
 Proof.
 move=> S0; rewrite not_exists2P => + g; apply/negP; rewrite -leNgt.
 by apply: ge_sup => // y Sy; move: (g y) => -[// | /negP]; rewrite leNgt.
 Qed.
+
+Section SupInterchange.
+Context {X Y : Type} (S : X -> Y -> R).
+Implicit Types (x : X) (y : Y).
+
+Let row x := range (S x).
+Let col y := range (S ^~ y).
+Let rows := range (sup \o row).
+Let cols := range (sup \o col).
+
+Lemma interchange_sup : (forall x, has_sup (row x)) -> has_sup rows ->
+  sup rows = sup cols.
+Proof.
+move=> row_sup rows_sup.
+have col_nonempty y : col y !=set0.
+  by case: rows_sup => -[_ [x _ _]] _; eexists; exact/imageT.
+have col_bound u : ubound (col u) (sup rows).
+  move=> r [t _ <-]; apply: le_trans.
+  - have /sup_upper_bound := row_sup t.
+    by apply; exists u.
+  - have /sup_upper_bound := rows_sup.
+    by apply; exists t.
+have col_le_rows y : sup (col y) <= sup rows.
+  by apply: ge_sup; [exact: col_nonempty|exact: col_bound].
+have cols_sup : has_sup cols.
+  split.
+  - case: rows_sup => -[_ [x _ _]] _.
+    case: (row_sup x) => -[_ [y _ _]] _.
+    by exists (sup (col y)), y.
+  - by exists (sup rows) => _ [y _ <-]; exact: col_le_rows.
+apply/eqP; rewrite eq_le; apply/andP; split.
+- apply: ge_sup; first by case: rows_sup.
+  move=> _ [x _ <-].
+  apply: ge_sup; first by case: (row_sup x).
+  move=> _ [y _ <-]; apply: le_trans.
+    suff col_y_sup : has_sup (col y).
+      move: col_y_sup => /sup_upper_bound.
+      by apply; exists x.
+    split; first exact: col_nonempty.
+    by exists (sup rows).
+  move: cols_sup => /sup_upper_bound.
+  by apply; exists y.
+- apply: ge_sup; first by case: cols_sup.
+  by move=> _ [y _ <-]; exact: col_le_rows.
+Qed.
+
+End SupInterchange.
 
 End RealLemmas.
 #[deprecated(since="mathcomp-analysis 1.14.0", note="Renamed `ub_le_sup`.")]
 Notation sup_ubound := ub_le_sup (only parsing).
 #[deprecated(since="mathcomp-analysis 1.14.0", note="Renamed `ge_sup`.")]
 Notation sup_le_ub := ge_sup (only parsing).
+#[deprecated(since="1.17.0", note="use `interchange_sup` instead")]
+Notation __admitted__interchange_sup := interchange_sup (only parsing).
 
 Section sup_sum.
 Context {R : realType}.
