@@ -243,6 +243,7 @@
     `within_continuousMl`, and `within_continuousMr`
 - in `pseudometric_normed_Zmodule.v`
   + new lemma `within_continuousN`
+
 - in `lebesgue_stieltjes_measure.v`:
   + module `MeasurableRocitv`
   + definition `open_type`
@@ -271,12 +272,12 @@
   + lemmas `dlet_dlet`, `dmargin_dlet`, `dlet_dmargin`, `dfst_dswap`,
     `dsnd_dswap`, `dsndE`, `pr_dlet` are no longer deprecated
 
-- in file `normed_module.v`,
-  + new lemmas `cvg1MC`, `cvg1M`, `cvgCM1`, `cvgM1`, `cvg0MC`, `cvg0M`, 
-    `cvgCM0`, and `cvgM0`.
-- in file `pseudometric_normed_Zmodule.v`,
-  + new lemmas `cvgDl`, `cvgDr`, `cvgBl`, `cvgBr`, `cvg0D`, `cvg0DC`, 
-    `cvgD0`, `cvgCD0`, `cvg0B`, `cvg0BC`, `cvgB0`, `cvgCB0`, and `cvgN0`.
+- in `normed_module.v`:
+  + lemmas `cvg1MC`, `cvg1M`, `cvgCM1`, `cvgM1`, `cvg0MC`, `cvg0M`,
+    `cvgCM0`, and `cvgM0`
+- in `pseudometric_normed_Zmodule.v`:
+  + lemmas `cvg0D`, `cvg0DC`,
+    `cvgD0`, `cvgCD0`, `cvg0B`, `cvg0BC`, `cvgB0`, `cvgCB0`, and `cvgN0`
 
 ### Changed
 

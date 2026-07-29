@@ -651,25 +651,25 @@ Lemma cvgMl_tmp g a b : g @ F --> b -> a * g x @[x --> F] --> a * b.
 Proof. exact: cvgZl_tmp. Qed.
 
 Lemma cvg1MC f a : f @ F --> (1 :> K) -> f x * a @[x --> F] --> a.
-Proof. by move/(cvgMr_tmp (b := a)); rewrite mul1r. Qed.
+Proof. by move/(@cvgMr_tmp _ _ a); rewrite mul1r. Qed.
 
 Lemma cvg1M f g a : f @ F --> (1 :> K) -> g @ F --> a -> f \* g @ F --> a.
 Proof. by move=> /cvgM /[apply]; rewrite mul1r. Qed.
 
 Lemma cvgCM1 f a : f @ F --> (1 :> K) -> a * f x @[x --> F] --> a.
-Proof. by move/(cvgMl_tmp (a := a)); rewrite mulr1. Qed.
+Proof. by move/(@cvgMl_tmp _ a); rewrite mulr1. Qed.
 
 Lemma cvgM1 f g a : f @ F --> a -> g @ F --> (1 :> K) -> f \* g @ F --> a.
 Proof. by move=> /cvgM /[apply]; rewrite mulr1. Qed.
 
 Lemma cvg0MC f a : f @ F --> 0 -> f x * a @[x --> F] --> 0.
-Proof. by move/(cvgMr_tmp (b := a)); rewrite mul0r. Qed.
+Proof. by move/(@cvgMr_tmp _ _ a); rewrite mul0r. Qed.
 
 Lemma cvg0M f g a : f @ F --> 0 -> g @ F --> a -> f \* g @ F --> 0.
 Proof. by move=> /cvgM /[apply]; rewrite mul0r. Qed.
 
 Lemma cvgCM0 f a : f @ F --> 0 -> a * f x @[x --> F] --> 0.
-Proof. by move/(cvgMl_tmp (a := a)); rewrite mulr0. Qed.
+Proof. by move/(@cvgMl_tmp _ a); rewrite mulr0. Qed.
 
 Lemma cvgM0 f g a : f @ F --> a -> g @ F --> 0 -> f \* g @ F --> 0.
 Proof. by move=> /cvgM /[apply]; rewrite mulr0. Qed.
