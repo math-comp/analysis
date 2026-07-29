@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint.
+From mathcomp Require Import boot order finmap ssralg ssrnum ssrint.
 From mathcomp Require Import interval interval_inference archimedean.
 From mathcomp Require Import boolp classical_sets functions cardinality.
 From mathcomp Require Import set_interval ereal reals topology.

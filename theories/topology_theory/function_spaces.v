@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat algebra finmap.
+From mathcomp Require Import boot order algebra finmap.
 From mathcomp Require Import generic_quotient.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
@@ -182,31 +182,31 @@ Proof.
 move=> f; have /cvg_sup/(_ i)/cvg_image : f --> f by apply: cvg_id.
 move=> h; apply: cvg_trans (h _) => {h}.
   by move=> Q /= [W nbdW <-]; apply: filterS nbdW; exact: preimage_image.
-rewrite eqEsubset; split => y //; exists (dfwith f i y) => //.
-by rewrite dfwithin.
+rewrite eqEsubset; split => y //; exists (dfwith f y) => //.
+by rewrite dfwith_in.
 Qed.
 
 Lemma dfwith_continuous g (i : I) : continuous (@dfwith I K g i).
 Proof.
 move=> z U [] P [] [] Q QfinP <- [] V JV Vpz.
-move/(@preimage_subset _ _ (dfwith g i))/filterS; apply.
-apply: (@filterS _ _ _ ((dfwith g i) @^-1` V)); first by exists V.
+move/(@preimage_subset _ _ (@dfwith _ _ g i))/filterS; apply.
+apply: (@filterS _ _ _ ((@dfwith _ _ g i) @^-1` V)); first by exists V.
 have [L Lsub /[dup] VL <-] := QfinP _ JV; rewrite preimage_bigcap.
 apply: filter_bigI => /= M /[dup] LM /Lsub /set_mem [] w _ [+] + /[dup] + <-.
 have [->|wnx] := eqVneq w i => N oN NM.
-  apply: (@filterS _ _ _ N); first by move=> ? ?; rewrite /= dfwithin.
+  apply: (@filterS _ _ _ N); first by move=> ? ?; rewrite /= dfwith_in.
   apply: open_nbhs_nbhs; split => //; move: Vpz.
-  by rewrite -VL => /(_ _ LM); rewrite -NM /= dfwithin.
+  by rewrite -VL => /(_ _ LM); rewrite -NM /= dfwith_in.
 apply: nearW => y /=; move: Vpz.
-by rewrite -VL => /(_ _ LM); rewrite -NM /= ?dfwithout // eq_sym.
+by rewrite -VL => /(_ _ LM); rewrite -NM /= ?dfwith_out // eq_sym.
 Qed.
 
 Lemma proj_open i (A : set (prod_topology K)) : open A -> open (proj i @` A).
 Proof.
 move=> oA; rewrite openE => z [f Af <-]; rewrite openE in oA.
 have {oA} := oA _ Af; rewrite /interior => nAf.
-apply: (@filterS _ _ _ ((dfwith f i) @^-1` A)).
-  by move=> w Apw; exists (dfwith f i w) => //; rewrite projK.
+apply: (@filterS _ _ _ ((@dfwith _ _ f i) @^-1` A)).
+  by move=> w Apw; exists (dfwith f w) => //; rewrite projK.
 apply: dfwith_continuous => /=; move: nAf; congr (nbhs _ A).
 by apply: functional_extensionality_dep => ?; case: dfwithP.
 Qed.

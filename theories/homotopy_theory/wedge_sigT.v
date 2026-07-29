@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat algebra generic_quotient.
+From mathcomp Require Import boot order algebra generic_quotient.
 From mathcomp Require Import finmap.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
@@ -238,7 +238,7 @@ Section wedge_as_product.
 
 Definition wedge_prod : wedge -> prod_topology X := wedge_fun (dfwith p0).
 
-Lemma wedge_prod_pointE (i j : I) : dfwith p0 i (p0 i) = dfwith p0 j (p0 j).
+Lemma wedge_prod_pointE (i j : I) : dfwith p0 (p0 i) = dfwith p0 (p0 j).
 Proof.
 apply: functional_extensionality_dep => k /=.
 by case: dfwithP => [|*]; case: dfwithP.
@@ -252,13 +252,13 @@ move Ea : (repr a)=> [i x]; move Eb : (repr b) => [j y].
 rewrite /wedge_prod !wedge_lift_funE//= => dfij; apply/eqmodP/orP.
 have [E|E /=] := eqVneq i j.
   rewrite -{}E in x y Ea Eb dfij *; left; apply/eqP; congr existT.
-  have : dfwith p0 i x i = dfwith p0 i y i by rewrite dfij.
-  by rewrite !dfwithin.
+  have : dfwith p0 x i = dfwith p0 y i by rewrite dfij.
+  by rewrite !dfwith_in.
 right; apply/andP; split; apply/eqP.
-- have : dfwith p0 i x i = dfwith p0 j y i by rewrite dfij.
-  by rewrite dfwithin => ->; rewrite dfwithout // eq_sym.
-- have : dfwith p0 i x j = dfwith p0 j y j by rewrite dfij.
-  by rewrite dfwithin => <-; rewrite dfwithout.
+- have : dfwith p0 x i = dfwith p0 y i by rewrite dfij.
+  by rewrite dfwith_in => ->; rewrite dfwith_out // eq_sym.
+- have : dfwith p0 x j = dfwith p0 y j by rewrite dfij.
+  by rewrite dfwith_in => <-; rewrite dfwith_out.
 Qed.
 
 Lemma wedge_prod_continuous : continuous wedge_prod.
@@ -283,7 +283,7 @@ move=> fsetI clI; case: wedge_nbhs_specP => [//|i0 bcA|i z zNp0 /= wNz].
     have /Bwz : [set` fI] (projT1 (repr z)) by rewrite -fIE.
     congr (A _); rewrite /wedge_lift /= -[RHS]reprK.
     apply/eqmodP/orP; left; rewrite /proj /=.
-    by rewrite /wedge_prod/= /wedge_fun /sigT_fun/= dfwithin surjective_existT.
+    by rewrite /wedge_prod/= /wedge_fun /sigT_fun/= dfwith_in surjective_existT.
   apply; apply/nbhs_subspace_ex; first by exists (wedge_lift (p0 i0)).
   exists (\bigcap_(i in [set` fI]) B_ i); last by rewrite -setIA setIid.
   apply: filter_bigI => i _; rewrite /B_; apply: proj_continuous.
@@ -301,7 +301,7 @@ move/filterS; apply; apply/nbhs_subspace_ex.
   by rewrite /wedge_prod wedge_lift_funE //; exact: wedge_prod_pointE.
 exists (proj i @^-1` (@wedge_lift i @^-1`
     (A `&` (@wedge_lift i @` (~`[set p0 i]))))).
-  apply/ proj_continuous; rewrite /proj dfwithin preimage_setI; apply: filterI.
+  apply/ proj_continuous; rewrite /proj dfwith_in preimage_setI; apply: filterI.
     exact: wNz.
   have /filterS := @preimage_image _ _ (@wedge_lift i) (~` [set p0 i]).
   by apply; apply: open_nbhs_nbhs; split; [exact: closed_openC|exact/eqP].
@@ -309,22 +309,22 @@ rewrite eqEsubset; split => // prodX; case => /[swap] [][] r _ <- /=.
   case => _ /[swap] /wedge_prod_inj -> [+ [e /[swap]]] => /[swap].
   move=> <- Awe eNpi; rewrite /proj /wedge_prod /=.
   rewrite wedge_lift_funE; first exact: wedge_prod_pointE.
-  rewrite dfwithin; split => //; first by split => //; exists e.
+  rewrite dfwith_in; split => //; first by split => //; exists e.
   exists (wedge_lift e) => //.
   by rewrite wedge_lift_funE //; exact: wedge_prod_pointE.
 case=> /[swap] [][y] yNpi E Ay.
 have [riE|R] := eqVneq i (projT1 (repr r)); last first.
   apply: absurd yNpi.
   move: E; rewrite /proj/wedge_prod /wedge_fun /=/sigT_fun /=.
-  rewrite dfwithout //; first by rewrite eq_sym.
+  rewrite dfwith_out //; first by rewrite eq_sym.
   by case/eqmodP/orP => [/eqP E|/andP[/= /eqP//]]; exact: (existT_inj2 E).
 split; exists (wedge_lift y); [by split; [rewrite E | exists y]| |by []|].
 - congr wedge_prod; rewrite E.
   rewrite /proj /wedge_prod /wedge_fun /=/sigT_fun.
-  by rewrite riE dfwithin /wedge_lift /= surjective_existT reprK.
+  by rewrite riE dfwith_in /wedge_lift /= surjective_existT reprK.
 - congr wedge_prod; rewrite E.
   rewrite /proj /wedge_prod /wedge_fun /=/sigT_fun.
-  by rewrite riE dfwithin /wedge_lift /= surjective_existT reprK.
+  by rewrite riE dfwith_in /wedge_lift /= surjective_existT reprK.
 Qed.
 
 End wedge_as_product.

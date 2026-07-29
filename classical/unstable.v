@@ -1,10 +1,10 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat finmap ssralg ssrnum ssrint.
+From mathcomp Require Import boot order finmap ssralg ssrnum ssrint.
 From mathcomp Require Import vector archimedean interval matrix.
 
 (**md**************************************************************************)
-(* # MathComp extra                                                           *)
+(* # Unstable                                                                 *)
 (*                                                                            *)
 (* This files contains lemmas that should eventually be backported            *)
 (* to mathcomp. These lemmas may change before being backported to mathcomp,  *)
@@ -52,6 +52,23 @@ Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
+
+Module Order.
+Import Order.
+Definition default_display : disp_t.
+Proof. exact: Disp tt tt. Defined.
+End Order.
+
+(* ??? *)
+Definition proj {I} {T : I -> Type} i (f : forall i, T i) := f i.
+
+Section DFunWith.
+Variables (I' : eqType) (T : I' -> Type) (f : forall i, T i).
+
+Lemma projK i (x : T i) : cancel (@dfwith _ _ f i) (proj i).
+Proof. by move=> z; rewrite /proj dfwith_in. Qed.
+
+End DFunWith.
 
 Lemma sub_row_mx {V : zmodType} m n1 n2 (A1 : 'M[V]_(m, n1)) (A2 : 'M[V]_(m, n2))
     (B1 : 'M[V]_(m, n1)) (B2 : 'M[V]_(m, n2)) :
@@ -148,29 +165,6 @@ rewrite mulnA mulnC leq_mul2l; apply/orP; right.
 do 2 rewrite -addSn -addnS.
 exact: leq_Mprod_prodD.
 Qed.
-
-Section max_min.
-Variable R : realFieldType.
-
-Let nz2 : 2%:R != 0 :> R. Proof. by rewrite pnatr_eq0. Qed.
-
-(* NB: to appear in MathComp 2.5.0 (PR #1416) *)
-Lemma maxr_absE (x y : R) : Num.max x y = (x + y + `|x - y|) / 2%:R.
-Proof.
-apply: canRL (mulfK _) _ => //; rewrite ?pnatr_eq0//.
-case: lerP => _; (* TODO: ring *) rewrite [2%:R]mulr2n mulrDr mulr1.
-  by rewrite addrCA addrK.
-by rewrite (addrC (x + y)) subrKA.
-Qed.
-
-(* NB: to appear in MathComp 2.5.0 (PR #1416) *)
-Lemma minr_absE (x y : R) : Num.min x y = (x + y - `|x - y|) / 2%:R.
-Proof.
-apply: (addrI (Num.max x y)); rewrite addr_max_min maxr_absE. (* TODO: ring *)
-by rewrite -mulrDl addrCA addrK mulrDl -splitr.
-Qed.
-
-End max_min.
 
 Notation trivial := (ltac:(done)).
 

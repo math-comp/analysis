@@ -16,7 +16,6 @@
 
 classical/all_classical.v
 classical/internal_Eqdep_dec.v
-classical/all_ssreflect_compat.v
 classical/boolp.v
 classical/contra.v
 classical/wochoice.v
