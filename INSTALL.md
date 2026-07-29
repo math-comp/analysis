@@ -3,7 +3,7 @@
 ## Requirements
 
 - [The Rocq Prover version ≥ 9.0](https://rocq-prover.org)
-- [Mathematical Components version ≥ 2.5.0](https://github.com/math-comp/math-comp)
+- [Mathematical Components version ≥ 2.6.0](https://github.com/math-comp/math-comp)
 - [Finmap library version ≥ 2.1.0](https://github.com/math-comp/finmap)
 - [Hierarchy builder version ≥ 1.8.0](https://github.com/math-comp/hierarchy-builder)
 - [bigenough ≥ 1.0.0](https://github.com/math-comp/bigenough)
@@ -73,7 +73,7 @@ using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
 ## Break-down of phase 3 of the installation procedure step by step
 
-With the example of Coq 9.1.1 and MathComp 2.5.0. For other versions, update the
+With the example of Coq 9.1.1 and MathComp 2.6.0. For other versions, update the
 version numbers accordingly.
 
 1. Install Rocq 9.1.1
@@ -82,19 +82,11 @@ $ opam install rocq-core.9.1.1
 ```
 2. Install the Mathematical Components
 ```
-$ opam install rocq-mathcomp-ssreflect.2.5.0
-$ opam install rocq-mathcomp-fingroup.2.5.0
-$ opam install rocq-mathcomp-algebra.2.5.0
-$ opam install rocq-mathcomp-solvable.2.5.0
-$ opam install rocq-mathcomp-field.2.5.0
+$ opam install rocq-mathcomp-field.2.6.0
 ```
 3. Install the Finite maps library
 ```
-$ opam install rocq-mathcomp-finmap.2.2.0
-```
-4. Install the Hierarchy Builder
-```
-$ opam install rocq-hierarchy-builder.1.10.2
+$ opam install rocq-mathcomp-finmap.2.4.0
 ```
 5. Download and compile `coq-mathcomp-analysis` without installing
 ```

@@ -6,7 +6,7 @@
 (* -------------------------------------------------------------------- *)
 From HB Require Import structures.
 From mathcomp Require Import boot order.
-From mathcomp Require Import mathcomp_extra.
+From mathcomp Require Import mathcomp_extra unstable.
 From mathcomp Require internal_Eqdep_dec.
 
 (**md**************************************************************************)

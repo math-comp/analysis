@@ -2,8 +2,8 @@
 From HB Require Import structures.
 From mathcomp Require Import boot order ssralg ssrint ssrnum interval.
 From mathcomp Require Import rat finmap.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality reals topology.
+From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import functions cardinality reals topology.
 
 (**md**************************************************************************)
 (* # The Cantor Space and Applications                                        *)

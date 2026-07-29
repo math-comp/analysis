@@ -121,11 +121,11 @@ by rewrite -(ayPfx _ mn) -(axPfx _ mn).
 Qed.
 
 Lemma first_diff_dfwith (x : forall n : nat, K n) i b :
-  x i != b <-> first_diff x (dfwith x i b) = Some i.
+  x i != b <-> first_diff x (dfwith x b) = Some i.
 Proof.
-split => [xBn|/first_diff_SomeP[_]]; last by rewrite dfwithin.
-apply/first_diff_SomeP; split; last by rewrite dfwithin.
-by move=> n ni; rewrite dfwithout// gt_eqF.
+split => [xBn|/first_diff_SomeP[_]]; last by rewrite dfwith_in.
+apply/first_diff_SomeP; split; last by rewrite dfwith_in.
+by move=> n ni; rewrite dfwith_out// gt_eqF.
 Qed.
 
 Definition big_lexi_le
