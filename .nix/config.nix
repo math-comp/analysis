@@ -44,55 +44,66 @@ in {
 
   ## select an entry to build in the following `bundles` set
   ## defaults to "default"
-  default-bundle = "9.1-master";
+  default-bundle = "9.2";
 
   ## write one `bundles.name` attribute set per
   ## alternative configuration
   ## When generating GitHub Action CI, one workflow file
   ## will be created per bundle
 
-  bundles."9.0-master" = {
+  bundles."9.0" = {
     rocqPackages = {
       rocq-core.override.version = "9.0";
-      mathcomp.override.version = "master";
-      mathcomp-bigenough.override.version = "master";
-      mathcomp-finmap.override.version = "master";
-      micromega-plugin.override.version = "master";
+      mathcomp.override.version = "2.6.0";
+      mathcomp-finmap.override.version = "2.2.4";
     };
     coqPackages = common-bundle // {
       coq.override.version = "9.0";
-      mathcomp.override.version = "master";
-      mathcomp-bigenough.override.version = "master";
-      mathcomp-finmap.override.version = "master";
-      ssprove.job = false;  # not yet available for 9.1
+      mathcomp.override.version = "2.6.0";
+      mathcomp-finmap.override.version = "2.2.4";
+      ssprove.job = false;  # not yet available for MC 2.6
     };
   };
 
-  # bundles."9.1-2.5.0" = {
-  #   rocqPackages = {
-  #     rocq-core.override.version = "9.1";
-  #     mathcomp.override.version = "2.5.0";
-  #   };
-  #   coqPackages = common-bundle // {
-  #     coq.override.version = "9.1";
-  #     ssprove.job = false;  # not yet available for 9.1
-  #   };
-  # };
-
-  bundles."9.1-master" = {
+  bundles."9.1" = {
     rocqPackages = {
       rocq-core.override.version = "9.1";
-      mathcomp.override.version = "master";
-      mathcomp-bigenough.override.version = "master";
-      mathcomp-finmap.override.version = "master";
-      micromega-plugin.override.version = "master";
+      mathcomp.override.version = "2.6.0";
+      mathcomp-finmap.override.version = "2.2.4";
     };
     coqPackages = common-bundle // {
       coq.override.version = "9.1";
-      mathcomp.override.version = "master";
-      mathcomp-bigenough.override.version = "master";
-      mathcomp-finmap.override.version = "master";
+      mathcomp.override.version = "2.6.0";
+      mathcomp-finmap.override.version = "2.2.4";
       ssprove.job = false;  # not yet available for 9.1
+      mathcomp-infotheo.job = false;  # not yet available for 9.1
+    };
+  };
+
+  bundles."9.2" = {
+    rocqPackages = {
+      rocq-core.override.version = "9.2";
+      mathcomp.override.version = "2.6.0";
+    };
+    coqPackages = common-bundle // {
+      coq.override.version = "9.2";
+      mathcomp.override.version = "2.6.0";
+      ssprove.job = false;  # not yet available for 9.2
+      mathcomp-infotheo.job = false;  # not yet available for 9.2
+    };
+  };
+
+  bundles."9.3" = {
+    rocqPackages = {
+      rocq-core.override.version = "9.3";
+      mathcomp.override.version = "2.6.0";
+    };
+    coqPackages = common-bundle // {
+      coq.override.version = "9.3";
+      mathcomp.override.version = "2.6.0";
+      interval.job = false;  # not yet available for 9.3
+      ssprove.job = false;  # not yet available for 9.3
+      mathcomp-infotheo.job = false;  # not yet available for 9.3
     };
   };
 
@@ -103,10 +114,11 @@ in {
       rocq-elpi.override.version = "master";
       hierarchy-builder.override.version = "master";
       micromega-plugin.job = false;
+      micromega-plugin.override.version = "master";
       mathcomp.override.version = "master";
       mathcomp-bigenough.override.version = "master";
       mathcomp-finmap.override.version = "master";
-      micromega-plugin.override.version = "master";
+      mathcomp-real-closed.override.version = "master";
     };
     coqPackages = common-bundle // {
       coq.override.version = "master";
@@ -116,6 +128,8 @@ in {
       mathcomp.override.version = "master";
       mathcomp-bigenough.override.version = "master";
       mathcomp-finmap.override.version = "master";
+      mathcomp-real-closed.override.version = "master";
+      interval.job = false;
       ssprove.job = false;
       mathcomp-infotheo.job = false;
     };

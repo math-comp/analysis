@@ -42,7 +42,7 @@ jobs:
     - id: stepGetDerivation
       name: Getting derivation for current job (coq)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"coq\" \\\n   --dry-run 2> err > out || (touch fail;
+        \"9.3\" --argstr job \"coq\" \\\n   --dry-run 2> err > out || (touch fail;
         true)\ncat out err\nif [ -e fail ]; then echo \"Error: getting derivation
         failed\"; exit 1; fi\n"
     - id: stepCheck
@@ -54,77 +54,15 @@ jobs:
         status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: rocq-core'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-core"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "rocq-core"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "coq"
-  coq-elpi:
-    needs:
-    - rocq-core
-    runs-on: ubuntu-latest
-    steps:
-    - name: Determine which commit to initially checkout
-      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"target_commit=${{
-        github.sha }}\" >> $GITHUB_ENV\nelse\n  echo \"target_commit=${{ github.event.pull_request.head.sha
-        }}\" >> $GITHUB_ENV\nfi\n"
-    - name: Git checkout
-      uses: actions/checkout@v7
-      with:
-        allow-unsafe-pr-checkout: true
-        fetch-depth: 0
-        ref: ${{ env.target_commit }}
-    - name: Determine which commit to test
-      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"tested_commit=${{
-        github.sha }}\" >> $GITHUB_ENV\nelse\n  merge_commit=$(git ls-remote ${{ github.event.repository.html_url
-        }} refs/pull/${{ github.event.number }}/merge | cut -f1)\n  mergeable=$(git
-        merge --no-commit --no-ff ${{ github.event.pull_request.base.sha }} > /dev/null
-        2>&1; echo $?; git merge --abort > /dev/null 2>&1 || true)\n  if [ -z \"$merge_commit\"\
-        \ -o \"x$mergeable\" != \"x0\" ]; then\n    echo \"tested_commit=${{ github.event.pull_request.head.sha
-        }}\" >> $GITHUB_ENV\n  else\n    echo \"tested_commit=$merge_commit\" >> $GITHUB_ENV\n\
-        \  fi\nfi\n"
-    - name: Git checkout
-      uses: actions/checkout@v7
-      with:
-        allow-unsafe-pr-checkout: true
-        fetch-depth: 0
-        ref: ${{ env.tested_commit }}
-    - name: Cachix install
-      uses: cachix/install-nix-action@v31
-      with:
-        nix_path: nixpkgs=channel:nixpkgs-unstable
-    - name: Cachix setup math-comp
-      uses: cachix/cachix-action@v16
-      with:
-        authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-        extraPullNames: coq, coq-community
-        name: math-comp
-    - id: stepGetDerivation
-      name: Getting derivation for current job (coq-elpi)
-      run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"coq-elpi\" \\\n   --dry-run 2> err > out || (touch
-        fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error: getting derivation
-        failed\"; exit 1; fi\n"
-    - id: stepCheck
-      name: Checking presence of CI target for current job
-      run: "if $(cat out err | grep -q \"built:\") ; then\n  echo \"CI target needs
-        actual building\"\n  if $(cat out err | grep -q \"derivations will be built:\"\
-        ) ; then\n    echo \"waiting a bit for derivations that should be in cache\"\
-        \n    sleep 30\n  fi\nelse\n  echo \"CI target already built\"\n  echo \"\
-        status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: rocq-core'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-core"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "coq-elpi"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "coq"
   coquelicot:
     needs:
     - coq
-    - stdlib
     runs-on: ubuntu-latest
     steps:
     - name: Determine which commit to initially checkout
@@ -165,7 +103,7 @@ jobs:
     - id: stepGetDerivation
       name: Getting derivation for current job (coquelicot)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"coquelicot\" \\\n   --dry-run 2> err > out || (touch
+        \"9.3\" --argstr job \"coquelicot\" \\\n   --dry-run 2> err > out || (touch
         fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error: getting derivation
         failed\"; exit 1; fi\n"
     - id: stepCheck
@@ -177,90 +115,23 @@ jobs:
         status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: coq'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "coq"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "coq"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: stdlib'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "stdlib"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "stdlib"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-boot'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-boot"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-boot"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "coquelicot"
-  hierarchy-builder:
-    needs:
-    - rocq-core
-    - coq-elpi
-    runs-on: ubuntu-latest
-    steps:
-    - name: Determine which commit to initially checkout
-      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"target_commit=${{
-        github.sha }}\" >> $GITHUB_ENV\nelse\n  echo \"target_commit=${{ github.event.pull_request.head.sha
-        }}\" >> $GITHUB_ENV\nfi\n"
-    - name: Git checkout
-      uses: actions/checkout@v7
-      with:
-        allow-unsafe-pr-checkout: true
-        fetch-depth: 0
-        ref: ${{ env.target_commit }}
-    - name: Determine which commit to test
-      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"tested_commit=${{
-        github.sha }}\" >> $GITHUB_ENV\nelse\n  merge_commit=$(git ls-remote ${{ github.event.repository.html_url
-        }} refs/pull/${{ github.event.number }}/merge | cut -f1)\n  mergeable=$(git
-        merge --no-commit --no-ff ${{ github.event.pull_request.base.sha }} > /dev/null
-        2>&1; echo $?; git merge --abort > /dev/null 2>&1 || true)\n  if [ -z \"$merge_commit\"\
-        \ -o \"x$mergeable\" != \"x0\" ]; then\n    echo \"tested_commit=${{ github.event.pull_request.head.sha
-        }}\" >> $GITHUB_ENV\n  else\n    echo \"tested_commit=$merge_commit\" >> $GITHUB_ENV\n\
-        \  fi\nfi\n"
-    - name: Git checkout
-      uses: actions/checkout@v7
-      with:
-        allow-unsafe-pr-checkout: true
-        fetch-depth: 0
-        ref: ${{ env.tested_commit }}
-    - name: Cachix install
-      uses: cachix/install-nix-action@v31
-      with:
-        nix_path: nixpkgs=channel:nixpkgs-unstable
-    - name: Cachix setup math-comp
-      uses: cachix/cachix-action@v16
-      with:
-        authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-        extraPullNames: coq, coq-community
-        name: math-comp
-    - id: stepGetDerivation
-      name: Getting derivation for current job (hierarchy-builder)
-      run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"hierarchy-builder\" \\\n   --dry-run 2> err > out
-        || (touch fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error: getting
-        derivation failed\"; exit 1; fi\n"
-    - id: stepCheck
-      name: Checking presence of CI target for current job
-      run: "if $(cat out err | grep -q \"built:\") ; then\n  echo \"CI target needs
-        actual building\"\n  if $(cat out err | grep -q \"derivations will be built:\"\
-        ) ; then\n    echo \"waiting a bit for derivations that should be in cache\"\
-        \n    sleep 30\n  fi\nelse\n  echo \"CI target already built\"\n  echo \"\
-        status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: rocq-core'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-core"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: coq-elpi'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "coq-elpi"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "hierarchy-builder"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "coquelicot"
   mathcomp:
     needs:
     - rocq-core
-    - hierarchy-builder
     runs-on: ubuntu-latest
     steps:
     - name: Determine which commit to initially checkout
@@ -301,7 +172,7 @@ jobs:
     - id: stepGetDerivation
       name: Getting derivation for current job (mathcomp)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"mathcomp\" \\\n   --dry-run 2> err > out || (touch
+        \"9.3\" --argstr job \"mathcomp\" \\\n   --dry-run 2> err > out || (touch
         fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error: getting derivation
         failed\"; exit 1; fi\n"
     - id: stepCheck
@@ -313,26 +184,24 @@ jobs:
         status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: rocq-core'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-core"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "rocq-core"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-character'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-character"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-character"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: hierarchy-builder'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "hierarchy-builder"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "hierarchy-builder"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp"
   mathcomp-analysis:
     needs:
     - rocq-core
     - mathcomp-reals
-    - mathcomp-bigenough
-    - mathcomp-real-closed
     runs-on: ubuntu-latest
     steps:
     - name: Determine which commit to initially checkout
@@ -373,8 +242,8 @@ jobs:
     - id: stepGetDerivation
       name: Getting derivation for current job (mathcomp-analysis)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"mathcomp-analysis\" \\\n   --dry-run 2> err > out
-        || (touch fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error: getting
+        \"9.3\" --argstr job \"mathcomp-analysis\" \\\n   --dry-run 2> err > out ||
+        (touch fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error: getting
         derivation failed\"; exit 1; fi\n"
     - id: stepCheck
       name: Checking presence of CI target for current job
@@ -385,36 +254,31 @@ jobs:
         status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: rocq-core'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-core"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "rocq-core"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-reals'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-reals"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-reals"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-field'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-field"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-field"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-bigenough'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-bigenough"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-bigenough"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-real-closed'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-real-closed"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-real-closed"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-analysis"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-analysis"
   mathcomp-analysis-single:
     needs:
     - rocq-core
-    - mathcomp-finmap
-    - mathcomp-bigenough
-    - mathcomp-bigenough
-    - mathcomp-real-closed
-    - stdlib
     runs-on: ubuntu-latest
     steps:
     - name: Determine which commit to initially checkout
@@ -455,7 +319,7 @@ jobs:
     - id: stepGetDerivation
       name: Getting derivation for current job (mathcomp-analysis-single)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"mathcomp-analysis-single\" \\\n   --dry-run 2> err
+        \"9.3\" --argstr job \"mathcomp-analysis-single\" \\\n   --dry-run 2> err
         > out || (touch fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error:
         getting derivation failed\"; exit 1; fi\n"
     - id: stepCheck
@@ -467,46 +331,45 @@ jobs:
         status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: rocq-core'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-core"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "rocq-core"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-algebra'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-algebra"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-algebra"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-finmap'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-finmap"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-finmap"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-bigenough'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-bigenough"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-bigenough"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-field'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-field"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-field"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-bigenough'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-bigenough"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-bigenough"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-real-closed'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-real-closed"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-real-closed"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: stdlib'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "stdlib"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "stdlib"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-analysis-single"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-analysis-single"
   mathcomp-analysis-stdlib:
     needs:
     - rocq-core
     - mathcomp-analysis
     - mathcomp-reals-stdlib
-    - stdlib
     runs-on: ubuntu-latest
     steps:
     - name: Determine which commit to initially checkout
@@ -547,7 +410,7 @@ jobs:
     - id: stepGetDerivation
       name: Getting derivation for current job (mathcomp-analysis-stdlib)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"mathcomp-analysis-stdlib\" \\\n   --dry-run 2> err
+        \"9.3\" --argstr job \"mathcomp-analysis-stdlib\" \\\n   --dry-run 2> err
         > out || (touch fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error:
         getting derivation failed\"; exit 1; fi\n"
     - id: stepCheck
@@ -559,93 +422,27 @@ jobs:
         status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: rocq-core'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-core"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "rocq-core"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-analysis'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-analysis"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-analysis"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-reals-stdlib'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-reals-stdlib"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-reals-stdlib"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: stdlib'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "stdlib"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "stdlib"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-analysis-stdlib"
-  mathcomp-bigenough:
-    needs:
-    - rocq-core
-    runs-on: ubuntu-latest
-    steps:
-    - name: Determine which commit to initially checkout
-      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"target_commit=${{
-        github.sha }}\" >> $GITHUB_ENV\nelse\n  echo \"target_commit=${{ github.event.pull_request.head.sha
-        }}\" >> $GITHUB_ENV\nfi\n"
-    - name: Git checkout
-      uses: actions/checkout@v7
-      with:
-        allow-unsafe-pr-checkout: true
-        fetch-depth: 0
-        ref: ${{ env.target_commit }}
-    - name: Determine which commit to test
-      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"tested_commit=${{
-        github.sha }}\" >> $GITHUB_ENV\nelse\n  merge_commit=$(git ls-remote ${{ github.event.repository.html_url
-        }} refs/pull/${{ github.event.number }}/merge | cut -f1)\n  mergeable=$(git
-        merge --no-commit --no-ff ${{ github.event.pull_request.base.sha }} > /dev/null
-        2>&1; echo $?; git merge --abort > /dev/null 2>&1 || true)\n  if [ -z \"$merge_commit\"\
-        \ -o \"x$mergeable\" != \"x0\" ]; then\n    echo \"tested_commit=${{ github.event.pull_request.head.sha
-        }}\" >> $GITHUB_ENV\n  else\n    echo \"tested_commit=$merge_commit\" >> $GITHUB_ENV\n\
-        \  fi\nfi\n"
-    - name: Git checkout
-      uses: actions/checkout@v7
-      with:
-        allow-unsafe-pr-checkout: true
-        fetch-depth: 0
-        ref: ${{ env.tested_commit }}
-    - name: Cachix install
-      uses: cachix/install-nix-action@v31
-      with:
-        nix_path: nixpkgs=channel:nixpkgs-unstable
-    - name: Cachix setup math-comp
-      uses: cachix/cachix-action@v16
-      with:
-        authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-        extraPullNames: coq, coq-community
-        name: math-comp
-    - id: stepGetDerivation
-      name: Getting derivation for current job (mathcomp-bigenough)
-      run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"mathcomp-bigenough\" \\\n   --dry-run 2> err > out
-        || (touch fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error: getting
-        derivation failed\"; exit 1; fi\n"
-    - id: stepCheck
-      name: Checking presence of CI target for current job
-      run: "if $(cat out err | grep -q \"built:\") ; then\n  echo \"CI target needs
-        actual building\"\n  if $(cat out err | grep -q \"derivations will be built:\"\
-        ) ; then\n    echo \"waiting a bit for derivations that should be in cache\"\
-        \n    sleep 30\n  fi\nelse\n  echo \"CI target already built\"\n  echo \"\
-        status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: rocq-core'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-core"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: mathcomp-boot'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-boot"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-bigenough"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-analysis-stdlib"
   mathcomp-classical:
     needs:
     - rocq-core
-    - mathcomp-finmap
     runs-on: ubuntu-latest
     steps:
     - name: Determine which commit to initially checkout
@@ -686,7 +483,7 @@ jobs:
     - id: stepGetDerivation
       name: Getting derivation for current job (mathcomp-classical)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"mathcomp-classical\" \\\n   --dry-run 2> err > out
+        \"9.3\" --argstr job \"mathcomp-classical\" \\\n   --dry-run 2> err > out
         || (touch fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error: getting
         derivation failed\"; exit 1; fi\n"
     - id: stepCheck
@@ -698,25 +495,24 @@ jobs:
         status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: rocq-core'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-core"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "rocq-core"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-algebra'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-algebra"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-algebra"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-finmap'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-finmap"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-finmap"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-classical"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-classical"
   mathcomp-experimental-reals:
     needs:
     - rocq-core
     - mathcomp-analysis
-    - mathcomp-bigenough
     runs-on: ubuntu-latest
     steps:
     - name: Determine which commit to initially checkout
@@ -757,143 +553,8 @@ jobs:
     - id: stepGetDerivation
       name: Getting derivation for current job (mathcomp-experimental-reals)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"mathcomp-experimental-reals\" \\\n   --dry-run 2>
-        err > out || (touch fail; true)\ncat out err\nif [ -e fail ]; then echo \"\
-        Error: getting derivation failed\"; exit 1; fi\n"
-    - id: stepCheck
-      name: Checking presence of CI target for current job
-      run: "if $(cat out err | grep -q \"built:\") ; then\n  echo \"CI target needs
-        actual building\"\n  if $(cat out err | grep -q \"derivations will be built:\"\
-        ) ; then\n    echo \"waiting a bit for derivations that should be in cache\"\
-        \n    sleep 30\n  fi\nelse\n  echo \"CI target already built\"\n  echo \"\
-        status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: rocq-core'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-core"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: mathcomp-analysis'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-analysis"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: mathcomp-bigenough'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-bigenough"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-experimental-reals"
-  mathcomp-finmap:
-    needs:
-    - rocq-core
-    runs-on: ubuntu-latest
-    steps:
-    - name: Determine which commit to initially checkout
-      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"target_commit=${{
-        github.sha }}\" >> $GITHUB_ENV\nelse\n  echo \"target_commit=${{ github.event.pull_request.head.sha
-        }}\" >> $GITHUB_ENV\nfi\n"
-    - name: Git checkout
-      uses: actions/checkout@v7
-      with:
-        allow-unsafe-pr-checkout: true
-        fetch-depth: 0
-        ref: ${{ env.target_commit }}
-    - name: Determine which commit to test
-      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"tested_commit=${{
-        github.sha }}\" >> $GITHUB_ENV\nelse\n  merge_commit=$(git ls-remote ${{ github.event.repository.html_url
-        }} refs/pull/${{ github.event.number }}/merge | cut -f1)\n  mergeable=$(git
-        merge --no-commit --no-ff ${{ github.event.pull_request.base.sha }} > /dev/null
-        2>&1; echo $?; git merge --abort > /dev/null 2>&1 || true)\n  if [ -z \"$merge_commit\"\
-        \ -o \"x$mergeable\" != \"x0\" ]; then\n    echo \"tested_commit=${{ github.event.pull_request.head.sha
-        }}\" >> $GITHUB_ENV\n  else\n    echo \"tested_commit=$merge_commit\" >> $GITHUB_ENV\n\
-        \  fi\nfi\n"
-    - name: Git checkout
-      uses: actions/checkout@v7
-      with:
-        allow-unsafe-pr-checkout: true
-        fetch-depth: 0
-        ref: ${{ env.tested_commit }}
-    - name: Cachix install
-      uses: cachix/install-nix-action@v31
-      with:
-        nix_path: nixpkgs=channel:nixpkgs-unstable
-    - name: Cachix setup math-comp
-      uses: cachix/cachix-action@v16
-      with:
-        authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-        extraPullNames: coq, coq-community
-        name: math-comp
-    - id: stepGetDerivation
-      name: Getting derivation for current job (mathcomp-finmap)
-      run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"mathcomp-finmap\" \\\n   --dry-run 2> err > out
-        || (touch fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error: getting
-        derivation failed\"; exit 1; fi\n"
-    - id: stepCheck
-      name: Checking presence of CI target for current job
-      run: "if $(cat out err | grep -q \"built:\") ; then\n  echo \"CI target needs
-        actual building\"\n  if $(cat out err | grep -q \"derivations will be built:\"\
-        ) ; then\n    echo \"waiting a bit for derivations that should be in cache\"\
-        \n    sleep 30\n  fi\nelse\n  echo \"CI target already built\"\n  echo \"\
-        status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: rocq-core'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-core"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: mathcomp-boot'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-boot"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-finmap"
-  mathcomp-real-closed:
-    needs:
-    - rocq-core
-    - mathcomp-bigenough
-    runs-on: ubuntu-latest
-    steps:
-    - name: Determine which commit to initially checkout
-      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"target_commit=${{
-        github.sha }}\" >> $GITHUB_ENV\nelse\n  echo \"target_commit=${{ github.event.pull_request.head.sha
-        }}\" >> $GITHUB_ENV\nfi\n"
-    - name: Git checkout
-      uses: actions/checkout@v7
-      with:
-        allow-unsafe-pr-checkout: true
-        fetch-depth: 0
-        ref: ${{ env.target_commit }}
-    - name: Determine which commit to test
-      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"tested_commit=${{
-        github.sha }}\" >> $GITHUB_ENV\nelse\n  merge_commit=$(git ls-remote ${{ github.event.repository.html_url
-        }} refs/pull/${{ github.event.number }}/merge | cut -f1)\n  mergeable=$(git
-        merge --no-commit --no-ff ${{ github.event.pull_request.base.sha }} > /dev/null
-        2>&1; echo $?; git merge --abort > /dev/null 2>&1 || true)\n  if [ -z \"$merge_commit\"\
-        \ -o \"x$mergeable\" != \"x0\" ]; then\n    echo \"tested_commit=${{ github.event.pull_request.head.sha
-        }}\" >> $GITHUB_ENV\n  else\n    echo \"tested_commit=$merge_commit\" >> $GITHUB_ENV\n\
-        \  fi\nfi\n"
-    - name: Git checkout
-      uses: actions/checkout@v7
-      with:
-        allow-unsafe-pr-checkout: true
-        fetch-depth: 0
-        ref: ${{ env.tested_commit }}
-    - name: Cachix install
-      uses: cachix/install-nix-action@v31
-      with:
-        nix_path: nixpkgs=channel:nixpkgs-unstable
-    - name: Cachix setup math-comp
-      uses: cachix/cachix-action@v16
-      with:
-        authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-        extraPullNames: coq, coq-community
-        name: math-comp
-    - id: stepGetDerivation
-      name: Getting derivation for current job (mathcomp-real-closed)
-      run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"mathcomp-real-closed\" \\\n   --dry-run 2> err >
-        out || (touch fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error:
+        \"9.3\" --argstr job \"mathcomp-experimental-reals\" \\\n   --dry-run 2> err
+        > out || (touch fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error:
         getting derivation failed\"; exit 1; fi\n"
     - id: stepCheck
       name: Checking presence of CI target for current job
@@ -904,20 +565,20 @@ jobs:
         status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: rocq-core'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-core"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "rocq-core"
     - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: mathcomp-field'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-field"
+      name: 'Building/fetching previous CI target: mathcomp-analysis'
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-analysis"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-bigenough'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-bigenough"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-bigenough"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-real-closed"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-experimental-reals"
   mathcomp-reals:
     needs:
     - rocq-core
@@ -962,9 +623,9 @@ jobs:
     - id: stepGetDerivation
       name: Getting derivation for current job (mathcomp-reals)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"mathcomp-reals\" \\\n   --dry-run 2> err > out ||
-        (touch fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error: getting
-        derivation failed\"; exit 1; fi\n"
+        \"9.3\" --argstr job \"mathcomp-reals\" \\\n   --dry-run 2> err > out || (touch
+        fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error: getting derivation
+        failed\"; exit 1; fi\n"
     - id: stepCheck
       name: Checking presence of CI target for current job
       run: "if $(cat out err | grep -q \"built:\") ; then\n  echo \"CI target needs
@@ -974,21 +635,20 @@ jobs:
         status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: rocq-core'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-core"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "rocq-core"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-classical'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-classical"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-classical"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-reals"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-reals"
   mathcomp-reals-stdlib:
     needs:
     - rocq-core
     - mathcomp-reals
-    - stdlib
     runs-on: ubuntu-latest
     steps:
     - name: Determine which commit to initially checkout
@@ -1029,9 +689,9 @@ jobs:
     - id: stepGetDerivation
       name: Getting derivation for current job (mathcomp-reals-stdlib)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"mathcomp-reals-stdlib\" \\\n   --dry-run 2> err
-        > out || (touch fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error:
-        getting derivation failed\"; exit 1; fi\n"
+        \"9.3\" --argstr job \"mathcomp-reals-stdlib\" \\\n   --dry-run 2> err > out
+        || (touch fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error: getting
+        derivation failed\"; exit 1; fi\n"
     - id: stepCheck
       name: Checking presence of CI target for current job
       run: "if $(cat out err | grep -q \"built:\") ; then\n  echo \"CI target needs
@@ -1041,20 +701,20 @@ jobs:
         status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: rocq-core'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-core"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "rocq-core"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: mathcomp-reals'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-reals"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-reals"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: 'Building/fetching previous CI target: stdlib'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "stdlib"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "stdlib"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "mathcomp-reals-stdlib"
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "mathcomp-reals-stdlib"
   rocq-core:
     needs: []
     runs-on: ubuntu-latest
@@ -1097,7 +757,7 @@ jobs:
     - id: stepGetDerivation
       name: Getting derivation for current job (rocq-core)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"rocq-core\" \\\n   --dry-run 2> err > out || (touch
+        \"9.3\" --argstr job \"rocq-core\" \\\n   --dry-run 2> err > out || (touch
         fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error: getting derivation
         failed\"; exit 1; fi\n"
     - id: stepCheck
@@ -1109,133 +769,16 @@ jobs:
         status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-core"
-  rocq-elpi:
-    needs: []
-    runs-on: ubuntu-latest
-    steps:
-    - name: Determine which commit to initially checkout
-      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"target_commit=${{
-        github.sha }}\" >> $GITHUB_ENV\nelse\n  echo \"target_commit=${{ github.event.pull_request.head.sha
-        }}\" >> $GITHUB_ENV\nfi\n"
-    - name: Git checkout
-      uses: actions/checkout@v7
-      with:
-        allow-unsafe-pr-checkout: true
-        fetch-depth: 0
-        ref: ${{ env.target_commit }}
-    - name: Determine which commit to test
-      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"tested_commit=${{
-        github.sha }}\" >> $GITHUB_ENV\nelse\n  merge_commit=$(git ls-remote ${{ github.event.repository.html_url
-        }} refs/pull/${{ github.event.number }}/merge | cut -f1)\n  mergeable=$(git
-        merge --no-commit --no-ff ${{ github.event.pull_request.base.sha }} > /dev/null
-        2>&1; echo $?; git merge --abort > /dev/null 2>&1 || true)\n  if [ -z \"$merge_commit\"\
-        \ -o \"x$mergeable\" != \"x0\" ]; then\n    echo \"tested_commit=${{ github.event.pull_request.head.sha
-        }}\" >> $GITHUB_ENV\n  else\n    echo \"tested_commit=$merge_commit\" >> $GITHUB_ENV\n\
-        \  fi\nfi\n"
-    - name: Git checkout
-      uses: actions/checkout@v7
-      with:
-        allow-unsafe-pr-checkout: true
-        fetch-depth: 0
-        ref: ${{ env.tested_commit }}
-    - name: Cachix install
-      uses: cachix/install-nix-action@v31
-      with:
-        nix_path: nixpkgs=channel:nixpkgs-unstable
-    - name: Cachix setup math-comp
-      uses: cachix/cachix-action@v16
-      with:
-        authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-        extraPullNames: coq, coq-community
-        name: math-comp
-    - id: stepGetDerivation
-      name: Getting derivation for current job (rocq-elpi)
-      run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"rocq-elpi\" \\\n   --dry-run 2> err > out || (touch
-        fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error: getting derivation
-        failed\"; exit 1; fi\n"
-    - id: stepCheck
-      name: Checking presence of CI target for current job
-      run: "if $(cat out err | grep -q \"built:\") ; then\n  echo \"CI target needs
-        actual building\"\n  if $(cat out err | grep -q \"derivations will be built:\"\
-        ) ; then\n    echo \"waiting a bit for derivations that should be in cache\"\
-        \n    sleep 30\n  fi\nelse\n  echo \"CI target already built\"\n  echo \"\
-        status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-elpi"
-  stdlib:
-    needs:
-    - rocq-core
-    runs-on: ubuntu-latest
-    steps:
-    - name: Determine which commit to initially checkout
-      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"target_commit=${{
-        github.sha }}\" >> $GITHUB_ENV\nelse\n  echo \"target_commit=${{ github.event.pull_request.head.sha
-        }}\" >> $GITHUB_ENV\nfi\n"
-    - name: Git checkout
-      uses: actions/checkout@v7
-      with:
-        allow-unsafe-pr-checkout: true
-        fetch-depth: 0
-        ref: ${{ env.target_commit }}
-    - name: Determine which commit to test
-      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"tested_commit=${{
-        github.sha }}\" >> $GITHUB_ENV\nelse\n  merge_commit=$(git ls-remote ${{ github.event.repository.html_url
-        }} refs/pull/${{ github.event.number }}/merge | cut -f1)\n  mergeable=$(git
-        merge --no-commit --no-ff ${{ github.event.pull_request.base.sha }} > /dev/null
-        2>&1; echo $?; git merge --abort > /dev/null 2>&1 || true)\n  if [ -z \"$merge_commit\"\
-        \ -o \"x$mergeable\" != \"x0\" ]; then\n    echo \"tested_commit=${{ github.event.pull_request.head.sha
-        }}\" >> $GITHUB_ENV\n  else\n    echo \"tested_commit=$merge_commit\" >> $GITHUB_ENV\n\
-        \  fi\nfi\n"
-    - name: Git checkout
-      uses: actions/checkout@v7
-      with:
-        allow-unsafe-pr-checkout: true
-        fetch-depth: 0
-        ref: ${{ env.tested_commit }}
-    - name: Cachix install
-      uses: cachix/install-nix-action@v31
-      with:
-        nix_path: nixpkgs=channel:nixpkgs-unstable
-    - name: Cachix setup math-comp
-      uses: cachix/cachix-action@v16
-      with:
-        authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-        extraPullNames: coq, coq-community
-        name: math-comp
-    - id: stepGetDerivation
-      name: Getting derivation for current job (stdlib)
-      run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
-        \"master\" --argstr job \"stdlib\" \\\n   --dry-run 2> err > out || (touch
-        fail; true)\ncat out err\nif [ -e fail ]; then echo \"Error: getting derivation
-        failed\"; exit 1; fi\n"
-    - id: stepCheck
-      name: Checking presence of CI target for current job
-      run: "if $(cat out err | grep -q \"built:\") ; then\n  echo \"CI target needs
-        actual building\"\n  if $(cat out err | grep -q \"derivations will be built:\"\
-        ) ; then\n    echo \"waiting a bit for derivations that should be in cache\"\
-        \n    sleep 30\n  fi\nelse\n  echo \"CI target already built\"\n  echo \"\
-        status=fetched\" >> $GITHUB_OUTPUT\nfi\n"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: rocq-core'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "rocq-core"
-    - if: steps.stepCheck.outputs.status != 'fetched'
-      name: Building/fetching current CI target
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "master" --argstr job "stdlib"
-name: Nix CI for bundle master
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.3" 
+        --argstr job "rocq-core"
+name: Nix CI for bundle 9.3
 on:
   pull_request:
     paths:
-    - .github/workflows/nix-action-master.yml
+    - .github/workflows/nix-action-9.3.yml
   pull_request_target:
     paths-ignore:
-    - .github/workflows/nix-action-master.yml
+    - .github/workflows/nix-action-9.3.yml
     types:
     - opened
     - synchronize
