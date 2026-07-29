@@ -965,7 +965,7 @@ rewrite interchange_psum /=; last first.
   apply/eq_psum=> y /=; rewrite mulrC -psumZ //.
   by apply/eq_psum=> x /=; rewrite mulrCA.
 + have := summable_pr E (dlet f mu); apply/eq_summable.
-  by move=> x; rewrite dletE psumZ ?ler0n.
+  by move=> x; rewrite /= dletE psumZ ?ler0n.
 + by move=> y; apply/summable_condl/summable_mlet.
 Qed.
 
