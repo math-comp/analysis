@@ -525,9 +525,6 @@ Qed.
 
 End DLetDLet.
 
-#[deprecated(since="1.17.0", note="use `dlet_dlet` instead")]
-Notation __deprecated__dlet_dlet := dlet_dlet (only parsing).
-
 (* -------------------------------------------------------------------- *)
 Section DLetAlg.
 Context {T U : choiceType} (mu mu1 mu2 : {distr T / R}).
@@ -744,6 +741,8 @@ End Std.
 Notation __deprecated__dmargin_dlet := dmargin_dlet (only parsing).
 #[deprecated(since="1.17.0", note="use `dlet_dmargin` instead")]
 Notation __deprecated__dlet_dmargin := dlet_dmargin (only parsing).
+#[deprecated(since="1.17.0", note="use `dlet_dlet` instead")]
+Notation __deprecated__dlet_dlet := dlet_dlet (only parsing).
 
 Notation dfst mu := (dmargin fst mu).
 Notation dsnd mu := (dmargin snd mu).
