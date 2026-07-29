@@ -172,6 +172,34 @@ Qed.
 
 End mx_norm.
 
+Section norm_trmx.
+
+Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import Order.Def.
+Local Open Scope ring_scope.
+Lemma nng_max0r {K : realFieldType} : left_id ((0:K)%:nng) (@maxr {nonneg K}).
+Proof.
+move=> x.
+rewrite /max; case: ifPn => //.
+rewrite -leNgt => x0.
+apply/eqP; rewrite eq_le; apply/andP; split; last first.
+  exact: x0.
+by have : 0 <= x%:nngnum by []. (* NB: this should be automatic *)
+Qed.
+
+HB.instance Definition _  {K : realFieldType} :=
+  Monoid.isComLaw.Build {nonneg K} 0%:nng max maxA maxC nng_max0r.
+
+Lemma norm_trmx m n {R : realFieldType} (M : 'M[R]_(m, n)) : mx_norm (M^T) = mx_norm M.
+Proof.
+rewrite [LHS]mx_normE/=.
+under eq_bigr do rewrite mxE /=.
+rewrite -(pair_big xpredT xpredT (fun i j => `|M j i|%:nng))/=.
+by rewrite exchange_big//= pair_big.
+Qed.
+
+End norm_trmx.
+
 Lemma mx_normrE (K : realDomainType) (m n : nat) (x : 'M[K]_(m, n)) :
   mx_norm x = \big[maxr/0]_ij `|x ij.1 ij.2|.
 Proof.
