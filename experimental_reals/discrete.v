@@ -6,7 +6,7 @@
 (* -------------------------------------------------------------------- *)
 From Corelib Require Setoid.
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat algebra.
+From mathcomp Require Import boot order algebra.
 From mathcomp.classical Require Import boolp.
 From mathcomp Require Import xfinmap reals.
 

@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat algebra finmap.
+From mathcomp Require Import boot order algebra finmap.
 From mathcomp Require Import generic_quotient.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.

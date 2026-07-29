@@ -1,5 +1,5 @@
 From Stdlib Require Import Nsatz.
-From mathcomp Require Import all_ssreflect_compat ssralg ssrint ssrnum.
+From mathcomp Require Import boot order ssralg ssrint ssrnum.
 From mathcomp Require Import boolp reals constructive_ereal.
 
 (**md**************************************************************************)

@@ -5,7 +5,7 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat algebra finmap.
+From mathcomp Require Import boot order algebra finmap.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.

@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect_compat ssralg ssrnum matrix interval.
+From mathcomp Require Import boot order ssralg ssrnum matrix interval.
 From mathcomp Require Import poly sesquilinear.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
