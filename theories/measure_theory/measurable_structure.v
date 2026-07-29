@@ -1319,6 +1319,9 @@ HB.instance Definition _ := @isMeasurable.Build (sigma_display G)
 
 End g_salgebra_instance.
 
+HB.instance Definition _ {T : pointedType} (G : set_system T) :=
+  Pointed.on (g_sigma_algebraType G).
+
 Notation "G .-sigma" := (sigma_display G) : measure_display_scope.
 Notation "G .-sigma.-measurable" :=
   (measurable : set_system (g_sigma_algebraType G)) : classical_set_scope.
@@ -1592,7 +1595,7 @@ Definition measure_prod_display :
 Proof. exact. Qed.
 
 Section product_salgebra_instance.
-Context d1 d2 (T1 : semiRingOfSetsType d1) (T2 : semiRingOfSetsType d2).
+Context {d1} {d2} {T1 : semiRingOfSetsType d1} {T2 : semiRingOfSetsType d2}.
 Let f1 := @fst T1 T2.
 Let f2 := @snd T1 T2.
 
@@ -1621,7 +1624,12 @@ Notation "p .-prod.-measurable" :=
   ((p.-prod).-measurable : set_system (_ * _)) :
     classical_set_scope.
 
-Lemma measurableX d1 d2 (T1 : semiRingOfSetsType d1) (T2 : semiRingOfSetsType d2)
+HB.instance Definition _
+    d d' (X : pmeasurableType d) (Y : pmeasurableType d') :=
+  Measurable.on (X * Y)%type.
+
+Lemma measurableX
+    d1 d2 (T1 : semiRingOfSetsType d1) (T2 : semiRingOfSetsType d2)
     (A : set T1) (B : set T2) :
   measurable A -> measurable B -> measurable (A `*` B).
 Proof.
