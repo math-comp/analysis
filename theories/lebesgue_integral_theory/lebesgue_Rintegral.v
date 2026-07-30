@@ -261,6 +261,8 @@ Hypotheses (mf_ : forall n, measurable_fun D (f_ n))
   (int_g : mu.-integrable D (EFin \o g))
   (absfg : forall n x, D x -> `|f_ n x| <= g x).
 
+Import MeasurableR.
+
 Lemma Rdominated_cvg :
   \int[mu]_(x in D) f_ n x @[n \oo] --> \int[mu]_(x in D) f x.
 Proof.
