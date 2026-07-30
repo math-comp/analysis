@@ -256,12 +256,11 @@ Section Rdominated_convergence.
 Context {d} {T : measurableType d} {R : realType}
   (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D)
   (f_ : (T -> R)^nat) (f g : T -> R).
+Import MeasurableR.
 Hypotheses (mf_ : forall n, measurable_fun D (f_ n))
   (f_f : forall x, D x -> f_ ^~ x @ \oo --> f x)
   (int_g : mu.-integrable D (EFin \o g))
   (absfg : forall n x, D x -> `|f_ n x| <= g x).
-
-Import MeasurableR.
 
 Lemma Rdominated_cvg :
   \int[mu]_(x in D) f_ n x @[n \oo] --> \int[mu]_(x in D) f x.
