@@ -271,8 +271,6 @@
   + lemmas `dlet_dlet`, `dmargin_dlet`, `dlet_dmargin`, `dfst_dswap`,
     `dsnd_dswap`, `dsndE`, `pr_dlet` are no longer deprecated
 
-- in file `lebesgue_Rintegral.v`,
-  + new lemma `Rdominated_cvg`.
 - in `lebesgue_Rintegral.v`:
   + lemma `Rdominated_cvg`
 
