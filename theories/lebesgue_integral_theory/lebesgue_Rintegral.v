@@ -253,44 +253,25 @@ Notation Rintegral_itv_bndo_bndc := Rintegral_itvbo_itvbc (only parsing).
 Notation Rintegral_itv_obnd_cbnd := Rintegral_itvob_itvcb (only parsing).
 
 Section Rdominated_convergence.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
-Variables (f_ : (T -> R)^nat) (f g : T -> R).
-Hypothesis mf_ : forall n, measurable_fun D (f_ n).
-Hypothesis f_f : forall x, D x -> f_ ^~ x @ \oo --> f x.
-Hypothesis ig : integrable.body mu D (EFin \o g).
-Hypothesis absfg : forall n x, D x -> `|f_ n x| <= g x.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D)
+  (f_ : (T -> R)^nat) (f g : T -> R).
+Hypotheses (mf_ : forall n, measurable_fun D (f_ n))
+  (f_f : forall x, D x -> f_ ^~ x @ \oo --> f x)
+  (int_g : mu.-integrable D (EFin \o g))
+  (absfg : forall n x, D x -> `|f_ n x| <= g x).
 
-Let mf_e n : measurable_fun D (EFin \o f_ n).
-Proof. by apply/measurable_EFinP. Qed.
-
-Let f_fe (x : T) : D x -> (f_ n x)%:E @[n --> \oo] --> (f x)%:E.
-Proof.
-move=> Dx.
-apply/fine_cvgP; split; first by apply: nearW.
-by apply: f_f.
-Qed.
-
-Let egi (x : T) : (g x)%:E \is a fin_num.
-Proof. by []. Qed.
-
-Let absfge (n : nat) (x : T) : D x -> (`|(f_ n x)%:E| <= (g x)%:E)%E.
-Proof.
-move=> Dx.
-rewrite abse_EFin lee_fin.
-by apply: absfg.
-Qed.
-
-Let mf : measurable_fun D (EFin \o f).
-Proof. by apply: emeasurable_fun_cvg; first by exact: mf_e. Qed.
-
-Lemma Rdominated_cvg : \int[mu]_(x in D) f_ n x @[n \oo] --> \int[mu]_(x in D) f x.
+Lemma Rdominated_cvg :
+  \int[mu]_(x in D) f_ n x @[n \oo] --> \int[mu]_(x in D) f x.
 Proof.
 rewrite /Rintegral.
-have := dominated_convergence mD mf_e mf (aeW _ f_fe) ig (aeW _ (fun x n Dx => absfge n Dx)).
-move=> /= [i_f _ +].
-rewrite -[X in _ --> X]fineK; first by apply: integrable_fin_num.
-by move/fine_cvg.
+have []// := @dominated_convergence _ _ _ mu _ mD (fun n t => (f_ n t)%:E)
+    (EFin \o f) (EFin \o g).
+- by move=> n; exact/measurable_EFinP.
+- exact/measurable_EFinP/measurable_fun_cvg.
+- by apply: aeW => x Dx; apply/fine_cvgP; split; [exact: nearW|exact: f_f].
+- by apply: aeW => x n Dx/=; rewrite lee_fin absfg.
+by move=> int_f _/= int_f_f; apply/fine_cvg; rewrite fineK// integrable_fin_num.
 Qed.
 
 End Rdominated_convergence.

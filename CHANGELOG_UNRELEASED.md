@@ -273,6 +273,8 @@
 
 - in file `lebesgue_Rintegral.v`,
   + new lemma `Rdominated_cvg`.
+- in `lebesgue_Rintegral.v`:
+  + lemma `Rdominated_cvg`
 
 ### Changed
 
