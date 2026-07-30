@@ -76,7 +76,6 @@ in {
       mathcomp.override.version = "2.6.0";
       mathcomp-finmap.override.version = "2.2.4";
       ssprove.job = false;  # not yet available for 9.1
-      mathcomp-infotheo.job = false;  # not yet available for 9.1
     };
   };
 
@@ -89,7 +88,7 @@ in {
       coq.override.version = "9.2";
       mathcomp.override.version = "2.6.0";
       ssprove.job = false;  # not yet available for 9.2
-      mathcomp-infotheo.job = false;  # not yet available for 9.2
+      mathcomp-infotheo.job = false;  # interval not yet available for 9.2
     };
   };
 
@@ -103,7 +102,7 @@ in {
       mathcomp.override.version = "2.6.0";
       interval.job = false;  # not yet available for 9.3
       ssprove.job = false;  # not yet available for 9.3
-      mathcomp-infotheo.job = false;  # not yet available for 9.3
+      mathcomp-infotheo.job = false;  # interval not yet available for 9.3
     };
   };
 
