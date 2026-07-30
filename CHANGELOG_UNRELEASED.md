@@ -274,6 +274,10 @@
 - in `lebesgue_Rintegral.v`:
   + lemma `Rdominated_cvg`
 
+- in `filter.v`:
+  + lemmas `near_eq_cvg_eq`, `near_eq_is_cvg`, `near_eq_lim`,
+    `cvg_to_withinP`, `within_cvg_to_within`
+
 ### Changed
 
 - in `realsum.v`:
