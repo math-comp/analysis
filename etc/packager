@@ -44,7 +44,7 @@ then
 # variables useful for package construction
   URLLINE="src: \"git+https://github.com/math-comp/analysis.git\""
   PKGS=$(ls -fs -d -1 $GITROOT/*.opam \
-        | $SED -r "s?.*coq-mathcomp-([^/]+).opam?\1?" \
+        | $SED -r "s?.*rocq-mathcomp-([^/]+).opam?\1?" \
         | paste -sd " " -)
   PKGPREFIX="$GITROOT/opam/extra-dev/packages"
 else
@@ -58,7 +58,7 @@ else
   URLLINE="src: \"$ARCHIVEURL\""
   CHECKSUMLINE="checksum: \"sha256=$SUM\""
   PKGS=$(ls -fs -d -1 $EXTRACTED/*/*.opam \
-        | $SED -r "s?.*coq-mathcomp-([^/]+).opam?\1?" \
+        | $SED -r "s?.*rocq-mathcomp-([^/]+).opam?\1?" \
         | paste -sd " " -)
   PKGPREFIX="$GITROOT/opam/released/packages"
 fi
@@ -67,11 +67,11 @@ fi
 # rewrite them to adapt them to single package construction and
 # version numbers
 for pkg in $PKGS
-do pkgdir="$PKGPREFIX/coq-mathcomp-$pkg/coq-mathcomp-$pkg.$VERSION"
+do pkgdir="$PKGPREFIX/rocq-mathcomp-$pkg/rocq-mathcomp-$pkg.$VERSION"
    mkdir -p $pkgdir
    if [ $VERSION == "dev" ]
-   then cp $GITROOT/coq-mathcomp-$pkg.opam $pkgdir/opam
-   else git show "$BRANCH:coq-mathcomp-$pkg.opam" > $pkgdir/opam
+   then cp $GITROOT/rocq-mathcomp-$pkg.opam $pkgdir/opam
+   else git show "$BRANCH:rocq-mathcomp-$pkg.opam" > $pkgdir/opam
         $SED -r "/^version/d" -i $pkgdir/opam
    fi
    echo "" >> $pkgdir/opam

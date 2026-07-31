@@ -123,6 +123,6 @@ html: build $(DOCDIR)/dependency_graph.dot
         -index-blacklist etc/rocqnavi_index-blacklist \
         -show-type-information-using-coqtop-process \
 	-doc-source-url $(GITHUB_URL) \
-	-external https://math-comp.github.io/htmldoc_2_5_0/ mathcomp.order \
-	-external https://math-comp.github.io/htmldoc_2_5_0/ mathcomp.boot \
-	-external https://math-comp.github.io/htmldoc_2_5_0/ mathcomp.algebra
+	-external https://math-comp.github.io/htmldoc_2_6_0/ mathcomp.order \
+	-external https://math-comp.github.io/htmldoc_2_6_0/ mathcomp.boot \
+	-external https://math-comp.github.io/htmldoc_2_6_0/ mathcomp.algebra

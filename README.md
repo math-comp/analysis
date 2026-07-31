@@ -63,8 +63,11 @@ make install
 
 Each file is documented in its header in ASCII.
 
-[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc/1_16_0/index.html) (using [`rocqnavi`](https://github.com/affeldt-aist/rocqnavi)).
-It includes inheritance diagrams for the mathematical structures that MathComp-Analysis adds on top of MathComp's ones.
+HTML rendering of the source code and inheritance diagrams for the
+mathematical structures that MathComp-Analysis adds on top of
+MathComp's ones (using [`rocqnavi`](https://github.com/affeldt-aist/rocqnavi)):
+- last version: [1.17.0](https://math-comp.github.io/analysis/htmldoc/1_17_0/index.html)
+- [master](https://math-comp.github.io/analysis/master/)
 
 Overview presentations:
 - [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
