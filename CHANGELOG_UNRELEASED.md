@@ -481,6 +481,18 @@
 - in `functions.v`
   + lemma `scalrfctE` -> `scalerfctE` (deprecating `scalrfctE`)
 
+- in `filter.v`:
+  + definition `finI_from` -> `open_finI_from`
+  + lemma `finI_from_cover` -> `open_finI_from_cover`
+  + lemma `finI_from1` -> `open_finI_from1`
+  + lemma `finI_from_countable` -> `open_finI_from_countable`
+  + lemma `finI_fromI` -> `open_finI_fromI`
+
+- in `topology_structure.v`:
+  + definition `open_from` -> `openU_from`
+  + lemma `closed_bigsetU` -> `bigsetU_closed`
+  + lemma `closed_bigcup` -> `bigcup_closed`
+
 ### Generalized
 
 - in `measurable_structure.v`:
