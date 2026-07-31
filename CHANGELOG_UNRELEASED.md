@@ -94,6 +94,9 @@
   + lemma `diffmx`
   + lemma `is_diff_mx`
   + instance `is_diff_mx`
+  + instance `is_derive_coord`
+  + instance `is_derive_mulmx`
+
 - in `realsum.v`:
   + lemma `esum_psum`
   + lemma `esum_sum`
