@@ -284,6 +284,10 @@
 - in `pseudometric_normed_Zmodule.v`:
   + factory `isPseudoMetricNormedZmodule`
   + structure `PseudoMetricNormedZmod0`
+- in `reals.v`:
+  + lemmas `supS`, `infS`
+  + lemmas `ge0_infZl`, `inf_ge0`, `inf_pos`
+  + lemmas `le_supP`, `gt_sup`
 
 ### Changed
 
