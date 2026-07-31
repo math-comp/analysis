@@ -12,7 +12,7 @@ Latest releases: [[1.17.0] - 2026-07-31](#1170---2026-07-31), [[1.16.0] - 2026-0
 - in `unstable.v`:
   + structures `SemiNorm`, `Norm`
   + lemmas `normMn`, `normN`, `ler_norm_sum`
-  + lemmas `divD_onem`
+  + lemma `divD_onem`
   + lemma `sub_row_mx`
 
 - in `classical_sets.v`:
@@ -87,7 +87,7 @@ Latest releases: [[1.17.0] - 2026-07-31](#1170---2026-07-31), [[1.16.0] - 2026-0
   + lemma `itv_center_shift`
   + factory `isPseudoMetricNormedZmodule`
   + structure `PseudoMetricNormedZmod0`
-  + new lemma `within_continuousN`
+  + lemma `within_continuousN`
 
 - in `normed_module.v`:
   + lemmas `closure_itvoo`
@@ -99,8 +99,8 @@ Latest releases: [[1.17.0] - 2026-07-31](#1170---2026-07-31), [[1.16.0] - 2026-0
   + structure `SubNormedModule`, notation `subNormedModType`
   + instance `ent_xsection_filter`
   + light-weigth factory `subLmodule_isSubNormedmodule`
-  + new lemmas `within_continuousZ`, `within_continuousM`,
-    `within_continuousMl`, and `within_continuousMr`
+  + lemmas `within_continuousZ`, `within_continuousM`,
+    `within_continuousMl`, `within_continuousMr`
 
 - in `matrix_normedtype.v`:
   + lemma `continuous_mx`
@@ -122,7 +122,7 @@ Latest releases: [[1.17.0] - 2026-07-31](#1170---2026-07-31), [[1.16.0] - 2026-0
   + lemma `esum_psum`
   + lemma `esum_sum`
   + lemma `esum_summableP`
-  + lemmas `interchange_sup` is no longer
+  + lemma `interchange_sup` is no longer
     deprecated and moved to `reals.v`
   + lemma `interchange_psum` is no longer deprecated
 
@@ -223,7 +223,7 @@ Latest releases: [[1.17.0] - 2026-07-31](#1170---2026-07-31), [[1.16.0] - 2026-0
     `independent_RVs2_funrnegpos`, `independent_RVs2_funrnegneg`,
     `independent_RVs2_funrpospos`
   + definition `pairRV`, lemma `measurable_pairRV`
-  + lemmas `independent_RVs2_product_measure1`
+  + lemma `independent_RVs2_product_measure1`
   + lemmas `independent_RVs2_setI_preimage`,
     `independent_Lfun1_expectation_product_measure_lty`
   + lemma `ge0_independent_expectationM`
@@ -245,10 +245,10 @@ Latest releases: [[1.17.0] - 2026-07-31](#1170---2026-07-31), [[1.16.0] - 2026-0
 
 ### Changed
 
-- in `functions.v`
+- in `functions.v`:
   + lemma `fctE` (include `zerofctE` and `onefctE`)
 
-- in `classical_sets.v`
+- in `classical_sets.v`:
   + lemma `bigcupDr` -> `setD_bigcupr` (deprecating `bigcupDr`)
 
 - moved from `numfun.v` to `unstable.v`:
@@ -269,15 +269,15 @@ Latest releases: [[1.17.0] - 2026-07-31](#1170---2026-07-31), [[1.16.0] - 2026-0
 - in `constructive_ereal.v`:
   + lemmas `EFin_semi_additive` and `dEFin_semi_additive` turned into `Let`s
 
-- moved from `normed_module.v` to `metric_structure.v`
+- moved from `normed_module.v` to `metric_structure.v`:
   + lemma `squeeze_cvgr`
 
-- moved from `pseudometric_normed_Zmodule.v` to `metric_structure.v`
+- moved from `pseudometric_normed_Zmodule.v` to `metric_structure.v`:
   + lemmas `real_cvgr_lt`, `real_cvgr_le`, `real_cvgr_le`, `real_cvgr_gt`
   + lemmas `cvgr_lt`, `cvgr_gt`, `cvgr_ge`, `cvgr_le`
 
 - in `pseudometric_normed_Zmodule.v`:
-  + structure `PseudoMetricNormedZmod` not inherits from `Metric`
+  + structure `PseudoMetricNormedZmod` now inherits from `Metric`
 
 - moved form `normed_module.v` to `pseudometric_normed_Zmodule.v` and generalized:
   + lemmas `fcvgr2dist_ltP`, `cvgr2dist_ltP`, `cvgr2dist_lt`
@@ -314,8 +314,8 @@ Latest releases: [[1.17.0] - 2026-07-31](#1170---2026-07-31), [[1.16.0] - 2026-0
 
 - moved from `measurable_structure.v` to `classical_sets.v`:
   + notation `^nat`
-  + defintion `sequence`
-  + defintion `seqDU`
+  + definition `sequence`
+  + definition `seqDU`
   + lemmas `seqDU_bigcup_eq`, `trivIset_seqDU`
   + definition `seqD`
   + lemmas `eq_bigcup_seqD`, `trivIset_seqD`, `seqDU_seqD`, `bigcup_bigsetU_bigcup`
@@ -323,7 +323,7 @@ Latest releases: [[1.17.0] - 2026-07-31](#1170---2026-07-31), [[1.16.0] - 2026-0
 - moved from `measurable_structure.v` to `measure_function.v`:
   + definition `subset_sigma_subadditive`
 
-- moved from `measurable_realfun.v` to `lebesgue_stieltjes_measure.v`
+- moved from `measurable_realfun.v` to `lebesgue_stieltjes_measure.v`:
   + module `RGenOInfty`
   + module `RGenInftyO`
   + module `RGenCInfty`
@@ -360,7 +360,7 @@ Latest releases: [[1.17.0] - 2026-07-31](#1170---2026-07-31), [[1.16.0] - 2026-0
   + definitions `jordan_pos`, `jordan_neg`
   + lemmas `jordan_posE`, `jordan_negE`, `jordan_decomp`, `jordan_pos_dominates`,
     `jordan_neg_dominates`
-  + definition `charge_variation`, `charge_dominates`
+  + definitions `charge_variation`, `charge_dominates`
   + lemmas `abse_charge_variation`, `null_charge_dominatesP`,
     `content_charge_dominatesP`, `charge_variation_continuous`
 
@@ -377,7 +377,7 @@ Latest releases: [[1.17.0] - 2026-07-31](#1170---2026-07-31), [[1.16.0] - 2026-0
     `ae_eq_Radon_Nikodym_SigmaFinite`, `Radon_Nikodym_change_of_variables`,
     `Radon_Nikodym_cscale`, `Radon_Nikodym_cadd`, `Radon_Nikodym_chain_rule`
 
-- in `normal_distribution.v:
+- in `normal_distribution.v`:
   + `normal_fun_center` -> `normal_fun_center0`
 
 ### Renamed
@@ -408,7 +408,7 @@ Latest releases: [[1.17.0] - 2026-07-31](#1170---2026-07-31), [[1.16.0] - 2026-0
   + section `Tvs_numField` -> `ConvexTvs_numField`
   + section `prod_Tvs` -> `prod_ConvexTvs`
 
-- in `normed_module.v`
+- in `normed_module.v`:
   + mixin `PseudoMetricNormedZmod_Tvs_isNormedModule` ->
     `PseudoMetricNormedZmod_ConvexTvs_isNormedModule`
 
