@@ -371,13 +371,15 @@ HB.instance Definition _ := isPointed.Build M 0.
 
 HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R M erefl.
 
+HB.instance Definition _ := isPseudoMetricNormedZmodule.Build R M.
+
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R M normrZ.
 
 HB.end.
 
 Definition subLmodule_isSubNormedmodule (R : realFieldType)
-    (V : normedModType R) (S : pred V) (U : Type) : Type := U.
+  (V : normedModType R) (S : pred V) (U : Type) : Type := U.
 
 Section SubLmodule_isSubNormedmodule.
 Context (R : realFieldType) (V : normedModType R) (S : pred V)
@@ -1747,7 +1749,7 @@ Qed.
 Section prod_NormedModule.
 Context {K : numFieldType} {U V : normedModType K}.
 
-Lemma prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
+Let prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
 Proof. by rewrite prod_normE /= !normrZ maxr_pMr. Qed.
 
 HB.instance Definition _ :=
@@ -1755,37 +1757,6 @@ HB.instance Definition _ :=
   prod_norm_scale.
 
 End prod_NormedModule.
-
-Section prod_NormedModule_lemmas.
-Context {T : Type} {K : numDomainType} {U V : normedModType K}.
-
-Lemma fcvgr2dist_ltP {F : set_system U} {G : set_system V}
-  {FF : Filter F} {FG : Filter G} (y : U) (z : V) :
-  (F, G) --> (y, z) <->
-  forall eps, 0 < eps ->
-   \forall y' \near F & z' \near G, `| (y, z) - (y', z') | < eps.
-Proof. exact: fcvgrPdist_lt. Qed.
-
-Lemma cvgr2dist_ltP {I J} {F : set_system I} {G : set_system J}
-  {FF : Filter F} {FG : Filter G} (f : I -> U) (g : J -> V) (y : U) (z : V) :
-  (f @ F, g @ G) --> (y, z) <->
-  forall eps, 0 < eps ->
-   \forall i \near F & j \near G, `| (y, z) - (f i, g j) | < eps.
-Proof.
-rewrite fcvgr2dist_ltP; split=> + e e0 => /(_ e e0);
-  by rewrite !near_simpl// => ?; rewrite !near_simpl.
-Qed.
-
-Lemma cvgr2dist_lt {I J} {F : set_system I} {G : set_system J}
-  {FF : Filter F} {FG : Filter G} (f : I -> U) (g : J -> V) (y : U) (z : V) :
-  (f @ F, g @ G) --> (y, z) ->
-  forall eps, 0 < eps ->
-   \forall i \near F & j \near G, `| (y, z) - (f i, g j) | < eps.
-Proof. by rewrite cvgr2dist_ltP. Qed.
-
-End prod_NormedModule_lemmas.
-Arguments cvgr2dist_ltP {_ _ _ _ _ F G FF FG}.
-Arguments cvgr2dist_lt {_ _ _ _ _ F G FF FG}.
 
 (* Local properties in R *)
 
@@ -2678,6 +2649,9 @@ HB.instance Definition _ (V : vectType R) :=
 
 HB.instance Definition _ (V : vectType R) :=
   NormedZmod_PseudoMetric_eq.Build R (max_space V) erefl.
+
+HB.instance Definition _ (V : vectType R) :=
+  isPseudoMetricNormedZmodule.Build _ (max_space V).
 
 HB.instance Definition _ (V : vectType R) :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R (max_space V)
