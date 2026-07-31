@@ -2481,6 +2481,8 @@ Qed.
 
 End pointwise_derive.
 
+#[global] Hint Extern 0 (is_derive _ _ (fun x => _ *m _) _) => apply: is_derive_mulmx : typeclass_instances.
+
 Section Ris_diff_mx.
 Local Open Scope classical_set_scope.
 Context {R : realFieldType}.
