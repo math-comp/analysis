@@ -194,6 +194,7 @@ subgraph cluster_Reals {
 }
   "classical/boolp" -> "reals/reals";
   "classical/classical_sets" -> "reals/reals";
+  "classical/contra" -> "reals/reals";
   "classical/mathcomp_extra" -> "reals/reals";
   "classical/set_interval" -> "reals/reals";
   "classical/unstable" -> "reals/reals";
