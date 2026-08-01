@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.probability_theory.uniform_distribution</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis c3de743 2026.07.31-19:52" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis c3de743 2026.08.01-19:37" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -317,18 +317,15 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> ab</span><span class="id"> -</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#EFinD">EFinD</a></span><span class="id"> -</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#EFinM">EFinM</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.divalg.html#GRing.Theory.mulVf">mulVf</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.order.html#Order.POrderTheory.gt_eqF">gt_eqF</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.Theory.subr_gt0">subr_gt0</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="uniform_prob" class="id"><div name="uniform_prob" class=" tooltip">uniform_prob<span class='tooltip-area'><p>uniform_prob :
-forall {R : realType} [a b : R],
-(a < b)%R ->
-set Real_sort__canonical__measurable_structure_Measurable -> \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="uniform_prob" class="id"><div name="uniform_prob" class=" tooltip">uniform_prob<span class='tooltip-area'><p>uniform_pdf : forall {R : realType}, R -> R -> R -> R
 
-uniform_prob is not universe polymorphic
-Arguments uniform_prob {R} [a b]%_ring_scope ab _%_classical_set_scope
-uniform_prob is transparent
+uniform_pdf is not universe polymorphic
+Arguments uniform_pdf {R} (a b)%_ring_scope x
+uniform_pdf is transparent
 Expands to: Constant
-            mathcomp.analysis.probability_theory.uniform_distribution.uniform_prob
+            mathcomp.analysis.probability_theory.uniform_distribution.uniform_pdf
 Declared in
-library mathcomp.analysis.probability_theory.uniform_distribution, line 74, characters 11-23
+library mathcomp.analysis.probability_theory.uniform_distribution, line 36, characters 11-22
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/c3de7438cedc146981879739c465567ad6edadd1/theories/probability_theory/uniform_distribution.v#L74' target='_blank'>Source code</a></span></div></span> (<span id="ab:12" class="id"><div name="ab:12" class=" tooltip">ab<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/c3de7438cedc146981879739c465567ad6edadd1/theories/probability_theory/uniform_distribution.v#L74' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.uniform_distribution.html#uniform_probability.a">a</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.uniform_distribution.html#uniform_probability.b">b</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> _</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.uniform_distribution.html#uniform_probability.R">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="U:13" class="id"><div name="U:13" class=" tooltip">U<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/c3de7438cedc146981879739c465567ad6edadd1/theories/probability_theory/uniform_distribution.v#L75' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">\int[</a></span><span class="id"><a href="mathcomp.analysis.probability_theory.uniform_distribution.html#mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">]_</a></span>(<span id="x:14" class="id"><div name="x:14" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/c3de7438cedc146981879739c465567ad6edadd1/theories/probability_theory/uniform_distribution.v#L75' target='_blank'>Source code</a></span></div></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> in</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.uniform_distribution.html#U:13">U</a></span>) (<span class="id"><a href="mathcomp.analysis.probability_theory.uniform_distribution.html#uniform_pdf">uniform_pdf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.uniform_distribution.html#x:14">x</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>)<span class="id">%E</span>.<br/>
 <br/>

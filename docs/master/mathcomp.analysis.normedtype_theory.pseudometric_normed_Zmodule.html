@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis c3de743 2026.07.31-19:52" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis c3de743 2026.08.01-19:37" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -316,14 +316,15 @@ To be used in `normed_module.v`.
 <span class="vernacular">Section</span><span class="id"> Shift</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Shift.R" class="id"><div name="Shift.R" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/c3de7438cedc146981879739c465567ad6edadd1/theories/normedtype_theory/pseudometric_normed_Zmodule.v#L79' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.nmodule.html#Algebra.Zmodule.Exports.zmodType">zmodType</a></span><span class="id">}</span><span class="id"> {</span><span id="Shift.T" class="id"><div name="Shift.T" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/c3de7438cedc146981879739c465567ad6edadd1/theories/normedtype_theory/pseudometric_normed_Zmodule.v#L79' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> Type}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="shift" class="id"><div name="shift" class=" tooltip">shift<span class='tooltip-area'><p>cpoint : forall {R : numDomainType} {M : pseudoPMetricType R}, set M -> M
+<span class="vernacular">Definition</span><span class="id"> </span><span id="shift" class="id"><div name="shift" class=" tooltip">shift<span class='tooltip-area'><p>radius :
+forall {R : numDomainType} {M : pseudoPMetricType R}, set M -> {nonneg R}%R
 
-cpoint is not universe polymorphic
-Arguments cpoint {R M} A%_classical_set_scope
-cpoint is transparent
-Expands to: Constant mathcomp.analysis.normedtype_theory.vitali_lemma.cpoint
+radius is not universe polymorphic
+Arguments radius {R M} A%_classical_set_scope
+radius is transparent
+Expands to: Constant mathcomp.analysis.normedtype_theory.vitali_lemma.radius
 Declared in
-library mathcomp.analysis.normedtype_theory.vitali_lemma, line 53, characters 11-17
+library mathcomp.analysis.normedtype_theory.vitali_lemma, line 55, characters 11-17
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/c3de7438cedc146981879739c465567ad6edadd1/theories/normedtype_theory/pseudometric_normed_Zmodule.v#L81' target='_blank'>Source code</a></span></div></span> (<span id="x:3" class="id"><div name="x:3" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/c3de7438cedc146981879739c465567ad6edadd1/theories/normedtype_theory/pseudometric_normed_Zmodule.v#L81' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="y:4" class="id"><div name="y:4" class=" tooltip">y<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/c3de7438cedc146981879739c465567ad6edadd1/theories/normedtype_theory/pseudometric_normed_Zmodule.v#L81' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#Shift.R">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#y:4">y</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#x:3">x</a></span>.<br/>
 <span class="vernacular">Notation</span><span class="id"> </span><span id="center" class="id"><div name="center" class=" tooltip">center<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/c3de7438cedc146981879739c465567ad6edadd1/theories/normedtype_theory/pseudometric_normed_Zmodule.v#L82' target='_blank'>Source code</a></span></div></span><span class="id"> c</span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#shift">shift</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x"> </a></span><span class="id">c</span>)).<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#shift">shift</a></span><span class="id"> x</span><span class="id"> /</span><span class="id"> y</span>.<br/>
@@ -1514,16 +1515,7 @@ Qed.</div></details>
 <span class="vernacular">End</span><span class="id"> realFieldType</span>.<br/>
 <br/>
 <span class="vernacular">Module</span><span class="vernacular"> Export</span><span class="id"> </span><span id="NbhsNorm" class="id"><div name="NbhsNorm" class=" tooltip">NbhsNorm<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/c3de7438cedc146981879739c465567ad6edadd1/theories/normedtype_theory/pseudometric_normed_Zmodule.v#L983' target='_blank'>Source code</a></span></div></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="NbhsNorm.nbhs_simpl" class="id"><div name="NbhsNorm.nbhs_simpl" class=" tooltip">nbhs_simpl<span class='tooltip-area'><p>radius :
-forall {R : numDomainType} {M : pseudoPMetricType R}, set M -> {nonneg R}%R
-
-radius is not universe polymorphic
-Arguments radius {R M} A%_classical_set_scope
-radius is transparent
-Expands to: Constant mathcomp.analysis.normedtype_theory.vitali_lemma.radius
-Declared in
-library mathcomp.analysis.normedtype_theory.vitali_lemma, line 55, characters 11-17
-is_ball : forall {R : numDomainType} {M : pseudoPMetricType R}, set M -> bool
+<span class="vernacular">Definition</span><span class="id"> </span><span id="NbhsNorm.nbhs_simpl" class="id"><div name="NbhsNorm.nbhs_simpl" class=" tooltip">nbhs_simpl<span class='tooltip-area'><p>is_ball : forall {R : numDomainType} {M : pseudoPMetricType R}, set M -> bool
 
 is_ball is not universe polymorphic
 Arguments is_ball {R M} A%_classical_set_scope
