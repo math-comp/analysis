@@ -273,11 +273,11 @@
     `dsnd_dswap`, `dsndE`, `pr_dlet` are no longer deprecated
 
 - in `normed_module.v`:
-  + lemmas `cvg1MC`, `cvg1M`, `cvgCM1`, `cvgM1`, `cvg0MC`, `cvg0M`,
-    `cvgCM0`, and `cvgM0`
+  + lemmas `cvg1Mcst`, `cvg1M`, `cvgcstM1`, `cvgM1`, `cvg0Mcst`, `cvg0M`,
+    `cvgcstM0`, and `cvgM0`
 - in `pseudometric_normed_Zmodule.v`:
-  + lemmas `cvg0D`, `cvg0DC`,
-    `cvgD0`, `cvgCD0`, `cvg0B`, `cvg0BC`, `cvgB0`, `cvgCB0`, and `cvgN0`
+  + lemmas `cvg0D`, `cvg0Dcst`,
+    `cvgD0`, `cvgcstD0`, `cvg0B`, `cvg0Bcst`, `cvgB0`, `cvgcstB0`, and `cvgN0`
 
 ### Changed
 
