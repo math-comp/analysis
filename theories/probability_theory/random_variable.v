@@ -353,7 +353,7 @@ have cdf_s : cdf X r @[r --> a^'+] --> s%:E.
   by exists (a + 1)%R => //; rewrite in_itv /=; apply/andP; rewrite ltrDl.
 have cdf_ns : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> s%:E.
   move/cvge_at_rightP : cdf_s; apply; split=> [n|]; rewrite ?ltrDl //.
-  rewrite -[X in _ --> X]addr0; apply: cvgD => //.
+  apply: cvgcstD0.
   by rewrite gtr0_cvgV0 ?cvg_shiftS; [near=> n | exact: cvgr_idn].
 have cdf_na : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> cdf X a.
   pose F n := X @^-1` `]-oo, (a + n.+1%:R^-1)%R].

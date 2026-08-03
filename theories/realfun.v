@@ -2301,11 +2301,11 @@ suff /near_eq_cvg/cvg_trans : {near (- x)^'+,
 apply: filter_app (nbhs_right_lt xa).
 apply: (filter_app _ _ (nbhs_right_ge _)).
 near=> t => xt ta; have ? : -b <= t by exact: (le_trans bx).
-have ? : t <= -a by exact: ltW.
+have ? : t <= - a by exact: ltW.
 apply/eqP; rewrite eq_sym -subr_eq opprK addrC.
 rewrite /= [TV a _ f]total_variation_opp opprK -fineD.
-- by apply/bounded_variationP => //; apply: bounded_variationl bvNf.
-- by apply/bounded_variationP => //; apply: bounded_variationr bvNf.
+- by apply/bounded_variationP => //; exact: bounded_variationl bvNf.
+- by apply/bounded_variationP => //; exact: bounded_variationr bvNf.
 by rewrite -total_variationD.
 Unshelve. all: by end_near. Qed.
 
@@ -2723,8 +2723,7 @@ have f0g0 y : a < y -> y < b ->
     (f0 x - f0 y) / (g0 x - g0 y) @[x --> a^'+] --> f0 y / g0 y.
   move=> ay yb; rewrite -[X in _ --> X]opprK -mulrN -invrN -mulNr.
   apply: cvgM.
-    rewrite -[X in _ --> X]add0r; apply: cvgB => //.
-    apply: cvg_trans fa0; apply: near_eq_cvg; near=> z.
+    apply: cvg0Bcst; apply: cvg_trans fa0; apply: near_eq_cvg; near=> z.
     by rewrite /f0 gt_eqF.
   apply: cvgV.
     rewrite oppr_eq0; apply/eqP => g0y0.
@@ -2736,8 +2735,7 @@ have f0g0 y : a < y -> y < b ->
     rewrite mulf_eq0// orbC gt_eqF ?subr_gt0//= => /eqP; apply/eqP.
     apply: cdg.
     by move: c0 c0ay; apply: subset_itvSoo; rewrite bnd_simp// ltW.
-  rewrite -[X in _ --> X]add0r; apply: cvgB => //.
-  apply: cvg_trans ga0; apply: near_eq_cvg; near=> z.
+  apply: cvg0Bcst; apply: cvg_trans ga0; apply: near_eq_cvg; near=> z.
   by rewrite /g0 gt_eqF.
 have lfg_ub q : l < q ->
     exists2 c2, a < c2 & forall x, a < x < c2 -> f x / g x < q.
