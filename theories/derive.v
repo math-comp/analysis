@@ -2212,7 +2212,7 @@ move=> fx_lt_gx fg_neq df dg cf cg; case: ifPn => fg /=.
         h (shift x (k *: v)) @[k --> nbhs 0^'] --> h x.
       move=> ch.
       apply: cvg_comp; last exact: ch.
-      by apply: cvg0Dcst; apply: cvg0Z; exact: nbhs_dnbhs.
+      by apply: cvg0D => //; apply: cvg0Z; exact: nbhs_dnbhs.
     apply/(cvgr_lt (f x - g x)); last by rewrite subr_lt0.
     by apply: cvgB; exact: Hf.
   + exact: dg.

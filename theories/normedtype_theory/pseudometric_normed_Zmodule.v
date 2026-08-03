@@ -1164,26 +1164,14 @@ Proof. by rewrite addrC; apply: is_cvgDlE. Qed.
 Lemma cvg0D f g a : f @ F --> 0 -> g @ F --> a -> f x + g x @[x --> F] --> a.
 Proof. by move=> /cvgD /[apply]; rewrite add0r. Qed.
 
-Lemma cvg0Dcst f a : f @ F --> 0 -> f x + a @[x --> F] --> a.
-Proof. by move=> ?; rewrite -[X in _ --> X]add0r; exact: cvgD. Qed.
-
 Lemma cvgD0 f g a : f @ F --> a -> g @ F --> 0 -> f x + g x @[x --> F] --> a.
 Proof. by move=> /cvgD /[apply]; rewrite addr0. Qed.
-
-Lemma cvgcstD0 f a : f @ F --> 0 -> a + f x @[x --> F] --> a.
-Proof. by move=> ?; rewrite -[X in _ --> X]addr0; exact: cvgD. Qed.
 
 Lemma cvg0B f g a : f @ F --> 0 -> g @ F --> a -> f x - g x @[x --> F] --> -a.
 Proof. by move=> /cvgB /[apply]; rewrite add0r. Qed.
 
-Lemma cvg0Bcst f a : f @ F --> 0 -> f x - a @[x --> F] --> - a.
-Proof. by move=> ?; rewrite -[X in _ --> X]sub0r; exact: cvgB. Qed.
-
 Lemma cvgB0 f g a : f @ F --> a -> g @ F --> 0 -> f x - g x @[x --> F] --> a.
 Proof. by move=> /cvgB /[apply]; rewrite subr0. Qed.
-
-Lemma cvgcstB0 f a : f @ F --> 0 -> a - f x @[x --> F] --> a.
-Proof. by move=> ?; rewrite -[X in _ --> X]subr0; exact: cvgB. Qed.
 
 Lemma cvgN0 f : f @ F --> 0 -> - f @ F --> 0.
 Proof. by rewrite -{2}oppr0; exact: cvgN. Qed.

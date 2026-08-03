@@ -916,7 +916,7 @@ Lemma cvg_geometric_series {R : archiRealFieldType} (a z : R) : `|z| < 1 ->
   series (geometric a z) @ \oo --> a * (1 - z)^-1.
 Proof.
 move=> Nz_lt1; rewrite geometric_seriesE ?lt_eqF 1?ltr_normlW//.
-by apply: cvgMr_tmp; apply: cvgM1 => //; apply: cvgcstB0; exact: cvg_expr.
+by apply: cvgMr_tmp; apply: cvgM1 => //; apply: cvgB0 => //; exact: cvg_expr.
 Qed.
 
 Lemma cvg_geometric_series_half {R : archiRealFieldType} (r : R) n :

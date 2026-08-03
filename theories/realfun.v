@@ -466,7 +466,7 @@ move=> nif; have ndNf : {in `[a, b] &, nondecreasing_fun (-%R \o f)}.
   by move=> x y xab yab xy /=; rewrite lerNl opprK nif.
 move/nondecreasing_at_left_at_right : (ndNf) => H x.
 rewrite in_itv/= => /andP[ax xb]; rewrite -[leLHS]opprK lerNl -!limN//.
-- rewrite -(opprK f);apply: is_cvgN.
+- rewrite -(opprK f); apply: is_cvgN.
   exact: nondecreasing_at_left_is_cvgrW ndNf.
 - rewrite -(opprK f); apply: is_cvgN.
   exact: nondecreasing_at_right_is_cvgrW ndNf.
@@ -2723,7 +2723,7 @@ have f0g0 y : a < y -> y < b ->
     (f0 x - f0 y) / (g0 x - g0 y) @[x --> a^'+] --> f0 y / g0 y.
   move=> ay yb; rewrite -[X in _ --> X]opprK -mulrN -invrN -mulNr.
   apply: cvgM.
-    apply: cvg0Bcst; apply: cvg_trans fa0; apply: near_eq_cvg; near=> z.
+    apply: cvg0B => //; apply: cvg_trans fa0; apply: near_eq_cvg; near=> z.
     by rewrite /f0 gt_eqF.
   apply: cvgV.
     rewrite oppr_eq0; apply/eqP => g0y0.
@@ -2735,7 +2735,7 @@ have f0g0 y : a < y -> y < b ->
     rewrite mulf_eq0// orbC gt_eqF ?subr_gt0//= => /eqP; apply/eqP.
     apply: cdg.
     by move: c0 c0ay; apply: subset_itvSoo; rewrite bnd_simp// ltW.
-  apply: cvg0Bcst; apply: cvg_trans ga0; apply: near_eq_cvg; near=> z.
+  apply: cvg0B => //; apply: cvg_trans ga0; apply: near_eq_cvg; near=> z.
   by rewrite /g0 gt_eqF.
 have lfg_ub q : l < q ->
     exists2 c2, a < c2 & forall x, a < x < c2 -> f x / g x < q.

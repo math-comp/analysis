@@ -49,9 +49,7 @@ Proof. by apply: measurableT_comp => //; exact: measurableT_comp. Qed.
 Lemma continuous_gauss_fun : continuous gauss_fun.
 Proof.
 move=> x; apply: (@continuous_comp _ _ _ (fun x : R => - x ^+ 2) expR).
-  apply: cvgN; apply: (cvg_comp (fun z => z) (fun z => z ^+ 2)).
-    exact: cvg_id.
-  exact: exprn_continuous.
+  by apply: cvgN; exact: exprn_continuous.
 exact: continuous_expR.
 Qed.
 
@@ -338,7 +336,7 @@ have Ig2 x : 0 < x -> (integral0_gauss x) ^+ 2 = pi / 4 - integral01_u x.
 suff: pi / 4 - integral01_u x @[x --> +oo] --> pi / 4.
   apply: cvg_trans; apply: near_eq_cvg.
   by near=> x; rewrite Ig2.
-exact: cvgcstB0.
+exact: cvgB0.
 Unshelve. end_near. Qed.
 
 End gauss_integral_proof.
