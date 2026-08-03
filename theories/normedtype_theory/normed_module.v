@@ -569,17 +569,15 @@ Unshelve. all: by end_near. Qed.
 End NVS_continuity_mul.
 
 Section cvg_composition_normed.
-Context {K : numFieldType} {V : normedModType K} {T : Type}.
-Context (F : set_system T) {FF : Filter F}.
+Context {K : numFieldType} {V : normedModType K} {T : Type}
+  (F : set_system T) {FF : Filter F}.
 Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a b : V).
 
 Lemma cvgZ s f k a : s @ F --> k -> f @ F --> a ->
                      s x *: f x @[x --> F] --> k *: a.
 Proof.
 move=> ? ?; apply: continuous2_cvg => //.
-have := (@scale_continuous K V (k, a)).
-rewrite /continuous_at/=.
-exact.
+exact: (@scale_continuous K V (k, a)).
 Qed.
 
 Lemma is_cvgZ s f : cvg (s @ F) ->
@@ -588,6 +586,15 @@ Proof. by have := cvgP _ (cvgZ _ _); apply. Qed.
 
 Lemma cvgZr_tmp s k a : s @ F --> k -> s x *: a @[x --> F] --> k *: a.
 Proof. by move=> ?; exact: cvgZ. Qed.
+
+Lemma cvg1Z s f a : s @ F --> (1 : K) -> f @ F --> a -> s x *: f x @[x --> F] --> a.
+Proof. by move=> /cvgZ /[apply]; rewrite scale1r. Qed.
+
+Lemma cvg0Z s f a : s @ F --> (0 : K) -> f @ F --> a -> s x *: f x @[x --> F] --> 0.
+Proof. by move=> /cvgZ /[apply]; rewrite scale0r. Qed.
+
+Lemma cvgZ0 s f k : s @ F --> k -> f @ F --> (0 : V) -> s x *: f x @[x --> F] --> 0.
+Proof. by move=> /cvgZ /[apply]; rewrite scaler0. Qed.
 
 Lemma is_cvgZr_tmp s a : cvg (s @ F) -> cvg ((fun x => s x *: a) @ F).
 Proof. by have := cvgP _ (cvgZr_tmp  _); apply. Qed.
@@ -600,8 +607,9 @@ Proof. by have := cvgP _ (cvgZl_tmp  _); apply. Qed.
 
 Lemma is_cvgZlE k f : k != 0 -> cvg (k *: f @ F) = cvg (f @ F).
 Proof.
-move=> k_neq0; rewrite propeqE; split => [/(@cvgZl_tmp k^-1)|/(@cvgZl_tmp k)/cvgP//].
-by under [_ \*: _]funext => x /= do rewrite scalerK//; apply: cvgP.
+move=> k_neq0.
+rewrite propeqE; split => [/(@cvgZl_tmp k^-1)|/(@cvgZl_tmp k)/cvgP//].
+by under [_ \*: _]funext => x /= do rewrite scalerK//; exact: cvgP.
 Qed.
 
 End cvg_composition_normed.
@@ -623,8 +631,7 @@ Notation is_cvgZr := is_cvgZl_tmp (only parsing).
 Notation is_cvgZrE := is_cvgZlE (only parsing).
 
 Section cvg_composition_field.
-Context {K : numFieldType}  {T : Type}.
-Context (F : set_system T) {FF : Filter F}.
+Context {K : numFieldType} {T : Type} (F : set_system T) {FF : Filter F}.
 Implicit Types (f g : T -> K) (a b : K).
 
 Lemma cvgV f a : a != 0 -> f @ F --> a -> f\^-1 @ F --> a^-1.
@@ -649,6 +656,18 @@ Proof. exact: cvgZr_tmp. Qed.
 
 Lemma cvgMl_tmp g a b : g @ F --> b -> a * g x @[x --> F] --> a * b.
 Proof. exact: cvgZl_tmp. Qed.
+
+Lemma cvg1M f g a : f @ F --> (1 :> K) -> g @ F --> a -> f \* g @ F --> a.
+Proof. by move=> /cvgM /[apply]; rewrite mul1r. Qed.
+
+Lemma cvgM1 f g a : f @ F --> a -> g @ F --> (1 :> K) -> f \* g @ F --> a.
+Proof. by move=> /cvgM /[apply]; rewrite mulr1. Qed.
+
+Lemma cvg0M f g a : f @ F --> 0 -> g @ F --> a -> f \* g @ F --> 0.
+Proof. by move=> /cvgM /[apply]; rewrite mul0r. Qed.
+
+Lemma cvgM0 f g a : f @ F --> a -> g @ F --> 0 -> f \* g @ F --> 0.
+Proof. by move=> /cvgM /[apply]; rewrite mulr0. Qed.
 
 Lemma is_cvgM f g : cvg (f @ F) -> cvg (g @ F) -> cvg (f \* g @ F).
 Proof. exact: is_cvgZ. Qed.
@@ -783,17 +802,17 @@ Proof. by move=> ?; apply: cvgN. Qed.
 Lemma continuousD f g x :
   {for x, continuous f} -> {for x, continuous g} ->
   {for x, continuous (f + g)}.
-Proof. by move=> f_cont g_cont; apply: cvgD. Qed.
+Proof. by move=> ? ?; exact: cvgD. Qed.
 
 Lemma continuousB f g x :
   {for x, continuous f} -> {for x, continuous g} ->
   {for x, continuous (f - g)}.
-Proof. by move=> f_cont g_cont; apply: cvgB. Qed.
+Proof. by move=> ? ?; exact: cvgB. Qed.
 
 Lemma continuousZ s f x :
   {for x, continuous s} -> {for x, continuous f} ->
   {for x, continuous (fun x => s x *: f x)}.
-Proof. by move=> ? ?; apply: cvgZ. Qed.
+Proof. by move=> ? ?; exact: cvgZ. Qed.
 
 Lemma continuousZl_tmp f k x :
   {for x, continuous f} -> {for x, continuous (k \*: f)}.
@@ -806,11 +825,11 @@ Proof. by move=> ?; exact: cvgZr_tmp. Qed.
 Lemma continuousM s t x :
   {for x, continuous s} -> {for x, continuous t} ->
   {for x, continuous (s \* t)}.
-Proof. by move=> f_cont g_cont; exact: cvgM. Qed.
+Proof. by move=> ? ?; exact: cvgM. Qed.
 
 Lemma continuousV s x : s x != 0 ->
   {for x, continuous s} -> {for x, continuous (fun x => (s x)^-1%R)}.
-Proof. by move=> ?; apply: cvgV. Qed.
+Proof. by move=> ?; exact: cvgV. Qed.
 
 End local_continuity.
 #[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `continuousZl_tmp`")]

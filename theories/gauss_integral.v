@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order ssralg ssrnum ssrint interval.
 From mathcomp Require Import finmap.
@@ -49,9 +49,7 @@ Proof. by apply: measurableT_comp => //; exact: measurableT_comp. Qed.
 Lemma continuous_gauss_fun : continuous gauss_fun.
 Proof.
 move=> x; apply: (@continuous_comp _ _ _ (fun x : R => - x ^+ 2) expR).
-  apply: cvgN; apply: (cvg_comp (fun z => z) (fun z => z ^+ 2)).
-    exact: cvg_id.
-  exact: exprn_continuous.
+  by apply: cvgN; exact: exprn_continuous.
 exact: continuous_expR.
 Qed.
 
@@ -331,15 +329,14 @@ have h_h0 x : 0 < x -> h x = h 0.
       under [X in X @ _ --> _]eq_fun do rewrite expr2.
       by apply: cvgM; apply: continuous_integral0_gauss; exact: ltW.
     by apply: derivable_within_continuous => u _; exact: derivable_integral01_u.
-  move=> c; rewrite in_itv/= => /andP[c0 cx].
-  by rewrite derive_h// mul0r => /eqP; rewrite subr_eq0 => /eqP.
+  by move=> c c0x; rewrite derive_h ?(itvP c0x)// mul0r => /subr0_eq.
 have Ig2 x : 0 < x -> (integral0_gauss x) ^+ 2 = pi / 4 - integral01_u x.
   move/h_h0/eqP; rewrite {1}/h eq_sym addrC -subr_eq => /eqP/esym.
   by rewrite h0.
 suff: pi / 4 - integral01_u x @[x --> +oo] --> pi / 4.
   apply: cvg_trans; apply: near_eq_cvg.
   by near=> x; rewrite Ig2.
-by rewrite -[in X in _ --> X](subr0 (pi / 4)); exact: cvgB.
+exact: cvgB0.
 Unshelve. end_near. Qed.
 
 End gauss_integral_proof.

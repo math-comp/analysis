@@ -1161,6 +1161,21 @@ Qed.
 Lemma is_cvgDrE f g : cvg (f @ F) -> cvg ((f + g) @ F) = cvg (g @ F).
 Proof. by rewrite addrC; apply: is_cvgDlE. Qed.
 
+Lemma cvg0D f g a : f @ F --> 0 -> g @ F --> a -> f x + g x @[x --> F] --> a.
+Proof. by move=> /cvgD /[apply]; rewrite add0r. Qed.
+
+Lemma cvgD0 f g a : f @ F --> a -> g @ F --> 0 -> f x + g x @[x --> F] --> a.
+Proof. by move=> /cvgD /[apply]; rewrite addr0. Qed.
+
+Lemma cvg0B f g a : f @ F --> 0 -> g @ F --> a -> f x - g x @[x --> F] --> -a.
+Proof. by move=> /cvgB /[apply]; rewrite add0r. Qed.
+
+Lemma cvgB0 f g a : f @ F --> a -> g @ F --> 0 -> f x - g x @[x --> F] --> a.
+Proof. by move=> /cvgB /[apply]; rewrite subr0. Qed.
+
+Lemma cvgN0 f : f @ F --> 0 -> - f @ F --> 0.
+Proof. by rewrite -{2}oppr0; exact: cvgN. Qed.
+
 Lemma cvg_sub0 f g a : (f - g) @ F --> (0 : V) -> g @ F --> a -> f @ F --> a.
 Proof.
 by move=> Cfg Cg; have := cvgD Cfg Cg; rewrite subrK add0r; apply.

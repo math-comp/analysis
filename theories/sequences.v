@@ -247,7 +247,7 @@ Local Notation eqolimPn := (@eqolimP _ _ _ eventually_filter).
 (** Sequences of sets *)
 
 Section seqDU.
-Variables (T : Type).
+Context {T : Type}.
 Implicit Types F : (set T)^nat.
 
 Lemma bigsetU_seqDU F n :
@@ -557,7 +557,7 @@ Lemma eq_sum_telescope (V : zmodType) (u_ : V ^nat) n :
 Proof. by rewrite telescopeK/= addrC addrNK. Qed.
 
 Section series_patched.
-Variables (N : nat) (K : numFieldType) (V : normedModType K).
+Context (N : nat) {K : numFieldType} {V : normedModType K}.
 Implicit Types (f : nat -> V) (u : V ^nat)  (l : set_system V).
 
 Lemma is_cvg_series_restrict u_ :
@@ -574,7 +574,7 @@ Qed.
 End series_patched.
 
 Section sequences_R_lemmas.
-Variable R : realType.
+Context {R : realType}.
 
 Lemma nondecreasing_cvgn (u_ : R ^nat) :
     nondecreasing_seq u_ -> has_ubound (range u_) ->
@@ -746,7 +746,7 @@ Unshelve. all: by end_near. Qed.
 End cesaro.
 
 Section cesaro_converse.
-Variable R : archiRealFieldType.
+Context {R : archiRealFieldType}.
 
 Let cesaro_converse_off_by_one (u_ : R ^nat) :
     [sequence n.+1%:R^-1 * series u_ n.+1]_n @ \oo --> 0 ->
@@ -771,10 +771,9 @@ pose a_ := telescope u_ => a_o u_l.
 suff abel : forall n,
     u_ n - arithmetic_mean u_ n = \sum_(1 <= k < n.+1) k%:R / n.+1%:R * a_ k.-1.
   suff K : u_ - arithmetic_mean u_ @ \oo --> 0.
-    rewrite -(add0r l).
     rewrite (_ : u_ = u_ - arithmetic_mean u_ + arithmetic_mean u_).
       by rewrite funeqE => n; rewrite subrK.
-    exact: cvgD.
+    exact: cvg0D.
   rewrite (_ : _ - arithmetic_mean u_ =
       (fun n => \sum_(1 <= k < n.+1) k%:R / n.+1%:R * a_ k.-1)).
     by rewrite funeqE.
@@ -913,15 +912,14 @@ rewrite seriesEnat !mulrBr [in LHS]mulr1 mulr_suml -opprB -sumrB.
 by under eq_bigr do rewrite -mulrA -exprSr; rewrite telescope_sumr// opprB.
 Qed.
 
-Lemma cvg_geometric_series (R : archiRealFieldType) (a z : R) : `|z| < 1 ->
-  series (geometric a z) @ \oo --> (a * (1 - z)^-1).
+Lemma cvg_geometric_series {R : archiRealFieldType} (a z : R) : `|z| < 1 ->
+  series (geometric a z) @ \oo --> a * (1 - z)^-1.
 Proof.
 move=> Nz_lt1; rewrite geometric_seriesE ?lt_eqF 1?ltr_normlW//.
-have -> : a / (1 - z) = (a * (1 - 0)) / (1 - z) by rewrite subr0 mulr1.
-by apply: cvgMr_tmp; apply: cvgMl_tmp; apply: cvgB => //; exact: cvg_expr.
+by apply: cvgMr_tmp; apply: cvgM1 => //; apply: cvgB0 => //; exact: cvg_expr.
 Qed.
 
-Lemma cvg_geometric_series_half (R : archiRealFieldType) (r : R) n :
+Lemma cvg_geometric_series_half {R : archiRealFieldType} (r : R) n :
   series (fun k => r / (2 ^ (k + n.+1))%:R : R^o) @ \oo --> (r / 2 ^+ n : R^o).
 Proof.
 rewrite (_ : series _ = series (geometric (r / (2 ^ n.+1)%:R) 2^-1%R)).
@@ -2393,14 +2391,14 @@ Lemma limn_infD u v : cvgn u -> cvgn v ->
 Proof.
 move=> cu cv; rewrite (cvg_limn_infE cu) -(cvg_limn_supE cu).
 rewrite (cvg_limn_infE cv) -(cvg_limn_supE cv) -limn_supD//.
-rewrite cvg_limn_supE; first exact: (@is_cvgD _ _ _ _ _ _ _ cu cv).
-by rewrite cvg_limn_infE //; exact: (@is_cvgD _ _ _ _ _ _ _ cu cv).
+rewrite cvg_limn_supE; first exact: is_cvgD cu cv.
+by rewrite cvg_limn_infE //; exact: is_cvgD cu cv.
 Qed.
 
 End limn_sup_limn_inf.
 
 Section esups_einfs.
-Variable R : realType.
+Context {R : realType}.
 Implicit Types (u : (\bar R)^nat).
 Local Open Scope ereal_scope.
 

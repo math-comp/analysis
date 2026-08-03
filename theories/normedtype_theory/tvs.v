@@ -187,7 +187,7 @@ move=> x; rewrite /continuous_at.
 rewrite -(@eq_cvg _ _ _ (fun x => 0 - x)); first by move=> y; exact: add0r.
 rewrite -[- x]add0r.
 apply: (@continuous_comp _ _ _ (fun x => (0, x)) (fun x : M * M => x.1 - x.2)).
-  by apply: cvg_pair => /=; [exact: cvg_cst|exact: cvg_id].
+  exact: cvg_pair.
 exact: sub_continuous.
 Qed.
 

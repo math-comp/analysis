@@ -403,8 +403,8 @@ evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=.
 apply: cvg_lim => //.
 pose g1 : R -> W := fun h => (h^-1 * h) *: 'd f a v.
 pose g2 : R -> W := fun h : R => h^-1 *: k (h *: v ).
-rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: cvgD.
-  rewrite -(scale1r (_ _ v)); apply: cvgZr_tmp => /= X [e e0].
+rewrite (_ : g = g1 + g2) ?funeqE//; apply: cvgD0.
+  apply: cvg1Z => //= X [e e0].
   rewrite /ball_ /= => eX.
   apply/nbhs_ballP.
   by exists e => //= x _ x0; apply eX; rewrite mulVf//= subrr normr0.
@@ -431,8 +431,8 @@ Qed.
 End DifferentialR_numFieldType.
 
 Section DifferentialR2.
-Variable R : numFieldType.
-Implicit Type (V : normedModType R).
+Context {R : numFieldType}.
+Implicit Type V : normedModType R.
 
 Lemma deriveEjacobian m n (f : 'rV[R]_m -> 'rV[R]_n) (a v : 'rV[R]_m) :
   differentiable f a -> 'D_ v f a = v *m jacobian f a.
@@ -1198,7 +1198,7 @@ End DeriveVW.
 Arguments derivable_cst {R V W}.
 
 Section Derive_lemmasVW.
-Variables (R : numFieldType) (V W : normedModType R).
+Context {R : numFieldType} {V W : normedModType R}.
 Implicit Types f g : V -> W.
 
 Fact der_add f g (x v : V) : derivable f x v -> derivable g x v ->
@@ -1206,9 +1206,10 @@ Fact der_add f g (x v : V) : derivable f x v -> derivable g x v ->
   0^'  --> 'D_v f x + 'D_v g x.
 Proof.
 move=> df dg.
-evar (fg : R -> W); rewrite [X in X @ _](_ : _ = fg) /=.
-  rewrite funeqE => h.
-  by rewrite !scalerDr scalerN scalerDr opprD addrACA -!scalerBr /fg.
+under [X in X @ _]eq_fun.
+  move=> /= h.
+  rewrite !scalerDr scalerN scalerDr opprD addrACA -!scalerBr.
+  over.
 exact: cvgD.
 Qed.
 
@@ -1537,7 +1538,7 @@ pose g t : R := (sup (f @` A) - f t)^-1.
 have invf_continuous : {within A, continuous g}.
   rewrite continuous_subspace_in => t tA; apply: cvgV => //=.
     by rewrite subr_eq0 gt_eqF// AfsupfA//; rewrite inE in tA.
-  by apply: cvgD; [exact: cst_continuous | apply: cvgN; exact: cf].
+  by apply: cvgD => //; apply: cvgN; exact: cf.
 have /ex_strict_bound_gt0[k k_gt0 /= imVfltk] : bounded_set (g @` A).
   exact/compact_bounded/continuous_compact.
 have [_ [t tA <-]] : exists2 y, (f @` A) y & sup (f @` A) - k^-1 < y.
@@ -2211,9 +2212,7 @@ move=> fx_lt_gx fg_neq df dg cf cg; case: ifPn => fg /=.
         h (shift x (k *: v)) @[k --> nbhs 0^'] --> h x.
       move=> ch.
       apply: cvg_comp; last exact: ch.
-      rewrite -[in nbhs x](add0r x); apply: cvgD => //.
-      rewrite -(scale0r v); apply: cvgZ => //.
-      exact: nbhs_dnbhs.
+      by apply: cvg0D => //; apply: cvg0Z => //; exact: nbhs_dnbhs.
     apply/(cvgr_lt (f x - g x)); last by rewrite subr_lt0.
     by apply: cvgB; exact: Hf.
   + exact: dg.

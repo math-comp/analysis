@@ -67,7 +67,7 @@ split.
 - by move=> y y01; apply: derivableM => //=; exact: onemXn_derivable.
 - apply: cvgM => //.
   apply: cvg_at_right_filter; apply: (@cvg_comp _ _ _ onem (fun x => x ^+ n)).
-    by apply: cvgB; [exact: cvg_cst|exact: cvg_id].
+    by apply: cvgB; [apply: cvg_cst|apply: cvg_id].
   exact: exprn_continuous.
 - apply: cvg_at_left_filter; apply: cvgM => //.
   apply: (@cvg_comp _ _ _ onem (fun x => x ^+ n)).
