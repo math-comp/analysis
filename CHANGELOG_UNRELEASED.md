@@ -9,7 +9,7 @@
 
 - in `normed_module.v`:
   + lemmas `cvg1M`, `cvgM1`, `cvg0M`, `cvgM0`
-  + lemmas `cvg1Z`, `cvg0Z`
+  + lemmas `cvg1Z`, `cvg0Z`, `cvgZ0`
 
 ### Changed
 

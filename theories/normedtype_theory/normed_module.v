@@ -587,11 +587,14 @@ Proof. by have := cvgP _ (cvgZ _ _); apply. Qed.
 Lemma cvgZr_tmp s k a : s @ F --> k -> s x *: a @[x --> F] --> k *: a.
 Proof. by move=> ?; exact: cvgZ. Qed.
 
-Lemma cvg1Z s a : s @ F --> (1 : K) -> s x *: a @[x --> F] --> a.
-Proof. by move=> ?; rewrite -[X in _ --> X]scale1r; exact: cvgZr_tmp. Qed.
+Lemma cvg1Z s f a : s @ F --> (1 : K) -> f @ F --> a -> s x *: f x @[x --> F] --> a.
+Proof. by move=> /cvgZ /[apply]; rewrite scale1r. Qed.
 
-Lemma cvg0Z s a : s @ F --> (0 : K) -> s x *: a @[x --> F] --> 0.
-Proof. by move=> ?; rewrite -(scale0r a); exact: cvgZr_tmp. Qed.
+Lemma cvg0Z s f a : s @ F --> (0 : K) -> f @ F --> a -> s x *: f x @[x --> F] --> 0.
+Proof. by move=> /cvgZ /[apply]; rewrite scale0r. Qed.
+
+Lemma cvgZ0 s f k : s @ F --> k -> f @ F --> (0 : V) -> s x *: f x @[x --> F] --> 0.
+Proof. by move=> /cvgZ /[apply]; rewrite scaler0. Qed.
 
 Lemma is_cvgZr_tmp s a : cvg (s @ F) -> cvg ((fun x => s x *: a) @ F).
 Proof. by have := cvgP _ (cvgZr_tmp  _); apply. Qed.
