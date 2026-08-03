@@ -404,7 +404,7 @@ apply: cvg_lim => //.
 pose g1 : R -> W := fun h => (h^-1 * h) *: 'd f a v.
 pose g2 : R -> W := fun h : R => h^-1 *: k (h *: v ).
 rewrite (_ : g = g1 + g2) ?funeqE//; apply: cvgD0.
-  apply: cvg1Z => /= X [e e0].
+  apply: cvg1Z => //= X [e e0].
   rewrite /ball_ /= => eX.
   apply/nbhs_ballP.
   by exists e => //= x _ x0; apply eX; rewrite mulVf//= subrr normr0.
@@ -2212,7 +2212,7 @@ move=> fx_lt_gx fg_neq df dg cf cg; case: ifPn => fg /=.
         h (shift x (k *: v)) @[k --> nbhs 0^'] --> h x.
       move=> ch.
       apply: cvg_comp; last exact: ch.
-      by apply: cvg0D => //; apply: cvg0Z; exact: nbhs_dnbhs.
+      by apply: cvg0D => //; apply: cvg0Z => //; exact: nbhs_dnbhs.
     apply/(cvgr_lt (f x - g x)); last by rewrite subr_lt0.
     by apply: cvgB; exact: Hf.
   + exact: dg.
