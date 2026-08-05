@@ -123,7 +123,7 @@ Implicit Types (S : set T) (f g : T -> \bar R).
 Local Notation "\esum_ ( i 'in' P ) A" := (pos_esum P (fun i => A)).
 
 Lemma subset_pos_esum (I J : set T) (a : T -> \bar R) :
-  (I `<=` J)%classic -> (\esum_(i in I) a i <= \esum_(i in J) a i)%E.
+  I `<=` J -> (\esum_(i in I) a i <= \esum_(i in J) a i)%E.
 Proof.
 move=> IJ; apply: ereal_sup_le => _/= [A [finA AI]] <-.
 by exists A => //; split => //; exact: subset_trans IJ.
@@ -155,33 +155,13 @@ Lemma pos_esum_ge (T1 : choiceType) (I : set T1) (a : T1 -> \bar R) x :
   x <= \esum_(i in I) a i.
 Proof. by move=> [X IX /le_trans->//]; apply: ereal_sup_ubound; exists X. Qed.
 
-Lemma pos_neq0_esum (I : set T) (a : T -> \bar R) :
-  \esum_(i in I) a i <> 0 -> exists i, a i <> 0.
+Lemma pos_esum_ge1 S f x : S x -> f x <= \esum_(i in S) f i.
 Proof.
-move=> ?. apply/existsp_asboolPn /asboolPn => h.
-have // : (\esum_(i in I) a i = 0); by apply pos_esum1.
+move=> Sx; apply: pos_esum_ge; exists [set x]; last by rewrite fsbig_set1.
+by split => //; rewrite sub1set inE.
 Qed.
 
-Lemma pos_esum_ge1 (I : set T) (f : T -> \bar R) :
-  (forall x, I x -> f x <= \esum_(i in (I : set T)) f i)%E.
-Proof.
-move=> x Ix.
-apply: pos_esum_ge.
-exists ([set` [::x]]%classic) => //=.
-+ by split => // y /=; rewrite mem_seq1 => /eqP ->.
-by rewrite -fsbig_seq //= big_seq1.
-Qed.
-
-Lemma pos_sum_esum_ge J (f: T -> R) :
-  uniq J -> ((\sum_(j <- J) f j)%:E <= \esum_(i in [set: T]) (f i)%:E)%E.
-Proof.
-move => ?.
-apply: pos_esum_ge.
-exists [set` J]%classic => //.
-rewrite fsumEFin // lee_fin -fsbig_seq //=.
-Qed.
-
-Lemma le_pos_esum {U : choiceType} (S: set U) (f g: U -> \bar R) :
+Lemma le_pos_esum {U : choiceType} (S : set U) (f g : U -> \bar R) :
   (forall i, S i -> f i <= g i) ->
   \esum_(i in S) f i <= \esum_(i in S) g i.
 Proof.
@@ -189,15 +169,14 @@ move=> fg; rewrite ge_ereal_sup => //= _ [X [finX XS]] <-.
 by rewrite pos_esum_ge//; exists X => //; apply: lee_fsum => // t /XS /fg.
 Qed.
 
-Lemma le_pos_esum_fine
-  {U : choiceType} (A : set U) (B : set T) (f : T -> U -> \bar R) :
-  (\esum_(i in A) (fine (\esum_(x in B) f x i))%:E <=
-  \esum_(i in A) (\esum_(x in B) f x i))%E.
+Lemma le_pos_esum_fine {U : choiceType} (A : set U) (B : set T)
+    (h : T -> U -> \bar R) :
+  (\esum_(i in A) (fine (\esum_(x in B) h x i))%:E <=
+  \esum_(i in A) (\esum_(x in B) h x i))%E.
 Proof.
-rewrite le_pos_esum // => i ?.
-case h: (\esum_(x in B) _) => //=.
-+ exact : leey.
-by rewrite -h pos_esum_ge0.
+rewrite le_pos_esum // => u Au.
+have := pos_esum_ge0 B (h ^~ u).
+by case: (\esum_(x in B) _).
 Qed.
 
 Lemma pos_esumZ S f (c : \bar R) : 0 <= c -> (forall t, S t -> 0 <= f t) ->
@@ -420,20 +399,19 @@ Arguments eq_esum {R T} S f g.
 Notation "\esum_ ( i 'in' P ) F" := (esum P (fun i => F)) : ring_scope.
 
 Section esum_realType.
-Variables (R : realType) (T : choiceType).
+Context {R : realType} {T : choiceType}.
 Implicit Types (S : set T) (f : T -> \bar R).
 
-Lemma sum_esum_ge J (f: T -> R) :
-  (forall x, 0 <= f x)%R ->
-  uniq J -> ((\sum_(j <- J) f j)%:E <= \esum_(i in [set:T]) (f i)%:E)%E.
+Lemma sum_esum_ge s (h : T -> R) : uniq s ->
+  (forall x, 0 <= h x)%R ->
+  (\sum_(j <- s) h j)%:E <= \esum_(i in [set: T]) (h i)%:E.
 Proof.
-move=> f0 uJ; rewrite ge0_esum.
-+ by move=> x _; rewrite lee_fin; exact: f0.
-exact: (PosEsum.pos_sum_esum_ge).
+move=> us f0; rewrite ge0_esum; first by move=> t _; rewrite lee_fin f0.
+apply: PosEsum.pos_esum_ge; exists [set` s] => //.
+by rewrite fsumEFin// fsbig_seq.
 Qed.
 
-Lemma le_esum S f g :
-  (forall x, S x -> f x <= g x) ->
+Lemma le_esum S f g : (forall x, S x -> f x <= g x) ->
   \esum_(i in S) f i <= \esum_(i in S) g i.
 Proof.
 move=> leS.
@@ -446,28 +424,26 @@ Qed.
 Lemma esum_ge0 S f : (forall x, S x -> 0 <= f x) -> 0 <= \esum_(i in S) f i.
 Proof. by move=> f0; rewrite ge0_esum// PosEsum.pos_esum_ge0. Qed.
 
-Lemma le_esum_fine {U : choiceType} (A : set U) (B : set T) (f : T -> U -> \bar R) :
-  (forall x y, 0 <= f x y)%E ->
-  (\esum_(i in A) (fine (\esum_(x in B) f x i))%:E <=
-     \esum_(i in A) (\esum_(x in B) f x i))%E.
+Lemma le_esum_fine {U : choiceType} (A : set U) (B : set T)
+    (f : T -> U -> \bar R) : (forall x y, 0 <= f x y) ->
+  \esum_(i in A) (fine (\esum_(x in B) f x i))%:E <=
+     \esum_(i in A) (\esum_(x in B) f x i).
 Proof.
 move=> hf.
 rewrite [leLHS]ge0_esum.
-+ by move=> i _; rewrite lee_fin; apply: fine_ge0; apply esum_ge0.
+  by move=> i _; rewrite lee_fin; apply: fine_ge0; apply esum_ge0.
 rewrite [leRHS]ge0_esum; first by move=> i _; apply esum_ge0.
-under [leLHS]PosEsum.eq_pos_esum => i _ do rewrite  ge0_esum //.
-under [leRHS]PosEsum.eq_pos_esum => i _ do rewrite  ge0_esum //.
+under [leLHS]PosEsum.eq_pos_esum => i _ do rewrite ge0_esum//.
+under [leRHS]PosEsum.eq_pos_esum => i _ do rewrite ge0_esum//.
 exact: PosEsum.le_pos_esum_fine.
 Qed.
 
-Lemma subset_esum (I J : set T) (a : T -> \bar R) :
-  (forall x, J x -> 0 <= a x) ->
-  I `<=` J -> (\esum_(i in I) a i <= \esum_(i in J) a i)%E.
+Lemma subset_esum (I J : set T) f : (forall x, J x -> 0 <= f x) ->
+  I `<=` J -> \esum_(i in I) f i <= \esum_(i in J) f i.
 Proof.
-move=> a0 IJ.
-have ?: forall x, I x -> 0 <= a x by move => x /IJ /a0.
-rewrite ge0_esum // ge0_esum //.
-by apply: PosEsum.subset_pos_esum.
+move=> f0 IJ.
+have I0f : forall x, I x -> 0 <= f x by move => x /IJ /f0.
+by rewrite !ge0_esum// PosEsum.subset_pos_esum.
 Qed.
 
 Lemma esum_fset S f : finite_set S -> (forall i, S i -> 0 <= f i) ->
@@ -484,11 +460,8 @@ by move=> i /Df0 ->.
 Qed.
 
 Lemma esum0 {R : realFieldType} {I : choiceType} (D : set I) :
-  \esum_(i in D) (@cst I (\bar R) 0 i) = 0.
-Proof.
-by rewrite esum1 ?subee// => r _;
-  rewrite ?[LHS](funepos_cst0,funeneg_cst0).
-Qed.
+  \esum_(i in D) @cst _ (\bar R) 0 i = 0.
+Proof. by rewrite esum1. Qed.
 
 Section esum_cond.
 Context {R : realType} {T : choiceType}.
@@ -564,7 +537,7 @@ Lemma esum_ge {R : realType} {T : choiceType} (I : set T) (f : T -> \bar R) x :
 Proof. by move=> f0 If; rewrite ge0_esum// PosEsum.pos_esum_ge. Qed.
 
 Lemma esum_unit {R : realType} {T : choiceType} (f : T -> \bar R)  x :
-  \esum_(i in [set:T]) (if x == i then f i else 0) = f x.
+  \esum_(i in [set: T]) (if x == i then f i else 0) = f x.
 Proof. by rewrite esum_if_eq_op esum_set1. Qed.
 
 Lemma esum_eq0P {R : realType} {T : choiceType} (A : set T) (f : T -> \bar R) :
@@ -577,16 +550,16 @@ exists [set x]; first by split => // t ->.
 by rewrite -esum_set1 esum_fset// => i ->; exact: f0.
 Qed.
 
-Lemma neq0_esum {R : realType} {T : choiceType} (I : set T) (a : T -> \bar R) :
-  \esum_(i in I) a i <> 0 -> exists i, a i <> 0.
+Lemma esum_neq0 {R : realType} {T : choiceType} (I : set T) (a : T -> \bar R) :
+  \esum_(i in I) a i != 0 -> exists2 i, i \in I & a i != 0.
 Proof.
-move=> ?. apply/existsp_asboolPn /asboolPn => h.
-have // : (\esum_(i in I) a i = 0); by apply esum1.
+apply: contra_neqP => /forall2NP a0; apply: esum1 => t /mem_set It.
+by have [|/negP/negPn/eqP//] := a0 t; rewrite It.
 Qed.
 
 Lemma esum_ge1 {R : realType} {T : choiceType} (I : set T) (f : T -> \bar R) :
   (forall x, I x -> 0 <= f x) ->
-  (forall x, I x -> f x <= \esum_(i in (I : set T)) f i)%E.
+  forall x, I x -> f x <= \esum_(i in I) f i.
 Proof. by move=> f0 x Ix; rewrite ge0_esum//; exact: PosEsum.pos_esum_ge1. Qed.
 
 Section esumZ.
@@ -879,17 +852,15 @@ Qed.
 Lemma eq_summable D f g : f =1 g -> summable D f -> summable D g.
 Proof.
 move => eq_fg; rewrite /summable; apply: le_lt_trans.
-by apply: le_esum => ?;  rewrite eq_fg.
+by apply: le_esum => ?; rewrite eq_fg.
 Qed.
 
 Lemma le_summable D f g :
   (forall x, 0 <= f x <= g x) -> summable D g -> summable D f.
 Proof.
-move => eq_fg; rewrite /summable; apply: le_lt_trans.
-apply: le_esum => i //.
-have /andP := (eq_fg i).
-move =>[ h1 h2]; rewrite !gee0_abs => //=.
-by apply /le_trans;first apply h1.
+move=> fg; rewrite /summable; apply: le_lt_trans.
+apply: le_esum => t Dt; have/andP[f0 {}fg] := fg t.
+by rewrite !gee0_abs// (le_trans f0).
 Qed.
 
 Lemma summableD D f g : summable D f -> summable D g -> summable D (f \+ g).
@@ -924,24 +895,20 @@ apply: PosEsum.le_pos_esum => t Dt.
 by rewrite -/((abse \o f) t) -funeposDneg gee0_abs// leeDr.
 Qed.
 
-Lemma summable_muleC D f1 f2 :
-  summable D (f2 \* f1) -> summable D (f1 \* f2).
+Lemma summableZ D f c : c \is a fin_num ->
+  summable D f -> summable D (fun x => c * f x).
 Proof.
-rewrite /summable => ?.
-by under eq_esum do rewrite abseM muleC -abseM.
-Qed.
-
-Lemma summableZ D f c :
-  c \is a fin_num -> summable D f -> summable D (fun x => c * f x).
-Proof.
-rewrite /summable => ??.
+rewrite /summable => cfun fy.
 under eq_esum do rewrite abseM.
-by rewrite esumZ // lte_mul_pinfty //= abse_fin_num.
+by rewrite esumZ// lte_mul_pinfty// abse_fin_num.
 Qed.
 
-Lemma summableZr D f c :
-c \is a fin_num -> summable D f -> summable D (fun x => f x * c).
-Proof. by move=> ??; apply/summable_muleC /summableZ. Qed.
+Lemma summableZr D f c : c \is a fin_num ->
+  summable D f -> summable D (fun x => f x * c).
+Proof.
+under eq_fun do rewrite muleC.
+exact: summableZ.
+Qed.
 
 Lemma summableMl D f1 f2 :
   (exists2 M, (forall x, D x -> `|f1 x| <= M) & M \is a fin_num) ->
@@ -955,17 +922,21 @@ by apply: le_trans (h1 x Dx) (lee_abs _).
 Qed.
 
 Lemma summableMr D f1 f2 :
-  (exists2 M, (forall x, D x -> `|f2 x| <= M) & M \is a fin_num ) ->
+  (exists2 M, (forall x, D x -> `|f2 x| <= M) & M \is a fin_num) ->
   summable D f1 ->
   summable D (f1 \* f2).
-Proof. by move => ??; apply/summable_muleC /summableMl. Qed.
+Proof.
+move=> Df2.
+under eq_fun do rewrite muleC.
+exact: summableMl.
+Qed.
 
 Lemma summableM D f1 f2 :
   summable D f1 -> summable D f2 -> summable D (f1 \* f2).
 Proof.
 rewrite summableE => smS1 smS2; apply/summableMl => //.
-exists (\esum_(x in D) `| f1  x|) => //.
-by move => x; apply/esum_ge1.
+exists (\esum_(x in D) `|f1  x|) => //.
+exact: esum_ge1.
 Qed.
 
 End summable_lemmas.
@@ -1118,7 +1089,7 @@ End esumB.
 
 Section esum_summable.
 Context {R : realType} {T : choiceType}.
-Implicit Types (S : T  -> \bar R).
+Implicit Types (S : T -> \bar R).
 
 Lemma summable_esum_funepos S :
   summable [set: T] S -> \esum_(t in [set: T]) S^\+ t \is a fin_num.
