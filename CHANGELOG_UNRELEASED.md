@@ -11,13 +11,15 @@
   + lemmas `cvg1M`, `cvgM1`, `cvg0M`, `cvgM0`
   + lemmas `cvg1Z`, `cvg0Z`, `cvgZ0`
 
-- in file `function_spaces.v`,
-  + new lemma `within_continuous_big`.
-- in file `nat_topology.v`,
-  + new lemma `near_infty_after`.
-- in file `num_topology.v`,
-  + new lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
-    `at_left_shift`, and `at_right_shift`.
+- in `function_spaces.v`:
+  + lemma `within_continuous_big`
+
+- in `nat_topology.v`:
+  + lemma `near_infty_leq`
+
+- in `num_topology.v`:
+  + lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`,
+    `at_left_shift`, `at_right_shift`
 
 ### Changed
 

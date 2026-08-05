@@ -13,6 +13,9 @@ From mathcomp Require Import order_topology matrix_topology.
 (*                                                                            *)
 (******************************************************************************)
 
+Reserved Notation "x ^'+" (at level 3, left associativity, format "x ^'+").
+Reserved Notation "x ^'-" (at level 3, left associativity, format "x ^'-").
+
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
@@ -146,11 +149,72 @@ Module Exports. HB.reexport. End Exports.
 End numFieldTopology.
 Import numFieldTopology.Exports.
 
-Reserved Notation "x ^'+" (at level 3, left associativity, format "x ^'+").
-Reserved Notation "x ^'-" (at level 3, left associativity, format "x ^'-").
+Lemma nbhsN {R : numFieldType} (x : R) : nbhs (- x) = -%R @ x.
+Proof.
+rewrite predeqE => A; split=> //= -[] e e_gt0 xeA; exists e => //= y /=.
+  by move=> ?; apply: xeA => //=; rewrite -opprD normrN.
+by rewrite -opprD normrN => ?; rewrite -[y]opprK; apply: xeA; rewrite /= opprK.
+Qed.
+
+Lemma cvg_compNP {T : topologicalType} {R : numFieldType} (f : R -> T) (a : R)
+    (l : T) :
+  (f \o -%R) x @[x --> a] --> l <-> f x @[x --> (- a)] --> l.
+Proof. by rewrite nbhsN. Qed.
+
+Lemma withinN {R : numFieldType} (A : set R) (r : R) :
+  within A (nbhs (- r)) = - x @[x --> within (-%R @` A) (nbhs r)].
+Proof.
+rewrite eqEsubset /=; split; move=> E /= [e e0 reE]; exists e => //.
+  move=> s rse sA; apply: reE; last by rewrite memNE opprK.
+  by rewrite /= opprK addrC distrC.
+move=> s res rs; rewrite -(opprK s); apply: reE; last by rewrite -memNE.
+by rewrite /= opprK -normrN opprD.
+Qed.
+
+Lemma nearN {R : numFieldType} (x : R) (P : R -> Prop) :
+  (\forall y \near - x, P y) <-> \near x, P (- x).
+Proof. by rewrite -[X in X <-> _]near_simpl nbhsN. Qed.
+
+Lemma nbhsNimage {R : numFieldType} (x : R) :
+  nbhs (- x) = [set -%R @` A | A in nbhs x].
+Proof.
+rewrite nbhsN /fmap/=; under eq_set => A do rewrite preimageEinv//= inv_oppr.
+by rewrite (eq_imageK opprK opprK).
+Qed.
+
+Lemma openN {R : numFieldType} (A : set R) : open A -> open [set - x | x in A].
+Proof.
+move=> Aop; rewrite openE => _ [x /Aop x_A <-].
+by rewrite /interior nbhsNimage; exists A.
+Qed.
+
+Lemma closedN (R : numFieldType) (A : set R) :
+  closed A -> closed [set - x | x in A].
+Proof.
+move=> Acl x clNAx.
+suff /Acl : closure A (- x) by exists (- x)=> //; rewrite opprK.
+move=> B oppx_B; have : [set - x | x in A] `&` [set - x | x in B] !=set0.
+  by apply: clNAx; rewrite -[x]opprK nbhsNimage; exists B.
+move=> [y [[z Az oppzey] [t Bt opptey]]]; exists (- y).
+by split; [rewrite -oppzey opprK|rewrite -opptey opprK].
+Qed.
+
+Lemma dnbhsN {R : numFieldType} (r : R) :
+  (- r)%R^' = (fun A => -%R @` A) @` r^'.
+Proof.
+apply/seteqP; split=> [A [e/= e0 reA]|_/= [A [e/= e0 reA <-]]].
+  exists (-%R @` A).
+    exists e => // x/= rxe xr; exists (- x)%R; rewrite ?opprK//.
+    by apply: reA; rewrite ?eqr_opp//= opprK addrC distrC.
+  rewrite image_comp (_ : _ \o _ = idfun) ?image_id// funeqE => x/=.
+  by rewrite opprK.
+exists e => //= x/=; rewrite -opprD normrN => axe xa.
+exists (- x)%R; rewrite ?opprK//; apply: reA; rewrite ?eqr_oppLR//=.
+by rewrite opprK.
+Qed.
 
 Section at_left_right.
-Variable R : numFieldType.
+Context {R : numFieldType}.
 
 Definition at_left (x : R) := within (fun u => u < x) (nbhs x).
 Definition at_right (x : R) := within (fun u => x < u) (nbhs x).
@@ -244,9 +308,9 @@ Unshelve. all: by end_near. Qed.
 Lemma at_rightD x a : (x + a)^'+ = (y + a @[y --> x^'+]).
 Proof.
 apply/seteqP; split=> P /=.
-- move=> [/= r r0 br_sub].
+- move=> [/= r r0 xarP].
   exists r => // y bxy x_lt_y.
-  apply: br_sub => /=.
+  apply: xarP => /=.
   + by rewrite (addrC y) addrKA.
   + by rewrite ltrD2r.
 - move=> [/= r r0 br_sub].
@@ -261,28 +325,32 @@ Lemma at_leftD x a : (x + a)^'- = (y + a @[y --> x^'-]).
 Proof.
 apply/seteqP; split=> P /=.
 - move=> [/= r r0 br_sub].
-  exists r => // y bxy x_gt_y.
+  exists r => // y bxy x_lt_y.
   apply: br_sub => /=.
   + by rewrite (addrC y) addrKA.
   + by rewrite ltrD2r.
 - move=> [/= r r0 br_sub].
-  exists r => // y bxay xDa_gt_y.
+  exists r => // y bxay xDa_lt_y.
   rewrite -(subrK a y).
   apply: br_sub => /=.
   + by rewrite opprB addrA.
   + by rewrite ltrBlDr.
 Qed.
 
-Lemma near_at_rightD x a (P : set R) : (\forall y \near (x + a)^'+, P y) = (\forall y \near x^'+, P (y + a)).
+Lemma near_at_rightD x a (P : set R) :
+  (\forall y \near (x + a)^'+, P y) = (\forall y \near x^'+, P (y + a)).
 Proof. by rewrite at_rightD near_map. Qed.
 
-Lemma near_at_leftD x a (P : set R) : (\forall y \near (x + a)^'-, P y) = (\forall y \near x^'-, P (y + a)).
+Lemma near_at_leftD x a (P : set R) :
+  (\forall y \near (x + a)^'-, P y) = (\forall y \near x^'-, P (y + a)).
 Proof. by rewrite at_leftD near_map. Qed.
 
-Lemma at_left_shift (T : Type) x a (f : R -> T) : (f @ (x + a)^'-) = (f (y + a) @[y --> x^'-]).
+Lemma at_left_shift (T : Type) x a (f : R -> T) :
+  (f @ (x + a)^'-) = (f (y + a) @[y --> x^'-]).
 Proof. by rewrite at_leftD. Qed.
 
-Lemma at_right_shift (T : Type) x a (f : R -> T) : (f @ (x + a)^'+) = (f (y + a) @[y --> x^'+]).
+Lemma at_right_shift (T : Type) x a (f : R -> T) :
+  (f @ (x + a)^'+) = (f (y + a) @[y --> x^'+]).
 Proof. by rewrite at_rightD. Qed.
 
 End at_left_right.
@@ -296,14 +364,14 @@ Notation "x ^'+" := (at_right x) : classical_set_scope.
 #[global] Hint Extern 0 (Filter (nbhs _^'-)) =>
   (apply: at_left_proper_filter) : typeclass_instances.
 
-Lemma cvg_at_right_left_dnbhs (R : realFieldType) (T : topologicalType) (f : R -> T) (p : R) (l : T) :
+Lemma cvg_at_right_left_dnbhs (R : realFieldType) (T : topologicalType)
+    (f : R -> T) (p : R) (l : T) :
   f x @[x --> p^'+] --> l -> f x @[x --> p^'-] --> l -> f x @[x --> p^'] --> l.
 Proof.
 move=> + + U Uz => /(_ U Uz) + /(_ U Uz); near_simpl.
 rewrite !near_withinE !near_nbhs => lf rf.
 apply: filter_app lf; apply: filter_app rf.
-near=> t => xlt xgt.
-by case/lt_total/orP.
+by near=> t => xlt xgt /lt_total/orP[|].
 Unshelve. all: by end_near. Qed.
 
 Lemma left_right_continuousP {R : realFieldType} {T : topologicalType}
@@ -366,70 +434,6 @@ have [f XsupXf] : exists f : {posnum R}, X (inf X - f%:num).
   by rewrite gtr0_norm // ltr_pdivrMr // ltr_pMr // ltr1n.
 have : inf X <= inf X - f%:num by exact: ge_inf.
 by apply/negP; rewrite -ltNge; rewrite ltrBlDr ltrDl.
-Qed.
-
-Lemma nbhsN {R : numFieldType} (x : R) : nbhs (- x) = -%R @ x.
-Proof.
-rewrite predeqE => A; split=> //= -[] e e_gt0 xeA; exists e => //= y /=.
-  by move=> ?; apply: xeA => //=; rewrite -opprD normrN.
-by rewrite -opprD normrN => ?; rewrite -[y]opprK; apply: xeA; rewrite /= opprK.
-Qed.
-
-Lemma cvg_compNP {T : topologicalType} {R : numFieldType} (f : R -> T) (a : R)
-    (l : T) :
-  (f \o -%R) x @[x --> a] --> l <-> f x @[x --> (- a)] --> l.
-Proof. by rewrite nbhsN. Qed.
-
-Lemma nbhsNimage {R : numFieldType} (x : R) :
-  nbhs (- x) = [set -%R @` A | A in nbhs x].
-Proof.
-rewrite nbhsN /fmap/=; under eq_set => A do rewrite preimageEinv//= inv_oppr.
-by rewrite (eq_imageK opprK opprK).
-Qed.
-
-Lemma nearN {R : numFieldType} (x : R) (P : R -> Prop) :
-  (\forall y \near - x, P y) <-> \near x, P (- x).
-Proof. by rewrite -[X in X <-> _]near_simpl nbhsN. Qed.
-
-Lemma openN {R : numFieldType} (A : set R) : open A -> open [set - x | x in A].
-Proof.
-move=> Aop; rewrite openE => _ [x /Aop x_A <-].
-by rewrite /interior nbhsNimage; exists A.
-Qed.
-
-Lemma closedN (R : numFieldType) (A : set R) :
-  closed A -> closed [set - x | x in A].
-Proof.
-move=> Acl x clNAx.
-suff /Acl : closure A (- x) by exists (- x)=> //; rewrite opprK.
-move=> B oppx_B; have : [set - x | x in A] `&` [set - x | x in B] !=set0.
-  by apply: clNAx; rewrite -[x]opprK nbhsNimage; exists B.
-move=> [y [[z Az oppzey] [t Bt opptey]]]; exists (- y).
-by split; [rewrite -oppzey opprK|rewrite -opptey opprK].
-Qed.
-
-Lemma dnbhsN {R : numFieldType} (r : R) :
-  (- r)%R^' = (fun A => -%R @` A) @` r^'.
-Proof.
-apply/seteqP; split=> [A [e/= e0 reA]|_/= [A [e/= e0 reA <-]]].
-  exists (-%R @` A).
-    exists e => // x/= rxe xr; exists (- x)%R; rewrite ?opprK//.
-    by apply: reA; rewrite ?eqr_opp//= opprK addrC distrC.
-  rewrite image_comp (_ : _ \o _ = idfun) ?image_id// funeqE => x/=.
-  by rewrite opprK.
-exists e => //= x/=; rewrite -opprD normrN => axe xa.
-exists (- x)%R; rewrite ?opprK//; apply: reA; rewrite ?eqr_oppLR//=.
-by rewrite opprK.
-Qed.
-
-Lemma withinN {R : numFieldType} (A : set R) (r : R) :
-  within A (nbhs (- r)) = - x @[x --> within (-%R @` A) (nbhs r)].
-Proof.
-rewrite eqEsubset /=; split; move=> E /= [e e0 reE]; exists e => //.
-  move=> s rse sA; apply: reE; last by rewrite memNE opprK.
-  by rewrite /= opprK addrC distrC.
-move=> s res rs; rewrite -(opprK s); apply: reE; last by rewrite -memNE.
-by rewrite /= opprK -normrN opprD.
 Qed.
 
 Lemma in_continuous_mksetP {T : realFieldType} {U : nbhsType}
