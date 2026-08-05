@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra all_classical.
 #[warning="-warn-library-file-internal-analysis"]
@@ -90,20 +90,17 @@ by rewrite /= -leq_divRL//; apply: Pn.
 Qed.
 
 Lemma near_inftyS (P : set nat) :
-  (\forall x \near \oo, P (S x)) -> (\forall x \near \oo, P x).
-Proof. case=> N _ NPS; exists (S N) => // [[]]; rewrite /= ?ltn0 //. Qed.
+  (\forall x \near \oo, P x.+1) -> (\forall x \near \oo, P x).
+Proof. by case=> N _ NPS; exists N.+1 => // [[]]; rewrite ?ltn0. Qed.
 
-Lemma near_infty_after (P : set nat) :
-  (\forall n \near \oo, P n) <-> (\forall N \near \oo, forall n, (n >= N)%N -> P n).
+Lemma near_infty_leq (P : set nat) :
+  (\forall n \near \oo, P n) <->
+  (\forall N \near \oo, forall n, (n >= N)%N -> P n).
 Proof.
-split.
-- move=> [N _ afterN].
-  exists N => // n /= /[swap] n' /leq_trans /[apply].
-  exact: afterN.
-- move=> [N _ afterN].
-  exists N => // n /=.
-  by apply: afterN => /=.
-Qed.  
+split => [[N _ /= NP]|].
+  by exists N => // n/= Nn m /(leq_trans Nn); exact: NP.
+by apply: filterS => N; exact.
+Qed.
 
 Section infty_nat.
 Local Open Scope nat_scope.
