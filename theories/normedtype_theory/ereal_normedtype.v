@@ -1,9 +1,9 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import boot order ssralg ssrnum interval.
-From mathcomp Require Import interval_inference.
-From mathcomp Require Import boolp classical_sets ereal reals topology.
-From mathcomp Require Import real_interval num_normedtype.
+From mathcomp Require Import boot order ssralg ssrnum interval
+  interval_inference.
+From mathcomp Require Import boolp classical_sets ereal reals real_interval.
+From mathcomp Require Import topology ereal num_normedtype.
 
 (**md**************************************************************************)
 (* # Preliminaries for norm-related notions                                   *)
@@ -41,7 +41,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section limf_esup_einf.
-Variables (T : choiceType) (X : filteredType T) (R : realFieldType).
+Context {T : choiceType} {X : filteredType T} {R : realFieldType}.
 Implicit Types (f : X -> \bar R) (F : set_system X).
 Local Open Scope ereal_scope.
 

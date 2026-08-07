@@ -4,14 +4,13 @@
 (* Copyright (c) - 2015--2018 - Inria                                   *)
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
-From mathcomp Require Import boot order algebra.
+From mathcomp Require Import boot order algebra interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import boolp fsbigop classical_sets functions.
-From mathcomp Require Import cardinality.
-From mathcomp Require Import constructive_ereal reals.
+From mathcomp Require Import boolp fsbigop classical_sets functions cardinality.
+From mathcomp Require Import reals.
+From mathcomp Require Import ereal esum numfun.
 From mathcomp Require Import xfinmap discrete realseq.
-From mathcomp Require Import esum ereal numfun.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

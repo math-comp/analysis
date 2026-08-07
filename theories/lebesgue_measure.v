@@ -4,10 +4,10 @@ From mathcomp Require Import boot order finmap ssralg ssrnum ssrint.
 From mathcomp Require Import interval interval_inference archimedean rat.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop reals ereal topology numfun.
-From mathcomp Require Import tvs normedtype sequences esum measure.
-From mathcomp Require Import real_interval realfun exp measurable_realfun.
+From mathcomp Require Import boolp classical_sets functions cardinality fsbigop
+  reals real_interval.
+From mathcomp Require Import topology ereal numfun tvs normedtype sequences
+  esum measure realfun exp measurable_realfun.
 From mathcomp Require Export lebesgue_stieltjes_measure.
 
 (**md**************************************************************************)

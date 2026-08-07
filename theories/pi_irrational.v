@@ -1,10 +1,8 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import boot order algebra.
-From mathcomp Require Import interval_inference.
-From mathcomp Require Import mathcomp_extra boolp classical_sets.
-From mathcomp Require Import functions cardinality fsbigop.
-From mathcomp Require Import reals ereal topology normedtype sequences.
-From mathcomp Require Import real_interval esum measure measurable_realfun.
+From mathcomp Require Import boot order algebra interval_inference.
+From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
+From mathcomp Require Import reals real_interval topology ereal normedtype.
+From mathcomp Require Import sequences esum measure measurable_realfun.
 From mathcomp Require Import numfun realfun lebesgue_measure lebesgue_integral.
 From mathcomp Require Import derive ftc trigo.
 
