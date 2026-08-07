@@ -1,10 +1,9 @@
 From HB Require Import structures.
-From mathcomp Require Import boot order algebra.
-From mathcomp Require Import interval_inference.
+From mathcomp Require Import boot order algebra interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp contra classical_sets filter.
-From mathcomp Require Import topology convex reals normedtype.
+From mathcomp Require Import boolp contra classical_sets filter.
+From mathcomp Require Import reals convex topology normedtype.
 
 (**md**************************************************************************)
 (* # The Hahn-Banach theorem                                                  *)

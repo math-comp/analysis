@@ -1,6 +1,7 @@
 From HB Require Import structures.
-From mathcomp Require Import boot order algebra boolp classical_sets.
-From mathcomp Require Import fsbigop functions reals topology separation_axioms.
+From mathcomp Require Import boot order algebra interval_inference.
+From mathcomp Require Import boolp classical_sets fsbigop functions.
+From mathcomp Require Import reals topology separation_axioms.
 From mathcomp Require Import ereal sequences numfun measure measurable_realfun.
 From mathcomp Require Import lebesgue_measure lebesgue_integral.
 

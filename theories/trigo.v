@@ -1,11 +1,11 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import boot order ssralg ssrint ssrnum matrix.
-From mathcomp Require Import interval rat.
+From mathcomp Require Import boot order ssralg ssrint ssrnum matrix
+  interval_inference interval rat.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import reals ereal interval_inference topology normedtype.
+From mathcomp Require Import boolp classical_sets functions.
+From mathcomp Require Import reals topology ereal normedtype.
 From mathcomp Require Import landau sequences derive realfun exp realfun.
 From mathcomp Require Import measure lebesgue_measure lebesgue_integral ftc.
 

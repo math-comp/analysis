@@ -10,8 +10,7 @@
    incorporate it into mathcomp proper where it could then be used for
    bounds of intervals*)
 From HB Require Import structures.
-From mathcomp Require Import boot order algebra finmap.
-From mathcomp Require Import mathcomp_extra interval_inference.
+From mathcomp Require Import boot order algebra finmap interval_inference.
 
 (**md**************************************************************************)
 (* # Extended real numbers $\overline{R}$                                     *)

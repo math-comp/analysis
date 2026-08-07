@@ -1,9 +1,8 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import boot order generic_quotient algebra.
-From mathcomp Require Import finmap.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop reals topology wedge_sigT.
+From mathcomp Require Import boot order generic_quotient algebra finmap.
+From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
+From mathcomp Require Import reals topology wedge_sigT.
 
 (**md**************************************************************************)
 (* # Paths                                                                    *)

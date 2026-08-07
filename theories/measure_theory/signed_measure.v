@@ -4,10 +4,10 @@ From mathcomp Require Import boot order ssralg ssrnum ssrint interval.
 From mathcomp Require Import interval_inference finmap fingroup perm rat.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets cardinality.
-From mathcomp Require Import functions fsbigop set_interval reals ereal.
-From mathcomp Require Import topology numfun normedtype derive sequences esum.
-From mathcomp Require Import measurable_structure measurable_function.
+From mathcomp Require Import boolp classical_sets cardinality functions fsbigop.
+From mathcomp Require Import set_interval reals.
+From mathcomp Require Import topology ereal numfun normedtype derive sequences.
+From mathcomp Require Import esum measurable_structure measurable_function.
 From mathcomp Require Import measure_function measure_negligible.
 
 (**md**************************************************************************)

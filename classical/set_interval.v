@@ -3,8 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import boot order ssralg ssrnum interval.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets.
-From mathcomp Require Import functions.
+From mathcomp Require Import boolp classical_sets functions.
 
 (**md**************************************************************************)
 (* # Sets and Intervals                                                       *)

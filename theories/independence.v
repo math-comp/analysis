@@ -2,10 +2,10 @@
 From HB Require Import structures.
 From mathcomp Require Import boot order interval_inference.
 From mathcomp Require Import ssralg poly ssrnum ssrint interval finmap.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop.
+From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
+From mathcomp Require Import reals.
+From mathcomp Require Import ereal topology normedtype sequences.
 From mathcomp Require Import exp numfun lebesgue_measure lebesgue_integral.
-From mathcomp Require Import reals ereal topology normedtype sequences.
 From mathcomp Require Import esum measure exp numfun lebesgue_measure.
 From mathcomp Require Import measurable_realfun lebesgue_integral kernel.
 From mathcomp Require Import hoelder probability.

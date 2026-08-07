@@ -2,10 +2,9 @@
 From HB Require Import structures.
 From mathcomp Require Import boot order ssralg ssrnum ssrint interval.
 From mathcomp Require Import interval_inference archimedean finmap.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop reals ereal topology.
-From mathcomp Require Import normedtype sequences esum measure.
-From mathcomp Require Import measurable_realfun numfun lebesgue_measure.
+From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
+From mathcomp Require Import reals topology ereal normedtype sequences esum.
+From mathcomp Require Import measure measurable_realfun numfun lebesgue_measure.
 From mathcomp Require Import lebesgue_integral.
 
 (**md**************************************************************************)

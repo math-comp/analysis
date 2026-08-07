@@ -4,9 +4,9 @@ From mathcomp Require Import boot order ssralg ssrnum ssrint interval.
 From mathcomp Require Import interval_inference archimedean finmap.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality reals fsbigop topology ereal tvs.
-From mathcomp Require Import normedtype sequences real_interval esum measure.
+From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
+From mathcomp Require Import reals real_interval topology ereal tvs.
+From mathcomp Require Import normedtype sequences esum measure.
 From mathcomp Require Import lebesgue_measure numfun realfun simple_functions.
 From mathcomp Require Import measurable_realfun measurable_fun_approximation.
 From mathcomp Require Import lebesgue_integral_definition.

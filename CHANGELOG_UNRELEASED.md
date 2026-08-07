@@ -66,6 +66,7 @@
 
 - in `lebesgue_integral_nonneg.v`:
   + `summable_integral_dirac` -> `esummable_integral_dirac`
+- `mathcomp_extra.v` -> `mathcomp_compat.v`
 
 ### Generalized
 

@@ -4,6 +4,11 @@
 (* Copyright (c) - 2015--2018 - Inria                                   *)
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
+From HB Require Import structures.
+From mathcomp Require Import boot order algebra.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
+From mathcomp Require Import boolp classical_sets contra set_interval.
 
 (**md**************************************************************************)
 (* # An axiomatization of real numbers $\mathbb{R}$                           *)
@@ -42,13 +47,6 @@
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
-
-From HB Require Import structures.
-From mathcomp Require Import boot order algebra.
-#[warning="-warn-library-file-internal-analysis"]
-From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets contra
-  set_interval.
 
 Declare Scope real_scope.
 

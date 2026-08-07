@@ -4,10 +4,10 @@ From mathcomp Require Import boot order finmap ssralg ssrnum ssrint.
 From mathcomp Require Import archimedean interval interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality contra reals convex ereal.
-From mathcomp Require Import topology prodnormedzmodule tvs normedtype derive.
-From mathcomp Require Import sequences real_interval numfun.
+From mathcomp Require Import boolp classical_sets functions cardinality contra.
+From mathcomp Require Import reals convex.
+From mathcomp Require Import topology ereal prodnormedzmodule tvs normedtype.
+From mathcomp Require Import derive sequences real_interval numfun.
 
 (**md**************************************************************************)
 (* # Real-valued functions over reals                                         *)

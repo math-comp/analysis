@@ -1,16 +1,14 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import boot order algebra finmap.
-From mathcomp Require Import generic_quotient.
+From mathcomp Require Import boot order algebra interval_inference.
+From mathcomp Require Import generic_quotient finmap.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop reals interval_inference.
-From mathcomp Require Import topology_structure uniform_structure.
-From mathcomp Require Import supremum_topology initial_topology.
-From mathcomp Require Import pseudometric_structure separation_axioms.
-From mathcomp Require Import compact connected subspace_topology.
-From mathcomp Require Import product_topology.
+From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
+From mathcomp Require Import reals.
+From mathcomp Require Import topology_structure uniform_structure
+  supremum_topology initial_topology pseudometric_structure separation_axioms
+  compact connected subspace_topology product_topology.
 
 (**md**************************************************************************)
 (* # The topology of functions spaces                                         *)

@@ -5,10 +5,9 @@ From mathcomp Require Import interval_inference rat interval zmodp vector.
 From mathcomp Require Import fieldext falgebra archimedean finmap.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets.
-From mathcomp Require Import contra reals topology_structure.
-From mathcomp Require Import uniform_structure pseudometric_structure.
-From mathcomp Require Import num_topology product_topology separation_axioms.
+From mathcomp Require Import boolp classical_sets contra reals.
+From mathcomp Require Import topology_structure uniform_structure
+  pseudometric_structure num_topology product_topology separation_axioms.
 
 (**md**************************************************************************)
 (* # Metric spaces                                                            *)

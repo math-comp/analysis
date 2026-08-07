@@ -4,7 +4,7 @@ From mathcomp Require Import boot order ssralg matrix finmap ssrnum.
 From mathcomp Require Import ssrint rat interval.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp wochoice.
+From mathcomp Require Import boolp wochoice.
 
 (**md**************************************************************************)
 (* # Set Theory                                                               *)

@@ -14,6 +14,7 @@ boolp.v
 contra.v
 wochoice.v
 classical_sets.v
+mathcomp_compat.v
 mathcomp_extra.v
 unstable.v
 functions.v
