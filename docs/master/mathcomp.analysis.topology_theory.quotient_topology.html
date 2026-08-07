@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.topology_theory.quotient_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 0653637 2026.08.05-19:58" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 0653637 2026.08.07-00:27" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -259,7 +259,18 @@
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> classical_set_scope</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="quotient_topology" class="id"><div name="quotient_topology" class=" tooltip">quotient_topology<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/topology_theory/quotient_topology.v#L24' target='_blank'>Source code</a></span></div></span> (<span id="T:1" class="id"><div name="T:1" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/topology_theory/quotient_topology.v#L24' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>) (<span id="Q:2" class="id"><div name="Q:2" class=" tooltip">Q<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/topology_theory/quotient_topology.v#L24' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.generic_quotient.html#Quotient.Exports.quotType">quotType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#T:1">T</a></span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#Q:2">Q</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="quotient_topology" class="id"><div name="quotient_topology" class=" tooltip">quotient_topology<span class='tooltip-area'><p>one_point_nbhs :
+forall {X : topologicalType},
+one_point_compactification X -> set_system (one_point_compactification X)
+
+one_point_nbhs is not universe polymorphic
+Arguments one_point_nbhs {X} x _
+one_point_nbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_nbhs
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 33, characters 11-25
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/topology_theory/quotient_topology.v#L24' target='_blank'>Source code</a></span></div></span> (<span id="T:1" class="id"><div name="T:1" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/topology_theory/quotient_topology.v#L24' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>) (<span id="Q:2" class="id"><div name="Q:2" class=" tooltip">Q<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/topology_theory/quotient_topology.v#L24' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.generic_quotient.html#Quotient.Exports.quotType">quotType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#T:1">T</a></span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#Q:2">Q</a></span>.<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> quotients</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> quotient_scope</span>.<br/>
