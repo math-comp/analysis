@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.numfun</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 0653637 2026.08.07-00:27" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 0653637 2026.08.07-19:23" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -317,14 +317,16 @@ Qed.</div></details>
 <span class="vernacular">Implicit</span><span class="gallina-kwd"> Type</span> (<span class="id">a</span><span class="id"> b</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#interval_partition_porderType.T">T</a></span>) (<span class="id">s</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#seq">seq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#interval_partition_porderType.T">T</a></span>).<br/>
 <br/>
 <div class="doc">a :: s is a partition of the interval <code class="bracket"><span class="id">a</span>, <span class="id">b</span></code> </div>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partition" class="id"><div name="itv_partition" class=" tooltip">itv_partition<span class='tooltip-area'><p>itv_partition :
-forall {d : disp_t} {T : porderType d}, T -> T -> seq T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partition" class="id"><div name="itv_partition" class=" tooltip">itv_partition<span class='tooltip-area'><p>addfun_bigO :
+forall {K : numFieldType} {T : Type} {V W : normedModType K}
+  [F : filter_on T] [e : T -> W],
+{O_F e} -> {O_F e} -> {O_F e}
 
-itv_partition is not universe polymorphic
-Arguments itv_partition {d T} a b s%_seq_scope
-itv_partition is transparent
-Expands to: Constant mathcomp.analysis.numfun.itv_partition
-Declared in library mathcomp.analysis.numfun, line 78, characters 11-24
+addfun_bigO is not universe polymorphic
+Arguments addfun_bigO {K} {T}%_type_scope {V W} [F] [e]%_function_scope df dg
+addfun_bigO is transparent
+Expands to: Constant mathcomp.analysis.landau.addfun_bigO
+Declared in library mathcomp.analysis.landau, line 616, characters 10-21
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L78' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="a:12" class="id"><div name="a:12" class=" tooltip">a<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L78' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="b:13" class="id"><div name="b:13" class=" tooltip">b<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L78' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="s:14" class="id"><div name="s:14" class=" tooltip">s<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L78' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#53e4c1e546d9b20e029d981f761726c2">[/\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#53e4c1e546d9b20e029d981f761726c2"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.path.html#path">path</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.preorder.html#17cb0bcdd8f53ccec523ce717893e976">&lt;%O</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#a:12">a</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#s:14">s</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#53e4c1e546d9b20e029d981f761726c2"> &amp;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#53e4c1e546d9b20e029d981f761726c2"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#last">last</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#a:12">a</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#s:14">s</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#df45e8c2e8370fd4f0f7c4fdaf208180"> ==</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#df45e8c2e8370fd4f0f7c4fdaf208180"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#b:13">b</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#53e4c1e546d9b20e029d981f761726c2">]</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="itv_partition_nil" class="id"><div name="itv_partition_nil" class=" tooltip">itv_partition_nil<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L80' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="a:15" class="id"><div name="a:15" class=" tooltip">a<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L80' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="b:16" class="id"><div name="b:16" class=" tooltip">b<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L80' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#itv_partition">itv_partition</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#a:15">a</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#b:16">b</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#0a934e621391740b862762275992e626">[::]</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#a:15">a</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#b:16">b</a></span>.<br/>
@@ -436,23 +438,31 @@ Qed.</div></details>
 Qed.</div></details>
 <br/>
 <div class="doc">given a partition of <code class="bracket"><span class="id">a</span>, <span class="id">b</span></code> and c, returns a partition of <code class="bracket"><span class="id">a</span>, <span class="id">c</span></code> </div>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partitionL" class="id"><div name="itv_partitionL" class=" tooltip">itv_partitionL<span class='tooltip-area'><p>itv_partitionL : forall {d : disp_t} {T : porderType d}, seq T -> T -> seq T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partitionL" class="id"><div name="itv_partitionL" class=" tooltip">itv_partitionL<span class='tooltip-area'><p>littleo_is_bigO :
+forall {K : numFieldType} {T : Type} {V W : normedModType K}
+  [F : filter_on T] [e : T -> W],
+{o_F e} -> {O_F e}
 
-itv_partitionL is not universe polymorphic
-Arguments itv_partitionL {d T} s%_seq_scope c
-itv_partitionL is transparent
-Expands to: Constant mathcomp.analysis.numfun.itv_partitionL
-Declared in library mathcomp.analysis.numfun, line 164, characters 11-25
+littleo_is_bigO is not universe polymorphic
+Arguments littleo_is_bigO {K} {T}%_type_scope {V W} [F] [e]%_function_scope f
+littleo_is_bigO is transparent
+Expands to: Constant mathcomp.analysis.landau.littleo_is_bigO
+Declared in library mathcomp.analysis.landau, line 700, characters 10-25
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L164' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="s:54" class="id"><div name="s:54" class=" tooltip">s<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L164' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="c:55" class="id"><div name="c:55" class=" tooltip">c<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L164' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#rcons">rcons</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#3de67eb42556f00623e74d6756c5ab67">[seq</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#3de67eb42556f00623e74d6756c5ab67"> </a></span><span id="x:56" class="id"><div name="x:56" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L164' target='_blank'>Source code</a></span></div></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#3de67eb42556f00623e74d6756c5ab67"> &lt;-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#3de67eb42556f00623e74d6756c5ab67"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#s:54">s</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#3de67eb42556f00623e74d6756c5ab67"> |</a></span> (<span class="id"><a href="mathcomp.analysis.numfun.html#x:56">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.preorder.html#Order.PreOSyntax.::order_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.preorder.html#Order.PreOSyntax.::order_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#c:55">c</a></span>)<span class="id">%O</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#3de67eb42556f00623e74d6756c5ab67">]</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#c:55">c</a></span>.<br/>
 <br/>
 <div class="doc">given a partition of <code class="bracket"><span class="id">a</span>, <span class="id">b</span></code> and c, returns a partition of <code class="bracket"><span class="id">c</span>, <span class="id">b</span></code> </div>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partitionR" class="id"><div name="itv_partitionR" class=" tooltip">itv_partitionR<span class='tooltip-area'><p>itv_partitionR : forall {d : disp_t} {T : porderType d}, seq T -> T -> seq T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="itv_partitionR" class="id"><div name="itv_partitionR" class=" tooltip">itv_partitionR<span class='tooltip-area'><p>the_littleo_bigO :
+forall {K : numFieldType} {T : Type} {V W : normedModType K},
+unit ->
+forall [F : filter_on T],
+phantom (set_system T) F -> (T -> V) -> forall h : T -> W, {O_F h}
 
-itv_partitionR is not universe polymorphic
-Arguments itv_partitionR {d T} s%_seq_scope c
-itv_partitionR is transparent
-Expands to: Constant mathcomp.analysis.numfun.itv_partitionR
-Declared in library mathcomp.analysis.numfun, line 167, characters 11-25
+the_littleo_bigO is not universe polymorphic
+Arguments the_littleo_bigO {K} {T}%_type_scope {V W} 
+  tag [F] phF (f h)%_function_scope
+the_littleo_bigO is transparent
+Expands to: Constant mathcomp.analysis.landau.the_littleo_bigO
+Declared in library mathcomp.analysis.landau, line 702, characters 10-26
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L167' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="s:57" class="id"><div name="s:57" class=" tooltip">s<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L167' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="c:58" class="id"><div name="c:58" class=" tooltip">c<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L167' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#3de67eb42556f00623e74d6756c5ab67">[seq</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#3de67eb42556f00623e74d6756c5ab67"> </a></span><span id="x:59" class="id"><div name="x:59" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L167' target='_blank'>Source code</a></span></div></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#3de67eb42556f00623e74d6756c5ab67"> &lt;-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#3de67eb42556f00623e74d6756c5ab67"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#s:57">s</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#3de67eb42556f00623e74d6756c5ab67"> |</a></span> (<span class="id"><a href="mathcomp.analysis.numfun.html#c:58">c</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.preorder.html#Order.PreOSyntax.::order_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.preorder.html#Order.PreOSyntax.::order_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#x:59">x</a></span>)<span class="id">%O</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#3de67eb42556f00623e74d6756c5ab67">]</a></span>.<br/>
 <br/>
 <span class="vernacular">End</span><span class="id"> interval_partition_porderType</span>.<br/>
@@ -551,40 +561,16 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="variation_numDomainType.R" class="id"><div name="variation_numDomainType.R" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L250' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span><span class="id">}</span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">a</span><span class="id"> b</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#variation_numDomainType.R">R</a></span>) (<span class="id">f</span><span class="id"> g</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#variation_numDomainType.R">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#variation_numDomainType.R">R</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="variation" class="id"><div name="variation" class=" tooltip">variation<span class='tooltip-area'><p>variation :
-forall {R : numDomainType},
-R ->
-R ->
-(R -> R) ->
-seq R ->
-{|
-  Num.POrderZmodule.sort := R;
-  Num.POrderZmodule.class :=
-    {|
-      Num.POrderZmodule.choice_hasChoice_mixin := Num.NumDomain.class R;
-      Num.POrderZmodule.eqtype_hasDecEq_mixin := Num.NumDomain.class R;
-      Num.POrderZmodule.Order_isDuallyPreorder_mixin := Num.NumDomain.class R;
-      Num.POrderZmodule.Order_Preorder_isDuallyPOrder_mixin :=
-        Num.NumDomain.class R;
-      Num.POrderZmodule.Algebra_hasOpp_mixin := Num.NumDomain.class R;
-      Num.POrderZmodule.Algebra_hasZero_mixin := Num.NumDomain.class R;
-      Num.POrderZmodule.Algebra_hasAdd_mixin := Num.NumDomain.class R;
-      Num.POrderZmodule.Algebra_BaseZmoduleNmodule_isZmodule_mixin :=
-        Num.NumDomain.class R;
-      Num.POrderZmodule.Algebra_BaseAddUMagma_isAddUMagma_mixin :=
-        Num.NumDomain.class R;
-      Num.POrderZmodule.Algebra_BaseAddMagma_isAddMagma_mixin :=
-        Num.NumDomain.class R;
-      Num.POrderZmodule.Algebra_AddMagma_isAddSemigroup_mixin :=
-        Num.NumDomain.class R
-    |}
-|}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="variation" class="id"><div name="variation" class=" tooltip">variation<span class='tooltip-area'><p>add_littleo :
+forall {K : numFieldType} {T : Type} {V W : normedModType K}
+  [F : filter_on T] [e : T -> W],
+{o_F e} -> {o_F e} -> {o_F e}
 
-variation is not universe polymorphic
-Arguments variation {R} (a b)%_ring_scope f%_function_scope s%_seq_scope
-variation is transparent
-Expands to: Constant mathcomp.analysis.numfun.variation
-Declared in library mathcomp.analysis.numfun, line 253, characters 11-20
+add_littleo is not universe polymorphic
+Arguments add_littleo {K} {T}%_type_scope {V W} [F] [e]%_function_scope df dg
+add_littleo is transparent
+Expands to: Constant mathcomp.analysis.landau.add_littleo
+Declared in library mathcomp.analysis.landau, line 844, characters 10-21
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L253' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="a:88" class="id"><div name="a:88" class=" tooltip">a<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L253' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="b:89" class="id"><div name="b:89" class=" tooltip">b<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L253' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="f:90" class="id"><div name="f:90" class=" tooltip">f<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L253' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="s:91" class="id"><div name="s:91" class=" tooltip">s<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L253' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="gallina-kwd"> let</span><span class="id"> </span><span id="F:92" class="id"><div name="F:92" class=" tooltip">F<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L253' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#f:90">f</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#nth">nth</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#b:89">b</a></span> (<span class="id"><a href="mathcomp.analysis.numfun.html#a:88">a</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#::seq_scope:x_'::'_x"> ::</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#::seq_scope:x_'::'_x"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#s:91">s</a></span>)<span class="gallina-kwd"> in</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#e8c9389d173e080b4b0bc8cfb531c18e">\sum_</a></span>(<span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#e8c9389d173e080b4b0bc8cfb531c18e"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#e8c9389d173e080b4b0bc8cfb531c18e"> </a></span><span id="n:95" class="id"><span id="n:94" class="id"><span id="n:93" class="id"><div name="n:95" class=" tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L254' target='_blank'>Source code</a></span></div></span></span></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#e8c9389d173e080b4b0bc8cfb531c18e"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#e8c9389d173e080b4b0bc8cfb531c18e"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#size">size</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#s:91">s</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#e8c9389d173e080b4b0bc8cfb531c18e"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">`|</a></span><span class="id"><a href="mathcomp.analysis.numfun.html#F:92">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#n:93">n</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.ssrnat.html#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#F:92">F</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#n:93">n</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#55297ec87c6b3f98c14c99daeafb55d3">|</a></span><span class="id">%R</span>.<br/>
 <br/>
@@ -858,41 +844,17 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="bounded_variation.R" class="id"><div name="bounded_variation.R" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L493' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span><span class="id">}</span>.<br/>
 <span class="vernacular">Implicit</span><span class="gallina-kwd"> Type</span> (<span class="id">a</span><span class="id"> b</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#bounded_variation.R">R</a></span>) (<span class="id">f</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#bounded_variation.R">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#bounded_variation.R">R</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="variations" class="id"><div name="variations" class=" tooltip">variations<span class='tooltip-area'><p>variations :
-forall {R : numDomainType},
-R ->
-R ->
-(R -> R) ->
-set
-  {|
-    Num.POrderZmodule.sort := R;
-    Num.POrderZmodule.class :=
-      {|
-        Num.POrderZmodule.choice_hasChoice_mixin := Num.NumDomain.class R;
-        Num.POrderZmodule.eqtype_hasDecEq_mixin := Num.NumDomain.class R;
-        Num.POrderZmodule.Order_isDuallyPreorder_mixin :=
-          Num.NumDomain.class R;
-        Num.POrderZmodule.Order_Preorder_isDuallyPOrder_mixin :=
-          Num.NumDomain.class R;
-        Num.POrderZmodule.Algebra_hasOpp_mixin := Num.NumDomain.class R;
-        Num.POrderZmodule.Algebra_hasZero_mixin := Num.NumDomain.class R;
-        Num.POrderZmodule.Algebra_hasAdd_mixin := Num.NumDomain.class R;
-        Num.POrderZmodule.Algebra_BaseZmoduleNmodule_isZmodule_mixin :=
-          Num.NumDomain.class R;
-        Num.POrderZmodule.Algebra_BaseAddUMagma_isAddUMagma_mixin :=
-          Num.NumDomain.class R;
-        Num.POrderZmodule.Algebra_BaseAddMagma_isAddMagma_mixin :=
-          Num.NumDomain.class R;
-        Num.POrderZmodule.Algebra_AddMagma_isAddSemigroup_mixin :=
-          Num.NumDomain.class R
-      |}
-  |}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="variations" class="id"><div name="variations" class=" tooltip">variations<span class='tooltip-area'><p>addfun_littleo :
+forall {K : numFieldType} {T : Type} {V W : normedModType K}
+  [F : filter_on T] [e : T -> W],
+{o_F e} -> {o_F e} -> {o_F e}
 
-variations is not universe polymorphic
-Arguments variations {R} (a b)%_ring_scope f%_function_scope _
-variations is transparent
-Expands to: Constant mathcomp.analysis.numfun.variations
-Declared in library mathcomp.analysis.numfun, line 496, characters 11-21
+addfun_littleo is not universe polymorphic
+Arguments addfun_littleo {K} {T}%_type_scope {V W} 
+  [F] [e]%_function_scope df dg
+addfun_littleo is transparent
+Expands to: Constant mathcomp.analysis.landau.addfun_littleo
+Declared in library mathcomp.analysis.landau, line 846, characters 10-24
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L496' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="a:184" class="id"><div name="a:184" class=" tooltip">a<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L496' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="b:185" class="id"><div name="b:185" class=" tooltip">b<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L496' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="f:186" class="id"><div name="f:186" class=" tooltip">f<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L496' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#variation">variation</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#a:184">a</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#b:185">b</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#f:186">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#l:187">l</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span id="l:187" class="id"><div name="l:187" class=" tooltip">l<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L496' target='_blank'>Source code</a></span></div></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> in</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#itv_partition">itv_partition</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#a:184">a</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#b:185">b</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">]</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="variations_variation" class="id"><div name="variations_variation" class=" tooltip">variations_variation<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L498' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="a:188" class="id"><div name="a:188" class=" tooltip">a<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L498' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="b:189" class="id"><div name="b:189" class=" tooltip">b<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L498' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="f:190" class="id"><div name="f:190" class=" tooltip">f<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L498' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="s:191" class="id"><div name="s:191" class=" tooltip">s<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L498' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#itv_partition">itv_partition</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#a:188">a</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#b:189">b</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#s:191">s</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><br/>
@@ -928,13 +890,17 @@ Qed.</div></details>
 <span class="gallina-kwd">by</span><span class="gallina-kwd"> exists</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#0a934e621391740b862762275992e626">[::]</a></span><span class="id"> =&gt;</span><span class="id"> //=;</span><span class="id"> rewrite</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.numfun.html#variation">variation</a></span><span class="id"> /=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.bigop.html#big_nil">big_nil</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="bounded_variation" class="id"><div name="bounded_variation" class=" tooltip">bounded_variation<span class='tooltip-area'><p>bounded_variation : forall {R : numDomainType}, R -> R -> (R -> R) -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="bounded_variation" class="id"><div name="bounded_variation" class=" tooltip">bounded_variation<span class='tooltip-area'><p>scale_littleo :
+forall {K : numFieldType} {T : Type} {V W : normedModType K}
+  [F : filter_on T] [e : T -> W],
+K -> {o_F e} -> {o_F e}
 
-bounded_variation is not universe polymorphic
-Arguments bounded_variation {R} (a b)%_ring_scope f%_function_scope
-bounded_variation is transparent
-Expands to: Constant mathcomp.analysis.numfun.bounded_variation
-Declared in library mathcomp.analysis.numfun, line 522, characters 11-28
+scale_littleo is not universe polymorphic
+Arguments scale_littleo {K} {T}%_type_scope {V W} 
+  [F] [e]%_function_scope a%_ring_scope df
+scale_littleo is transparent
+Expands to: Constant mathcomp.analysis.landau.scale_littleo
+Declared in library mathcomp.analysis.landau, line 870, characters 10-23
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L522' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="a:200" class="id"><div name="a:200" class=" tooltip">a<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L522' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="b:201" class="id"><div name="b:201" class=" tooltip">b<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L522' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="f:202" class="id"><div name="f:202" class=" tooltip">f<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L522' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#has_ubound">has_ubound</a></span> (<span class="id"><a href="mathcomp.analysis.numfun.html#variations">variations</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#a:200">a</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#b:201">b</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#f:202">f</a></span>).<br/>
 <br/>
 <span class="vernacular">Notation</span><span class="id"> </span><span id="BV" class="id"><div name="BV" class=" tooltip">BV<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L524' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#bounded_variation">bounded_variation</a></span>.<br/>
@@ -1150,25 +1116,36 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> funrposneg</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="funrpos" class="id"><div name="funrpos" class=" tooltip">funrpos<span class='tooltip-area'><p>funrpos : forall [T : Type] [R : realDomainType], (T -> R) -> T -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="funrpos" class="id"><div name="funrpos" class=" tooltip">funrpos<span class='tooltip-area'><p>bigOmega_clone :
+forall {K : realFieldType} {T : Type} {V W : normedModType K}
+  [F : set_system T] [g : T -> W] [f : T -> V] [fT : {Omega_F g}]
+  [c : `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+              (f0 : T -> V) (g0 : T -> W0) =>
+            exists2
+              k : join_Num_POrderNmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
+                    K,
+              (0 < k)%R & \near F0, (k * `|g0 F0| <= `|f0 F0|)%R)
+             W F f g >]],
+phant_id (bigOmega_class fT) c -> {Omega_F g}
 
-funrpos is not universe polymorphic
-Arguments funrpos [T]%_type_scope [R] f%_function_scope x
-funrpos is transparent
-Expands to: Constant mathcomp.analysis.numfun.funrpos
-Declared in library mathcomp.analysis.numfun, line 678, characters 11-18
+bigOmega_clone is not universe polymorphic
+Arguments bigOmega_clone {K} {T}%_type_scope {V W} 
+  [F] [g f]%_function_scope [fT c] _
+bigOmega_clone is transparent
+Expands to: Constant mathcomp.analysis.landau.bigOmega_clone
+Declared in library mathcomp.analysis.landau, line 1235, characters 11-25
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L678' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="T:300" class="id"><div name="T:300" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L678' target='_blank'>Source code</a></span></div></span> (<span id="R:301" class="id"><div name="R:301" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L678' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#Num.RealDomain.Exports.realDomainType">realDomainType</a></span>) (<span id="f:302" class="id"><div name="f:302" class=" tooltip">f<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L678' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#T:300">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#R:301">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:303" class="id"><div name="x:303" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L679' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.max">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.max">max</a></span> (<span class="id"><a href="mathcomp.analysis.numfun.html#f:302">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#x:303">x</a></span>)<span class="id"> 0</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="funrneg" class="id"><div name="funrneg" class=" tooltip">funrneg<span class='tooltip-area'><p>funrneg :
-forall [T : Type] [R : realDomainType],
-(T -> R) ->
-T -> join_Num_POrderZmodule_between_Algebra_BaseZmodule_and_Order_Preorder R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="funrneg" class="id"><div name="funrneg" class=" tooltip">funrneg<span class='tooltip-area'><p>bigOmega_refl :
+forall {K : realFieldType} {T : Type} {V : normedModType K} 
+  (F : filter_on T) (g : T -> V),
+{Omega_F g}
 
-funrneg is not universe polymorphic
-Arguments funrneg [T]%_type_scope [R] f%_function_scope x
-funrneg is transparent
-Expands to: Constant mathcomp.analysis.numfun.funrneg
-Declared in library mathcomp.analysis.numfun, line 680, characters 11-18
+bigOmega_refl is not universe polymorphic
+Arguments bigOmega_refl {K} {T}%_type_scope {V} F g%_function_scope
+bigOmega_refl is transparent
+Expands to: Constant mathcomp.analysis.landau.bigOmega_refl
+Declared in library mathcomp.analysis.landau, line 1245, characters 11-24
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L680' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="T:304" class="id"><div name="T:304" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L680' target='_blank'>Source code</a></span></div></span> (<span id="R:305" class="id"><div name="R:305" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L680' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#Num.RealDomain.Exports.realDomainType">realDomainType</a></span>) (<span id="f:306" class="id"><div name="f:306" class=" tooltip">f<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L680' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#T:304">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#R:305">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:307" class="id"><div name="x:307" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L681' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.max">Num</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.max">max</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#f:306">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#x:307">x</a></span>)<span class="id"> 0</span>.<br/>
 <br/>
@@ -1384,100 +1361,128 @@ Qed.</div></details>
 <span class="id">#[global]</span><br/>
 <span class="vernacular">Hint</span><span class="id"> Extern</span><span class="id"> 0</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#is_true">is_true</a></span> (<span class="id">0%R</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> </a></span>_<span class="id"><a href="mathcomp.analysis.numfun.html#a9566f9ccc6e50ea8a9bb141f13f417b"> ^\-</a></span><span class="id"><a href="mathcomp.analysis.numfun.html#a9566f9ccc6e50ea8a9bb141f13f417b"> _</a></span>)<span class="id">%R</span>)<span class="id"> =&gt;</span><span class="id"> solve</span><span class="id"> [apply:</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#funrneg_ge0">funrneg_ge0</a></span><span class="id">]</span><span class="id"> :</span><span class="id"> core</span>.<br/>
 <br/>
-<span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><div name="funepos_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>funepos_unlock_subterm :
-unlockable
-  (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (f x) 0%R)
+<span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><div name="funepos_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>the_bigOmega :
+forall {K : realFieldType} {T : Type} {V : normedModType K},
+unit ->
+forall [F : filter_on T],
+phantom (set_system T) F -> (T -> V) -> (T -> V) -> T -> V
 
-funepos_unlock_subterm is not universe polymorphic
-funepos_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.numfun.funepos_unlock_subterm
-Declared in library mathcomp.analysis.numfun, line 841, characters 0-95
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L841' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span>.<span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><div name="funepos_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>funepos_unlock_subterm :
-unlockable
-  (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (f x) 0%R)
+the_bigOmega is not universe polymorphic
+Arguments the_bigOmega {K} {T}%_type_scope {V} u [F] 
+  phF (f g)%_function_scope _
+the_bigOmega is transparent
+Expands to: Constant mathcomp.analysis.landau.the_bigOmega
+Declared in library mathcomp.analysis.landau, line 1248, characters 11-23
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L841' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span>.<span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><div name="funepos_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>is_bigOmega :
+forall {K : realFieldType} {T : Type} {V W : normedModType K},
+set_system T -> (T -> W) -> qualifier 0 (T -> V)
 
-funepos_unlock_subterm is not universe polymorphic
-funepos_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.numfun.funepos_unlock_subterm
-Declared in library mathcomp.analysis.numfun, line 841, characters 0-95
+is_bigOmega is not universe polymorphic
+Arguments is_bigOmega {K} {T}%_type_scope {V W} F g%_function_scope
+is_bigOmega is transparent
+Expands to: Constant mathcomp.analysis.landau.is_bigOmega
+Declared in library mathcomp.analysis.landau, line 1257, characters 11-22
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L841' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span><br/>
-<span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><div name="funepos_unlock_subterm" class=" tooltip">Definition<span class='tooltip-area'><p>funepos_unlock_subterm :
-unlockable
-  (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (f x) 0%R)
+<span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><div name="funepos_unlock_subterm" class=" tooltip">Definition<span class='tooltip-area'><p>is_bigOmega_keyed :
+forall {K : realFieldType} {T : Type} {V W : normedModType K}
+  (F : set_system T) (g : T -> W),
+keyed_qualifier (q:='Omega_F(g)) (is_bigOmega_key F g)
 
-funepos_unlock_subterm is not universe polymorphic
-funepos_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.numfun.funepos_unlock_subterm
-Declared in library mathcomp.analysis.numfun, line 841, characters 0-95
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L842' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span><span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><div name="funepos_unlock_subterm" class=" tooltip"> funepos<span class='tooltip-area'><p>funepos_unlock_subterm :
-unlockable
-  (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (f x) 0%R)
+is_bigOmega_keyed is not universe polymorphic
+Arguments is_bigOmega_keyed {K} {T}%_type_scope {V W} F g%_function_scope
+is_bigOmega_keyed is transparent
+Expands to: Constant mathcomp.analysis.landau.is_bigOmega_keyed
+Declared in library mathcomp.analysis.landau, line 1261, characters 10-27
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L842' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span><span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><div name="funepos_unlock_subterm" class=" tooltip"> funepos<span class='tooltip-area'><p>the_bigOmega_bigOmega :
+forall {K : realFieldType} {T : Type} {V : normedModType K},
+unit ->
+forall [F : filter_on T],
+phantom (set_system T) F -> (T -> V) -> forall h : T -> V, {Omega_F h}
 
-funepos_unlock_subterm is not universe polymorphic
-funepos_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.numfun.funepos_unlock_subterm
-Declared in library mathcomp.analysis.numfun, line 841, characters 0-95
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L842' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span><span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><div name="funepos_unlock_subterm" class=" tooltip"> T<span class='tooltip-area'><p>funepos_unlock_subterm :
-unlockable
-  (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (f x) 0%R)
+the_bigOmega_bigOmega is not universe polymorphic
+Arguments the_bigOmega_bigOmega {K} {T}%_type_scope 
+  {V} tag [F] phF (f h)%_function_scope
+the_bigOmega_bigOmega is transparent
+Expands to: Constant mathcomp.analysis.landau.the_bigOmega_bigOmega
+Declared in library mathcomp.analysis.landau, line 1275, characters 10-31
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L842' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span><span id="funepos_unlock_subterm" class="id"><span id="funepos" class="id"><span id="funepos.unlock" class="id"><span id="funepos.body" class="id"><span id="funepos" class="id"><span id="funepos_Locked.unlock" class="id"><span id="funepos_Locked.body" class="id"><span id="funepos_Locked" class="id"><div name="funepos_unlock_subterm" class=" tooltip"> T<span class='tooltip-area'><p>bigTheta_clone :
+forall {K : realFieldType} {T : Type} {V W : normedModType K}
+  [F : set_system T] [g : T -> W] [f : T -> V] [fT : {Theta_ T V} F g]
+  [c : `[< (fun (W0 : normedModType K) (F0 : set_system T) 
+              (f0 : T -> V) (g0 : T -> W0) =>
+            exists2
+              k : join_Num_POrderNmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
+                    K *
+                  join_Num_POrderNmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
+                    K,
+              (0 < k.1)%R && (0 < k.2)%R &
+              \near F0, (k.1 * `|g0 F0| <= `|f0 F0|)%R /\
+                        (`|f0 F0| <= k.2 * `|g0 F0|)%R)
+             W F f g >]],
+phant_id (bigTheta_class fT) c -> {Theta_ T V} F g
 
-funepos_unlock_subterm is not universe polymorphic
-funepos_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.numfun.funepos_unlock_subterm
-Declared in library mathcomp.analysis.numfun, line 841, characters 0-95
+bigTheta_clone is not universe polymorphic
+Arguments bigTheta_clone {K} {T}%_type_scope {V W} 
+  [F] [g f]%_function_scope [fT c] _
+bigTheta_clone is transparent
+Expands to: Constant mathcomp.analysis.landau.bigTheta_clone
+Declared in library mathcomp.analysis.landau, line 1375, characters 11-25
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L842' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span> (<span id="R:377" class="id"><div name="R:377" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L842' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#Num.RealDomain.Exports.realDomainType">realDomainType</a></span>) (<span id="f:378" class="id"><div name="f:378" class=" tooltip">f<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L842' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#T:376">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#R:377">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:379" class="id"><div name="x:379" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L843' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#maxe">maxe</a></span> (<span class="id"><a href="mathcomp.analysis.numfun.html#f:378">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#x:379">x</a></span>)<span class="id"> 0</span>.<br/>
-<span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><div name="funeneg_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>funeneg_unlock_subterm :
-unlockable
-  (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (- f x)%E 0%R)
+<span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><div name="funeneg_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><p>bigTheta_refl :
+forall {K : realFieldType} {T : Type} {V : normedModType K} 
+  (F : filter_on T) (g : T -> V),
+{Theta_ T V} F g
 
-funeneg_unlock_subterm is not universe polymorphic
-funeneg_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.numfun.funeneg_unlock_subterm
-Declared in library mathcomp.analysis.numfun, line 844, characters 0-102
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L844' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span>.<span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><div name="funeneg_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>funeneg_unlock_subterm :
-unlockable
-  (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (- f x)%E 0%R)
+bigTheta_refl is not universe polymorphic
+Arguments bigTheta_refl {K} {T}%_type_scope {V} F g%_function_scope
+bigTheta_refl is transparent
+Expands to: Constant mathcomp.analysis.landau.bigTheta_refl
+Declared in library mathcomp.analysis.landau, line 1385, characters 11-24
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L844' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span>.<span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><div name="funeneg_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><p>the_bigTheta :
+forall {K : realFieldType} {T : Type} {V : normedModType K},
+unit ->
+forall [F : filter_on T],
+phantom (set_system T) F -> (T -> V) -> (T -> V) -> T -> V
 
-funeneg_unlock_subterm is not universe polymorphic
-funeneg_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.numfun.funeneg_unlock_subterm
-Declared in library mathcomp.analysis.numfun, line 844, characters 0-102
+the_bigTheta is not universe polymorphic
+Arguments the_bigTheta {K} {T}%_type_scope {V} u [F] 
+  phF (f g)%_function_scope _
+the_bigTheta is transparent
+Expands to: Constant mathcomp.analysis.landau.the_bigTheta
+Declared in library mathcomp.analysis.landau, line 1388, characters 11-23
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L844' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span><br/>
-<span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><div name="funeneg_unlock_subterm" class=" tooltip">Definition<span class='tooltip-area'><p>funeneg_unlock_subterm :
-unlockable
-  (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (- f x)%E 0%R)
+<span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><div name="funeneg_unlock_subterm" class=" tooltip">Definition<span class='tooltip-area'><p>is_bigTheta :
+forall {K : realFieldType} {T : Type} {V W : normedModType K},
+set_system T -> (T -> W) -> qualifier 0 (T -> V)
 
-funeneg_unlock_subterm is not universe polymorphic
-funeneg_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.numfun.funeneg_unlock_subterm
-Declared in library mathcomp.analysis.numfun, line 844, characters 0-102
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L845' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span><span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><div name="funeneg_unlock_subterm" class=" tooltip"> funeneg<span class='tooltip-area'><p>funeneg_unlock_subterm :
-unlockable
-  (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (- f x)%E 0%R)
+is_bigTheta is not universe polymorphic
+Arguments is_bigTheta {K} {T}%_type_scope {V W} F g%_function_scope
+is_bigTheta is transparent
+Expands to: Constant mathcomp.analysis.landau.is_bigTheta
+Declared in library mathcomp.analysis.landau, line 1397, characters 11-22
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L845' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span><span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><div name="funeneg_unlock_subterm" class=" tooltip"> funeneg<span class='tooltip-area'><p>is_bigTheta_keyed :
+forall {K : realFieldType} {T : Type} {V W : normedModType K}
+  (F : set_system T) (g : T -> W),
+keyed_qualifier (q:='Theta_F(g)) (is_bigTheta_key F g)
 
-funeneg_unlock_subterm is not universe polymorphic
-funeneg_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.numfun.funeneg_unlock_subterm
-Declared in library mathcomp.analysis.numfun, line 844, characters 0-102
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L845' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span><span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><div name="funeneg_unlock_subterm" class=" tooltip"> T<span class='tooltip-area'><p>funeneg_unlock_subterm :
-unlockable
-  (fun (T : Type) (R : realDomainType) (f : T -> \bar R) (x : T) =>
-   maxe (- f x)%E 0%R)
+is_bigTheta_keyed is not universe polymorphic
+Arguments is_bigTheta_keyed {K} {T}%_type_scope {V W} F g%_function_scope
+is_bigTheta_keyed is transparent
+Expands to: Constant mathcomp.analysis.landau.is_bigTheta_keyed
+Declared in library mathcomp.analysis.landau, line 1401, characters 10-27
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L845' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span><span id="funeneg_unlock_subterm" class="id"><span id="funeneg" class="id"><span id="funeneg.unlock" class="id"><span id="funeneg.body" class="id"><span id="funeneg" class="id"><span id="funeneg_Locked.unlock" class="id"><span id="funeneg_Locked.body" class="id"><span id="funeneg_Locked" class="id"><div name="funeneg_unlock_subterm" class=" tooltip"> T<span class='tooltip-area'><p>the_bigTheta_bigTheta :
+forall {K : realFieldType} {T : Type} {V : normedModType K},
+unit ->
+forall [F : filter_on T],
+phantom (set_system T) F -> (T -> V) -> forall h : T -> V, {Theta_ T V} F h
 
-funeneg_unlock_subterm is not universe polymorphic
-funeneg_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.numfun.funeneg_unlock_subterm
-Declared in library mathcomp.analysis.numfun, line 844, characters 0-102
+the_bigTheta_bigTheta is not universe polymorphic
+Arguments the_bigTheta_bigTheta {K} {T}%_type_scope 
+  {V} tag [F] phF (f h)%_function_scope
+the_bigTheta_bigTheta is transparent
+Expands to: Constant mathcomp.analysis.landau.the_bigTheta_bigTheta
+Declared in library mathcomp.analysis.landau, line 1413, characters 10-31
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L845' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span> (<span id="R:384" class="id"><div name="R:384" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L845' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#Num.RealDomain.Exports.realDomainType">realDomainType</a></span>) (<span id="f:385" class="id"><div name="f:385" class=" tooltip">f<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L845' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#T:383">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#R:384">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="x:386" class="id"><div name="x:386" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L846' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#maxe">maxe</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#oppe">oppe</a></span> (<span class="id"><a href="mathcomp.analysis.numfun.html#f:385">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#x:386">x</a></span>))<span class="id"> 0</span>.<br/>
 <br/>
@@ -1719,14 +1724,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> funrpos_funepos_lemmas</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="indic" class="id"><div name="indic" class=" tooltip">indic<span class='tooltip-area'><p>indic : forall {T : Type} {R : pzRingType}, set T -> T -> R
-
-indic is not universe polymorphic
-Arguments indic {T}%_type_scope {R} A%_classical_set_scope x
-indic is transparent
-Expands to: Constant mathcomp.analysis.numfun.indic
-Declared in library mathcomp.analysis.numfun, line 1013, characters 11-16
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1013' target='_blank'>Source code</a></span></div></span><span class="id"> {</span><span id="T:460" class="id"><div name="T:460" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1013' target='_blank'>Source code</a></span></div></span><span class="id">}</span><span class="id"> {</span><span id="R:461" class="id"><div name="R:461" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1013' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.PzRing.Exports.pzRingType">pzRingType</a></span><span class="id">}</span> (<span id="A:462" class="id"><div name="A:462" class=" tooltip">A<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1013' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#T:460">T</a></span>) (<span id="x:463" class="id"><div name="x:463" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1013' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#T:460">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#R:461">R</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.numfun.html#x:463">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#A:462">A</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#6411ed08724033ae48d2865f0380d533">%:R</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="indic" class="id"><div name="indic" class=" tooltip">indic<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1013' target='_blank'>Source code</a></span></div></span><span class="id"> {</span><span id="T:460" class="id"><div name="T:460" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1013' target='_blank'>Source code</a></span></div></span><span class="id">}</span><span class="id"> {</span><span id="R:461" class="id"><div name="R:461" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1013' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.PzRing.Exports.pzRingType">pzRingType</a></span><span class="id">}</span> (<span id="A:462" class="id"><div name="A:462" class=" tooltip">A<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1013' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#T:460">T</a></span>) (<span id="x:463" class="id"><div name="x:463" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1013' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#T:460">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#R:461">R</a></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.numfun.html#x:463">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#A:462">A</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#6411ed08724033ae48d2865f0380d533">%:R</a></span>.<br/>
 <br/>
 <span class="vernacular">Reserved</span><span class="vernacular"> Notation</span> <span class="id">&quot;'\1_' A&quot;</span> (<span class="gallina-kwd">at</span><span class="id"> level</span><span class="id"> 8,</span><span class="id"> A</span><span class="gallina-kwd"> at</span><span class="id"> level</span><span class="id"> 2,</span><span class="id"> format</span> <span class="id">&quot;'\1_' A&quot;</span>) .<br/>
 <span class="vernacular">Notation</span> <span id="e353122e03268a6eab33cb5af81dd3c6" class="id"><div name="e353122e03268a6eab33cb5af81dd3c6" class=" tooltip">&quot;'\1_' A&quot;<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1016' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.numfun.html#indic">indic</a></span><span class="id"> A</span>)<span class="id"> :</span><span class="id"> ring_scope</span>.<br/>
@@ -1740,14 +1738,7 @@ Declared in library mathcomp.analysis.numfun, line 1013, characters 11-16
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> -</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.ssrint.html#pmulrn">pmulrn</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#Num.Theory.ler_nat">ler_nat</a></span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.ssrnat.html#leq_b1">leq_b1</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="indic_inum" class="id"><div name="indic_inum" class=" tooltip">indic_inum<span class='tooltip-area'><p>indic_inum : forall {T : Type} {R : numDomainType}, set T -> T -> {i01 R}
-
-indic_inum is not universe polymorphic
-Arguments indic_inum {T}%_type_scope {R} A%_classical_set_scope x
-indic_inum is transparent
-Expands to: Constant mathcomp.analysis.numfun.indic_inum
-Declared in library mathcomp.analysis.numfun, line 1025, characters 10-20
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1025' target='_blank'>Source code</a></span></div></span><span class="id"> {</span><span id="T:468" class="id"><div name="T:468" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1025' target='_blank'>Source code</a></span></div></span><span class="id">}</span><span class="id"> {</span><span id="R:469" class="id"><div name="R:469" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1025' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span><span class="id">}</span> (<span id="A:470" class="id"><div name="A:470" class=" tooltip">A<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1025' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#T:468">T</a></span>) (<span id="x:471" class="id"><div name="x:471" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1025' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#T:468">T</a></span>)<span class="id"> :=</span><br/>
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="indic_inum" class="id"><div name="indic_inum" class=" tooltip">indic_inum<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1025' target='_blank'>Source code</a></span></div></span><span class="id"> {</span><span id="T:468" class="id"><div name="T:468" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1025' target='_blank'>Source code</a></span></div></span><span class="id">}</span><span class="id"> {</span><span id="R:469" class="id"><div name="R:469" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1025' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span><span class="id">}</span> (<span id="A:470" class="id"><div name="A:470" class=" tooltip">A<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1025' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#T:468">T</a></span>) (<span id="x:471" class="id"><div name="x:471" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1025' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#T:468">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.interval_inference.html#Itv.mk">Itv</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.interval_inference.html#Itv.mk">mk</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.numfun.html#num_spec_indic">num_spec_indic</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#T:468">T</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#R:469">R</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#A:470">A</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#x:471">x</a></span>).<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> indic_ringType</span>.<br/>
@@ -2001,28 +1992,11 @@ Qed.</div></details>
 <br/>
 <span id="numfun_indic__canonical__cardinality_FImFun" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="ring.hb_instance_13.X" class="id"><div name="numfun_indic__canonical__cardinality_FImFun" class=" tooltip">HB<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1220' target='_blank'>Source code</a></span></div></span></span></span>.<span id="numfun_indic__canonical__cardinality_FImFun" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="ring.hb_instance_13.X" class="id"><div name="numfun_indic__canonical__cardinality_FImFun" class=" tooltip">instance<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1220' target='_blank'>Source code</a></span></div></span></span></span><span id="numfun_indic__canonical__cardinality_FImFun" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="ring.hb_instance_13.X" class="id"><div name="numfun_indic__canonical__cardinality_FImFun" class=" tooltip"> Definition<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1220' target='_blank'>Source code</a></span></div></span></span></span><span id="numfun_indic__canonical__cardinality_FImFun" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="ring.hb_instance_13.X" class="id"><div name="numfun_indic__canonical__cardinality_FImFun" class=" tooltip"> _<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1220' target='_blank'>Source code</a></span></div></span></span></span><span id="numfun_indic__canonical__cardinality_FImFun" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="ring.hb_instance_13.X" class="id"><div name="numfun_indic__canonical__cardinality_FImFun" class=" tooltip"> X<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1220' target='_blank'>Source code</a></span></div></span></span></span><span id="numfun_indic__canonical__cardinality_FImFun" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="ring.hb_instance_13.X" class="id"><div name="numfun_indic__canonical__cardinality_FImFun" class=" tooltip"> :=<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1220' target='_blank'>Source code</a></span></div></span></span></span><span id="numfun_indic__canonical__cardinality_FImFun" class="id"><span id="HB_unnamed_factory_14" class="id"><span id="ring.hb_instance_13.X" class="id"><div name="numfun_indic__canonical__cardinality_FImFun" class=" tooltip"> indic_fimfun_subproof<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1220' target='_blank'>Source code</a></span></div></span></span></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#X:566">X</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="indic_fimfun" class="id"><div name="indic_fimfun" class=" tooltip">indic_fimfun<span class='tooltip-area'><p>indic_fimfun :
-forall {aT : Type} {rT : pzRingType}, set aT -> {fimfun aT >-> rT}
-
-indic_fimfun is not universe polymorphic
-Arguments indic_fimfun {aT}%_type_scope {rT} X%_classical_set_scope
-indic_fimfun is transparent
-Expands to: Constant mathcomp.analysis.numfun.indic_fimfun
-Declared in library mathcomp.analysis.numfun, line 1222, characters 11-23
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1222' target='_blank'>Source code</a></span></div></span> (<span id="X:567" class="id"><div name="X:567" class=" tooltip">X<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1222' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#ring.aT">aT</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93">{fimfun</a></span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#ring.aT">aT</a></span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93"> &gt;-&gt;</a></span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#ring.rT">rT</a></span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93">}</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#e353122e03268a6eab33cb5af81dd3c6">\1_</a></span><span class="id"><a href="mathcomp.analysis.numfun.html#X:567">X</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="indic_fimfun" class="id"><div name="indic_fimfun" class=" tooltip">indic_fimfun<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1222' target='_blank'>Source code</a></span></div></span> (<span id="X:567" class="id"><div name="X:567" class=" tooltip">X<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1222' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#ring.aT">aT</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93">{fimfun</a></span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#ring.aT">aT</a></span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93"> &gt;-&gt;</a></span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#ring.rT">rT</a></span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93">}</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#e353122e03268a6eab33cb5af81dd3c6">\1_</a></span><span class="id"><a href="mathcomp.analysis.numfun.html#X:567">X</a></span>.<br/>
 <br/>
 <span id="GRing_mulr_fun__canonical__cardinality_FImFun" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="cardinality_FImFun__to__cardinality_FiniteImage" class="id"><span id="HB_unnamed_factory_17" class="id"><span id="ring.hb_instance_16.f" class="id"><span id="ring.hb_instance_16.k" class="id"><div name="GRing_mulr_fun__canonical__cardinality_FImFun" class=" tooltip">HB<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1224' target='_blank'>Source code</a></span></div></span></span></span></span></span></span>.<span id="GRing_mulr_fun__canonical__cardinality_FImFun" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="cardinality_FImFun__to__cardinality_FiniteImage" class="id"><span id="HB_unnamed_factory_17" class="id"><span id="ring.hb_instance_16.f" class="id"><span id="ring.hb_instance_16.k" class="id"><div name="GRing_mulr_fun__canonical__cardinality_FImFun" class=" tooltip">instance<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1224' target='_blank'>Source code</a></span></div></span></span></span></span></span></span><span id="GRing_mulr_fun__canonical__cardinality_FImFun" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="cardinality_FImFun__to__cardinality_FiniteImage" class="id"><span id="HB_unnamed_factory_17" class="id"><span id="ring.hb_instance_16.f" class="id"><span id="ring.hb_instance_16.k" class="id"><div name="GRing_mulr_fun__canonical__cardinality_FImFun" class=" tooltip"> Definition<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1224' target='_blank'>Source code</a></span></div></span></span></span></span></span></span><span id="GRing_mulr_fun__canonical__cardinality_FImFun" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="cardinality_FImFun__to__cardinality_FiniteImage" class="id"><span id="HB_unnamed_factory_17" class="id"><span id="ring.hb_instance_16.f" class="id"><span id="ring.hb_instance_16.k" class="id"><div name="GRing_mulr_fun__canonical__cardinality_FImFun" class=" tooltip"> _<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1224' target='_blank'>Source code</a></span></div></span></span></span></span></span></span><span id="GRing_mulr_fun__canonical__cardinality_FImFun" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="cardinality_FImFun__to__cardinality_FiniteImage" class="id"><span id="HB_unnamed_factory_17" class="id"><span id="ring.hb_instance_16.f" class="id"><span id="ring.hb_instance_16.k" class="id"><div name="GRing_mulr_fun__canonical__cardinality_FImFun" class=" tooltip"> k<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1224' target='_blank'>Source code</a></span></div></span></span></span></span></span></span><span id="GRing_mulr_fun__canonical__cardinality_FImFun" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="cardinality_FImFun__to__cardinality_FiniteImage" class="id"><span id="HB_unnamed_factory_17" class="id"><span id="ring.hb_instance_16.f" class="id"><span id="ring.hb_instance_16.k" class="id"><div name="GRing_mulr_fun__canonical__cardinality_FImFun" class=" tooltip"> f<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1224' target='_blank'>Source code</a></span></div></span></span></span></span></span></span><span id="GRing_mulr_fun__canonical__cardinality_FImFun" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="cardinality_FImFun__to__cardinality_FiniteImage" class="id"><span id="HB_unnamed_factory_17" class="id"><span id="ring.hb_instance_16.f" class="id"><span id="ring.hb_instance_16.k" class="id"><div name="GRing_mulr_fun__canonical__cardinality_FImFun" class=" tooltip"> :=<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1224' target='_blank'>Source code</a></span></div></span></span></span></span></span></span><span id="GRing_mulr_fun__canonical__cardinality_FImFun" class="id"><span id="HB_unnamed_mixin_19" class="id"><span id="cardinality_FImFun__to__cardinality_FiniteImage" class="id"><span id="HB_unnamed_factory_17" class="id"><span id="ring.hb_instance_16.f" class="id"><span id="ring.hb_instance_16.k" class="id"><div name="GRing_mulr_fun__canonical__cardinality_FImFun" class=" tooltip"> FImFun<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1224' target='_blank'>Source code</a></span></div></span></span></span></span></span></span>.<span class="id"><a href="mathcomp.classical.cardinality.html#FImFun.copy">copy</a></span> (<span class="id"><a href="mathcomp.analysis.numfun.html#k:568">k</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#5e03abe1c4aaadd0b39b8ab0cf62f35b"> \o*</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#5e03abe1c4aaadd0b39b8ab0cf62f35b"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#f:569">f</a></span>) (<span class="id"><a href="mathcomp.analysis.numfun.html#f:569">f</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.classical.cardinality.html#cst_fimfun">cst_fimfun</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#k:568">k</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="scale_fimfun" class="id"><div name="scale_fimfun" class=" tooltip">scale_fimfun<span class='tooltip-area'><p>scale_fimfun :
-forall [aT : Type] [rT : pzRingType],
-rT -> {fimfun aT >-> rT} -> {fimfun aT >-> rT}
-
-scale_fimfun is not universe polymorphic
-Arguments scale_fimfun [aT]%_type_scope [rT] k%_ring_scope f
-scale_fimfun is transparent
-Expands to: Constant mathcomp.analysis.numfun.scale_fimfun
-Declared in library mathcomp.analysis.numfun, line 1226, characters 11-23
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1226' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="k:570" class="id"><div name="k:570" class=" tooltip">k<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1226' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="f:571" class="id"><div name="f:571" class=" tooltip">f<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1226' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93">{fimfun</a></span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#ring.aT">aT</a></span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93"> &gt;-&gt;</a></span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#ring.rT">rT</a></span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93">}</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#k:570">k</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#5e03abe1c4aaadd0b39b8ab0cf62f35b"> \o*</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#5e03abe1c4aaadd0b39b8ab0cf62f35b"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#f:571">f</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="scale_fimfun" class="id"><div name="scale_fimfun" class=" tooltip">scale_fimfun<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1226' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="k:570" class="id"><div name="k:570" class=" tooltip">k<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1226' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="f:571" class="id"><div name="f:571" class=" tooltip">f<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/theories/numfun.v#L1226' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93">{fimfun</a></span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#ring.aT">aT</a></span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93"> &gt;-&gt;</a></span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#ring.rT">rT</a></span><span class="id"><a href="mathcomp.classical.cardinality.html#5d25759c49498e68ff2d2e33aa44cf93">}</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#k:570">k</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#5e03abe1c4aaadd0b39b8ab0cf62f35b"> \o*</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#5e03abe1c4aaadd0b39b8ab0cf62f35b"> </a></span><span class="id"><a href="mathcomp.analysis.numfun.html#f:571">f</a></span>.<br/>
 <br/>
 <span class="vernacular">End</span><span class="id"> ring</span>.<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.numfun.html#indic_fimfun">indic_fimfun</a></span><span class="id"> {aT</span><span class="id"> rT}</span><span class="id"> _</span>.<br/>
