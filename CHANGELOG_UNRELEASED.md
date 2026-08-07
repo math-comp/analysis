@@ -15,6 +15,8 @@
 
 ### Renamed
 
+- `mathcomp_extra.v` -> `mathcomp_compat.v`
+
 ### Generalized
 
 ### Deprecated

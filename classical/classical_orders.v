@@ -1,7 +1,6 @@
-From mathcomp Require Import boot order ssralg ssrnum interval.
-From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From HB Require Import structures.
-From mathcomp Require Import functions set_interval.
+From mathcomp Require Import boot order ssralg ssrnum interval.
+From mathcomp Require Import boolp classical_sets functions set_interval.
 
 (**md**************************************************************************)
 (* # classical orders                                                         *)

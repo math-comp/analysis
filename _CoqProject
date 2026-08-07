@@ -20,6 +20,7 @@ classical/boolp.v
 classical/contra.v
 classical/wochoice.v
 classical/classical_sets.v
+classical/mathcomp_compat.v
 classical/mathcomp_extra.v
 classical/unstable.v
 classical/functions.v

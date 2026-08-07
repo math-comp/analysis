@@ -1,10 +1,9 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import boot order ssralg ssrnum finmap.
+From mathcomp Require Import boot order ssralg ssrnum interval_inference finmap.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop reals ereal interval_inference.
-From mathcomp Require Import topology sequences normedtype numfun.
+From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
+From mathcomp Require Import reals topology ereal sequences normedtype numfun.
 
 (**md**************************************************************************)
 (* # Summation over classical sets                                            *)

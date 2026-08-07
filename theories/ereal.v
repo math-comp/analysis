@@ -5,12 +5,14 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
 From HB Require Import structures.
-From mathcomp Require Import boot order algebra finmap.
+From mathcomp Require Import boot order algebra interval_inference finmap.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import fsbigop cardinality set_interval reals.
-From mathcomp Require Export interval_inference topology constructive_ereal.
+From mathcomp Require Import boolp classical_sets functions fsbigop cardinality
+  set_interval.
+From mathcomp Require Import reals.
+From mathcomp Require Export constructive_ereal.
+From mathcomp Require Import topology.
 
 (**md**************************************************************************)
 (* # Extended real numbers, classical part ($\overline{\mathbb{R}}$)          *)

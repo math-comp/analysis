@@ -1,14 +1,12 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import boot order algebra finmap.
+From mathcomp Require Import boot order algebra interval_inference finmap.
 From mathcomp Require Import boolp classical_sets functions wochoice.
-From mathcomp Require Import cardinality fsbigop.
-From mathcomp Require Import set_interval filter reals interval_inference.
-From mathcomp Require Import topology_structure compact subspace_topology.
-From mathcomp Require Import discrete_topology order_topology.
-From mathcomp Require Import pseudometric_structure num_topology.
-From mathcomp Require Import one_point_compactification uniform_structure.
-From mathcomp Require Import connected supremum_topology sigT_topology.
+From mathcomp Require Import cardinality fsbigop set_interval filter reals.
+From mathcomp Require Import topology_structure compact subspace_topology
+  discrete_topology order_topology pseudometric_structure num_topology
+  one_point_compactification uniform_structure connected supremum_topology
+  sigT_topology.
 
 (**md**************************************************************************)
 (* # Separation Axioms                                                        *)
@@ -59,7 +57,6 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Theory.
-From mathcomp Require Import mathcomp_extra.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 

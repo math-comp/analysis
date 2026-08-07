@@ -6,9 +6,9 @@
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import boot order algebra.
 From mathcomp Require Import bigenough.
-From mathcomp.classical Require Import boolp classical_sets functions.
-From mathcomp.classical Require Import mathcomp_extra.
-From mathcomp Require Import xfinmap constructive_ereal reals discrete.
+From mathcomp Require Import boolp classical_sets functions
+  constructive_ereal reals.
+From mathcomp Require Import xfinmap discrete.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

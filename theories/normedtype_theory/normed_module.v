@@ -1,13 +1,14 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import boot order finmap ssralg ssrnum ssrint.
-From mathcomp Require Import archimedean rat interval zmodp vector.
+From mathcomp Require Import boot order finmap ssralg ssrnum ssrint
+  interval_inference archimedean rat interval zmodp vector.
 #[warning="-warn-library-file-internal-analysis"]
-From mathcomp Require Import mathcomp_extra unstable.
-From mathcomp Require Import boolp classical_sets filter functions cardinality.
-From mathcomp Require Import set_interval ereal reals topology real_interval.
-From mathcomp Require Import convex prodnormedzmodule tvs num_normedtype.
-From mathcomp Require Import ereal_normedtype pseudometric_normed_Zmodule.
+From mathcomp Require Import unstable.
+From mathcomp Require Import boolp classical_sets filter functions cardinality
+  set_interval.
+From mathcomp Require Import reals real_interval ereal topology convex
+  prodnormedzmodule tvs num_normedtype ereal_normedtype
+  pseudometric_normed_Zmodule.
 
 (**md**************************************************************************)
 (* # Normed modules                                                           *)

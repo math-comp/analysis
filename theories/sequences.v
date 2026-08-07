@@ -4,9 +4,9 @@ From mathcomp Require Import boot order ssralg ssrnum ssrint.
 From mathcomp Require Import interval interval_inference archimedean.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp contra classical_sets.
-From mathcomp Require Import functions cardinality set_interval reals.
-From mathcomp Require Import ereal topology tvs normedtype landau.
+From mathcomp Require Import boolp contra classical_sets functions cardinality
+  set_interval reals.
+From mathcomp Require Import topology ereal tvs normedtype landau.
 
 (**md**************************************************************************)
 (* # Definitions and lemmas about sequences                                   *)

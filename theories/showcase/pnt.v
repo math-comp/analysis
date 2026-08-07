@@ -1,9 +1,9 @@
-From mathcomp Require Import boot order ssralg ssrnum ssrint interval.
+From mathcomp Require Import boot order ssralg ssrnum ssrint interval
+  interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import classical_sets boolp topology.
-From mathcomp Require Import ereal sequences reals.
-Import Order.POrderTheory GRing.Theory Num.Theory.
+From mathcomp Require Import reals ereal sequences.
 
 (**md**************************************************************************)
 (* # The Prime Number Theorem                                                 *)
@@ -26,6 +26,8 @@ Unset Printing Implicit Defensive.
 Local Open Scope classical_set_scope.
 Local Open Scope set_scope.
 Local Open Scope nat_scope.
+
+Import Order.POrderTheory GRing.Theory Num.Theory.
 
 Section prime_seq.
 
