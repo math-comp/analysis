@@ -90,27 +90,27 @@ From mathcomp Require Import product_topology.
 (******************************************************************************)
 
 Reserved Notation "{ 'uniform`' A -> V }"
-  (at level 0, A at level 69, format "{ 'uniform`'  A  ->  V }").
+  (at level 0, A at level 53, format "{ 'uniform`'  A  ->  V }").
 Reserved Notation "{ 'uniform' U -> V }"
-  (at level 0, U at level 69, format "{ 'uniform'  U  ->  V }").
+  (at level 0, U at level 53, format "{ 'uniform'  U  ->  V }").
 Reserved Notation "{ 'uniform' A , F --> f }"
-  (at level 0, A at level 69, F at level 69,
+  (at level 0, A at level 53, F at level 53,
    format "{ 'uniform'  A ,  F  -->  f }").
 Reserved Notation "{ 'uniform' , F --> f }"
-  (at level 0, F at level 69,
+  (at level 0, F at level 53,
    format "{ 'uniform' ,  F  -->  f }").
 Reserved Notation "{ 'ptws' U -> V }"
-  (at level 0, U at level 69, format "{ 'ptws'  U  ->  V }").
+  (at level 0, U at level 53, format "{ 'ptws'  U  ->  V }").
 Reserved Notation "{ 'ptws' , F --> f }"
-  (at level 0, F at level 69, format "{ 'ptws' ,  F  -->  f }").
+  (at level 0, F at level 53, format "{ 'ptws' ,  F  -->  f }").
 Reserved Notation "{ 'family' fam , U -> V }"
-  (at level 0, U at level 69, format "{ 'family'  fam ,  U  ->  V }").
+  (at level 0, U at level 53, format "{ 'family'  fam ,  U  ->  V }").
 Reserved Notation "{ 'family' fam , F --> f }"
-  (at level 0, F at level 69, format "{ 'family'  fam ,  F  -->  f }").
+  (at level 0, F at level 53, format "{ 'family'  fam ,  F  -->  f }").
 Reserved Notation "{ 'compact-open' , U -> V }"
-  (at level 0, U at level 69, format "{ 'compact-open' ,  U  ->  V }").
+  (at level 0, U at level 53, format "{ 'compact-open' ,  U  ->  V }").
 Reserved Notation "{ 'compact-open' , F --> f }"
-  (at level 0, F at level 69, format "{ 'compact-open' ,  F  -->  f }").
+  (at level 0, F at level 53, format "{ 'compact-open' ,  F  -->  f }").
 
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
