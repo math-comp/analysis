@@ -11,6 +11,10 @@
   + lemmas `cvg1M`, `cvgM1`, `cvg0M`, `cvgM0`
   + lemmas `cvg1Z`, `cvg0Z`, `cvgZ0`
 
+- new file `absolute_continuity.v`
+  + definitions `abs_cont`, `abs_cont_order`
+  + lemma `abs_contP`
+
 ### Changed
 
 ### Renamed
