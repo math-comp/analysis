@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis_stdlib.Rstruct_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 0653637 2026.08.07-19:23" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 0653637 2026.08.08-19:03" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -361,27 +361,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="RexpE" class="id"><div name="RexpE" class=" tooltip">RexpE<span class='tooltip-area'><p>ereal_nbhs : forall {R : numFieldType}, \bar R -> set_system \bar R
-
-ereal_nbhs is not universe polymorphic
-Arguments ereal_nbhs {R} x%_ereal_scope _
-ereal_nbhs is transparent
-Expands to: Constant mathcomp.analysis.ereal.ereal_nbhs
-Declared in library mathcomp.analysis.ereal, line 881, characters 11-21
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/analysis_stdlib/Rstruct_topology.v#L112' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<br/>
-<br/>
-<span class="vernacular">Lemma</span><span class="id"> </span><span id="RlnE" class="id"><div name="RlnE" class=" tooltip">RlnE<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/analysis_stdlib/Rstruct_topology.v#L114' target='_blank'>Source code</a></span></div></span> (<span id="x:22" class="id"><div name="x:22" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/analysis_stdlib/Rstruct_topology.v#L114' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rdefinitions.html#RbaseSymbolsImpl.R">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln">Rpower</a></span>.<span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln">ln</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#x:22">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.exp.html#ln">exp</a></span>.<span class="id"><a href="mathcomp.analysis.exp.html#ln">ln</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#x:22">x</a></span>.<br/>
-<details>
-<summary class="toggleproof">Proof.</summary>
-<div class="proofscript">
-<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln">Rpower</a></span>.<span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln">ln</a></span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#Rln">Rln</a></span>.<br/>
-<span class="id">have</span><span class="id"> [xle0|xgt0]</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.order.html#Order.TotalTheory.leP">leP</a></span><span class="id"> x</span><span class="id"> 0</span>.<br/>
-&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.RIneq.html#Rlt_dec">Rlt_dec</a></span><span class="id"> =&gt;</span><span class="id"> //=</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#a686f16c7fee28a2e0daca8726c6780b">[dup]</a></span><span class="id"> /</span><span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#RltP">RltP</a></span><span class="id"> +</span><span class="id"> ?;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.exp.html#ln0">exp</a></span>.<span class="id"><a href="mathcomp.analysis.exp.html#ln0">ln0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.order.html#Order.TotalTheory.ltNge">ltNge</a></span><span class="id"> xle0</span>.<br/>
-<span class="id">case:</span> (<span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.RIneq.html#Rlt_dec">Rlt_dec</a></span><span class="id"> 0</span><span class="id"> x</span>)<span class="id"> =&gt;</span><span class="id"> [/=</span><span class="id"> ?</span><span class="id"> |</span><span class="id"> /</span><span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#RltP">RltP</a></span><span class="id">/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#a4185b2be48be717d1ed9bd3d9ed6b28">[!</a></span><span class="id">xgt0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#a4185b2be48be717d1ed9bd3d9ed6b28">]</a></span><span class="id">//]</span>.<br/>
-<span class="gallina-kwd">by</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln_exists">ln_exists</a></span><span class="id"> =&gt;</span><span class="id"> y</span><span class="id"> -&gt;;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.exp.html#expRK">exp</a></span>.<span class="id"><a href="mathcomp.analysis.exp.html#expRK">expRK</a></span>.<br/>
-Qed.</div></details>
-<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="RealsE" class="id"><div name="RealsE" class=" tooltip">RealsE<span class='tooltip-area'><p>le_expandLR :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="RexpE" class="id"><div name="RexpE" class=" tooltip">RexpE<span class='tooltip-area'><p>le_expandLR :
 forall [R : realFieldType],
 {in [pred r | (`|r| <= 1)%R] & predT,
   forall (x : R) (y : \bar R),
@@ -398,6 +378,36 @@ Arguments le_expandLR [R x y] _ _
 le_expandLR is transparent
 Expands to: Constant mathcomp.analysis.ereal.le_expandLR
 Declared in library mathcomp.analysis.ereal, line 1130, characters 11-22
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/analysis_stdlib/Rstruct_topology.v#L112' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<br/>
+<br/>
+<span class="vernacular">Lemma</span><span class="id"> </span><span id="RlnE" class="id"><div name="RlnE" class=" tooltip">RlnE<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/analysis_stdlib/Rstruct_topology.v#L114' target='_blank'>Source code</a></span></div></span> (<span id="x:22" class="id"><div name="x:22" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/analysis_stdlib/Rstruct_topology.v#L114' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rdefinitions.html#RbaseSymbolsImpl.R">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln">Rpower</a></span>.<span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln">ln</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#x:22">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.exp.html#ln">exp</a></span>.<span class="id"><a href="mathcomp.analysis.exp.html#ln">ln</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#x:22">x</a></span>.<br/>
+<details>
+<summary class="toggleproof">Proof.</summary>
+<div class="proofscript">
+<span class="id">rewrite</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln">Rpower</a></span>.<span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln">ln</a></span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#Rln">Rln</a></span>.<br/>
+<span class="id">have</span><span class="id"> [xle0|xgt0]</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.order.html#Order.TotalTheory.leP">leP</a></span><span class="id"> x</span><span class="id"> 0</span>.<br/>
+&nbsp;&nbsp;<span class="gallina-kwd">by</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.RIneq.html#Rlt_dec">Rlt_dec</a></span><span class="id"> =&gt;</span><span class="id"> //=</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#a686f16c7fee28a2e0daca8726c6780b">[dup]</a></span><span class="id"> /</span><span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#RltP">RltP</a></span><span class="id"> +</span><span class="id"> ?;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.exp.html#ln0">exp</a></span>.<span class="id"><a href="mathcomp.analysis.exp.html#ln0">ln0</a></span><span class="id">//</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.order.html#Order.TotalTheory.ltNge">ltNge</a></span><span class="id"> xle0</span>.<br/>
+<span class="id">case:</span> (<span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.RIneq.html#Rlt_dec">Rlt_dec</a></span><span class="id"> 0</span><span class="id"> x</span>)<span class="id"> =&gt;</span><span class="id"> [/=</span><span class="id"> ?</span><span class="id"> |</span><span class="id"> /</span><span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#RltP">RltP</a></span><span class="id">/</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#a4185b2be48be717d1ed9bd3d9ed6b28">[!</a></span><span class="id">xgt0</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#a4185b2be48be717d1ed9bd3d9ed6b28">]</a></span><span class="id">//]</span>.<br/>
+<span class="gallina-kwd">by</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln_exists">ln_exists</a></span><span class="id"> =&gt;</span><span class="id"> y</span><span class="id"> -&gt;;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.exp.html#expRK">exp</a></span>.<span class="id"><a href="mathcomp.analysis.exp.html#expRK">expRK</a></span>.<br/>
+Qed.</div></details>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="RealsE" class="id"><div name="RealsE" class=" tooltip">RealsE<span class='tooltip-area'><p>lt_expandLR :
+forall [R : realFieldType],
+{in [pred r | (`|r| <= 1)%R] & predT,
+  forall (x : R) (y : \bar R),
+  (expand (R:=R) x < y)%E = (x < contract (R:=R) y)%R}
+
+lt_expandLR is not universe polymorphic
+Expanded type for implicit arguments
+lt_expandLR :
+forall [R : realFieldType] [x : R] [y : \bar R],
+x \in [pred r | (`|r| <= 1)%R] ->
+y \in predT -> (expand (R:=R) x < y)%E = (x < contract (R:=R) y)%R
+
+Arguments lt_expandLR [R x y] _ _
+lt_expandLR is transparent
+Expands to: Constant mathcomp.analysis.ereal.lt_expandLR
+Declared in library mathcomp.analysis.ereal, line 1132, characters 11-22
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/0653637c39b12898e0cb645e83826d2723595e28/analysis_stdlib/Rstruct_topology.v#L124' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#RealsE">RealsE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RlnE">RlnE</a></span>).<br/>
 
       <div class="footer"><hr/>Generated by <a href="https://github.com/affeldt-aist/rocqnavi/">rocqnavi</a></div>
