@@ -694,7 +694,7 @@ Qed.
 Lemma fmap_at_left0P {T : Type} {R : numFieldType} x (f : R -> T) : (f (x - e) @[e --> 0^'+]) = (f @ x^'-).
 Proof.
 rewrite -(subrr (-x)) at_right_shift at_rightN -fmap_comp.
-apply: near_eq_cvgE.
+apply: near_eq_cvg_eq.
 apply: (nearW (F := x^'-)) => y /=.
 by rewrite opprB addNKr opprK.
 Qed.
@@ -702,7 +702,7 @@ Qed.
 Lemma fmap_at_right0E {T : Type} {R : numFieldType} (x : R) (f : R -> T) : (f (x + e) @[e --> 0^'+]) = (f @ x^'+).
 Proof.
 rewrite -(subrr x) at_right_shift.
-apply: near_eq_cvgE.
+apply: near_eq_cvg_eq.
 apply: (nearW (F := x^'+)) => y.
 by rewrite addrC subrK.
 Qed.
