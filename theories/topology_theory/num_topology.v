@@ -307,34 +307,20 @@ Unshelve. all: by end_near. Qed.
 
 Lemma at_rightD x a : (x + a)^'+ = (y + a @[y --> x^'+]).
 Proof.
-apply/seteqP; split=> P /=.
-- move=> [/= r r0 xarP].
-  exists r => // y bxy x_lt_y.
-  apply: xarP => /=.
-  + by rewrite (addrC y) addrKA.
-  + by rewrite ltrD2r.
-- move=> [/= r r0 br_sub].
-  exists r => // y bxay xDa_lt_y.
-  rewrite -(subrK a y).
-  apply: br_sub => /=.
-  + by rewrite opprB addrA.
-  + by rewrite ltrBrDr.
+apply/seteqP; split=> A /=.
+- move=> [/= r r0 xarA]; exists r => // y bxy x_lt_y.
+  by apply: xarA => /=; rewrite ?ltrD2r// (addrC y) addrKA.
+- move=> [/= r r0 xrAa]; exists r => // y bxay xay.
+  by rewrite -(subrK a y); apply: xrAa => /=; rewrite ?ltrBrDr// opprB addrA.
 Qed.
 
 Lemma at_leftD x a : (x + a)^'- = (y + a @[y --> x^'-]).
 Proof.
-apply/seteqP; split=> P /=.
-- move=> [/= r r0 br_sub].
-  exists r => // y bxy x_lt_y.
-  apply: br_sub => /=.
-  + by rewrite (addrC y) addrKA.
-  + by rewrite ltrD2r.
-- move=> [/= r r0 br_sub].
-  exists r => // y bxay xDa_lt_y.
-  rewrite -(subrK a y).
-  apply: br_sub => /=.
-  + by rewrite opprB addrA.
-  + by rewrite ltrBlDr.
+apply/seteqP; split=> A /=.
+- move=> [/= r r0 xarA]; exists r => // y bxy x_lt_y.
+  by apply: xarA => /=; rewrite ?ltrD2r// (addrC y) addrKA.
+- move=> [/= r r0 xrAa]; exists r => // y bxay yxa.
+  by rewrite -(subrK a y); apply: xrAa => /=; rewrite ?ltrBlDr// opprB addrA.
 Qed.
 
 Lemma near_at_rightD x a (P : set R) :
