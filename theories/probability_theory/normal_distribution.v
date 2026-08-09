@@ -847,7 +847,7 @@ End normal_probD.
 
 Section gaussian_conjugate.
 Context {R : realType}.
-Implicit Types (s x m theta : R) (V : set R).
+Implicit Types (s x m t : R) (V : set R).
 
 (**md $\sqrt{\frac{1}{\sigma_0^{-2} + \sigma^{-2}}}$ *)
 Definition post_stddev s0 s : R := Num.sqrt (s0 ^- 2 + s ^- 2)^-1.
@@ -871,10 +871,10 @@ Definition post_mean m0 s0 x s : R :=
   (s ^+ 2 * m0 + s0 ^+ 2 * x) / (s0 ^+ 2 + s ^+ 2).
 
 (**md "complete the square" for the `normal_fun` exponents *)
-Lemma normal_fun_conjugate m0 s0 s x theta : s0 != 0 -> s != 0 ->
-  normal_fun theta s x * normal_fun m0 s0 theta =
+Lemma normal_fun_conjugate m0 s0 s x t : s0 != 0 -> s != 0 ->
+  normal_fun t s x * normal_fun m0 s0 t =
   normal_fun m0 (Num.sqrt (s0 ^+ 2 + s ^+ 2)) x *
-  normal_fun (post_mean m0 s0 x s) (post_stddev s0 s) theta.
+  normal_fun (post_mean m0 s0 x s) (post_stddev s0 s) t.
 Proof.
 move=> s0_neq0 s_neq0.
 have ? : 0 < s0 ^+ 2 by rewrite exprn_even_gt0.
