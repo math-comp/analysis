@@ -155,6 +155,7 @@ Lemma pos_esum_ge (T1 : choiceType) (I : set T1) (a : T1 -> \bar R) x :
   x <= \esum_(i in I) a i.
 Proof. by move=> [X IX /le_trans->//]; apply: ereal_sup_ubound; exists X. Qed.
 
+(* TODO: better name wanted *)
 Lemma pos_esum_ge1 S f x : S x -> f x <= \esum_(i in S) f i.
 Proof.
 move=> Sx; apply: pos_esum_ge; exists [set x]; last by rewrite fsbig_set1.
@@ -564,6 +565,7 @@ apply: contra_neqP => /forall2NP a0; apply: esum1 => t /mem_set It.
 by have [|/negP/negPn/eqP//] := a0 t; rewrite It.
 Qed.
 
+(* TODO: better name wanted *)
 Lemma esum_ge1 {R : realType} {T : choiceType} (I : set T) (f : T -> \bar R) :
   (forall x, I x -> 0 <= f x) ->
   forall x, I x -> f x <= \esum_(i in I) f i.
