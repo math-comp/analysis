@@ -2408,7 +2408,7 @@ rewrite (le_trans (ler_normD _ _))// (splitr e) lerD//.
   by rewrite sub0r normrN; near: x; exact: dnbhs0_lt.
 Unshelve. all: by end_near. Qed.
 
-Global Instance is_derive_mx {m n : nat} (M : V -> 'M[R]_(m, n))
+Lemma is_derive_mx {m n : nat} (M : V -> 'M[R]_(m, n))
     (dM : 'M[R]_(m, n)) (x v : V) :
   (forall i j, is_derive x v (fun t => M t i j) (dM i j)) ->
   is_derive x v M dM.

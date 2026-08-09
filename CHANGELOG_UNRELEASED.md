@@ -13,6 +13,9 @@
 
 ### Changed
 
+- in `derive.v`:
+  + instance `is_derive_mx` is now a lemma
+
 ### Renamed
 
 ### Generalized
