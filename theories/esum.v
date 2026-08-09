@@ -1152,9 +1152,9 @@ Proof.
 move=> h d0 dfin.
 have -> : d = (fine d)%:E by rewrite fineK.
 have ? : (0 <= fine d)%R  by rewrite -lee_fin fineK.
-rewrite esumE (ge0_funeposM f)// (ge0_funenegM f)// !esumZ// -muleBr//.
+rewrite esumE muleBr//.
   by rewrite fin_num_adde_defr// esummable_esum_funepos.
-by rewrite [in RHS]esumE.
+by rewrite -!esumZ// -(ge0_funeposM f)// -(ge0_funenegM f)// -esumE.
 Qed.
 
 Lemma esummable_esumZ D f c : `|c| \is a fin_num -> esummable D f ->
@@ -1162,7 +1162,7 @@ Lemma esummable_esumZ D f c : `|c| \is a fin_num -> esummable D f ->
 Proof.
 move=> cmin Df; have [c0|c0|->] := comparable_ltgtP (comparableT c 0).
 - rewrite -(oppeK c) -(@lte0_abs _ c)//.
-  under eq_esum do rewrite mulNe.
+  under [LHS]eq_esum do rewrite mulNe.
   rewrite esummable_esumN; first exact: esummableZl.
   by rewrite nonneg_esummable_esumZ// mulNe.
 - by rewrite (nonneg_esummable_esumZ _ (ltW c0))// -abse_fin_num.
