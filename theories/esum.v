@@ -1152,7 +1152,7 @@ Proof.
 move=> h d0 dfin.
 have -> : d = (fine d)%:E by rewrite fineK.
 have ? : (0 <= fine d)%R  by rewrite -lee_fin fineK.
-rewrite esumE muleBr//.
+rewrite [in RHS]esumE muleBr//.
   by rewrite fin_num_adde_defr// esummable_esum_funepos.
 by rewrite -!esumZ// -(ge0_funeposM f)// -(ge0_funenegM f)// -esumE.
 Qed.
