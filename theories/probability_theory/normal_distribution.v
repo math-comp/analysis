@@ -930,7 +930,7 @@ rewrite measurable_bounded_integrable//.
 Qed.
 
 (* Gaussian-Gaussian conjugate prior: the posterior of theta given X = x is
-   the single Gaussian normal_prob (mean_post ..) (stddev_post ..) *)
+   the single Gaussian normal_prob (post_mean ..) (post_stddev ..) *)
 Lemma normal_prob_conjugate m0 s0 s x V :
   s0 != 0 -> s != 0 -> measurable V ->
   ((\int[normal_prob m0 s0]_(t in V) (normal_pdf t s x)%:E) /
