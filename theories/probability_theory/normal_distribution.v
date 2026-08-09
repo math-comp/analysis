@@ -11,16 +11,24 @@ From mathcomp Require Import lebesgue_integral ftc gauss_integral.
 (**md**************************************************************************)
 (* # Normal distribution                                                      *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*        normal_peak s := (sqrtr (s ^+ 2 * pi *+ 2))^-1                      *)
-(*     normal_fun m s x := expR (- (x - m) ^+ 2 / (s ^+ 2 *+ 2))              *)
-(*       normal_pdf m s == pdf of the normal distribution with mean m and     *)
-(*                         standard deviation s                               *)
-(*                         Using normal_peak and normal_pdf.                  *)
-(*      normal_prob m s == normal probability measure                         *)
-(*     stddev_post s0 s == posterior standard deviation                       *)
-(*   mean_post m s0 x s == posterior mean given an observation x              *)
-(* ```                                                                        *)
+(* `normal_peak s`                                                            *)
+(* : $\frac{1}{\sqrt{s^2 \cdot 2\pi}}$                                        *)
+(*                                                                            *)
+(* `normal_fun m s x`                                                         *)
+(* : $e^{\frac{- (x - m)^2}{2 s^2}}$                                          *)
+(*                                                                            *)
+(* `normal_pdf m s`                                                           *)
+(* : pdf of the normal distribution with mean m and standard deviation s      *)
+(* : Using normal_peak and normal_pdf.                                        *)
+(*                                                                            *)
+(* `normal_prob m s`                                                          *)
+(* : normal probability measure                                               *)
+(*                                                                            *)
+(* `post_stddev s0 s`                                                         *)
+(* : posterior standard deviation                                             *)
+(*                                                                            *)
+(* `mean_post m s0 x s`                                                       *)
+(* : posterior mean given an observation x                                    *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -701,7 +709,7 @@ rewrite (@fubini_tonelli _ _ _ _ _ mu mu (EFin \o
     rewrite [X in measurable_fun _  X](_ : _ = (fun x =>
         normal_pdf0 0 s2 (x.2 - (m2 + x.1)%R)))/=.
       apply/funext => x0.
-      by rewrite /normal_pdf0 normal_pdfE// normal_fun_center.
+      by rewrite /normal_pdf0 normal_pdfE// normal_fun_center0.
     apply: measurableT_comp => /=; first exact: measurable_normal_pdf0.
     under eq_fun do rewrite opprD.
     by apply: measurable_funD => //=; exact: measurable_funB.
@@ -839,129 +847,115 @@ End normal_probD.
 
 Section gaussian_conjugate.
 Context {R : realType}.
-Implicit Types (sigma x theta : R) (V : set R).
+Implicit Types (s x m theta : R) (V : set R).
 
-(**md $\sqrt{\frac{\sigma_0^2 \sigma^2}{\sigma_0^2 + \sigma^2}}$ *)
-Definition stddev_post sigma0 sigma : R :=
-  Num.sqrt (sigma0 ^+ 2 * sigma ^+ 2 / (sigma0 ^+ 2 + sigma ^+ 2)).
+(**md $\sqrt{\frac{1}{\sigma_0^{-2} + \sigma^{-2}}}$ *)
+Definition post_stddev s0 s : R := Num.sqrt (s0 ^- 2 + s ^- 2)^-1.
 
-Lemma stddev_post_neq0 sigma0 sigma :
-  sigma0 != 0 -> sigma != 0 -> stddev_post sigma0 sigma != 0.
+Lemma post_stddev_gt0 s0 s : s0 != 0 -> s != 0 -> 0 < post_stddev s0 s.
 Proof.
-move=> sigma0_neq0 sigma_neq0.
-rewrite lt0r_neq0 ?sqrtr_gt0 ?divr_gt0 ?addr_gt0 ?exprn_even_gt0//.
-by rewrite mulr_gt0// exprn_even_gt0.
+move=> s0_neq0 s_neq0; rewrite /post_stddev sqrtr_gt0 invr_gt0.
+by rewrite addr_gt0// -exprVn// exprn_even_gt0//= invr_eq0.
+Qed.
+
+Lemma post_stddevE s0 s : s0 != 0 -> s != 0 ->
+  post_stddev s0 s ^+ 2 = s0 ^+ 2 * s ^+ 2 / (s0 ^+ 2 + s ^+ 2).
+Proof.
+move=> s0_neq0 s_neq0.
+rewrite /post_stddev sqr_sqrtr ?invr_ge0 ?addr_ge0 ?invr_ge0 ?sqr_ge0//.
+by field by rewrite ?paddr_eq0 ?sqr_ge0 ?negb_and ?sqrf_eq0 ?s0_neq0 ?s_neq0.
 Qed.
 
 (**md $\frac{\sigma^2 \mu_0 + \sigma_0^2 x}{\sigma_0^2 + \sigma^2}$ *)
-Definition mean_post (mu0 : R) sigma0 x sigma : R :=
-  (sigma ^+ 2 * mu0 + sigma0 ^+ 2 * x) / (sigma0 ^+ 2 + sigma ^+ 2).
+Definition post_mean m0 s0 x s : R :=
+  (s ^+ 2 * m0 + s0 ^+ 2 * x) / (s0 ^+ 2 + s ^+ 2).
 
-(* "complete the square" for the normal_fun exponents *)
-Lemma normal_fun_conjugate (mu0 : R) sigma0 sigma x theta :
-  sigma0 != 0 -> sigma != 0 ->
-  normal_fun theta sigma x * normal_fun mu0 sigma0 theta =
-  normal_fun mu0 (Num.sqrt (sigma0 ^+ 2 + sigma ^+ 2)) x *
-  normal_fun (mean_post mu0 sigma0 x sigma) (stddev_post sigma0 sigma) theta.
+(**md "complete the square" for the `normal_fun` exponents *)
+Lemma normal_fun_conjugate m0 s0 s x theta : s0 != 0 -> s != 0 ->
+  normal_fun theta s x * normal_fun m0 s0 theta =
+  normal_fun m0 (Num.sqrt (s0 ^+ 2 + s ^+ 2)) x *
+  normal_fun (post_mean m0 s0 x s) (post_stddev s0 s) theta.
 Proof.
-move=> sigma0_neq0 sigma_neq0.
-have ? : 0 < sigma0 ^+ 2 by rewrite exprn_even_gt0.
-have ? : 0 < sigma ^+ 2 by rewrite exprn_even_gt0.
-have ? : 0 < sigma0 ^+ 2 + sigma ^+ 2 by rewrite addr_gt0.
+move=> s0_neq0 s_neq0.
+have ? : 0 < s0 ^+ 2 by rewrite exprn_even_gt0.
+have ? : 0 < s ^+ 2 by rewrite exprn_even_gt0.
+have ? : 0 < s0 ^+ 2 + s ^+ 2 by rewrite addr_gt0.
 rewrite /normal_fun -2!expRD; congr (expR _).
-rewrite (sqr_sqrtr (ltW _))// /stddev_post sqr_sqrtr.
-  by rewrite (divr_ge0 _ (ltW _))// mulr_ge0// ltW.
-by rewrite /mean_post; field by rewrite ?sigma0_neq0 ?sigma_neq0 ?gt_eqF.
+rewrite (sqr_sqrtr (ltW _))// /post_stddev sqr_sqrtr.
+  by rewrite invr_ge0// ltW// addr_gt0// invr_gt0.
+by rewrite /post_mean; field by rewrite ?s0_neq0 ?s_neq0 ?gt_eqF ?addr_gt0//.
 Qed.
 
 (**md "complete the square": $p(x | \theta) * p(\theta)$ factors as a theta-free
    marginal times the posterior density *)
-Lemma normal_pdf_conjugate mu0 sigma0 sigma x theta :
-  sigma0 != 0 -> sigma != 0 ->
-  normal_pdf theta sigma x * normal_pdf mu0 sigma0 theta =
-  normal_pdf mu0 (Num.sqrt (sigma0 ^+ 2 + sigma ^+ 2)) x *
-  normal_pdf (mean_post mu0 sigma0 x sigma) (stddev_post sigma0 sigma) theta.
+Lemma normal_pdf_conjugate m0 s0 s x t : s0 != 0 -> s != 0 ->
+  normal_pdf t s x * normal_pdf m0 s0 t =
+  normal_pdf m0 (Num.sqrt (s0 ^+ 2 + s ^+ 2)) x *
+  normal_pdf (post_mean m0 s0 x s) (post_stddev s0 s) t.
 Proof.
-move=> sigma0_neq0 sigma_neq0.
-have ? : 0 < sigma0 ^+ 2 by rewrite exprn_even_gt0.
-have ? : 0 < sigma ^+ 2 by rewrite exprn_even_gt0.
-have ? : 0 < sigma0 ^+ 2 + sigma ^+ 2 by apply: addr_gt0.
-have ? : Num.sqrt (sigma0 ^+ 2 + sigma ^+ 2) != 0 by rewrite sqrtr_eq0 -ltNge.
-have ? : 0 < stddev_post sigma0 sigma.
-  by rewrite /stddev_post sqrtr_gt0 divr_gt0// mulr_gt0.
-have ? := stddev_post_neq0 sigma0_neq0 sigma_neq0.
-rewrite !normal_pdfE // mulrACA [RHS]mulrACA.
-congr (_ * _); first last.
-  exact: normal_fun_conjugate.
-have ? : 0 <= sigma ^+ 2 * pi *+ 2
+move=> s0_neq0 s_neq0.
+have ? : 0 < s0 ^+ 2 by rewrite exprn_even_gt0.
+have ? : 0 < s ^+ 2 by rewrite exprn_even_gt0.
+have ? : 0 < s0 ^+ 2 + s ^+ 2 by rewrite addr_gt0.
+have ? : 0 < Num.sqrt (s0 ^+ 2 + s ^+ 2) by rewrite sqrtr_gt0.
+have ? : 0 < post_stddev s0 s by rewrite post_stddev_gt0.
+rewrite !normal_pdfE// ?gt_eqF// mulrACA [RHS]mulrACA.
+congr (_ * _); last exact: normal_fun_conjugate.
+have ? : 0 <= s ^+ 2 * pi *+ 2 by rewrite mulrn_wge0// mulr_ge0 ?pi_ge0// ltW.
+have ? : 0 <= s0 ^+ 2 * pi *+ 2 by rewrite mulrn_wge0// mulr_ge0 ?pi_ge0// ltW.
+have ? : 0 <= (s0 ^+ 2 + s ^+ 2) * pi *+ 2
   by rewrite mulrn_wge0// mulr_ge0 ?pi_ge0// ltW.
-have ? : 0 <= sigma0 ^+ 2 * pi *+ 2
-  by rewrite mulrn_wge0// mulr_ge0 ?pi_ge0// ltW.
-have ? : 0 <= (sigma0 ^+ 2 + sigma ^+ 2) * pi *+ 2
-  by rewrite mulrn_wge0// mulr_ge0 ?pi_ge0// ltW.
-rewrite /normal_peak (_ : Num.sqrt _ ^+ 2 = sigma0 ^+ 2 + sigma ^+ 2).
+rewrite /normal_peak (_ : Num.sqrt _ ^+ 2 = s0 ^+ 2 + s ^+ 2).
   by rewrite sqr_sqrtr// ltW.
-rewrite (_ : stddev_post sigma0 sigma ^+ 2
-  = sigma0 ^+ 2 * sigma ^+ 2 / (sigma0 ^+ 2 + sigma ^+ 2)).
-  by rewrite /stddev_post sqr_sqrtr// divr_ge0// ?addr_ge0 ?ltW// mulr_gt0.
-rewrite -invfM -[RHS]invfM -!sqrtrM//.
+rewrite post_stddevE// -invfM -[RHS]invfM -!sqrtrM//.
 by congr (Num.sqrt _)^-1; field by rewrite gt_eqF.
 Qed.
 
 Import MeasurableR.
 
 (* bounded integrand against a probability measure *)
-Local Lemma integrable_normal_pdf_likelihood mu0 sigma0 sigma x V :
-  sigma != 0 -> measurable V ->
-  (normal_prob mu0 sigma0).-integrable V
-    (fun theta => (normal_pdf theta sigma x)%:E).
+Local Lemma integrable_normal_pdf_likelihood m0 s0 s x V :
+  s != 0 -> measurable V ->
+  (normal_prob m0 s0).-integrable V (fun t => (normal_pdf t s x)%:E).
 Proof.
-move=> sigma_neq0 mV.
-have pdf_sym theta : normal_pdf theta sigma x = normal_pdf x sigma theta.
-  rewrite !normal_pdfE //; congr (_ * _).
-  by rewrite /normal_fun -[in LHS](opprB theta x) sqrrN.
-have -> : (fun theta => (normal_pdf theta sigma x)%:E) =
-          EFin \o normal_pdf x sigma by apply/funext => theta; rewrite pdf_sym.
-apply: (@measurable_bounded_integrable _ _ _
-    (normal_prob mu0 sigma0)
-  (normal_pdf x sigma) _ mV).
-- by apply: (le_lt_trans (probability_le1 _ _)) => //; rewrite ltey.
+move=> s_neq0 mV.
+rewrite [X in _.-integrable _ X](_ : _ = EFin \o normal_pdf x s).
+  by apply/funext => t; rewrite normal_pdf_sym.
+rewrite measurable_bounded_integrable//.
+- by rewrite (le_lt_trans (probability_le1 _ _))// ltey.
 - by apply: measurable_funTS; exact: measurable_normal_pdf.
-- exists (normal_peak sigma); split; first by rewrite num_real.
-  move=> y ynp /= theta _.
-  rewrite ger0_norm; first exact: normal_pdf_ge0.
-  exact: le_trans (normal_pdf_ub _ _ sigma_neq0) (ltW ynp).
+- exists (normal_peak s); split; first by rewrite num_real.
+  move=> y sy /= t _.
+  by rewrite ger0_norm ?normal_pdf_ge0// (le_trans (normal_pdf_ub _ _ _))// ltW.
 Qed.
 
 (* Gaussian-Gaussian conjugate prior: the posterior of theta given X = x is
    the single Gaussian normal_prob (mean_post ..) (stddev_post ..) *)
-Lemma normal_prob_conjugate mu0 sigma0 sigma x V :
-  sigma0 != 0 -> sigma != 0 -> measurable V ->
-  ((\int[normal_prob mu0 sigma0]_(theta in V) (normal_pdf theta sigma x)%:E) /
-   \int[normal_prob mu0 sigma0]_theta (normal_pdf theta sigma x)%:E =
-   normal_prob (mean_post mu0 sigma0 x sigma) (stddev_post sigma0 sigma) V)%E.
+Lemma normal_prob_conjugate m0 s0 s x V :
+  s0 != 0 -> s != 0 -> measurable V ->
+  ((\int[normal_prob m0 s0]_(t in V) (normal_pdf t s x)%:E) /
+   \int[normal_prob m0 s0]_t (normal_pdf t s x)%:E =
+   normal_prob (post_mean m0 s0 x s) (post_stddev s0 s) V)%E.
 Proof.
-move=> sigma0_neq0 sigma_neq0 mV.
-have ? : 0 < sigma0 ^+ 2 by rewrite exprn_even_gt0.
-have ? : 0 < sigma ^+ 2 by rewrite exprn_even_gt0.
-have ? : 0 < sigma0 ^+ 2 + sigma ^+ 2 by apply: addr_gt0.
-have ? : Num.sqrt (sigma0 ^+ 2 + sigma ^+ 2) != 0 by rewrite sqrtr_eq0 -ltNge.
-pose K := normal_pdf mu0 (Num.sqrt (sigma0 ^+ 2 + sigma ^+ 2)) x.
+move=> s0_neq0 s_neq0 mV.
+have ? : 0 < s0 ^+ 2 by rewrite exprn_even_gt0.
+have ? : 0 < s ^+ 2 by rewrite exprn_even_gt0.
+have ? : 0 < s0 ^+ 2 + s ^+ 2 by rewrite addr_gt0.
+have ? : 0 < Num.sqrt (s0 ^+ 2 + s ^+ 2) by rewrite sqrtr_gt0.
+pose K := normal_pdf m0 (Num.sqrt (s0 ^+ 2 + s ^+ 2)) x.
 have Kpos : 0 < K.
-  by rewrite /K normal_pdfE// mulr_gt0 ?normal_peak_gt0//; exact: expR_gt0.
-have ? : (K%:E != 0)%E by rewrite eqe gt_eqF.
+  rewrite /K normal_pdfE ?gt_eqF// mulr_gt0 ?normal_peak_gt0 ?gt_eqF//.
+  exact: expR_gt0.
+have ? : K%:E != 0 by rewrite eqe gt_eqF.
 have step U : measurable U ->
-    (\int[normal_prob mu0 sigma0]_(theta in U) (normal_pdf theta sigma x)%:E =
-    K%:E *
-    normal_prob (mean_post mu0 sigma0 x sigma) (stddev_post sigma0 sigma) U)%E.
+    (\int[normal_prob m0 s0]_(t in U) (normal_pdf t s x)%:E =
+    K%:E * normal_prob (post_mean m0 s0 x s) (post_stddev s0 s) U)%E.
   move=> mU.
   rewrite integral_normal_prob ?integrable_normal_pdf_likelihood//=.
-  under eq_integral => theta _ do
-    rewrite -EFinM
-            (normal_pdf_conjugate mu0 x theta sigma0_neq0 sigma_neq0)
-            EFinM.
+  under eq_integral => t _ do
+    rewrite -EFinM (normal_pdf_conjugate m0 x t s0_neq0 s_neq0) EFinM.
   rewrite -/K ge0_integralZl_EFin //=.
-  - by move=> theta _; rewrite lee_fin; exact: normal_pdf_ge0.
+  - by move=> t _; rewrite lee_fin; exact: normal_pdf_ge0.
   - by apply/measurable_EFinP/measurable_funTS; exact: measurable_normal_pdf.
   - exact: ltW.
 rewrite (step _ mV) (step _ measurableT) probability_setT mule1.
