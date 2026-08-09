@@ -21,12 +21,14 @@
   + lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`,
     `at_left_shift`, `at_right_shift`
 - in `esum.v`:
+  + lemmas `pos_esum_ge1`, `le_pos_esum_fine`, `sum_esum_ge`, `le_esum_fine`,
+    `subset_esum`, `esum0`, `esum_if_eq_op_set1`, `esum_neq0`, `esum_ge1`
   + lemmas `eq_esummable`, `le_esummable`, `esummableZl`, `esummableZr`,
     `esummableMl`, `esummableMr`, `esummableM`
- + lemmas `esummable_esum_funepos`, `esummable_esum_funeneg`,
-    `esummable_esum_fin_num`, `esummable_esumN`
- + lemma `esumE`
- + lemmas `esummable_esumZ`, `esummable_esumD`, `esummableB`
+  + lemmas `esummable_esum_funepos`, `esummable_esum_funeneg`,
+     `esummable_esum_fin_num`, `esummable_esumN`
+  + lemma `esumE`
+  + lemmas `esummable_esumZ`, `esummable_esumD`, `esummableB`
 
 ### Changed
 

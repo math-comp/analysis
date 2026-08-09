@@ -542,7 +542,8 @@ Lemma esum_ge {R : realType} {T : choiceType} (I : set T) (f : T -> \bar R) x :
   x <= \esum_(i in I) f i.
 Proof. by move=> f0 If; rewrite ge0_esum// PosEsum.pos_esum_ge. Qed.
 
-Lemma esum_unit {R : realType} {T : choiceType} (f : T -> \bar R)  x :
+(* TODO: is this lemma really useful? *)
+Lemma esum_if_eq_op_set1 {R : realType} {T : choiceType} (f : T -> \bar R)  x :
   \esum_(i in [set: T]) (if x == i then f i else 0) = f x.
 Proof. by rewrite esum_if_eq_op esum_set1. Qed.
 
@@ -1149,7 +1150,7 @@ Proof.
 move=> h d0 dfin.
 have -> : d = (fine d)%:E by rewrite fineK.
 have ? : (0 <= fine d)%R  by rewrite -lee_fin fineK.
-rewrite esumE ge0_funeposM// ge0_funenegM// !esumZ// -muleBr//.
+rewrite esumE (ge0_funeposM f)// (ge0_funenegM f)// !esumZ// -muleBr//.
   by rewrite fin_num_adde_defr// esummable_esum_funepos.
 by rewrite [in RHS]esumE.
 Qed.
