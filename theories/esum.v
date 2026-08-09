@@ -19,7 +19,7 @@ From mathcomp Require Import topology sequences normedtype numfun.
 (*                       function whose codomain is included in the extended  *)
 (*                       reals; it is 0 if I = set0 and sup(\sum_A a) where A *)
 (*                       is a finite set included in I o.w.                   *)
-(*       summable D f := \esum_(x in D) `| f x | < +oo                        *)
+(*      esummable D f := \esum_(x in D) `| f x | < +oo                        *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -38,7 +38,7 @@ Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 
 Section set_of_fset_in_a_set.
-Variable (T : choiceType).
+Context {T : choiceType}.
 Implicit Type S : set T.
 
 Definition fsets S : set_system T := [set F | finite_set F /\ F `<=` S].
@@ -64,7 +64,7 @@ End set_of_fset_in_a_set.
   define a generic `esum` below, which should be preferred *)
 Module PosEsum.
 Section posesum.
-Variables (R : realFieldType) (T : choiceType).
+Context {R : realFieldType} {T : choiceType}.
 Implicit Types (S : set T) (f g : T -> \bar R).
 
 Definition pos_esum S g := ereal_sup [set \sum_(x \in B) g x | B in fsets S].
@@ -117,7 +117,7 @@ End posesum.
 Arguments eq_pos_esum {R T} S f g.
 
 Section posesum_realType.
-Variables (R : realType) (T : choiceType).
+Context {R : realType} {T : choiceType}.
 Implicit Types (S : set T) (f g : T -> \bar R).
 
 Local Notation "\esum_ ( i 'in' P ) A" := (pos_esum P (fun i => A)).
@@ -356,51 +356,57 @@ Arguments reindex_pos_esum {R T1 T2} P Q e a.
 End PosEsum.
 
 Section esum.
-Variables (R : realFieldType) (T : choiceType).
-Implicit Types (S : set T) (f g : T -> \bar R).
+Context {R : realFieldType} {T : choiceType}.
+Implicit Types (A : set T) (f g : T -> \bar R).
 
-Definition esum S f := PosEsum.pos_esum S f^\+ - PosEsum.pos_esum S f^\-.
+Definition esum A f := PosEsum.pos_esum A f^\+ - PosEsum.pos_esum A f^\-.
 
 Local Notation "\esum_ ( i 'in' P ) A" := (esum P (fun i => A)).
 
-Lemma eq_esum S f g : (forall i, S i -> f i = g i) ->
-  \esum_(i in S) f i = \esum_(i in S) g i.
+Lemma ge0_esum A f : (forall x, A x -> 0 <= f x) ->
+  \esum_(i in A) f i = ereal_sup [set \sum_(x \in B) f x | B in fsets A].
+Proof.
+move=> ?; rewrite /esum PosEsum.ge0_pos_esum_funepos//.
+by rewrite PosEsum.ge0_pos_esum_funeneg// sube0.
+Qed.
+
+Lemma esumE A f :
+  \esum_(x in A) f x = \esum_(x in A) f^\+ x - \esum_(x in A) f^\- x.
+Proof.
+rewrite [in RHS]ge0_esum; first by move=> x _; exact: funepos_ge0.
+by rewrite [in RHS]ge0_esum.
+Qed.
+
+Lemma eq_esum A f g : (forall i, A i -> f i = g i) ->
+  \esum_(i in A) f i = \esum_(i in A) g i.
 Proof.
 by move=> e; congr (_ - _); apply: PosEsum.eq_pos_esum => i /set_mem/e fgi;
   rewrite !(funeposE,funenegE) fgi.
 Qed.
 
-Lemma ge0_esum S f : (forall x, S x -> 0 <= f x) ->
-  \esum_(i in S) f i = ereal_sup [set \sum_(x \in B) f x | B in fsets S].
-Proof.
-move=> ?.
-rewrite /esum PosEsum.ge0_pos_esum_funepos// PosEsum.ge0_pos_esum_funeneg//.
-by rewrite sube0.
-Qed.
-
 Lemma esum_set0 f : \esum_(i in set0) f i = 0.
 Proof. by rewrite /esum !PosEsum.pos_esum_set0 subee. Qed.
 
-Lemma esumN S f : (forall x, S x -> 0 <= f x) ->
-  \esum_(x in S) - f x = - \esum_(i in S) f i.
+Lemma esumN A f : (forall x, A x -> 0 <= f x) ->
+  \esum_(x in A) - f x = - \esum_(i in A) f i.
 Proof.
 move=> f0.
 rewrite [in RHS]ge0_esum// [LHS]/esum [X in X - _ = _]PosEsum.pos_esum1 ?add0r.
-  by move=> t /mem_set At; rewrite funeposN (@ge0_funenegE _ _ S).
+  by move=> t /mem_set At; rewrite funeposN (@ge0_funenegE _ _ A).
 rewrite /PosEsum.pos_esum; congr (- ereal_sup _).
-apply: eq_imagel => B SB; apply: eq_fsbigr => x xB.
+apply: eq_imagel => B AB; apply: eq_fsbigr => x xB.
 rewrite funenegN (@ge0_funeposE _ _ B)// => y By; apply: f0.
-by case: SB => _; exact.
+by case: AB => _; exact.
 Qed.
 
 End esum.
-Arguments eq_esum {R T} S f g.
+Arguments eq_esum {R T} A f g.
 
 Notation "\esum_ ( i 'in' P ) F" := (esum P (fun i => F)) : ring_scope.
 
 Section esum_realType.
 Context {R : realType} {T : choiceType}.
-Implicit Types (S : set T) (f : T -> \bar R).
+Implicit Types (D : set T) (f : T -> \bar R).
 
 Lemma sum_esum_ge s (h : T -> R) : uniq s ->
   (forall x, 0 <= h x)%R ->
@@ -411,17 +417,17 @@ apply: PosEsum.pos_esum_ge; exists [set` s] => //.
 by rewrite fsumEFin// fsbig_seq.
 Qed.
 
-Lemma le_esum S f g : (forall x, S x -> f x <= g x) ->
-  \esum_(i in S) f i <= \esum_(i in S) g i.
+Lemma le_esum D f g : (forall x, D x -> f x <= g x) ->
+  \esum_(i in D) f i <= \esum_(i in D) g i.
 Proof.
-move=> leS.
-have leS' : {in S, forall x, f x <= g x} by move=> x /set_mem; exact: leS.
-rewrite /esum; apply: leeB.
+move=> leD.
+have {}leD : {in D, forall x, f x <= g x} by move=> x /set_mem; exact: leD.
+rewrite /esum leeB//.
 - by apply: PosEsum.le_pos_esum => x /mem_set; exact: funepos_le.
 - by apply: PosEsum.le_pos_esum => x /mem_set; exact: funeneg_le.
 Qed.
 
-Lemma esum_ge0 S f : (forall x, S x -> 0 <= f x) -> 0 <= \esum_(i in S) f i.
+Lemma esum_ge0 D f : (forall x, D x -> 0 <= f x) -> 0 <= \esum_(i in D) f i.
 Proof. by move=> f0; rewrite ge0_esum// PosEsum.pos_esum_ge0. Qed.
 
 Lemma le_esum_fine {U : choiceType} (A : set U) (B : set T)
@@ -431,8 +437,8 @@ Lemma le_esum_fine {U : choiceType} (A : set U) (B : set T)
 Proof.
 move=> hf.
 rewrite [leLHS]ge0_esum.
-  by move=> i _; rewrite lee_fin; apply: fine_ge0; apply esum_ge0.
-rewrite [leRHS]ge0_esum; first by move=> i _; apply esum_ge0.
+  by move=> i _; rewrite lee_fin; apply: fine_ge0; exact: esum_ge0.
+rewrite [leRHS]ge0_esum; first by move=> i _; exact: esum_ge0.
 under [leLHS]PosEsum.eq_pos_esum => i _ do rewrite ge0_esum//.
 under [leRHS]PosEsum.eq_pos_esum => i _ do rewrite ge0_esum//.
 exact: PosEsum.le_pos_esum_fine.
@@ -446,8 +452,8 @@ have I0f : forall x, I x -> 0 <= f x by move => x /IJ /f0.
 by rewrite !ge0_esum// PosEsum.subset_pos_esum.
 Qed.
 
-Lemma esum_fset S f : finite_set S -> (forall i, S i -> 0 <= f i) ->
-  \esum_(i in S) f i = \sum_(i \in S) f i.
+Lemma esum_fset D f : finite_set D -> (forall i, D i -> 0 <= f i) ->
+  \esum_(i in D) f i = \sum_(i \in D) f i.
 Proof. by move=> finF f0; rewrite ge0_esum//; exact: PosEsum.pos_esum_fset. Qed.
 
 End esum_realType.
@@ -768,7 +774,7 @@ Qed.
 Arguments esum_set_image {R T} a e P.
 
 Section esum_bigcup.
-Variables (R : realType) (T : choiceType) (K : set nat).
+Context {R : realType} {T : choiceType} (K : set nat).
 Implicit Types (J : nat -> set T) (a : T -> \bar R).
 
 Lemma esum_bigcupT J a : trivIset setT J -> (forall x, 0 <= a x) ->
@@ -828,42 +834,44 @@ move=> tF f0; rewrite esum_bigcupT// nneseries_esum//.
 by rewrite fun_true; apply: eq_esum => /= i _.
 Qed.
 
-Definition summable (T : choiceType) (R : realType) (D : set T)
+Definition esummable (T : choiceType) (R : realType) (D : set T)
   (f : T -> \bar R) := (\esum_(x in D) `| f x | < +oo)%E.
+#[deprecated(since="mathcomp-analysis 1.18.0", use=esummable)]
+Notation summable := esummable (only parsing).
 
-Section summable_lemmas.
+Section esummable_lemmas.
 Local Open Scope ereal_scope.
-Variables (T : choiceType) (R : realType).
+Context {T : choiceType} {R : realType}.
 Implicit Types (D : set T) (f : T -> \bar R).
 
-Lemma summable_pinfty D f : summable D f -> forall x, D x -> `| f x | < +oo.
+Lemma esummable_pinfty D f : esummable D f -> forall x, D x -> `| f x | < +oo.
 Proof.
 move=> Dfoo x Dx; apply: le_lt_trans Dfoo.
 rewrite (esumID [set x])// setI1 mem_set// esum_set1// leeDl//.
 exact: esum_ge0.
 Qed.
 
-Lemma summableE D f : summable D f = (\esum_(x in D) `| f x | \is a fin_num).
+Lemma esummableE D f : esummable D f = (\esum_(x in D) `| f x | \is a fin_num).
 Proof.
-rewrite /summable fin_numElt; apply/idP/idP => [->|/andP[]//].
+rewrite /esummable fin_numElt; apply/idP/idP => [->|/andP[]//].
 by rewrite andbT (lt_le_trans (ltNyr 0))//; exact: esum_ge0.
 Qed.
 
-Lemma eq_summable D f g : f =1 g -> summable D f -> summable D g.
+Lemma eq_esummable D f g : {in D, f =1 g} -> esummable D f -> esummable D g.
 Proof.
-move => eq_fg; rewrite /summable; apply: le_lt_trans.
-by apply: le_esum => ?; rewrite eq_fg.
+move => eq_fg;  apply: le_lt_trans.
+by apply: le_esum => t Dt; rewrite eq_fg//; exact/mem_set.
 Qed.
 
-Lemma le_summable D f g :
-  (forall x, 0 <= f x <= g x) -> summable D g -> summable D f.
+Lemma le_esummable D f g :
+  (forall x, D x -> 0 <= f x <= g x) -> esummable D g -> esummable D f.
 Proof.
-move=> fg; rewrite /summable; apply: le_lt_trans.
-apply: le_esum => t Dt; have/andP[f0 {}fg] := fg t.
+move=> fg; apply: le_lt_trans.
+apply: le_esum => t Dt; have/andP[f0 {}fg] := fg _ Dt.
 by rewrite !gee0_abs// (le_trans f0).
 Qed.
 
-Lemma summableD D f g : summable D f -> summable D g -> summable D (f \+ g).
+Lemma esummableD D f g : esummable D f -> esummable D g -> esummable D (f \+ g).
 Proof.
 move=> Df Dg; apply: le_lt_trans (lte_add_pinfty Df Dg).
 rewrite -esumD//; do 2 rewrite ge0_esum//.
@@ -871,15 +879,15 @@ rewrite -esumD//; do 2 rewrite ge0_esum//.
 by apply: PosEsum.le_pos_esum => t Dt; exact: lee_abs_add.
 Qed.
 
-Lemma summableN D f : summable D f = summable D (\- f).
+Lemma esummableN D f : esummable D f = esummable D (\- f).
 Proof.
-by rewrite /summable; congr (_ < +oo); apply: eq_esum => t Dt; rewrite abseN.
+by rewrite /esummable; congr (_ < +oo); apply: eq_esum => t Dt; rewrite abseN.
 Qed.
 
-Lemma summableB D f g : summable D f -> summable D g -> summable D (f \- g).
-Proof. by move=> Df; rewrite summableN; exact: summableD. Qed.
+Lemma esummableB D f g : esummable D f -> esummable D g -> esummable D (f \- g).
+Proof. by move=> Df; rewrite esummableN; exact: esummableD. Qed.
 
-Lemma summable_funepos D f : summable D f -> summable D f^\+.
+Lemma esummable_funepos D f : esummable D f -> esummable D f^\+.
 Proof.
 apply: le_lt_trans.
 do 2 rewrite ge0_esum//.
@@ -887,7 +895,7 @@ apply: PosEsum.le_pos_esum => t Dt.
 by rewrite -/((abse \o f) t) -funeposDneg gee0_abs// leeDl.
 Qed.
 
-Lemma summable_funeneg D f : summable D f -> summable D f^\-.
+Lemma esummable_funeneg D f : esummable D f -> esummable D f^\-.
 Proof.
 apply: le_lt_trans.
 do 2 rewrite ge0_esum//.
@@ -895,78 +903,80 @@ apply: PosEsum.le_pos_esum => t Dt.
 by rewrite -/((abse \o f) t) -funeposDneg gee0_abs// leeDr.
 Qed.
 
-Lemma summableZ D f c : c \is a fin_num ->
-  summable D f -> summable D (fun x => c * f x).
+Lemma esummableZl D f c : c \is a fin_num ->
+  esummable D f -> esummable D (fun x => c * f x).
 Proof.
-rewrite /summable => cfun fy.
-under eq_esum do rewrite abseM.
+move=> cfin fy; rewrite /esummable; under eq_esum do rewrite abseM.
 by rewrite esumZ// lte_mul_pinfty// abse_fin_num.
 Qed.
 
-Lemma summableZr D f c : c \is a fin_num ->
-  summable D f -> summable D (fun x => f x * c).
-Proof.
-under eq_fun do rewrite muleC.
-exact: summableZ.
-Qed.
+Lemma esummableZr D f c : c \is a fin_num ->
+  esummable D f -> esummable D (fun x => f x * c).
+Proof. by under eq_fun do rewrite muleC; exact: esummableZl. Qed.
 
-Lemma summableMl D f1 f2 :
-  (exists2 M, (forall x, D x -> `|f1 x| <= M) & M \is a fin_num) ->
-  summable D f2 -> summable D (f1 \* f2).
+Lemma esummableMl D f1 f2 :
+  (exists2 M, forall x, D x -> `|f1 x| <= M & M \is a fin_num) ->
+  esummable D f2 -> esummable D (f1 \* f2).
 Proof.
-move=> [M h1 Mfin] sf2.
-rewrite /summable; apply: le_lt_trans (summableZ Mfin sf2).
+move=> [M Df1M Mfin] Df2; apply: le_lt_trans (esummableZl Mfin Df2).
 apply: le_esum => x Dx; rewrite !abseM.
-apply: lee_wpmul2r; first exact: abse_ge0.
-by apply: le_trans (h1 x Dx) (lee_abs _).
+by rewrite lee_wpmul2r ?abse_ge0// (le_trans (Df1M x Dx) (lee_abs _)).
 Qed.
 
-Lemma summableMr D f1 f2 :
-  (exists2 M, (forall x, D x -> `|f2 x| <= M) & M \is a fin_num) ->
-  summable D f1 ->
-  summable D (f1 \* f2).
+Lemma esummableMr D f1 f2 :
+  (exists2 M, forall x, D x -> `|f2 x| <= M & M \is a fin_num) ->
+  esummable D f1 -> esummable D (f1 \* f2).
+Proof. by move=> Df2; under eq_fun do rewrite muleC; exact: esummableMl. Qed.
+
+Lemma esummableM D f1 f2 :
+  esummable D f1 -> esummable D f2 -> esummable D (f1 \* f2).
 Proof.
-move=> Df2.
-under eq_fun do rewrite muleC.
-exact: summableMl.
+rewrite esummableE => smS1 smS2; apply/esummableMl => //.
+by exists (\esum_(x in D) `|f1  x|) => //; exact: esum_ge1.
 Qed.
 
-Lemma summableM D f1 f2 :
-  summable D f1 -> summable D f2 -> summable D (f1 \* f2).
-Proof.
-rewrite summableE => smS1 smS2; apply/summableMl => //.
-exists (\esum_(x in D) `|f1  x|) => //.
-exact: esum_ge1.
-Qed.
-
-End summable_lemmas.
+End esummable_lemmas.
+#[deprecated(since="mathcomp-analysis 1.18.0", use=esummable_pinfty)]
+Notation summable_pinfty := esummable_pinfty (only parsing).
+#[deprecated(since="mathcomp-analysis 1.18.0", use=esummableE)]
+Notation summableE := esummableE (only parsing).
+#[deprecated(since="mathcomp-analysis 1.18.0", use=esummableD)]
+Notation summableD := esummableD (only parsing).
+#[deprecated(since="mathcomp-analysis 1.18.0", use=esummableN)]
+Notation summableN := esummableN (only parsing).
+#[deprecated(since="mathcomp-analysis 1.18.0", use=esummableB)]
+Notation summableB := esummableB (only parsing).
+#[deprecated(since="mathcomp-analysis 1.18.0", use=esummable_funepos)]
+Notation summable_funepos := esummable_funepos (only parsing).
+#[deprecated(since="mathcomp-analysis 1.18.0", use=esummable_funeneg)]
+Notation summable_funeneg := esummable_funeneg (only parsing).
 
 Import numFieldNormedType.Exports.
 
-Section summable_nat.
+Section esummable_nat.
 Local Open Scope ereal_scope.
-Variable R : realType.
+Context {R : realType}.
 
-Lemma summable_fine_sum r (P : pred nat) (f : (\bar R)^nat) : summable P f ->
+Lemma esummable_fine_sum r (P : pred nat) (f : (\bar R)^nat) : esummable P f ->
   (\sum_(0 <= k < r | P k) fine (f k))%R = fine (\sum_(0 <= k < r | P k) f k).
 Proof.
 move=> Pf; elim: r => [|r ih]; first by rewrite !big_nil.
 rewrite big_mkcond/= big_nat_recr// [in RHS]big_mkcond/= big_nat_recr//=.
 rewrite -!big_mkcond/= ih; case: ifPn => Pr => //; last by rewrite adde0 addr0.
 rewrite fineD//; last first.
-  by rewrite fin_num_abs (summable_pinfty Pf).
-by apply/sum_fin_numP => i ir Pi; rewrite fin_num_abs (summable_pinfty Pf).
+  by rewrite fin_num_abs (esummable_pinfty Pf).
+by apply/sum_fin_numP => i ir Pi; rewrite fin_num_abs (esummable_pinfty Pf).
 Qed.
 
-Lemma summable_cvg (P : pred nat) (f : (\bar R)^nat) :
-  (forall i, P i -> 0 <= f i)%E -> summable P f ->
+Lemma esummable_cvg (P : pred nat) (f : (\bar R)^nat) :
+  (forall i, P i -> 0 <= f i)%E -> esummable P f ->
   cvg ((fun n => \sum_(0 <= k < n | P k) fine (f k))%R @ \oo).
 Proof.
 move=> f0 Pf; apply: nondecreasing_is_cvgn.
   by apply: nondecreasing_series => n _ Pn; exact/fine_ge0/f0.
 exists (fine (\sum_(i <oo | P i) `|f i|)) => x /= [n _ <-].
-rewrite summable_fine_sum// -lee_fin fineK//.
-  by apply/sum_fin_numP => i ni Pi; rewrite fin_num_abs (summable_pinfty Pf).
+rewrite esummable_fine_sum// -lee_fin fineK//.
+  by apply/sum_fin_numP => i ni Pi; rewrite fin_num_abs (esummable_pinfty Pf).
 rewrite fineK//.
   rewrite nneseries_esum// fin_numElt; apply/andP; split.
     by rewrite (@lt_le_trans _ _ 0)// ?lte_ninfty//; exact: esum_ge0.
@@ -976,8 +986,8 @@ apply: le_trans (nneseries_lim_ge n _) => //; apply: lee_sum => i _.
 by rewrite lee_abs.
 Qed.
 
-Lemma summable_nneseries_lim (P : pred nat) (f : (\bar R)^nat) :
-    (forall i, P i -> 0 <= f i)%E -> summable P f ->
+Lemma esummable_nneseries_lim (P : pred nat) (f : (\bar R)^nat) :
+    (forall i, P i -> 0 <= f i)%E -> esummable P f ->
   \sum_(i <oo | P i) f i =
   (lim ((fun n => (\sum_(0 <= k < n | P k) fine (f k))%R) @ \oo))%:E.
 Proof.
@@ -985,11 +995,11 @@ move=> f0 Pf; pose A_ n := (\sum_(0 <= k < n | P k) fine (f k))%R.
 transitivity (lim (EFin \o A_ @ \oo)).
   apply/congr_lim/funext => /= n; rewrite /A_ /= -sumEFin.
   apply eq_bigr => i Pi/=; rewrite fineK//.
-  by rewrite fin_num_abs (@summable_pinfty _ _ P).
-by rewrite EFin_lim//; apply: summable_cvg.
+  by rewrite fin_num_abs (@esummable_pinfty _ _ P).
+by rewrite EFin_lim//; exact: esummable_cvg.
 Qed.
 
-Lemma summable_eseries (f : (\bar R)^nat) (P : pred nat) : summable P f ->
+Lemma esummable_eseries (f : (\bar R)^nat) (P : pred nat) : esummable P f ->
   \sum_(i <oo | P i) (f i) =
   \sum_(i <oo | P i) f^\+ i - \sum_(i <oo | P i) f^\- i.
 Proof.
@@ -1001,42 +1011,52 @@ pose A := lim (A_ @ \oo).
 pose B := lim (B_ @ \oo).
 suff: ((fun n => C_ n - (A - B)) @ \oo --> (0 : R^o))%R.
   move=> CAB.
-  rewrite [X in  X - _]summable_nneseries_lim//; first exact/summable_funepos.
-  rewrite [X in _ - X]summable_nneseries_lim//; first exact/summable_funeneg.
+  rewrite [X in  X - _]esummable_nneseries_lim//; first exact/esummable_funepos.
+  rewrite [X in _ - X]esummable_nneseries_lim//; first exact/esummable_funeneg.
   rewrite -EFinB; apply/cvg_lim => //; apply/fine_cvgP; split; last first.
     exact: (@cvg_sub0 _ _ _ _ _ _ (cst (A - B)%R) _ CAB).
   apply: nearW => n; rewrite fin_num_abs; apply: le_lt_trans Pf => /=.
   by rewrite -nneseries_esum// (le_trans (lee_abs_sum _ _ _))// nneseries_lim_ge.
 have : ((fun x => A_ x - B_ x) @ \oo --> A - B)%R.
   apply: cvgD.
-  - by apply: summable_cvg => //; exact/summable_funepos.
-  - by apply: cvgN; apply: summable_cvg => //; exact/summable_funeneg.
+  - by apply: esummable_cvg => //; exact/esummable_funepos.
+  - by apply: cvgN; apply: esummable_cvg => //; exact/esummable_funeneg.
 move=> /cvgrPdist_lt cvgAB; apply/cvgrPdist_lt => e e0.
 move: cvgAB => /(_ _ e0) [N _/= hN] /=.
 near=> n.
 rewrite distrC subr0.
 have -> : (C_ = A_ \- B_)%R.
   apply/funext => k.
-  rewrite /= /A_ /C_ /B_ -sumrN -big_split/= -summable_fine_sum//.
+  rewrite /= /A_ /C_ /B_ -sumrN -big_split/= -esummable_fine_sum//.
   apply eq_bigr => i Pi; rewrite -fineB//.
-  - by rewrite fin_num_abs (@summable_pinfty _ _ P)// summable_funepos.
-  - by rewrite fin_num_abs (@summable_pinfty _ _ P)// summable_funeneg.
+  - by rewrite fin_num_abs (@esummable_pinfty _ _ P)// esummable_funepos.
+  - by rewrite fin_num_abs (@esummable_pinfty _ _ P)// esummable_funeneg.
   - by rewrite -[in LHS](funeposBneg f).
 by rewrite distrC; apply: hN; near: n; exists N.
 Unshelve. all: by end_near. Qed.
 
-Lemma summable_eseries_esum (f : (\bar R)^nat) (P : pred nat) :
-  summable P f -> \sum_(i <oo | P i) f i = esum P f^\+ - esum P f^\-.
+Lemma esummable_eseries_esum (f : (\bar R)^nat) (P : pred nat) :
+  esummable P f -> \sum_(i <oo | P i) f i = esum P f^\+ - esum P f^\-.
 Proof.
 move=> Pfoo.
-by rewrite -nneseries_esum// -nneseries_esum// [LHS]summable_eseries.
+by rewrite -nneseries_esum// -nneseries_esum// [LHS]esummable_eseries.
 Qed.
 
-End summable_nat.
+End esummable_nat.
+#[deprecated(since="mathcomp-analysis 1.18.0", use=esummable_fine_sum)]
+Notation summable_fine_sum := esummable_fine_sum (only parsing).
+#[deprecated(since="mathcomp-analysis 1.18.0", use=esummable_cvg)]
+Notation summable_cvg := esummable_cvg (only parsing).
+#[deprecated(since="mathcomp-analysis 1.18.0", use=esummable_nneseries_lim)]
+Notation summable_nneseries_lim := esummable_nneseries_lim (only parsing).
+#[deprecated(since="mathcomp-analysis 1.18.0", use=esummable_eseries)]
+Notation summable_eseries := esummable_eseries (only parsing).
+#[deprecated(since="mathcomp-analysis 1.18.0", use=esummable_eseries_esum)]
+Notation summable_eseries_esum := esummable_eseries_esum (only parsing).
 
 Section esumB.
 Local Open Scope ereal_scope.
-Variables (R : realType) (T : choiceType).
+Context {R : realType} {T : choiceType}.
 Implicit Types (D : set T) (f g : T -> \bar R).
 
 Let esum_posneg D f := esum D f^\+ - esum D f^\-.
@@ -1049,7 +1069,7 @@ move=> Sa; rewrite /esum_posneg [X in _ - X](_ : _ = 0) ?sube0.
 apply: eq_esum => t St; rewrite funeposE; apply/max_idPl; exact: Sa.
 Qed.
 
-Lemma esumB D f g : summable D f -> summable D g ->
+Lemma esumB D f g : esummable D f -> esummable D g ->
   (forall i, D i -> 0 <= f i) -> (forall i, D i -> 0 <= g i) ->
   \esum_(i in D) (f \- g)^\+ i - \esum_(i in D) (f \- g)^\- i =
   \esum_(i in D) f i - \esum_(i in D) g i.
@@ -1061,26 +1081,26 @@ have /eqP : esum D (f \- g)^\+ + esum_posneg D g =
   apply eq_esum => i Di; rewrite funeposE funenegE.
   have [fg|fg] := leP 0 (f i - g i).
     rewrite max_r 1?leeNl ?oppe0// add0e subeK//.
-    by rewrite fin_num_abs (summable_pinfty Dg).
+    by rewrite fin_num_abs (esummable_pinfty Dg).
   rewrite add0e max_l; first by rewrite leeNr oppe0 ltW.
-  rewrite fin_num_oppeB//; first by rewrite fin_num_abs (summable_pinfty Dg).
-  by rewrite -addeA addeCA addeA subeK// fin_num_abs (summable_pinfty Df).
+  rewrite fin_num_oppeB//; first by rewrite fin_num_abs (esummable_pinfty Dg).
+  by rewrite -addeA addeCA addeA subeK// fin_num_abs (esummable_pinfty Df).
 rewrite [X in _ == X -> _]addeC -sube_eq.
 - rewrite fin_numD; apply/andP; split.
     rewrite (eq_esum _ _ (abse \o (f \- g)^\+))//.
       by move=> t Dt; rewrite /= gee0_abs.
-    by rewrite -summableE; exact/summable_funepos/summableB.
-  move: Dg; rewrite summableE (eq_esum _ _ g)//.
+    by rewrite -esummableE; exact/esummable_funepos/esummableB.
+  move: Dg; rewrite esummableE (eq_esum _ _ g)//.
     by move=> t Tt; rewrite gee0_abs// g0.
   by rewrite ge0_esum_posneg// => t Tt; rewrite gee0_abs// g0.
 - rewrite fin_num_adde_defr// ge0_esum_posneg//.
-  rewrite (eq_esum _ _ (abse \o f))// -?summableE// => i Di.
+  rewrite (eq_esum _ _ (abse \o f))// -?esummableE// => i Di.
   by rewrite /= gee0_abs// f0.
 rewrite -addeA addeCA eq_sym [X in _ == X -> _]addeC -sube_eq.
-- rewrite ge0_esum_posneg// (eq_esum _ _ (abse \o f))// -?summableE// => i Di.
+- rewrite ge0_esum_posneg// (eq_esum _ _ (abse \o f))// -?esummableE// => i Di.
   by rewrite /= gee0_abs// f0.
 - rewrite fin_num_adde_defl// ge0_esum_posneg//.
-  rewrite (@eq_esum _ _ _ _ (abse \o g))// -?summableE// => i Di.
+  rewrite (@eq_esum _ _ _ _ (abse \o g))// -?esummableE// => i Di.
   by rewrite /= gee0_abs// g0.
 by rewrite ge0_esum_posneg// ge0_esum_posneg// => /eqP ->.
 Qed.
@@ -1089,115 +1109,84 @@ End esumB.
 
 Section esum_summable.
 Context {R : realType} {T : choiceType}.
-Implicit Types (S : T -> \bar R).
+Implicit Types (D : set T) (f g : T -> \bar R).
 
-Lemma summable_esum_funepos S :
-  summable [set: T] S -> \esum_(t in [set: T]) S^\+ t \is a fin_num.
+Lemma esummable_esum_funepos D f :
+  esummable D f -> \esum_(t in D) f^\+ t \is a fin_num.
 Proof.
-move => /summable_funepos.
-rewrite summableE.
-rewrite (@eq_esum _ _ _ (fun y : T => S^\+ y) (fun y : T => `|S^\+ y|)) //=.
-by move => ??; rewrite gee0_abs.
+move=> /esummable_funepos; rewrite esummableE => ffin.
+by rewrite (eq_esum _ _ (fun y => `|f^\+ y|))//= => t Dt; rewrite gee0_abs.
 Qed.
 
-Lemma summable_esum_fin_num S :
-  summable [set: T] S -> \esum_(i in [set:T]) S i \is a fin_num.
+Lemma esummable_esum_funeneg D f :
+  esummable D f -> \esum_(t in D) f^\- t \is a fin_num.
 Proof.
-move=> sm; rewrite /esum fin_numB; apply/andP; split.
-- rewrite /PosEsum.pos_esum -ge0_esum; first by move=> x _; exact: funepos_ge0.
-  exact: (summable_esum_funepos sm).
-- have smN : summable [set: T] (\- S) by rewrite -summableN.
-  rewrite /PosEsum.pos_esum -ge0_esum; first by move=> x _; exact: funeneg_ge0.
-  by rewrite -funeposN; exact: (summable_esum_funepos smN).
+rewrite esummableN => /esummable_esum_funepos.
+by under eq_esum do rewrite funeposN.
 Qed.
 
-Lemma summable_esumN S :
-  summable [set : T] S -> \esum_(i in [set:T]) - S i = - \esum_(i in [set:T]) S i.
+Lemma esummable_esum_fin_num D f :
+  esummable D f -> \esum_(i in D) f i \is a fin_num.
 Proof.
-move=> hs; rewrite /esum funeposN funenegN oppeB.
-- apply: fin_num_adde_defr.
-  rewrite /PosEsum.pos_esum -ge0_esum; first by move=> x _; exact: funepos_ge0.
-  exact: (summable_esum_funepos hs).
-- by rewrite addeC.
+by move=> sm; rewrite esumE fin_numB; apply/andP; split;
+  [exact: esummable_esum_funepos|exact: esummable_esum_funeneg].
 Qed.
 
-Lemma summable_esumZ_pos S :
-  summable [set : T] S ->
-  forall d : \bar R, 0 <= d -> d \is a fin_num ->
-                \esum_(x in [set:T]) d * S x = d * \esum_(x in [set:T]) S x.
+Lemma esummable_esumN D f :
+  esummable D f -> \esum_(i in D) - f i = - \esum_(i in D) f i.
 Proof.
-move=> h d d0 dfin.
+move=> hs; rewrite [in RHS]esumE oppeB.
+  by rewrite fin_num_adde_defr// esummable_esum_funepos.
+rewrite [in LHS]esumE.
+under eq_esum do rewrite funeposN.
+under [in X in _ - X]eq_esum do rewrite funenegN.
+by rewrite addeC.
+Qed.
+
+Let nonneg_esummable_esumZ D f d : esummable D f -> 0 <= d -> d \is a fin_num ->
+  \esum_(x in D) d * f x = d * \esum_(x in D) f x.
+Proof.
+move=> h d0 dfin.
 have -> : d = (fine d)%:E by rewrite fineK.
 have ? : (0 <= fine d)%R  by rewrite -lee_fin fineK.
-have ? : (0 <= (fine d)%:E) by rewrite fineK.
-have ? : (fine d)%:E \is a fin_num by [].
-rewrite [in LHS]/esum ge0_funeposM// ge0_funenegM//.
-rewrite (PosEsum.pos_esumZ _ (fun t _ => funepos_ge0 S t)) //.
-rewrite (PosEsum.pos_esumZ _ (fun t _ => funeneg_ge0 S t)) //.
-rewrite -muleBr //.
-apply: fin_num_adde_defr.
-rewrite /PosEsum.pos_esum -ge0_esum; first by move=> x _; exact: funepos_ge0.
-exact: (summable_esum_funepos h).
+rewrite esumE ge0_funeposM// ge0_funenegM// !esumZ// -muleBr//.
+  by rewrite fin_num_adde_defr// esummable_esum_funepos.
+by rewrite [in RHS]esumE.
 Qed.
 
-Lemma summable_esumZ S c :
-  `|c| \is a fin_num -> summable [set : T] S ->
-  \esum_(x in [set : T]) c * S x = c * \esum_(x in [set : T]) S x.
+Lemma esummable_esumZ D f c : `|c| \is a fin_num -> esummable D f ->
+  \esum_(x in D) c * f x = c * \esum_(x in D) f x.
 Proof.
-move=> hf h.
-have [c0|c0|->] := comparable_ltgtP (comparableT c 0).
-- rewrite (eq_esum _ _ (fun x => - (`|c| * S x))).
-  + by move=> x _; rewrite lte0_abs// mulNe oppeK.
-    rewrite (summable_esumN (summableZ hf h)).
-    rewrite (summable_esumZ_pos h (abse_ge0 c) hf).
-    by rewrite lte0_abs// mulNe oppeK.
-- apply: (summable_esumZ_pos h (ltW c0)).
-  by rewrite -abse_fin_num.
-- rewrite [in RHS]mul0e; under eq_esum do rewrite mul0e.
-  by rewrite esum0.
+move=> cmin Df; have [c0|c0|->] := comparable_ltgtP (comparableT c 0).
+- rewrite -(oppeK c) -(@lte0_abs _ c)//.
+  under eq_esum do rewrite mulNe.
+  rewrite esummable_esumN; first exact: esummableZl.
+  by rewrite nonneg_esummable_esumZ// mulNe.
+- by rewrite (nonneg_esummable_esumZ _ (ltW c0))// -abse_fin_num.
+- by rewrite mul0e esum1// => t _; rewrite mul0e.
 Qed.
 
-Lemma esum_posneg (h : T -> \bar R) :
-  \esum_(x in [set:T]) h x =
-  \esum_(x in [set:T]) h^\+ x - \esum_(x in [set:T]) h^\- x.
-Proof.
-rewrite [in RHS]ge0_esum; first by move=> x _; exact: funepos_ge0.
-rewrite [in RHS]ge0_esum; first by move=> x _; exact: funeneg_ge0.
-by rewrite /esum.
-Qed.
-
-Lemma summable_esumD S1 S2 :
-  summable [set: T] S1 -> summable [set: T] S2 ->
-  \esum_(x in [set : T]) (S1 x + S2 x) =
-  \esum_(x in [set : T]) S1 x + \esum_(x in [set : T]) S2 x.
+Lemma esummable_esumD D f g : esummable D f -> esummable D g ->
+  \esum_(x in D) (f x + g x) = \esum_(x in D) f x + \esum_(x in D) g x.
 Proof.
 move=> sm1 sm2.
-rewrite -(funeDB S1 S2).
-rewrite (esum_posneg ((S1^\+ \+ S2^\+) \- (S1^\- \+ S2^\-))).
-rewrite (@esumB _ _ [set:T] (S1^\+ \+ S2^\+) (S1^\- \+ S2^\-)
-           (summableD (summable_funepos sm1) (summable_funepos sm2))
-           (summableD (summable_funeneg sm1) (summable_funeneg sm2))
-           (fun i _ => adde_ge0 (funepos_ge0 S1 i) (funepos_ge0 S2 i))
-           (fun i _ => adde_ge0 (funeneg_ge0 S1 i) (funeneg_ge0 S2 i))).
-rewrite (@esumD _ _ [set:T] (S1^\+) (S2^\+)
-           (fun i _ => funepos_ge0 S1 i) (fun i _ => funepos_ge0 S2 i)).
-rewrite (@esumD _ _ [set:T] (S1^\-) (S2^\-)
-           (fun i _ => funeneg_ge0 S1 i) (fun i _ => funeneg_ge0 S2 i)).
-rewrite [in RHS](esum_posneg S1) [in RHS](esum_posneg S2).
-rewrite oppeD.
-  apply: fin_num_adde_defl.
-  exact: (summable_esum_fin_num (summable_funeneg sm2)).
+rewrite -(funeDB f g) (esumE _ ((f^\+ \+ g^\+) \- (f^\- \+ g^\-))).
+rewrite (@esumB _ _ D (f^\+ \+ g^\+) (f^\- \+ g^\-)).
+  by apply: esummableD => //; exact: esummable_funepos.
+  by apply: esummableD => //; exact: esummable_funeneg.
+  by move=> t _; rewrite adde_ge0.
+  by move=> t _; rewrite adde_ge0.
+rewrite esumD// esumD// [in RHS](esumE _ f) [in RHS](esumE _ g) oppeD.
+  rewrite fin_num_adde_defl// esummable_esum_fin_num//.
+  exact: esummable_funeneg.
 by rewrite addeACA.
 Qed.
 
-Lemma summable_esumB {V : choiceType} S1 S2 :
-  summable [set: T] S1 -> summable [set: T] S2 ->
-  \esum_(x in [set : T]) (S1 x - S2 x) =
- \esum_(x in [set : T]) S1 x - \esum_(x in [set : T]) S2 x.
+Lemma esummable_esumB D f g : esummable D f -> esummable D g ->
+  \esum_(x in D) (f x - g x) = \esum_(x in D) f x - \esum_(x in D) g x.
 Proof.
 move=> sm1 sm2.
-have nS2 : summable [set: T] (\- S2) by rewrite -summableN.
-by rewrite (summable_esumD sm1 nS2) (summable_esumN sm2).
+by rewrite esummable_esumD ?esummable_esumN// -esummableN.
 Qed.
 
 End esum_summable.

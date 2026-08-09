@@ -20,6 +20,13 @@
 - in `num_topology.v`:
   + lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`,
     `at_left_shift`, `at_right_shift`
+- in `esum.v`:
+  + lemmas `eq_esummable`, `le_esummable`, `esummableZl`, `esummableZr`,
+    `esummableMl`, `esummableMr`, `esummableM`
+ + lemmas `esummable_esum_funepos`, `esummable_esum_funeneg`,
+    `esummable_esum_fin_num`, `esummable_esumN`
+ + lemma `esumE`
+ + lemmas `esummable_esumZ`, `esummable_esumD`, `esummableB`
 
 ### Changed
 
@@ -31,7 +38,31 @@
 
 ### Renamed
 
+- in `esum.v`:
+  + `summable` -> `esummable`
+  + `summable_pinfty` -> `esummable_pinfty`
+  + `summableE` -> `esummableE`
+  + `summableD` -> `esummableD`
+  + `summableN` -> `esummableN`
+  + `summableB` -> `esummableB`
+  + `summable_funepos` -> `esummable_funepos`
+  + `summable_funeneg` -> `esummable_funeneg`
+  + `summable_fine_sum` -> `esummable_fine_sum`
+  + `summable_cvg` -> `esummable_cvg`
+  + `summable_nneseries_lim` -> `esummable_nneseries_lim`
+  + `summable_eseries` -> `esummable_eseries`
+  + `summable_eseries_esum` -> `esummable_eseries_esum`
+
+- in `lebesgue_integrable.v`:
+  + `integrable_summable` -> `integrable_esummable`
+
+- in `lebesgue_integral_nonneg.v`:
+  + `summable_integral_dirac` -> `esummable_integral_dirac`
+
 ### Generalized
+
+- in `esum.v`:
+  + lemmma `le_esum`
 
 ### Deprecated
 
