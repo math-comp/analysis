@@ -102,18 +102,6 @@ split => [[N _ /= NP]|].
 by apply: filterS => N; exact.
 Qed.
 
-Lemma near_infty_after (P : set nat) :
-  (\forall n \near \oo, P n) <-> (\forall N \near \oo, forall n, (n >= N)%N -> P n).
-Proof.
-split.
-- move=> [N _ afterN].
-  exists N => // n /= /[swap] n' /leq_trans /[apply].
-  exact: afterN.
-- move=> [N _ afterN].
-  exists N => // n /=.
-  by apply: afterN => /=.
-Qed.  
-
 Section infty_nat.
 Local Open Scope nat_scope.
 
