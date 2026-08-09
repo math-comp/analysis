@@ -53,38 +53,16 @@
 - in `num_topology.v`:
   + lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`,
     `at_left_shift`, `at_right_shift`
-- in `classical_sets.v`:
-  + lemmas `setI_closed_setT`, `setI_closed_set0`
 
-- in `measurable_function.v`:
-  + lemma `g_sigma_algebra_preimage_comp`
+- in `num_normedtype.v`,
+  + lemmas `pinftyV`, `ninftyV`, `cvgryV`, `cvgrNyV`, `lt0_cvgMlNy`, 
+    `lt0_cvgMrNy`, `lt0_cvgMly`, `lt0_cvgMry`
 
-- in `measure_function.v`:
-  + lemma `g_sigma_algebra_finite_measure_unique`
+- in `pseudometric_normed_Zmodule.v`,
+  + lemmas `fmap_at_left0P`, `fmap_at_right0E`
 
-- new file `independence.v`:
-  + definition `independent_events`
-  + definition `mutual_independence`
-  + lemma `eq_mutual_independence`
-  + definition `independence2`, `independence2P`
-  + lemma `mutual_independence_fset`
-  + lemma `mutual_independence_finiteS`
-  + theorem `mutual_independence_finite_g_sigma`
-  + lemma `mutual_dependence_bigcup`
-  + definition `independent_RVs`
-  + lemma `independent_RVsD1`
-  + theorem `independent_generators`
-  + definition `independent_RVs2`
-  + lemmas `independent_RVs2_comp`, `independent_RVs2_funrposneg`,
-    `independent_RVs2_funrnegpos`, `independent_RVs2_funrnegneg`,
-    `independent_RVs2_funrpospos`
-  + definition `pairRV`, lemma `measurable_pairRV`
-  + lemmas `independent_RVs2_product_measure1`
-  + lemmas `independent_RVs2_setI_preimage`,
-    `independent_Lfun1_expectation_product_measure_lty`
-  + lemma `ge0_independent_expectationM`
-  + lemmas `independent_Lfun1_expectationM_lty`, `independent_Lfun1M`,
-    `independent_expectationM`
+- in `tvs.v`,
+  + lemmas `near_shiftE`, `nearZE`
 
 - in `ereal.v`:
   + lemma `ge0_addBefctE`
@@ -266,6 +244,8 @@
   + new lemmas `fmap_at_left0P`, and `fmap_at_right0E`.
 - in file `tvs.v`,
   + new lemmas `near_shiftE`, and `nearZE`.
+- in `num_topology.v`:
+  + lemmas `near_right_in_itv`, `near_left_in_itv`
 
 ### Changed
 
@@ -308,6 +288,8 @@
 
 - moved from `metric_structure.v` to `num_topology.v`: 
   + lemma `cvg_at_right_left_dnbhs`, generalized to `topologicalType` from `metricType`.
+- moved from `metric_structure.v` to `num_topology.v`: 
+  + lemma `cvg_at_right_left_dnbhs`, generalized to `topologicalType` from `metricType`
 
 ### Renamed
 
