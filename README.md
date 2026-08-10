@@ -104,7 +104,7 @@ Other work using MathComp-Analysis:
   doi:[10.1007/978-981-95-3585-9_3](https://doi.org/10.1007/978-981-95-3585-9_3)
 - [Cylindrical Algebraic Decomposition in Coq/Rocq](https://dl.acm.org/doi/pdf/10.1145/3779031.3779100) (2026)
   doi:[10.1145/3779031.3779100](https://doi.org/10.1145/3779031.3779100)
-- [Compositional Neural-Cyber-Physical System Verification in the Interactive Theorem Prover of Your Choice](https://arxiv.org/abs/2605.02790)
+- [Compositional Neural-Cyber-Physical System Verification in the Interactive Theorem Prover of Your Choice](https://arxiv.org/abs/2605.02790) (2026)
 
 ## About the stability of this library
 
