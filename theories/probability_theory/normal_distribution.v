@@ -885,9 +885,7 @@ rewrite (sqr_sqrtr (ltW _))// /post_stddev sqr_sqrtr.
 by rewrite /post_mean; field by rewrite ?s0_neq0 ?s_neq0 ?gt_eqF ?addr_gt0//.
 Qed.
 
-(**md $\mathcal{N}(t,s)(x)\mathcal{N}(m_0,s_0)(t) =
-  \mathcal{N}\left(m_0,\sqrt{s_0^2+s^2}\right)(x)\mathcal{N}(\mu_1,\sigma_1)(t)$
- with $\mu_1$ = `post_mean m0 s0 x s` and $\sigma_1$ = `post_stddev s0 s`. *)
+(**md $\mathcal{N}(t,s)(x)\mathcal{N}(m_0,s_0)(t) = \mathcal{N}\left(m_0,\sqrt{s_0^2+s^2}\right)(x)\mathcal{N}(\mu_1,\sigma_1)(t)$ with $\mu_1$ = `post_mean m0 s0 x s` and $\sigma_1$ = `post_stddev s0 s`. *)
 Lemma normal_pdf_conjugate m0 s0 s x t : s0 != 0 -> s != 0 ->
   normal_pdf t s x * normal_pdf m0 s0 t =
   normal_pdf m0 (Num.sqrt (s0 ^+ 2 + s ^+ 2)) x *
