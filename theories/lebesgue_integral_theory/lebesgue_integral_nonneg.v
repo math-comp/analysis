@@ -649,17 +649,19 @@ Qed.
 
 End integral_dirac.
 
-Lemma summable_integral_dirac {R : realType} (a : (\bar R)^nat) :
-  summable setT a -> (\sum_(n <oo) `|\int[\d_ n]_x a x| < +oo)%E.
+Lemma esummable_integral_dirac {R : realType} (a : (\bar R)^nat) :
+  esummable [set: nat] a -> (\sum_(n <oo) `|\int[\d_ n]_x a x| < +oo)%E.
 Proof.
 move=> sa.
 apply: (@le_lt_trans _ _ (\sum_(i <oo) `|fine (a i)|%:E))%E.
   apply: lee_nneseries => // n _; rewrite integral_dirac//.
-  move: (@summable_pinfty _ _ _ _ sa n Logic.I).
+  move: (@esummable_pinfty _ _ _ _ sa n Logic.I).
   by case: (a n) => //= r _; rewrite indicE/= mem_set// mul1r.
-move: (sa); rewrite /summable -fun_true -nneseries_esum//; apply: le_lt_trans.
+move: (sa); rewrite /esummable -fun_true -nneseries_esum//; apply: le_lt_trans.
 by apply: lee_nneseries => // n _ /=; case: (a n) => //; rewrite leey.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.18.0", use=esummable_integral_dirac)]
+Notation summable_integral_dirac := esummable_integral_dirac (only parsing).
 
 Section integral_measure_sum_nnsfun.
 Local Open Scope ereal_scope.

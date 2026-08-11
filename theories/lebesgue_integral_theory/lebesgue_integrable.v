@@ -887,16 +887,15 @@ End integral_measure_add.
 
 Section subadditive_countable.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
-Variable (mu : {measure set T -> \bar R}).
+Context {d} {T : measurableType d} {R : realType} (mu : {measure set T -> \bar R}).
 
-Lemma integrable_summable (F : (set T)^nat) (g : T -> \bar R):
+Lemma integrable_esummable (F : (set T)^nat) (g : T -> \bar R):
   trivIset setT F -> (forall k, measurable (F k)) ->
   mu.-integrable (\bigcup_k F k) g ->
-  summable [set: nat] (fun i => \int[mu]_(x in F i) g x).
+  esummable [set: nat] (fun i => \int[mu]_(x in F i) g x).
 Proof.
 move=> tF mF fi.
-rewrite /summable -(_ : [set _ | true] = setT); first exact/seteqP.
+rewrite /esummable -(_ : [set _ | true] = setT); first exact/seteqP.
 rewrite -nneseries_esum//.
 have [mf {fi}] := integrableP _ _ _ fi.
 rewrite ge0_integral_bigcup//; first exact: measurableT_comp.
@@ -938,24 +937,25 @@ transitivity ((\sum_(i <oo) \int[mu]_(x in F i) g^\+ x) -
 rewrite [X in X - _]nneseries_esum; first by move=> n _; exact: integral_ge0.
 rewrite [X in _ - X]nneseries_esum; first by move=> n _; exact: integral_ge0.
 rewrite set_true -esumB//=.
-  - apply: integrable_summable => //; apply: integrable_funepos => //.
+  - apply: integrable_esummable => //; apply: integrable_funepos => //.
     exact: bigcup_measurable.
-  - apply: integrable_summable => //; apply: integrable_funeneg => //.
+  - apply: integrable_esummable => //; apply: integrable_funeneg => //.
     exact: bigcup_measurable.
   - by move=> n _; exact: integral_ge0.
   - by move=> n _; exact: integral_ge0.
-rewrite summable_eseries.
-  under [X in summable _ X]eq_fun do rewrite -integralE.
-  by rewrite fun_true; exact: integrable_summable.
+rewrite esummable_eseries.
+  under [X in esummable _ X]eq_fun do rewrite -integralE.
+  by rewrite fun_true; exact: integrable_esummable.
 by congr (_ - _)%E; rewrite nneseries_esum// set_true.
 Qed.
 
 End subadditive_countable.
+#[deprecated(since="mathcomp-analysis 1.18.0", use=integrable_esummable)]
+Notation integrable_summable := integrable_esummable (only parsing).
 
 Section sequence_of_measures.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
-Variable m_ : {measure set T -> \bar R}^nat.
+Context {d} {T : measurableType d} {R : realType} (m_ : {measure set T -> \bar R}^nat).
 Let m := mseries m_ O.
 
 Lemma integral_measure_series (D : set T) (mD : measurable D) (f : T -> \bar R) :
@@ -983,11 +983,11 @@ have fineKp : \sum_(n <oo) `|\int[m_ n]_(x in D) f^\+ x| =
 rewrite nneseries_esum; first by move=> n _; exact/fine_ge0/integral_ge0.
 rewrite nneseries_esum; first by move=> n _; exact/fine_ge0/integral_ge0.
 rewrite -esumB//.
-  - by rewrite /= /summable -nneseries_esum// -fineKp.
-  - by rewrite /summable /= -nneseries_esum// -fineKn; exact: fmoo.
+  - by rewrite /= /esummable -nneseries_esum// -fineKp.
+  - by rewrite /esummable /= -nneseries_esum// -fineKn; exact: fmoo.
   - by move=> n _; exact/fine_ge0/integral_ge0.
   - by move=> n _; exact/fine_ge0/integral_ge0.
-rewrite -summable_eseries_esum.
+rewrite -esummable_eseries_esum.
   apply: (@le_lt_trans _ _ (\esum_(i in (fun=> true))
      `|(fine (\int[m_ i]_(x in D) f x))%:E|)).
     do 2 rewrite ge0_esum//.
@@ -1012,9 +1012,9 @@ End sequence_of_measures.
 
 Section integral_counting.
 Local Open Scope ereal_scope.
-Variable R : realType.
+Context {R : realType}.
 
-Lemma integral_count (a : nat -> \bar R) : summable setT a ->
+Lemma integral_count (a : nat -> \bar R) : esummable [set: nat] a ->
   \int[counting]_t (a t) = \sum_(k <oo) (a k).
 Proof.
 move=> sa.
@@ -1023,10 +1023,10 @@ transitivity (\int[mseries (fun n => \d_ n) O]_t a t).
   by rewrite /= counting_dirac.
 rewrite (@integral_measure_series _ _ R (fun n => \d_ n) setT)//=.
 - move=> n; apply/integrableP; split=> [//|].
-  by rewrite integral_dirac//= diracT mul1e (summable_pinfty sa).
-- by apply: summable_integral_dirac => //; exact: summable_funeneg.
-- by apply: summable_integral_dirac => //; exact: summable_funepos.
-- by apply: eq_eseriesr=> i _; rewrite integral_dirac//= diracT mul1e.
+  by rewrite integral_dirac//= diracT mul1e (esummable_pinfty sa).
+- by apply: esummable_integral_dirac => //; exact: esummable_funeneg.
+- by apply: esummable_integral_dirac => //; exact: esummable_funepos.
+- by apply: eq_eseriesr => i _; rewrite integral_dirac//= diracT mul1e.
 Qed.
 
 End integral_counting.

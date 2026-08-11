@@ -362,7 +362,7 @@ Lemma isd_mlet : isdistr mlet.
 Proof.
 split=> [x|J uqJ]; first by apply/ge0_psum.
 rewrite /mlet psum_bigop; first by move=> y x; rewrite mulr_ge0.
-  move=> u; apply/(le_summable (F2 := mu)) => //.
+  move=> u; apply/(le_summable (g := mu)) => //.
   by move=> x; rewrite mulr_ge0 //= ler_piMr ?le1_mu1.
 apply/(le_trans _ (le1_mu mu))/le_psum => //.
 move=> x; rewrite sumr_ge0 /= => [y _|]; first by rewrite mulr_ge0.
@@ -495,10 +495,11 @@ Lemma eq0_dlet (mu : {distr T / R}) (F : T -> {distr U / R}) y :
 Proof.
 unlock dlet; rewrite /= /mlet => /eq0_psum h x /dinsuppP /eqP mu_x.
 have {}/h: summable (fun x => mu x * F x y).
-  apply/(le_summable (F2 := mu)) => // z.
+  apply/(le_summable (g := mu)) => // z.
   by rewrite mulr_ge0 //= ler_piMr // le1_mu1.
 by move/(_ x)/eqP; rewrite mulf_eq0 (negbTE mu_x) /= => /eqP.
 Qed.
+
 End BindTheory.
 
 (* -------------------------------------------------------------------- *)
@@ -515,7 +516,7 @@ rewrite (eq_psum (F2 := fun y => PosSum.psum (S^~ y))) => [x|].
   by rewrite -psumZ //; apply/eq_psum => y /=.
 rewrite interchange_psum.
 + by move=> x; apply/summableZ/summable_mlet.
-+ rewrite {}/S; apply/(le_summable (F2 := mu)) => //.
++ rewrite {}/S; apply/(le_summable (g := mu)) => //.
   move=> x; rewrite ge0_psum /= psumZ ?ler_piMr //.
   apply/(le_trans _ (le1_mu (f1 x)))/le_psum => //.
   by move=> y; rewrite mulr_ge0 //= ler_piMr ?le1_mu1.
@@ -855,7 +856,7 @@ Implicit Types (mu : {distr T / R}) (A B E : pred T).
 
 Lemma summable_pr E mu : summable (fun x => (E x)%:R * mu x).
 Proof.
-apply/(le_summable (F2 := mu)) => [x|]; last by apply/summable_mu.
+apply/(le_summable (g := mu)) => [x|]; last by apply/summable_mu.
   by rewrite mulr_ge0 ?ler0n //= ler_piMl // lern1 leq_b1.
 Qed.
 
