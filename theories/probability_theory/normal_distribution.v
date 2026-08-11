@@ -11,14 +11,24 @@ From mathcomp Require Import lebesgue_integral ftc gauss_integral.
 (**md**************************************************************************)
 (* # Normal distribution                                                      *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*        normal_peak s := (sqrtr (s ^+ 2 * pi *+ 2))^-1                      *)
-(*     normal_fun m s x := expR (- (x - m) ^+ 2 / (s ^+ 2 *+ 2))              *)
-(*       normal_pdf m s == pdf of the normal distribution with mean m and     *)
-(*                         standard deviation s                               *)
-(*                         Using normal_peak and normal_pdf.                  *)
-(*      normal_prob m s == normal probability measure                         *)
-(* ```                                                                        *)
+(* `normal_peak s`                                                            *)
+(* : $\frac{1}{\sqrt{s^2 \cdot 2\pi}}$                                        *)
+(*                                                                            *)
+(* `normal_fun m s x`                                                         *)
+(* : $e^{\frac{- (x - m)^2}{2 s^2}}$                                          *)
+(*                                                                            *)
+(* `normal_pdf m s`                                                           *)
+(* : pdf of the normal distribution with mean m and standard deviation s      *)
+(* : Using normal_peak and normal_pdf.                                        *)
+(*                                                                            *)
+(* `normal_prob m s`                                                          *)
+(* : normal probability measure                                               *)
+(*                                                                            *)
+(* `post_stddev s0 s`                                                         *)
+(* : posterior standard deviation                                             *)
+(*                                                                            *)
+(* `mean_post m s0 x s`                                                       *)
+(* : posterior mean given an observation x                                    *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -596,6 +606,7 @@ Section normal_prob_lemmas.
 Context {R : realType}.
 Local Notation mu := lebesgue_measure.
 Local Open Scope ereal_scope.
+
 Import MeasurableR.
 
 Lemma integral_normal_prob (m s : R) f U : measurable U ->
@@ -698,7 +709,7 @@ rewrite (@fubini_tonelli _ _ _ _ _ mu mu (EFin \o
     rewrite [X in measurable_fun _  X](_ : _ = (fun x =>
         normal_pdf0 0 s2 (x.2 - (m2 + x.1)%R)))/=.
       apply/funext => x0.
-      by rewrite /normal_pdf0 normal_pdfE// normal_fun_center.
+      by rewrite /normal_pdf0 normal_pdfE// normal_fun_center0.
     apply: measurableT_comp => /=; first exact: measurable_normal_pdf0.
     under eq_fun do rewrite opprD.
     by apply: measurable_funD => //=; exact: measurable_funB.
@@ -833,3 +844,127 @@ by rewrite sqrtrM ?addr_ge0 ?sqr_ge0// mulrC.
 Qed.
 
 End normal_probD.
+
+Section gaussian_conjugate.
+Context {R : realType}.
+Implicit Types (s x m t : R) (V : set R).
+
+(**md $\sqrt{\frac{1}{\sigma_0^{-2} + \sigma^{-2}}}$ *)
+Definition post_stddev s0 s : R := Num.sqrt (s0 ^- 2 + s ^- 2)^-1.
+
+Lemma post_stddev_gt0 s0 s : s0 != 0 -> s != 0 -> 0 < post_stddev s0 s.
+Proof.
+move=> s0_neq0 s_neq0; rewrite /post_stddev sqrtr_gt0 invr_gt0.
+by rewrite addr_gt0// -exprVn// exprn_even_gt0//= invr_eq0.
+Qed.
+
+Lemma post_stddevE s0 s : s0 != 0 -> s != 0 ->
+  post_stddev s0 s ^+ 2 = s0 ^+ 2 * s ^+ 2 / (s0 ^+ 2 + s ^+ 2).
+Proof.
+move=> s0_neq0 s_neq0.
+rewrite /post_stddev sqr_sqrtr ?invr_ge0 ?addr_ge0 ?invr_ge0 ?sqr_ge0//.
+by field by rewrite ?paddr_eq0 ?sqr_ge0 ?negb_and ?sqrf_eq0 ?s0_neq0 ?s_neq0.
+Qed.
+
+(**md $\frac{\sigma^2 \mu_0 + \sigma_0^2 x}{\sigma_0^2 + \sigma^2}$ *)
+Definition post_mean m0 s0 x s : R :=
+  (s ^+ 2 * m0 + s0 ^+ 2 * x) / (s0 ^+ 2 + s ^+ 2).
+
+Lemma normal_fun_conjugate m0 s0 s x t : s0 != 0 -> s != 0 ->
+  normal_fun t s x * normal_fun m0 s0 t =
+  normal_fun m0 (Num.sqrt (s0 ^+ 2 + s ^+ 2)) x *
+  normal_fun (post_mean m0 s0 x s) (post_stddev s0 s) t.
+Proof.
+move=> s0_neq0 s_neq0.
+have ? : 0 < s0 ^+ 2 by rewrite exprn_even_gt0.
+have ? : 0 < s ^+ 2 by rewrite exprn_even_gt0.
+have ? : 0 < s0 ^+ 2 + s ^+ 2 by rewrite addr_gt0.
+rewrite /normal_fun -2!expRD; congr (expR _).
+rewrite (sqr_sqrtr (ltW _))// /post_stddev sqr_sqrtr.
+  by rewrite invr_ge0// ltW// addr_gt0// invr_gt0.
+by rewrite /post_mean; field by rewrite ?s0_neq0 ?s_neq0 ?gt_eqF ?addr_gt0//.
+Qed.
+
+(**md $\mathcal{N}(t,s)(x)\mathcal{N}(m_0,s_0)(t) = \mathcal{N}\left(m_0,\sqrt{s_0^2+s^2}\right)(x)\mathcal{N}(\mu_1,\sigma_1)(t)$ with $\mu_1$ = `post_mean m0 s0 x s` and $\sigma_1$ = `post_stddev s0 s`. *)
+Lemma normal_pdf_conjugate m0 s0 s x t : s0 != 0 -> s != 0 ->
+  normal_pdf t s x * normal_pdf m0 s0 t =
+  normal_pdf m0 (Num.sqrt (s0 ^+ 2 + s ^+ 2)) x *
+  normal_pdf (post_mean m0 s0 x s) (post_stddev s0 s) t.
+Proof.
+move=> s0_neq0 s_neq0.
+have ? : 0 < s0 ^+ 2 by rewrite exprn_even_gt0.
+have ? : 0 < s ^+ 2 by rewrite exprn_even_gt0.
+have ? : 0 < s0 ^+ 2 + s ^+ 2 by rewrite addr_gt0.
+have ? : 0 < Num.sqrt (s0 ^+ 2 + s ^+ 2) by rewrite sqrtr_gt0.
+have ? : 0 < post_stddev s0 s by rewrite post_stddev_gt0.
+rewrite !normal_pdfE// ?gt_eqF// mulrACA [RHS]mulrACA.
+congr (_ * _); last exact: normal_fun_conjugate.
+have ? : 0 <= s ^+ 2 * pi *+ 2 by rewrite mulrn_wge0// mulr_ge0 ?pi_ge0// ltW.
+have ? : 0 <= s0 ^+ 2 * pi *+ 2 by rewrite mulrn_wge0// mulr_ge0 ?pi_ge0// ltW.
+have ? : 0 <= (s0 ^+ 2 + s ^+ 2) * pi *+ 2
+  by rewrite mulrn_wge0// mulr_ge0 ?pi_ge0// ltW.
+rewrite /normal_peak (_ : Num.sqrt _ ^+ 2 = s0 ^+ 2 + s ^+ 2).
+  by rewrite sqr_sqrtr// ltW.
+rewrite post_stddevE// -invfM -[RHS]invfM -!sqrtrM//.
+by congr (Num.sqrt _)^-1; field by rewrite gt_eqF.
+Qed.
+
+Import MeasurableR.
+
+(* bounded integrand against a probability measure *)
+Local Lemma integrable_normal_pdf_likelihood m0 s0 s x V :
+  s != 0 -> measurable V ->
+  (normal_prob m0 s0).-integrable V (fun t => (normal_pdf t s x)%:E).
+Proof.
+move=> s_neq0 mV.
+rewrite [X in _.-integrable _ X](_ : _ = EFin \o normal_pdf x s).
+  by apply/funext => t; rewrite normal_pdf_sym.
+rewrite measurable_bounded_integrable//.
+- by rewrite (le_lt_trans (probability_le1 _ _))// ltey.
+- by apply: measurable_funTS; exact: measurable_normal_pdf.
+- exists (normal_peak s); split; first by rewrite num_real.
+  move=> y sy /= t _.
+  by rewrite ger0_norm ?normal_pdf_ge0// (le_trans (normal_pdf_ub _ _ _))// ltW.
+Qed.
+
+(**md Gaussian-Gaussian conjugate prior for a single observation $x$ (cf. first
+ row of the table of
+ [conjugate priors for continuous likelihoods](https://en.wikipedia.org/wiki/Conjugate_prior#When_the_likelihood_function_is_a_continuous_distribution)):
+ the prior $\mathcal{N}(m_0,s_0)$ is conjugate to the likelihood
+ $\mathcal{N}(\mu,s)$ with parameter $\mu$ (and known variance $s^2$), and the
+ posterior hyperparameters are $\mu_1$ = `post_mean m0 s0 x s` and
+ $\sigma_1$ = `post_stddev s0 s`; i.e.,
+ $V \mapsto \int_{t \in V} \mathcal{N}(t,s)(x)d\mathcal{N}(m_0,s_0)$ normalized
+ by its total mass is $\mathcal{N}(\mu_1,\sigma_1)$. *)
+Lemma normal_prob_conjugate m0 s0 s x V :
+  s0 != 0 -> s != 0 -> measurable V ->
+  ((\int[normal_prob m0 s0]_(t in V) (normal_pdf t s x)%:E) /
+   \int[normal_prob m0 s0]_t (normal_pdf t s x)%:E =
+   normal_prob (post_mean m0 s0 x s) (post_stddev s0 s) V)%E.
+Proof.
+move=> s0_neq0 s_neq0 mV.
+have ? : 0 < s0 ^+ 2 by rewrite exprn_even_gt0.
+have ? : 0 < s ^+ 2 by rewrite exprn_even_gt0.
+have ? : 0 < s0 ^+ 2 + s ^+ 2 by rewrite addr_gt0.
+have ? : 0 < Num.sqrt (s0 ^+ 2 + s ^+ 2) by rewrite sqrtr_gt0.
+pose K := normal_pdf m0 (Num.sqrt (s0 ^+ 2 + s ^+ 2)) x.
+have Kpos : 0 < K.
+  rewrite /K normal_pdfE ?gt_eqF// mulr_gt0 ?normal_peak_gt0 ?gt_eqF//.
+  exact: expR_gt0.
+have ? : K%:E != 0 by rewrite eqe gt_eqF.
+have step U : measurable U ->
+    (\int[normal_prob m0 s0]_(t in U) (normal_pdf t s x)%:E =
+    K%:E * normal_prob (post_mean m0 s0 x s) (post_stddev s0 s) U)%E.
+  move=> mU.
+  rewrite integral_normal_prob ?integrable_normal_pdf_likelihood//=.
+  under eq_integral => t _ do
+    rewrite -EFinM (normal_pdf_conjugate m0 x t s0_neq0 s_neq0) EFinM.
+  rewrite -/K ge0_integralZl_EFin //=.
+  - by move=> t _; rewrite lee_fin; exact: normal_pdf_ge0.
+  - by apply/measurable_EFinP/measurable_funTS; exact: measurable_normal_pdf.
+  - exact: ltW.
+rewrite (step _ mV) (step _ measurableT) probability_setT mule1.
+by rewrite muleAC divee // mul1e.
+Qed.
+
+End gaussian_conjugate.

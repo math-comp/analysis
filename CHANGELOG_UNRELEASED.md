@@ -11,6 +11,12 @@
   + lemmas `cvg1M`, `cvgM1`, `cvg0M`, `cvgM0`
   + lemmas `cvg1Z`, `cvg0Z`, `cvgZ0`
 
+- in `normal_distribution.v`:
+  + definition `post_stddev`
+  + lemmas `post_stddev_gt0`, `post_stddevE`
+  + definition `post_mean`
+  + lemmas `normal_fun_conjugate`, `normal_pdf_conjugate`, `normal_prob_conjugate`
+
 - in `function_spaces.v`:
   + lemma `within_continuous_big`
 
