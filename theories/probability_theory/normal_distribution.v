@@ -870,7 +870,6 @@ Qed.
 Definition post_mean m0 s0 x s : R :=
   (s ^+ 2 * m0 + s0 ^+ 2 * x) / (s0 ^+ 2 + s ^+ 2).
 
-(**md "complete the square" for the `normal_fun` exponents *)
 Lemma normal_fun_conjugate m0 s0 s x t : s0 != 0 -> s != 0 ->
   normal_fun t s x * normal_fun m0 s0 t =
   normal_fun m0 (Num.sqrt (s0 ^+ 2 + s ^+ 2)) x *
@@ -886,8 +885,9 @@ rewrite (sqr_sqrtr (ltW _))// /post_stddev sqr_sqrtr.
 by rewrite /post_mean; field by rewrite ?s0_neq0 ?s_neq0 ?gt_eqF ?addr_gt0//.
 Qed.
 
-(**md "complete the square": $p(x | \theta) * p(\theta)$ factors as a theta-free
-   marginal times the posterior density *)
+(**md $\mathcal{N}(t,s)(x)\mathcal{N}(m_0,s_0)(t) =
+  \mathcal{N}\left(m_0,\sqrt{s_0^2+s^2}\right)(x)\mathcal{N}(\mu_1,\sigma_1)(t)$
+ with $\mu_1$ = `post_mean m0 s0 x s` and $\sigma_1$ = `post_stddev s0 s`. *)
 Lemma normal_pdf_conjugate m0 s0 s x t : s0 != 0 -> s != 0 ->
   normal_pdf t s x * normal_pdf m0 s0 t =
   normal_pdf m0 (Num.sqrt (s0 ^+ 2 + s ^+ 2)) x *
@@ -929,8 +929,15 @@ rewrite measurable_bounded_integrable//.
   by rewrite ger0_norm ?normal_pdf_ge0// (le_trans (normal_pdf_ub _ _ _))// ltW.
 Qed.
 
-(* Gaussian-Gaussian conjugate prior: the posterior of theta given X = x is
-   the single Gaussian normal_prob (post_mean ..) (post_stddev ..) *)
+(**md Gaussian-Gaussian conjugate prior for a single observation $x$ (cf. first
+ row of the table of
+ [conjugate priors for continuous likelihoods](https://en.wikipedia.org/wiki/Conjugate_prior#When_the_likelihood_function_is_a_continuous_distribution)):
+ the prior $\mathcal{N}(m_0,s_0)$ is conjugate to the likelihood
+ $\mathcal{N}(\mu,s)$ with parameter $\mu$ (and known variance $s^2$), and the
+ posterior hyperparameters are $\mu_1$ = `post_mean m0 s0 x s` and
+ $\sigma_1$ = `post_stddev s0 s`; i.e.,
+ $V \mapsto \int_{t \in V} \mathcal{N}(t,s)(x)d\mathcal{N}(m_0,s_0)$ normalized
+ by its total mass is $\mathcal{N}(\mu_1,\sigma_1)$. *)
 Lemma normal_prob_conjugate m0 s0 s x V :
   s0 != 0 -> s != 0 -> measurable V ->
   ((\int[normal_prob m0 s0]_(t in V) (normal_pdf t s x)%:E) /
