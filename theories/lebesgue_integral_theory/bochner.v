@@ -73,7 +73,6 @@ End topology_lemmas.
 
 Section uniform_lemmas.
 Context {U : choiceType} {V : uniformType}.
-
 Lemma cvg_uniform_fin_bigcup [f : U -> V] [F : set_system (U -> V)] {I}
     [D : set I] {A : I -> set U} : Filter F -> finite_set D ->
 (forall i, D i -> {uniform A i, F --> f}) ->
@@ -141,7 +140,7 @@ Qed.
 but normedModType doesn't inherit from metricType yet*)
 Lemma closed_dist0 {R:realType} {N:normedModType R} {F : set N}
 (cF : closed F) (x:N) :
-F x = forall e:R, 0 < e -> exists f:N, F f /\ `|x - f| < e.
+F x = forall eps:R, 0<eps -> exists f:N, F f /\ `|x - f| < eps.
 Proof.
   rewrite propeqE; split=>[Fx e|Cx]. exists x; split=>//=. by rewrite subrr normr0.
   have Q : forall n:nat, exists f:N, F f /\ `|x-f| < n.+1%:R^-1.
@@ -493,16 +492,6 @@ Import HBSimple.
 Definition bochner_measurable (f: T -> X) :=
   exists f_ : ({sfun T >-> X} : lmodType _)^nat,
 \forall x \ae mu, f_ n x @[n --> \oo]--> f x.
-
-Lemma bmeas_meas (f : T -> X) : bochner_measurable f -> measure_is_complete mu
- -> measurable_fun [set:T] f.
-Proof.
-move=> [F [A [mA mA0 /subsetCl cv]]] cmu. rewrite -(setvU A).
-apply/measurable_funU=>//. exact: measurableC. split=>[|_ Y mY].
-  apply: measurable_fun_cv _ cv=>m. apply: measurable_funP.
-apply: cmu. apply: (negligibleS (@subIsetl _ A (f@^-1`Y))).
-by exists A; split.
-Qed.
 
 Lemma bmeasD (f g : T -> X) : bochner_measurable f -> bochner_measurable g ->
 bochner_measurable (f + g).
