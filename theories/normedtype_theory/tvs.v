@@ -624,7 +624,6 @@ HB.instance Definition _ := Nbhs_isUniform_mixin.Build E
     entourage_inv entourage_split_ex
     nbhsE.
 
-
 HB.instance Definition _ := PreTopologicalNmodule_isTopologicalNmodule.Build E add_continuous.
 
 HB.instance Definition _ := TopologicalNmodule_isTopologicalLmodule.Build R E scale_continuous.
@@ -642,12 +641,15 @@ Proof. exact/nbhs0N_subproof/scale_continuous. Qed.
 Lemma nbhsT (x :E) : nbhs 0 U -> nbhs x (+%R x @` U).
 Proof. exact/nbhsT_subproof/add_continuous. Qed.
 
-Lemma nbhsB (z x : E) : nbhs z U -> nbhs (x + z) (+%R x @` U).
-Proof. exact/nbhsB_subproof/add_continuous. Qed.
-
 End ConvexTvs_numDomain.
 
-Lemma near_shiftE (R : numDomainType) (E : convexTvsType R) (U : set E) (x a : E) :
+Lemma nbhsB {R : numDomainType} {E : topologicalLmodType R} (U : set E)
+    (z x : E) :
+  nbhs z U -> nbhs (x + z) (+%R x @` U).
+Proof. exact/nbhsB_subproof/add_continuous. Qed.
+
+(* NB: similar to nbhsDl *)
+Lemma near_shiftE (R : numDomainType) (E : topologicalLmodType R) (U : set E) (x a : E) :
   (\forall y \near x + a, U y) = (\near x, U (x + a)).
 Proof.
 eqProp; rewrite -!nbhs_nearE.
@@ -671,7 +673,7 @@ near=> x => //=; exists (r^-1 *: x); last by rewrite scalerA divff// scale1r.
 by apply: (BU (r^-1, x)); split => //=;[exact: nbhs_singleton|near: x].
 Unshelve. all: by end_near. Qed.
 
-Lemma nbhsZ  (R : numFieldType) (E : convexTvsType R) (U : set E) (r : R) (x :E) :
+Lemma nbhsZ (R : numFieldType) (E : convexTvsType R) (U : set E) (r : R) (x :E) :
   r != 0 -> nbhs x U -> nbhs (r *:x) ( *:%R r @` U ).
 Proof.
 move=> r0 U0; have /= := scale_continuous ((r^-1, r *: x)) U.

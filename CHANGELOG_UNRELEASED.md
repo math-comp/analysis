@@ -46,6 +46,9 @@
 
 ### Generalized
 
+- in `tvs.v`:
+  + lemma `nbhsB`
+
 ### Deprecated
 
 ### Removed
