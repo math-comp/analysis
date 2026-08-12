@@ -2,8 +2,7 @@
 From mathcomp Require Import boot order ssralg ssrnum ssrint interval finmap.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets.
-From mathcomp Require Import functions cardinality.
+From mathcomp Require Import boolp classical_sets functions cardinality.
 
 (**md**************************************************************************)
 (* # Finitely-supported big operators                                         *)

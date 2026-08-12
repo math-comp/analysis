@@ -1,9 +1,8 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import boot order ssralg ssrnum.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import ereal reals interval_inference topology normedtype.
-From mathcomp Require Import prodnormedzmodule.
+From mathcomp Require Import boot order ssralg interval_inference ssrnum.
+From mathcomp Require Import boolp classical_sets functions reals.
+From mathcomp Require Import ereal topology normedtype prodnormedzmodule.
 
 (**md**************************************************************************)
 (* # Bachmann-Landau notations: $f=o(e)$, $f=O(e)$                            *)

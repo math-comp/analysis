@@ -3,9 +3,9 @@ From mathcomp Require Import boot order ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import boolp classical_sets functions mathcomp_extra.
-From mathcomp Require Import reals topology ereal tvs normedtype landau.
-From mathcomp Require Import sequences derive realfun convex.
+From mathcomp Require Import boolp classical_sets functions.
+From mathcomp Require Import reals convex ereal topology tvs normedtype landau.
+From mathcomp Require Import sequences derive realfun.
 
 (**md**************************************************************************)
 (* # Theory of exponential/logarithm functions                                *)

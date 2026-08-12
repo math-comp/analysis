@@ -1,12 +1,12 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import boot order ssralg ssrnum matrix interval.
+From mathcomp Require Import boot order ssralg ssrnum matrix interval
+  interval_inference.
 From mathcomp Require Import poly sesquilinear.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp contra classical_sets.
-From mathcomp Require Import functions reals interval_inference topology.
-From mathcomp Require Import prodnormedzmodule tvs normedtype landau.
+From mathcomp Require Import boolp contra classical_sets functions reals.
+From mathcomp Require Import topology prodnormedzmodule tvs normedtype landau.
 
 (**md**************************************************************************)
 (* # Differentiation                                                          *)

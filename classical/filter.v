@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra finmap.
-From mathcomp Require Import boolp classical_sets functions wochoice.
-From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
+From mathcomp Require Import boolp classical_sets functions wochoice
+  cardinality fsbigop set_interval.
 
 (**md**************************************************************************)
 (* # Filters                                                                  *)

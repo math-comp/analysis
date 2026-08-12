@@ -5,9 +5,9 @@ From mathcomp Require Import interval interval_inference archimedean.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality.
-From mathcomp Require Import set_interval ereal reals topology tvs.
-From mathcomp Require Import num_normedtype pseudometric_normed_Zmodule.
-From mathcomp Require Import normed_module.
+From mathcomp Require Import set_interval reals.
+From mathcomp Require Import topology ereal tvs num_normedtype.
+From mathcomp Require Import pseudometric_normed_Zmodule normed_module.
 
 (**md**************************************************************************)
 (* # Urysohn's lemma                                                          *)

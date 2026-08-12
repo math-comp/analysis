@@ -4,7 +4,7 @@ From mathcomp Require Import boot order finmap ssralg ssrint ssrnum interval.
 From mathcomp Require Import interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import mathcomp_extra boolp classical_sets set_interval.
+From mathcomp Require Import boolp classical_sets set_interval.
 From mathcomp Require Import reals topology.
 
 (**md**************************************************************************)

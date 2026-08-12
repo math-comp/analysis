@@ -1,11 +1,10 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import boot order algebra finmap.
+From mathcomp Require Import boot order algebra interval_inference finmap.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
-From mathcomp Require Import reals interval_inference ereal topology normedtype.
-From mathcomp Require Import sequences esum.
+From mathcomp Require Import reals ereal topology normedtype sequences esum.
 From mathcomp Require Import measurable_structure measurable_function.
 
 (**md**************************************************************************)
