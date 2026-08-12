@@ -36,13 +36,26 @@
   + lemma `esumE`
   + lemmas `esummable_esumZ`, `esummable_esumD`, `esummableB`
 
+- in `num_normedtype.v`,
+  + lemmas `pinftyV`, `ninftyV`, `cvgryV`, `cvgrNyV`, `lt0_cvgMlNy`, 
+    `lt0_cvgMrNy`, `lt0_cvgMly`, `lt0_cvgMry`
+
+- in `pseudometric_normed_Zmodule.v`,
+  + lemmas `fmap_at_left0P`, `fmap_at_right0E`
+
+- in `tvs.v`,
+  + lemmas `near_shiftE`, `nearZE`
+
+- in `num_topology.v`:
+  + lemmas `near_right_in_itv`, `near_left_in_itv`
+
 ### Changed
 
 - in `derive.v`:
   + instance `is_derive_mx` is now a lemma
 
 - moved from `metric_structure.v` to `num_topology.v`: 
-  + lemma `cvg_at_right_left_dnbhs`, generalized to `topologicalType` from `metricType`.
+  + lemma `cvg_at_right_left_dnbhs`, generalized to `topologicalType` from `metricType`
 
 ### Renamed
 

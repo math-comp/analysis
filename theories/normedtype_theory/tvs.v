@@ -647,6 +647,19 @@ Proof. exact/nbhsB_subproof/add_continuous. Qed.
 
 End ConvexTvs_numDomain.
 
+Lemma near_shiftE (R : numDomainType) (E : convexTvsType R) (U : set E) (x a : E) :
+  (\forall y \near x + a, U y) = (\near x, U (x + a)).
+Proof.
+eqProp; rewrite -!nbhs_nearE.
+- move/(nbhsB (-a)).
+  rewrite addrC addrK.
+  apply: filterS => _ [y Uy <-].
+  by rewrite addrC addNKr.
+- move/(nbhsB a); rewrite addrC.
+  apply: filterS => ? [y Uya <-].
+  by rewrite addrC.
+Qed.
+
 Section ConvexTvs_numField.
 
 Lemma nbhs0Z (R : numFieldType) (E : convexTvsType R) (U : set E) (r : R) :
@@ -666,6 +679,20 @@ rewrite scalerA mulVf// scale1r =>/(_ U0)[] /= B [B1 B2] BU.
 near=> z; exists (r^-1 *: z); last by rewrite scalerA divff// scale1r.
 by apply: (BU (r^-1,z)); split; [exact: nbhs_singleton|near: z].
 Unshelve. all: by end_near. Qed.
+
+Lemma nearZE (R : numFieldType) (T : convexTvsType R) (c : R) (x : T) (P : set T) :
+  c != 0 -> (\forall y \near c *: x, P y) = (\near x, P (c *: x)).
+Proof.
+move=> c_neq0.
+have cinv_neq0 : c^-1 != 0 by apply: invr_neq0.
+eqProp.
+- move/(nbhsZ cinv_neq0).
+  rewrite scalerK//.
+  apply: filterS => ? [y Py <-].
+  by rewrite scalerKV.
+- move/(nbhsZ c_neq0).
+  by apply: filterS => ? [y Pcy <-].
+Qed.
 
 End ConvexTvs_numField.
 
