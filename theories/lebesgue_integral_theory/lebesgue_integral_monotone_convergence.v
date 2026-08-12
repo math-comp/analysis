@@ -35,6 +35,7 @@ Variables (mu : {measure set T -> \bar R}) (f : T -> \bar R)
 Hypothesis f0 : forall x, 0 <= f x.
 Hypothesis mf : measurable_fun setT f.
 
+Import HBNNSimple.
 
 Hypothesis nd_g : forall x, nondecreasing_seq (g^~x).
 Hypothesis gf : forall x, EFin \o g^~ x @ \oo --> f x.
@@ -161,6 +162,7 @@ Local Definition max_g2' : (T -> R)^nat :=
 Local Definition max_g2 : {nnsfun T >-> R}^nat :=
   fun k => bigmax_nnsfun (g2^~ k) k.
 
+Import HBNNSimple.
 
 Let is_cvg_g2 n t : cvgn (EFin \o (g2 n ^~ t)).
 Proof.

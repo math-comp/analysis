@@ -1062,6 +1062,7 @@ HB.export KCOMP_SFINITE_KERNEL.
 
 Section measurable_fun_preimage_integral.
 Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
+Import HBNNSimple.
 Variables (k : Y -> \bar R)
   (k_ : ({nnsfun Y >-> R}) ^nat)
   (ndk_ : nondecreasing_seq (k_ : (Y -> R)^nat))
@@ -1108,6 +1109,7 @@ End measurable_fun_preimage_integral.
 
 Section measurable_fun_integral_kernel.
 
+Import HBNNSimple.
 
 Lemma measurable_fun_integral_kernel
     d d' (X : measurableType d) (Y : measurableType d') (R : realType)
@@ -1138,6 +1140,7 @@ rewrite integral_indic//= /kcomp.
 by apply: eq_integral => y _; rewrite integral_indic.
 Qed.
 
+Import HBNNSimple.
 
 Let integral_kcomp_nnsfun x (f : {nnsfun Z >-> R}) :
   \int[kcomp l k x]_z (f z)%:E = \int[l x]_y (\int[k (x, y)]_z (f z)%:E).
@@ -1319,6 +1322,7 @@ split => //.
   + by split => //; rewrite kfcompkindic.
 Qed.
 
+Import HBNNSimple.
 
 (* [Lemma 14.20, Klenke 2014]  *)
 Lemma measurable_kfcomp : measurable_fun [set: T1 * T2] f ->

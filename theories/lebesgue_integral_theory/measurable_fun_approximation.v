@@ -351,6 +351,7 @@ Definition nnsfun_approx : {nnsfun T >-> R}^nat := fun n => locked (add_nnsfun
       else nnsfun0) (n * 2 ^ n)%N)
   (scale_nnsfun (indic_nnsfun _ (mB n)) (ler0n _ n))).
 
+Import HBNNSimple.
 
 Lemma nnsfun_approxE n : nnsfun_approx n = approx n :> (T -> R).
 Proof.
@@ -386,7 +387,8 @@ Import MeasurableR.
   NonNegFun.on (cst x%:num).*)
 (* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 
-Import MeasurableR.
+Import HBSimple.
+Import HBNNSimple.
 
 Lemma approximation_sfun :
   exists g : {sfun T >-> R}^nat, (forall x, D x -> EFin \o g ^~ x @ \oo --> f x).
@@ -706,6 +708,7 @@ Let R  : measurableType _ := rT(*measurableTypeR rT*).
 Hypothesis mA : measurable A.
 Hypothesis finA : mu A < +oo.
 
+Import HBSimple.
 
 Let lusin_simple (f : {sfun R >-> rT}) (eps : rT) : (0 < eps)%R ->
   exists K, [/\ compact K, K `<=` A, mu (A `\` K) < eps%:E &

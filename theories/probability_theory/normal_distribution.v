@@ -219,8 +219,6 @@ HB.instance Definition _ m s := Measure.on (normal_prob m s).
 
 End normal_prob_def.
 
-End normal_prob_def.
-
 Section normal_probability.
 Context {R : realType} (m sigma : R).
 Local Open Scope ring_scope.

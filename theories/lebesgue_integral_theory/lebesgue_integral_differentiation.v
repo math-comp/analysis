@@ -81,6 +81,7 @@ Import MeasurableR.
 Let R  : measurableType _ := (*measurableTypeR*) rT.
 Local Open Scope ereal_scope.
 
+Import HBSimple.
 
 Lemma approximation_continuous_integrable (E : set _) (f : rT -> rT):
   measurable E -> mu E < +oo -> mu.-integrable E (EFin \o f) ->

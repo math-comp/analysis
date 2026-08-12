@@ -260,14 +260,14 @@ HB.instance Definition _ (V : normedModType R) :=
 Implicit Types (f g : {sfun aT >-> N} : lmodType _).
 
 Lemma sfun0' : (0 : {sfun aT >-> N} : lmodType _) =1 cst 0. Proof. by []. Qed.
-Lemma sfunN' f : - f =1 \- f. Proof. by []. Qed.
-Lemma sfunD' f g : f + g =1 f \+ g. Proof. by []. Qed.
-Lemma sfunB' f g : f - g =1 f \- g. Proof. by []. Qed.
-Lemma sfunZ' k f : k *: f =1 k \*: f. Proof. by []. Qed.
-Lemma sfun_sum' I r (P : {pred I}) (f : I -> {sfun aT >-> N} : lmodType _) (x : aT) :
+Lemma sfunN f : - f =1 \- f. Proof. by []. Qed.
+Lemma sfunD f g : f + g =1 f \+ g. Proof. by []. Qed.
+Lemma sfunB f g : f - g =1 f \- g. Proof. by []. Qed.
+Lemma sfunZ k f : k *: f =1 k \*: f. Proof. by []. Qed.
+Lemma sfun_sum I r (P : {pred I}) (f : I -> {sfun aT >-> N} : lmodType _) (x : aT) :
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
-Lemma sfun_prod' I r (P : {pred I}) (f : I -> {sfun aT >-> N} : lmodType _) (x : aT) :
+Lemma sfun_prod I r (P : {pred I}) (f : I -> {sfun aT >-> N} : lmodType _) (x : aT) :
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
 
@@ -327,20 +327,31 @@ move=> mD Y mY; rewrite preimage_indic_lmod //.
 do 2 (case: ifP => _); apply: measurableI=>//; exact: measurableC.
 Qed.
 
+Import HBSimple.
+
 HB.instance Definition _ A mA z := @isMeasurableFun.Build _ _ aT nT
   (mindic_lmod mA z) (@measurable_indic_lmod [set: aT] A mA z).
 
 HB.instance Definition _ (D : set aT) (mD : measurable D) (z : nT) :
    @FImFun aT nT (mindic_lmod mD z) := FImFun.on (mindic_lmod mD z).
 
-Import HBSimple.
-
-(*
 Definition mindic_lmod_sfun (D : set aT) (mD : measurable D) (z : nT) :
   {sfun aT >-> nT} := mindic_lmod mD z.
-*)
 
 End mindic_lmod.
+
+Section fimfunE_lmod.
+Context {T : Type} {K : pzRingType} {L : lmodType K} (f : {fimfun T >-> L}).
+
+Lemma fimfunE_lmod (x : T) :
+  f x = \sum_(y \in range f)  indic_lmod (f @^-1` [set y]) y x.
+Proof.
+rewrite (fsbigD1 (f x))// /= indic_lmodE mem_set// fsbig1 ?addr0//.
+by move=> y [fy /= /nesym yfx]; rewrite indic_lmodE memNset ?mulr0.
+Qed.
+
+End fimfunE_lmod.
+
 
 Lemma preimage_nnfun0 T (R : realDomainType) (f : {nnfun T >-> R}) t :
   t < 0 -> f @^-1` [set t] = set0.
