@@ -349,6 +349,8 @@
     `cvg_sub0`, `cvg0`, `subr_cvg0`
   + lemmas `within_continuousD`, `within_continuousB`, `within_continuousN`
   + lemmas `le_closed_ball`, `closed_ball0`
+- in `tvs.v`:
+  + lemma `nbhsB`
 
 - in `esum.v`:
   + lemmas `esum_bigcupT`, `esum_bigcup`
