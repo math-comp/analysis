@@ -41,9 +41,9 @@ digraph dependencies {
 		"classical/functions"	[URL="mathcomp.classical.functions.html",
 			fillcolor=1,
 			label=functions];
-		"classical/mathcomp_extra"	[URL="mathcomp.classical.mathcomp_extra.html",
+		"classical/mathcomp_compat"	[URL="mathcomp.classical.mathcomp_compat.html",
 			fillcolor=1,
-			label=mathcomp_extra];
+			label=mathcomp_compat];
 		"classical/set_interval"	[URL="mathcomp.classical.set_interval.html",
 			fillcolor=1,
 			label=set_interval];
@@ -56,6 +56,9 @@ digraph dependencies {
 		"classical/wochoice"	[URL="mathcomp.classical.wochoice.html",
 			fillcolor=1,
 			label=wochoice];
+		"classical/mathcomp_extra"	[URL="mathcomp.classical.mathcomp_extra.html",
+			fillcolor=1,
+			label=mathcomp_extra];
 	}
 	subgraph cluster_ExperimentalReals {
 		graph [label=ExperimentalReals];
@@ -423,8 +426,8 @@ digraph dependencies {
 	"classical/fsbigop" -> "classical/filter";
 	"classical/functions" -> "classical/cardinality";
 	"classical/functions" -> "classical/set_interval";
-	"classical/mathcomp_extra" -> "classical/boolp";
-	"classical/mathcomp_extra" -> "reals/constructive_ereal";
+	"classical/mathcomp_compat" -> "classical/all_classical";
+	"classical/mathcomp_compat" -> "classical/mathcomp_extra";
 	"classical/set_interval" -> "classical/classical_orders";
 	"classical/set_interval" -> "classical/filter";
 	"classical/set_interval" -> "reals/reals";
