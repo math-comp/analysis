@@ -60,7 +60,11 @@ functional_analysis/hahn_banach_theorem.v
 realfun.v
 sequences.v
 exp.v
-trigo.v
+
+elementary_functions/trigonometry_functions.v
+elementary_functions/trigonometry_integral.v
+elementary_functions/trigo.v
+
 esum.v
 derive.v
 numfun.v

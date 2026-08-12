@@ -93,7 +93,11 @@ theories/functional_analysis/hahn_banach_theorem.v
 theories/sequences.v
 theories/realfun.v
 theories/exp.v
-theories/trigo.v
+
+theories/elementary_functions/trigonometry_functions.v
+theories/elementary_functions/trigonometry_integral.v
+theories/elementary_functions/trigo.v
+
 theories/esum.v
 theories/derive.v
 theories/numfun.v

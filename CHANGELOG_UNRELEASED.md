@@ -35,6 +35,10 @@
      `esummable_esum_fin_num`, `esummable_esumN`
   + lemma `esumE`
   + lemmas `esummable_esumZ`, `esummable_esumD`, `esummableB`
+- new files (result of the splitting of `trigo.v`):
+  + `elementary_functions/trigo.v`
+  + `elementary_functions/trigonometry.v`
+  + `elementary_functions/trigonometry_integral.v`
 
 ### Changed
 
