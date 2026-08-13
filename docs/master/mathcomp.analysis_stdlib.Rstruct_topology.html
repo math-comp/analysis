@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis_stdlib.Rstruct_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis a362cf0 2026.08.12-19:29" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis a362cf0 2026.08.13-19:31" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -362,18 +362,19 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="RexpE" class="id"><div name="RexpE" class=" tooltip">RexpE<span class='tooltip-area'><p>sfinite_measure_seq :
-forall [d : measure_display] [T : measurableType d] [R : realType],
-{sfinite_measure set T -> \bar R}%R ->
-({finite_measure set T -> \bar R}%R) ^nat
+<span class="vernacular">Definition</span><span class="id"> </span><span id="RexpE" class="id"><div name="RexpE" class=" tooltip">RexpE<span class='tooltip-area'><p>pushforward :
+forall {d1 d2 : measure_display} {T1 : sigmaRingType d1}
+  {T2 : sigmaRingType d2} {R : realFieldType},
+(set T1 -> \bar R) -> (T1 -> T2) -> set T2 -> \bar R
 
-sfinite_measure_seq is not universe polymorphic
-Arguments sfinite_measure_seq [d]%_measure_display_scope [T R] mu _
-sfinite_measure_seq is transparent
+pushforward is not universe polymorphic
+Arguments pushforward {d1 d2}%_measure_display_scope 
+  {T1 T2 R} (m f)%_function_scope A%_classical_set_scope
+pushforward is transparent
 Expands to: Constant
-            mathcomp.analysis.measure_theory.measure_function.sfinite_measure_seq
+            mathcomp.analysis.measure_theory.measure_function.pushforward
 Declared in
-library mathcomp.analysis.measure_theory.measure_function, line 1534, characters 11-30
+library mathcomp.analysis.measure_theory.measure_function, line 660, characters 11-22
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/analysis_stdlib/Rstruct_topology.v#L112' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RlnE" class="id"><div name="RlnE" class=" tooltip">RlnE<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/analysis_stdlib/Rstruct_topology.v#L114' target='_blank'>Source code</a></span></div></span> (<span id="x:22" class="id"><div name="x:22" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/analysis_stdlib/Rstruct_topology.v#L114' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rdefinitions.html#RbaseSymbolsImpl.R">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln">Rpower</a></span>.<span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln">ln</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#x:22">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.exp.html#ln">exp</a></span>.<span class="id"><a href="mathcomp.analysis.exp.html#ln">ln</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#x:22">x</a></span>.<br/>
@@ -387,20 +388,15 @@ library mathcomp.analysis.measure_theory.measure_function, line 1534, characters
 <span class="gallina-kwd">by</span><span class="id"> case:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln_exists">ln_exists</a></span><span class="id"> =&gt;</span><span class="id"> y</span><span class="id"> -&gt;;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.exp.html#expRK">exp</a></span>.<span class="id"><a href="mathcomp.analysis.exp.html#expRK">expRK</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="RealsE" class="id"><div name="RealsE" class=" tooltip">RealsE<span class='tooltip-area'><p>mfrestr :
-forall [d : measure_display] [T : measurableType d] 
-  [R : realFieldType] [D : set T] [f : set T -> \bar R],
-d.-measurable%classic D -> (f D < +oo)%E -> set T -> \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="RealsE" class="id"><div name="RealsE" class=" tooltip">RealsE<span class='tooltip-area'><p>SetRing.type : Type -> Type
 
-mfrestr is not universe polymorphic
-Arguments mfrestr [d]%_measure_display_scope [T R] 
-  [D]%_classical_set_scope [f]%_function_scope mD 
-  _ X%_classical_set_scope
-mfrestr is transparent
+SetRing.type is not universe polymorphic
+Arguments SetRing.type T%_type_scope
+SetRing.type is transparent
 Expands to: Constant
-            mathcomp.analysis.measure_theory.measure_function.mfrestr
+            mathcomp.analysis.measure_theory.measure_function.SetRing.type
 Declared in
-library mathcomp.analysis.measure_theory.measure_function, line 1544, characters 11-18
+library mathcomp.analysis.measure_theory.measure_function, line 694, characters 11-15
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/analysis_stdlib/Rstruct_topology.v#L124' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#RealsE">RealsE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RlnE">RlnE</a></span>).<br/>
 
       <div class="footer"><hr/>Generated by <a href="https://github.com/affeldt-aist/rocqnavi/">rocqnavi</a></div>

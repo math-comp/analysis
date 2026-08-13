@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.experimental_reals.discrete</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis a362cf0 2026.08.12-19:29" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis a362cf0 2026.08.13-19:31" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -297,15 +297,14 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> PIncl</span>.<br/>
 <span class="vernacular">Variables</span> (<span id="PIncl.T" class="id"><div name="PIncl.T" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/experimental_reals/discrete.v#L64' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>) (<span id="PIncl.E" class="id"><div name="PIncl.E" class=" tooltip">E<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/experimental_reals/discrete.v#L64' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="PIncl.F" class="id"><div name="PIncl.F" class=" tooltip">F<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/experimental_reals/discrete.v#L64' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred">pred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#T:22">T</a></span>) (<span id="PIncl.le" class="id"><div name="PIncl.le" class=" tooltip">le<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/experimental_reals/discrete.v#L64' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">{subset</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#E:25">E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> &lt;=</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#F:26">F</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#ca592708f529c7c7ee5f3dbd6cf93463">}</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="pincl" class="id"><div name="pincl" class=" tooltip">pincl<span class='tooltip-area'><p>drestr :
-forall {R : realType} {T : choiceType}, pred T -> {distr T / R} -> distr R T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="pincl" class="id"><div name="pincl" class=" tooltip">pincl<span class='tooltip-area'><p>esp : forall {R : realType} [T : choiceType], {distr T / R} -> (T -> R) -> R
 
-drestr is not universe polymorphic
-Arguments drestr {R T} p mu
-drestr is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.drestr
+esp is not universe polymorphic
+Arguments esp {R} [T] mu f%_function_scope
+esp is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.esp
 Declared in
-library mathcomp.experimental_reals.distr, line 229, characters 11-17
+library mathcomp.experimental_reals.distr, line 124, characters 11-14
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/experimental_reals/discrete.v#L66' target='_blank'>Source code</a></span></div></span> (<span id="x:29" class="id"><div name="x:29" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/experimental_reals/discrete.v#L66' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#PIncl.E">E</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#PIncl.F">F</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.experimental_reals.discrete.html#PSubSub">PSubSub</a></span> (<span class="id"><a href="mathcomp.experimental_reals.discrete.html#PIncl.le">le</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#valP">valP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#x:29">x</a></span>)).<br/>
 <span class="vernacular">End</span><span class="id"> PIncl</span>.<br/>
@@ -319,25 +318,28 @@ library mathcomp.experimental_reals.distr, line 229, characters 11-17
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="runpickle:37" class="id"><div name="runpickle:37" class=" tooltip">runpickle<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/experimental_reals/discrete.v#L77' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#option">option</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#Countable.E">E</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id">of</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#pcancel">pcancel</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#rpickle:36">rpickle</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#runpickle:37">runpickle</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="rpickle" class="id"><div name="rpickle" class=" tooltip">rpickle<span class='tooltip-area'><p>mrat : forall {R : realType} [T : choiceType], seq T -> T -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="rpickle" class="id"><div name="rpickle" class=" tooltip">rpickle<span class='tooltip-area'><p>espc :
+forall {R : realType} [T : choiceType],
+{distr T / R} -> (T -> R) -> pred T -> R
 
-mrat is not universe polymorphic
-Arguments mrat {R} [T] s%_seq_scope _
-mrat is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.mrat
+espc is not universe polymorphic
+Arguments espc {R} [T] mu f%_function_scope A
+espc is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.espc
 Declared in
-library mathcomp.experimental_reals.distr, line 261, characters 11-15
+library mathcomp.experimental_reals.distr, line 125, characters 11-15
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/experimental_reals/discrete.v#L80' target='_blank'>Source code</a></span></div></span> (<span id="c:38" class="id"><div name="c:38" class=" tooltip">c<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/experimental_reals/discrete.v#L80' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#countable">countable</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id">let:</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#Countable">Countable</a></span><span class="id"> p</span><span class="id"> _</span><span class="id"> _</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c:38">c</a></span><span class="gallina-kwd"> in</span><span class="id"> p</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="runpickle" class="id"><div name="runpickle" class=" tooltip">runpickle<span class='tooltip-area'><p>drat : forall {R : realType} [T : choiceType], seq T -> distr R T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="runpickle" class="id"><div name="runpickle" class=" tooltip">runpickle<span class='tooltip-area'><p>has_esp :
+forall {R : realType} [T : choiceType], {distr T / R} -> (T -> R) -> Prop
 
-drat is not universe polymorphic
-Arguments drat {R} [T] s%_seq_scope
-drat is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.drat
+has_esp is not universe polymorphic
+Arguments has_esp {R} [T] mu f%_function_scope
+has_esp is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.has_esp
 Declared in
-library mathcomp.experimental_reals.distr, line 304, characters 11-15
+library mathcomp.experimental_reals.distr, line 127, characters 11-18
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/experimental_reals/discrete.v#L83' target='_blank'>Source code</a></span></div></span> (<span id="c:40" class="id"><div name="c:40" class=" tooltip">c<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/experimental_reals/discrete.v#L83' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#countable">countable</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id">let:</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#Countable">Countable</a></span><span class="id"> _</span><span class="id"> p</span><span class="id"> _</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c:40">c</a></span><span class="gallina-kwd"> in</span><span class="id"> p</span>.<br/>
 <br/>
@@ -372,24 +374,25 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> CountType</span>.<br/>
 <span class="vernacular">Variables</span> (<span id="CountableTheory.CountType.T" class="id"><div name="CountableTheory.CountType.T" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/experimental_reals/discrete.v#L108' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#Equality.Exports.eqType">eqType</a></span>) (<span id="CountableTheory.CountType.E" class="id"><div name="CountableTheory.CountType.E" class=" tooltip">E<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/experimental_reals/discrete.v#L108' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred">pred</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#T:57">T</a></span>) (<span id="CountableTheory.CountType.c" class="id"><div name="CountableTheory.CountType.c" class=" tooltip">c<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/experimental_reals/discrete.v#L108' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#countable">countable</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#E:59">E</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="countable_countMixin" class="id"><div name="countable_countMixin" class=" tooltip">countable_countMixin<span class='tooltip-area'><p>dunit : forall {R : realType} [T : choiceType], T -> distr R T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="countable_countMixin" class="id"><div name="countable_countMixin" class=" tooltip">countable_countMixin<span class='tooltip-area'><p>isdistr : forall {R : realType} {T : choiceType}, (T -> R) -> Prop
 
-dunit is not universe polymorphic
-Arguments dunit {R} [T] x
-dunit is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.dunit
+isdistr is not universe polymorphic
+Arguments isdistr {R T} mu%_function_scope
+isdistr is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.isdistr
 Declared in
-library mathcomp.experimental_reals.distr, line 310, characters 11-16
+library mathcomp.experimental_reals.distr, line 141, characters 11-18
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/experimental_reals/discrete.v#L110' target='_blank'>Source code</a></span></div></span> <span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.choice.html#Countable.copy">Countable</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.choice.html#Countable.copy">copy</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.E">E</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#pcan_type">pcan_type</a></span> (<span class="id"><a href="mathcomp.experimental_reals.discrete.html#rpickleK">rpickleK</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.c">c</a></span>)).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="countable_choiceMixin" class="id"><div name="countable_choiceMixin" class=" tooltip">countable_choiceMixin<span class='tooltip-area'><p>duni : forall {R : realType} [T : choiceType], seq T -> distr R T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="countable_choiceMixin" class="id"><div name="countable_choiceMixin" class=" tooltip">countable_choiceMixin<span class='tooltip-area'><p>mkdistr :
+forall {R : realType} {T : choiceType} [mu : T -> R], isdistr mu -> distr R T
 
-duni is not universe polymorphic
-Arguments duni {R} [T] s%_seq_scope
-duni is transparent
-Expands to: Constant mathcomp.experimental_reals.distr.duni
+mkdistr is not universe polymorphic
+Arguments mkdistr {R T} [mu]%_function_scope isd
+mkdistr is transparent
+Expands to: Constant mathcomp.experimental_reals.distr.mkdistr
 Declared in
-library mathcomp.experimental_reals.distr, line 311, characters 11-15
+library mathcomp.experimental_reals.distr, line 164, characters 11-18
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/a362cf02999d950c91eb058855f318afd86d71fb/experimental_reals/discrete.v#L112' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.choice.html#Choice.copy">Choice</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.choice.html#Choice.copy">copy</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">[psub</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68"> </a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.E">E</a></span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#c0c811e7546edbb2f6af662704007a68">]</a></span><br/>
 &nbsp;&nbsp;(<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#pcan_type">pcan_type</a></span> (<span class="id"><a href="mathcomp.experimental_reals.discrete.html#rpickleK">rpickleK</a></span><span class="id"> </span><span class="id"><a href="mathcomp.experimental_reals.discrete.html#CountableTheory.CountType.c">c</a></span>)).<br/>
 <span class="vernacular">End</span><span class="id"> CountType</span>.<br/>
