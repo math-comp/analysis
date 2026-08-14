@@ -77,6 +77,48 @@
 
 ### Removed
 
+- in `unstable.v`:
+  + lemmas `le_bigmax_seq`, `bigmax_sup_seq` (now in MathComp 2.6.0)
+
+- in `classical_sets.v`:
+  + notations `preimage_itv_o_infty`, `preimage_itv_c_infty`,
+    `preimage_itv_infty_o`, `preimage_itv_infty_c`
+    (deprecated since 1.8.0)
+
+- in `constructive_ereal.v`:
+  + notations `maxeMr`, `maxeMl`, `mineMr`, `mineMl`
+    (deprecated since 1.8.0)
+
+- in `derive.v`:
+  + notation `le0r_derive1_ndecr` (deprecated since 1.9.0)
+
+- in `set_interval.v`:
+  + notations `opp_itv_bnd_infty`, `opp_itv_infty_bnd` (deprecated since 1.9.0)
+
+- in `Rstruct.v`:
+  + definition `Rinvx` (deprecated since 1.9.0)
+
+- in `real_interval.v`:
+  + notations `itv_bnd_infty_bigcup`, `itv_bnd_infty_bigcup0S`, `itv_infty_bnd_bigcup`
+    (deprecated since 1.9.0)
+
+- in `num_topology.v`:
+  + notations `nbhs_lt`, `nbhs_le` (deprecated since 1.9.0)
+
+- in `normed_module.v`:
+  + notation `cvge_sub0` (deprecated since 1.9.0)
+
+- in `num_normedtype.v`:
+  + notation `cvgyNP` (deprecated since 1.9.0)
+
+- in `measurable_function.v`:
+  + notation `preimage_class_measurable_fun` (deprecated since 1.9.0)
+
+- in `measurable_structure.v`:
+  + notations `setDI_closed`, `setDI_semi_setD_closed`, `sedDI_closedP`,
+    `setringDI`, `preimage_classes`, `preimage_classes_comp`
+    (deprecated since 1.9.0)
+
 ### Infrastructure
 
 ### Misc

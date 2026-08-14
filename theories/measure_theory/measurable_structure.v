@@ -217,10 +217,6 @@ Definition lambda_system :=
 Definition monotone := ndseq_closed /\ niseq_closed.
 
 End set_systems.
-#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed `setD_closed`")]
-Notation setDI_closed := setD_closed (only parsing).
-#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed `setD_semi_setD_closed`")]
-Notation setDI_semi_setD_closed := setD_semi_setD_closed (only parsing).
 
 Lemma powerset_sigma_ring (T : Type) (D : set T) :
   sigma_ring [set X | X `<=` D].
@@ -297,8 +293,6 @@ move=> A B GA GB; suff <- : A `\` (A `&` B) = A `\` B.
   by apply: GD => //; apply: GI.
 by rewrite setDE setCI setIUr -setDE setDv set0U.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed `setD_closed`")]
-Notation sedDI_closedP := setD_closed (only parsing).
 
 Lemma sigma_algebra_bigcap T (I : choiceType) (D : set T)
     (F : I -> set_system T) (J : set I) :
@@ -418,8 +412,6 @@ Qed.
 
 End generated_setring.
 #[global] Hint Resolve smallest_setring setring0 : core.
-#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed `setringD`")]
-Notation setringDI := setringD (only parsing).
 
 Lemma g_sigma_algebra_lambda_system T (G : set_system T) (D : set T) :
   (forall X, <<s D, G >> X -> X `<=` D) ->
@@ -1529,7 +1521,7 @@ Qed.
 
 End covering.
 
-Lemma measurable_uncurry (T1 T2 : Type) d (T : semiRingOfSetsType d)
+Lemma measurable_uncurry {T1 T2 : Type} {d} {T : semiRingOfSetsType d}
     (G : T1 -> T2 -> set T) (x : T1 * T2) :
   measurable (G x.1 x.2) <-> measurable (uncurry G x).
 Proof. by case: x. Qed.
@@ -1560,17 +1552,13 @@ Qed.
 
 End g_sigma_algebra_cross.
 
-Definition g_sigma_preimageU d1 d2
-  (T1 : semiRingOfSetsType d1) (T2 : semiRingOfSetsType d2) (T : Type)
+Definition g_sigma_preimageU {d1 d2}
+  {T1 : semiRingOfSetsType d1} {T2 : semiRingOfSetsType d2} {T : Type}
   (f1 : T -> T1) (f2 : T -> T2) := <<s cross f1 f2 measurable measurable >>.
-#[deprecated(since="mathcomp-analysis 1.9.0",
-  note="renamed to `g_sigma_preimageU`")]
-Notation preimage_classes := g_sigma_preimageU (only parsing).
 
 Section product_lemma.
-Context d1 d2 (T1 : semiRingOfSetsType d1) (T2 : semiRingOfSetsType d2).
-Variables (T : choiceType) (f1 : T -> T1) (f2 : T -> T2).
-Variables (T3 : Type) (g : T3 -> T).
+Context {d1 d2} {T1 : semiRingOfSetsType d1} {T2 : semiRingOfSetsType d2}
+  (T : choiceType) (f1 : T -> T1) (f2 : T -> T2) (T3 : Type) (g : T3 -> T).
 
 Lemma g_sigma_preimageU_comp : g_sigma_preimageU (f1 \o g) (f2 \o g) =
   preimage_set_system setT g (g_sigma_preimageU f1 f2).
@@ -1586,16 +1574,13 @@ rewrite predeqE => C; split.
 Qed.
 
 End product_lemma.
-#[deprecated(since="mathcomp-analysis 1.9.0",
-  note="renamed to `g_sigma_preimageU_comp`")]
-Notation preimage_classes_comp := g_sigma_preimageU_comp (only parsing).
 
 Definition measure_prod_display :
   (measure_display * measure_display) -> measure_display.
 Proof. exact. Qed.
 
 Section product_salgebra_instance.
-Context {d1} {d2} {T1 : semiRingOfSetsType d1} {T2 : semiRingOfSetsType d2}.
+Context {d1 d2} {T1 : semiRingOfSetsType d1} {T2 : semiRingOfSetsType d2}.
 Let f1 := @fst T1 T2.
 Let f2 := @snd T1 T2.
 

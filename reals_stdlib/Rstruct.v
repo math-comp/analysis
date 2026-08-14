@@ -160,9 +160,6 @@ Proof. by move=> x; rewrite inE/= RinvxE /Rinvx -if_neg => ->. Qed.
 
 End Rinvx.
 
-#[deprecated(since="mathcomp-analysis 1.9.0", note="To be removed. Use GRing.inv instead.")]
-Definition Rinvx := Rinv.
-
 #[hnf]
 HB.instance Definition _ := GRing.NzRing_hasMulInverse.Build R
   RmultRinv RinvRmult intro_unit_R Rinv_out.
