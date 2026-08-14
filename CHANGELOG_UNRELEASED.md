@@ -35,9 +35,10 @@
      `esummable_esum_fin_num`, `esummable_esumN`
   + lemma `esumE`
   + lemmas `esummable_esumZ`, `esummable_esumD`, `esummableB`
+
 - new files (result of the splitting of `trigo.v`):
   + `elementary_functions/trigo.v`
-  + `elementary_functions/trigonometry.v`
+  + `elementary_functions/trigonometry_functions.v`
   + `elementary_functions/trigonometry_integral.v`
 
 ### Changed
@@ -47,6 +48,12 @@
 
 - moved from `metric_structure.v` to `num_topology.v`: 
   + lemma `cvg_at_right_left_dnbhs`, generalized to `topologicalType` from `metricType`.
+
+- moved from `trigo.v` to `trigonometry_integral.v`:
+  + lemmas `integral0_oneDsqr`, `integral0y_oneDsqr`
+
+- moved from `trigo.v` to `trigonometry_functions.v`:
+  + all contents except lemmas `integral0_oneDsqr`, `integral0y_oneDsqr`
 
 ### Renamed
 

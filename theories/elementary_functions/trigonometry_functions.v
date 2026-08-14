@@ -14,24 +14,47 @@ From mathcomp Require Import landau sequences derive realfun exp realfun.
 (* This file provides the definitions of basic trigonometric functions and    *)
 (* develops their theories.                                                   *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*    periodic f T == f is a periodic function of period T                    *)
-(* alternating f T == f is an alternating function of period T                *)
-(*     sin_coeff x == the sequence of coefficients of sin x                   *)
-(*           sin x == the sine function, i.e., lim (series (sin_coeff x))     *)
-(*    sin_coeff' x == the sequence of odd coefficients of sin x               *)
-(*     cos_coeff x == the sequence of coefficients of cos x                   *)
-(*           cos x == the cosine function, i.e., lim (series (cos_coeff x))   *)
-(*    cos_coeff' x == the sequence of even coefficients of cos x              *)
-(*              pi == pi                                                      *)
-(*           tan x == the tangent function                                    *)
-(*          acos x == the arccos function                                     *)
-(*          asin x == the arcsin function                                     *)
-(*          atan x == the arctangent function                                 *)
-(* ```                                                                        *)
+(* `periodic f T`                                                             *)
+(* : `f` is a periodic function of period `T`                                 *)
 (*                                                                            *)
-(* Acknowledgments: the proof of cos 2 < 0 is inspired from HOL-light, some   *)
-(* proofs of trigonometric relations are taken from                           *)
+(* `alternating f T`                                                          *)
+(* : `f` is an alternating function of period `T`                             *)
+(*                                                                            *)
+(* `sin_coeff x`                                                              *)
+(* : the sequence of coefficients of $\sin(x)$                                *)
+(*                                                                            *)
+(* `sin x`                                                                    *)
+(* : the sine function, i.e., `lim (series (sin_coeff x))`                    *)
+(*                                                                            *)
+(* `sin_coeff' x`                                                             *)
+(* : the sequence of odd coefficients of $\sin(x)$                            *)
+(*                                                                            *)
+(* `cos_coeff x`                                                              *)
+(* : the sequence of coefficients of $\cos(x)$                                *)
+(*                                                                            *)
+(* `cos x`                                                                    *)
+(* : the cosine function, i.e., `lim (series (cos_coeff x))`                  *)
+(*                                                                            *)
+(* `cos_coeff' x`                                                             *)
+(* : the sequence of even coefficients of $\cos(x)$                           *)
+(*                                                                            *)
+(* `pi`                                                                       *)
+(* : $\pi$                                                                    *)
+(*                                                                            *)
+(* `tan x`                                                                    *)
+(* : the tangent function                                                     *)
+(*                                                                            *)
+(* `acos x`                                                                   *)
+(* : the $\arccos$ function                                                   *)
+(*                                                                            *)
+(* `asin x`                                                                   *)
+(* : the $\arcsin$ function                                                   *)
+(*                                                                            *)
+(* `atan x`                                                                   *)
+(* : the $\arctan$ function                                                   *)
+(*                                                                            *)
+(* Acknowledgments: the proof of $\cos(2) < 0$ is inspired from HOL-light,    *)
+(* some proofs of trigonometric relations are taken from                      *)
 (* https://github.com/affeldt-aist/coq-robot.                                 *)
 (*                                                                            *)
 (******************************************************************************)
@@ -81,7 +104,7 @@ by move/(lt_le_trans ffnfn); rewrite ltxx.
 Qed.
 
 Section periodic.
-Variables U V : zmodType.
+Context {U V : zmodType}.
 Implicit Type f : U -> V.
 
 Definition periodic f (T : U) := forall u, f (u + T) = f u.
@@ -93,7 +116,7 @@ Qed.
 End periodic.
 
 Section alternating.
-Variables (U : zmodType) (V : pzRingType).
+Context {U : zmodType} {V : pzRingType}.
 Implicit Type f : U -> V.
 
 Definition alternating f (T : U) := forall x, f (x + T) = - f x.
@@ -120,7 +143,7 @@ HB.lock Definition cos {R : realType} x : R := lim (series (cos_coeff x) @ \oo).
 Canonical locked_cos := Unlockable cos.unlock.
 
 Section CosSin.
-Variable R : realType.
+Context {R : realType}.
 Implicit Types x y : R.
 
 Lemma sin_coeffE x : sin_coeff x =
@@ -192,10 +215,10 @@ Proof. by rewrite /cos_coeff /= odd_double /= !mul0r. Qed.
 Lemma cos_coeff_2_0 : cos_coeff 2 0%N = 1 :> R.
 Proof. by rewrite /cos_coeff /= divr1 2!mul1r. Qed.
 
-Lemma cos_coeff_2_2 : cos_coeff 2 2%N = - 2%:R :> R.
+Lemma cos_coeff_2_2 : cos_coeff 2 2%N = - 2 :> R.
 Proof. by rewrite /cos_coeff /= mul1r mulN1r mulNr mulfK. Qed.
 
-Lemma cos_coeff_2_4 : cos_coeff 2 4%N = 2%:R / 3%:R :> R.
+Lemma cos_coeff_2_4 : cos_coeff 2 4%N = 2 / 3 :> R.
 Proof.
 apply/eqP; rewrite eqr_div //= ?pnatr_eq0 // -exprnP sqrrN expr1n 2!mul1r.
 by rewrite -natrX -2!natrM eqr_nat.
@@ -478,7 +501,7 @@ Proof. by apply/and3P; rewrite ?num_real !bnd_simp ?cos_geN1 ?cos_le1. Qed.
 Canonical cos_inum {R : realType} (x : R) := Itv.mk (num_spec_cos x).
 
 Section Pi.
-Variable R : realType.
+Context {R : realType}.
 Implicit Types (x y : R) (n k : nat).
 
 Definition pi : R := get [set x | 0 <= x <= 2 /\ cos x = 0] *+ 2.
@@ -493,7 +516,7 @@ rewrite -(cvg_lim (@Rhausdorff R) h).
 apply: (@lt_trans _ _ (\sum_(0 <= i < 3) - cos_coeff' 2 i)).
   do 3 rewrite big_nat_recl//; rewrite big_nil addr0 3!cos_coeff'E double0.
   rewrite cos_coeff_2_0 cos_coeff_2_2 -muln2 cos_coeff_2_4 addrA -(opprD 1).
-  rewrite opprB -(@natrB _ 2 1)// subn1/= -[in X in X - _](@divff _ 3%:R)//.
+  rewrite opprB -(@natrB _ 2 1)// subn1/= -[in X in X - _](@divff _ 3)//.
   by rewrite -mulrBl divr_gt0// -natrB// -[(_ - _)%N]/_.+1.
 rewrite -seriesN lt_sum_lim_series //.
   by move/cvgP in h; by rewrite seriesN.
@@ -776,7 +799,7 @@ End Pi.
 Arguments pi {R}.
 
 Section Tan.
-Variable R : realType.
+Context {R : realType}.
 
 Definition tan (x : R) := sin x / cos x.
 
@@ -873,7 +896,7 @@ HB.lock Definition acos {R : realType} (x : R) : R :=
 Canonical locked_acos := Unlockable acos.unlock.
 
 Section Acos.
-Variable R : realType.
+Context {R : realType}.
 Implicit Type x : R.
 
 Lemma acos_def x :
@@ -929,9 +952,9 @@ Proof.
 by have := @cosK 0; rewrite cos0 => -> //; rewrite in_itv //= lexx pi_ge0.
 Qed.
 
-Lemma acos0 : acos (0 : R) = pi / 2%:R.
+Lemma acos0 : acos (0 : R) = pi / 2.
 Proof.
-have := @cosK (pi / 2%:R).
+have := @cosK (pi / 2).
 rewrite cos_pihalf => -> //; rewrite in_itv//= divr_ge0 ?ler0n ?pi_ge0//=.
 by rewrite ler_pdivrMr ?ltr0n// ler_peMr ?pi_ge0// ler1n.
 Qed.
@@ -999,7 +1022,7 @@ HB.lock Definition asin {R : realType} (x : R) : R :=
 Canonical locked_asin := Unlockable asin.unlock.
 
 Section Asin.
-Variable R : realType.
+Context {R : realType}.
 Implicit Type x : R.
 
 Lemma asin_def x :
@@ -1018,7 +1041,7 @@ have /IVT[] // :
   by case: (He x1); rewrite !x1I.
 Qed.
 
-Lemma asin_geNpi2 x : -1 <= x <= 1 -> -(pi / 2) <= asin x.
+Lemma asin_geNpi2 x : -1 <= x <= 1 -> - (pi / 2) <= asin x.
 Proof. by move=> /asin_def[/andP[]]. Qed.
 
 Lemma asin_lepi2 x : -1 <= x <= 1 -> asin x <= pi / 2.
@@ -1027,7 +1050,7 @@ Proof. by move=> /asin_def[/andP[]]. Qed.
 Lemma asinK : {in `[(-1),1], cancel (@asin R) sin}.
 Proof. by move=> x; rewrite in_itv/= => /asin_def[/andP[]]. Qed.
 
-Lemma asin_ltpi2 x : -1 <= x < 1 -> asin x < pi/2.
+Lemma asin_ltpi2 x : -1 <= x < 1 -> asin x < pi / 2.
 Proof.
 move=> /andP[x_geN1 x_lt1]; move: (x_lt1).
 have : asin x <= pi / 2 by rewrite asin_lepi2 // x_geN1 ltW.
@@ -1172,7 +1195,7 @@ apply: tan_inj; last by rewrite atanK tan0.
 - by rewrite in_itv/= oppr_cp0 divr_gt0 ?pi_gt0.
 Qed.
 
-Lemma atan1 : atan 1 = pi / 4%:R :> R.
+Lemma atan1 : atan 1 = pi / 4 :> R.
 Proof.
 apply: tan_inj; first 2 last.
   by rewrite atanK tan_piquarter.
