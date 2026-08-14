@@ -66,6 +66,9 @@ Proof. by move=> mY; rewrite -[f @^-1` _]setTI; exact: measurable_funP. Qed.
 #[deprecated(since="mathcomp-analysis 1.13.0", note="renamed to `measurable_funPTI`")]
 Notation measurable_sfunP := measurable_funPTI (only parsing).
 
+(*#[global] Hint Extern 0 (measurable (_ @^-1` [set _])) =>
+  solve [apply: measurable_funPTI; exact: measurable1] : core.*)
+
 Section mfun_pred.
 Context {d d'} {aT : sigmaRingType d} {rT : sigmaRingType d'}.
 Definition mfun : {pred aT -> rT} := mem [set f | measurable_fun setT f].
