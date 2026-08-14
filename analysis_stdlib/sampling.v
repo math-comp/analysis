@@ -1,17 +1,17 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect.
-From mathcomp Require Import ssralg poly ssrnum ssrint interval finmap.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop.
-Require Reals (*Interval.Tactic*).
+From mathcomp Require Import boot order ssralg interval interval_inference.
+From mathcomp Require Import poly ssrnum ssrint finmap.
+From mathcomp Require Import unstable.
+From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
+From Stdlib Require Reals (*Interval.Tactic*).
 From mathcomp Require Import (canonicals) Rstruct Rstruct_topology.
 From HB Require Import structures.
 From mathcomp Require Import exp numfun lebesgue_measure lebesgue_integral.
-From mathcomp Require Import reals ereal interval_inference topology normedtype.
+From mathcomp Require Import reals ereal topology normedtype.
 From mathcomp Require Import sequences realfun convex real_interval.
 From mathcomp Require Import derive esum measure exp numfun lebesgue_measure.
 From mathcomp Require Import lebesgue_integral kernel probability.
-From mathcomp Require Import hoelder unstable measurable_realfun.
+From mathcomp Require Import hoelder measurable_realfun.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -734,7 +734,7 @@ rewrite bernoulli_probE// diracE/= mem_set// mule1// diracE/= memNset//.
 by rewrite mule0 adde0 /distribution /= => <-.
 Qed.
 
-Lemma bernoulli_RV2 (X : bernoulliRV P p) : P [set i | X i = 0%R] = (`1-p)%:E.
+Lemma bernoulli_RV2 (X : bernoulliRV P p) : P [set i | X i = 0%R] = p.~%:E.
 Proof.
 have/(congr1 (fun f => f [set 0%:R])):= @bernoulliP _ _ _ _ _ X.
 rewrite bernoulli_probE// diracE/= memNset// mule0// diracE/= mem_set// add0e mule1.
@@ -784,7 +784,7 @@ by case: (X x) => /=; rewrite ?mulr1 ?mulr0.
 Qed.
 
 Lemma bernoulli_variance (X : bernoulliRV P p) :
-  'V_P[bool_to_real R X] = (p * (`1-p))%:E.
+  'V_P[bool_to_real R X] = (p * p.~)%:E.
 Proof.
 rewrite (@varianceE _ _ _ _ (bool_to_real R X));
   [rewrite ?[X in _ \o X]bool_RV_sqr; apply: Lfun_bernoulli..|].
@@ -859,7 +859,7 @@ have mB : measurable B by exact: measurable_funPTI.
 have dAB : [disjoint A & B].
   by apply/disj_setPRL; rewrite /A /B preimage_true preimage_false.
 have TAB : setT = A `|` B by rewrite -preimage_setU -setT_bool preimage_setT.
-rewrite unlock TAB integral_setU_EFin//; first by rewrite -TAB.
+rewrite unlock TAB integral_setU//; first by rewrite -TAB; exact/measurable_EFinP.
 under eq_integral.
   move=> x /=.
   rewrite /A inE/= /bool_to_real /= => ->.
