@@ -143,9 +143,6 @@ digraph dependencies {
 		"theories/exp"	[URL="mathcomp.analysis.exp.html",
 			fillcolor=5,
 			label=exp];
-		"theories/trigo"	[URL="mathcomp.analysis.trigo.html",
-			fillcolor=5,
-			label=trigo];
 		"theories/ftc"	[URL="mathcomp.analysis.ftc.html",
 			fillcolor=5,
 			label=ftc];
@@ -531,10 +528,11 @@ digraph dependencies {
 	"theories/derive" -> "theories/realfun";
 	"theories/derive" -> "theories/measure_theory/signed_measure";
 	"theories/exp" -> "theories/measurable_realfun";
+	"theories/exp" -> "theories/elementary_functions/trigonometry_functions";
 	"theories/exp" -> "analysis_stdlib/Rstruct_topology";
-	"theories/trigo" -> "theories/gauss_integral";
-	"theories/trigo" -> "theories/pi_irrational";
-	"theories/ftc" -> "theories/trigo";
+	"theories/elementary_functions/trigonometry_functions" -> "theories/elementary_functions/trigonometry_integral";
+	"theories/elementary_functions/trigonometry_integral" -> "theories/elementary_functions/trigo";
+	"theories/ftc" -> "theories/elementary_functions/trigonometry_integral";
 	"theories/ftc" -> "theories/probability_theory/exponential_distribution";
 	"theories/ftc" -> "theories/probability_theory/beta_distribution";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/ftc";
@@ -544,6 +542,8 @@ digraph dependencies {
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/uniform_distribution";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/poisson_distribution";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/charge";
+	"theories/elementary_functions/trigo" -> "theories/gauss_integral";
+	"theories/elementary_functions/trigo" -> "theories/pi_irrational";
 	"theories/measure_theory/measurable_structure" -> "theories/measure_theory/measurable_function";
 	"theories/measure_theory/measure_function" -> "theories/measure_theory/counting_measure";
 	"theories/measure_theory/measure_function" -> "theories/measure_theory/dirac_measure";

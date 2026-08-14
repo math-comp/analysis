@@ -1082,31 +1082,39 @@ subgraph cluster_Analysis {
   "theories/realfun" -> "theories/exp";
   "theories/sequences" -> "theories/exp";
   "theories/topology_theory/topology" -> "theories/exp";
-
-subgraph cluster_Analysis {
-    "theories/trigo"[
-        label="trigo",
-        URL="mathcomp.analysis.trigo.html",
-        fillcolor=5
-    ]
-}
-  "classical/boolp" -> "theories/trigo";
-  "classical/classical_sets" -> "theories/trigo";
-  "classical/functions" -> "theories/trigo";
-  "classical/unstable" -> "theories/trigo";
-  "reals/reals" -> "theories/trigo";
-  "theories/derive" -> "theories/trigo";
-  "theories/ereal" -> "theories/trigo";
-  "theories/exp" -> "theories/trigo";
-  "theories/ftc" -> "theories/trigo";
-  "theories/landau" -> "theories/trigo";
-  "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/trigo";
-  "theories/lebesgue_measure" -> "theories/trigo";
-  "theories/measure_theory/measure" -> "theories/trigo";
-  "theories/normedtype_theory/normedtype" -> "theories/trigo";
-  "theories/realfun" -> "theories/trigo";
-  "theories/sequences" -> "theories/trigo";
-  "theories/topology_theory/topology" -> "theories/trigo";
+  "classical/boolp" -> "theories/elementary_functions/trigonometry_functions";
+  "classical/classical_sets" -> "theories/elementary_functions/trigonometry_functions";
+  "classical/functions" -> "theories/elementary_functions/trigonometry_functions";
+  "classical/unstable" -> "theories/elementary_functions/trigonometry_functions";
+  "reals/reals" -> "theories/elementary_functions/trigonometry_functions";
+  "theories/derive" -> "theories/elementary_functions/trigonometry_functions";
+  "theories/ereal" -> "theories/elementary_functions/trigonometry_functions";
+  "theories/exp" -> "theories/elementary_functions/trigonometry_functions";
+  "theories/landau" -> "theories/elementary_functions/trigonometry_functions";
+  "theories/normedtype_theory/normedtype" -> "theories/elementary_functions/trigonometry_functions";
+  "theories/realfun" -> "theories/elementary_functions/trigonometry_functions";
+  "theories/sequences" -> "theories/elementary_functions/trigonometry_functions";
+  "theories/topology_theory/topology" -> "theories/elementary_functions/trigonometry_functions";
+  "classical/boolp" -> "theories/elementary_functions/trigonometry_integral";
+  "classical/classical_sets" -> "theories/elementary_functions/trigonometry_integral";
+  "classical/functions" -> "theories/elementary_functions/trigonometry_integral";
+  "classical/unstable" -> "theories/elementary_functions/trigonometry_integral";
+  "reals/reals" -> "theories/elementary_functions/trigonometry_integral";
+  "theories/derive" -> "theories/elementary_functions/trigonometry_integral";
+  "theories/elementary_functions/trigonometry_functions" -> "theories/elementary_functions/trigonometry_integral";
+  "theories/ereal" -> "theories/elementary_functions/trigonometry_integral";
+  "theories/exp" -> "theories/elementary_functions/trigonometry_integral";
+  "theories/ftc" -> "theories/elementary_functions/trigonometry_integral";
+  "theories/landau" -> "theories/elementary_functions/trigonometry_integral";
+  "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/elementary_functions/trigonometry_integral";
+  "theories/lebesgue_measure" -> "theories/elementary_functions/trigonometry_integral";
+  "theories/measure_theory/measure" -> "theories/elementary_functions/trigonometry_integral";
+  "theories/normedtype_theory/normedtype" -> "theories/elementary_functions/trigonometry_integral";
+  "theories/realfun" -> "theories/elementary_functions/trigonometry_integral";
+  "theories/sequences" -> "theories/elementary_functions/trigonometry_integral";
+  "theories/topology_theory/topology" -> "theories/elementary_functions/trigonometry_integral";
+  "theories/elementary_functions/trigonometry_functions" -> "theories/elementary_functions/trigo";
+  "theories/elementary_functions/trigonometry_integral" -> "theories/elementary_functions/trigo";
 
 subgraph cluster_Analysis {
     "theories/esum"[
@@ -2050,6 +2058,7 @@ subgraph cluster_Probability {
   "classical/functions" -> "theories/probability_theory/normal_distribution";
   "reals/reals" -> "theories/probability_theory/normal_distribution";
   "theories/derive" -> "theories/probability_theory/normal_distribution";
+  "theories/elementary_functions/trigo" -> "theories/probability_theory/normal_distribution";
   "theories/ereal" -> "theories/probability_theory/normal_distribution";
   "theories/exp" -> "theories/probability_theory/normal_distribution";
   "theories/ftc" -> "theories/probability_theory/normal_distribution";
@@ -2063,7 +2072,6 @@ subgraph cluster_Probability {
   "theories/realfun" -> "theories/probability_theory/normal_distribution";
   "theories/sequences" -> "theories/probability_theory/normal_distribution";
   "theories/topology_theory/topology" -> "theories/probability_theory/normal_distribution";
-  "theories/trigo" -> "theories/probability_theory/normal_distribution";
 
 subgraph cluster_Probability {
     "theories/probability_theory/exponential_distribution"[
@@ -2268,6 +2276,7 @@ subgraph cluster_Analysis {
   "reals/real_interval" -> "theories/pi_irrational";
   "reals/reals" -> "theories/pi_irrational";
   "theories/derive" -> "theories/pi_irrational";
+  "theories/elementary_functions/trigo" -> "theories/pi_irrational";
   "theories/ereal" -> "theories/pi_irrational";
   "theories/esum" -> "theories/pi_irrational";
   "theories/ftc" -> "theories/pi_irrational";
@@ -2280,7 +2289,6 @@ subgraph cluster_Analysis {
   "theories/realfun" -> "theories/pi_irrational";
   "theories/sequences" -> "theories/pi_irrational";
   "theories/topology_theory/topology" -> "theories/pi_irrational";
-  "theories/trigo" -> "theories/pi_irrational";
 
 subgraph cluster_Analysis {
     "theories/gauss_integral"[
@@ -2297,6 +2305,7 @@ subgraph cluster_Analysis {
   "reals/real_interval" -> "theories/gauss_integral";
   "reals/reals" -> "theories/gauss_integral";
   "theories/derive" -> "theories/gauss_integral";
+  "theories/elementary_functions/trigo" -> "theories/gauss_integral";
   "theories/ereal" -> "theories/gauss_integral";
   "theories/esum" -> "theories/gauss_integral";
   "theories/exp" -> "theories/gauss_integral";
@@ -2311,7 +2320,6 @@ subgraph cluster_Analysis {
   "theories/realfun" -> "theories/gauss_integral";
   "theories/sequences" -> "theories/gauss_integral";
   "theories/topology_theory/topology" -> "theories/gauss_integral";
-  "theories/trigo" -> "theories/gauss_integral";
 
 subgraph cluster_Analysis {
     "theories/all_analysis"[
@@ -2324,6 +2332,7 @@ subgraph cluster_Analysis {
   "theories/cantor" -> "theories/all_analysis";
   "theories/convex" -> "theories/all_analysis";
   "theories/derive" -> "theories/all_analysis";
+  "theories/elementary_functions/trigo" -> "theories/all_analysis";
   "theories/ereal" -> "theories/all_analysis";
   "theories/esum" -> "theories/all_analysis";
   "theories/exp" -> "theories/all_analysis";
@@ -2343,7 +2352,6 @@ subgraph cluster_Analysis {
   "theories/realfun" -> "theories/all_analysis";
   "theories/sequences" -> "theories/all_analysis";
   "theories/topology_theory/topology" -> "theories/all_analysis";
-  "theories/trigo" -> "theories/all_analysis";
 
 subgraph cluster_Analysis {
     "theories/showcase/summability"[
