@@ -41,6 +41,9 @@
   + `elementary_functions/trigonometry_functions.v`
   + `elementary_functions/trigonometry_integral.v`
 
+- in `topology_structure.v`:
+  + lemma `id_continuous`
+
 ### Changed
 
 - in `derive.v`:
@@ -84,7 +87,7 @@
 - in `esum.v`:
   + lemmma `le_esum`
 
-- from `pseudometric_normed_Zmodule.v` to `topology_structure.v`
+- from `pseudometric_normed_Zmodule.v` to `topology_structure.v`:
   + lemma `continuous_comp_cvg`
 
 ### Deprecated

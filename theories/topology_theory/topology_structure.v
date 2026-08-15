@@ -319,20 +319,16 @@ move=> h_continuous fa fb; apply: (cvg_trans _ h_continuous).
 exact: (cvg_comp _ (fun x => h x.1 x.2) (cvg_pair fa fb)).
 Qed.
 
-Lemma continuous_comp_cvg (T V U : topologicalType)
+Lemma continuous_comp_cvg {T V U : topologicalType}
   (f : T -> V) (h : V -> U) (r : T) (l : U) :
   {for f r, continuous h} ->
   (h \o f) x @[x --> r] --> l -> h x @[x --> f r] --> l.
-move=> cf fgl X.
-rewrite nbhsE; case=> Y [] oY Yl YX.
-apply/(filterS YX)/cf.
+Proof.
+move=> frh hfrl X; rewrite nbhsE => -[Y [oY Yl]].
+move/filterS; apply; apply: frh.
 rewrite nbhsE; exists Y => //; split => //.
-have := fgl Y.
-have : nbhs l Y by rewrite nbhsE; exists Y.
-move/[swap]/[apply].
-rewrite nbhsE; case=> W/= [] oW Wr.
-rewrite -image_sub/= => /(_ (h (f r))); apply.
-by exists r.
+have /hfrl : nbhs l Y by exact: open_nbhs_nbhs.
+by rewrite nbhsE => -[W [oW Wr]]; exact.
 Qed.
 
 Lemma cvg_near_cst (T : Type) (U : topologicalType)
@@ -377,6 +373,9 @@ Arguments is_cvg_cst {U} x {T F FF}.
 Lemma cst_continuous {T U : topologicalType} (x : U) :
   continuous (fun _ : T => x).
 Proof. by move=> t; exact: cvg_cst. Qed.
+
+Lemma id_continuous {T : topologicalType} : continuous (@id T).
+Proof. by move=> t; exact: cvg_id. Qed.
 
 Section within_topologicalType.
 Context {T : topologicalType} (A : set T).
@@ -1086,8 +1085,8 @@ HB.instance Definition _ {X Y : nbhsType} (f: X -> Y) (f_cts : continuous f) :=
   @isContinuous.Build X Y (mkcts f_cts) f_cts.
 
 Section continuous_comp.
-Context {X Y Z : topologicalType}.
-Context (f : continuousType X Y) (g : continuousType Y Z).
+Context {X Y Z : topologicalType}
+  (f : continuousType X Y) (g : continuousType Y Z).
 
 #[local] Lemma cts_fun_comp : continuous (g \o f).
 Proof. move=> x; apply: continuous_comp; exact: continuous_fun. Qed.
@@ -1099,10 +1098,7 @@ End continuous_comp.
 Section continuous_id.
 Context {X : topologicalType}.
 
-#[local] Lemma cts_id : continuous (@idfun X).
-Proof. by move=> ?. Qed.
-
-HB.instance Definition _ := @isContinuous.Build X X (@idfun X) cts_id.
+HB.instance Definition _ := @isContinuous.Build X X (@idfun X) id_continuous.
 
 End continuous_id.
 
