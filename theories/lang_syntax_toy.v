@@ -1,9 +1,8 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
-From Coq Require Import String Classical.
+From Stdlib Require Import String Classical.
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg interval_inference.
-From mathcomp Require Import mathcomp_extra boolp.
-From mathcomp Require Import reals topology normedtype.
+From mathcomp Require Import boot ssralg interval_inference.
+From mathcomp Require Import boolp reals topology normedtype.
 From mathcomp Require Import lang_syntax_util.
 
 (**md**************************************************************************)
