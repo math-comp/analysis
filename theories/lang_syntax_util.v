@@ -1,8 +1,7 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
-From Coq Require Import String.
+From Stdlib Require Import String Classical_Prop.
 From HB Require Import structures.
-Require Import Classical_Prop. (* NB: to compile with Coq 8.17 *)
-From mathcomp Require Import all_ssreflect.
+From mathcomp Require Import boot.
 From mathcomp Require Import interval_inference.
 
 (**md**************************************************************************)
