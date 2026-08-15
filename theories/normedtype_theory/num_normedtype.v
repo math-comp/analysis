@@ -533,8 +533,6 @@ Proof.
 have f_opp : f =1 (fun x => (f \o -%R) (- x)) by move=> x; rewrite /comp opprK.
 by rewrite (eq_cvg -oo _ f_opp) [in X in X <-> _]fmap_comp ninftyN.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `cvgNy_compNP`")]
-Notation cvgyNP := cvgNy_compNP (only parsing).
 
 Lemma cvgy_compNP {T : topologicalType} {R : numFieldType} (f : R -> T)
     (l : set_system T) :

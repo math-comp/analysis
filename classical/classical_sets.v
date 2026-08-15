@@ -464,28 +464,20 @@ Lemma preimage_itvoy T d (rT : porderType d) (f : T -> rT) y :
 Proof.
 by rewrite predeqE => t; split => [|?]; rewrite /= in_itv/= andbT.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to preimage_itvoy")]
-Notation preimage_itv_o_infty := preimage_itvoy (only parsing).
 
 Lemma preimage_itvcy T d (rT : porderType d) (f : T -> rT) y :
   f @^-1` `[y, +oo[%classic = [set x | (y <= f x)%O].
 Proof.
 by rewrite predeqE => t; split => [|?]; rewrite /= in_itv/= andbT.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to preimage_itvcy")]
-Notation preimage_itv_c_infty := preimage_itvcy (only parsing).
 
 Lemma preimage_itvNyo T d (rT : orderType d) (f : T -> rT) y :
   f @^-1` `]-oo, y[%classic = [set x | (f x < y)%O].
 Proof. by rewrite predeqE => t; split => [|?]; rewrite /= in_itv. Qed.
-#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to preimage_itvNyo")]
-Notation preimage_itv_infty_o := preimage_itvNyo (only parsing).
 
 Lemma preimage_itvNyc T d (rT : orderType d) (f : T -> rT) y :
   f @^-1` `]-oo, y]%classic = [set x | (f x <= y)%O].
 Proof. by rewrite predeqE => t; split => [|?]; rewrite /= in_itv. Qed.
-#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to preimage_itvNyc")]
-Notation preimage_itv_infty_c := preimage_itvNyc (only parsing).
 
 Lemma eq_set T (P Q : T -> Prop) : (forall x : T, P x = Q x) ->
   [set x | P x] = [set x | Q x].

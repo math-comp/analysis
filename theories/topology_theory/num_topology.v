@@ -483,10 +483,6 @@ by move=> xz; apply: filterS (lt_nbhsl_lt xz) => y /[apply] /ltW.
 Qed.
 
 End nbhs_lt_le.
-#[deprecated(since="mathcomp-analysis 1.9.0", note="use `lt_nbhsl_lt` instead")]
-Notation nbhs_lt := lt_nbhsl_lt (only parsing).
-#[deprecated(since="mathcomp-analysis 1.9.0", note="use `lt_nbhsl_le` instead")]
-Notation nbhs_le := lt_nbhsl_le (only parsing).
 
 Lemma lt_nbhsr {R : realFieldType} (a z : R) : a < z ->
   \forall x \near z, a < x.

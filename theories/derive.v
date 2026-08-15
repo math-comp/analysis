@@ -1975,9 +1975,6 @@ move=> df dfge0 cf x y ax xy yb.
 by apply: (@ger0_derive1_le_cc _ _ a b) => //;
   rewrite in_itv/= ?(le_trans _ xy)//= ?(le_trans xy) ?andbT.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.9.0",
-  note="renamed to `ger0_derive1_ndecr`")]
-Notation le0r_derive1_ndecr := ger0_derive1_ndecr (only parsing).
 
 Lemma ger0_derive1_ndecry {R : realType} (f : R -> R) (a : R) :
   (forall x, x \in `]a, +oo[%R -> derivable f x 1) ->

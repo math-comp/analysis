@@ -249,7 +249,7 @@ rewrite -[leLHS]/(fine `|f z|%:E) fine_le//.
   (* TODO: generalize the statement of bigmaxe_fin_num *)
   have := @bigmaxe_fin_num _ (map normr r) `|f z|.
   by rewrite big_map => ->//; apply/mapP; exists (f z).
-by rewrite (unstable.bigmax_sup_seq _ _ (lexx _)).
+exact: (bigmax_sup_seq _ _ _ _ _ _ _ (lexx _)).
 Qed.
 
 End simple_bounded.

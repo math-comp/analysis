@@ -1121,8 +1121,6 @@ move=> [:apoo] [:bnoo] [:poopoo] [:poonoo]; move: a b => [a| |] [b| |] //.
 Unshelve. all: end_near. Qed.
 
 End ecvg_realFieldType.
-#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `sube_cvg0`")]
-Notation cvge_sub0 := sube_cvg0 (only parsing).
 #[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `cvgeZl`")]
 Notation cvgeMl := cvgeZl (only parsing).
 #[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `is_cvgeZl`")]
@@ -1157,7 +1155,7 @@ Qed.
 
 End max_cts.
 
-Lemma limit_pointP (T : archiRealFieldType) (A : set T) (x : T) :
+Lemma limit_pointP {T : archiRealFieldType} (A : set T) (x : T) :
   limit_point A x <-> exists a_ : nat -> T,
     [/\ a_ @` setT `<=` A, forall n, a_ n != x & a_ @ \oo --> x].
 Proof.

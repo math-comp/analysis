@@ -3017,15 +3017,6 @@ Arguments lee_sum_nneg_natl {R}.
 Arguments lee_sum_npos_natl {R}.
 #[global] Hint Extern 0 (is_true (0 <= `| _ |)%E) => solve [apply: abse_ge0] : core.
 
-#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to maxe_pMr")]
-Notation maxeMr := maxe_pMr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to maxe_pMl")]
-Notation maxeMl := maxe_pMl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to mine_pMr")]
-Notation mineMr := mine_pMr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to mine_pMl")]
-Notation mineMl := mine_pMl (only parsing).
-
 Section esg.
 Context {R : realDomainType}.
 Implicit Types x : \bar R.
