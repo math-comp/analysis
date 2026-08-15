@@ -84,7 +84,7 @@
 - in `esum.v`:
   + lemmma `le_esum`
 
-- from `pseudometric_structure.v` to `topology_structure.v`
+- from `pseudometric_normed_Zmodule.v` to `topology_structure.v`
   + lemma `continuous_comp_cvg`
 
 ### Deprecated
