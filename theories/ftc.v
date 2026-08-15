@@ -1857,8 +1857,12 @@ rewrite onemK onem1 => -> //; last 1 first.
 split => /=.
 - by move=> x xr1; exact: derivableB.
 - apply: cvg_at_right_filter; rewrite onemK.
-  apply: (@continuous_comp_cvg _ _ _ _ onem)=> //=.
-    by move=> x; apply: continuousB => //; exact: cst_continuous.
+  apply/continuous_comp_cvg => /=.
+    apply: continuousB; [exact: cst_continuous |].
+    by [].
+    (* NB: proof search for `{for _, continuous id}` is slow!
+       But there is no explicit lemma like `id_continuous`.
+       See Section `continuous_id` in `topology_structure.v`. *)
   by under eq_fun do rewrite -/(onem _) onemK; exact: cvg_id.
 - by apply: cvg_at_left_filter; exact: cvgB.
 Qed.

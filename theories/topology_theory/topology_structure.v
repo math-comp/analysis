@@ -319,6 +319,22 @@ move=> h_continuous fa fb; apply: (cvg_trans _ h_continuous).
 exact: (cvg_comp _ (fun x => h x.1 x.2) (cvg_pair fa fb)).
 Qed.
 
+Lemma continuous_comp_cvg (T V U : topologicalType)
+  (f : T -> V) (h : V -> U) (r : T) (l : U) :
+  {for f r, continuous h} ->
+  (h \o f) x @[x --> r] --> l -> h x @[x --> f r] --> l.
+move=> cf fgl X.
+rewrite nbhsE; case=> Y [] oY Yl YX.
+apply/(filterS YX)/cf.
+rewrite nbhsE; exists Y => //; split => //.
+have := fgl Y.
+have : nbhs l Y by rewrite nbhsE; exists Y.
+move/[swap]/[apply].
+rewrite nbhsE; case=> W/= [] oW Wr.
+rewrite -image_sub/= => /(_ (h (f r))); apply.
+by exists r.
+Qed.
+
 Lemma cvg_near_cst (T : Type) (U : topologicalType)
   (l : U) (f : T -> U) (F : set_system T) {FF : Filter F} :
   (\forall x \near F, f x = l) -> f @ F --> l.
