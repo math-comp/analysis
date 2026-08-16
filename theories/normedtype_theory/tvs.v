@@ -1599,47 +1599,6 @@ by apply: image_subset.
 Qed.
 (* END TO BE MOVED *)
 
-(* TODO : factorise*)
-#[local] Lemma ler_gaugeD:
-  forall x y, gauge_fun (x + y) <=  gauge_fun x +  gauge_fun y.
-Proof.
-have A0 : A 0 by move: (absorbA 0)=> [??]; rewrite scaler0 inE.
-have :=  absA; rewrite /absolutely_convex_set => -[] convA /= balA.
-have lem (w : V) : (exists2 r, (0 < r) & A (r *: w)) ->
-    has_inf [set t | 0 < t /\ w \in ( *:%R t) @` A].
-  move => [r r0 Aw]; split => /=; rewrite /set0P; last by exists 0 => z [z0 _]; rewrite ltW.
-  exists r^-1 => //=; split=> //.
-  rewrite ?invr_gt0 //.
-  rewrite inE /=; exists (r *: w) => //.
-  by rewrite scalerA mulVf ?scale1r ?lt0r_neq0 //.
-move => x y; rewrite /gauge_fun.
-have:= (absorbA x) => -[/= r r0]; rewrite inE /= => Arx.
-have:= (absorbA y) => -[/= r' r0']; rewrite inE /= => Ary.
-have:= (absorbA (x+y)) => -[/= r2 r20']; rewrite inE /= => Arxy.
-rewrite -inf_sumE; first by apply: lem; exists r.
-  by apply: lem; exists r'.
-apply: infS; first by apply: lem;  exists r2.
-  exists (r^-1 + r'^-1) => /=.
-  exists r^-1 => //=.
-    split=> //; rewrite ?invr_gt0 //.
-    rewrite inE /=; exists (r *: x) => //.
-    by rewrite scalerA mulVf ?scale1r ?lt0r_neq0 //.
-  exists r'^-1 => //=.
-  split=> //; rewrite ?invr_gt0 //.
-  rewrite inE /=; exists (r' *: y) => //.
-  by rewrite scalerA mulVf ?scale1r ?lt0r_neq0 //.
-move => z /= [t [t0]]; rewrite inE /= => [[v] Av rvx] [s] [s0]; rewrite inE /=.
-move => [w Aw twy] <-. rewrite addr_gt0 => //; split => //; rewrite inE /=.
-rewrite -twy -rvx.
-exists  ((t + s)^-1 *: (t *: v + s *: w)).
-rewrite scalerDr !scalerA mulrC (mulrC _ s).
-rewrite -divD_onem => //.
-pose st := Itv01 (divDl_ge0 (ltW t0) (ltW s0)) (divDl_le1 (ltW t0) (ltW s0)).
-have := convA v w st.
-rewrite !inE => /(_ Av Aw); rewrite /conv /=; apply.
-by rewrite !scalerA divff ?scale1r //; rewrite gt_eqF // addr_gt0.
-Qed.
-
 Lemma ge0_infZl : forall (B : set K) [a : K], 0 <= a -> inf [set a * x | x in B] = a * inf B.
 Proof.
 move => B a a0; rewrite /inf mulrN -(ge0_supZl (-%R @` B) a0); congr (- sup _).
