@@ -1714,7 +1714,6 @@ by apply/has_inf_supN.
 by apply: image_subset.
 Qed.
 
-
 (* TODO : factorise*)
 #[local] Lemma ler_gaugeD:
   forall x y, gauge_fun (x + y) <=  gauge_fun x +  gauge_fun y.
