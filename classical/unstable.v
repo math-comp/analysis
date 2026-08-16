@@ -9,7 +9,7 @@ From mathcomp Require Import vector archimedean interval matrix.
 (* This files contains lemmas that should eventually be backported            *)
 (* to mathcomp. These lemmas may change before being backported to mathcomp,  *)
 (* don't use anything in this file outside of Analysis. For this same reason, *)
-(* nothing in this file should be mentionned in the changelog.                *)
+(* nothing in this file should be mentioned in the changelog.                 *)
 (* Once a result is backported to mathcomp, please move it to mathcomp_extra.v*)
 (* and mention it in the changelog.                                           *)
 (*                                                                            *)
