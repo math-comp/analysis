@@ -11,126 +11,6 @@
   + lemmas `cvg1M`, `cvgM1`, `cvg0M`, `cvgM0`
   + lemmas `cvg1Z`, `cvg0Z`, `cvgZ0`
 
-- in `normed_module.v`:
-  + structure `NormedVector`
-  + notation `normedVectType`
-  + definition `max_space`
-  + lemmas `sup_closed_ball_compact`, `equivalence_norms`,
-    `linear_findim_continuous`
-
-- in `tvs.v`:
-  + lemmas `cvg_sum`, `sum_continuous`
-
-- in `classical_sets.v`:
-  + lemmas `setI_closed_setT`, `setI_closed_set0`
-
-- in `measurable_function.v`:
-  + lemma `g_sigma_algebra_preimage_comp`
-
-- in `measure_function.v`:
-  + lemma `g_sigma_algebra_finite_measure_unique`
-
-- new file `independence.v`:
-  + definition `independent_events`
-  + definition `mutual_independence`
-  + lemma `eq_mutual_independence`
-  + definition `independence2`, `independence2P`
-  + lemma `mutual_independence_fset`
-  + lemma `mutual_independence_finiteS`
-  + theorem `mutual_independence_finite_g_sigma`
-  + lemma `mutual_dependence_bigcup`
-  + definition `independent_RVs`
-  + lemma `independent_RVsD1`
-  + theorem `independent_generators`
-  + definition `independent_RVs2`
-  + lemmas `independent_RVs2_comp`, `independent_RVs2_funrposneg`,
-    `independent_RVs2_funrnegpos`, `independent_RVs2_funrnegneg`,
-    `independent_RVs2_funrpospos`
-  + definition `pairRV`, lemma `measurable_pairRV`
-  + lemmas `independent_RVs2_product_measure1`
-  + lemmas `independent_RVs2_setI_preimage`,
-    `independent_Lfun1_expectation_product_measure_lty`
-  + lemma `ge0_independent_expectationM`
-  + lemmas `independent_Lfun1_expectationM_lty`, `independent_Lfun1M`,
-    `independent_expectationM`
-
-- in `ereal.v`:
-  + lemma `ge0_addBefctE`
-
-- in `measure_extension.v`:
-  + definition `caratheodory_measure`
-- in `measurable_structure.v`:
-  + structure `PMeasurable`, notation `pmeasurableType`
-
-- in `subspace_topology.v`:
-  + lemma `withinU_continuous_patch`
-- in `matrix_normedtype.v`:
-  + lemma `continuous_mx`
-
-- in `derive.v`:
-  + instance `is_derive_mx`
-  + fact `dmx`
-  + lemma `diffmx`
-  + lemma `is_diff_mx`
-  + instance `is_diff_mx`
-- in `realsum.v`:
-  + lemma `esum_psum`
-  + lemma `esum_sum`
-
-- in `constructive_ereal.v`:
-  + definition `esg`
-  + lemmas `numEesg`, `gte0_esg`, `lte0_esg`, `esg0`
-
-- in `esum.v`:
-  + lemmas `esum_eq0P`, `esumZ`, `exchange_esum`
-  + lemmas `le_esum`, `esumN`
-  + lemmas `summable_le_esum`, `summable_esum_funepos`, `summable_esumN`,
-    `summableZ`, `summable_esumZ`
-  + lemmas `esum_if_eq_op`
-  + lemmas `exchange_esum_ereal_sup`
-
-- in `ereal.v`:
-  + lemmas `exchange_ereal_sup`, `ge0_ereal_supZl`, `ge0_ereal_supZl_range`
-
-- in `sequences.v`:
-  + lemmas `ereal_supD`, `ereal_sup_sum`
-
-- in `reals.v`:
-  + lemmas `sup_ge0`, `has_sup_wpZl`, `gt0_has_supZl`, `has_sup_Mn`, `sup_Mn`
-- in `mathcomp_extra.v`:
-  + lemmas `divDl_ge0`, `divDl_le1`
-
-- in `unstable.v`:
-  + lemmas `divD_onem`
-
-- in `filter.v`:
-  + mixin `isSubNbhs`, structure `SubNbhs`, notation `subNbhsType`
-  + new lemmas `near_eq_cvgE`, `near_eq_is_cvg`, `near_eq_lim`, 
-    `cvg_to_eq`, `cvg_to_withinP`, and `within_cvg_to_within`.
-
-- in `topology_structure.v`:
-  + structure `SubTopological`, notation `subTopologicalType`
-
-- in `tvs.v`:
-  + structure `SubConvexTvs`, notation `subConvexTvsType`
-
-- in `normed_module.v`:
-  + structure `SubNormedModule`, notation `subNormedModType`
-  + instance `ent_xsection_filter`
-  + light-weigth factory `subLmodule_isSubNormedmodule`
-
-- new file `hahn_banach_theorem.v`:
-  + module `LinearGraph`
-    * definitions `graph`, `linear_graph`
-    * lemmas `lingraph_00`, `lingraphZ`, `lingraphD`
-  + module `HahnBanachZorn`
-    * definitions `extend_graph`, `le_graph`, `functional_graph`, `le_extend_graph`
-    * record `zorn_type`
-    * definition `zphi`
-    * lemma `zorn_type_eq`
-    * definition `zornS`
-    * lemmas `zornS_ex`, `domain_extend`, `hahn_banach_witness`
-  + theorems `hahn_banach_extension`, `hahn_banach_extension_normed`
 - in `normal_distribution.v`:
   + definition `post_stddev`
   + lemmas `post_stddev_gt0`, `post_stddevE`
@@ -180,9 +60,12 @@
 
 - in `derive.v`
   + new lemmas `derive1Dn`, `der1_scaleLR`, `deriveZLR`, `derivableZLR`, 
+- in `derive.v`:
+  + lemmas `derive1Dn`, `der1_scaleLR`, `deriveZLR`, `derivableZLR`, 
     `derivable_shiftf`, `derive_shiftf`, `is_derive_shiftf`, `derive1_shiftf`, 
-    `near_eq_derive1n_near`, `near_eq_derive1_near`, `near_eq_derive1n`, and 
-    `near_eq_derive1`.
+    `near_eq_derive1n_near`, `near_eq_derive1_near`, `near_eq_derive1n`,
+    `near_eq_derive1`
+  + global instance `is_derive_exp`
 
 ### Changed
 
@@ -199,7 +82,7 @@
   + all contents except lemmas `integral0_oneDsqr`, `integral0y_oneDsqr`
 
 - moved from `realfun.v` to `derive.v`: 
-  + lemmas `is_deriveV`, `is_derive1_comp`.
+  + lemmas `is_deriveV`, `is_derive1_comp`
 
 ### Renamed
 
@@ -232,6 +115,9 @@
 
 - from `pseudometric_normed_Zmodule.v` to `topology_structure.v`:
   + lemma `continuous_comp_cvg`
+- in `derive.v`:
+  + lemmas `derive1_comp`, `is_derive1_comp` (`realFieldType` -> `numFieldType`)
+  + lemmas `derive_shift`, `is_derive_shift` (function codomain)
 
 ### Deprecated
 
