@@ -265,7 +265,7 @@ by apply/eqolim0P; apply: (cvg_trans (dfc 0)); rewrite linear0.
 Unshelve. all: by end_near. Qed.
 
 Section littleo_lemmas.
-Variables (X Y Z : normedModType R).
+Context {X Y Z : normedModType R}.
 
 Lemma normm_littleo x (f : X -> Y) : `| [o_(x \near x) (1 : R) of f x]| = 0.
 Proof.
@@ -581,7 +581,7 @@ Unshelve. all: by end_near. Qed.
 End DifferentialR3.
 
 Section DifferentialR3_numFieldType.
-Variable R : numFieldType.
+Context {R : numFieldType}.
 
 Lemma littleo_linear0 (V W : normedModType R) (f : {linear V -> W}) :
   (f : V -> W) =o_ 0 id -> f = cst 0 :> (V -> W).
@@ -1107,7 +1107,7 @@ Proof. by move=> /differentiableP df; rewrite diff_val. Qed.
 End DifferentialR3_numFieldType.
 
 Section DeriveRU.
-Variables (R : numFieldType) (U : normedModType R).
+Context {R : numFieldType} {U : normedModType R}.
 Implicit Types f : R -> U.
 
 Let der1 f x : derivable f x 1 ->
@@ -1164,7 +1164,7 @@ Qed.
 End DeriveRU.
 
 Section DeriveVW.
-Variables (R : numFieldType) (V W : normedModType R).
+Context {R : numFieldType} {V W : normedModType R}.
 Implicit Types f : V -> W.
 
 Lemma derivable1P f x v :
@@ -1368,7 +1368,7 @@ Proof. by move=> dk df; exact/ex_derive/is_derive1ZLR; apply: derivableP. Qed.
 End Derive_LR.
 
 Section derive_id.
-Variables (R : numFieldType) (V : normedModType R).
+Context {R : numFieldType} {V : normedModType R}.
 
 Lemma derivable_id (x v : V) : derivable id x v.
 Proof. exact/diff_derivable. Qed.
@@ -1940,8 +1940,7 @@ move=> abf abf' cf x y ax xy yb; apply: (@gtr0_derive1_lt_cc _ _ a b) => //;
 Qed.
 
 Section ltr0_derive1_lt.
-Context {R : realType}.
-Variables (f : R -> R) (a b : R).
+Context {R : realType} (f : R -> R) (a b : R).
 Hypothesis df : forall x, x \in `]a, b[%R -> derivable f x 1.
 Hypothesis dflt0 : forall x, x \in `]a, b[%R -> f^`() x < 0.
 
@@ -2265,16 +2264,13 @@ near do (rewrite 2!derive1nS !derive1E; apply: near_eq_derive).
 by rewrite near_nbhs; exact: near_join.
 Unshelve. all: by end_near. Qed.
 
-Lemma near_eq_derive1_near f g x :
-  {near x, f =1 g} -> {near x, f^`() =1 g^`()}.
+Lemma near_eq_derive1_near f g x : {near x, f =1 g} -> {near x, f^`() =1 g^`()}.
 Proof. by rewrite -!derive1n1; exact: near_eq_derive1n_near. Qed.
 
-Lemma near_eq_derive1n n f g x :
-  {near x, f =1 g} -> f^`(n) x = g^`(n) x.
+Lemma near_eq_derive1n n f g x : {near x, f =1 g} -> f^`(n) x = g^`(n) x.
 Proof. by move=> /near_eq_derive1n_near => /(_ n)/nbhs_singleton. Qed.
 
-Lemma near_eq_derive1 f g x :
-  {near x, f =1 g} -> f^`() x = g^`() x.
+Lemma near_eq_derive1 f g x : {near x, f =1 g} -> f^`() x = g^`() x.
 Proof. by rewrite -!derive1n1; exact: near_eq_derive1n. Qed.
 
 End near_eq_derive1.
@@ -2380,7 +2376,7 @@ Lemma trigger_derive (R : realType) (f : R -> R) x x1 y1 :
 Proof. by move=> Hi <-. Qed.
 
 Section derive_horner.
-Variable (R : realFieldType).
+Context {R : realFieldType}.
 Local Open Scope ring_scope.
 
 Lemma horner0_ext : horner (0 : {poly R}) = 0.
