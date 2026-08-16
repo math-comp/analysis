@@ -1525,31 +1525,34 @@ Proof.
 by apply/funext => x/=; rewrite deriveD// derive_id derive_cst addr0.
 Qed.
 
+Lemma derive1_shift {R : numFieldType} (k : R) : (shift k)^`() = cst 1.
+Proof. by rewrite -(derive_shift _ k); apply/funext => x; rewrite derive1E. Qed.
+
 Lemma is_derive_shift {R : numFieldType} {V : normedModType R} x (v k : V) :
   is_derive x v (shift k) v.
 Proof. by apply: DeriveDef => //; rewrite derive_val addr0. Qed.
 
-Section derive_shiftf.
+Section derive_comp_shift.
 Context {R : numFieldType} {V : normedModType R} (f : R -> V).
 Implicit Types x a v : R.
 
-Lemma derivable_shiftf x a v :
+Lemma derive_comp_shift x a v : 'D_v (f \o shift a) x = 'D_v f (x + a).
+Proof. by rewrite /derive/=; under [in RHS]eq_fun do rewrite addrA. Qed.
+
+Lemma derive1_comp_shift x a : (f \o shift a)^`() x = f^`() (x + a).
+Proof. by rewrite 2!derive1E derive_comp_shift. Qed.
+
+Lemma derivable_comp_shift x a v :
   derivable f (x + a) v -> derivable (f \o shift a) x v.
 Proof. by rewrite {1}/derivable/=; under eq_is_cvg do rewrite addrA. Qed.
 
-Lemma derive_shiftf x a v : 'D_v (f \o shift a) x = 'D_v f (x + a).
-Proof. by rewrite /derive/=; under [in RHS]eq_fun do rewrite addrA. Qed.
-
-Lemma derive1_shiftf x a : (f \o shift a)^`() x = f^`() (x + a).
-Proof. by rewrite 2!derive1E derive_shiftf. Qed.
-
-Lemma is_derive_shiftf x a (df : V) :
+Lemma is_derive_comp_shift x a (df : V) :
   is_derive (x + a) 1 f df -> is_derive x 1 (f \o shift a) df.
 Proof.
-by move=> [/derivable_shiftf derf] <-; split => //; rewrite derive_shiftf.
+by move=> [/derivable_comp_shift derf] <-; split => //; rewrite derive_comp_shift.
 Qed.
 
-End derive_shiftf.
+End derive_comp_shift.
 
 Lemma derive1_cst {R : numFieldType} (V : normedModType R) (k : V) t :
   (cst k)^`() t = 0.

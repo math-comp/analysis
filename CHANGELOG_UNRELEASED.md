@@ -62,10 +62,11 @@
   + new lemmas `derive1Dn`, `der1_scaleLR`, `deriveZLR`, `derivableZLR`, 
 - in `derive.v`:
   + lemmas `derive1Dn`, `der1_scaleLR`, `deriveZLR`, `derivableZLR`, 
-    `derivable_shiftf`, `derive_shiftf`, `is_derive_shiftf`, `derive1_shiftf`, 
+    `derivable_comp_shift`, `derive_comp_shift`, `is_derive_comp_shift`, `derive1_comp_shift`, 
     `near_eq_derive1n_near`, `near_eq_derive1_near`, `near_eq_derive1n`,
     `near_eq_derive1`
   + global instance `is_derive_exp`
+  + lemma `derive1_shift`
 
 ### Changed
 
