@@ -44,8 +44,6 @@
 - in `topology_structure.v`:
   + lemma `id_continuous`
 
-- in `derive.v`
-  + new lemmas `derive1Dn`, `der1_scaleLR`, `deriveZLR`, `derivableZLR`, 
 - in `derive.v`:
   + lemmas `derive1Dn`, `der1_scaleLR`, `deriveZLR`, `derivableZLR`, 
     `derivable_comp_shift`, `derive_comp_shift`, `is_derive_comp_shift`, `derive1_comp_shift`, 
