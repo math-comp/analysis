@@ -195,7 +195,7 @@ apply/esym/get_unique => //= y y_pihalf.
 exact: pihalf_unique.
 Qed.
 
-Lemma PIE : PI = pi.
+Lemma Rtrigo_PIE : PI = pi.
 Proof. by rewrite /PI PI2E !RealsE/= mulrCA divff// mulr1. Qed.
 
 End PIE.
@@ -206,7 +206,8 @@ Proof. by rewrite sin_cos RcosE PIE !RealsE/= addrC cosDpihalf opprK. Qed.
 End RtrigoE.
 
 Definition RcosE := RtrigoE.RcosE.
-Definition PIE := RtrigoE.PIE.
+Definition Rtrigo_PIE := RtrigoE.Rtrigo_PIE.
 Definition RsinE := RtrigoE.RsinE.
 
-Definition RealsE := (RealsE, RexpE, RlnE, RcosE, PIE, RsinE).
+(* extend RealsE from Rstruct.v *)
+Definition RealsE := (RealsE, RexpE, RlnE, RcosE, Rtrigo_PIE, RsinE).
