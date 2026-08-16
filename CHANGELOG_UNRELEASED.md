@@ -43,20 +43,6 @@
 
 - in `topology_structure.v`:
   + lemma `id_continuous`
-- in file `function_spaces.v`,
-  + new lemma `within_continuous_big`.
-- in file `nat_topology.v`,
-  + new lemma `near_infty_after`.
-- in file `num_topology.v`,
-  + new lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
-    `at_left_shift`, and `at_right_shift`.
-
-- in file `normed_module.v`,
-  + new lemmas `cvg1MC`, `cvg1M`, `cvgCM1`, `cvgM1`, `cvg0MC`, `cvg0M`, 
-    `cvgCM0`, and `cvgM0`.
-- in file `pseudometric_normed_Zmodule.v`,
-  + new lemmas `cvgDl`, `cvgDr`, `cvgBl`, `cvgBr`, `cvg0D`, `cvg0DC`, 
-    `cvgD0`, `cvgCD0`, `cvg0B`, `cvg0BC`, `cvgB0`, `cvgCB0`, and `cvgN0`.
 
 - in `derive.v`
   + new lemmas `derive1Dn`, `der1_scaleLR`, `deriveZLR`, `derivableZLR`, 
