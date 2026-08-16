@@ -44,6 +44,14 @@
 - in `topology_structure.v`:
   + lemma `id_continuous`
 
+- in `derive.v`:
+  + lemmas `derive1Dn`, `der1_scaleLR`, `deriveZLR`, `derivableZLR`, 
+    `derivable_comp_shift`, `derive_comp_shift`, `is_derive_comp_shift`, `derive1_comp_shift`, 
+    `near_eq_derive1n_near`, `near_eq_derive1_near`, `near_eq_derive1n`,
+    `near_eq_derive1`
+  + global instance `is_derive_exp`
+  + lemma `derive1_shift`
+
 ### Changed
 
 - in `derive.v`:
@@ -57,6 +65,9 @@
 
 - moved from `trigo.v` to `trigonometry_functions.v`:
   + all contents except lemmas `integral0_oneDsqr`, `integral0y_oneDsqr`
+
+- moved from `realfun.v` to `derive.v`: 
+  + lemmas `is_deriveV`, `is_derive1_comp`
 
 ### Renamed
 
@@ -89,6 +100,9 @@
 
 - from `pseudometric_normed_Zmodule.v` to `topology_structure.v`:
   + lemma `continuous_comp_cvg`
+- in `derive.v`:
+  + lemmas `derive1_comp`, `is_derive1_comp` (`realFieldType` -> `numFieldType`)
+  + lemmas `derive_shift`, `is_derive_shift` (function codomain)
 
 ### Deprecated
 

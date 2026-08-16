@@ -1796,17 +1796,15 @@ Lemma ge0_integration_by_substitution_shift_itvy (f : R -> R) (r e : R) :
   \int[mu]_(x in `[r, +oo[) ((f \o shift e) x)%:E)%E.
 Proof.
 move=> cf f0.
-have dshiftE : (shift e)^`() = cst 1.
-  by apply/funext => x; rewrite derive1E -(derive_shift 1 e).
 rewrite (@increasing_ge0_integration_by_substitutiony _ (shift e))//=.
 - by move=> x y _ _ xy; rewrite ltr_leD.
-- by rewrite dshiftE; apply: in1W; exact: cst_continuous.
-- by rewrite dshiftE.
-- by rewrite dshiftE.
+- by rewrite derive1_shift; apply: in1W; exact: cst_continuous.
+- by rewrite derive1_shift.
+- by rewrite derive1_shift.
 - split; first by move=> x _; exact: ex_derive.
   by apply/cvg_at_right_filter; exact: cvgD.
 - exact: cvg_addrr.
-by rewrite dshiftE mulr1.
+by rewrite derive1_shift mulr1.
 Qed.
 
 Lemma ge0_integration_by_substitution_shift_itvNy (f : R -> R) (r e : R) :
@@ -1816,17 +1814,15 @@ Lemma ge0_integration_by_substitution_shift_itvNy (f : R -> R) (r e : R) :
    \int[mu]_(x in `]-oo, r]) ((f \o shift e) x)%:E)%E.
 Proof.
 move=> cf f0.
-have dshiftE : (shift e)^`() = cst 1.
-  by apply/funext => x; rewrite derive1E -(derive_shift 1 e).
 rewrite (@increasing_ge0_integration_by_substitutionNy _ (shift e))//.
 - by move=> x y _ _ xy; rewrite ltr_leD.
-- by rewrite dshiftE; apply: in1W; exact: cst_continuous.
-- by rewrite dshiftE.
-- by rewrite dshiftE.
+- by rewrite derive1_shift; apply: in1W; exact: cst_continuous.
+- by rewrite derive1_shift.
+- by rewrite derive1_shift.
 - split; first by move=> x _; exact: ex_derive.
   by apply/cvg_at_left_filter; exact: cvgD.
 - exact: cvg_addrr_Ny.
-by rewrite dshiftE mulr1.
+by rewrite derive1_shift mulr1.
 Qed.
 
 End ge0_integration_by_substitution_shift.

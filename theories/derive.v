@@ -265,7 +265,7 @@ by apply/eqolim0P; apply: (cvg_trans (dfc 0)); rewrite linear0.
 Unshelve. all: by end_near. Qed.
 
 Section littleo_lemmas.
-Variables (X Y Z : normedModType R).
+Context {X Y Z : normedModType R}.
 
 Lemma normm_littleo x (f : X -> Y) : `| [o_(x \near x) (1 : R) of f x]| = 0.
 Proof.
@@ -470,6 +470,9 @@ Proof. by []. Qed.
 Lemma derive1Sn V (f : R -> V) n : f^`(n.+1) = f^`()^`(n).
 Proof. exact: iterSr. Qed.
 
+Lemma derive1Dn V (f : R -> V) m n : f^`(n + m) = f^`(m)^`(n).
+Proof. by rewrite /derive1n iterD. Qed.
+
 End DifferentialR2.
 Notation "f ^` ()" := (derive1 f) : classical_set_scope.
 Notation "f ^` ( n )" := (derive1n n f) : classical_set_scope.
@@ -477,7 +480,7 @@ Notation "f ^` ( n )" := (derive1n n f) : classical_set_scope.
 Notation derivemxE := deriveEjacobian (only parsing).
 
 Section DifferentialR3.
-Variable R : numFieldType.
+Context {R : numFieldType}.
 
 Fact dcst (V W : normedModType R) (a : W) (x : V) : continuous (0 : V -> W) /\
   cst a \o shift x = cst (cst a x) + \0 +o_ 0 id.
@@ -578,7 +581,7 @@ Unshelve. all: by end_near. Qed.
 End DifferentialR3.
 
 Section DifferentialR3_numFieldType.
-Variable R : numFieldType.
+Context {R : numFieldType}.
 
 Lemma littleo_linear0 (V W : normedModType R) (f : {linear V -> W}) :
   (f : V -> W) =o_ 0 id -> f = cst 0 :> (V -> W).
@@ -1104,7 +1107,7 @@ Proof. by move=> /differentiableP df; rewrite diff_val. Qed.
 End DifferentialR3_numFieldType.
 
 Section DeriveRU.
-Variables (R : numFieldType) (U : normedModType R).
+Context {R : numFieldType} {U : normedModType R}.
 Implicit Types f : R -> U.
 
 Let der1 f x : derivable f x 1 ->
@@ -1161,7 +1164,7 @@ Qed.
 End DeriveRU.
 
 Section DeriveVW.
-Variables (R : numFieldType) (V W : normedModType R).
+Context {R : numFieldType} {V W : normedModType R}.
 Implicit Types f : V -> W.
 
 Lemma derivable1P f x v :
@@ -1322,8 +1325,50 @@ Proof. by rewrite derive_val. Qed.
 
 End Derive_lemmasVW.
 
+Section Derive_LR.
+Context {R : numFieldType} {V : normedModType R}.
+Implicit Types (k : R -> R) (f : R -> V) (x : R).
+
+Lemma der1_scaleLR k f x : derivable k x 1 -> derivable f x 1 ->
+  h^-1 *: (((fun x0 => k x0 *: f x0) \o  shift x) h%:A - k x *: f x)
+  @[h --> 0^'] --> 'D_1 k x *: f x + k x *: 'D_1 f x.
+Proof.
+move=> der_k der_f/=; rewrite (@near_eq_cvg_eq _ _ _ _ _
+    (fun h => (h^-1 * (k (h%:A + x) - k x)) *: f (h%:A + x) +
+              k x *: (h^-1 *: (f (h%:A + x) - f x)))).
+  near=> h.
+  rewrite scalerA (mulrC (k x)) -(scalerA h^-1 (k x)) -scalerA -scalerDr.
+  by congr (_ *: _); rewrite scalerBl scalerBr addrA subrK.
+apply: cvgD.
+- apply/(cvgZ der_k)/(@cvg_comp _ _ _ _ _ _ (nbhs x)).
+  + apply: cvg0D => //;  apply: (@cvg0M _ _ _ _ _ _ 1) => //.
+    exact: cvg_within_filter.
+  + rewrite -/(continuous_at x f).
+    exact/differentiable_continuous/derivable1_diffP.
+- exact: cvgZl_tmp der_f.
+Unshelve. all: by end_near. Qed.
+
+Global Instance is_derive1ZLR k f x (dk : R) (df : V) :
+  is_derive x 1 k dk -> is_derive x 1 f df ->
+  is_derive x 1 (fun x => k x *: f x) (dk *: f x + k x *: df).
+Proof.
+move=> [der_k <-] [der_f <-]/=; apply: DeriveDef.
+- exact: cvgP (der1_scaleLR _ _).
+- by apply: norm_cvg_lim; exact: cvg_trans (der1_scaleLR _ _).
+Qed.
+
+Lemma deriveZLR k f x : derivable k x 1 -> derivable f x 1 ->
+  'D_1 (fun x => k x *: f x) x = 'D_1 k x *: f x + k x *: 'D_1 f x.
+Proof. by move=> dk df; exact/derive_val/is_derive1ZLR. Qed.
+
+Lemma derivableZLR k f x : derivable k x 1 -> derivable f x 1 ->
+  derivable (fun x => k x *: f x) x 1.
+Proof. by move=> dk df; exact/ex_derive/is_derive1ZLR; apply: derivableP. Qed.
+
+End Derive_LR.
+
 Section derive_id.
-Variables (R : numFieldType) (V : normedModType R).
+Context {R : numFieldType} {V : normedModType R}.
 
 Lemma derivable_id (x v : V) : derivable id x v.
 Proof. exact/diff_derivable. Qed.
@@ -1474,15 +1519,40 @@ End Derive_lemmasVR.
 #[global] Hint Extern 0 (is_derive _ _ (fun _ => (_ _)^-1) _) =>
   (apply: is_deriveV; first by []) : typeclass_instances.
 
-Lemma derive_shift {R : numFieldType} (v k : R) :
-  'D_v (shift k : R -> R) = cst v.
+Lemma derive_shift {R : numFieldType} {V : normedModType R} (v k : V) :
+  'D_v (shift k : V -> V) = cst v.
 Proof.
 by apply/funext => x/=; rewrite deriveD// derive_id derive_cst addr0.
 Qed.
 
-Lemma is_derive_shift {R : numFieldType} x v (k : R) :
+Lemma derive1_shift {R : numFieldType} (k : R) : (shift k)^`() = cst 1.
+Proof. by rewrite -(derive_shift _ k); apply/funext => x; rewrite derive1E. Qed.
+
+Lemma is_derive_shift {R : numFieldType} {V : normedModType R} x (v k : V) :
   is_derive x v (shift k) v.
 Proof. by apply: DeriveDef => //; rewrite derive_val addr0. Qed.
+
+Section derive_comp_shift.
+Context {R : numFieldType} {V : normedModType R} (f : R -> V).
+Implicit Types x a v : R.
+
+Lemma derive_comp_shift x a v : 'D_v (f \o shift a) x = 'D_v f (x + a).
+Proof. by rewrite /derive/=; under [in RHS]eq_fun do rewrite addrA. Qed.
+
+Lemma derive1_comp_shift x a : (f \o shift a)^`() x = f^`() (x + a).
+Proof. by rewrite 2!derive1E derive_comp_shift. Qed.
+
+Lemma derivable_comp_shift x a v :
+  derivable f (x + a) v -> derivable (f \o shift a) x v.
+Proof. by rewrite {1}/derivable/=; under eq_is_cvg do rewrite addrA. Qed.
+
+Lemma is_derive_comp_shift x a (df : V) :
+  is_derive (x + a) 1 f df -> is_derive x 1 (f \o shift a) df.
+Proof.
+by move=> [/derivable_comp_shift derf] <-; split => //; rewrite derive_comp_shift.
+Qed.
+
+End derive_comp_shift.
 
 Lemma derive1_cst {R : numFieldType} (V : normedModType R) (k : V) t :
   (cst k)^`() t = 0.
@@ -1513,6 +1583,10 @@ Proof.
 have /= := @deriveX R R id n x v (@derivable_id _ _ _ _).
 by rewrite fctE => ->; rewrite derive_id.
 Qed.
+
+Global Instance is_derive_exp (R : numFieldType) n x v :
+  is_derive x v (@GRing.exp R ^~ n) (n%:R *: x ^+ n.-1 *: v).
+Proof. by constructor; [exact: exprn_derivable|exact: exp_derive]. Qed.
 
 Lemma exp_derive1 {R : numFieldType} n x :
   (@GRing.exp R ^~ n)^`() x = n%:R *: x ^+ n.-1.
@@ -1722,8 +1796,7 @@ by exists c => //; rewrite in_itv /= ltW (itvP cab).
 Qed.
 
 Section ger0_derive1_le.
-Context {R : realType}.
-Variables (f : R -> R) (a b : R).
+Context {R : realType} (f : R -> R) (a b : R).
 Hypothesis df : forall x, x \in `]a, b[%R -> derivable f x 1.
 Hypothesis dfge0 : forall x, x \in `]a, b[%R -> 0 <= f^`() x.
 
@@ -1765,8 +1838,7 @@ Proof. by rewrite -continuous_open_subspace//; exact: ger0_derive1_le. Qed.
 End ger0_derive1_le.
 
 Section ler0_derive1_le.
-Context {R : realType}.
-Variables (f : R -> R) (a b : R).
+Context {R : realType} (f : R -> R) (a b : R).
 Hypothesis df : forall x, x \in `]a, b[%R -> derivable f x 1.
 Hypothesis dfle0 : forall x, x \in `]a, b[%R -> f^`() x <= 0.
 
@@ -1816,8 +1888,7 @@ by apply: ler0_derive1_le_cc; [ exact: df | exact: dfle0 | by [] | | | by [] ];
 Qed.
 
 Section gtr0_derive1_lt.
-Context {R : realType}.
-Variables (f : R -> R) (a b : R).
+Context {R : realType} (f : R -> R) (a b : R).
 Hypothesis df : forall x, x \in `]a, b[%R -> derivable f x 1.
 Hypothesis dfgt0 : forall x, x \in `]a, b[%R -> 0 < f^`() x.
 
@@ -1872,8 +1943,7 @@ move=> abf abf' cf x y ax xy yb; apply: (@gtr0_derive1_lt_cc _ _ a b) => //;
 Qed.
 
 Section ltr0_derive1_lt.
-Context {R : realType}.
-Variables (f : R -> R) (a b : R).
+Context {R : realType} (f : R -> R) (a b : R).
 Hypothesis df : forall x, x \in `]a, b[%R -> derivable f x 1.
 Hypothesis dflt0 : forall x, x \in `]a, b[%R -> f^`() x < 0.
 
@@ -2129,7 +2199,7 @@ apply: (@decr_derive1_le0_itvNy _ _ b1 _ _ _ _ zNyb).
 - by move=> x y Dx Dy yx; rewrite ltrN2; apply: incrf.
 Qed.
 
-Lemma derive1_comp (R : realFieldType) (f g : R -> R) x :
+Lemma derive1_comp {R : numFieldType} (f g : R -> R) x :
   derivable f x 1 -> derivable g (f x) 1 ->
   (g \o f)^`() x = g^`()%classic (f x) * f^`()%classic x.
 Proof.
@@ -2139,7 +2209,7 @@ rewrite diff_comp // !derive1E' //= -[X in 'd  _ _ X = _]mulr1.
 by rewrite [LHS]linearZ mulrC.
 Qed.
 
-Global Instance is_derive1_comp (R : realFieldType) (f g : R -> R) (x a b : R) :
+Global Instance is_derive1_comp {R : numFieldType} (f g : R -> R) (x a b : R) :
   is_derive (g x) 1 f a -> is_derive x 1 g b -> is_derive x 1 (f \o g) (a * b).
 Proof.
 move=> [fgxv <-{a}] [gv <-{b}]; apply: (@DeriveDef _ _ _ _ _ (f \o g)).
@@ -2148,7 +2218,7 @@ move=> [fgxv <-{a}] [gv <-{b}]; apply: (@DeriveDef _ _ _ _ _ (f \o g)).
 by rewrite -derive1E (derive1_comp gv fgxv) 2!derive1E.
 Qed.
 
-Lemma near_eq_growth_rate (R : numFieldType) (V W : normedModType R)
+Lemma near_eq_growth_rate {R : numFieldType} {V W : normedModType R}
     (f g : V -> W) (a v : V) : {near a, f =1 g} ->
    \forall h \near 0,
      h^-1 *: (f (h *: v + a) - f a) = h^-1 *: (g (h *: v + a) - g a).
@@ -2158,7 +2228,7 @@ apply/(@near0Z _ _ _ [set v | (a + v) \is_near (nbhs a)])=> /=.
 by rewrite (near_shift a)/=; near do rewrite /= sub0r addrC addrNK//.
 Unshelve. all: by end_near. Qed.
 
-Lemma near_eq_derivable (R : numFieldType) (V W : normedModType R)
+Lemma near_eq_derivable {R : numFieldType} {V W : normedModType R}
     (f g : V -> W) (a v : V) :
   {near a, f =1 g} -> derivable f a v -> derivable g a v.
 Proof.
@@ -2167,7 +2237,7 @@ move=> vn0 nfg /cvg_ex[/= l fl]; apply/cvg_ex; exists l => /=.
 exact/(cvg_trans _ fl)/near_eq_cvg/cvg_within/near_eq_growth_rate.
 Qed.
 
-Lemma near_eq_derive (R : numFieldType) (V W : normedModType R)
+Lemma near_eq_derive {R : numFieldType} {V W : normedModType R}
   (f g : V -> W) (a v : V) :
   (\near a, f a = g a) -> 'D_v f a = 'D_v g a.
 Proof.
@@ -2177,13 +2247,36 @@ rewrite eqEsubset; split; apply/near_eq_cvg/cvg_within/near_eq_growth_rate =>//.
 by near do apply/esym.
 Unshelve. all: by end_near. Qed.
 
-Lemma near_eq_is_derive (R : numFieldType) (V W : normedModType R)
+Lemma near_eq_is_derive {R : numFieldType} {V W : normedModType R}
     (f g : V -> W) (a v : V) (df : W) :
   (\near a, f a = g a) -> is_derive a v f df -> is_derive a v g df.
 Proof.
 move=> fg [fav <-]; rewrite (near_eq_derive _ fg).
 by apply: DeriveDef => //; exact: near_eq_derivable fav.
 Qed.
+
+Section near_eq_derive1.
+Context {R : numFieldType} {V : normedModType R}.
+Implicit Types (f g : R -> V) (x : R).
+
+Lemma near_eq_derive1n_near n f g x:
+  {near x, f =1 g} -> {near x, f^`(n) =1 g^`(n)}.
+Proof.
+move=> fg; elim: n => [//|n IH].
+near do (rewrite 2!derive1nS !derive1E; apply: near_eq_derive).
+by rewrite near_nbhs; exact: near_join.
+Unshelve. all: by end_near. Qed.
+
+Lemma near_eq_derive1_near f g x : {near x, f =1 g} -> {near x, f^`() =1 g^`()}.
+Proof. by rewrite -!derive1n1; exact: near_eq_derive1n_near. Qed.
+
+Lemma near_eq_derive1n n f g x : {near x, f =1 g} -> f^`(n) x = g^`(n) x.
+Proof. by move=> /near_eq_derive1n_near => /(_ n)/nbhs_singleton. Qed.
+
+Lemma near_eq_derive1 f g x : {near x, f =1 g} -> f^`() x = g^`() x.
+Proof. by rewrite -!derive1n1; exact: near_eq_derive1n. Qed.
+
+End near_eq_derive1.
 
 Section Derive_max.
 Context {K : realType} {V W : normedModType K}.
@@ -2286,7 +2379,7 @@ Lemma trigger_derive (R : realType) (f : R -> R) x x1 y1 :
 Proof. by move=> Hi <-. Qed.
 
 Section derive_horner.
-Variable (R : realFieldType).
+Context {R : realFieldType}.
 Local Open Scope ring_scope.
 
 Lemma horner0_ext : horner (0 : {poly R}) = 0.
