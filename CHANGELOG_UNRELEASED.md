@@ -52,6 +52,10 @@
   + global instance `is_derive_exp`
   + lemma `derive1_shift`
 
+- new file `absolute_continuity.v`
+  + definitions `abs_cont`, `abs_cont_order`
+  + lemma `abs_contP`
+
 ### Changed
 
 - in `derive.v`:
