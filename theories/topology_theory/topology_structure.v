@@ -27,6 +27,8 @@ From mathcomp Require Export filter.
 (*                  basis B == a family of open sets that converges to        *)
 (*                             each point                                     *)
 (*       second_countable T == T has a countable basis                        *)
+(*        separable_set T A == A : set T admits a countable dense subset      *)
+(*              separable T == separable_set T [set:T]                        *)
 (*              [locally P] := forall a, A a -> G (within A (nbhs x)) if P    *)
 (*                             is convertible to G (globally A)               *)
 (*                       U° == all of the points which are locally in U,      *)
@@ -121,11 +123,6 @@ Section Topological1.
 Context {T : topologicalType}.
 
 Definition open_nbhs (p : T) (A : set T) := open A /\ A p.
-
-Definition basis (B : set_system T) :=
-  B `<=` open /\ forall x, filter_from [set U | B U /\ U x] id --> x.
-
-Definition second_countable := exists2 B, countable B & basis B.
 
 Global Instance nbhs_pfilter (p : T) : ProperFilter (nbhs p).
 Proof. by apply: nbhs_pfilter_subproof; case: T p => ? []. Qed.
@@ -1022,6 +1019,76 @@ apply/not_implyP; split; first exact/set0P/setT0.
 apply/not_implyP; split; first exact: openT.
 by rewrite setTI => -[].
 Qed.
+
+Section basis.
+Context {T : topologicalType}.
+
+Definition basis (B : set (set T)) :=
+  B `<=` open /\ forall x, filter_from [set U | B U /\ U x] id --> x.
+
+Definition separable_set (A : set T) :=
+exists D,
+  [/\ countable D, D `<=` A & forall O, A`&`O !=set0 -> open O -> O`&`D !=set0].
+
+Definition separable := separable_set setT.
+
+Definition second_countable := exists2 B, countable B & basis B.
+
+Lemma basisP {B : set_system T} : basis B <-> B `<=`open
+/\ (forall U: set T, open U -> U = \bigcup_(V in [set W | B W /\ W `<=`U]) V).
+Proof.
+split=> [[oB bB]|[Bo dec]]. split=> //U oU.
+  rewrite eqEsubset /bigcup; split=>[x Ux/=|x [A/= [BA AU] /AU //]].
+  have:= bB x. rewrite/cvg_to {2}/nbhs/filter_from/= => /(_ U)/=.
+  have nT: \near x, U x by apply: (open_in_nearW oU)=>[y|]; rewrite in_setE.
+  rewrite nbhs_nearE !exists2E/= => /(_ nT).
+  by under eq_exists=>x0 do rewrite -andA {1}(andC (x0 x) _) andA.
+split=>// x. rewrite nbhsE => P [U [/(dec U)->] [A [BA AU] Ax] UP].
+exists A=>// t At; apply: UP. by exists A.
+Qed.
+
+Lemma separableTE : separable = exists A : set T, countable A /\ dense A.
+Proof.
+apply: eq_exists=>A. rewrite [X in [/\ _, _ & X]] (_:_ = dense A)//.
+  by under eq_forall do rewrite setTI.
+by rewrite propeqE; split=>[[]|[]].
+Qed.
+
+Lemma second_countable_separable :
+  second_countable -> separable.
+Proof.
+have [T0 _|/set0P [x _]] := eqVneq [set:T] set0. by exists set0; split=>// U;
+  rewrite setTI => [/(subset_nonempty (subsetT U))/set0P/eqP /(_ T0)].
+move=>[B] /(sub_countable (card_le_setD B [set set0])) cB /basisP [BO BB].
+have /choice [f nef] : forall U, exists x, (B `\ set0) U -> U x.
+  move=> U; have [[BU /= /eqP/set0P [y Uy]]|
+    /= /not_andP [nBU|nU0]] := pselect ((B `\ set0) U); first by exists y.
+    by exists x => [[/nBU]]. by exists x => [[_ /nU0]].
+exists (image (B `\ set0) f); split=>// [|U /=];
+  first exact/(card_le_trans (card_image_le _ _)).
+rewrite setTI/= => [/[swap] /BB -> /bigcup_nonempty [V [BV VU] /set0P/eqP nV0]].
+exists (f V); split; exists V=>//. exact: nef.
+Qed.
+
+Lemma bigcupT_separable [A : (set T)^nat] : (forall n, separable_set (A n)) ->
+separable_set (\bigcup_n A n).
+Proof.
+move=>/choice [D_ /all_and3 [cDx DAx dDx]]. exists (\bigcup_n D_ n); split.
+  exact: bigcup_countable. exact: subset_bigcup. move=> O [x [[n _ Anx] Ox] oO].
+have /(dDx n O) /(_ oO) [y [Oy Dny]] : A n `&` O !=set0 by exists x.
+by exists y; split=>//; exists n.
+Qed.
+
+Lemma bigcup_separable [A : (set T)^nat] [P : set nat] :
+(forall n, P n -> separable_set (A n))
+-> separable_set (\bigcup_(i in P) A i).
+Proof.
+rewrite bigcup_mkcond => nsPA. apply: bigcupT_separable=>n.
+case: ifPn=>[|_]. rewrite in_setE. apply: (nsPA n).
+by exists set0; split=>// O [x [F]].
+Qed.
+
+End basis.
 
 Section ClopenSets.
 Implicit Type T : topologicalType.
