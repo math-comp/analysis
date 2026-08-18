@@ -143,8 +143,7 @@ have /(@cvg_lim R^o) <- // : series G x @[x --> \oo] --> y.
 apply: (@cvg_lim R^o) => //.
 suff -> : G = cos_coeff' x by exact: cvg_cos_coeff'.
 apply/funext=> n; rewrite /G cos_coeff'E cos_coeffE.
-rewrite odd_double/= mul1r.
-rewrite /G/= plusE addn0 addnn Rsqr_def !RealsE.
+rewrite odd_double/= mul1r plusE addn0 addnn Rsqr_def !RealsE.
 by rewrite -expr2 -exprM mul2n doubleK.
 Unshelve. all: by end_near. Qed.
 
