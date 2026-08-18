@@ -52,6 +52,9 @@
   + global instance `is_derive_exp`
   + lemma `derive1_shift`
 
+- in `Rstruct_topology.v`:
+  + lemmas `RcosE`, `Rtrigo_PIE`, `RsinE`
+
 ### Changed
 
 - in `derive.v`:
@@ -68,6 +71,9 @@
 
 - moved from `realfun.v` to `derive.v`: 
   + lemmas `is_deriveV`, `is_derive1_comp`
+
+- in `Rstruct_topology.v`:
+  + lemma `RealsE` to include `RcosE`, `Rtrigo_PIE`, `RsinE`
 
 ### Renamed
 
