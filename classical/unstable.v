@@ -647,39 +647,3 @@ End Theory.
 Module Import Exports. HB.reexport. End Exports.
 End Norm.
 Export Norm.Exports.
-
-(* PR to mathcomp in progress (#1637) *)
-Section big_nat_dvdn.
-
-Lemma iotaS (m n : nat) : iota m n.+1 = rcons (iota m n) (m + n)%N.
-Proof. by rewrite -addn1 iotaD cats1. Qed.
-
-Lemma index_iotaS (m n : nat) :
-  (m <= n)%N -> index_iota m n.+1 = rcons (index_iota m n) n.
-Proof. by move=> ?; rewrite /index_iota subSn// iotaS subnKC. Qed.
-
-Lemma big_nat_recr_op (R : Type) (idx : R) (op : R -> R -> R)
-  (n m : nat) (P : pred nat) (F : nat -> R) :
-  (m <= n)%N ->
-  let idx' := if P n then op (F n) idx else idx in
-  \big[op/idx]_(m <= i < n.+1 | P i) F i = \big[op/idx']_(m <= i < n | P i) F i.
-Proof. by move=> ?; rewrite index_iotaS// big_rcons_op. Qed.
-
-Lemma big_nat_dvdn (R : Type) (idx : R) (op : R -> R -> R)
-  (n d : nat) (F : nat -> R) :
-  \big[op/idx]_(0 <= i < n | d.+1 %| i) F i =
-  \big[op/idx]_(0 <= i < (n + d) %/ d.+1) F (d.+1 * i)%N.
-Proof.
-elim: n idx.
-  by move=> ?; rewrite divn_small// !big_nil.
-move=> n IHn idx.
-rewrite addSn divnS// -addnS dvdn_addl// big_nat_recr_op// IHn.
-case/boolP: (d.+1 %| n) => H /=.
-  rewrite add1n big_nat_recr_op//.
-  rewrite divnDl// (@divn_small d)// addn0.
-  congr bigop.body; congr op; congr F.
-  by rewrite muln_divCA// divnn muln1.
-by rewrite add0n.
-Qed.
-
-End big_nat_dvdn.

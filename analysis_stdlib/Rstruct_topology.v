@@ -10,8 +10,6 @@ From Stdlib Require Import Rtrigo1 Reals.
 From HB Require Import structures.
 From mathcomp Require Import boot order ssralg ssrnum archimedean.
 From mathcomp Require Import interval arithmetic_tactic.
-#[warning="-warn-library-file-internal-analysis"]
-From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets reals interval_inference.
 From mathcomp Require Export Rstruct.
 From mathcomp Require Import topology.
@@ -131,40 +129,23 @@ Local Open Scope classical_set_scope.
 
 Lemma RcosE (x : R) : Rtrigo_def.cos x = cos x.
 Proof.
-apply/esym; rewrite /Rtrigo_def.cos.
+rewrite /Rtrigo_def.cos.
 case: exist_cos => y.
 rewrite /cos_in /cos_n /infinite_sum/=.
 set G : nat -> R^o := (G in sum_f_R0 G).
 move=> cos_ub.
-have Gy : series G x @[x --> \oo] --> y.
+have /(@cvg_lim R^o) <- // : series G x @[x --> \oo] --> y.
   rewrite -cvg_shiftS/=; apply/cvgrPdist_lt => /= e /RltP /cos_ub[N Ncos_ub].
   near=> n.
   have nN : (n >= N)%coq_nat by apply/ssrnat.leP; near: n; exact: nbhs_infty_ge.
   move: Ncos_ub => /(_ _ nN) /[!RdistE] /RltP /=.
   by rewrite /G distrC sum_f_R0E.
-rewrite cosE /series/=; apply: (@cvg_lim R^o) => //.
-evar (F : nat -> R); rewrite [X in fmap X](_ : _ = fun n => F n.+1).
-  apply: funext => n.
-  under eq_bigr do rewrite -dvdn2 -!mulrA mulr_natl mulrb.
-  rewrite -big_mkcond/=.
-  rewrite big_nat_dvdn.
-  rewrite addn1.
-  pattern n.+1; rewrite [EQ in EQ n.+1]lock.
-  have : forall f g, f = g -> forall y, locked (fun x => f x = g x) y.
-    by move=> ? ? ? ? ->; rewrite -lock.
-  by apply; unlock; rewrite {}/F; reflexivity.
-rewrite -/(mk_sequence F) cvg_shiftS/= -[X in _ --> X]/(nbhs y).
-have divn2_cofinal : divn^~ 2 @ \oo --> \oo.
-  move=> N [] n _ nN.
-  exists (n * 2)%N => // m/=.
-  have := nN (m %/ 2)%N => /=.
-  by rewrite leq_divRL.
-have := (cvg_comp (divn^~ 2%N) _ divn2_cofinal Gy).
-rewrite [X in fmap X](_ : _ = F)//.
-apply: funext => n/=.
-apply: eq_bigr => i _.
+apply: (@cvg_lim R^o) => //.
+suff -> : G = cos_coeff' x by exact: cvg_cos_coeff'.
+apply/funext=> n; rewrite /G cos_coeff'E cos_coeffE.
+rewrite odd_double/= mul1r.
 rewrite /G/= plusE addn0 addnn Rsqr_def !RealsE.
-by rewrite -expr2 -exprM mul2n doubleK mulrA.
+by rewrite -expr2 -exprM mul2n doubleK.
 Unshelve. all: by end_near. Qed.
 
 Section PIE.
