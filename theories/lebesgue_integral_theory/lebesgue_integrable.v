@@ -1101,3 +1101,27 @@ rewrite h set_neq_lt setIUr measureU//; [exact: measurable_lte..| |].
 Qed.
 
 End integral_ae_eq.
+
+Lemma compact_continuous_Rintegrable {R : realType} (D : set R) (f : R -> R) :
+  D !=set0 -> compact D -> {within D, continuous f} ->
+  lebesgue_measure.-integrable D (EFin \o f).
+Proof.
+move=> D_neq0 cptD cf.
+apply/integrableP; split.
+  apply/measurable_EFinP.
+  apply: subspace_continuous_measurable_fun.
+    exact: compact_measurable.
+  exact: cf.
+have : {within D, continuous (fun t => `|f t|)}.
+  apply: within_continuous_comp => //.
+  by move=> *; exact: norm_continuous.
+move/(derive.compact_EVT_max D_neq0 cptD) => /= [x xD x_ub].
+have mD := compact_measurable cptD.
+apply: (@le_lt_trans _ _ (\int[lebesgue_measure]_(d in D) (cst `|f x|%:E d))%E).
+  apply: ge0_le_integral => //.
+  - apply/measurable_EFinP.
+    apply: measurableT_comp => //.
+    exact: subspace_continuous_measurable_fun.
+  by move=> /= ? ?; apply: x_ub; rewrite inE.
+by rewrite integral_cst//= lte_mul_pinfty // compact_finite_measure.
+Qed.

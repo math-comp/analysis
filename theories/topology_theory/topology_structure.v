@@ -1141,7 +1141,31 @@ Context {d} {T : topologicalType d}.
 Definition basis (B : set_system T) :=
   B `<=` open /\ forall x : T, filter_from [set U | B U /\ U x] id --> x.
 
-Definition nbhs_basis (x : T) (B : set (set T)) :=
+Lemma basis_open_bigcup (F : set_system T) (A : set T) :
+  basis F -> open A ->
+  A = \bigcup_(i in [set i | F i /\ i `<=` A]) i.
+Proof.
+case=> Fo Ffilt oA; apply/seteqP; split => x.
+  move=> Ax.
+  have:= Ffilt x A (open_nbhs_nbhs (conj oA Ax)).
+  by case=> U /= [] FU Ux UA; exists U => //; split.
+by case=> U /= [] FU; exact.
+Qed.
+
+Lemma basisP (B : set_system T) : basis B <-> B `<=`open /\
+  (forall U : set T, open U -> U = \bigcup_(V in [set W | B W /\ W `<=`U]) V).
+Proof.
+split=> [[oB bB]|[Bo dec]].
+- split=> // U oU.
+  apply/seteqP; split => [x Ux/=|]; last by apply: bigcup_sub => V /= [].
+  have : nbhs x U by exact: open_nbhs_nbhs.
+  by move=> /(bB x U)[V [BV Vx] VU]; exists V.
+- split=> // x.
+  rewrite /cvg_to nbhsE/= => P [U [/(dec U)->] [A [BA AU] Ax] UP].
+  by exists A => // t At; apply: UP; exists A.
+Qed.
+
+Definition nbhs_basis (x : T) (B : set_system T) :=
   B `<=` nbhs x /\ filter_from [set U | B U] id --> x.
 
 Definition separable_set (A : set T) := exists D,
@@ -1155,21 +1179,6 @@ Qed.
 
 Definition separable := separable_set setT.
 
-Definition second_countable := exists2 B, countable B & basis B.
-
-Lemma basisP (B : set_system T) : basis B <-> B `<=`open
-  /\ (forall U: set T, open U -> U = \bigcup_(V in [set W | B W /\ W `<=`U]) V).
-Proof.
-split=> [[oB bB]|[Bo dec]].
-- split=> // U oU.
-  apply/seteqP; split => [x Ux/=|]; last by apply: bigcup_sub => V /= [].
-  have : nbhs x U by exact: open_nbhs_nbhs.
-  by move=> /(bB x U)[V [BV Vx] VU]; exists V.
-- split=> // x.
-  rewrite /cvg_to nbhsE/= => P [U [/(dec U)->] [A [BA AU] Ax] UP].
-  by exists A => // t At; apply: UP; exists A.
-Qed.
-
 Lemma separableTE : separable = exists A : set T, countable A /\ dense A.
 Proof.
 apply: eq_exists => A.
@@ -1177,6 +1186,8 @@ rewrite [X in [/\ _, _ & X]] (_ : _ = dense A)//.
   by under eq_forall do rewrite setTI.
 by apply/propext; split=> [|] [].
 Qed.
+
+Definition second_countable := exists2 B, countable B & basis B.
 
 Lemma second_countable_separable : second_countable -> separable.
 Proof.
@@ -1215,6 +1226,16 @@ by case: ifPn => [/set_mem/nPsA//|_]; exact: separable_set0.
 Qed.
 
 End basis.
+
+Lemma continuous_on_basis {d} {S : topologicalType d} {d'}
+    {T : topologicalType d'} (F : set_system T) (f : S -> T) :
+  basis F -> (forall A : set T, F A -> open (f @^-1` A)) -> continuous f.
+Proof.
+move=> bF bcf.
+apply/continuousP => A /(basis_open_bigcup bF) ->.
+rewrite preimage_bigcup; apply: bigcup_open.
+by move=> U /= [] FU UA; exact: bcf.
+Qed.
 
 Section ClopenSets.
 Context {d} {T : topologicalType d}.
