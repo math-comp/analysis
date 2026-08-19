@@ -529,8 +529,8 @@ digraph dependencies {
 	"theories/derive" -> "theories/measure_theory/signed_measure";
 	"theories/exp" -> "theories/measurable_realfun";
 	"theories/exp" -> "theories/elementary_functions/trigonometry_functions";
-	"theories/exp" -> "analysis_stdlib/Rstruct_topology";
 	"theories/elementary_functions/trigonometry_functions" -> "theories/elementary_functions/trigonometry_integral";
+	"theories/elementary_functions/trigonometry_functions" -> "analysis_stdlib/Rstruct_topology";
 	"theories/elementary_functions/trigonometry_integral" -> "theories/elementary_functions/trigo";
 	"theories/ftc" -> "theories/elementary_functions/trigonometry_integral";
 	"theories/ftc" -> "theories/probability_theory/exponential_distribution";

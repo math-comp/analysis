@@ -2393,6 +2393,7 @@ subgraph cluster_AnalysisStdlib {
   "classical/classical_sets" -> "analysis_stdlib/Rstruct_topology";
   "reals/reals" -> "analysis_stdlib/Rstruct_topology";
   "reals_stdlib/Rstruct" -> "analysis_stdlib/Rstruct_topology";
+  "theories/elementary_functions/trigonometry_functions" -> "analysis_stdlib/Rstruct_topology";
   "theories/exp" -> "analysis_stdlib/Rstruct_topology";
   "theories/normedtype_theory/normedtype" -> "analysis_stdlib/Rstruct_topology";
   "theories/sequences" -> "analysis_stdlib/Rstruct_topology";
