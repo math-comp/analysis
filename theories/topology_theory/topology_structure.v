@@ -118,7 +118,7 @@ HB.structure Definition SubTopological (V : topologicalType)
   (S : pred V) := {U of SubNbhs V S U & Topological U}.
 
 Section Topological1.
-Context {T T' : topologicalType}.
+Context {T : topologicalType}.
 
 Definition open_nbhs (p : T) (A : set T) := open A /\ A p.
 
