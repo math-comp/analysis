@@ -2573,6 +2573,22 @@ Proof. by rewrite /open_disjoint_itv; case: cid => //= I [_]. Qed.
 
 End open_set_disjoint_real_intervals.
 
+Section real_basis.
+Context {R : realFieldType}.
+
+Lemma real_basis :
+  @basis R [set `]x, y[%classic | x in [set: R] & y in [set: R]].
+Proof.
+split; first by move=> U [] x _ [] y _ <-; exact: interval_open.
+move=> x U [] e /= e0 bU.
+exists (ball_ Num.Def.normr x e) => //=.
+rewrite subrr normr0; split => //.
+exists (x - e) => //; exists (x + e) => //.
+by rewrite -ball_itv.
+Qed.
+
+End real_basis.
+
 Section EquivalenceNorms.
 Variables (R : realType).
 
