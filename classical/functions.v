@@ -295,9 +295,6 @@ Definition phant_inv aT rT (f : {inv aT >-> rT}) & phantom (_ -> _) f :=
 Notation "f ^-1" := (@inv _ _ f%function) (only printing) : function_scope.
 Notation "f ^-1" :=
   (@phant_inv _ _ _ (Phantom (_ -> _) f%function)) : function_scope.
-(* TODO: remove the following notations in fun_scope *)
-Notation "f ^-1" := (@inv _ _ f%FUN) (only printing) : fun_scope.
-Notation "f ^-1" := (@phant_inv _ _ _ (Phantom (_ -> _) f%FUN)) : fun_scope.
 
 HB.structure Definition InvFun aT rT A B :=
   {f of Inv aT rT f & isFun aT rT A B f}.
