@@ -1102,66 +1102,6 @@ Qed.
 
 End integral_ae_eq.
 
-Lemma gerNE : forall {R : numDomainType(*porderedZmodType*)} (x : R), (0 <= x) = (- x <= x).
-Proof.
-move=> ? x.
-apply/idP/idP; first exact: gerN.
-rewrite -[leLHS]add0r lerBlDl -mulr2n.
-by rewrite pmulrn_lge0.
-Qed.
-
-Lemma lerNE : forall {R : numDomainType(*porderedZmodType*)} (x : R), (x <= 0) = (x <= - x).
-Proof. by move=> ? x; rewrite -[RHS]lerN2 -gerNE oppr_ge0. Qed.
-
-Lemma EVT_abs_max :
-  forall [T : topologicalType] [R : realType] [f : T -> R] [A : set T],
-  A !=set0 ->
-  compact A ->
-  {within A, continuous f} ->
-  exists2 c : T, c \in A & forall t : T, t \in A -> `|f t| <= `|f c|.
-Proof.
-move=> ? ? f D D_neq0 cptD cf.
-have /= [x xD x_ub] := derive.compact_EVT_max D_neq0 cptD cf.
-have /= [y yD y_lb] := derive.compact_EVT_min D_neq0 cptD cf.
-have [xy| /ltW yx] := leP `|f x| `|f y|.
-  exists y => // t tD; move: xy.
-  rewrite !ler_normr !ler_norml opprK !x_ub//= !y_lb//=.
-  case/orP => [/andP[Nfyx fxy]|fxNy].
-    have fxEy : f x = f y.
-      apply: le_anti; rewrite fxy x_ub//.
-    have := Nfyx; rewrite fxEy.
-    have fyx := x_ub y yD.
-    rewrite -gerNE => fy_ge0.
-    rewrite orbC -implyNb.
-    apply/implyP; rewrite -ltNge => /ltW -> /=.
-    by rewrite -fxEy x_ub.
-  rewrite orbC -implyNb.
-  apply/implyP; rewrite -ltNge => /[dup] H /ltW /[dup] Nfyt -> /=.
-  have fxEt : f x = f t.
-    by apply: le_anti; rewrite x_ub// (le_trans fxNy Nfyt).
-  have fxENy : f x = - f y.
-    by apply: le_anti; rewrite fxNy fxEt Nfyt.
-  by have := H; rewrite -fxEt fxENy ltxx.
-exists x => // t tD; move: yx.
-rewrite !ler_normr !ler_norml !opprK !x_ub//= !andbT.
-case/orP => [Nfxy|/andP[fxy fyNx]]; last first.
-  have fxEy : f x = f y.
-    apply: le_anti; rewrite fxy x_ub//.
-  have := fyNx; rewrite fxEy.
-  have fyx := x_ub y yD.
-  rewrite -lerNE => fy_ge0.
-  rewrite -implyNb.
-  apply/implyP; rewrite -ltNge => /ltW -> /=.
-  by rewrite y_lb.
-rewrite -implyNb.
-apply/implyP; rewrite -ltNge => /[dup] H /ltW /[dup] ftNx -> /=; rewrite andbT.
-have fyEt : f y = f t.
-  by apply: le_anti; rewrite y_lb// (le_trans ftNx Nfxy).
-have fyENx : f y = - f x.
-  by apply: le_anti; rewrite Nfxy fyEt ftNx.
-by have := H; rewrite -fyEt fyENx ltxx.
-Qed.
-
 Lemma compact_continuous_Rintegrable {R : realType} (D : set R) (f : R -> R) :
   D !=set0 -> compact D -> {within D, continuous f} ->
   lebesgue_measure.-integrable D (EFin \o f).
@@ -1172,7 +1112,10 @@ apply/integrableP; split.
   apply: subspace_continuous_measurable_fun.
     exact: compact_measurable.
   exact: cf.
-have /=[x xD x_ub] := EVT_abs_max D_neq0 cptD cf.
+have : {within D, continuous (fun t => `|f t|)}.
+  apply: within_continuous_comp => //.
+  by move=> *; exact: norm_continuous.
+move/(derive.compact_EVT_max D_neq0 cptD) => /= [x xD x_ub].
 have mD := compact_measurable cptD.
 apply: (@le_lt_trans _ _ (\int[lebesgue_measure]_(d in D) (cst `|f x|%:E d))%E).
   apply: ge0_le_integral => //.
