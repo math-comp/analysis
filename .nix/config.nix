@@ -52,12 +52,8 @@ in {
   ## will be created per bundle
 
   bundles."9.0" = {
-    rocqPackages = {
+    rocqPackages = common-bundle // {
       rocq-core.override.version = "9.0";
-      mathcomp.override.version = "2.6.0";
-      mathcomp-finmap.override.version = "2.2.4";
-    };
-    coqPackages = common-bundle // {
       coq.override.version = "9.0";
       mathcomp.override.version = "2.6.0";
       mathcomp-finmap.override.version = "2.2.4";
@@ -66,12 +62,8 @@ in {
   };
 
   bundles."9.1" = {
-    rocqPackages = {
+    rocqPackages = common-bundle // {
       rocq-core.override.version = "9.1";
-      mathcomp.override.version = "2.6.0";
-      mathcomp-finmap.override.version = "2.2.4";
-    };
-    coqPackages = common-bundle // {
       coq.override.version = "9.1";
       mathcomp.override.version = "2.6.0";
       mathcomp-finmap.override.version = "2.2.4";
@@ -80,11 +72,8 @@ in {
   };
 
   bundles."9.2" = {
-    rocqPackages = {
+    rocqPackages = common-bundle // {
       rocq-core.override.version = "9.2";
-      mathcomp.override.version = "2.6.0";
-    };
-    coqPackages = common-bundle // {
       coq.override.version = "9.2";
       mathcomp.override.version = "2.6.0";
       ssprove.job = false;  # not yet available for 9.2
@@ -93,11 +82,8 @@ in {
   };
 
   bundles."9.3" = {
-    rocqPackages = {
+    rocqPackages = common-bundle // {
       rocq-core.override.version = "9.3";
-      mathcomp.override.version = "2.6.0";
-    };
-    coqPackages = common-bundle // {
       coq.override.version = "9.3";
       mathcomp.override.version = "2.6.0";
       interval.job = false;  # not yet available for 9.3
@@ -107,23 +93,14 @@ in {
   };
 
   bundles."master" = {
-    rocqPackages = {
+    rocqPackages = common-bundle // {
       rocq-core.override.version = "master";
+      coq.override.version = "master";
       stdlib.override.version = "master";
       rocq-elpi.override.version = "master";
       hierarchy-builder.override.version = "master";
       micromega-plugin.job = false;
       micromega-plugin.override.version = "master";
-      mathcomp.override.version = "master";
-      mathcomp-bigenough.override.version = "master";
-      mathcomp-finmap.override.version = "master";
-      mathcomp-real-closed.override.version = "master";
-    };
-    coqPackages = common-bundle // {
-      coq.override.version = "master";
-      stdlib.override.version = "master";
-      coq-elpi.override.version = "master";
-      hierarchy-builder.override.version = "master";
       mathcomp.override.version = "master";
       mathcomp-bigenough.override.version = "master";
       mathcomp-finmap.override.version = "master";
