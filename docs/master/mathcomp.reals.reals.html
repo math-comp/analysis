@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.reals.reals</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis fcd4ec5 2026.08.20-19:05" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis fcd4ec5 2026.08.21-19:03" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -390,14 +390,21 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Bind</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span><span class="gallina-kwd"> with</span><span class="id"> Real</span>.<span class="id">sort</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sup" class="id"><div name="sup" class=" tooltip">sup<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/fcd4ec53d253f3298964988ff9f6c78fabe111a0/reals/reals.v#L135' target='_blank'>Source code</a></span></div></span><span class="id"> {</span><span id="R:23" class="id"><div name="R:23" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/fcd4ec53d253f3298964988ff9f6c78fabe111a0/reals/reals.v#L135' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#realType">realType</a></span><span class="id">}</span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.classical.classical_sets.html#supremum">supremum</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#R:23">R</a></span><span class="id"> 0</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="inf" class="id"><div name="inf" class=" tooltip">inf<span class='tooltip-area'><p>sup : forall {R : realType}, set R -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sup" class="id"><div name="sup" class=" tooltip">sup<span class='tooltip-area'><p>sup : forall {R : realType}, set R -> R
 
 sup is not universe polymorphic
 Arguments sup {R} A%_classical_set_scope
 sup is transparent
 Expands to: Constant mathcomp.reals.reals.sup
 Declared in library mathcomp.reals.reals, line 135, characters 11-14
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/fcd4ec53d253f3298964988ff9f6c78fabe111a0/reals/reals.v#L135' target='_blank'>Source code</a></span></div></span><span class="id"> {</span><span id="R:23" class="id"><div name="R:23" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/fcd4ec53d253f3298964988ff9f6c78fabe111a0/reals/reals.v#L135' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#realType">realType</a></span><span class="id">}</span><span class="id"> :=</span><span class="id"> @</span><span class="id"><a href="mathcomp.classical.classical_sets.html#supremum">supremum</a></span><span class="id"> _</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#R:23">R</a></span><span class="id"> 0</span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="inf" class="id"><div name="inf" class=" tooltip">inf<span class='tooltip-area'><p>inf : forall {R : realType}, set R -> R
+
+inf is not universe polymorphic
+Arguments inf {R} E%_classical_set_scope
+inf is transparent
+Expands to: Constant mathcomp.reals.reals.inf
+Declared in library mathcomp.reals.reals, line 136, characters 11-14
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/fcd4ec53d253f3298964988ff9f6c78fabe111a0/reals/reals.v#L136' target='_blank'>Source code</a></span></div></span><span class="id"> {</span><span id="R:24" class="id"><div name="R:24" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/fcd4ec53d253f3298964988ff9f6c78fabe111a0/reals/reals.v#L136' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#realType">realType</a></span><span class="id">}</span> (<span id="E:25" class="id"><div name="E:25" class=" tooltip">E<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/fcd4ec53d253f3298964988ff9f6c78fabe111a0/reals/reals.v#L136' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#R:24">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#sup">sup</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#a8ac36d488c8d5cdcfec5adcde894e5f">-%R</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#E:25">E</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="sup_upper_bound" class="id"><div name="sup_upper_bound" class=" tooltip">sup_upper_bound<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/fcd4ec53d253f3298964988ff9f6c78fabe111a0/reals/reals.v#L139' target='_blank'>Source code</a></span></div></span><span class="id"> {</span><span id="R:26" class="id"><div name="R:26" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/fcd4ec53d253f3298964988ff9f6c78fabe111a0/reals/reals.v#L139' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#realType">realType</a></span><span class="id">}</span> (<span id="E:27" class="id"><div name="E:27" class=" tooltip">E<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/fcd4ec53d253f3298964988ff9f6c78fabe111a0/reals/reals.v#L139' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#R:26">R</a></span>)<span class="id">:</span><br/>
@@ -417,14 +424,7 @@ Declared in library mathcomp.reals.reals, line 135, characters 11-14
 <span class="vernacular">Section</span><span class="id"> IsInt</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="IsInt.R" class="id"><div name="IsInt.R" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/fcd4ec53d253f3298964988ff9f6c78fabe111a0/reals/reals.v#L149' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numfield.html#Num.RealField.Exports.realFieldType">realFieldType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Rint_pred" class="id"><div name="Rint_pred" class=" tooltip">Rint_pred<span class='tooltip-area'><p>inf : forall {R : realType}, set R -> R
-
-inf is not universe polymorphic
-Arguments inf {R} E%_classical_set_scope
-inf is transparent
-Expands to: Constant mathcomp.reals.reals.inf
-Declared in library mathcomp.reals.reals, line 136, characters 11-14
-Rint_pred : forall {R : realFieldType}, R -> bool
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Rint_pred" class="id"><div name="Rint_pred" class=" tooltip">Rint_pred<span class='tooltip-area'><p>Rint_pred : forall {R : realFieldType}, R -> bool
 
 Rint_pred is not universe polymorphic
 Arguments Rint_pred {R} x%_ring_scope /
