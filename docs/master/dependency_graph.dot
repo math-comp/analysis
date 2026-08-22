@@ -180,6 +180,18 @@ digraph dependencies {
 			fillcolor=5,
 			label=pnt];
 	}
+	subgraph cluster_ElementaryFunctions {
+		graph [label=ElementaryFunctions];
+		"theories/elementary_functions/trigonometry_functions"	[URL="mathcomp.analysis.elementary_functions.trigonometry_functions.html",
+			fillcolor=6,
+			label=trigonometry_functions];
+		"theories/elementary_functions/trigonometry_integral"	[URL="mathcomp.analysis.elementary_functions.trigonometry_integral.html",
+			fillcolor=6,
+			label=trigonometry_integral];
+		"theories/elementary_functions/trigo"	[URL="mathcomp.analysis.elementary_functions.trigo.html",
+			fillcolor=6,
+			label=trigo];
+	}
 	subgraph cluster_FunctionalAnalysis {
 		graph [label=FunctionalAnalysis];
 		"theories/functional_analysis/hahn_banach_theorem"	[URL="mathcomp.analysis.functional_analysis.hahn_banach_theorem.html",

@@ -5,6 +5,7 @@ digraph dependencies {
   subgraph cluster_ExperimentalReals { label="ExperimentalReals" }
   subgraph cluster_Reals { label="Reals" }
   subgraph cluster_Analysis { label="Analysis" }
+  subgraph cluster_ElementaryFunctions { label="ElementaryFunctions" }
   subgraph cluster_FunctionalAnalysis { label="FunctionalAnalysis" }
   subgraph cluster_Topology { label="Topology" }
   subgraph cluster_LebesgueIntegral { label="LebesgueIntegral" }
@@ -1082,6 +1083,14 @@ subgraph cluster_Analysis {
   "theories/realfun" -> "theories/exp";
   "theories/sequences" -> "theories/exp";
   "theories/topology_theory/topology" -> "theories/exp";
+
+subgraph cluster_ElementaryFunctions {
+    "theories/elementary_functions/trigonometry_functions"[
+        label="trigonometry_functions",
+        URL="mathcomp.analysis.elementary_functions.trigonometry_functions.html",
+        fillcolor=6
+    ]
+}
   "classical/boolp" -> "theories/elementary_functions/trigonometry_functions";
   "classical/classical_sets" -> "theories/elementary_functions/trigonometry_functions";
   "classical/functions" -> "theories/elementary_functions/trigonometry_functions";
@@ -1095,6 +1104,14 @@ subgraph cluster_Analysis {
   "theories/realfun" -> "theories/elementary_functions/trigonometry_functions";
   "theories/sequences" -> "theories/elementary_functions/trigonometry_functions";
   "theories/topology_theory/topology" -> "theories/elementary_functions/trigonometry_functions";
+
+subgraph cluster_ElementaryFunctions {
+    "theories/elementary_functions/trigonometry_integral"[
+        label="trigonometry_integral",
+        URL="mathcomp.analysis.elementary_functions.trigonometry_integral.html",
+        fillcolor=6
+    ]
+}
   "classical/boolp" -> "theories/elementary_functions/trigonometry_integral";
   "classical/classical_sets" -> "theories/elementary_functions/trigonometry_integral";
   "classical/functions" -> "theories/elementary_functions/trigonometry_integral";
@@ -1113,6 +1130,14 @@ subgraph cluster_Analysis {
   "theories/realfun" -> "theories/elementary_functions/trigonometry_integral";
   "theories/sequences" -> "theories/elementary_functions/trigonometry_integral";
   "theories/topology_theory/topology" -> "theories/elementary_functions/trigonometry_integral";
+
+subgraph cluster_ElementaryFunctions {
+    "theories/elementary_functions/trigo"[
+        label="trigo",
+        URL="mathcomp.analysis.elementary_functions.trigo.html",
+        fillcolor=6
+    ]
+}
   "theories/elementary_functions/trigonometry_functions" -> "theories/elementary_functions/trigo";
   "theories/elementary_functions/trigonometry_integral" -> "theories/elementary_functions/trigo";
 
