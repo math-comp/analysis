@@ -28,6 +28,8 @@ my %clusters = ( #         directory => [ Cluster Name, Color, URL ]
 
     'theories/functional_analysis'   => [ "FunctionalAnalysis", 3,
                                           "analysis.functional_analysis.%s"],
+    'theories/elementary_functions'   => [ "ElementaryFunctions", 6,
+                                          "analysis.elementary_functions.%s"],
 );
 
 print "digraph dependencies {\n";
