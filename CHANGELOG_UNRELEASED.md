@@ -110,6 +110,9 @@
   + lemmas `derive1_comp`, `is_derive1_comp` (`realFieldType` -> `numFieldType`)
   + lemmas `derive_shift`, `is_derive_shift` (function codomain)
 
+- in `pseudometric_normed_Zmodule.v`:
+  + lemma `within_continuous_continuous`
+
 ### Deprecated
 
 ### Removed

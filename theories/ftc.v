@@ -1013,24 +1013,6 @@ Unshelve. all: end_near. Qed.
 
 End integration_by_substitution_preliminaries.
 
-(* PR in progress *)
-Lemma cvgNy_compNP {T : topologicalType} {R : numFieldType} (f : R -> T)
-    (l : set_system T) :
-  f x @[x --> -oo] --> l <-> (f \o -%R) x @[x --> +oo] --> l.
-Proof.
-have f_opp : f =1 (fun x => (f \o -%R) (- x)) by move=> x; rewrite /comp opprK.
-by rewrite (eq_cvg -oo _ f_opp) [in X in X <-> _]fmap_comp ninftyN.
-Qed.
-
-(* PR in progress *)
-Lemma cvgy_compNP {T : topologicalType} {R : numFieldType} (f : R -> T)
-    (l : set_system T) :
-  f x @[x --> +oo] --> l <-> (f \o -%R) x @[x --> -oo] --> l.
-Proof.
-have f_opp : f =1 (fun x => (f \o -%R) (- x)) by move=> x; rewrite /comp opprK.
-by rewrite (eq_cvg +oo _ f_opp) [in X in X <-> _]fmap_comp ninfty.
-Qed.
-
 Section integration_by_substitution.
 Local Open Scope ereal_scope.
 Context {R : realType}.
@@ -1071,10 +1053,10 @@ pose PG x := parameterized_integral mu (F b) x G.
 have PGFbFa : derivable_oo_LRcontinuous PG (F b) (F a).
   have [/= dF rF lF] := Fab; split => /=.
   - move=> x xFbFa /=.
-    have xFa : (x < F a)%R. by move: xFbFa; rewrite in_itv/= => /andP[].
+    have xFa : (x < F a)%R by move: xFbFa; rewrite in_itv/= => /andP[].
     apply: (continuous_FTC1 xFa intG _ _).1 => /=.
       by move: xFbFa; rewrite lte_fin in_itv/= => /andP[].
-    exact: (within_continuous_continuous _ _ xFbFa).
+    exact: (within_continuous_continuous (ltW _) _ xFbFa).
   - have := parameterized_integral_continuous (ltW FbFa) intG.
     by move=> /(continuous_within_itvP _ FbFa)[].
   - exact: parameterized_integral_cvg_at_left.
@@ -1090,7 +1072,7 @@ rewrite (@continuous_FTC2 _ _ PG _ _ FbFa cG).
   have xFa : (x < F a)%R by move: xFbFa; rewrite in_itv/= => /andP[].
   apply: (continuous_FTC1 xFa _ _ _).2 => //=.
     by move: xFbFa; rewrite lte_fin in_itv/= => /andP[].
-  exact: (within_continuous_continuous _ _ xFbFa).
+  exact: (within_continuous_continuous (ltW _) _ xFbFa).
 set f  := fun x => if x == a then r else if x == b then l else F^`() x.
 have fE : {in `]a, b[, F^`() =1 f}.
   by move=> x; rewrite in_itv/= => /andP[ax xb]; rewrite /f gt_eqF// lt_eqF.
@@ -1108,7 +1090,7 @@ have DPGFE : {in `]a, b[, (- (PG \o F))%R^`() =1 ((G \o F) * (- f))%R}.
   have /[dup]FxFbFa : F x \in `]F b, F a[ by exact: decreasing_image_oo.
   rewrite in_itv/= => /andP[FbFx FxFa].
   apply: (continuous_FTC1 FxFa intG FbFx _).2 => //=.
-  exact: (within_continuous_continuous _ _ FxFbFa).
+  exact: (within_continuous_continuous (ltW _) _ FxFbFa).
 rewrite -[LHS]oppeK oppeB// addrC.
 under eq_integral do rewrite mulrN EFinN.
 rewrite oppeD//= -(continuous_FTC2 ab _ _ DPGFE).
