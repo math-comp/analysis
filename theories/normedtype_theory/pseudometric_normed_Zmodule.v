@@ -1089,10 +1089,12 @@ Qed.
 End continuous_within_itvP.
 
 Lemma within_continuous_continuous {R : realFieldType} {K : numDomainType}
-    {U : pseudoMetricNormedZmodType K} a b (f : R -> U) x : (a < b)%R ->
-  {within `[a, b], continuous f} -> x \in `]a, b[ -> {for x, continuous f}.
+    {U : pseudoMetricNormedZmodType K} a b (f : R -> U) x : (a <= b)%R ->
+  {within `[a, b], continuous f} -> x \in `]a, b[%R -> {for x, continuous f}.
 Proof.
-by move=> ab /continuous_within_itvP-/(_ ab)[+ _] /[swap] xab cf; exact.
+rewrite le_eqVlt => /predU1P[<- _|ab].
+  by rewrite in_itv/= => /andP[] /lt_trans /[apply]; rewrite ltxx.
+by move=> /continuous_within_itvP-/(_ ab)[+ _ _]; exact.
 Qed.
 
 Module Export NearNorm.
