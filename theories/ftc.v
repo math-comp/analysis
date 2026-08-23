@@ -1765,6 +1765,40 @@ Qed.
 
 End integration_by_substitution.
 
+Lemma parameterized_integralN {R : realType} x b (f : R -> R) : (x <= b) ->
+  {within `[x, b], continuous f} ->
+  parameterized_integral lebesgue_measure x b f =
+  parameterized_integral lebesgue_measure (- b) (- x) (f \o -%R).
+Proof.
+move=> xb cf.
+rewrite /parameterized_integral /Rintegral.
+rewrite -(@integration_by_substitution_oppr _ f (- b) (- x)) ?opprK//.
+by rewrite lerN2.
+Qed.
+
+Section parameterized_integralN_continuous.
+Context {R : realType}.
+Notation mu := (@lebesgue_measure R).
+Let int := (parameterized_integral mu).
+
+Lemma parameterized_integralN_continuous a b (f : R -> R) : a <= b ->
+  {within `[a, b], continuous f} ->
+  {within `[a, b], continuous (fun x => int x b f)}.
+Proof.
+move=> ab abf; suff: {within `[a, b], continuous
+    ((fun x => parameterized_integral mu (- b) x (f \o -%R)) \o -%R)}.
+  apply: subspace_eq_continuous => /= x /[!inE] xab/=.
+  rewrite /from_subspace/= -parameterized_integralN ?(itvP xab)//.
+  apply: continuous_subspaceW abf.
+  by apply: subset_itvr; rewrite bnd_simp (itvP xab).
+apply: within_continuous_compN.
+apply: parameterized_integral_continuous; first by rewrite lerN2.
+apply: continuous_compact_integrable => //; first exact: segment_compact.
+by apply: within_continuous_compN; rewrite !opprK.
+Qed.
+
+End parameterized_integralN_continuous.
+
 Section ge0_integration_by_substitution_shift.
 Context {R : realType}.
 Notation mu := (@lebesgue_measure R).
