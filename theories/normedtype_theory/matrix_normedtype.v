@@ -172,33 +172,19 @@ Qed.
 
 End mx_norm.
 
-Section norm_trmx.
+HB.instance Definition _ {K : numDomainType} m n :=
+  Num.Zmodule_isNormed.Build K 'M[K]_(m, n)
+    (@ler_mx_norm_add _ _ _) (@mx_norm_eq0 _ _ _)
+    (@mx_norm_natmul _ _ _) (@mx_normN _ _ _).
 
-Import Order.TTheory GRing.Theory Num.Def Num.Theory.
-Import Order.Def.
-Local Open Scope ring_scope.
-Lemma nng_max0r {K : realFieldType} : left_id ((0:K)%:nng) (@maxr {nonneg K}).
-Proof.
-move=> x.
-rewrite /max; case: ifPn => //.
-rewrite -leNgt => x0.
-apply/eqP; rewrite eq_le; apply/andP; split; last first.
-  exact: x0.
-by have : 0 <= x%:nngnum by []. (* NB: this should be automatic *)
-Qed.
-
-HB.instance Definition _  {K : realFieldType} :=
-  Monoid.isComLaw.Build {nonneg K} 0%:nng max maxA maxC nng_max0r.
-
-Lemma norm_trmx m n {R : realFieldType} (M : 'M[R]_(m, n)) : mx_norm (M^T) = mx_norm M.
+Lemma norm_trmx {R : realFieldType} m n (M : 'M[R]_(m, n)) :
+  mx_norm (M^T) = mx_norm M.
 Proof.
 rewrite [LHS]mx_normE/=.
-under eq_bigr do rewrite mxE /=.
+under eq_bigr do rewrite mxE/=.
 rewrite -(pair_big xpredT xpredT (fun i j => `|M j i|%:nng))/=.
 by rewrite exchange_big//= pair_big.
 Qed.
-
-End norm_trmx.
 
 Lemma mx_normrE (K : realDomainType) (m n : nat) (x : 'M[K]_(m, n)) :
   mx_norm x = \big[maxr/0]_ij `|x ij.1 ij.2|.
@@ -208,13 +194,8 @@ elim/big_ind2 : _ => //= a a' b b' ->{a'} ->{b'}.
 by have [ab|ab] := leP a b; [rewrite max_r | rewrite max_l // ltW].
 Qed.
 
-HB.instance Definition _ (K : numDomainType) (m n : nat) :=
-  Num.Zmodule_isNormed.Build K 'M[K]_(m, n)
-    (@ler_mx_norm_add _ _ _) (@mx_norm_eq0 _ _ _)
-    (@mx_norm_natmul _ _ _) (@mx_normN _ _ _).
-
 Section example_of_sharing.
-Variables (K : numDomainType).
+Context {K : numDomainType}.
 
 Example matrix_triangle m n (M N : 'M[K]_(m, n)) :
   `|M + N| <= `|M| + `|N|.
@@ -226,7 +207,7 @@ Proof. exact: ler_normD. Qed.
 End example_of_sharing.
 
 Section matrix_pseudoMetricNormedZmod.
-Variables (K : numFieldType) (m n : nat).
+Context {K : numFieldType} {m n : nat}.
 
 Local Lemma ball_gt0 (x y : 'M[K]_(m, n)) e : ball x e y -> 0 < e.
 Proof. by case. Qed.

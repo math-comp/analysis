@@ -647,3 +647,21 @@ End Theory.
 Module Import Exports. HB.reexport. End Exports.
 End Norm.
 Export Norm.Exports.
+
+From mathcomp Require Import interval_inference.
+Section nng_comlaw.
+Import Num.Def.
+Context {K : realFieldType}.
+
+Let nng_max0r : left_id ((0 : K)%:nng) (@maxr {nonneg K}).
+Proof.
+move=> x; rewrite /maxr; case: ifPn => //.
+rewrite -leNgt => x0.
+apply/eqP; rewrite eq_le x0 andbT.
+by have : 0 <= x%:nngnum by []. (* NB: why isn't this automatic? *)
+Qed.
+
+HB.instance Definition _ :=
+  Monoid.isComLaw.Build {nonneg K} 0%:nng maxr maxA maxC nng_max0r.
+
+End nng_comlaw.

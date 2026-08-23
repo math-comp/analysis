@@ -2511,58 +2511,46 @@ apply/derivable_mxP => i0 j0.
 by have [] := MdM i0 j0.
 Qed.
 
-Lemma derivable_trmx m n (M : V -> 'M[R]_(m, n)) t v :
+Lemma derivable_trmx {m n} (M : V -> 'M[R]_(m, n)) t v :
   derivable (fun x => (M x)^T) t v = derivable M t v.
 Proof.
 rewrite propeqE; split; rewrite /derivable/=.
-- move=> /cvg_ex[/= l Hl].
-  apply/cvg_ex => /=; exists l^T.
+- move=> /cvg_ex[/= l Ml]; apply/cvg_ex => /=; exists l^T.
   apply/cvgrPdist_le => /= e e0.
-  move/cvgrPdist_le : Hl => /(_ _ e0)[/= r r0 re].
+  move/cvgrPdist_le : Ml => /(_ _ e0)[/= r r0 re].
   near=> x.
-  rewrite [leLHS](_ : _ =
-      `|l - x^-1 *: ((M (x *: v + t))^T - (M t)^T)|); last 2 first.
-    rewrite -[RHS]norm_trmx.
-    rewrite [in RHS]linearD/=.
-    rewrite [in RHS]linearN/=.
+  rewrite [leLHS](_ : _ = `|l - x^-1 *: ((M (x *: v + t))^T - (M t)^T)|).
+    rewrite -[RHS]norm_trmx [in RHS]linearD/= [in RHS]linearN/=.
     congr (`| _ - _ |).
-    rewrite [RHS]linearZ/=.
-    rewrite [in RHS]linearB.
-    by rewrite /= !trmxK.
+    by rewrite [RHS]linearZ/= [in RHS]linearB /= !trmxK.
   apply: re => /=.
     rewrite sub0r normrN.
     by near: x; exact: dnbhs0_lt.
   by near: x; exact: nbhs_dnbhs_neq.
-- move=> /cvg_ex[/= l Hl].
-  apply/cvg_ex => /=; exists l^T.
+- move=> /cvg_ex[/= l Ml]; apply/cvg_ex => /=; exists l^T.
   apply/cvgrPdist_le => /= e e0.
-  move/cvgrPdist_le : Hl => /(_ _ e0)[/= r r0 re].
+  move/cvgrPdist_le : Ml => /(_ _ e0)[/= r r0 re].
   near=> x.
-  rewrite [leLHS](_ : _ = `|l - x^-1 *: ((M (x *: v + t)) - (M t))|); last 2 first.
-    rewrite -[RHS]norm_trmx.
-    rewrite [in RHS]linearD/=.
-    rewrite [in RHS]linearN/=.
+  rewrite [leLHS](_ : _ = `|l - x^-1 *: ((M (x *: v + t)) - (M t))|).
+    rewrite -[RHS]norm_trmx [in RHS]linearD/= [in RHS]linearN/=.
     congr (`| _ - _ |).
-    rewrite [RHS]linearZ/=.
-    by rewrite [in RHS]linearB.
+    by rewrite [RHS]linearZ/= [in RHS]linearB.
   apply: re => /=.
     rewrite sub0r normrN.
     by near: x; exact: dnbhs0_lt.
   by near: x; exact: nbhs_dnbhs_neq.
 Unshelve. all: by end_near. Qed.
 
-Lemma derive_trmx {m n : nat} (M : V -> 'M[R]_(m, n)) t v :
+Lemma derive_trmx {m n} (M : V -> 'M[R]_(m, n)) t v :
   derivable M t v -> 'D_v (trmx \o M) t = ('D_v M t)^T.
 Proof.
-move=> Mt1.
-rewrite !derive_mx//=.
-  by rewrite derivable_trmx.
+move=> Mtv; rewrite !derive_mx//=; first by rewrite derivable_trmx.
 apply/matrixP => i j; rewrite !mxE.
 by under eq_fun do rewrite mxE.
 Qed.
 
-Global Instance is_derive_trmx {m n : nat}
-  (f : V -> 'M[R]_(m, n)) (f' : 'M[R]_(m, n)) (t : V) w:
+Global Instance is_derive_trmx {m n} (f : V -> 'M[R]_(m, n)) (f' : 'M[R]_(m, n))
+    (t : V) w :
   is_derive t w f f' -> is_derive t w (fun x => (f x)^T) f'^T.
 Proof.
 move=> fD.

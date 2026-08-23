@@ -57,6 +57,12 @@
 
 - in `measurable_realfun.v`:
   + lemma `measurable_bigmaxr`
+- in `matrix_normedtype.v`:
+  + lemma `norm_trmx`
+
+- in `derive.v`:
+  + lemmas `derivable_trmx`, `derive_trmx`
+  + global instance `is_derive_trmx`
 
 ### Changed
 
