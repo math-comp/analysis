@@ -55,6 +55,9 @@
 - in `Rstruct_topology.v`:
   + lemmas `RcosE`, `Rtrigo_PIE`, `RsinE`
 
+- in `ftc.v`:
+  + lemmas `parameterized_integralN`, `parameterized_integralN_continuous`
+
 ### Changed
 
 - in `derive.v`:
