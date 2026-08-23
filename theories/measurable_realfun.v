@@ -88,7 +88,7 @@ Qed.
 End ps_infty.
 
 Section salgebra_ereal.
-Variables (R : realType) (G : set_system R).
+Context {R : realType} (G : set_system R).
 Let measurableR : set_system R := G.-sigma.-measurable.
 
 Definition emeasurable : set_system (\bar R) :=
@@ -143,7 +143,7 @@ Definition ereal_isMeasurable : isMeasurable default_measure_display (\bar R) :=
 End salgebra_ereal.
 
 Section puncture_ereal_itv.
-Variable R : realDomainType.
+Context {R : realDomainType}.
 Implicit Types (y : R) (b : bool).
 Local Open Scope ereal_scope.
 
@@ -299,8 +299,7 @@ Qed.
 
 Section measurable_fun_measurable.
 Local Open Scope ereal_scope.
-Context d (T : sigmaRingType d) (R : realType).
-Variables (D : set T) (f : T -> \bar R).
+Context {d} {T : sigmaRingType d} {R : realType} (D : set T) (f : T -> \bar R).
 Hypotheses (mD : measurable D) (mf : measurable_fun D f).
 Implicit Types y : \bar R.
 
@@ -341,7 +340,7 @@ Qed.
 End measurable_fun_measurable.
 
 Section erealwithrays.
-Variable R : realType.
+Context {R : realType}.
 Implicit Types (x y z : \bar R) (r s : R).
 Local Open Scope ereal_scope.
 
@@ -424,7 +423,7 @@ End erealwithrays.
 
 Module ErealGenOInfty.
 Section erealgenoinfty.
-Variable R : realType.
+Context (R : realType).
 Implicit Types (x y z : \bar R) (r s : R).
 
 Local Open Scope ereal_scope.
@@ -478,7 +477,7 @@ End ErealGenOInfty.
 
 Module ErealGenCInfty.
 Section erealgencinfty.
-Variable R : realType.
+Context (R : realType).
 Implicit Types (x y z : \bar R) (r s : R).
 Local Open Scope ereal_scope.
 
@@ -530,7 +529,7 @@ End ErealGenCInfty.
 
 Module ErealGenInftyO.
 Section erealgeninftyo.
-Variable R : realType.
+Context (R : realType).
 
 Definition G := [set A : set \bar R | exists r, A = `]-oo, r%:E[%classic].
 
@@ -555,7 +554,7 @@ Lemma is_interval_measurable (R : realType) (I : set R) :
 Proof. by move/is_intervalP => ->; rewrite -?RGenOpenSets.measurableE//. Qed.
 
 Section coutinuous_measurable.
-Variable R : realType.
+Context {R : realType}.
 
 Lemma open_measurable (A : set R) : open A -> measurable A.
 Proof.
@@ -615,7 +614,7 @@ by rewrite preimage_itvoy; move/lower_semicontinuousP : scif; exact.
 Qed.
 
 Section standard_measurable_fun.
-Variable R : realType.
+Context {R : realType}.
 Implicit Types D : set R.
 
 Lemma oppr_measurable D : measurable_fun D -%R.
@@ -683,7 +682,7 @@ exact: (@measurable_comp _ _ _ _ _ _ setT (fun x : R => x ^+ n) _ f).
 Qed.
 
 Section measurable_fun_realType.
-Context d (T : measurableType d) (R : realType).
+Context {d} {T : measurableType d} {R : realType}.
 Implicit Types (D : set T) (f g : T -> R).
 
 Lemma measurable_funD D f g :
@@ -758,6 +757,16 @@ Lemma measurable_maxr D f g :
 Proof.
 by move=> mf mg mD; move: (mD); apply: measurable_fun_if => //;
   [exact: measurable_fun_ltr|exact: measurable_funS mg|exact: measurable_funS mf].
+Qed.
+
+Lemma measurable_bigmaxr D def {n} (f : 'I_n -> T -> R) :
+  (forall i, measurable_fun D (f i)) ->
+  measurable_fun D (fun x => \big[maxr/def]_(i < n) f i x).
+Proof.
+elim: n f => [|n ih] f mf.
+  by under eq_fun do rewrite big_ord0/=; exact: measurable_cst.
+under eq_fun do rewrite big_ord_recl/=.
+by apply: measurable_maxr; [exact: mf|apply: ih => i; exact: mf].
 Qed.
 
 Lemma measurable_funrpos D f : measurable_fun D f -> measurable_fun D f^\+.
@@ -992,7 +1001,7 @@ HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst k).
 Definition scale_mfun k f : {mfun aT >-> rT} := k \o* f.
 
 Let max_mfun_subproof f g : @isMeasurableFun d _ aT rT (f \max g).
-Proof. by split; apply: measurable_maxr. Qed.
+Proof. by split; exact: measurable_maxr. Qed.
 
 HB.instance Definition _ f g := max_mfun_subproof f g.
 
@@ -1223,7 +1232,7 @@ Qed.
 End measurable_fun_nat.
 
 Section standard_emeasurable_fun.
-Variable R : realType.
+Context {R : realType}.
 
 Lemma EFin_measurable (D : set R) : measurable_fun D EFin.
 Proof.

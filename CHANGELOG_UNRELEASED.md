@@ -55,6 +55,9 @@
 - in `Rstruct_topology.v`:
   + lemmas `RcosE`, `Rtrigo_PIE`, `RsinE`
 
+- in `measurable_realfun.v`:
+  + lemma `measurable_bigmaxr`
+
 ### Changed
 
 - in `derive.v`:
