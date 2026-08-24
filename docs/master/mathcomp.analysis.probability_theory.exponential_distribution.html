@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.probability_theory.exponential_distribution</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis e53f4d1 2026.08.23-18:57" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis e53f4d1 2026.08.24-19:07" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -360,20 +360,19 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#MeasurableR">MeasurableR</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="exponential_prob" class="id"><div name="exponential_prob" class=" tooltip">exponential_prob<span class='tooltip-area'><p>exponential_pdf :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="exponential_prob" class="id"><div name="exponential_prob" class=" tooltip">exponential_prob<span class='tooltip-area'><p>exponential_prob :
 forall {R : realType},
 R ->
-join_Num_POrderNmodule_between_Algebra_BaseAddUMagma_and_Order_POrder
-  (join_Num_POrderZmodule_between_Algebra_BaseZmodule_and_Num_POrderNmodule R) ->
-numFieldTopology.Real_sort__canonical__classical_sets_Pointed R
+set Real_sort__canonical__measurable_structure_Measurable ->
+GRing.BaseAddMagma.sort \bar R
 
-exponential_pdf is not universe polymorphic
-Arguments exponential_pdf {R} rate%_ring_scope u
-exponential_pdf is transparent
+exponential_prob is not universe polymorphic
+Arguments exponential_prob {R} rate%_ring_scope V%_classical_set_scope
+exponential_prob is transparent
 Expands to: Constant
-            mathcomp.analysis.probability_theory.exponential_distribution.exponential_pdf
+            mathcomp.analysis.probability_theory.exponential_distribution.exponential_prob
 Declared in
-library mathcomp.analysis.probability_theory.exponential_distribution, line 38, characters 11-26
+library mathcomp.analysis.probability_theory.exponential_distribution, line 102, characters 11-27
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/e53f4d17c5ecdc10c26eb7d6116e19e5adc593fb/theories/probability_theory/exponential_distribution.v#L102' target='_blank'>Source code</a></span></div></span> (<span id="rate:15" class="id"><div name="rate:15" class=" tooltip">rate<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e53f4d17c5ecdc10c26eb7d6116e19e5adc593fb/theories/probability_theory/exponential_distribution.v#L102' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#exponential_prob.R">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">fun</span><span class="id"> </span><span id="V:16" class="id"><div name="V:16" class=" tooltip">V<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e53f4d17c5ecdc10c26eb7d6116e19e5adc593fb/theories/probability_theory/exponential_distribution.v#L103' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span> (<span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">\int[</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#lebesgue_measure">lebesgue_measure</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">]_</a></span>(<span id="x:17" class="id"><div name="x:17" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e53f4d17c5ecdc10c26eb7d6116e19e5adc593fb/theories/probability_theory/exponential_distribution.v#L103' target='_blank'>Source code</a></span></div></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> in</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#V:16">V</a></span>) (<span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#exponential_pdf">exponential_pdf</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#rate:15">rate</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.exponential_distribution.html#x:17">x</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>)<span class="id">%E</span>.<br/>
 <br/>
