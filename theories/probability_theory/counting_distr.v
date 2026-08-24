@@ -1,8 +1,9 @@
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra.
-From mathcomp.classical Require Import boolp classical_sets mathcomp_extra.
+From mathcomp.classical Require Import boolp classical_sets mathcomp_compat.
 From mathcomp Require Import xfinmap constructive_ereal reals discrete.
-From mathcomp Require Import esum sequences normedtype ereal cardinality fsbigop.
+From mathcomp Require Import esum ereal.
+From mathcomp Require Import cardinality fsbigop topology normedtype sequences.
 
 (* Should be removed *)
 From mathcomp Require Import numfun.
@@ -58,7 +59,7 @@ HB.structure Definition Distribution (R : realType) (T : choiceType) :=
 
 Notation "{ 'distr' T / R }" := (@Distribution.type R T)
   (at level 0, T at level 2, format "{ 'distr'  T  /  R }")
-  : type_scope.
+    : type_scope.
 
 (* -------------------------------------------------------------------- *)
 Section DistrCoreTh.
@@ -154,7 +155,9 @@ Local Lemma isd2 : esummable [set: T] (EFin \o mu).
 Proof.
 case isd => ? h2.
 rewrite /esummable (@le_lt_trans _ _ 1%:E) ?ltey//.
-rewrite ge0_esum //  ge_ereal_sup//= => _ [X [finX _]] <-.
+rewrite ge0_esum //.
++ by move => ? _;rewrite lee_fin.
+rewrite ge_ereal_sup//= => _ [X [finX _]] <-.
 rewrite fsumEFin // lee_fin fsbig_finite //=.
 rewrite (eq_bigr (fun x => mu x)).
 + by move => ??; rewrite ger0_norm.
@@ -180,7 +183,8 @@ End DistrTheory.
 
 Lemma isdistr_finP {R : realType} {I : finType} (mu : I -> R) :
   (isdistr mu) <-> (forall x, 0 <= mu x) /\ (\sum_j mu j <= 1).
-Proof. split=> -[ ge0_mu le1]; split=> //.
+Proof.
+split=> -[ ge0_mu le1]; split=> //.
 + by apply/le1; rewrite /index_enum -enumT enum_uniq.
 + move=> J uqJ; rewrite big_uniq 1?(le_trans _ le1) //=.
   by rewrite [X in _<=X](bigID (mem J)) /= lerDl sumr_ge0.
@@ -201,15 +205,17 @@ Qed.
 Section DistrD.
 Context {R : realType} {T : choiceType}.
 
-Definition dnull := fun x : T => (0 : R).
+Definition dnull_fun := fun x : T => (0 : R).
 
-Lemma isd_mnull : isdistr dnull.
+Lemma isd_mnull : isdistr dnull_fun.
 Proof. by split=> // J _; rewrite big1 ?ler01. Qed.
 
-HB.instance Definition _ := @mkdistrd R T dnull isd_mnull.
+HB.instance Definition _ := @mkdistrd R T dnull_fun isd_mnull.
+
+Definition dnull := @locked {distr T / R} dnull_fun.
 
 Lemma dnullE x : dnull x = 0.
-Proof. by []. Qed.
+Proof. by unlock dnull. Qed.
 
 End DistrD.
 
@@ -222,14 +228,14 @@ Proof. by move=> x; rewrite dnullE ge0_mu. Qed.
 Section Restr.
 Context (R : realType) (T : choiceType) (p : pred T).
 
-Definition drestr (mu : {distr T / R}) :=
+Definition drestr_fun (mu : {distr T / R}) :=
   fun x => if p x then mu x else 0.
 
-Lemma isd_drestr (mu : {distr T / R}) : isdistr (drestr mu).
+Lemma isd_drestr (mu : {distr T / R}) : isdistr (drestr_fun mu).
 Proof.
-split=> [x|J]; first by rewrite /drestr; case: ifP.
+split=> [x|J]; first by rewrite /drestr_fun; case: ifP.
 move=> eqJ; apply/(@le_trans _ _ (\sum_(j <- J) `|mu j|)).
-+ apply/ler_sum=> i _; rewrite /drestr; case: ifPn=> _.
++ apply/ler_sum=> i _; rewrite /drestr_fun; case: ifPn=> _.
   by apply/ler_norm. by apply/normr_ge0.
 + rewrite -lee_fin.
   apply/(le_trans _ (le1_mu mu)).
@@ -240,11 +246,13 @@ move=> eqJ; apply/(@le_trans _ _ (\sum_(j <- J) `|mu j|)).
 Qed.
 
 HB.instance Definition _ (mu : {distr T / R}) :=
-  @mkdistrd R T (drestr mu) (isd_drestr mu).
+  @mkdistrd R T (drestr_fun mu) (isd_drestr mu).
+
+Definition drestr (mu : {distr T / R}) := @locked {distr T / R} (drestr_fun mu).
 
 Lemma drestrE (mu : {distr T / R}) x :
   drestr mu x = if p x then mu x else 0.
-Proof. by []. Qed.
+Proof. by unlock drestr. Qed.
 End Restr.
 
 (* -------------------------------------------------------------------- *)
@@ -272,13 +280,13 @@ Local Notation distr := {distr T / R}.
 
 Implicit Types (s : seq T).
 
-Definition drat (s : seq T) : T -> R :=
+Definition drat_fun (s : seq T) : T -> R :=
   fun x : T => (count (pred1 x) s)%:R / (size s)%:R.
 
-Lemma ge0_drat s : forall x, 0 <= drat s x.
+Lemma ge0_drat s : forall x, 0 <= drat_fun s x.
 Proof. by move=> x; rewrite mulr_ge0 ?invr_ge0 // ler0n. Qed.
 
-Local Lemma has_sup_drat s J : uniq J -> \sum_(i <- J) drat s i <= 1.
+Local Lemma has_sup_drat s J : uniq J -> \sum_(i <- J) drat_fun s i <= 1.
 Proof.
 move=> uqJ; rewrite -mulr_suml /= -natr_sum; case: (size s =P 0%N).
   by move=> ->; rewrite invr0 mulr0 ler01.
@@ -296,7 +304,7 @@ by move=> x; rewrite !mem_filter mem_undup andbC.
 Qed.
 
 Local Lemma drat_sup s : (0 < size s)%N ->
-  \sum_(i <- undup s) drat s i = 1.
+  \sum_(i <- undup s) drat_fun s i = 1.
 Proof.
 move=> gt0_s; rewrite -mulr_suml -natr_sum.
 apply/(mulIf (x := (size s)%:R)); first by rewrite pnatr_eq0 -lt0n.
@@ -305,43 +313,47 @@ rewrite -sum1_size -[in RHS]big_undup_iterop_count/=; apply: eq_bigr => i _.
 by rewrite Monoid.iteropE iter_addn addn0 mul1n.
 Qed.
 
-Local Lemma summable_drat s: esummable [set :T] (EFin \o (drat s)).
+Local Lemma summable_drat s: esummable [set :T] (EFin \o (drat_fun s)).
 Proof.
 rewrite /esummable (@le_lt_trans _ _ 1%:E) ?ltey//.
-rewrite ge0_esum // ge_ereal_sup//= => _ [X [finX _]] <-.
+rewrite ge0_esum.
++ by move => ? _;rewrite lee_fin.
+rewrite ge_ereal_sup//= => _ [X [finX _]] <-.
 rewrite fsumEFin // lee_fin fsbig_finite //=.
-rewrite (eq_bigr (drat s)).
+rewrite (eq_bigr (drat_fun s)).
 + move => ??; rewrite ger0_norm ?ge0_drat //.
 by apply/has_sup_drat.
 Qed.
 
-Lemma isd_drat s : isdistr (drat s).
+Lemma isd_drat s : isdistr (drat_fun s).
 Proof. by split; [apply/ge0_drat | apply/has_sup_drat]. Qed.
 
 HB.instance Definition _ (s : seq T) :=
-  @mkdistrd R T (drat s) (isd_drat s).
+  @mkdistrd R T (drat_fun s) (isd_drat s).
+
+Definition drat (s : seq T) := @locked {distr T / R} (drat_fun s).
 
 Lemma drat1E s x :
   drat s x = (count_mem x s)%:R / (size s)%:R.
-Proof. by []. Qed.
+Proof. by unlock drat. Qed.
 
-Definition dunit x := @locked {distr T / R} (drat [:: x] ).
-Definition duni  s := @locked {distr T / R} (drat (undup s)).
+Definition dunit x := drat [:: x].
+Definition duni  s := drat (undup s).
 
 Lemma dunit1E x y : (dunit x) y = (x == y)%:R.
-Proof. by unlock dunit; rewrite /= drat1E /= !(simpm, invr1). Qed.
+Proof. by rewrite /dunit drat1E /= !(simpm, invr1). Qed.
 
 Lemma dunit_id x : (dunit x) x = 1.
-Proof. by unlock dunit; rewrite /= drat1E /= !(simpm, invr1) eq_refl. Qed.
+Proof. by rewrite /dunit drat1E /= !(simpm, invr1) eq_refl. Qed.
 
 Lemma dunit_diff x y: x <> y -> (dunit x) y = 0.
 Proof.
-  unlock dunit; rewrite /= drat1E /= !(simpm, invr1).
+  rewrite /dunit drat1E /= !(simpm, invr1).
   by case_eq (x == y) => //= /eqP.
 Qed.
 
 Lemma duni1E s x : (duni s) x = (x \in s)%:R / (size (undup s))%:R.
-Proof. by unlock duni; rewrite /= drat1E count_uniq_mem ?(mem_undup, undup_uniq). Qed.
+Proof. by rewrite /duni drat1E count_uniq_mem ?(mem_undup, undup_uniq). Qed.
 
 Lemma in_dunit t t' :
   t' \in dinsupp (dunit t) -> t' = t :> T.
@@ -352,20 +364,22 @@ End DRat.
 Section Flip.
 Context {R : realType}.
 
-Definition dflip (xt : R) :=
+Definition dflip_fun (xt : R) :=
   fun b => if b then clamp xt else 1 - clamp xt.
 
-Lemma isd_dflip xt : isdistr (dflip xt).
+Lemma isd_dflip xt : isdistr (dflip_fun xt).
 Proof. apply/isdistr_finP; split=> [b|].
 + by case: b; rewrite ?subr_ge0 cp01_clamp.
 + by rewrite /index_enum !unlock /= addr0 addrC subrK.
 Qed.
 
 HB.instance Definition _ (xt : R) :=
-  @mkdistrd R _ (dflip xt) (isd_dflip xt).
+  @mkdistrd R _ (dflip_fun xt) (isd_dflip xt).
+
+Definition dflip (xt : R) := @locked {distr bool / R} (dflip_fun xt).
 
 Lemma dflip1E xt : dflip xt =1 (fun b => if b then clamp xt else 1 - clamp xt).
-Proof. by []. Qed.
+Proof. by unlock dflip. Qed.
 End Flip.
 
 (* -------------------------------------------------------------------- *)
@@ -373,7 +387,7 @@ Section Bind.
 Context {R : realType} {T U : choiceType}
           (f : T -> {distr U / R}) (mu : {distr T /R}).
 
-Definition dlet := fun y : U => fine (esum [set:T] (fun x => EFin (mu x * f x y))).
+Definition dlet_fun := fun y : U => fine (esum [set:T] (fun x => EFin (mu x * f x y))).
 
 Lemma dlet_pos x : 0 <= fine (\esum_(x0 in [set: T]) (mu x0 * f x0 x)%:E).
 Proof.
@@ -383,11 +397,11 @@ rewrite -lee_fin -{}h esum_ge0 // => ??.
 by rewrite EFinM mule_ge0 //= lee_tofin.
 Qed.
 
-Lemma isd_dlet : isdistr dlet.
+Lemma isd_dlet : isdistr dlet_fun.
 Proof.
 split=> [x|J uqJ].
 + exact: dlet_pos.
-+ rewrite /dlet -lee_fin.
++ rewrite /dlet_fun -lee_fin.
   have hpos : (forall x i, 0 <= (mu x * f x i)%:E )%E.
   + by move => ?? ;rewrite EFinM mule_ge0  //= lee_tofin.
   apply /le_trans.
@@ -404,10 +418,12 @@ split=> [x|J uqJ].
   by have := (summable_mu (f i)); rewrite esummableE.
 Qed.
 
-HB.instance Definition _ :=  @mkdistrd R U dlet isd_dlet.
+HB.instance Definition _ :=  @mkdistrd R U dlet_fun isd_dlet.
+
+Definition dlet := @locked {distr U / R} dlet_fun.
 
 Lemma dletE y : dlet y = fine (esum [set:T] (fun x => EFin (mu x * f x y))).
-Proof. by []. Qed.
+Proof. by unlock dlet. Qed.
 End Bind.
 
 Notation "\dlet_ ( i <- d ) E" := (dlet (fun i => E) d).
@@ -476,8 +492,7 @@ Qed.
 Lemma eq_in_dlet f g mu nu : {in dinsupp mu, f =2 g} -> mu =1 nu ->
   dlet f mu =1 dlet g nu.
 Proof.
-move=> eq_f eq_mu; unlock dlet=> y /=.
-rewrite /dlet.
+move=> eq_f eq_mu y; rewrite !dletE.
 have -> //= : (\esum_(x in [set: T]) (mu x * f x y)%:E =
             \esum_(x in [set: T]) (nu x * g x y)%:E).
 apply /eq_esum.
@@ -499,10 +514,14 @@ rewrite esum_abse.
 by  have := (summable_dlet f mu y); rewrite esummableE.
 Qed.
 
+Lemma dlet_EFin (f : T -> {distr U / R}) (mu : {distr T / R}) y :
+  (dlet f mu y)%:E = esum [set:T] (fun x => (mu x * f x y)%:E).
+Proof. by rewrite dletE fineK// ?fin_esum. Qed.
+
 Lemma le_in_dlet f g mu : {in dinsupp mu, f <=2 g} ->
   dlet f mu <=1 dlet g mu.
 Proof.
-move=> le_f; unlock dlet=> y /=;  rewrite /dlet  fine_le // ?fin_esum //.
+move=> le_f y; rewrite !dletE fine_le // ?fin_esum //.
 apply: le_esum => x ?.
 case /boolP: (x \in dinsupp mu) => [/le_f ?|].
 rewrite !EFinM lee_pmul //= lee_tofin //=.
@@ -511,7 +530,7 @@ Qed.
 
 Lemma le_mu_dlet f mu nu : mu <=1 nu -> dlet f mu <=1 dlet f nu.
 Proof.
-move => le_mu y; unlock dlet; rewrite /dlet  fine_le //= ?fin_esum //.
+move => le_mu y; rewrite !dletE fine_le //= ?fin_esum //.
 apply: le_esum => x ?.
 by rewrite !EFinM lee_pmul //= lee_tofin.
 Qed.
@@ -536,7 +555,6 @@ rewrite fineM => //=;last first.
   by under eq_esum do rewrite mul1r.
 by rewrite esum_abse //; have := (summable_mu mu); rewrite esummableE.
 Qed.
-
 
 Lemma dinsupp_dlet f mu y :
   y \in dinsupp (\dlet_(x <- mu) f x) ->
@@ -583,7 +601,7 @@ Qed.
 Lemma eq0_dlet (mu : {distr T / R}) (F : T -> {distr U / R}) y :
   (\dlet_(x <- mu) F x) y = 0 -> forall x, x \in dinsupp mu -> F x y = 0.
 Proof.
-unlock dlet; rewrite /= /dlet => /fine_esum0 => h x.
+rewrite dletE => /fine_esum0 => h x.
 move => /dinsuppP /eqP mu_x. move: (h x).
 by  move=> /eqP ; rewrite eqe mulf_eq0 (negbTE mu_x) /= => /eqP.
 Qed.
@@ -599,15 +617,15 @@ Lemma dlet_dlet (mu : {distr T / R}) :
      \dlet_(x <- \dlet_(y <- mu) f1 y) f2 x
   =1 \dlet_(y <- mu) (\dlet_(x <- f1 y) f2 x).
 Proof.
-move=> z; unlock dlet => /=; rewrite /dlet /=.
+move=> z; rewrite !dletE.
 pose S y x := mu x * f1 x y * f2 y z.
 rewrite (eq_esum _ _ (fun y => \esum_(x in [set: T]) (S y x)%:E)%E).
-+ move => y ?; subst S; rewrite EFinM fineK ?fin_esum //.
++ move => y ?; subst S; rewrite EFinM dlet_EFin //.
   + rewrite muleC -esumZ // ?lee_tofin // => [? |].
     + by rewrite EFinM lee_tofin // mulr_ge0.
     + by apply eq_esum => ??; rewrite -EFinM mulrC.
 rewrite (eq_esum _ _ (fun x => \esum_(y in [set: U]) (S y x)%:E)%E).
-+ move => x ?; subst S; rewrite EFinM fineK ?fin_esum //.
++ move => x ?; subst S; rewrite EFinM dlet_EFin //.
   + rewrite -esumZ // ?lee_tofin // => [? |].
     + by rewrite EFinM lee_tofin // mulr_ge0.
     + by apply eq_esum => ??; rewrite -EFinM mulrA.
@@ -632,20 +650,11 @@ Qed.
 End DLetAlg.
 
 (* -------------------------------------------------------------------- *)
+Lemma mono_nondecressing {R : realType} (T : choiceType) (f : nat -> T -> R)
+  (hmono : forall n m, (n <= m)%N -> forall x, f n x <= f m x) :
+  forall x, nondecreasing_seq (fun n => (f n x)%:E).
+Proof. by move=> x n m nm; rewrite lee_fin; exact: hmono. Qed.
 
-HB.mixin Record isNDistribution
-  (R : realType) (T : choiceType) (nmu : nat -> {distr T / R}) :=
-  { nmu_decrease :  forall x, nondecreasing_seq (fun n => (nmu n x)%:E); }.
-
-HB.structure Definition NDistribution (R : realType) (T : choiceType) :=
-  {f of @isNDistribution R T f }.
-
-Notation "{ 'ndistr' T / R }" := (@NDistribution.type R T)
-  (at level 0, T at level 2, format "{ 'ndistr'  T  /  R }")
-  : type_scope.
-
-
-(* -------------------------------------------------------------------- *)
 Lemma sup_range_lim {R : realType} (u : (\bar R)^nat) :
   nondecreasing_seq u -> ereal_sup (range u) = limn u.
 Proof.
@@ -653,204 +662,187 @@ by move=> ndu; apply/esym/cvg_lim => //; exact: ereal_nondecreasing_cvgn.
 Qed.
 
 (* -------------------------------------------------------------------- *)
+(* Generic facts about [einfs] / [limn_einf] missing from sequences.v,  *)
+(* used below to make [dlim] total on sequences of subdistributions.    *)
+Lemma einfs_le {R : realType} (u : (\bar R)^nat) n m :
+  (n <= m)%N -> (einfs u n <= u m)%E.
+Proof. by move=> nm; apply: ereal_inf_lbound; exists m; [exact: nm | by []]. Qed.
+
+Lemma einfs_lift {R : realType} (u : (\bar R)^nat) p n :
+  einfs (fun k => u (k + p)%N) n = einfs u (n + p)%N.
+Proof.
+congr (ereal_inf _); apply/seteqP; split => _ /= [k /= nk] <-.
+- by exists (k + p)%N => //=; rewrite leq_add2r.
+- have pk : (p <= k)%N by apply: leq_trans nk; exact: leq_addl.
+  exists (k - p)%N => /=; last by rewrite subnK.
+  by rewrite -(leq_add2r p) subnK.
+Qed.
+
+Lemma limn_einf_lift {R : realType} (u : (\bar R)^nat) p :
+  limn_einf (fun n => u (n + p)%N) = limn_einf u.
+Proof.
+rewrite !limn_einf_lim.
+have -> : einfs (fun k => u (k + p)%N) = (fun n => einfs u (n + p)%N).
+  by apply/funext => n; exact: einfs_lift.
+by apply/cvg_lim => //; rewrite (cvg_shiftn p (einfs u)); exact: is_cvg_einfs.
+Qed.
+
+Lemma limn_einf_bump {R : realType} (u : (\bar R)^nat) :
+  limn_einf (fun n => u n.+1) = limn_einf u.
+Proof.
+rewrite -(limn_einf_lift u 1); congr limn_einf.
+by apply/funext => n; rewrite addn1.
+Qed.
+
+Lemma limn_einf_cst {R : realType} (c : \bar R) : limn_einf (fun=> c) = c.
+Proof. by rewrite is_cvg_limn_einfE ?lim_cst//; exact: is_cvg_cst. Qed.
+
+(* -------------------------------------------------------------------- *)
 Section dlim.
 Context {R : realType} (T : choiceType).
 
-Lemma nd_f (f : {ndistr T / R}) : forall x, nondecreasing_seq (fun n => (f n x)%:E).
-Proof. exact: nmu_decrease. Qed.
-
-Lemma id1 (f : {ndistr T / R}): forall x, cvgn (fun n => (f n x)%:E).
-Proof.
-case f => {}f [[nd_f] ?].
-by move=> x; apply: ereal_nondecreasing_is_cvgn; exact: nd_f.
-Qed.
-
-(* Definition dlim  (f : {ndistr T / R}) : T -> R := *)
-(*   fun x => fine (ereal_sup (range (fun n : nat => (f n x)%:E))). *)
+Implicit Types (f g : nat -> {distr T / R}).
 
 Import numFieldNormedType.Exports.
 
-Definition dlim  (f : {ndistr T / R}) : T -> R :=
-  fun x => fine (limn (fun n : nat => (f n x)%:E)).
+Definition dlim_fun f : T -> R :=
+  fun x => fine (limn_einf (fun n : nat => (f n x)%:E)).
 
-Lemma le1_lim (f : {ndistr T / R}) :
-  forall x, (limn (fun n => (f n x)%:E) <= 1%:E)%E.
+Lemma ge0_liminf f x : (0 <= limn_einf (fun n => (f n x)%:E))%E.
 Proof.
-  move=> x; apply: lime_le; [ exact: id1| apply: nearW].
-  move=> n; rewrite lee_fin.
-  exact: le1_mu1.
+rewrite limn_einf_lim; apply: lime_ge; first exact: is_cvg_einfs.
+apply: nearW => n; apply: le_ereal_inf_tmp => _ [m _] <-.
+by rewrite lee_fin.
 Qed.
 
-Lemma fin_lim (f : {ndistr T / R}) :
-  forall x, limn (fun n => (f n x)%:E) \is a fin_num.
+Lemma le1_liminf f x : (limn_einf (fun n => (f n x)%:E) <= 1%:E)%E.
 Proof.
-  move=> x; rewrite ge0_fin_numE //.
-  + by apply: lime_ge; [exact: id1 | apply: nearW => n; rewrite lee_fin].
-  apply: le_lt_trans;[ apply le1_lim | apply ltry].
+rewrite limn_einf_lim; apply: lime_le; first exact: is_cvg_einfs.
+apply: nearW => n; apply: (@le_trans _ _ ((f n x)%:E)); first exact: einfs_le.
+by rewrite lee_fin le1_mu1.
 Qed.
 
-Lemma sumlim (f : {ndistr T / R}):
-  forall L, uniq L ->
-       (\sum_(j <- L) limn (fun n => (f n j)%:E) =
-       limn (fun n => \sum_(j <- L) (f n j)%:E))%E.
+Lemma fin_liminf f x : limn_einf (fun n => (f n x)%:E) \is a fin_num.
 Proof.
-elim => [|a L IH] uqL.
-- rewrite big_nil.
-  apply/esym/cvg_lim => //.
+have h0 : (0 <= limn_einf (fun n => (f n x)%:E))%E by exact: ge0_liminf.
+rewrite ge0_fin_numE//.
+by apply: le_lt_trans; [apply: le1_liminf | apply: ltry].
+Qed.
+
+Lemma dlim_fun_EFin f x : (dlim_fun f x)%:E = limn_einf (fun n => (f n x)%:E).
+Proof. by rewrite /dlim_fun fineK// fin_liminf. Qed.
+
+Lemma sumlim {u : T -> (\bar R)^nat} :
+  (forall j, nondecreasing_seq (u j)) -> (forall j, limn (u j) \is a fin_num) ->
+  forall L, (\sum_(j <- L) limn (u j) = limn (fun n => \sum_(j <- L) u j n))%E.
+Proof.
+move=> ndu fu; elim => [|a L IH].
+- rewrite big_nil; apply/esym/cvg_lim => //.
   by apply: cvg_near_cst; apply: nearW => n; rewrite big_nil.
-- case/andP: uqL => _ uqL.
-  rewrite big_cons IH //.
+- rewrite big_cons IH.
   under [in RHS]eq_fun => n do rewrite big_cons.
   apply/esym/cvg_lim => //.
   apply: cvgeD.
-  + apply: fin_num_adde_defr; exact: fin_lim.
-  + exact: id1.
+  + by apply: fin_num_adde_defr; exact: fu.
+  + by apply: ereal_nondecreasing_is_cvgn; exact: ndu.
   + apply: ereal_nondecreasing_is_cvgn => n m nm.
-    by apply: lee_sum => j _; exact : nd_f.
+    by apply: lee_sum => j _; exact: ndu.
 Qed.
 
-Lemma dlim_EFin (f : {ndistr T / R}):
+Lemma isd_dlim f : isdistr (dlim_fun f).
+Proof.
+split=> [x|J uqJ].
+  by rewrite /dlim_fun; apply: fine_ge0; exact: ge0_liminf.
+have ndE : forall j : T, nondecreasing_seq (einfs (fun n => (f n j)%:E)).
+  by move=> j; exact: nondecreasing_einfs.
+have finE : forall j : T, limn (einfs (fun n => (f n j)%:E)) \is a fin_num.
+  by move=> j; rewrite -limn_einf_lim fin_liminf.
+rewrite -lee_fin -sumEFin.
+under eq_bigr => j _ do rewrite dlim_fun_EFin limn_einf_lim.
+rewrite (sumlim ndE finE); apply: lime_le.
+  apply: ereal_nondecreasing_is_cvgn => n m nm.
+  by apply: lee_sum => j _; exact: ndE.
+apply: nearW => n; apply: (@le_trans _ _ (\sum_(j <- J) (f n j)%:E)).
+  by apply: lee_sum => j _; exact: einfs_le.
+rewrite sumEFin.
+apply: (@le_trans _ _ (esum [set: T] (EFin \o f n))); last exact: le1_mu.
+exact: sum_esum_ge.
+Qed.
+
+HB.instance Definition _ f := @mkdistrd R T (dlim_fun f) (isd_dlim f).
+
+Definition dlim f := @locked {distr T / R} (dlim_fun f).
+
+Lemma dlimE f x : dlim f x = fine (limn_einf (fun n => (f n x)%:E)).
+Proof. by unlock dlim. Qed.
+
+Lemma dlim_EFin f x : (dlim f x)%:E = limn_einf (fun n => (f n x)%:E).
+Proof. by unlock dlim; exact: dlim_fun_EFin. Qed.
+
+Definition homo (f : nat -> {distr T / R}) :=
+  forall n m, (n <= m)%N -> f n <=1 f m.
+
+Definition nd (f : nat -> {distr T / R}) :=
+  forall x, nondecreasing_seq (fun n => (f n x)%:E).
+
+Lemma dhomo_dnd f : homo f -> nd f.
+Proof. by move=> hf; apply: mono_nondecressing => n m nm x; exact: hf. Qed.
+
+Lemma cvg_dlim f : nd f -> forall x, cvgn (fun n => (f n x)%:E).
+Proof. by move=> ndf x; apply: ereal_nondecreasing_is_cvgn; exact: ndf. Qed.
+
+Lemma dlim_limE f : nd f ->
+  forall x, dlim f x = fine (limn (fun n => (f n x)%:E)).
+Proof.
+by move=> ndf x; rewrite dlimE is_cvg_limn_einfE//; exact: cvg_dlim.
+Qed.
+
+Lemma dlim_limEFin f : nd f ->
   forall x, (dlim f x)%:E = limn (fun n => (f n x)%:E).
 Proof.
-move=> x; rewrite /dlim fineK //.
-exact: fin_lim.
+by move=> ndf x; rewrite dlim_EFin is_cvg_limn_einfE//; exact: cvg_dlim.
 Qed.
 
-Lemma isd_dlim (f : {ndistr T / R}):  isdistr (dlim f).
-Proof.
-split=> [x|J uqJ]; rewrite /dlim.
-+ case h: (limn _) => //=.
-  rewrite -lee_fin -{}h.
-  apply: lime_ge; first exact: id1.
-  apply: nearW => n.
-  by rewrite lee_fin.
-+ rewrite -lee_fin -sumEFin.
-  under eq_bigr => j _ do rewrite -/(dlim f j) dlim_EFin //.
-  rewrite sumlim //.
-  apply: lime_le.
-  + apply: ereal_nondecreasing_is_cvgn => n m nm.
-    by apply: lee_sum => j _ ; exact: nd_f.
-  + apply: nearW => n; rewrite sumEFin.
-    apply: (@le_trans _ _ (esum [set: T] (EFin \o f n))); last exact: le1_mu.
-    exact: sum_esum_ge.
-Qed.
-
-HB.instance Definition _ (f : {ndistr T / R}) :=  @mkdistrd R T (dlim f) (isd_dlim f).
-
-Lemma dlimE (f : {ndistr T / R}) x :
-  (dlim f) x =  fine (limn (fun n => EFin(f n x))).
-Proof. by []. Qed.
+Lemma dlim_sup f : nd f ->
+  forall x, (dlim f x)%:E = ereal_sup (range (fun n => (f n x)%:E)).
+Proof. by move=> ndf x; rewrite (dlim_limEFin ndf) -(sup_range_lim (ndf x)). Qed.
 
 End dlim.
 
-Lemma mono_nondecressing {R : realType} (T : choiceType) (f : nat -> T -> R)
-  (hmono : forall n m, (n <= m)%N -> forall x, f n x <= f m x) :
-  forall x, nondecreasing_seq (fun n => (f n x)%:E).
-Proof. by move=> x n m nm; rewrite lee_fin; exact: hmono. Qed.
-
 Notation "\dlim_ ( n ) E" := (dlim (fun n => E)).
+
 (* -------------------------------------------------------------------- *)
-
-Section DLimC.
-Variables (R : realType) (T U : choiceType).
-
-Implicit Types (mu : {distr T / R}).
-
-Definition nmuc mu := fun (_:nat) => mu.
-
-Lemma isnd_ndc mu : forall x, nondecreasing_seq (fun n => (nmuc mu n x)%:E).
-Proof.
-by apply: mono_nondecressing.
-Qed.
-
-HB.instance Definition _ mu:= @isNDistribution.Build R T (nmuc mu) (isnd_ndc mu).
-
-Lemma dlimC mu : forall x, (dlim (nmuc mu)) x = mu x.
-Proof.
-move=> x; rewrite dlimE /= /nmuc.
-have -> : limn (fun n : nat => (mu x)%:E) = (mu x)%:E.
-  by apply/cvg_lim => //; exact: cvg_cst.
-by [].
-Qed.
-
-End  DLimC.
-
-Section DLimBump.
-Variables (R : realType) (T U : choiceType).
-
-Definition bump (nmu :{ndistr T / R}) := fun n => nmu (n.+1).
-
-Lemma isnd_bump nmu : forall x, nondecreasing_seq (fun n => (bump nmu n x)%:E).
-Proof.
-apply: mono_nondecressing.
-rewrite /bump => n m h x.
-by apply: nmu_decrease.
-Qed.
-
-HB.instance Definition _ nmu :=
-  @isNDistribution.Build R T (bump nmu) (isnd_bump nmu).
-
-Lemma dlim_bump (nmu: {ndistr T / R}) : dlim (bump nmu) =1 dlim nmu.
-Proof.
-move=> x; rewrite /dlim /=.
-congr (fine _).
-apply/cvg_lim => //.
-rewrite (cvg_shiftS (fun k => (nmu k x)%:E)).
-exact: id1.
-Qed.
-
-End DLimBump.
-
-Section DLimLift.
-
-Variables (R : realType) (T U : choiceType).
-
-Definition lift (nmu : {ndistr T / R}) p := fun n => nmu (n + p).
-
-Lemma isnd_lift nmu p : forall x, nondecreasing_seq (fun n => (lift nmu p n x)%:E).
-Proof.
-apply: mono_nondecressing.
-rewrite /lift => n m h x.
-apply: nmu_decrease.
-by rewrite leq_add2r.
-Qed.
-
-HB.instance Definition _ nmu p :=
-  @isNDistribution.Build R T (lift nmu p ) (isnd_lift nmu p).
-
-Lemma dlim_lift (nmu : {ndistr T / R}) p :
-  dlim (lift nmu p) =1 dlim nmu.
-Proof.
-move=> x; rewrite /dlim /=.
-congr (fine _).
-apply/cvg_lim => //.
-rewrite (cvg_shiftn p (fun k => (nmu k x)%:E)).
-exact: id1.
-Qed.
-
-End DLimLift.
-
 Section DLimTheory.
 Variables (R : realType) (T U : choiceType).
 
-Implicit Types (f g : {ndistr T / R}) (h : T -> {distr U / R}).
+Implicit Types (f g : nat -> {distr T / R}) (h : T -> {distr U / R}).
 Implicit Types (mu : {distr T / R}).
+
+Lemma dlimC mu : \dlim_(n) mu =1 mu.
+Proof.
+by move=> x; rewrite dlimE limn_einf_cst.
+Qed.
+
+Lemma dlim_bump f : \dlim_(n) f n.+1 =1 dlim f.
+Proof. by move=> x; rewrite !dlimE (limn_einf_bump (fun n => (f n x)%:E)). Qed.
+
+Lemma dlim_lift f p : \dlim_(n) f (n + p)%N =1 dlim f.
+Proof. by move=> x; rewrite !dlimE (limn_einf_lift (fun n => (f n x)%:E) p). Qed.
 
 Lemma ge0_dlim f : forall x, 0 <= dlim f x.
 Proof. exact: mu_positive. Qed.
 
 Lemma le1_dlim f : forall x, dlim f x <= 1.
-Proof.
-move => x; rewrite /= dlimE -lee_fin dlim_EFin.
-exact: le1_lim.
-Qed.
+Proof. by move=> x; rewrite -lee_fin dlim_EFin; exact: le1_liminf. Qed.
 
 Lemma le_dlim f g :
   (forall n, f n <=1 g n) -> dlim f <=1 dlim g.
 Proof.
-move=> le x; rewrite -lee_fin !dlim_EFin.
-apply: lee_lim; [exact: id1 | exact: id1 |].
-by apply: nearW => n; rewrite lee_fin; apply: le.
+move=> le x; rewrite -lee_fin !dlim_EFin !limn_einf_lim.
+apply: lee_lim; [exact: is_cvg_einfs | exact: is_cvg_einfs |].
+apply: nearW => n; apply: le_ereal_inf_tmp => _ [m /= nm] <-.
+apply: (@le_trans _ _ ((f m x)%:E)); first exact: einfs_le.
+by rewrite lee_fin; exact: le.
 Qed.
 
 Lemma eq_dlim f g :  (forall n, f n =1 g n) -> dlim f =1 dlim g.
@@ -866,11 +858,11 @@ Proof.
   by apply : le_dlim => n y.
 Qed.
 
-Lemma dlim_ub f k : f k <=1 dlim f.
+Lemma dlim_ub f k : homo f -> f k <=1 dlim f.
 Proof.
-move=> x; rewrite -lee_fin dlim_EFin.
-apply: lime_ge; first exact: id1.
-near=> n; apply: (nd_f f x).
+move=> hf x; rewrite -lee_fin (dlim_limEFin (dhomo_dnd hf)).
+apply: lime_ge; first exact: (cvg_dlim (dhomo_dnd hf)).
+near=> n; apply: (dhomo_dnd hf x).
 by near: n; apply: nbhs_infty_ge.
 Unshelve. all: by end_near.
 Qed.
@@ -880,56 +872,42 @@ End DLimTheory.
 Section DletDLim.
 Variables (R : realType) (T U : choiceType).
 
-Implicit Types (f : {ndistr T / R}) (h : T -> {distr U / R}).
+Implicit Types (f : nat -> {distr T / R}) (h : T -> {distr U / R}).
 
-Definition ndlet f h: (nat -> {distr U / R}) := fun n => dlet h (f n).
-
-Lemma isnd_dlet h f : forall x, nondecreasing_seq (fun n => (ndlet f h n x)%:E).
-Proof.
-apply: mono_nondecressing => n m hnm x.
-apply: le_mu_dlet => y.
-by apply nd_f.
-Qed.
-
-HB.instance Definition _ h f :=
-  @isNDistribution.Build R U (ndlet f h) (isnd_dlet h f).
-
-Lemma dlet_EFin h (mu : {distr T / R}) y :
-  (dlet h mu y)%:E = esum [set:T] (fun x => (mu x * h x y)%:E).
-Proof. by rewrite dletE fineK// ?fin_esum. Qed.
-
-Lemma sup_mul (nf : {ndistr T / R}) (c : R) x : 0 <= c ->
-  ((dlim nf x) * c)%:E = ereal_sup (range (fun n => (nf n x * c)%:E)).
+Lemma sup_mul f (hf : nd f) (c : R) x : 0 <= c ->
+  ((dlim f x) * c)%:E = ereal_sup (range (fun n => (f n x * c)%:E)).
 Proof.
 move=> c0.
-rewrite EFinM dlim_EFin -(sup_range_lim (nd_f nf x)) muleC.
-rewrite (@ge0_ereal_supZl_range R T (fun t n => (nf n t)%:E)) //=.
+rewrite EFinM (dlim_sup hf) muleC.
+rewrite (@ge0_ereal_supZl_range R T (fun t n => (f n t)%:E)) //=.
 + by move=> t n; rewrite lee_fin; exact: ge0_mu.
 have -> :
-  [set (c%:E * (nf i x)%:E)%E | i in [set: nat]]%classic =
-    [set (nf i x * c)%:E | i in [set: nat]]%classic.
+  [set (c%:E * (f i x)%:E)%E | i in [set: nat]]%classic =
+    [set (f i x * c)%:E | i in [set: nat]]%classic.
   apply/seteqP; split.
   - by move=> ? [x0 ?]; rewrite -EFinM mulrC=> <- //=; exists x0.
   - by move=> ? [x0 ?]; rewrite mulrC EFinM => <- //=; exists x0.
 reflexivity.
 Qed.
 
-Lemma dlet_lim f h : dlet h (dlim f) =1 dlim (ndlet f h).
+Lemma dlet_lim f h : nd f -> dlet h (dlim f) =1 \dlim_(n) (dlet h (f n)).
 Proof.
-move=> y; apply: EFin_inj.
-rewrite dlet_EFin dlim_EFin.
-under eq_esum => x _ do rewrite sup_mul//.
-rewrite -(sup_range_lim (nd_f (ndlet f h) y)).
+move=> ndf y; apply: EFin_inj.
+have nd : nd (fun n => dlet h (f n)).
++ apply: mono_nondecressing => n m hnm x.
+  apply: le_mu_dlet => ?; rewrite -lee_fin; exact: ndf.
+rewrite dlet_EFin (dlim_sup nd).
+under eq_esum => x _ do rewrite (sup_mul ndf)//.
 rewrite (@exchange_esum_ereal_sup R T (fun x n => (f n x * h x y)%:E)) /=.
 + by move=> t n; rewrite lee_fin; apply: mulr_ge0; exact: ge0_mu.
 + move=> n m nm t; rewrite lee_fin; apply: ler_wpM2r; first exact: ge0_mu.
-  by rewrite -lee_fin; apply: nd_f.
+  by rewrite -lee_fin; exact: ndf.
 have -> :
 [set \esum_(x in [set: T]) (f i x * h x y)%:E | i in [set: nat]]%classic =
 [set ((\dlet_(i <- f i) h i) y)%:E | i in [set: nat]]%classic.
   apply/seteqP; split.
   - by move=> ? [x0 ?]; rewrite -dlet_EFin => <- //=; exists x0.
-  - by move=> ? [x0 ?]; rewrite /ndlet dlet_EFin => <- //=; exists x0.
+  - by move=> ? [x0 ?]; rewrite dlet_EFin => <- //=; exists x0.
 reflexivity.
 Qed.
 
@@ -939,49 +917,30 @@ Section DLimDlet.
 Context (R : realType) (T U : choiceType) (f : nat -> T -> {distr U / R}).
 Context (hmono: forall x n m, (n <= m)%N -> f n x <=1 f m x).
 
-Definition reduce y : (nat -> {distr U / R}) := fun n => f n y.
-
-Lemma isnd_reduce y :
-  forall x, nondecreasing_seq (fun n => (reduce y n x)%:E).
-Proof.
-apply: mono_nondecressing => n m hnm x.
-exact: hmono.
-Qed.
-
-HB.instance Definition _ y :=
-  @isNDistribution.Build R U (reduce y)  (isnd_reduce y ).
-
-Definition mu_dlet mu: (nat -> {distr U / R}) := fun n => dlet (f n) mu.
-
-Lemma isnd_mu_dlet (mu : {distr T / R}) :
-  forall x, nondecreasing_seq (fun n => (mu_dlet mu n x)%:E).
-Proof.
-apply: mono_nondecressing => n m hnm x.
-apply: le_in_dlet => z _.
-exact: hmono.
-Qed.
-
-HB.instance Definition _ mu :=
-  @isNDistribution.Build R U (mu_dlet mu) (isnd_mu_dlet mu).
-
 Lemma dlim_let (mu : {distr T / R}) :
-  dlim (mu_dlet mu) =1 dlet (fun x => dlim (reduce x )) mu.
+  \dlim_(n) \dlet_(x <- mu) (f n x) =1 \dlet_(x <- mu) \dlim_(n) (f n x).
 Proof.
+have nd1 y : nd (fun n => f n y).
++ apply: mono_nondecressing => n m hnm x.
+  exact: hmono.
+have nd2 : nd (fun n => dlet (f n) mu).
++ apply: mono_nondecressing => n m hnm x.
+  apply: le_in_dlet => z _.
+  exact: hmono.
 move=> z; apply: EFin_inj.
-rewrite dlim_EFin dlet_EFin.
-under eq_esum => t _ do rewrite mulrC sup_mul//.
-rewrite -(sup_range_lim (nd_f (mu_dlet mu) z)).
-rewrite (@exchange_esum_ereal_sup R T (fun t n => (reduce t n z * mu t)%:E)) /=.
-+ by move=> t n; rewrite /reduce lee_fin; apply: mulr_ge0; exact: ge0_mu.
-+ move=> n m nm t; rewrite /reduce lee_fin; apply: ler_wpM2r; first exact: ge0_mu.
+rewrite (dlim_sup nd2 ) dlet_EFin.
+under eq_esum => t _ do rewrite mulrC (sup_mul (nd1 t))//.
+rewrite (@exchange_esum_ereal_sup R T (fun t n => (f n t z * mu t)%:E)) /=.
++ by move=> t n; rewrite  lee_fin; apply: mulr_ge0; exact: ge0_mu.
++ move=> n m nm t; rewrite lee_fin; apply: ler_wpM2r; first exact: ge0_mu.
   exact: hmono.
 have ->:
   [set ((\dlet_(i0 <- mu) f i i0) z)%:E | i in [set: nat]]%classic =
-  [set \esum_(x in [set: T]) (reduce x i z * mu x)%:E | i in [set: nat]]%classic.
+  [set \esum_(x in [set: T]) (f i x z * mu x)%:E | i in [set: nat]]%classic.
   apply/seteqP; split.
   -  move=> ? [x0 ?]; rewrite dlet_EFin=> <-//=; exists x0 => //=.
-     by under eq_esum do rewrite  /reduce mulrC.
-  - move=> ? [x0 ?]; under eq_esum do rewrite  /reduce mulrC.
+     by under eq_esum do rewrite  mulrC.
+  - move=> ? [x0 ?]; under eq_esum do rewrite mulrC.
     by move => <- //=; exists x0 => //=; rewrite -dlet_EFin.
 reflexivity.
 Qed.
@@ -993,113 +952,67 @@ Context (R : realType) (T : choiceType) (f : nat -> nat -> {distr T / R}).
 Context (hmono1: (forall k n1 n2, (n1 <= n2)%N -> f n1 k <=1 f n2 k)).
 Context (hmono2: (forall k n1 n2, (n1 <= n2)%N -> f k n1 <=1 f k n2)).
 
-Definition apply2 : (nat -> {distr T / R}) := (fun n => f n n).
-
-Lemma isnd_apply2:
-  forall x, nondecreasing_seq (fun n => (apply2 n x)%:E).
+Lemma dhomo_apply2 : homo (fun n => f n n).
 Proof.
-apply: mono_nondecressing => n m hnm x.
-rewrite /apply2.
+move=> n m hnm x.
 apply /le_trans.
 + apply hmono1.  exact: hnm.
 by apply: hmono2.
 Qed.
 
-HB.instance Definition _ :=
-  @isNDistribution.Build R T apply2 isnd_apply2.
-
-Definition apply (k:nat) : (nat -> {distr T / R}) := f k.
-
-Lemma isnd_apply k:
-  forall x, nondecreasing_seq (fun n => (apply k n x)%:E).
-Proof.
-apply: mono_nondecressing => n m hnm x.
-by apply: hmono2.
-Qed.
-
-HB.instance Definition _ k :=
-  @isNDistribution.Build R T (apply k) (isnd_apply k).
-
-Definition dlim_apply : (nat -> {distr T / R}) := (fun n => dlim (apply n)).
-
-Lemma isnd_dlim_apply:
-  forall x, nondecreasing_seq (fun n => (dlim_apply n x)%:E).
-Proof.
-apply: mono_nondecressing => n m hnm x.
-apply le_dlim => ??.
-by apply: hmono1.
-Qed.
-
-HB.instance Definition _ :=
-  @isNDistribution.Build R T dlim_apply isnd_dlim_apply.
-
 Lemma leub_dlim_dlim1 :
-  dlim dlim_apply <=1 dlim apply2.
+  \dlim_(n) dlim (f n) <=1 \dlim_(n) (f n n).
 Proof.
 apply: leub_dlim => n.
 apply: leub_dlim => m x.
-apply: (@le_trans _ _ (apply2 (maxn n m) x)); last exact: dlim_ub.
-apply: (@le_trans _ _ (f (maxn n m) m x)).
-- apply: hmono1; exact: leq_maxl.
-- apply: hmono2; exact: leq_maxr.
+apply: (@le_trans _ _ (f (maxn n m) (maxn n m) x)).
+  apply: (@le_trans _ _ (f (maxn n m) m x)).
+  - apply: hmono1; exact: leq_maxl.
+  - apply: hmono2; exact: leq_maxr.
+apply: dlim_ub.
+exact : dhomo_apply2.
 Qed.
 
 Lemma dlim_dlim_ub1 :
-  dlim apply2 <=1 dlim dlim_apply.
+  \dlim_(n) (f n n) <=1 \dlim_(n) dlim (f n).
 Proof.
 apply: leub_dlim => n x.
-apply: (@le_trans _ _ (dlim (apply n) x)).
-- exact: (dlim_ub (apply n) n).
-- exact: (dlim_ub dlim_apply n).
+apply: (@le_trans _ _ (dlim (f n) x)).
+- apply: dlim_ub.
+  by move=> *; apply: hmono2.
+- apply: dlim_ub.
+  move => *.
+  apply le_dlim => ??.
+  by apply: hmono1.
 Qed.
-
-Definition applyk (k:nat) : (nat -> {distr T / R}) := (fun n => f n k).
-
-Lemma isnd_applyk k:
-  forall x, nondecreasing_seq (fun n => (applyk k n x)%:E).
-Proof.
-apply: mono_nondecressing => n m hnm x.
-by apply: hmono1.
-Qed.
-
-HB.instance Definition _ k :=
-  @isNDistribution.Build R T (applyk k) (isnd_applyk k).
-
-Definition dlim_applyk : (nat -> {distr T / R}) := (fun n => dlim (applyk n)).
-
-Lemma isnd_dlim_applyk:
-  forall x, nondecreasing_seq (fun n => (dlim_applyk n x)%:E).
-Proof.
-apply: mono_nondecressing => n m hnm x.
-apply le_dlim => ??.
-by apply: hmono2.
-Qed.
-
-HB.instance Definition _ :=
-  @isNDistribution.Build R T dlim_applyk isnd_dlim_applyk.
 
 Lemma leub_dlim_dlim2 :
-  dlim dlim_applyk <=1 dlim apply2.
+  \dlim_(m) (\dlim_(n) (f n m)) <=1 \dlim_(n) (f n n).
 Proof.
 apply: leub_dlim => n.
 apply: leub_dlim => m x.
-apply: (@le_trans _ _ (apply2 (maxn n m) x)); last exact: dlim_ub.
-apply: (@le_trans _ _ (f (maxn n m) n x)).
-- apply: hmono1; exact: leq_maxr.
-- apply: hmono2; exact: leq_maxl.
+apply: (@le_trans _ _ (f (maxn n m) (maxn n m) x)).
+  apply: (@le_trans _ _ (f (maxn n m) n x)).
+  - apply: hmono1; exact: leq_maxr.
+  - apply: hmono2; exact: leq_maxl.
+apply: dlim_ub.
+exact : dhomo_apply2.
 Qed.
 
 Lemma dlim_dlim_ub2 :
-  dlim apply2 <=1 dlim dlim_applyk.
+\dlim_(n) (f n n) <=1 \dlim_(m) (\dlim_(n) (f n m)).
 Proof.
 apply: leub_dlim => n x.
-apply: (@le_trans _ _ (dlim (applyk n) x)).
-- exact: (dlim_ub (applyk n) n).
-- exact: (dlim_ub dlim_applyk n).
+apply: (@le_trans _ _ (dlim (fun k => f k n) x)).
+- apply: dlim_ub.
+  by move=> *; apply: hmono1.
+- apply: dlim_ub.
+  move=> * ;apply le_dlim => ??.
+  by apply: hmono2.
 Qed.
 
 Lemma dlim_dlim_com :
-  dlim dlim_apply =1 dlim dlim_applyk.
+\dlim_(n) (dlim (f n)) =1 \dlim_(m) (\dlim_(n) (f n m)).
 Proof.
 move=> x; apply/eqP; rewrite eq_le; apply/andP; split.
 - exact: (le_trans (leub_dlim_dlim1 x) (dlim_dlim_ub2 x)).
@@ -1110,51 +1023,43 @@ End DLimDLim.
 
 Section dlet_dlim_diag.
 Context (R : realType) (T U: choiceType).
-Context (d : {ndistr T / R}) (h : nat -> T -> {distr U / R}).
+Context (d : nat -> {distr T / R}) (h : nat -> T -> {distr U / R}).
+Context (hd : homo d).
 Context (hmono: (forall k n1 n2, (n1 <= n2)%N -> h n1 k <=1 h n2 k)).
 
-Definition nmu_dlet (nmu : {ndistr T / R}): (nat -> {distr U / R}) :=
-  fun n => dlet (h n) (nmu n).
-
-Lemma isnd_nmu_dlet (nmu : {ndistr T / R}) :
-  forall x, nondecreasing_seq (fun n => (nmu_dlet nmu n x)%:E).
+Lemma dhomo_nmu_dlet (nmu : nat -> {distr T / R}) :
+  homo nmu -> homo (fun n => dlet (h n) (nmu n)).
 Proof.
-apply: mono_nondecressing => n m hnm x.
-rewrite /= /nmu_dlet.
+move=> hnmu n m hnm x.
 apply: le_dlet.
-+ move => ?.
-  by apply: nmu_decrease.
++ by move => ?; apply: hnmu.
 move => ???; exact: hmono.
 Qed.
 
-HB.instance Definition _ nmu :=
-  @isNDistribution.Build R U (nmu_dlet nmu) (isnd_nmu_dlet nmu).
-
-Let hreduce := (reduce h).
-
-HB.instance Definition _ y :=
-  @isNDistribution.Build R U (hreduce y) (isnd_reduce hmono y).
-
-Lemma key : forall n, dlet (fun x => dlim (hreduce x)) (d n) <=1 dlim (nmu_dlet d).
+Lemma dlet_dlim_diag_n :
+  forall n, \dlet_(x <- d n) (\dlim_(n) (h n x))  <=1 \dlim_(n) (dlet (h n) (d n)).
 Proof.
-move=> n u; rewrite -dlim_let.
-apply: leub_dlim => m w; rewrite /mu_dlet.
-apply: (@le_trans _ _ (nmu_dlet d (maxn m n) w)); last exact: dlim_ub.
-rewrite /nmu_dlet; apply: le_dlet.
-+ move=> x; rewrite -lee_fin; apply: (nd_f d x).
-  exact: leq_maxr.
+move=> n u; rewrite -(dlim_let hmono).
+apply: leub_dlim => m w.
+apply: (@le_trans _ _ ((\dlet_(i <- d (maxn m n)) h (maxn m n) i) w));
+  last exact: (@dlim_ub _ _ (fun n => dlet (h n) (d n)) (maxn m n) (dhomo_nmu_dlet hd)).
+apply: le_dlet.
++ move=> x; apply: hd; exact: leq_maxr.
 by move=> ? _; apply: hmono; exact: leq_maxl.
 Qed.
 
 Lemma dlet_dlim_diag :
-  dlet (fun x => dlim (hreduce x)) (dlim d) =1 dlim (nmu_dlet d).
+  \dlet_(x <- dlim d) (\dlim_(n) (h n x)) =1 \dlim_(n) (dlet (h n) (d n)).
 Proof.
+have hnd := dhomo_dnd hd.
 move=> z; apply/eqP; rewrite eq_le; apply/andP; split.
-- rewrite dlet_lim; apply: leub_dlim => n.
-  rewrite /ndlet; exact: key.
-- apply: leub_dlim => n; rewrite /nmu_dlet; apply: le_dlet.
-  + exact: dlim_ub.
-  by move=> x _; exact: (dlim_ub (hreduce x) n).
+- rewrite dlet_lim//; apply: leub_dlim => n.
+  exact: dlet_dlim_diag_n.
+- apply: leub_dlim => n; apply: le_dlet.
+  + exact: (@dlim_ub _ _ d n hd).
+move=> x _.
+apply: dlim_ub.
+by move=> *; exact: hmono.
 Qed.
 
 End dlet_dlim_diag.
@@ -1287,7 +1192,8 @@ rewrite -(reindex_esum [set:U] [set z : T * U | z.1 = x]
   - by move=> y1 y2 _ _ /(congr1 snd).
   - move=> z /= zx; exists z.2 => //=.
     by case: z zx => z1 z2 /= ->.
-by apply: subset_esum.
+apply: subset_esum => //=.
+by move=> z _; rewrite lee_tofin // mulr_ge0.
 Qed.
 End DFst.
 
@@ -2023,7 +1929,9 @@ Section mono_esum.
 Context
   {R : realType}
   {T : choiceType}
-  {f : {ndistr T/ R}}.
+  {f : nat -> {distr T / R}}.
+
+Hypothesis ndf : nd f.
 
 Lemma mono_esum_Efn (E: T -> \bar R):
   (forall m, 0 <= E m)%E ->
@@ -2035,12 +1943,12 @@ move=> hE m n le_mn.
 apply /esum.le_esum.
 move => ??; rewrite lee_pmul => //=.
 - rewrite lee_tofin //.
-- rewrite lee_tofin //; exact: nmu_decrease.
+- rewrite lee_tofin //; exact: ndf.
 Qed.
 
 Lemma distr_lub_sup a :
   ((dlim f) a)%:E = ereal_sup (range (fun n => (f n a)%:E)).
-Proof. by rewrite dlim_EFin (sup_range_lim (nd_f f a)). Qed.
+Proof. exact: (dlim_sup ndf a). Qed.
 
 Lemma esum_dlim_r [E : T -> \bar R]  [r : \bar R]:
   (forall m, 0 <= E m)%E ->
@@ -2054,7 +1962,7 @@ rewrite (@esum.eq_esum _ _ _ _ (fun x => ereal_sup (range (fun n =>  E x * (f n 
   move => ??; rewrite lee_tofin //.
 rewrite exchange_esum_ereal_sup //.
 - by move => ??; rewrite mule_ge0 // lee_tofin.
-- by move => ????; rewrite lee_pmul // ?lee_tofin // ; exact: nmu_decrease.
+- by move => ????; rewrite lee_pmul // ?lee_tofin // ; exact: ndf.
 rewrite ge_ereal_sup//= => x [n s] <-.
 exact: h.
 Qed.
@@ -2080,7 +1988,7 @@ Proof.
 have hmono : forall n m, (n <= m)%N -> forall x,
     (((E x)%:R * f n x)%:E <= ((E x)%:R * f m x)%:E)%E.
   move=> n m nm x; rewrite lee_fin; apply: ler_wpM2l; first exact: ler0n.
-  by rewrite -lee_fin; exact: (nd_f f x nm).
+  by rewrite -lee_fin; exact: (ndf x nm).
 transitivity (ereal_sup (range
     (fun n => esum [set:T] (fun x : T => ((E x)%:R * f n x)%:E)))); last first.
   by apply: sup_range_lim => n m nm; apply: le_esum => x _; exact: (hmono n m nm x).
@@ -2090,6 +1998,7 @@ rewrite -(@exchange_esum_ereal_sup R T (fun x n => ((E x)%:R * f n x)%:E)) //.
 apply: eq_esum => x _.
 rewrite EFinM distr_lub_sup (@ge0_ereal_supZl_range R T (fun a b => (f b a)%:E)) //.
 + by move=> t n; rewrite lee_fin; exact: ge0_mu.
++ by rewrite lee_tofin.
 Qed.
 
 End mono_esum.
