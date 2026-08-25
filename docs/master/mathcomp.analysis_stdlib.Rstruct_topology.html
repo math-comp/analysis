@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis_stdlib.Rstruct_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis e53f4d1 2026.08.24-19:07" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis e53f4d1 2026.08.25-19:07" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -371,19 +371,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="RexpE" class="id"><div name="RexpE" class=" tooltip">RexpE<span class='tooltip-area'><p>SetRing.decomp :
-forall [d : measure_display] {T : semiRingOfSetsType d},
-set (SetRing.type T) -> set_system T
-
-SetRing.decomp is not universe polymorphic
-Arguments SetRing.decomp [d]%_measure_display_scope 
-  {T} A%_classical_set_scope _
-SetRing.decomp is transparent
-Expands to: Constant
-            mathcomp.analysis.measure_theory.measure_function.SetRing.decomp
-Declared in
-library mathcomp.analysis.measure_theory.measure_function, line 790, characters 11-17
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/e53f4d17c5ecdc10c26eb7d6116e19e5adc593fb/analysis_stdlib/Rstruct_topology.v#L115' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="RexpE" class="id"><div name="RexpE" class=" tooltip">RexpE<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e53f4d17c5ecdc10c26eb7d6116e19e5adc593fb/analysis_stdlib/Rstruct_topology.v#L115' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RlnE" class="id"><div name="RlnE" class=" tooltip">RlnE<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e53f4d17c5ecdc10c26eb7d6116e19e5adc593fb/analysis_stdlib/Rstruct_topology.v#L117' target='_blank'>Source code</a></span></div></span> (<span id="x:22" class="id"><div name="x:22" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e53f4d17c5ecdc10c26eb7d6116e19e5adc593fb/analysis_stdlib/Rstruct_topology.v#L117' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rdefinitions.html#RbaseSymbolsImpl.R">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln">Rpower</a></span>.<span class="id"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln">ln</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#x:22">x</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.exp.html#ln">exp</a></span>.<span class="id"><a href="mathcomp.analysis.exp.html#ln">ln</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#x:22">x</a></span>.<br/>
 <details>
@@ -470,57 +458,11 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RtrigoE">RtrigoE</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="RcosE" class="id"><div name="RcosE" class=" tooltip">RcosE<span class='tooltip-area'><p>fin_num_fun :
-forall [d : measure_display] [T : semiRingOfSetsType d] [R : numDomainType],
-(set T -> \bar R) -> Prop
-
-fin_num_fun is not universe polymorphic
-Arguments fin_num_fun [d]%_measure_display_scope [T R] mu%_function_scope
-fin_num_fun is transparent
-Expands to: Constant
-            mathcomp.analysis.measure_theory.measure_function.fin_num_fun
-Declared in
-library mathcomp.analysis.measure_theory.measure_function, line 1259, characters 11-22
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/e53f4d17c5ecdc10c26eb7d6116e19e5adc593fb/analysis_stdlib/Rstruct_topology.v#L188' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RcosE">RtrigoE</a></span>.<span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RcosE">RcosE</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Rtrigo_PIE" class="id"><div name="Rtrigo_PIE" class=" tooltip">Rtrigo_PIE<span class='tooltip-area'><p>sfinite_measure :
-forall [d : measure_display] [T : sigmaRingType d] [R : realType],
-(set T -> \bar R) -> Prop
-
-sfinite_measure is not universe polymorphic
-Arguments sfinite_measure [d]%_measure_display_scope [T R] mu%_function_scope
-sfinite_measure is transparent
-Expands to: Constant
-            mathcomp.analysis.measure_theory.measure_function.sfinite_measure
-Declared in
-library mathcomp.analysis.measure_theory.measure_function, line 1274, characters 11-26
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/e53f4d17c5ecdc10c26eb7d6116e19e5adc593fb/analysis_stdlib/Rstruct_topology.v#L189' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#PIE">RtrigoE</a></span>.<span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#PIE">PIE</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="RsinE" class="id"><div name="RsinE" class=" tooltip">RsinE<span class='tooltip-area'><p>sigma_finite :
-forall [d : measure_display] [T : semiRingOfSetsType d] [R : numDomainType],
-set T -> (set T -> \bar R) -> Prop
-
-sigma_finite is not universe polymorphic
-Arguments sigma_finite [d]%_measure_display_scope 
-  [T R] A%_classical_set_scope mu%_function_scope
-sigma_finite is transparent
-Expands to: Constant
-            mathcomp.analysis.measure_theory.measure_function.sigma_finite
-Declared in
-library mathcomp.analysis.measure_theory.measure_function, line 1280, characters 11-23
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/e53f4d17c5ecdc10c26eb7d6116e19e5adc593fb/analysis_stdlib/Rstruct_topology.v#L190' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RsinE">RtrigoE</a></span>.<span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RsinE">RsinE</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="RcosE" class="id"><div name="RcosE" class=" tooltip">RcosE<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e53f4d17c5ecdc10c26eb7d6116e19e5adc593fb/analysis_stdlib/Rstruct_topology.v#L188' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RcosE">RtrigoE</a></span>.<span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RcosE">RcosE</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Rtrigo_PIE" class="id"><div name="Rtrigo_PIE" class=" tooltip">Rtrigo_PIE<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e53f4d17c5ecdc10c26eb7d6116e19e5adc593fb/analysis_stdlib/Rstruct_topology.v#L189' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#PIE">RtrigoE</a></span>.<span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#PIE">PIE</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="RsinE" class="id"><div name="RsinE" class=" tooltip">RsinE<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e53f4d17c5ecdc10c26eb7d6116e19e5adc593fb/analysis_stdlib/Rstruct_topology.v#L190' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RsinE">RtrigoE</a></span>.<span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RsinE">RsinE</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="RealsE" class="id"><div name="RealsE" class=" tooltip">RealsE<span class='tooltip-area'><p>mrestr :
-forall [d : measure_display] [T : sigmaRingType d] 
-  [R : realFieldType] [D : set T],
-(set T -> \bar R) -> d.-measurable%classic D -> set T -> \bar R
-
-mrestr is not universe polymorphic
-Arguments mrestr [d]%_measure_display_scope [T R] 
-  [D]%_classical_set_scope f%_function_scope mD X%_classical_set_scope
-mrestr is transparent
-Expands to: Constant mathcomp.analysis.measure_theory.measure_function.mrestr
-Declared in
-library mathcomp.analysis.measure_theory.measure_function, line 1294, characters 11-17
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/e53f4d17c5ecdc10c26eb7d6116e19e5adc593fb/analysis_stdlib/Rstruct_topology.v#L193' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#RealsE">RealsE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RlnE">RlnE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RcosE">RcosE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#Rtrigo_PIE">Rtrigo_PIE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RsinE">RsinE</a></span>).<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="RealsE" class="id"><div name="RealsE" class=" tooltip">RealsE<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/e53f4d17c5ecdc10c26eb7d6116e19e5adc593fb/analysis_stdlib/Rstruct_topology.v#L193' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.Rstruct.html#RealsE">RealsE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RlnE">RlnE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RcosE">RcosE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#Rtrigo_PIE">Rtrigo_PIE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RsinE">RsinE</a></span>).<br/>
 
       <div class="footer"><hr/>Generated by <a href="https://github.com/affeldt-aist/rocqnavi/">rocqnavi</a></div>
     </div>
