@@ -2514,31 +2514,18 @@ Qed.
 Lemma derivable_trmx {m n} (M : V -> 'M[R]_(m, n)) t v :
   derivable (fun x => (M x)^T) t v = derivable M t v.
 Proof.
-rewrite propeqE; split; rewrite /derivable/=.
-- move=> /cvg_ex[/= l Ml]; apply/cvg_ex => /=; exists l^T.
-  apply/cvgrPdist_le => /= e e0.
-  move/cvgrPdist_le : Ml => /(_ _ e0)[/= r r0 re].
-  near=> x.
-  rewrite [leLHS](_ : _ = `|l - x^-1 *: ((M (x *: v + t))^T - (M t)^T)|).
-    rewrite -[RHS]norm_trmx [in RHS]linearD/= [in RHS]linearN/=.
-    congr (`| _ - _ |).
-    by rewrite [RHS]linearZ/= [in RHS]linearB /= !trmxK.
-  apply: re => /=.
-    rewrite sub0r normrN.
-    by near: x; exact: dnbhs0_lt.
-  by near: x; exact: nbhs_dnbhs_neq.
-- move=> /cvg_ex[/= l Ml]; apply/cvg_ex => /=; exists l^T.
-  apply/cvgrPdist_le => /= e e0.
-  move/cvgrPdist_le : Ml => /(_ _ e0)[/= r r0 re].
-  near=> x.
-  rewrite [leLHS](_ : _ = `|l - x^-1 *: ((M (x *: v + t)) - (M t))|).
-    rewrite -[RHS]norm_trmx [in RHS]linearD/= [in RHS]linearN/=.
-    congr (`| _ - _ |).
-    by rewrite [RHS]linearZ/= [in RHS]linearB.
-  apply: re => /=.
-    rewrite sub0r normrN.
-    by near: x; exact: dnbhs0_lt.
-  by near: x; exact: nbhs_dnbhs_neq.
+suff: forall N, derivable N t v -> derivable (fun x => (N x)^T) t v.
+  move=> suf; apply/propext; split; last exact: suf.
+  by move=> /suf; under eq_fun do rewrite trmxK.
+move=> {}m {}n {}M /cvg_ex[/= l Ml]; apply/cvg_ex => /=; exists l^T.
+apply/cvgrPdist_le => /= e e0.
+move/cvgrPdist_le : Ml => /(_ _ e0)[/= r r0 re].
+near=> x.
+rewrite [leLHS](_ : _ = `|l - x^-1 *: (M (x *: v + t) - M t)|).
+  rewrite -[RHS]norm_trmx [in RHS]linearD/= [in RHS]linearN/=.
+  by congr (`| _ - _ |); rewrite [RHS]linearZ/= [in RHS]linearB.
+apply: re => /=; last by near: x; exact: nbhs_dnbhs_neq.
+by rewrite sub0r normrN; near: x; exact: dnbhs0_lt.
 Unshelve. all: by end_near. Qed.
 
 Lemma derive_trmx {m n} (M : V -> 'M[R]_(m, n)) t v :

@@ -38,6 +38,8 @@ From mathcomp Require Import vector archimedean interval matrix.
 (*                           K is a numDomainType.                            *)
 (*                           L is a lmodType K.                               *)
 (*                           The HB class is Norm.                            *)
+(*    Module MaxNngComLaw == contains on instance of Monoid.isComLaw on       *)
+(*                           (@maxr {nonneg _}) to be used with caution       *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -649,7 +651,10 @@ End Norm.
 Export Norm.Exports.
 
 From mathcomp Require Import interval_inference.
-Section nng_comlaw.
+(* NB: This module adds an instance of `Monoid.Law.sort` on `Order.max`
+   although there is already one. Use with caution. *)
+Module MaxNngComLaw.
+Section max_nng_comlaw.
 Import Num.Def.
 Context {K : realFieldType}.
 
@@ -658,10 +663,14 @@ Proof.
 move=> x; rewrite /maxr; case: ifPn => //.
 rewrite -leNgt => x0.
 apply/eqP; rewrite eq_le x0 andbT.
-by have : 0 <= x%:nngnum by []. (* NB: why isn't this automatic? *)
+(* NB: the goal is `widen_itv 0%:itv <= x`, which does not match the syntax to
+   trigger the hint for `ge0` as can be seen at
+   https://github.com/math-comp/math-comp/blob/900e37912dbecbd3c04d3c1b320efe721d3f56dd/algebra/interval_inference.v#L770 *)
+by rewrite -num_le/=.
 Qed.
 
 HB.instance Definition _ :=
   Monoid.isComLaw.Build {nonneg K} 0%:nng maxr maxA maxC nng_max0r.
 
-End nng_comlaw.
+End max_nng_comlaw.
+End MaxNngComLaw.

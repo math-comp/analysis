@@ -109,7 +109,7 @@ by rewrite predeqE => x /=; split => [ _ | _ []//]; apply/rowP => -[].
 Qed.
 
 Section mx_norm.
-Variables (K : numDomainType) (m n : nat).
+Context [K : numDomainType] {m n : nat}.
 Implicit Types x y : 'M[K]_(m, n).
 
 Definition mx_norm x : K := (\big[maxr/0%:nng]_i `|x i.1 i.2|%:nng)%:num.
@@ -177,14 +177,19 @@ HB.instance Definition _ {K : numDomainType} m n :=
     (@ler_mx_norm_add _ _ _) (@mx_norm_eq0 _ _ _)
     (@mx_norm_natmul _ _ _) (@mx_normN _ _ _).
 
+Section norm_trmx.
+Import MaxNngComLaw.
+
 Lemma norm_trmx {R : realFieldType} m n (M : 'M[R]_(m, n)) :
-  mx_norm (M^T) = mx_norm M.
+  mx_norm M^T = mx_norm M.
 Proof.
 rewrite [LHS]mx_normE/=.
 under eq_bigr do rewrite mxE/=.
 rewrite -(pair_big xpredT xpredT (fun i j => `|M j i|%:nng))/=.
 by rewrite exchange_big//= pair_big.
 Qed.
+
+End norm_trmx.
 
 Lemma mx_normrE (K : realDomainType) (m n : nat) (x : 'M[K]_(m, n)) :
   mx_norm x = \big[maxr/0]_ij `|x ij.1 ij.2|.
