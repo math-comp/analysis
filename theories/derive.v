@@ -2511,6 +2511,41 @@ apply/derivable_mxP => i0 j0.
 by have [] := MdM i0 j0.
 Qed.
 
+Lemma derivable_trmx {m n} (M : V -> 'M[R]_(m, n)) t v :
+  derivable (fun x => (M x)^T) t v = derivable M t v.
+Proof.
+suff: forall N, derivable N t v -> derivable (fun x => (N x)^T) t v.
+  move=> suf; apply/propext; split; last exact: suf.
+  by move=> /suf; under eq_fun do rewrite trmxK.
+move=> {}m {}n {}M /cvg_ex[/= l Ml]; apply/cvg_ex => /=; exists l^T.
+apply/cvgrPdist_le => /= e e0.
+move/cvgrPdist_le : Ml => /(_ _ e0)[/= r r0 re].
+near=> x.
+rewrite [leLHS](_ : _ = `|l - x^-1 *: (M (x *: v + t) - M t)|).
+  rewrite -[RHS]norm_trmx [in RHS]linearD/= [in RHS]linearN/=.
+  by congr (`| _ - _ |); rewrite [RHS]linearZ/= [in RHS]linearB.
+apply: re => /=; last by near: x; exact: nbhs_dnbhs_neq.
+by rewrite sub0r normrN; near: x; exact: dnbhs0_lt.
+Unshelve. all: by end_near. Qed.
+
+Lemma derive_trmx {m n} (M : V -> 'M[R]_(m, n)) t v :
+  derivable M t v -> 'D_v (trmx \o M) t = ('D_v M t)^T.
+Proof.
+move=> Mtv; rewrite !derive_mx//=; first by rewrite derivable_trmx.
+apply/matrixP => i j; rewrite !mxE.
+by under eq_fun do rewrite mxE.
+Qed.
+
+Global Instance is_derive_trmx {m n} (f : V -> 'M[R]_(m, n)) (f' : 'M[R]_(m, n))
+    (t : V) w :
+  is_derive t w f f' -> is_derive t w (fun x => (f x)^T) f'^T.
+Proof.
+move=> fD.
+have fDer : derivable f t w by case: fD.
+apply/DeriveDef; last by have [_ <-] := fD; rewrite derive_trmx.
+by rewrite derivable_trmx.
+Qed.
+
 Fact dmx {m n : nat} (M : V -> 'M[R]_(m, n)) (x : V) :
   let g := fun t : V => (\matrix_(i < m, j < n) 'd M x t i j) in
   differentiable M x ->

@@ -2,8 +2,6 @@
 From HB Require Import structures.
 From mathcomp Require Import boot order ssralg ssrnum ssrint interval.
 From mathcomp Require Import interval_inference finmap fingroup perm rat.
-#[warning="-warn-library-file-internal-analysis"]
-From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets cardinality functions fsbigop
   set_interval reals.
 From mathcomp Require Import topology ereal numfun normedtype derive sequences.
