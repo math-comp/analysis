@@ -1867,7 +1867,6 @@ subgraph cluster_LebesgueIntegral {
   "classical/fsbigop" -> "theories/lebesgue_integral_theory/radon_nikodym";
   "classical/functions" -> "theories/lebesgue_integral_theory/radon_nikodym";
   "classical/set_interval" -> "theories/lebesgue_integral_theory/radon_nikodym";
-  "classical/unstable" -> "theories/lebesgue_integral_theory/radon_nikodym";
   "reals/reals" -> "theories/lebesgue_integral_theory/radon_nikodym";
   "theories/derive" -> "theories/lebesgue_integral_theory/radon_nikodym";
   "theories/ereal" -> "theories/lebesgue_integral_theory/radon_nikodym";
