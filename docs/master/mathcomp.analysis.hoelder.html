@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.hoelder</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 73c7aa2 2026.08.29-01:52" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 73c7aa2 2026.08.29-20:54" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -308,41 +308,7 @@ Lp-spaces and properties of Lp-norms:
 <span class="vernacular">Declare</span><span class="vernacular"> Scope</span><span class="id"> Lnorm_scope</span>.<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
-<span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/hoelder.v#L66' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span>.<span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/hoelder.v#L66' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span><span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip"> Definition<span class='tooltip-area'><p>Lnorm_unlock_subterm :
-unlockable
-  (fun (d : measure_display) (T : measurableType d) 
-     (R : realType) (mu : measure T R) (p : \bar R) 
-     (f : T -> \bar R) =>
-   match p with
-   | p0%:E => ((\int[mu]_x `|f x| `^ p0) `^ p0^-1)%E
-   | +oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_sup mu (abse \o f) else 0%R
-   | -oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_inf mu (abse \o f) else 0%R
-   end)
-
-Lnorm_unlock_subterm is not universe polymorphic
-Lnorm_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.hoelder.Lnorm_unlock_subterm
-Declared in library mathcomp.analysis.hoelder, line 66, characters 0-389
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/hoelder.v#L66' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span><span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip"> Lnorm<span class='tooltip-area'><p>Lnorm_unlock_subterm :
-unlockable
-  (fun (d : measure_display) (T : measurableType d) 
-     (R : realType) (mu : measure T R) (p : \bar R) 
-     (f : T -> \bar R) =>
-   match p with
-   | p0%:E => ((\int[mu]_x `|f x| `^ p0) `^ p0^-1)%E
-   | +oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_sup mu (abse \o f) else 0%R
-   | -oo%E =>
-       if (0%R < mu [set: T]%classic)%E then ess_inf mu (abse \o f) else 0%R
-   end)
-
-Lnorm_unlock_subterm is not universe polymorphic
-Lnorm_unlock_subterm is transparent
-Expands to: Constant mathcomp.analysis.hoelder.Lnorm_unlock_subterm
-Declared in library mathcomp.analysis.hoelder, line 66, characters 0-389
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/hoelder.v#L66' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span><span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip"> {d}<span class='tooltip-area'><p>Lnorm_unlock_subterm :
+<span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip">HB<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/hoelder.v#L66' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span>.<span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip">lock<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/hoelder.v#L66' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span><span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip"> Definition<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/hoelder.v#L66' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span><span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip"> Lnorm<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/hoelder.v#L66' target='_blank'>Source code</a></span></div></span></span></span></span></span></span></span></span><span id="Lnorm_unlock_subterm" class="id"><span id="Lnorm" class="id"><span id="Lnorm.unlock" class="id"><span id="Lnorm.body" class="id"><span id="Lnorm" class="id"><span id="Lnorm_Locked.unlock" class="id"><span id="Lnorm_Locked.body" class="id"><span id="Lnorm_Locked" class="id"><div name="Lnorm_unlock_subterm" class=" tooltip"> {d}<span class='tooltip-area'><p>Lnorm_unlock_subterm :
 unlockable
   (fun (d : measure_display) (T : measurableType d) 
      (R : realType) (mu : measure T R) (p : \bar R) 

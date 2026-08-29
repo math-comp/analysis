@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.topology_theory.num_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 73c7aa2 2026.08.29-01:52" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 73c7aa2 2026.08.29-20:54" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -488,30 +488,27 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> at_left_right</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="at_left_right.R" class="id"><div name="at_left_right.R" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/topology_theory/num_topology.v#L217' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numfield.html#Num.NumField.Exports.numFieldType">numFieldType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="at_left" class="id"><div name="at_left" class=" tooltip">at_left<span class='tooltip-area'><p>ball_ :
-forall {R : numDomainType} {V : GRing.Zmodule.Exports.zmodType},
-(V -> R) -> V -> R -> set V
+<span class="vernacular">Definition</span><span class="id"> </span><span id="at_left" class="id"><div name="at_left" class=" tooltip">at_left<span class='tooltip-area'><p>sup_pseudometric :
+forall [R : realType] [T Ii : Type],
+(Ii -> PseudoMetric.axioms_ R T) -> countable (T:=Ii) [set: Ii] -> Type
 
-ball_ is not universe polymorphic
-Arguments ball_ {R V} norm x e%_ring_scope y /
-  (where some original arguments have been renamed)
-The reduction tactics unfold ball_ when applied to 6 arguments
-ball_ is transparent
+sup_pseudometric is not universe polymorphic
+Arguments sup_pseudometric [R] [T Ii]%_type_scope Tc%_function_scope Icnt
+sup_pseudometric is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.pseudometric_structure.ball_
+            mathcomp.analysis.topology_theory.separation_axioms.sup_pseudometric
 Declared in
-library mathcomp.analysis.topology_theory.pseudometric_structure, line 330, characters 11-16
+library mathcomp.analysis.topology_theory.separation_axioms, line 978, characters 11-27
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/topology_theory/num_topology.v#L219' target='_blank'>Source code</a></span></div></span> (<span id="x:61" class="id"><div name="x:61" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/topology_theory/num_topology.v#L219' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#at_left_right.R">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#within">within</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="u:62" class="id"><div name="u:62" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/topology_theory/num_topology.v#L219' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#u:62">u</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#x:61">x</a></span>) (<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#x:61">x</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="at_right" class="id"><div name="at_right" class=" tooltip">at_right<span class='tooltip-area'><p>cauchy_ex :
-forall {R : numDomainType} {T : pseudoMetricType R}, set_system T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="at_right" class="id"><div name="at_right" class=" tooltip">at_right<span class='tooltip-area'><p>gauge.gauge : forall {T : uniformType}, set (T * T) -> set_system (T * T)
 
-cauchy_ex is not universe polymorphic
-Arguments cauchy_ex {R T} F
-cauchy_ex is transparent
+gauge.gauge is not universe polymorphic
+Arguments gauge.gauge {T} E%_classical_set_scope _
+gauge.gauge is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.pseudometric_structure.cauchy_ex
+            mathcomp.analysis.topology_theory.separation_axioms.gauge.gauge
 Declared in
-library mathcomp.analysis.topology_theory.pseudometric_structure, line 398, characters 11-20
+library mathcomp.analysis.topology_theory.separation_axioms, line 1009, characters 11-16
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/topology_theory/num_topology.v#L220' target='_blank'>Source code</a></span></div></span> (<span id="x:63" class="id"><div name="x:63" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/topology_theory/num_topology.v#L220' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#at_left_right.R">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#within">within</a></span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="u:64" class="id"><div name="u:64" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/topology_theory/num_topology.v#L220' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#x:63">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.Syntax.::ring_scope:x_'&lt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#u:64">u</a></span>) (<span class="id"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#x:63">x</a></span>).<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span> <span id="1b3db48b0cbae15ed360572ab99a89f1" class="id"><div name="1b3db48b0cbae15ed360572ab99a89f1" class=" tooltip">&quot;x ^'-&quot;<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/topology_theory/num_topology.v#L221' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#at_left">at_left</a></span><span class="id"> x</span>)<span class="id"> :</span><span class="id"> classical_set_scope</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span> <span id="747e41d73885ecaa9accce261f47e270" class="id"><div name="747e41d73885ecaa9accce261f47e270" class=" tooltip">&quot;x ^'+&quot;<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/73c7aa2f500c2bd57c44f92e0316355a5b83d2d0/theories/topology_theory/num_topology.v#L222' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.analysis.topology_theory.num_topology.html#at_right">at_right</a></span><span class="id"> x</span>)<span class="id"> :</span><span class="id"> classical_set_scope</span>.<br/>
