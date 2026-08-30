@@ -154,8 +154,7 @@ Qed.
 
 Lemma open_subspace_out (U : set (subspace A)) : U `<=` ~` A -> open U.
 Proof.
-move=> Usub; rewrite (_ : U = \bigcup_(i in U) [set i]).
-  by rewrite eqEsubset; split => x; [move=> ?; exists x|case=> i ? ->].
+move=> Usub; rewrite -(image_id U) -bigcup_imset1.
 by apply: bigcup_open => ? ?; apply: open_subspace1out; exact: Usub.
 Qed.
 
@@ -356,14 +355,14 @@ Lemma continuous_subspaceT_for {U} A (f : T -> U) (x : T) :
 Proof.
 rewrite /continuous_at /prop_for => inA ctsf.
 have [_|//] := nbhs_subspaceP A x.
-apply: (cvg_trans _ ctsf); apply: cvg_fmap2; apply: cvg_within.
+by apply: (cvg_trans _ ctsf); apply: cvg_fmap2; exact: cvg_within.
 Qed.
 
 Lemma continuous_in_subspaceT {U} A (f : T -> U) :
   {in A, continuous f} -> {within A, continuous f}.
 Proof.
 rewrite continuous_subspace_in ?in_setP => ctsf t At.
-by apply: continuous_subspaceT_for => //=; apply: ctsf.
+by apply: continuous_subspaceT_for => //=; exact: ctsf.
 Qed.
 
 Lemma continuous_subspaceT {U} A (f : T -> U) :
@@ -385,7 +384,7 @@ by split => + x /[dup] Ax /oA Aox => /(_ _ Ax);
 Qed.
 
 Lemma continuous_inP {U} A (f : T -> U) : open A ->
-  {in A, continuous f} <-> forall X, open X -> open (A `&` f @^-1` X).
+  {in A, continuous f} <-> open `<=` image_set_system A f open.
 Proof.
 move=> oA; rewrite -continuous_open_subspace// continuousP.
 by under eq_forall do rewrite -open_setSI//.
@@ -449,34 +448,32 @@ move=> [x y] /=; case; first (by move=> ->; split=> /=; left).
 by move=> [Ax [Ay [Pxy Qxy]]]; split=> /=; right.
 Qed.
 
-Let subspace_uniform_entourage_diagonal :
-  forall X : set (subspace A * subspace A),
-    subspace_ent X -> diagonal `<=` X.
-Proof. by move=> ? + [x y]/diagonalP ->; case=> V entV; apply; left. Qed.
+Let subspace_uniform_entourage_diagonal (B : set (subspace A * subspace A)) :
+  subspace_ent B -> diagonal `<=` B.
+Proof. by move=> + [x y]/diagonalP ->; case=> V entV; apply; left. Qed.
 
-Let subspace_uniform_entourage_inv : forall A : set (subspace A * subspace A),
-  subspace_ent A -> subspace_ent A^-1.
+Let subspace_uniform_entourage_inv (B : set (subspace A * subspace A)) :
+  subspace_ent B -> subspace_ent B^-1.
 Proof.
-move=> ?; case=> V ? Vsub; exists V^-1; first exact: entourage_inv.
+case=> V ? Vsub; exists V^-1; first exact: entourage_inv.
 move=> [x y] /= G; apply: Vsub; case: G; first by (move=> <-; left).
 by move=> [? [? Vxy]]; right; repeat split.
 Qed.
 
-Let subspace_uniform_entourage_split_ex :
-  forall A : set (subspace A * subspace A),
-    subspace_ent A -> exists2 B, subspace_ent B & B \; B `<=` A.
+Let subspace_uniform_entourage_split_ex (C : set (subspace A * subspace A)) :
+  subspace_ent C -> exists2 B, subspace_ent B & B \; B `<=` C.
 Proof.
-move=> ?; case=> E entE Esub.
-exists  [set xy | xy.1 = xy.2 \/ A xy.1 /\ A xy.2 /\ split_ent E xy].
+case=> E entE Esub.
+exists [set xy | xy.1 = xy.2 \/ A xy.1 /\ A xy.2 /\ split_ent E xy].
   by exists (split_ent E).
 move=> [x y] [z /= Ez zE] /=; case: Ez; case: zE.
-  - by move=> -> ->; apply: Esub; left.
-  - move=> [ ? []] ? G xy; subst; apply: Esub; right; repeat split => //=.
-    by apply: entourage_split => //=; first exact: G; exact: entourage_refl.
-  - move=> -> [ ? []] ? G; apply: Esub; right; repeat split => //=.
-    by apply: entourage_split => //=; first exact: G; exact: entourage_refl.
-  - move=> []? []? ?[]?[]??; apply: Esub; right; repeat split => //=.
-    by apply: subset_split_ent => //; exists z.
+- by move=> -> ->; apply: Esub; left.
+- move=> [ ? []] ? G xy; subst; apply: Esub; right; repeat split => //=.
+  by apply: entourage_split => //=; first exact: G; exact: entourage_refl.
+- move=> -> [ ? []] ? G; apply: Esub; right; repeat split => //=.
+  by apply: entourage_split => //=; first exact: G; exact: entourage_refl.
+- move=> []? []? ?[]?[]??; apply: Esub; right; repeat split => //=.
+  by apply: subset_split_ent => //; exists z.
 Qed.
 
 Let subspace_uniform_nbhsE : @nbhs _ (subspace A) = nbhs_ subspace_ent.
@@ -525,8 +522,7 @@ rewrite /subspace_ball; case: ifP => //= /asboolP ? ?.
 by split=> //; exact: ballxx.
 Qed.
 
-Let subspace_pm_ball_sym x y e :
-  subspace_ball x e y -> subspace_ball y e x.
+Let subspace_pm_ball_sym x y e : subspace_ball x e y -> subspace_ball y e x.
 Proof.
 rewrite /subspace_ball; case: ifP => //= /asboolP ?.
   by move=> [] Ay /ball_sym yBx; case: ifP => /asboolP.
@@ -543,8 +539,7 @@ rewrite /subspace_ball; (repeat case: ifP => /asboolP).
 - by move=> _ _ -> ->.
 Qed.
 
-Let subspace_pm_entourageE :
-  @entourage (subspace A) = entourage_ subspace_ball.
+Let subspace_pm_entourageE : @entourage (subspace A) = entourage_ subspace_ball.
 Proof.
 rewrite eqEsubset; split; rewrite /subspace_ball.
   move=> U [W + subU]; rewrite -entourage_ballE => [[eps] nneg subW].
@@ -571,8 +566,7 @@ Proof. by []. Qed.
 End SubspacePseudoMetric.
 
 Section SubspaceInitial.
-Context {T : topologicalType} {U : choiceType}.
-Variables (f : U -> T).
+Context {T : topologicalType} {U : choiceType} (f : U -> T).
 
 Lemma initial_subspace_open (A : set (initial_topology f)) :
   open A -> open (f @` A : set (subspace (range f))).
@@ -595,13 +589,13 @@ have GF : ProperFilter G.
   - by move=> C /(filterI FfA) /filter_ex [_ [[p ? <-]]]; exists p.
 move: Aco; rewrite -[A]setIid => /compact_subspaceIP; rewrite setIid.
 case /(_ G); first by exists (f @` A) => // ? [].
-move=> p [Ap clsGp]; exists (f p); split; first exact/imageP.
+move=> /= p [Ap clsGp]; exists (f p); split; first exact/imageP.
 move=> B C FB /fcont p_Cf.
-have : G (A `&` f @^-1` B) by exists B.
+have : image_set_system A f G B by exists B.
 by move=> /clsGp /(_ p_Cf) [q [[]]]; exists (f q).
 Qed.
 
-Lemma connected_continuous_connected (T U : topologicalType)
+Lemma connected_continuous_connected {T U : topologicalType}
     (A : set T) (f : T -> U) :
   connected A -> {within A, continuous f} -> connected (f @` A).
 Proof.
@@ -645,7 +639,7 @@ Qed.
 
 Lemma continuous_localP {X Y : topologicalType} (f : X -> Y) :
   continuous f <->
-  forall (x : X), \forall U \near powerset_filter_from (nbhs x),
+  forall x : X, \forall U \near powerset_filter_from (nbhs x),
     {within U, continuous f}.
 Proof.
 split; first by move=> ? ?; near=> U; apply: continuous_subspaceT=> ?; exact.
@@ -666,7 +660,7 @@ Section subspace_product.
 Context {X Y Z : topologicalType} (A : set X) (B : set Y) .
 
 Lemma nbhs_prodX_subspace_inE x : (A `*` B) x ->
-  nbhs  (x : subspace (A `*` B)) = @nbhs _ (subspace A * subspace B)%type x.
+  nbhs (x : subspace (A `*` B)) = @nbhs _ (subspace A * subspace B)%type x.
 Proof.
 case: x => a b [/= Aa Bb]; rewrite /nbhs/= -nbhs_subspace_in//.
 rewrite funeqE => U /=; rewrite propeqE; split; rewrite /nbhs /=.
@@ -688,6 +682,7 @@ Proof.
 by split; rewrite continuous_subspace_in => + x ABx U nfxU => /(_ x ABx U nfxU);
   rewrite nbhs_prodX_subspace_inE//; move/set_mem: ABx.
 Qed.
+
 End subspace_product.
 
 #[short(type = "continuousSubspaceType")]
@@ -701,8 +696,8 @@ Notation continuousFunType := continuousSubspaceType.
 Notation ContinuousFun A B := (ContinuousSubspace A B).
 
 Section continuous_fun_comp.
-Context {X Y Z : topologicalType} (A : set X) (B : set Y) (C : set Z).
-Context {f : continuousSubspaceType A B} {g : continuousSubspaceType B C}.
+Context {X Y Z : topologicalType} (A : set X) (B : set Y) (C : set Z)
+  {f : continuousSubspaceType A B} {g : continuousSubspaceType B C}.
 
 #[local] Lemma continuous_comp_subproof : continuous (g \o f : subspace A -> Z).
 Proof.
@@ -717,13 +712,12 @@ Qed.
 End continuous_fun_comp.
 
 Section continuous_patch.
-Context {U V : topologicalType}.
-Variables (A B : set U) (f g : U -> V).
-Hypothesis contf : {within A, continuous f}.
-Hypothesis contg : {within B, continuous g}.
-Hypothesis closedA : closed A.
-Hypothesis closedB : closed B.
-Hypothesis AB_fg : forall x, x \in A `&` B -> f x = g x.
+Context {U V : topologicalType} (A B : set U) (f g : U -> V).
+Hypotheses (contf : {within A, continuous f})
+  (contg : {within B, continuous g})
+  (closedA : closed A)
+  (closedB : closed B)
+  (AB_fg : forall x, x \in A `&` B -> f x = g x).
 
 Lemma withinU_continuous_patch : {within A `|` B, continuous (patch g A f)}.
 Proof.

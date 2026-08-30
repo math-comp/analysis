@@ -138,7 +138,7 @@ Definition initial_ent : set_system (S * S) :=
 Let initial_ent_filter : Filter initial_ent.
 Proof.
 apply: filter_from_filter; first by exists setT; exact: entourageT.
-by move=> P Q ??; (exists (P `&` Q); first exact: filterI) => ?.
+by move=> P Q ? ?; (exists (P `&` Q); first exact: filterI) => ?.
 Qed.
 
 Let initial_ent_refl A : initial_ent A -> diagonal `<=` A.
