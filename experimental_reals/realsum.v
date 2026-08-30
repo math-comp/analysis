@@ -12,6 +12,21 @@ From mathcomp Require Import reals.
 From mathcomp Require Import ereal esum numfun.
 From mathcomp Require Import xfinmap discrete realseq.
 
+(**md**************************************************************************)
+(* # Summability                                                              *)
+(*                                                                            *)
+(* `summable f`                                                               *)
+(* : the function $f$ is summable, i.e., there is a bound that bounds every   *)
+(* : finite sub-sum of absolute values $|f(x)|$                               *)
+(*                                                                            *)
+(* `psum f`                                                                   *)
+(* : the supremum of the finite sub-sums if `f` is summable, and 0 o.w.       *)
+(*                                                                            *)
+(* `sum f`                                                                    *)
+(* : `psum f^\+ - psum f^\-`                                                  *)
+(*                                                                            *)
+(******************************************************************************)
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -22,11 +37,9 @@ Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope fset_scope.
 Local Open Scope ring_scope.
 
-(* -------------------------------------------------------------------- *)
 Local Notation "\`| f |" := (fun x => `|f x|) (at level 2).
 Local Notation simpm := Monoid.simpm.
 
-(* -------------------------------------------------------------------- *)
 Section Summable.
 Context {T : choiceType} {R : realType} (f : T -> R).
 
@@ -76,7 +89,6 @@ Notation psum := PosSum.psum.
 Definition sum {R : realType} {T : choiceType} (f : T -> R) : R :=
   PosSum.psum f^\+ - PosSum.psum f^\-.
 
-(* -------------------------------------------------------------------- *)
 Section SummableCountable.
 Context {T : choiceType} {R : realType} (f : T -> R).
 
