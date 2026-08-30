@@ -85,7 +85,7 @@
   + lemma `RealsE` to include `RcosE`, `Rtrigo_PIE`, `RsinE`
 
 - in `topology_structure.v`:
-  + lemma `denseNE` not used `exists2`
+  + lemma `denseNE` now uses `exists2`
 
 ### Renamed
 
