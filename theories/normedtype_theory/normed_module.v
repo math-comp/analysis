@@ -175,7 +175,7 @@ HB.structure Definition NormedVector (K : numDomainType) :=
 (**md see also `Section standard_topology_pseudoMetricNormedZmod` in
   `pseudometric_normed_Zmodule.v` *)
 Section standard_topology_normedMod.
-Variable R : numFieldType.
+Context {R : numFieldType}.
 
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_ConvexTvs_isNormedModule.Build R R^o (@normrM _).
@@ -1564,7 +1564,7 @@ split => [cE x y Ex Ey z /andP[xz zy]|].
     have ? : ~ closure (A true) z.
       by move: sepA; rewrite /separated => -[] _ /disjoints_subset; apply.
     have ? : open (~` closure (A true)) by exact/closed_openC/closed_closure.
-    exact/nbhsC_ball/open_nbhs_nbhs.
+    exact/nbhsC_ball/mem_open_nbhs.
   pose z1 : R := z + r%:num / 2; exists z1.
   have z1y : z1 <= y.
     rewrite leNgt; apply/negP => yz1.
@@ -2203,7 +2203,7 @@ Qed.
 Lemma open_subball {R : numFieldType} {M : normedModType R} (A : set M)
   (x : M) : open A -> A x -> \forall e \near 0^'+, ball x e `<=` A.
 Proof.
-move=> oA Ax; have /nbhsr0P/= : nbhs x A by exact/open_nbhs_nbhs.
+move=> oA Ax; have /nbhsr0P/= : nbhs x A by exact/mem_open_nbhs.
 apply: filterS => e xeA y exy; apply: xeA.
 by rewrite -ball_normE/= in exy; exact: ltW.
 Qed.
@@ -2317,12 +2317,14 @@ apply lt_le_trans; rewrite ltr_pMl; first by rewrite normr_gt0 subr_eq0 eq_sym.
 by rewrite ger0_norm // ltrDl normr_gt0; near: e; exists 1 => /=.
 Unshelve. all: by end_near. Qed.
 
-Lemma open_nbhs_closed_ball (R : realType) (V : normedModType R) (x : V)
-  (r : R) : 0 < r -> open_nbhs x (closed_ball x r)°.
+Lemma mem_open_closed_ball (R : realType) (V : normedModType R) (x : V)
+  (r : R) : 0 < r -> mem_open x (closed_ball x r)°.
 Proof.
 move=> r0; split; first exact: open_interior.
 by rewrite interior_closed_ballE //; exact: ballxx.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.18.0", use=mem_open_closed_ball)]
+Notation open_nbhs_closed_ball := mem_open_closed_ball (only parsing).
 
 Lemma locally_compactR (R : realType) : locally_compact [set: R].
 Proof.

@@ -265,13 +265,13 @@ wlog xy : x y / (x < y)%O.
 move=> _ U /=; rewrite (min_l (ltW xy)) => Ux.
 have [[z xzy]|/forallNP/= xNy] := pselect (exists z, x < z < y)%O.
   exists (U `&` `]-oo, z[, `]z, +oo[%classic) => /=.
-    split; [apply: filterI =>//|]; apply: open_nbhs_nbhs.
+    split; [apply: filterI =>//|]; apply: mem_open_nbhs.
     - by split; [exact: lray_open|rewrite set_itvE; case/andP: xzy].
     - by split; [exact: rray_open|rewrite set_itvE; case/andP: xzy].
   case=> a b /= [[Ua]]; rewrite !in_itv andbT /= => az zb.
   by rewrite min_l// (ltW (lt_trans az _)).
 exists (U `&` `]-oo, y[, `]x, +oo[%classic) => /=.
-  split; [apply: filterI => //|]; apply: open_nbhs_nbhs.
+  split; [apply: filterI => //|]; apply: mem_open_nbhs.
   - by split; [exact: lray_open|rewrite set_itvE].
   - by split; [exact: rray_open|rewrite set_itvE].
 case=> a b /= [[Ua]]; rewrite !in_itv andbT /= => ay xb.
@@ -304,13 +304,13 @@ wlog xy : x y / (x < y)%O.
 move=> _ U /=; rewrite (max_r (ltW xy)) => Ux.
 have [[z xzy]|/forallNP /= xNy] := pselect (exists z, x < z < y)%O.
   exists (`]-oo, z[%classic, U `&` `]z, +oo[) => /=.
-    split; [|apply: filterI =>//]; apply: open_nbhs_nbhs.
+    split; [|apply: filterI =>//]; apply: mem_open_nbhs.
     - by split; [exact: lray_open|rewrite set_itvE; case/andP: xzy].
     - by split; [exact: rray_open|rewrite set_itvE; case/andP: xzy].
   case=> a b /= [] + []; rewrite !in_itv andbT /= => az Ub zb.
   by rewrite (max_r (ltW (lt_trans az _))).
 exists (`]-oo, y[%classic, U `&` `]x, +oo[) => /=.
-  split; [|apply: filterI => //]; apply: open_nbhs_nbhs.
+  split; [|apply: filterI => //]; apply: mem_open_nbhs.
   - by split; [exact: lray_open|rewrite set_itvE].
   - by split; [exact: rray_open|rewrite set_itvE].
 case=> a b /=; rewrite !in_itv /= andbT => [/=] [ay] [Ub] xb.

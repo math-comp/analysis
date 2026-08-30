@@ -31,7 +31,7 @@ HB.instance Definition _ (R : numDomainType) := hasNbhs.Build R^o
 
 Module TopologicalNumDomainType.
 Section TopologicalNumDomainType.
-Variable (R : numDomainType).
+Context {R : numDomainType}.
 
 Lemma nbhs_filter (p : R^o) : ProperFilter (nbhs p).
 Proof.

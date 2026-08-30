@@ -212,7 +212,7 @@ Proof. exact: ball_triangle_subproof. Qed.
 Lemma nbhsx_ballx x (eps : R) : 0 < eps -> nbhs x (ball x eps).
 Proof. by move=> e0; apply/nbhs_ballP; exists eps. Qed.
 
-Lemma open_nbhs_ball x (eps : {posnum R}) : open_nbhs x (ball x eps%:num)°.
+Lemma mem_open_ball x (eps : {posnum R}) : mem_open x (ball x eps%:num)°.
 Proof.
 split; first exact: open_interior.
 by apply: nbhs_singleton; apply: nbhs_interior; exact: nbhsx_ballx.
@@ -267,6 +267,8 @@ Lemma cvgi_ball T {F} {FF : Filter F} (f : T -> M -> Prop) y :
 Proof. by move/cvgi_ballP. Qed.
 
 End pseudoMetricType_numDomainType.
+#[deprecated(since="mathcomp-analysis 1.18.0", use=mem_open_ball)]
+Notation open_nbhs_ball := mem_open_ball (only parsing).
 
 #[global] Hint Resolve nbhsx_ballx : core.
 

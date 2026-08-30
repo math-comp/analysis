@@ -193,7 +193,7 @@ have [L Lsub /[dup] VL <-] := QfinP _ JV; rewrite preimage_bigcap.
 apply: filter_bigI => /= M /[dup] LM /Lsub /set_mem [] w _ [+] + /[dup] + <-.
 have [->|wnx] := eqVneq w i => N oN NM.
   apply: (@filterS _ _ _ N); first by move=> ? ?; rewrite /= dfwith_in.
-  apply: open_nbhs_nbhs; split => //; move: Vpz.
+  apply: mem_open_nbhs; split => //; move: Vpz.
   by rewrite -VL => /(_ _ LM); rewrite -NM /= dfwith_in.
 apply: nearW => y /=; move: Vpz.
 by rewrite -VL => /(_ _ LM); rewrite -NM /= ?dfwith_out // eq_sym.
@@ -400,7 +400,7 @@ apply: (@filterS _ _ _ (range join_product `&` B)).
   case=> K [oK KsubA] /KsubA.
   have -> : proj i (join_product w) = f_ i w by [].
   by move=> /exists2P/forallNP/(_ w)/not_andP [] // /contrapT.
-apply: open_nbhs_nbhs; split; last by rewrite -jxy.
+apply: mem_open_nbhs; split; last by rewrite -jxy.
 apply: openI; first exact: open_subspaceT.
 apply: open_subspaceW; apply: open_comp; last exact/closed_openC/closed_closure.
 by move=> + _; exact: proj_continuous.
@@ -1460,10 +1460,10 @@ Proof.
 move=> lcV reg cf cfp /= [u v] D; rewrite /= nbhsE => -[O [oO Ofuv]] /filterS.
 apply; have [B] := @lcV v I; rewrite withinET => Bv [cptB clB].
 have [R Rv RO] : exists2 R, nbhs v R & forall z, closure R z -> O (f u z).
-  have [] := reg v (f u @^-1` O); first by apply: cfp; exact: open_nbhs_nbhs.
+  have [] := reg v (f u @^-1` O); first by apply: cfp; exact: mem_open_nbhs.
   by move=> R ? ?; exists R.
 exists (f @^-1` [set g | g @` (B `&` closure R) `<=` O], B `&` closure R).
-  split; [apply/cf/open_nbhs_nbhs; split | apply: filterI] => //.
+  split; [apply/cf/mem_open_nbhs; split | apply: filterI] => //.
   - apply: compact_open_open => //; apply: compact_closedI => //.
     exact: closed_closure.
   - by move=> ? [x [? + <-]]; apply: RO.
@@ -1500,15 +1500,15 @@ move=> _ v Mv; move: v Mv Ki; near: p.
 have umb : \forall y \near u, (forall b, M b -> nbhs (y, b) (f @^-1` O)).
   move/compact_near_coveringP/near_covering_withinP : (cptM); apply => v Mv.
   have [[P Q] [Pu Qv] PQO] : nbhs (u, v) (f @^-1` O).
-    by apply: ctsf; apply: open_nbhs_nbhs; split => //; apply: fMO; exists v.
+    by apply: ctsf; apply: mem_open_nbhs; split => //; apply: fMO; exists v.
   exists (Q, P); [by []| move=> [b a [/= Qb Pa Mb]]].
-  by apply: ctsf; apply: open_nbhs_nbhs; split => //; exact: PQO.
+  by apply: ctsf; apply: mem_open_nbhs; split => //; exact: PQO.
 move/compact_near_coveringP/near_covering_withinP : (cptM); apply => v Mv.
 have [P' P'u cPO] := regU u _ umb.
 pose L := [set h | h @` ((K `&` closure P') `*` M) `<=` O].
 exists (setT, P' `*` L).
   split => //; [exact: filterT|]; exists (P', L) => //; split => //.
-  apply: open_nbhs_nbhs; split; first apply: compact_open_open => //.
+  apply: mem_open_nbhs; split; first apply: compact_open_open => //.
     apply: compact_setX => //; apply: compact_closedI => //.
     exact: closed_closure.
   by move=> ? [[a b] [[Ka /cPO +] Mb <-]] => /(_ _ Mb)/nbhs_singleton.
@@ -1545,9 +1545,9 @@ case=> P [Q [clP cptQ Pu Qv PQfO]]; pose R := [set g : V -> W | g @` Q `<=` O].
 pose L := [set h : U -> V -> W | h @` (fst @` K `&` P) `<=` R].
 exists ((P `&` P') `*` Q, L); first split => /=.
 - exists (P `&` P', Q) => //; split => //=; apply: filterI => //.
-  apply: ctsf; apply: open_nbhs_nbhs; split => // _ [b Qb <-].
+  apply: ctsf; apply: mem_open_nbhs; split => // _ [b Qb <-].
   by apply: (PQfO (u, b)); split => //; exact: nbhs_singleton.
-- rewrite nbhs_simpl /=; apply: open_nbhs_nbhs; split.
+- rewrite nbhs_simpl /=; apply: mem_open_nbhs; split.
     apply: compact_open_open => //; apply: compact_closedI => //.
     apply: continuous_compact => //; apply: continuous_subspaceT => x.
     exact: cvg_fst.

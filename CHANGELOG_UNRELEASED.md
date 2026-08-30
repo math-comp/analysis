@@ -84,6 +84,9 @@
 - in `Rstruct_topology.v`:
   + lemma `RealsE` to include `RcosE`, `Rtrigo_PIE`, `RsinE`
 
+- in `topology_structure.v`:
+  + lemma `denseNE` not used `exists2`
+
 ### Renamed
 
 - in `esum.v`:
@@ -107,6 +110,25 @@
 - in `lebesgue_integral_nonneg.v`:
   + `summable_integral_dirac` -> `esummable_integral_dirac`
 - `mathcomp_extra.v` -> `mathcomp_compat.v`
+
+- in `topology_structure.v`:
+  + `open_nbhs` -> `mem_open`
+  + `open_nbhsE` -> `mem_openE`
+  + `open_nbhsT` -> `mem_openT`
+  + `open_nbhsI` -> `mem_openI`
+  + `open_nbhs_nbhs` -> `mem_open_nbhs`
+
+- in `uniform_structure.v`:
+  + `open_nbhs_entourage` -> `mem_open_entourage`
+
+- in `pseudometric_structure.v`:
+  + `open_nbhs_ball` -> `mem_open_ball`
+
+- in `pseudo_metric_normed_Zmodule.v`:
+  + `ball_open_nbhs` -> `ball_mem_open`
+
+- in `normed_module.v`:
+  + `open_nbhs_closed_ball` -> `mem_open_closed_ball`
 
 ### Generalized
 
@@ -167,6 +189,9 @@
   + notations `setDI_closed`, `setDI_semi_setD_closed`, `sedDI_closedP`,
     `setringDI`, `preimage_classes`, `preimage_classes_comp`
     (deprecated since 1.9.0)
+
+- in `uniform_structure.v`:
+  + notation `complete_ax` (was deprecated)
 
 ### Infrastructure
 

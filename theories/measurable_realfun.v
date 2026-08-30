@@ -1590,7 +1590,7 @@ have mE k n : measurable (E k n).
 have nEcvg x k : exists n, A x -> (~` E k n) x.
   have [Ax|?] := pselect (A x); last by exists point.
   have [] := fptwsg _ Ax (interior (ball (g x) k.+1%:R^-1)).
-    by apply: open_nbhs_nbhs; split; [exact: open_interior|exact: nbhsx_ballx].
+    by apply: mem_open_nbhs; split; [exact: open_interior|exact: nbhsx_ballx].
   move=> N _ Nk; exists N.+1 => _; rewrite /E setC_bigcup => i /= /ltnW Ni.
   apply/not_andP; right; apply/negP; rewrite /h -real_ltNge // distrC.
   by case: (Nk _ Ni) => _/posnumP[?]; apply; exact: ball_norm_center.
@@ -1606,7 +1606,7 @@ have badn' k : exists n, mu (E k n) < ((eps / 2) / (2 ^ k.+1)%:R)%:E.
     - by rewrite (le_lt_trans _ finA)// le_measure// ?inE// => ? [? _ []].
     - exact: bigcap_measurable.
   rewrite measure0; case/fine_cvg/(_ (interior (ball 0%R ek))).
-    apply/open_nbhs_nbhs/(open_nbhs_ball _ (@PosNum _ ek _)).
+    apply/mem_open_nbhs/(mem_open_ball _ (@PosNum _ ek _)).
     by rewrite !divr_gt0.
   move=> N _ /(_ N (leqnn _))/interior_subset muEN; exists N; move: muEN.
   rewrite /ball /= distrC subr0 ger0_norm // -[x in x < _]fineK ?ge0_fin_numE//.

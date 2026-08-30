@@ -218,7 +218,7 @@ move=> z; rewrite -ball_normE/= ltrBrDr.
 by apply: le_lt_trans; rewrite [in leRHS]addrC ler_distD.
 Qed.
 
-Lemma ball_open_nbhs (x : V) (r : K) : 0 < r -> open_nbhs x (ball x r).
+Lemma ball_mem_open (x : V) (r : K) : 0 < r -> mem_open x (ball x r).
 Proof. by move=> e0; split; [exact: ball_open|exact: ballxx]. Qed.
 
 (**md Neighborhoods defined by the norm: *)
@@ -379,6 +379,9 @@ by rewrite (_ : _ \o _ = A \o f) // funeqE=> z; rewrite /= opprD addNKr addrNK.
 Qed.
 
 End pseudoMetricNormedZmod_numDomainType.
+#[deprecated(since="mathcomp-analysis 1.18.0", use=ball_mem_open)]
+Notation ball_open_nbhs := ball_mem_open (only parsing).
+
 #[global] Hint Resolve normr_ge0 : core.
 Arguments cvgr_dist_lt {_ _ _ F FF}.
 Arguments cvgr_distC_lt {_ _ _ F FF}.

@@ -207,7 +207,7 @@ exact/principal_filterP.
 Qed.
 
 Lemma discrete_set1 (x : X) : nbhs x [set x].
-Proof. by apply: open_nbhs_nbhs; split => //; exact: discrete_open. Qed.
+Proof. by apply: mem_open_nbhs; split => //; exact: discrete_open. Qed.
 
 Lemma discrete_closed (A : set X) : closed A.
 Proof. by rewrite -[A]setCK closedC; exact: discrete_open. Qed.

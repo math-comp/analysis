@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra all_classical.
 From mathcomp Require Import topology_structure.
@@ -318,12 +318,15 @@ exists (range f); split; first exact: card_image_le.
 by move=> E /fsubE [n fnA]; exists (f n) => //; exists n.
 Qed.
 
-Lemma open_nbhs_entourage (U : uniformType) (x : U) (A : set (U * U)) :
-  entourage A -> open_nbhs x (xsection A x)°.
+Lemma entourage_mem_open {U : uniformType} (x : U) (A : set (U * U)) :
+  entourage A -> mem_open x (xsection A x)°.
 Proof.
 move=> entA; split; first exact: open_interior.
 by apply: nbhs_singleton; apply: nbhs_interior; exact: nbhs_entourage.
 Qed.
+
+#[deprecated(since="mathcomp-analysis 1.18.0", use=entourage_mem_open)]
+Notation open_nbhs_entourage := entourage_mem_open (only parsing).
 
 Definition unif_continuous (U V : uniformType) (f : U -> V) :=
   (fun xy => (f xy.1, f xy.2)) @ entourage --> entourage.
@@ -355,9 +358,6 @@ HB.mixin Record Uniform_isComplete T & PointedUniform T := {
 #[short(type="completeType")]
 HB.structure Definition Complete :=
   {T of Uniform T & Uniform_isComplete T & isPointed T}.
-
-#[deprecated(since="mathcomp-analysis 2.0", note="use cauchy_cvg instead")]
-Notation complete_ax := cauchy_cvg (only parsing).
 
 Section completeType1.
 

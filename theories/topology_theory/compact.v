@@ -56,7 +56,7 @@ Definition cluster (F : set_system T) := [set p : T | F `#` nbhs p].
 Lemma cluster_nbhs t : cluster (nbhs t) t.
 Proof. by move=> A B /nbhs_singleton At /nbhs_singleton Bt; exists t. Qed.
 
-Lemma clusterEonbhs F : cluster F = [set p | F `#` open_nbhs p].
+Lemma clusterEonbhs F : cluster F = [set p | F `#` mem_open p].
 Proof. by under eq_fun do rewrite -meets_openr. Qed.
 
 Lemma clusterE F : cluster F = \bigcap_(A in F) (closure A).
@@ -412,8 +412,8 @@ move=> D [] oD cD /=; have cmpt : cover_compact D.
   by rewrite -compact_cover; exact: (subclosed_compact _ cmpT).
 have h (x : T) : exists V : set T, D x -> [/\ B V, nbhs x V & V `<=` D].
   have [Dx|] := pselect (D x); last by move=> ?; exists set0.
-  have [V [BV Vx VD]] := Bbase x D (open_nbhs_nbhs (conj oD Dx)).
-  exists V => _; split => //; apply: open_nbhs_nbhs; split => //.
+  have [V [BV Vx VD]] := Bbase x D (mem_open_nbhs (conj oD Dx)).
+  exists V => _; split => //; apply: mem_open_nbhs; split => //.
   exact: obase.
 pose h' := fun z => projT1 (cid (h z)).
 have [fs fsD DsubC] : finite_subset_cover D h' D.

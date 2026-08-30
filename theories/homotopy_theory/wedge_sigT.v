@@ -140,7 +140,7 @@ Proof.
 rewrite eqEsubset; split => //= U /=; rewrite ?nbhs_simpl.
   case=> V [/= oV Vp] VU j _; apply: wedge_lift_continuous.
   apply: (filterS VU); first exact: (@nbhs_filter wedge).
-  apply: open_nbhs_nbhs; split => //.
+  apply: mem_open_nbhs; split => //.
   by rewrite (wedge_liftE (p0 i0)).
 move=> Uj; have V_ : forall i, {V : set (X i) |
     [/\ open V, V (p0 i) & V `<=` @wedge_lift i @^-1` U]}.
@@ -303,7 +303,7 @@ exists (proj i @^-1` (@wedge_lift i @^-1`
   apply/ proj_continuous; rewrite /proj dfwith_in preimage_setI; apply: filterI.
     exact: wNz.
   have /filterS := @preimage_image _ _ (@wedge_lift i) (~` [set p0 i]).
-  by apply; apply: open_nbhs_nbhs; split; [exact: closed_openC|exact/eqP].
+  by apply; apply: mem_open_nbhs; split; [exact: closed_openC|exact/eqP].
 rewrite eqEsubset; split => // prodX; case => /[swap] [][] r _ <- /=.
   case => _ /[swap] /wedge_prod_inj -> [+ [e /[swap]]] => /[swap].
   move=> <- Awe eNpi; rewrite /proj /wedge_prod /=.

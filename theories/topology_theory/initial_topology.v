@@ -92,7 +92,7 @@ Lemma cvg_image (F : set_system S) (s : S) :
 Proof.
 move=> FF fsurj; split=> [cvFs|cvfFfs].
   move=> A /initial_continuous [B [Bop Bs sBAf]].
-  have /cvFs FB : nbhs (s : W) B by apply: open_nbhs_nbhs.
+  have /cvFs FB : nbhs (s : W) B by apply: mem_open_nbhs.
   rewrite nbhs_simpl; exists (f @^-1` A); first exact: filterS FB.
   exact: image_preimage.
 move=> A /= [_ [[B Bop <-] Bfs sBfA]].
@@ -163,7 +163,7 @@ Qed.
 Let initial_ent_nbhs : nbhs = nbhs_ initial_ent.
 Proof.
 rewrite predeq2E => x V; split.
-  case=> [? [[B  ? <-] ? BsubV]]; have: nbhs (f x) B by apply: open_nbhs_nbhs.
+  case=> [? [[B  ? <-] ? BsubV]]; have: nbhs (f x) B by apply: mem_open_nbhs.
   move=> /nbhsP [W ? WsubB]; exists ((map_pair f) @^-1` W); first by exists W.
   by move=> ? ?; exact/BsubV/WsubB.
 case=> W [V' entV' V'subW] /filterS; apply.
@@ -262,5 +262,5 @@ Lemma continuous_comp_initial {Y : choiceType} {X Z : topologicalType}
   continuous (w \o f) -> continuous f.
 Proof.
 move=> cf z U [?/= [[W oW <-]]] /= Wsfz /filterS; apply; apply: cf.
-exact: open_nbhs_nbhs.
+exact: mem_open_nbhs.
 Qed.
