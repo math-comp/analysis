@@ -64,6 +64,10 @@
   + lemmas `derivable_trmx`, `derive_trmx`
   + global instance `is_derive_trmx`
 
+- new file `absolute_continuity.v`
+  + definitions `abs_cont`, `abs_cont_order`
+  + lemma `abs_contP`
+
 ### Changed
 
 - in `derive.v`:
