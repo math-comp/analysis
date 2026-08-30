@@ -2,7 +2,6 @@ From mathcomp Require Export ereal.
 From mathcomp Require Export landau.
 From mathcomp Require Export topology.
 From mathcomp Require Export cantor.
-From mathcomp Require Export prodnormedzmodule.
 From mathcomp Require Export normedtype.
 From mathcomp Require Export realfun.
 From mathcomp Require Export sequences.

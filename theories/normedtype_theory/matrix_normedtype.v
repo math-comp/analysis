@@ -5,8 +5,7 @@ From mathcomp Require Import interval interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp contra classical_sets reals topology.
-From mathcomp Require Import prodnormedzmodule tvs pseudometric_normed_Zmodule.
-From mathcomp Require Import normed_module.
+From mathcomp Require Import tvs pseudometric_normed_Zmodule normed_module.
 
 (**md**************************************************************************)
 (* # Normed topological Abelian group of matrices                             *)

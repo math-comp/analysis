@@ -6,7 +6,7 @@ From mathcomp Require Import archimedean interval interval_inference.
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality contra.
 From mathcomp Require Import reals convex.
-From mathcomp Require Import topology ereal prodnormedzmodule tvs normedtype.
+From mathcomp Require Import topology ereal tvs normedtype.
 From mathcomp Require Import derive sequences real_interval numfun.
 
 (**md**************************************************************************)

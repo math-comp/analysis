@@ -2,9 +2,11 @@
 From HB Require Import structures.
 From mathcomp Require Import boot order finmap ssralg ssrnum ssrint.
 From mathcomp Require Import interval interval_inference archimedean.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality.
 From mathcomp Require Import set_interval ereal reals topology.
-From mathcomp Require Import prodnormedzmodule num_normedtype.
+From mathcomp Require Import num_normedtype.
 
 (**md**************************************************************************)
 (* # Normed topological abelian groups                                        *)

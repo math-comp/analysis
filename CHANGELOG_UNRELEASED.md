@@ -89,6 +89,10 @@
 
 - in `normed_module.v`:
   + implicit arguments of `squeeze_cvge` and `sequeeze_fin`
+- moved from `prodnormedzmodule.v` to `unstable.v`
+  + module `ProdNormedZmodule`
+    * definition `norm`
+    * lemmas `normD`, `norm_eq0`, `normMn`, `normrN`, `prod_normE`
 
 ### Renamed
 
@@ -173,6 +177,8 @@
   + notations `setDI_closed`, `setDI_semi_setD_closed`, `sedDI_closedP`,
     `setringDI`, `preimage_classes`, `preimage_classes_comp`
     (deprecated since 1.9.0)
+
+- file `prodnormedzmodule.v`
 
 ### Infrastructure
 

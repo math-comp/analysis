@@ -55,8 +55,7 @@ Proof. by rewrite qualifE/=. Qed.
 (* /PR to mathcomp in progress *)
 
 Section PseriesDiff.
-
-Variable R : realType.
+Context {R : realType}.
 
 Definition pseries f (x : R) := [series f i * x ^+ i]_i.
 
@@ -306,7 +305,7 @@ Qed.
 End PseriesDiff.
 
 Section expR.
-Variable R : realType.
+Context {R : realType}.
 Implicit Types x : R.
 
 Lemma expR0 : expR 0 = 1 :> R.
@@ -684,7 +683,7 @@ Notation ltr_expeR := lte_expeR (only parsing).
 Notation ler_expeR := lee_expeR (only parsing).
 
 Section Ln.
-Variable R : realType.
+Context {R : realType}.
 Implicit Types x : R.
 
 Notation exp := (@expR R).
@@ -822,7 +821,7 @@ Unshelve. end_near. Qed.
 End Ln.
 
 Section PowR.
-Variable R : realType.
+Context {R : realType}.
 Implicit Types a x y z r : R.
 
 Definition powR a x := if a == 0 then (x == 0)%:R else expR (x * ln a).
@@ -1146,7 +1145,7 @@ End PowR.
 Notation "a `^ x" := (powR a x) : ring_scope.
 
 Section Lne.
-Variable R : realType.
+Context {R : realType}.
 Implicit Types (x : \bar R) (r : R).
 Local Open Scope ereal_scope.
 
@@ -1454,7 +1453,7 @@ End poweR.
 Notation "a `^ x" := (poweR a x) : ereal_scope.
 
 Section riemannR_series.
-Variable R : realType.
+Context {R : realType}.
 Implicit Types a : R.
 Local Open Scope real_scope.
 
