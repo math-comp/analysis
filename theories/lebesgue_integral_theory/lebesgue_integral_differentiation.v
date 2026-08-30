@@ -1129,7 +1129,7 @@ apply: (sube_cvg0 _ _).1 => //.
 move: Ax; rewrite /lebesgue_pt /davg /= -/mu => Ax.
 have : (mu (ball x r))^-1 *
        `|\int[mu]_(y in ball x r) (\1_A y - \1_A x)%:E | @[r --> 0^'+] --> 0.
-  apply: (@squeeze_cvge _ _ _ R (cst 0) _ _ _ _ _ Ax) => //.
+  apply: (squeeze_cvge (cst 0) _ _ _ _ _ Ax) => //.
   near=> a; rewrite mule_ge0 ?inve_ge0///= lee_pmul2l//.
     by rewrite lebesgue_measure_ball// fin_numV// eqe mulrn_eq0/= gt_eqF.
     rewrite lebesgue_measure_ball// inver mulrn_eq0/= gt_eqF// lte_fin.
@@ -1241,7 +1241,7 @@ have E_r_ n : E x n `<=` ball x (r_ x n)%:num.
   by rewrite /r_ /sval/=; case: cid => -[? ?] [].
 have muEr_ n : mu (ball x (r_ x n)%:num) <= C%:E * mu (E x n).
   by rewrite /C /r_ /sval/=; case: cid => -[? ?] [].
-apply: (@squeeze_cvge _ _ _ _ (cst 0) _
+apply: (squeeze_cvge (cst 0) _
     (fun n => C%:E * davg f x (r_ x n)%:num)) => //; last first.
   move/cvge_at_rightP: fx => /(_ (fun r => (r_ x r)%:num)) fx.
   by rewrite -(mule0 C%:E); apply: cvgeM => //; apply: fx; split => //;

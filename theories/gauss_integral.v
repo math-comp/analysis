@@ -305,9 +305,8 @@ Qed.
 
 Let cvg_integral01_u : integral01_u x @[x --> +oo] --> 0.
 Proof.
-apply: (@squeeze_cvgr _ _ _ _ (cst 0) gauss_fun) => //.
-- by near=> n => /=; rewrite integral01_u_gauss_fun integral01_u_ge0.
-- exact: cvg_gauss_fun.
+apply: (squeeze_cvgr (cst 0) _ _ _ _ _ cvg_gauss_fun) => //.
+by near=> n => /=; rewrite integral01_u_gauss_fun integral01_u_ge0.
 Unshelve. all: end_near. Qed.
 
 Lemma cvg_integral0_gauss_sqr :

@@ -890,7 +890,7 @@ Lemma cvg_expr (R : archiRealFieldType) (z : R) :
   `|z| < 1 -> (GRing.exp z : R ^nat) @ \oo --> 0.
 Proof.
 move=> Nz_lt1; apply/norm_cvg0P; pose t := 1 - `|z|.
-apply: (@squeeze_cvgr _ _ _ _ (cst 0) (t^-1 *: @harmonic R)) => //; last first.
+apply: (squeeze_cvgr (cst 0) _ (t^-1 *: @harmonic R)) => //; last first.
   by rewrite -(scaler0 _ t^-1); exact: (cvgZl_tmp cvg_harmonic).
 near=> n; rewrite normr_ge0 normrX/= ler_pdivlMl ?subr_gt0//.
 rewrite -(@ler_pM2l _ n.+1%:R)// mulfV// [t * _]mulrC mulr_natl.
@@ -2535,7 +2535,7 @@ Proof.
 move=> supul ul; have usupu n : l <= u n <= esups u n.
   by rewrite ul /=; apply/ereal_sup_ubound; exists n => /=.
 suff : esups u @ \oo --> l.
-  by apply: (@squeeze_cvge _ _ _ _ (cst l)) => //; exact: nearW.
+  by apply: (squeeze_cvge (cst l)) => //; exact: nearW.
 apply/cvg_closeP; split; first exact: is_cvg_esups.
 rewrite closeE//; apply/eqP.
 rewrite eq_le -[X in X <= _ <= _]limn_esup_lim supul/=.

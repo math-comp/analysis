@@ -400,8 +400,8 @@ Proof.
 by move=> /cvgr_gt + ? z0 => /(_ _ z0); apply: filterS => ?; apply/ltW.
 Qed.
 
-Lemma squeeze_cvgr f h g : (\near F, f F <= g F <= h F) ->
-  forall (l : R), f @ F --> l -> h @ F --> l -> g @ F --> l.
+Lemma squeeze_cvgr f g h : (\near F, f F <= g F <= h F) ->
+  forall l : R, f @ F --> l -> h @ F --> l -> g @ F --> l.
 Proof.
 move=> fgh l lfa lga.
 apply/(@metricType_numDomainType.cvgrPdist_lt R R^o) => e e_gt0.
@@ -416,3 +416,4 @@ Arguments cvgr_lt {T F FF R f}.
 Arguments cvgr_gt {T F FF R f}.
 Arguments cvgr_le {T F FF R f}.
 Arguments cvgr_ge {T F FF R f}.
+Arguments squeeze_cvgr {T F FF R} f g h.
