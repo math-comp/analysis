@@ -560,7 +560,7 @@ split; first by exists [set: E]; split; first exact: filter_nbhsT.
   move=> P Q; rewrite /entourage nbhsE /=.
   move=> [U [[B B0] BU Bxy]] [V [[C C0] CV Cxy]].
   exists (U `&` V); split => [|xy].
-    by exists (B `&` C); [exact: open_nbhsI|exact: setISS].
+    by exists (B `&` C); [exact: mem_openI|exact: setISS].
   by rewrite !in_setI => /andP[/Bxy-> /Cxy->].
 by move=> P Q PQ [U [HU Hxy]]; exists U; split=> [|xy /Hxy /[!inE] /PQ].
 Qed.
@@ -588,7 +588,7 @@ have := @add_continuous (0, 0); rewrite /continuous_at/= addr0 => /(_ U U0)[]/=.
 move=> [W1 W2] []; rewrite nbhsE/= => [[U1 nU1 UW1] [U2 nU2 UW2]] Wadd.
 exists [set w | (W1 `&` W2) (w.1 - w.2)].
   exists (W1 `&` W2); split; last by [].
-  exists (U1 `&` U2); first exact: open_nbhsI.
+  exists (U1 `&` U2); first exact: mem_openI.
   by move=> t [U1t U2t]; split; [exact: UW1|exact: UW2].
 move => xy /= [z [H1 _] [_ H2]]; apply/set_mem/(Uxy xy)/mem_set.
 rewrite [_ - _](_ : _ = (xy.1 - z) + (z - xy.2)); first by rewrite addrA subrK.

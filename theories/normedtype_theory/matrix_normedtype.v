@@ -71,8 +71,8 @@ exists (\row_j f j); split; first by move=> i; rewrite mxE; apply: Af.
 move=> C D FC f_D; have {}f_D :
   nbhs (f : prod_topology _) [set g | D (\row_j g j)].
   have [E f_E sED] := f_D; rewrite nbhsE.
-  set Pj := fun j Bj => open_nbhs (f j) Bj /\ Bj `<=` E ord0 j.
-  have exPj : forall j, exists Bj, open_nbhs (f j) Bj /\ Bj `<=` E ord0 j.
+  set Pj := fun j Bj => mem_open (f j) Bj /\ Bj `<=` E ord0 j.
+  have exPj : forall j, exists Bj, mem_open (f j) Bj /\ Bj `<=` E ord0 j.
     move=> j; have := f_E ord0 j; rewrite nbhsE => - [Bj].
     by rewrite row_simpl'; exists Bj.
   exists [set g | forall j, (get (Pj j)) (g j)]; last first.

@@ -82,7 +82,7 @@ Lemma set_nbhsP (B : set T) :
    set_nbhs B <-> (exists C, [/\ open C, A `<=` C & C `<=` B]).
 Proof.
 split; first last.
-  by case=> V [? AV /filterS +] x /AV ?; apply; apply: open_nbhs_nbhs.
+  by case=> V [? AV /filterS +] x /AV ?; apply; apply: mem_open_nbhs.
 move=> snB; have Ux x : exists U, A x -> [/\ U x, open U & U `<=` B].
   have [/snB|?] := pselect (A x); last by exists point.
   by rewrite nbhsE => -[V [? ? ?]]; exists V.
@@ -119,7 +119,7 @@ Proof.
 move=> ? cptV nxV PF FV clFx1 U nbhsU; rewrite nbhs_simpl.
 wlog oU : U nbhsU / open U.
   rewrite /= nbhsE in nbhsU; case: nbhsU => O oO OsubU /(_ O) WH.
-  by apply: (filterS OsubU); apply: WH; [exact: open_nbhs_nbhs | by case: oO].
+  by apply: (filterS OsubU); apply: WH; [exact: mem_open_nbhs | by case: oO].
 have /compact_near_coveringP : compact (V `\` U).
   apply: (subclosed_compact _ cptV) => //.
   by apply: closedI; [exact: compact_closed | exact: open_closedC].
@@ -157,7 +157,7 @@ rewrite propeqE; split => [T_filterT2|T_openT2] x y.
   by exists (oA, oB); rewrite ?inE; split => //; apply: subsetI_eq0 AIB_eq0.
 apply: contraPP => /eqP /T_openT2[[/=A B]].
 rewrite !inE => - [xA yB] [Aopen Bopen /eqP AIB_eq0].
-move=> /(_ A B (open_nbhs_nbhs _) (open_nbhs_nbhs _)).
+move=> /(_ A B (mem_open_nbhs _) (mem_open_nbhs _)).
 by rewrite -set0P => /(_ _ _)/negP; apply.
 Qed.
 
@@ -208,10 +208,10 @@ rewrite /interior nbhsE/=.
 exists U => // x Ux /=.
 rewrite not_limit_pointE.
 have [xa|xneqa] := eqVneq x a.
-  exists U; rewrite xa; first exact: open_nbhs_nbhs.
+  exists U; rewrite xa; first exact: mem_open_nbhs.
   by apply: subset_trans XAa; exact: setIS.
 exists (U `&` [set~ a]).
-  apply: open_nbhs_nbhs; split.
+  apply: mem_open_nbhs; split.
     apply: openI; first by case: oaU.
     by rewrite openC; exact: accessible_closed_set1.
   by split => //; exact/eqP.
@@ -258,7 +258,7 @@ move=> npzq; exists (`]-oo, q[, `]p, +oo[)%classic; split => //=.
 Qed.
 
 Section ball_hausdorff.
-Variables (R : numDomainType) (T : pseudoMetricType R).
+Context {R : numDomainType} {T : pseudoMetricType R}.
 
 Lemma ball_hausdorff : hausdorff_space T =
   forall (a b : T), a != b ->
@@ -267,8 +267,8 @@ Lemma ball_hausdorff : hausdorff_space T =
 Proof.
 rewrite propeqE open_hausdorff; split => T2T a b /T2T[[/=]].
   move=> A B; rewrite 2!inE => [[aA bB] [oA oB /eqP ABeq0]].
-  have /nbhs_ballP[_/posnumP[r] rA]: nbhs a A by apply: open_nbhs_nbhs.
-  have /nbhs_ballP[_/posnumP[s] rB]: nbhs b B by apply: open_nbhs_nbhs.
+  have /nbhs_ballP[_/posnumP[r] rA]: nbhs a A by exact: mem_open_nbhs.
+  have /nbhs_ballP[_/posnumP[s] rB]: nbhs b B by exact: mem_open_nbhs.
   by exists (r, s) => /=; rewrite (subsetI_eq0 _ _ ABeq0).
 move=> r s /eqP brs_eq0; exists ((ball a r%:num)°, (ball b s%:num)°) => /=.
   split; by rewrite inE; apply: nbhs_singleton; apply: nbhs_interior;
@@ -305,22 +305,22 @@ move=> lcpt hsdfX [x|] [y|] //=.
 Qed.
 
 Section hausdorff_topologicalType.
-Variable T : topologicalType.
+Context {T : topologicalType}.
 Implicit Types x y : T.
 
 Local Open Scope classical_set_scope.
-Definition close x y : Prop := forall M, open_nbhs y M -> closure M x.
+Definition close x y : Prop := forall M, mem_open y M -> closure M x.
 
 Lemma closeEnbhs x : close x = cluster (nbhs x).
 Proof.
-transitivity (cluster (open_nbhs x)); last first.
+transitivity (cluster (mem_open x)); last first.
   by rewrite /cluster; under eq_fun do rewrite -meets_openl.
 rewrite clusterEonbhs /close funeqE => y /=; rewrite meetsC /meets.
 apply/eq_forall => A; rewrite forall_swap.
 by rewrite closureEonbhs/= meets_globallyl.
 Qed.
 
-Lemma closeEonbhs x : close x = [set y | open_nbhs x `#` open_nbhs y].
+Lemma closeEonbhs x : close x = [set y | mem_open x `#` mem_open y].
 Proof.
 by rewrite closeEnbhs; under eq_fun do rewrite -meets_openl -meets_openr.
 Qed.
@@ -460,9 +460,9 @@ Lemma ball_close {R : numFieldType} {M : pseudoMetricType R} (x y : M) :
   close x y = forall eps : {posnum R}, ball x eps%:num y.
 Proof.
 rewrite propeqE; split => [cxy eps|cxy].
-  have := [elaborate cxy _ (open_nbhs_ball _ (eps%:num/2)%:pos)].
+  have := [elaborate cxy _ (mem_open_ball _ (eps%:num/2)%:pos)].
   rewrite closureEonbhs/= meetsC meets_globallyr.
-  move/(_ _ (open_nbhs_ball _ (eps%:num/2)%:pos)) => [z [zx zy]].
+  move/(_ _ (mem_open_ball _ (eps%:num / 2)%:pos)) => [z [zx zy]].
   by apply: (@ball_splitl _ _ z); apply: interior_subset.
 rewrite closeEnbhs => B A /nbhs_ballP[_/posnumP[e2 e2B]]
   /nbhs_ballP[_/posnumP[e1 e1A]].
@@ -495,8 +495,8 @@ rewrite eqEsubset; split; first last.
 move=> y /=; apply: contraPeq; move: sep; rewrite open_hausdorff => /[apply].
 move=> [[B A]]/=; rewrite ?inE; case=> By Ax [oB oA BA0].
 apply/existsNP; exists (closure A); apply/existsNP; exists B; apply/not_implyP.
-split; first by exists A => //; exact: open_nbhs_nbhs.
-apply/not_implyP; split; first exact: open_nbhs_nbhs.
+split; first by exists A => //; exact: mem_open_nbhs.
+apply/not_implyP; split; first exact: mem_open_nbhs.
 apply/set0P/negP; rewrite negbK; apply/eqP/disjoints_subset.
 have /closure_id -> : closed (~` B); first by exact: open_closedC.
 by apply/closureS/disjoints_subset; rewrite setIC.
@@ -526,7 +526,7 @@ have cvP (x : T) : A x -> \forall x' \near x & i \near F, (~` i) x'.
   have snBD : filter_from (set_nbhs (~` B)) closure (closure (~` closure D)).
     exists (closure (~` closure D)) => [z|].
       move=> nBZ; apply: filterS; first exact: subset_closure.
-      apply: open_nbhs_nbhs; split; first exact/closed_openC/closed_closure.
+      apply: mem_open_nbhs; split; first exact/closed_openC/closed_closure.
       exact/(subsetC _ nBZ)/(subset_trans cDC).
     by have := @closed_closure _ (~` closure D); rewrite closure_id => <-.
   near=> y U => /=; have Dy : D° y by exact: (near nD _).
@@ -617,7 +617,7 @@ move=> /(_ _ _ setC (powerset_filter_from_filter PF))[].
   move=> y nUy; have /zdT [C [[oC cC] Cx Cy]] : x != y.
     by apply: contra_notN nUy => /eqP <-; exact: nbhs_singleton.
   exists (~` C, [set U | U `<=` C]); first split.
-  - by apply: open_nbhs_nbhs; split => //; exact: closed_openC.
+  - by apply: mem_open_nbhs; split => //; exact: closed_openC.
   - apply/near_powerset_filter_fromP; first by move=> ? ?; exact: subset_trans.
     by exists C => //; exists C.
   - by case=> i j [? /subsetC]; apply.
@@ -1110,7 +1110,7 @@ Lemma perfectTP {T} : perfect_set [set: T] <-> forall x : T, ~ open [set x].
 Proof.
 split.
   case=> _; rewrite eqEsubset; case=> _ + x Ox => /(_ x I [set x]).
-  by case; [by apply: open_nbhs_nbhs; split |] => y [+ _] => /[swap] -> /eqP.
+  by case; [by apply: mem_open_nbhs; split |] => y [+ _] => /[swap] -> /eqP.
 move=> NOx; split; [exact: closedT |]; rewrite eqEsubset; split => x // _.
 move=> U; rewrite nbhsE; case=> V [] oV Vx VU.
 have Vnx: V != [set x] by apply/eqP => M; apply: (NOx x); rewrite -M.

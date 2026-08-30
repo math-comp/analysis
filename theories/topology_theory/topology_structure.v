@@ -6,9 +6,12 @@ From mathcomp Require Export filter.
 
 (**md**************************************************************************)
 (* # Basic topological notions                                                *)
+(*                                                                            *)
 (* This file develops tools for the manipulation of basic topological         *)
 (* notions. The development of topological notions builds on "filtered types" *)
 (* by extending the hierarchy.                                                *)
+(*                                                                            *)
+(* In the identifiers, "nbhs" is an abbreviation for "neighborhoods".         *)
 (*                                                                            *)
 (* ## Mathematical structures                                                 *)
 (* ### Topology                                                               *)
@@ -23,7 +26,9 @@ From mathcomp Require Export filter.
 (*                     open == set of open sets                               *)
 (*                   closed == set of closed sets                             *)
 (*                 clopen U == U is both open and closed                      *)
-(*              open_nbhs p == set of open neighbourhoods of p                *)
+(*               mem_open p == the set of sets that are open and contain p    *)
+(*                             This is intended to represent the set of open  *)
+(*                             neighborhoods of p                             *)
 (*                  basis B == a family of open sets that converges to        *)
 (*                             each point                                     *)
 (*       second_countable T == T has a countable basis                        *)
@@ -120,7 +125,7 @@ HB.structure Definition SubTopological (V : topologicalType)
 Section Topological1.
 Context {T : topologicalType}.
 
-Definition open_nbhs (p : T) (A : set T) := open A /\ A p.
+Definition mem_open (p : T) (A : set T) := open A /\ A p.
 
 Definition basis (B : set_system T) :=
   B `<=` open /\ forall x, filter_from [set U | B U /\ U x] id --> x.
@@ -136,14 +141,14 @@ Proof. exact: (@nbhs_pfilter). Qed.
 Canonical nbhs_filter_on (x : T) := FilterType (nbhs x) (@nbhs_filter x).
 
 Lemma nbhsE (p : T) :
-  nbhs p = [set A : set T | exists2 B : set T, open_nbhs p B & B `<=` A].
+  nbhs p = [set A : set T | exists2 B : set T, mem_open p B & B `<=` A].
 Proof.
 have -> : nbhs p = [set A : set T | exists B, [/\ open B, B p & B `<=` A] ].
   exact: nbhsE_subproof.
 by rewrite predeqE => A; split=> [[B [?]]|[B[]]]; exists B.
 Qed.
 
-Lemma open_nbhsE (p : T) (A : set T) : open_nbhs p A = (open A /\ nbhs p A).
+Lemma mem_openE (p : T) (A : set T) : mem_open p A = (open A /\ nbhs p A).
 Proof.
 by rewrite nbhsE propeqE; split=> [[? ?]|[? [B [? ?] BA]]]; split => //;
   [exists A | exact: BA].
@@ -166,7 +171,7 @@ Proof. by rewrite nbhsE => - [? [_ ?]]; apply. Qed.
 
 Lemma nbhs_interior (p : T) (A : set T) : nbhs p A -> nbhs p A°.
 Proof.
-rewrite nbhsE /open_nbhs openE => - [B [Bop Bp] sBA].
+rewrite nbhsE /mem_open openE => - [B [Bop Bp] sBA].
 by exists B => // q Bq; apply: filterS sBA _; apply: Bop.
 Qed.
 
@@ -214,29 +219,39 @@ move=> p [i Di]; rewrite /interior nbhsE => - [B [Bop Bp] sBfi].
 by exists B => // ? /sBfi; exists i.
 Qed.
 
-Lemma open_nbhsT (p : T) : open_nbhs p setT.
-Proof. by split=> //; apply: openT. Qed.
+Lemma mem_openT (p : T) : mem_open p setT.
+Proof. by split=> //; exact: openT. Qed.
 
-Lemma open_nbhsI (p : T) : setI_closed (open_nbhs p).
+Lemma mem_openI (p : T) : setI_closed (mem_open p).
 Proof. by move=> A B [Aop Ap] [Bop Bp]; split => //; exact: openI. Qed.
 
-Lemma open_nbhs_nbhs (p : T) (A : set T) : open_nbhs p A -> nbhs p A.
-Proof. by rewrite nbhsE => p_A; exists A. Qed.
+Lemma mem_open_nbhs (p : T) : mem_open p `<=` nbhs p.
+Proof. by move=> A; rewrite nbhsE => p_A; exists A. Qed.
 
 Lemma interiorI (A B : set T) : (A `&` B)° = A° `&` B°.
 Proof.
 rewrite /interior predeqE => //= x; rewrite nbhsE; split => [[B0 ?] | []].
 - by rewrite subsetI => // -[? ?]; split; exists B0.
 - by move=> -[B0 ? ?] [B1 ? ?]; exists (B0 `&` B1);
-  [exact: open_nbhsI | rewrite subsetI; split; apply: subIset; [left|right]].
+  [exact: mem_openI | rewrite subsetI; split; apply: subIset; [left|right]].
 Qed.
 
 End Topological1.
+#[deprecated(since="mathcomp-analysis 1.18.0", use=mem_open)]
+Notation open_nbhs := mem_open (only parsing).
+#[deprecated(since="mathcomp-analysis 1.18.0", use=mem_openE)]
+Notation open_nbhsE := mem_openE (only parsing).
+#[deprecated(since="mathcomp-analysis 1.18.0", use=mem_openT)]
+Notation open_nbhsT := mem_openT (only parsing).
+#[deprecated(since="mathcomp-analysis 1.18.0", use=mem_openI)]
+Notation open_nbhsI := mem_openI (only parsing).
+#[deprecated(since="mathcomp-analysis 1.18.0", use=mem_open_nbhs)]
+Notation open_nbhs_nbhs := mem_open_nbhs (only parsing).
 
 Lemma open_in_nearW {T : topologicalType} (P : T -> Prop) (S : set T) :
   open S -> {in S, forall x, P x} -> {in S, forall x, \near x, P x}.
 Proof.
-by move=> oS SP z /set_mem Sz; apply: in_nearW SP => //=; exact: open_nbhs_nbhs.
+by move=> oS SP z /set_mem Sz; apply: in_nearW SP => //=; exact: mem_open_nbhs.
 Qed.
 
 #[global] Hint Extern 0 (Filter (nbhs _)) =>
@@ -327,7 +342,7 @@ Proof.
 move=> frh hfrl X; rewrite nbhsE => -[Y [oY Yl]].
 move/filterS; apply; apply: frh.
 rewrite nbhsE; exists Y => //; split => //.
-have /hfrl : nbhs l Y by exact: open_nbhs_nbhs.
+have /hfrl : nbhs l Y by exact: mem_open_nbhs.
 by rewrite nbhsE => -[W [oW Wr]]; exact.
 Qed.
 
@@ -400,9 +415,9 @@ Lemma within_interior (x : T) : A° x -> within A (nbhs x) = nbhs x.
 Proof.
 move=> Aox; rewrite eqEsubset; split; last exact: cvg_within.
 rewrite ?nbhsE => W /= => [[B + BsubW]].
-rewrite open_nbhsE => [[oB nbhsB]].
+rewrite mem_openE => [[oB nbhsB]].
 exists (B `&` A°); last by move=> t /= [] /BsubW + /interior_subset; apply.
-rewrite open_nbhsE; split; first by apply: openI => //; exact: open_interior.
+rewrite mem_openE; split; first by apply: openI => //; exact: open_interior.
 by apply: filterI => //; have := open_interior A; rewrite openE; exact.
 Qed.
 
@@ -658,14 +673,14 @@ Qed.
 (** meets *)
 
 Lemma meets_openr {T : topologicalType} (F : set_system T) (x : T) :
-  F `#` nbhs x = F `#` open_nbhs x.
+  F `#` nbhs x = F `#` mem_open x.
 Proof.
-rewrite propeqE; split; [exact/meetsSr/open_nbhs_nbhs|].
+rewrite propeqE; split; [exact/meetsSr/mem_open_nbhs|].
 by move=> P A B {}/P P; rewrite nbhsE => -[B' /P + sB]; apply: subsetI_neq0.
 Qed.
 
 Lemma meets_openl {T : topologicalType} (F : set_system T) (x : T) :
-  nbhs x `#` F = open_nbhs x `#` F.
+  nbhs x `#` F = mem_open x `#` F.
 Proof. by rewrite meetsC meets_openr meetsC. Qed.
 (** Closed sets in topological spaces *)
 
@@ -678,11 +693,11 @@ Definition closure (A : set T) :=
 Lemma closureEnbhs A : closure A = [set p | globally A `#` nbhs p].
 Proof. by under eq_fun do rewrite meets_globallyl. Qed.
 
-Lemma closureEonbhs A : closure A = [set p | globally A `#` open_nbhs p].
+Lemma closureEonbhs A : closure A = [set p | globally A `#` mem_open p].
 Proof. by under eq_fun do rewrite -meets_openr meets_globallyl. Qed.
 
 Lemma subset_closure (A : set T) : A `<=` closure A.
-Proof. by move=> p ??; exists p; split=> //; apply: nbhs_singleton. Qed.
+Proof. by move=> p ??; exists p; split=> //; exact: nbhs_singleton. Qed.
 
 Lemma closure_eq0 (A : set T) : closure A = set0 -> A = set0.
 Proof.
@@ -704,7 +719,7 @@ by rewrite propeqE; split => [[/eqP ? ?]|[[? /eqP ?]]]; do 2?split.
 Qed.
 
 Lemma limit_pointEonbhs E :
-  limit_point E = [set p | globally (E `\ p) `#` open_nbhs p].
+  limit_point E = [set p | globally (E `\ p) `#` mem_open p].
 Proof. by rewrite limit_pointEnbhs; under eq_fun do rewrite meets_openr. Qed.
 
 Lemma subset_limit_point E : limit_point E `<=` closure E.
@@ -896,7 +911,7 @@ Qed.
 End closure_lemmas.
 
 Section regular_open_closed.
-Variable T : topologicalType.
+Context {T : topologicalType}.
 
 Definition regopen (A : set T) := (closure A)° = A.
 
@@ -905,14 +920,14 @@ Definition regclosed (A : set T) := closure (A°) = A.
 End regular_open_closed.
 
 Section closure_interior_lemmas.
-Variable T : topologicalType.
+Context {T : topologicalType}.
 Implicit Types (A B : set T).
 
 Lemma interiorC A : (~` A)° = ~` closure A.
 Proof.
 rewrite eqEsubset; split=> x; rewrite /closure /interior nbhsE /= -existsNE.
   case=> U ? /disjoints_subset UA; exists U; rewrite not_implyE.
-  split; first exact/open_nbhs_nbhs.
+  split; first exact/mem_open_nbhs.
   by rewrite setIC UA; apply/set0P; rewrite eqxx.
 case=> X; rewrite not_implyE nbhsE=> -[] -[] U xU UX AX0.
 exists U => //; apply/(subset_trans UX)/disjoints_subset; rewrite setIC.
@@ -995,15 +1010,15 @@ End closure_interior_lemmas.
 #[deprecated(since="mathcomp-analysis 1.17.0", note="renamed to `closureC`")]
 Notation closure_setC := closureC (only parsing).
 
-Definition dense (T : topologicalType) (S : set T) :=
-  forall (O : set T), O !=set0 -> open O -> O `&` S !=set0.
+Definition dense {T : topologicalType} (S : set T) :=
+  forall O : set T, O !=set0 -> open O -> O `&` S !=set0.
 
-Lemma denseNE (T : topologicalType) (S : set T) : ~ dense S ->
-  exists O, (exists x, open_nbhs x O) /\ (O `&` S = set0).
+Lemma denseNE {T : topologicalType} (S : set T) : ~ dense S ->
+  exists2 O, (exists x, mem_open x O) & (O `&` S = set0).
 Proof.
-rewrite /dense /open_nbhs.
+rewrite /dense /mem_open.
 move=> /existsNP[X /not_implyP[[x Xx] /not_implyP[ Ox /forallNP A]]].
-by exists X; split; [exists x | rewrite -subset0; apply/A].
+by exists X; [exists x | rewrite -subset0; apply/A].
 Qed.
 
 Lemma denseI (T : topologicalType) (A B : set T) :

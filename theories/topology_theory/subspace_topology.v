@@ -191,11 +191,11 @@ split; first last.
   by move: oV; rewrite openE /interior; exact.
 rewrite -open_subspaceIT => oUA.
 have oxF (x : T) : (U `&` A) x ->
-    exists2 V, open_nbhs (x : T) V & V `&` A `<=` U `&` A.
+    exists2 V, mem_open (x : T) V & V `&` A `<=` U `&` A.
   move=> /[dup] UAx /= [Ux Ax].
   have := oUA _ UAx; case: nbhs_subspaceP => // _.
   rewrite withinE /= => -[V nbhsV]; rewrite -setIA setIid => UV.
-  exists V°; first rewrite open_nbhsE; first split => //.
+  exists V°; first rewrite mem_openE; first split => //.
   - exact: open_interior.
   - exact: nbhs_interior.
   - by rewrite UV => t [/interior_subset].
@@ -203,7 +203,7 @@ pose f (x : T) :=
   if pselect ((U `&` A) x) is left e then projT1 (cid2 (oxF x e)) else set0.
 set V := \bigcup_(x in U `&` A) f x; exists V.
   apply: bigcup_open => i UAi; rewrite /f; case: pselect => // ?; case: cid2.
-  by move=> //= W; rewrite open_nbhsE => -[].
+  by move=> //= W; rewrite mem_openE => -[].
 rewrite eqEsubset /V /f; split.
   move=> t [[u]] UAu /=; case: pselect => //= ?.
   by case: cid2 => //= W _ + ? ? ; apply; exact.

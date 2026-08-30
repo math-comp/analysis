@@ -665,7 +665,7 @@ Unshelve. all: by end_near. Qed.
 
 Section continuous_cvg_davg.
 Context f (x : R) (U : set R).
-Hypotheses (xU : open_nbhs x U) (mU : measurable U) (mUf : measurable_fun U f)
+Hypotheses (xU : mem_open x U) (mU : measurable U) (mUf : measurable_fun U f)
            (fx : {for x, continuous f}).
 
 Let continuous_integralB_fin_num :
@@ -746,7 +746,7 @@ Proof. by apply: limf_esup_ge0 => // => y; exact: iavg_ge0. Qed.
 
 Import MeasurableR.
 
-Lemma lim_sup_davg_le f g x (U : set R) : open_nbhs x U -> measurable U ->
+Lemma lim_sup_davg_le f g x (U : set R) : mem_open x U -> measurable U ->
   measurable_fun U f -> measurable_fun U g ->
   (f \+ g)%R^* x <= (f^* \+ g^*) x.
 Proof.
@@ -762,7 +762,7 @@ apply: measurable_funS mg => //; apply: exU => //=.
 by rewrite (lt_le_trans ry)//; near: r; exact: nbhs_right_le.
 Unshelve. all: by end_near. Qed.
 
-Lemma continuous_lim_sup_davg f x (U : set R) : open_nbhs x U -> measurable U ->
+Lemma continuous_lim_sup_davg f x (U : set R) : mem_open x U -> measurable U ->
   measurable_fun U f -> {for x, continuous f} ->
   f^* x = 0.
 Proof.
@@ -770,7 +770,7 @@ move=> xU mU mUf ctsf.
 by have /lim_lime_sup := continuous_cvg_davg xU mU mUf ctsf.
 Qed.
 
-Lemma lim_sup_davgB f g x (U : set R) : open_nbhs x U -> measurable U ->
+Lemma lim_sup_davgB f g x (U : set R) : mem_open x U -> measurable U ->
   measurable_fun U f -> {for x, continuous g} ->
   locally_integrable [set: R] g -> (f \- g)%R^* x = f^* x.
 Proof.
@@ -851,7 +851,7 @@ Definition lebesgue_pt {R : realType} (f : R -> R) (x : R) :=
 Import MeasurableR.
 
 Lemma continuous_lebesgue_pt {R : realType} (f : R -> R) x (U : set R) :
-  open_nbhs x U -> measurable U -> measurable_fun U f ->
+  mem_open x U -> measurable U -> measurable_fun U f ->
   {for x, continuous f} -> lebesgue_pt f x.
 Proof.
 move=> xU mU mUf xf; rewrite /lebesgue_pt -[X in _ --> X](@davg0 _ f x 0)//.

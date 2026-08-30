@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra all_classical.
 From mathcomp Require Import topology_structure.
@@ -151,7 +151,7 @@ suff : A `<=` U.
   by apply: closedI => //; exact: closed_closure.
 rewrite -setIidPl; apply: ctdA.
 - move: U0; rewrite C1E => -[z [clAx C1z]]; have [] := clAx C1.
-    exact: open_nbhs_nbhs.
+    exact: mem_open_nbhs.
   by move=> w [Aw C1w]; exists w; rewrite setIA (setIidl (@subset_closure _ _)).
 - by exists C1 => //; rewrite C1E setIA (setIidl (@subset_closure _ _)).
 - by exists C2 => //; rewrite C2E setIA (setIidl (@subset_closure _ _)).

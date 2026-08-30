@@ -3123,7 +3123,7 @@ move=> odF D Dy OpenD.
 have /(_ D Dy OpenD)[a0 DF0a0] : dense (F 0%N) := proj2 (odF 0%N).
 have {OpenD Dy} openIDF0 : open (D `&` F 0%N).
   by apply: openI => //; exact: (proj1 (odF 0%N)).
-have /open_nbhs_nbhs/nbhs_closedballP[r0 Ball_a0] : open_nbhs a0 (D `&` F 0%N).
+have /mem_open_nbhs/nbhs_closedballP[r0 Ball_a0] : mem_open a0 (D `&` F 0%N).
   by [].
 pose P (m : nat) (arn : U * {posnum K}) (arm : U * {posnum K}) :=
   closed_ball arm.1 (arm.2%:num) `<=` (closed_ball arn.1 arn.2%:num)° `&` F m
@@ -3133,12 +3133,12 @@ have Ar : forall na : nat * (U * {posnum K}), exists b : U * {posnum K},
   move=> [n [an rn]].
   have [ openFn denseFn] := odF n.+1.
   have [an1 B0Fn2an1] : exists x, ((closed_ball an rn%:num)° `&` F n.+1) x.
-    have [//|? ?] := @open_nbhs_closed_ball _ _ an rn%:num.
+    have [//|? ?] := @mem_open_closed_ball _ _ an rn%:num.
     by apply: denseFn => //; exists an.
   have openIB0Fn1 : open ((closed_ball an rn%:num)° `&` F n.+1).
     by apply/openI => //; exact/open_interior.
-  have /open_nbhs_nbhs/nbhs_closedballP[rn01 Ball_an1] :
-    open_nbhs an1 ((closed_ball an rn%:num)° `&` F n.+1) by [].
+  have /mem_open_nbhs/nbhs_closedballP[rn01 Ball_an1] :
+    mem_open an1 ((closed_ball an rn%:num)° `&` F n.+1) by [].
   have n31_gt0 : n.+3%:R^-1 > 0 :> K by [].
   have majr : minr (PosNum n31_gt0)%:num rn01%:num > 0 by [].
   exists (an1, PosNum majr); split.
@@ -3282,8 +3282,8 @@ have ContraBaire : exists i, not (dense (O i)).
 have [n [x0 [r H]] k] :
     exists n x (r : {posnum K}), (ball x r%:num) `<=` (~` (O n)).
   move: ContraBaire =>
-  [i /(denseNE) [ O0 [ [ x /open_nbhs_nbhs /nbhs_ballP [r r0 bxr]
-   /((@subsetI_eq0 _ (ball x r) O0 (O i) (O i)))]]]] /(_ bxr) bxrOi.
+  [i /denseNE[ O0 [ x /mem_open_nbhs /nbhs_ballP [r r0 bxr]
+   /((@subsetI_eq0 _ (ball x r) O0 (O i) (O i)))]]] /(_ bxr) bxrOi.
   by exists i, x, (PosNum r0); apply/disjoints_subset/bxrOi.
 exists ((n + n)%:R * k * 2 / r%:num)=> f Ff y Hx; move: (Propf f Ff) => [ _ linf].
 have [->|Zeroy] := eqVneq y 0.
