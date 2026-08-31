@@ -1416,7 +1416,7 @@ by rewrite (lt_le_trans oof) ?(le_lt_trans gh).
 Qed.
 
 Lemma squeeze_cvge f g h : (\near a, f a <= g a <= h a) ->
-  forall (l : \bar R), f @ a --> l -> h @ a --> l -> g @ a --> l.
+  forall l : \bar R, f @ a --> l -> h @ a --> l -> g @ a --> l.
 Proof.
 move=> fgh [l||]; last 2 first.
 - by move=> + _; apply: gee_cvgy; apply: filterS fgh => ? /andP[].
@@ -1428,6 +1428,8 @@ by have /(_ _)/andP[//|fg gh] := near fgh x; rewrite !fine_le//=; near: x.
 Unshelve. all: end_near. Qed.
 
 End FilterERealType.
+Arguments squeeze_fin {T a Fa R} f g h.
+Arguments squeeze_cvge {T a Fa R} f g h.
 
 Section TopoProperFilterERealType.
 Context {T : topologicalType} {a : set_system T} {Fa : ProperFilter a}.

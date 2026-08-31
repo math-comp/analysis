@@ -738,7 +738,7 @@ have A_cvg_0 : nu (A_ (v n)) @[n --> \oo] --> 0.
   move: cvg_nuA; rewrite -(@fineK _ (nu Aoo)) ?fin_num_measure//.
   by move=> /fine_cvgP[_ ?]; apply/cvg_ex; exists (fine (nu Aoo)).
 have mine_cvg_0 : (mine (g_ (v n) * 2^-1%:E) 1) @[n --> \oo] --> 0.
-  apply: (@squeeze_cvge _ _ _ _ _ _ (fun n => nu (A_ (v n)))) => //.
+  apply: (squeeze_cvge _ _ (fun n => nu (A_ (v n)))) => //.
   by apply: nearW => n /=; rewrite nuA_g_ andbT le_min lee01 andbT mule_ge0.
 have g_cvg_0 : (g_ \o v) n @[n --> \oo] --> 0 by apply: mine2_cvg_0_cvg_0 => /=.
 have nuDAoo : nu D >= nu (D `\` Aoo).

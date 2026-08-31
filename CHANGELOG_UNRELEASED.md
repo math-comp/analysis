@@ -84,6 +84,12 @@
 - in `Rstruct_topology.v`:
   + lemma `RealsE` to include `RcosE`, `Rtrigo_PIE`, `RsinE`
 
+- in `metric_structure.v`:
+  + order of arguments and implicit arguments of `squeeze_cvgr`
+
+- in `normed_module.v`:
+  + implicit arguments of `squeeze_cvge` and `sequeeze_fin`
+
 ### Renamed
 
 - in `esum.v`:

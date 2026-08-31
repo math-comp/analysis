@@ -156,7 +156,7 @@ suff: `| \int[mu]_(x in D) f_ n x - \int[mu]_(x in D) f x | @[n \oo] --> 0.
    rewrite fin_numElt (_ : -oo = - +oo)// -lte_absl.
    move: dominated_integrable => /integrableP[?]; apply: le_lt_trans.
    by apply: (le_trans _ (@le_abse_integral _ _ _ mu D f mD _)).
-apply: (@squeeze_cvge _ _ _ _ (cst 0) _ (fun n => \int[mu]_(x in D) g_ n x)) => //.
+apply: (squeeze_cvge (cst 0) _ (fun n => \int[mu]_(x in D) g_ n x)) => //.
 - by apply: nearW => n; rewrite abse_ge0//=; exact: h.
 - exact: dominated_cvg0.
 Qed.

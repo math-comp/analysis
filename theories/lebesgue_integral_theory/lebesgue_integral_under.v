@@ -269,7 +269,7 @@ rewrite [X in X @ _ --> _](_ : _ =
 apply: norm_cvg0.
 have {}g_d1f_0 : (\int[mu]_(y in B) `|g_ n y - ('d1 f) a y|) @[n --> \oo] --> 0.
   exact/fine_cvg.
-apply: (@squeeze_cvgr _ _ _ _ (cst 0) _ _ _ _ _ g_d1f_0) => //.
+apply: (squeeze_cvgr (cst 0) _ _ _ _ _ g_d1f_0) => //.
 apply/nearW => n.
 rewrite /= normr_ge0/= le_normr_Rintegral//.
 rewrite /comp; under eq_fun do rewrite EFinB.
