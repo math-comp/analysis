@@ -2183,6 +2183,9 @@ End bigop_lemmas.
 Arguments bigcup_setD1 {T I} x.
 Arguments bigcap_setD1 {T I} x.
 
+Lemma bigcup_id {T: Type} (P: set T) : \bigcup_(i in P) [set i] = P.
+Proof.  by rewrite bigcup_imset1 // image_id. Qed.
+
 Lemma setD_bigcup {T} (I : eqType) (F : I -> set T) (P : set I) (j : I) : P j ->
   F j `\` \bigcup_(i in [set k | P k /\ k != j]) (F j `\` F i) =
   \bigcap_(i in P) F i.
