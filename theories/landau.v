@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From mathcomp Require Import boot order ssralg interval_inference ssrnum.
 From mathcomp Require Import boolp classical_sets functions reals.
-From mathcomp Require Import ereal topology normedtype prodnormedzmodule.
+From mathcomp Require Import ereal topology normedtype.
 
 (**md**************************************************************************)
 (* # Bachmann-Landau notations: $f=o(e)$, $f=O(e)$                            *)

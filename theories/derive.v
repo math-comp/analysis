@@ -6,7 +6,7 @@ From mathcomp Require Import poly sesquilinear.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp contra classical_sets functions reals.
-From mathcomp Require Import topology prodnormedzmodule tvs normedtype landau.
+From mathcomp Require Import topology tvs normedtype landau.
 
 (**md**************************************************************************)
 (* # Differentiation                                                          *)

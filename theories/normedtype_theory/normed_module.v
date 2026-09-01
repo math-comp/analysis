@@ -7,8 +7,7 @@ From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets filter functions cardinality
   set_interval.
 From mathcomp Require Import reals real_interval ereal topology convex
-  prodnormedzmodule tvs num_normedtype ereal_normedtype
-  pseudometric_normed_Zmodule.
+  tvs num_normedtype ereal_normedtype pseudometric_normed_Zmodule.
 
 (**md**************************************************************************)
 (* # Normed modules                                                           *)
