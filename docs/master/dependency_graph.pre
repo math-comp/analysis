@@ -356,7 +356,6 @@ subgraph cluster_Analysis {
   "classical/boolp" -> "theories/landau";
   "classical/classical_sets" -> "theories/landau";
   "classical/functions" -> "theories/landau";
-  "reals/prodnormedzmodule" -> "theories/landau";
   "reals/reals" -> "theories/landau";
   "theories/ereal" -> "theories/landau";
   "theories/normedtype_theory/normedtype" -> "theories/landau";
@@ -840,7 +839,6 @@ subgraph cluster_Normedtype {
   "classical/classical_sets" -> "theories/normedtype_theory/matrix_normedtype";
   "classical/contra" -> "theories/normedtype_theory/matrix_normedtype";
   "classical/unstable" -> "theories/normedtype_theory/matrix_normedtype";
-  "reals/prodnormedzmodule" -> "theories/normedtype_theory/matrix_normedtype";
   "reals/reals" -> "theories/normedtype_theory/matrix_normedtype";
   "theories/normedtype_theory/normed_module" -> "theories/normedtype_theory/matrix_normedtype";
   "theories/normedtype_theory/pseudometric_normed_Zmodule" -> "theories/normedtype_theory/matrix_normedtype";
@@ -874,7 +872,7 @@ subgraph cluster_Normedtype {
   "classical/classical_sets" -> "theories/normedtype_theory/pseudometric_normed_Zmodule";
   "classical/functions" -> "theories/normedtype_theory/pseudometric_normed_Zmodule";
   "classical/set_interval" -> "theories/normedtype_theory/pseudometric_normed_Zmodule";
-  "reals/prodnormedzmodule" -> "theories/normedtype_theory/pseudometric_normed_Zmodule";
+  "classical/unstable" -> "theories/normedtype_theory/pseudometric_normed_Zmodule";
   "reals/reals" -> "theories/normedtype_theory/pseudometric_normed_Zmodule";
   "theories/ereal" -> "theories/normedtype_theory/pseudometric_normed_Zmodule";
   "theories/normedtype_theory/num_normedtype" -> "theories/normedtype_theory/pseudometric_normed_Zmodule";
@@ -913,7 +911,6 @@ subgraph cluster_Normedtype {
   "classical/functions" -> "theories/normedtype_theory/normed_module";
   "classical/set_interval" -> "theories/normedtype_theory/normed_module";
   "classical/unstable" -> "theories/normedtype_theory/normed_module";
-  "reals/prodnormedzmodule" -> "theories/normedtype_theory/normed_module";
   "reals/real_interval" -> "theories/normedtype_theory/normed_module";
   "reals/reals" -> "theories/normedtype_theory/normed_module";
   "theories/convex" -> "theories/normedtype_theory/normed_module";
@@ -1050,7 +1047,6 @@ subgraph cluster_Analysis {
   "classical/contra" -> "theories/realfun";
   "classical/functions" -> "theories/realfun";
   "classical/unstable" -> "theories/realfun";
-  "reals/prodnormedzmodule" -> "theories/realfun";
   "reals/real_interval" -> "theories/realfun";
   "reals/reals" -> "theories/realfun";
   "theories/convex" -> "theories/realfun";
@@ -1173,7 +1169,6 @@ subgraph cluster_Analysis {
   "classical/contra" -> "theories/derive";
   "classical/functions" -> "theories/derive";
   "classical/unstable" -> "theories/derive";
-  "reals/prodnormedzmodule" -> "theories/derive";
   "reals/reals" -> "theories/derive";
   "theories/landau" -> "theories/derive";
   "theories/normedtype_theory/normedtype" -> "theories/derive";
@@ -1532,7 +1527,6 @@ subgraph cluster_LebesgueIntegral {
   "classical/classical_sets" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
   "classical/fsbigop" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
   "classical/functions" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
-  "classical/unstable" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
   "reals/real_interval" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
   "reals/reals" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
   "theories/ereal" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
@@ -2352,7 +2346,6 @@ subgraph cluster_Analysis {
         fillcolor=5
     ]
 }
-  "reals/prodnormedzmodule" -> "theories/all_analysis";
   "theories/cantor" -> "theories/all_analysis";
   "theories/convex" -> "theories/all_analysis";
   "theories/derive" -> "theories/all_analysis";
