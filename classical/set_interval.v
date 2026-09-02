@@ -65,7 +65,7 @@ Local Open Scope ring_scope.
 (** definitions and lemmas to make a bridge between MathComp intervals and
     classical sets *)
 Section set_itv_porderType.
-Variables (disp : Order.disp_t) (T : porderType disp).
+Context {disp} {T : porderType disp}.
 Implicit Types (i j : interval T) (x y : T) (a : itv_bound T).
 
 Definition neitv i := [set` i] != set0.
@@ -262,25 +262,11 @@ Proof. by rewrite -setDDl setDitv1l setDitv1r. Qed.
 
 End set_itv_porderType.
 Arguments neitv {disp T} _.
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itvNyy`")]
-Notation set_itv_infty_infty := set_itvNyy (only parsing).
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itvoy`")]
-Notation set_itv_o_infty := set_itvoy (only parsing).
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itvcy`")]
-Notation set_itv_c_infty := set_itvcy (only parsing).
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itvNyo`")]
-Notation set_itv_infty_o := set_itvNyo (only parsing).
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itvNyc`")]
-Notation set_itv_infty_c := set_itvNyc (only parsing).
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itv_ybnd`")]
-Notation set_itv_pinfty_bnd := set_itv_ybnd (only parsing).
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itv_bndNy`")]
-Notation set_itv_bnd_ninfty := set_itv_bndNy (only parsing).
 #[deprecated(since="mathcomp-analysis 1.15.0", note="use `set_itv1` instead")]
 Notation interval_set1 := set_itv1 (only parsing).
 
 Section set_itv_orderType.
-Variables (d : Order.disp_t) (T : orderType d).
+Context {d} {T : orderType d}.
 Implicit Types a b x y : itv_bound T.
 
 Lemma itv_bndbnd_setU a x y : (a <= x)%O -> (x <= y)%O ->
@@ -447,7 +433,7 @@ Lemma set_itv_ge disp [T : porderType disp] [b1 b2 : itv_bound T] :
 Proof. by move=> Nb12; rewrite -subset0 => x /=; rewrite itv_ge. Qed.
 
 Section set_itv_latticeType.
-Variables (d : Order.disp_t) (T : latticeType d).
+Context {d} {T : latticeType d}.
 Implicit Types (i j : interval T) (x y : T) (a : itv_bound T).
 
 Lemma set_itvI i j :  [set` (i `&` j)%O] = [set` i] `&` [set` j].
@@ -456,7 +442,7 @@ Proof. by apply/seteqP; split=> x /=; rewrite in_itvI (rwP andP). Qed.
 End set_itv_latticeType.
 
 Section set_itv_numFieldType.
-Variable R : numFieldType.
+Context {R : numFieldType}.
 Implicit Types i : interval R.
 
 Lemma neitvE i : neitv i = (i.1 < i.2)%O.
@@ -474,7 +460,7 @@ Lemma setitv0 (R : realDomainType) : [set` (\bot%O : interval R)] = set0.
 Proof. by rewrite predeqE. Qed.
 
 Section interval_has_bound.
-Variable R : numDomainType.
+Context {R : numDomainType}.
 
 Lemma has_lbound_itv (x : R) b (a : itv_bound R) :
   has_lbound [set` Interval (BSide b x) a].
@@ -487,9 +473,8 @@ Proof. by case: b; exists x => r /andP[]; rewrite bnd_simp // => _ /ltW. Qed.
 End interval_has_bound.
 
 Section subr_image.
-Variable R : numDomainType.
-Implicit Types E : set R.
-Implicit Types x : R.
+Context {R : numDomainType}.
+Implicit Types (E : set R) (x : R).
 
 Lemma setNK : involutive (fun E => -%R @` E).
 Proof.
@@ -530,9 +515,8 @@ Qed.
 End subr_image.
 
 Section interval_hasNbound.
-Variable R : realDomainType.
-Implicit Types E : set R.
-Implicit Types x : R.
+Context {R : realDomainType}.
+Implicit Types (E : set R) (x : R).
 
 Lemma has_ubPn {E} : ~ has_ubound E <-> (forall x, exists2 y, E y & x < y).
 Proof.
@@ -639,7 +623,7 @@ Proof. by apply/seteqP; split => [x/=|x/=]; rewrite oppr_itv. Qed.
 
 (** lemmas between itv and set-theoretic operations *)
 Section set_itv_porderType.
-Variables (d : Order.disp_t) (T : porderType d).
+Context {d} {T : porderType d}.
 Implicit Types (a : itv_bound T) (x y : T) (i j : interval T) (b : bool).
 
 Lemma set_itv_splitI i : [set` i] = [set` Interval i.1 +oo%O] `&` [set` Interval -oo%O i.2].
@@ -651,7 +635,7 @@ Qed.
 End set_itv_porderType.
 
 Section set_itv_orderType.
-Variables (d : Order.disp_t) (T : orderType d).
+Context {d} {T : orderType d}.
 Implicit Types (a : itv_bound T) (x y : T) (i j : interval T) (b : bool).
 
 Lemma setCitvl a : ~` [set` Interval -oo%O a] = [set` Interval a +oo%O].
@@ -678,7 +662,7 @@ Proof. by rewrite -itv_bndbnd_setU// set_itvE. Qed.
 End set_itv_orderType.
 
 Section line_path_factor_numDomainType.
-Variable R : numDomainType.
+Context {R : numDomainType}.
 Implicit Types (a b t r : R) (A : set R).
 
 Lemma memB_itv (x y : bool) a b t :
@@ -751,7 +735,7 @@ End line_path_factor_numDomainType.
 Notation mem_1B_itvcc := __deprepcated__mem_1B_itvcc (only parsing).
 
 Section line_path_factor_numFieldType.
-Variable R : numFieldType.
+Context {R : numFieldType}.
 Implicit Types (a b t r : R) (A : set R).
 
 Lemma factorr a b : a != b -> factor a b b = 1.

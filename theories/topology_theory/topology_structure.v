@@ -898,7 +898,7 @@ Qed.
 End closure_lemmas.
 
 Section regular_open_closed.
-Variable T : topologicalType.
+Context {T : topologicalType}.
 
 Definition regopen (A : set T) := (closure A)° = A.
 
@@ -907,7 +907,7 @@ Definition regclosed (A : set T) := closure (A°) = A.
 End regular_open_closed.
 
 Section closure_interior_lemmas.
-Variable T : topologicalType.
+Context {T : topologicalType}.
 Implicit Types (A B : set T).
 
 Lemma interiorC A : (~` A)° = ~` closure A.

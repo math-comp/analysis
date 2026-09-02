@@ -76,8 +76,8 @@ Arguments Lnorm {d T R} mu p f.
 Local Close Scope ereal_scope.
 
 Section Lnorm_properties.
-Context d {T : measurableType d} {R : realType}.
-Variable mu : {measure set T -> \bar R}.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}).
 Local Open Scope ereal_scope.
 Implicit Types (p : \bar R) (f g : T -> \bar R) (r : R).
 
@@ -187,8 +187,8 @@ Qed.
 End lnorm.
 
 Section hoelder_conjugate.
-Context {d} {T : measurableType d} {R : realType}.
-Variable mu : {measure set T -> \bar R}.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}).
 Implicit Types p q : \bar R.
 
 Local Open Scope classical_set_scope.
@@ -788,9 +788,6 @@ exact: ess_sup_normD.
 Qed.
 
 End minkowski.
-#[deprecated(since="mathcomp-analysis 1.10.0",
-  note="use `minkowski_EFin` or `eminkowski` instead")]
-Notation minkowski := minkowski_EFin (only parsing).
 
 Definition finite_norm d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) (p : \bar R) (f : T -> R) :=
@@ -815,8 +812,10 @@ Arguments Lfunction_finite {d} {T} {R} {mu} {p} _.
   solve [apply: Lfunction_finite] : core.
 
 Section LfunType_canonical.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E).
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (p : \bar R).
+
+Hypotheses p1 : (1 <= p)%E.
 
 HB.instance Definition _ := gen_eqMixin (LfunType mu p1).
 HB.instance Definition _ := gen_choiceMixin (LfunType mu p1).
@@ -824,8 +823,8 @@ HB.instance Definition _ := gen_choiceMixin (LfunType mu p1).
 End LfunType_canonical.
 
 Section AeEqEquiv.
-Context d1 d2 (R : realType) (T1 : measurableType d1) (T2 : measurableType d2).
-Variables (mu : {measure set T1 -> \bar R}).
+Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
+  {R : realType} (mu : {measure set T1 -> \bar R}).
 
 Definition ae_eq_op (f g : {mfun T1 >-> T2}) := `[< f = g %[ae mu] >].
 
@@ -863,7 +862,7 @@ End AeEqEquiv.
 Reserved Notation "{ 'mfun_' mu , U >-> V }"
   (at level 0, U at level 69, format "{ 'mfun_'  mu ,  U  >->  V }").
 
-Notation "{ 'mfun_' mu , aT >-> T }" := (@aeEqMfun _ _ _ aT T mu)
+Notation "{ 'mfun_' mu , aT >-> T }" := (@aeEqMfun _ _ aT T _ mu)
    : form_scope.
 
 Import numFieldNormedType.Exports HBNNSimple.
@@ -880,8 +879,8 @@ HB.structure Definition LebesgueSpace d (T : measurableType d) (R : realType)
   {f of isFinLebesgue d T R mu p p1 f}.
 
 Section mfun_extra.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}).
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}).
 
 Lemma mfunP (f : {mfun T >-> R}) : (f : T -> R) \in mfun.
 Proof. exact: valP. Qed.
@@ -899,8 +898,8 @@ HB.instance Definition _ := [SubNmodule_isSubLSemiModule of {mfun T >-> R} by <:
 End mfun_extra.
 
 Section Lfun_pred.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (p : \bar R).
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (p : \bar R).
 
 Definition finLfun : {pred _ -> _} := mem [set f | finite_norm mu p f].
 Definition Lfun : {pred _ -> _} := [predI @mfun _ _ T R & finLfun].
@@ -914,8 +913,9 @@ Proof. by move=> x /andP[]. Qed.
 End Lfun_pred.
 
 Section Lfun.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E).
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (p : \bar R).
+Hypothesis  p1 : (1 <= p)%E.
 Notation Lfun := (@Lfun _ T R mu p).
 
 Section Sub.
@@ -1034,9 +1034,10 @@ HB.instance Definition _ := [SubChoice_isSubLmodule of LfunType mu p1 by <:].
 End Lfun.
 
 Section Lspace_norm.
-Context d (T : measurableType d) (R : realType).
-Variable mu : {measure set T -> \bar R}.
-Variables (p : \bar R) (p1 : (1 <= p)%E).
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (p : \bar R).
+
+Hypothesis p1 : (1 <= p)%E.
 
 (* TODO: 0 - + should come with proofs that they are in LfunType mu p *)
 
@@ -1085,8 +1086,8 @@ Qed.
 End Lspace_norm.
 
 Section Lspace.
-Context d (T : measurableType d) (R : realType).
-Variable mu : {measure set T -> \bar R}.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}).
 
 Definition Lspace p (p1 : (1 <= p)%E) := [set: LspaceType mu p1].
 Arguments Lspace : clear implicits.
@@ -1192,8 +1193,8 @@ End Lspace.
 Notation "mu .-Lspace p" := (@Lspace _ _ _ mu p) : type_scope.
 
 Section Lspace_finite_measure.
-Context d (T : measurableType d) (R : realType).
-Variable mu : {finite_measure set T -> \bar R}.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {finite_measure set T -> \bar R}).
 
 Lemma Lfun_cst c r : cst c \in Lfun mu r%:E.
 Proof.
@@ -1207,8 +1208,8 @@ Qed.
 End Lspace_finite_measure.
 
 Section Lfun_subset.
-Context d (T : measurableType d) (R : realType).
-Variable mu : {measure set T -> \bar R}.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}).
 Local Open Scope ereal_scope.
 
 Lemma Lfun_subset (p q : \bar R) : forall (p1 : 1 <= p) (q1 : 1 <= q),

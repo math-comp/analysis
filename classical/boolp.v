@@ -272,15 +272,11 @@ Proof. by move=> /funext->. Qed.
 Lemma eq2_fun T1 T2 rT (U V : T1 -> T2 -> rT) :
   (forall x y, U x y = V x y) -> (fun x y => U x y) = (fun x y => V x y).
 Proof. by move=> UV; rewrite funeq2E => x y; rewrite UV. Qed.
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `eq2_fun`.")]
-Notation eq_fun2 := eq2_fun (only parsing).
 
 Lemma eq3_fun  T1 T2 T3 rT (U V : T1 -> T2 -> T3 -> rT) :
   (forall x y z, U x y z = V x y z) ->
   (fun x y z => U x y z) = (fun x y z => V x y z).
 Proof. by move=> UV; rewrite funeq3E => x y z; rewrite UV. Qed.
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `eq3_fun`.")]
-Notation eq_fun3 := eq3_fun (only parsing).
 
 Lemma eq_forall T (U V : T -> Prop) :
   (forall x : T, U x = V x) -> (forall x, U x) = (forall x, V x).
@@ -289,15 +285,11 @@ Proof. by move=> e; rewrite propeqE; split=> ??; rewrite (e,=^~e). Qed.
 Lemma eq2_forall T S (U V : forall x : T, S x -> Prop) :
   (forall x y, U x y = V x y) -> (forall x y, U x y) = (forall x y, V x y).
 Proof. by move=> UV; apply/eq_forall => x; exact/eq_forall. Qed.
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `eq2_forall`.")]
-Notation eq_forall2 := eq2_forall (only parsing).
 
 Lemma eq3_forall T S R (U V : forall (x : T) (y : S x), R x y -> Prop) :
   (forall x y z, U x y z = V x y z) ->
   (forall x y z, U x y z) = (forall x y z, V x y z).
 Proof. by move=> UV; apply/eq2_forall => x y; exact/eq_forall. Qed.
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `eq3_forall`.")]
-Notation eq_forall3 := eq3_forall (only parsing).
 
 Lemma eq_exists T (U V : T -> Prop) :
   (forall x : T, U x = V x) -> (exists x, U x) = (exists x, V x).
@@ -313,8 +305,6 @@ Lemma eq3_exists T S R (U V : forall (x : T) (y : S x), R x y -> Prop) :
   (forall x y z, U x y z = V x y z) ->
   (exists x y z, U x y z) = (exists x y z, V x y z).
 Proof. by move=> UV; apply/eq2_exists => x y; exact/eq_exists. Qed.
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `eq3_exists`.")]
-Notation eq_exists3 := eq3_exists (only parsing).
 
 Lemma eq_exist T (P : T -> Prop) (s t : T) (p : P s) (q : P t) :
   s = t -> exist P s p = exist P t q.
@@ -861,8 +851,8 @@ Section bigmaxmin.
 Local Notation max := Order.max.
 Local Notation min := Order.min.
 Local Open Scope order_scope.
-Variables (d : Order.disp_t) (T : orderType d).
-Variables (x : T) (I : finType) (P : pred I) (m : T) (F : I -> T).
+Context {d} {T : orderType d} (x : T)
+  {I : finType} (P : pred I) (m : T) (F : I -> T).
 
 Import Order.TTheory.
 
@@ -911,7 +901,7 @@ End bigmaxmin.
 Module FunOrder.
 Section FunOrder.
 Import Order.TTheory.
-Variables (aT : Type) (d : Order.disp_t) (T : porderType d).
+Context {aT : Type} {d} {T : porderType d}.
 Implicit Types f g h : aT -> T.
 
 Lemma fun_display : Order.disp_t. Proof. exact: Order.default_display. Qed.
@@ -955,7 +945,7 @@ End FunOrder.
 
 Section FunLattice.
 Import Order.TTheory.
-Variables (aT : Type) (d : Order.disp_t) (T : latticeType d).
+Context {aT : Type} {d} {T : latticeType d}.
 Implicit Types f g h : aT -> T.
 
 Definition meetf f g := fun x => Order.meet (f x) (g x).
@@ -1009,17 +999,17 @@ Lemma joinfE (aT : Type) d (T : latticeType d) (f g : aT -> T) x :
   ((f `|` g) x = f x `|` g x)%O.
 Proof. by []. Qed.
 
-Lemma iterfS {T} (f : T -> T) (n : nat) : iter n.+1 f = f \o iter n f.
+Lemma iterfS {T} (f : T -> T) n : iter n.+1 f = f \o iter n f.
 Proof. by []. Qed.
 
-Lemma iterfSr {T} (f : T -> T) (n : nat) : iter n.+1 f = iter n f \o f.
+Lemma iterfSr {T} (f : T -> T) n : iter n.+1 f = iter n f \o f.
 Proof. by apply/funeqP => ?; rewrite iterSr. Qed.
 
 Lemma iter0 {T} (f : T -> T) : iter 0 f = id.
 Proof. by []. Qed.
 
 Section Inhabited.
-Variable (T : Type).
+Context (T : Type).
 
 Lemma inhabitedE : inhabited T = exists x : T, True.
 Proof. by eqProp; case. Qed.

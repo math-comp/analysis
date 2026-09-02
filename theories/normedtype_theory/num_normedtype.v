@@ -4,8 +4,8 @@ From mathcomp Require Import interval interval_inference archimedean rat.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions.
-From mathcomp Require Import cardinality set_interval reals real_interval.
-From mathcomp Require Import topology prodnormedzmodule.
+From mathcomp Require Import cardinality set_interval reals real_interval
+  topology.
 
 (**md**************************************************************************)
 (* # Preliminaries for norm-related notions                                   *)
