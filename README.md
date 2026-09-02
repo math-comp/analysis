@@ -9,22 +9,22 @@
 [chat-shield]: https://img.shields.io/badge/zulip-join_chat-brightgreen.svg
 [chat-link]: https://rocq-prover.zulipchat.com/#narrow/channel/237666-math-comp-analysis
 
-This repository contains a real analysis library for the Coq / Rocq proof-assistant.
+This repository contains a real analysis library for the Rocq proof-assistant.
 It is based on the [Mathematical Components](https://math-comp.github.io/) library.
 
 In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the following packages:
-- `coq-mathcomp-classical`: a layer for classical reasoning
-- `coq-mathcomp-reals`: real numbers for MathComp
-- `coq-mathcomp-reals-stdlib`: compatibility with the real numbers of the Coq standard library
-- `coq-mathcomp-analysis-stdlib`: compatibility with the Coq standard library (topology only)
-- `coq-mathcomp-analysis`: theories for real analysis
-- `coq-mathcomp-experimental-reals`: sequences of real numbers and distributions (experimental)
+- `rocq-mathcomp-classical`: a layer for classical reasoning
+- `rocq-mathcomp-reals`: real numbers for MathComp
+- `rocq-mathcomp-reals-stdlib`: compatibility with the real numbers of the Rocq standard library
+- `rocq-mathcomp-analysis-stdlib`: compatibility with the Rocq standard library (topology only)
+- `rocq-mathcomp-analysis`: theories for real analysis
+- `rocq-mathcomp-experimental-reals`: sequences of real numbers and distributions (experimental)
 
 ## Meta
 
 - [Authors](AUTHORS.md)
 - License: [CeCILL-C](LICENSE)
-- Compatible Rocq versions: Rocq 9.0 and 9.1 (or dev)
+- Compatible Rocq versions: Rocq 9.0--9.3 (or dev)
 - Additional dependencies:
   - [MathComp boot 2.6.0 or later](https://math-comp.github.io)
   - [MathComp finite-group 2.6.0 or later](https://math-comp.github.io)
@@ -66,7 +66,7 @@ Each file is documented in its header in ASCII.
 HTML rendering of the source code and inheritance diagrams for the
 mathematical structures that MathComp-Analysis adds on top of
 MathComp's ones (using [`rocqnavi`](https://github.com/affeldt-aist/rocqnavi)):
-- last version: [1.17.0](https://math-comp.github.io/analysis/htmldoc/1_17_0/index.html)
+- last version: [1.18.0](https://math-comp.github.io/analysis/htmldoc/1_18_0/index.html)
 - [master](https://math-comp.github.io/analysis/master/)
 
 Overview presentations:
