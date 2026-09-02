@@ -19,12 +19,12 @@ Detailed instructions for possible installations of Mathematical Components are 
 ## Short Instructions
 
 - Through opam:
-  + type `opam install coq-mathcomp-analysis.X.Y.Z` where `X.Y.Z` is the version number
+  + type `opam install rocq-mathcomp-analysis.X.Y.Z` where `X.Y.Z` is the version number
     (all the dependencies should be automatically installed, assuming `opam` has been properly
     configured and `coq-released` repository is added)
 - Custom:
   + first, install the required dependencies, for example with opam
-    type `opam install --deps-only coq-mathcomp-analysis.X.Y.Z`
+    type `opam install --deps-only rocq-mathcomp-analysis.X.Y.Z`
   + assuming the requirements are met, type `make` to use the provided `Makefile`
 
 ## From scratch instructions
@@ -46,11 +46,11 @@ $ opam repo add rocq-released https://rocq-prover.org/opam/released
 ```
 3. Install our package (and all its dependencies)
 ```
-$ opam install coq-mathcomp-analysis
+$ opam install rocq-mathcomp-analysis
 ```
 To install a precise version, type, say
 ```
-$ opam install coq-mathcomp-analysis.1.17.0
+$ opam install rocq-mathcomp-analysis.1.18.0
 ```
 4. Everytime you want to work in this same context, you need to type
 ```
@@ -61,9 +61,9 @@ $ eval `opam config env`
 ### How to edit and test the source code
 
 If you would rather edit and test the files than intalling them, we suggest that you replace
-`opam install coq-mathcomp-analysis` command with the following
+`opam install rocq-mathcomp-analysis` command with the following
 ```
-$ opam install coq-mathcomp-analysis --deps-only
+$ opam install rocq-mathcomp-analysis --deps-only
 $ git clone https://github.com/math-comp/analysis
 $ cd analysis
 $ make
@@ -73,7 +73,7 @@ using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
 ## Break-down of phase 3 of the installation procedure step by step
 
-With the example of Coq 9.1.1 and MathComp 2.6.0. For other versions, update the
+With the example of Rocq 9.1.1 and MathComp 2.6.0. For other versions, update the
 version numbers accordingly.
 
 1. Install Rocq 9.1.1
@@ -88,7 +88,7 @@ $ opam install rocq-mathcomp-field.2.6.0
 ```
 $ opam install rocq-mathcomp-finmap.2.4.0
 ```
-5. Download and compile `coq-mathcomp-analysis` without installing
+5. Download and compile `rocq-mathcomp-analysis` without installing
 ```
 $ git clone https://github.com/math-comp/analysis
 $ cd analysis
@@ -97,11 +97,11 @@ $ make
 
 ## How to clean your computer
 
-- If you installed the package `coq-mathcomp-analysis` and wish to get rid of it, just type
+- If you installed the package `rocq-mathcomp-analysis` and wish to get rid of it, just type
 ```
-$ opam remove coq-mathcomp-analysis
+$ opam remove rocq-mathcomp-analysis
 ```
-- However if you wish to clean the entire installation (including `coq` and `mathcomp` dependencies)
+- However if you wish to clean the entire installation (including `rocq` and `mathcomp` dependencies)
   you should remove the opam root we created for this purpose:
 ```
 $ rm -rf ~/.opam_mathcomp_analysis

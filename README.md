@@ -9,16 +9,16 @@
 [chat-shield]: https://img.shields.io/badge/zulip-join_chat-brightgreen.svg
 [chat-link]: https://rocq-prover.zulipchat.com/#narrow/channel/237666-math-comp-analysis
 
-This repository contains a real analysis library for the Coq / Rocq proof-assistant.
+This repository contains a real analysis library for the Rocq proof-assistant.
 It is based on the [Mathematical Components](https://math-comp.github.io/) library.
 
 In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the following packages:
-- `coq-mathcomp-classical`: a layer for classical reasoning
-- `coq-mathcomp-reals`: real numbers for MathComp
-- `coq-mathcomp-reals-stdlib`: compatibility with the real numbers of the Coq standard library
-- `coq-mathcomp-analysis-stdlib`: compatibility with the Coq standard library (topology only)
-- `coq-mathcomp-analysis`: theories for real analysis
-- `coq-mathcomp-experimental-reals`: sequences of real numbers and distributions (experimental)
+- `rocq-mathcomp-classical`: a layer for classical reasoning
+- `rocq-mathcomp-reals`: real numbers for MathComp
+- `rocq-mathcomp-reals-stdlib`: compatibility with the real numbers of the Rocq standard library
+- `rocq-mathcomp-analysis-stdlib`: compatibility with the Rocq standard library (topology only)
+- `rocq-mathcomp-analysis`: theories for real analysis
+- `rocq-mathcomp-experimental-reals`: sequences of real numbers and distributions (experimental)
 
 ## Meta
 

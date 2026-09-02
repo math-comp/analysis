@@ -1,6 +1,220 @@
 # Changelog
 
-Latest releases: [[1.17.0] - 2026-07-31](#1170---2026-07-31), [[1.16.0] - 2026-03-17](#1160---2026-03-17), and [[1.15.0] - 2026-01-15](#1150---2026-01-15)
+Latest releases: [[1.18.0] - 2026-09-02](#1180---2026-09-02), [[1.17.0] - 2026-07-31](#1170---2026-07-31), and [[1.16.0] - 2026-03-17](#1160---2026-03-17)
+
+## [1.18.0] - 2026-09-02
+
+### Added
+
+- in `Rstruct_topology.v`:
+  + lemmas `RcosE`, `Rtrigo_PIE`, `RsinE`
+
+- in `topology_structure.v`:
+  + lemma `id_continuous`
+
+- in `nat_topology.v`:
+  + lemma `near_infty_leq`
+
+- in `num_topology.v`:
+  + lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`,
+    `at_left_shift`, `at_right_shift`
+
+- in `function_spaces.v`:
+  + lemma `within_continuous_big`
+
+- in `pseudometric_normed_Zmodule.v`:
+  + lemmas `cvg0D`, `cvgD0`, `cvg0B`, `cvgB0`, `cvgN0`
+
+- in `normed_module.v`:
+  + lemmas `cvg1M`, `cvgM1`, `cvg0M`, `cvgM0`
+  + lemmas `cvg1Z`, `cvg0Z`, `cvgZ0`
+
+- in `matrix_normedtype.v`:
+  + lemma `norm_trmx`
+
+- in `derive.v`:
+  + lemmas `derive1Dn`, `der1_scaleLR`, `deriveZLR`, `derivableZLR`,
+    `derivable_comp_shift`, `derive_comp_shift`, `is_derive_comp_shift`, `derive1_comp_shift`,
+    `near_eq_derive1n_near`, `near_eq_derive1_near`, `near_eq_derive1n`,
+    `near_eq_derive1`
+  + global instance `is_derive_exp`
+  + lemma `derive1_shift`
+  + lemmas `derivable_trmx`, `derive_trmx`
+  + global instance `is_derive_trmx`
+
+- in `esum.v`:
+  + lemmas `pos_esum_ge1`, `le_pos_esum_fine`, `sum_esum_ge`, `le_esum_fine`,
+    `subset_esum`, `esum0`, `esum_if_eq_op_set1`, `esum_neq0`, `esum_ge1`
+  + lemmas `eq_esummable`, `le_esummable`, `esummableZl`, `esummableZr`,
+    `esummableMl`, `esummableMr`, `esummableM`
+  + lemmas `esummable_esum_funepos`, `esummable_esum_funeneg`,
+     `esummable_esum_fin_num`, `esummable_esumN`
+  + lemma `esumE`
+  + lemmas `esummable_esumZ`, `esummable_esumD`, `esummableB`
+
+- in `measurable_realfun.v`:
+  + lemma `measurable_bigmaxr`
+
+- in `normal_distribution.v`:
+  + definition `post_stddev`
+  + lemmas `post_stddev_gt0`, `post_stddevE`
+  + definition `post_mean`
+  + lemmas `normal_fun_conjugate`, `normal_pdf_conjugate`, `normal_prob_conjugate`
+
+- new files (result of the splitting of `trigo.v`):
+  + `elementary_functions/trigo.v`
+  + `elementary_functions/trigonometry_functions.v`
+  + `elementary_functions/trigonometry_integral.v`
+
+### Changed
+
+- in `Rstruct_topology.v`:
+  + lemma `RealsE` to include `RcosE`, `Rtrigo_PIE`, `RsinE`
+
+- moved from `prodnormedzmodule.v` to `unstable.v`
+  + module `ProdNormedZmodule`
+    * definition `norm`
+    * lemmas `normD`, `norm_eq0`, `normMn`, `normrN`, `prod_normE`
+
+- in `metric_structure.v`:
+  + order of arguments and implicit arguments of `squeeze_cvgr`
+
+- moved from `metric_structure.v` to `num_topology.v`:
+  + lemma `cvg_at_right_left_dnbhs`, generalized to `topologicalType` from `metricType`.
+
+- in `normed_module.v`:
+  + implicit arguments of `squeeze_cvge` and `sequeeze_fin`
+
+- in `derive.v`:
+  + instance `is_derive_mx` is now a lemma
+
+- moved from `realfun.v` to `derive.v`:
+  + lemmas `is_deriveV`, `is_derive1_comp`
+
+- moved from `trigo.v` to `trigonometry_integral.v`:
+  + lemmas `integral0_oneDsqr`, `integral0y_oneDsqr`
+
+- moved from `trigo.v` to `trigonometry_functions.v`:
+  + all contents except lemmas `integral0_oneDsqr`, `integral0y_oneDsqr`
+
+### Renamed
+
+- `mathcomp_extra.v` -> `mathcomp_compat.v`
+
+- in `esum.v`:
+  + `summable` -> `esummable`
+  + `summable_pinfty` -> `esummable_pinfty`
+  + `summableE` -> `esummableE`
+  + `summableD` -> `esummableD`
+  + `summableN` -> `esummableN`
+  + `summableB` -> `esummableB`
+  + `summable_funepos` -> `esummable_funepos`
+  + `summable_funeneg` -> `esummable_funeneg`
+  + `summable_fine_sum` -> `esummable_fine_sum`
+  + `summable_cvg` -> `esummable_cvg`
+  + `summable_nneseries_lim` -> `esummable_nneseries_lim`
+  + `summable_eseries` -> `esummable_eseries`
+  + `summable_eseries_esum` -> `esummable_eseries_esum`
+
+- in `lebesgue_integral_nonneg.v`:
+  + `summable_integral_dirac` -> `esummable_integral_dirac`
+
+- in `lebesgue_integrable.v`:
+  + `integrable_summable` -> `integrable_esummable`
+
+### Generalized
+
+- in `esum.v`:
+  + lemmma `le_esum`
+
+- from `pseudometric_normed_Zmodule.v` to `topology_structure.v`:
+  + lemma `continuous_comp_cvg`
+
+- in `pseudometric_normed_Zmodule.v`:
+  + lemma `within_continuous_continuous`
+
+- in `derive.v`:
+  + lemmas `derive1_comp`, `is_derive1_comp` (`realFieldType` -> `numFieldType`)
+  + lemmas `derive_shift`, `is_derive_shift` (function codomain)
+
+### Removed
+
+- in `unstable.v`:
+  + lemmas `le_bigmax_seq`, `bigmax_sup_seq` (now in MathComp 2.6.0)
+
+- in `boolp.v`:
+  + notations `eq_fun2`, `eq_fun3`, `eq_forall2`, `eq_forall3`, `eq_exists3`
+    (deprecated since 1.10.0)
+
+- in `classical_sets.v`:
+  + notations `preimage_itv_o_infty`, `preimage_itv_c_infty`,
+    `preimage_itv_infty_o`, `preimage_itv_infty_c`
+    (deprecated since 1.8.0)
+
+- in `set_interval.v`:
+  + notations `opp_itv_bnd_infty`, `opp_itv_infty_bnd` (deprecated since 1.9.0)
+  + notations `set_itv_infty_infty`, `set_itv_o_infty`, `set_itv_c_infty`,
+    `set_itv_infty_o`, `set_itv_infty_c`, `set_itv_pinfty_bnd`,
+    `set_itv_bnd_ninfty` (deprecated since 1.10.0)
+
+- in `Rstruct.v`:
+  + definition `Rinvx` (deprecated since 1.9.0)
+
+- in `real_interval.v`:
+  + notations `itv_bnd_infty_bigcup`, `itv_bnd_infty_bigcup0S`, `itv_infty_bnd_bigcup`
+    (deprecated since 1.9.0)
+  + notations `tv_c_inftyEbigcap`, `itv_bnd_inftyEbigcup`, `itv_o_inftyEbigcup`
+    (deprecated since 1.10.0)
+
+- file `prodnormedzmodule.v`
+
+- in `constructive_ereal.v`:
+  + notations `maxeMr`, `maxeMl`, `mineMr`, `mineMl`
+    (deprecated since 1.8.0)
+
+- in `uniform_structure.v`:
+  + notation `complete_ax` (deprecated)
+
+- in `num_topology.v`:
+  + notations `nbhs_lt`, `nbhs_le` (deprecated since 1.9.0)
+
+- in `normed_module.v`:
+  + notation `cvge_sub0` (deprecated since 1.9.0)
+
+- in `num_normedtype.v`:
+  + notation `cvgyNP` (deprecated since 1.9.0)
+
+- in `normed_module.v`:
+  + notations `cvgeMl`, `is_cvgeMl`, `cvgeMr`, `is_cvgeMr` (deprecated since 1.10.0)
+
+- in `derive.v`:
+  + notation `le0r_derive1_ndecr` (deprecated since 1.9.0)
+  + lemmas `ler0_derive1_nincr`, `gtr0_derive1_incr`, `ltr0_derive1_decr` (deprecated since 1.10.0)
+
+- in `measurable_function.v`:
+  + notation `preimage_class_measurable_fun` (deprecated since 1.9.0)
+  + notations `measurable_fun_prod`, `prod_measurable_funP`,
+    `measurable_pair1`, `measurable_pair2` (deprecated since 1.10.0)
+
+- in `measurable_structure.v`:
+  + notations `setDI_closed`, `setDI_semi_setD_closed`, `sedDI_closedP`,
+    `setringDI`, `preimage_classes`, `preimage_classes_comp`
+    (deprecated since 1.9.0)
+
+- in `lebesgue_integral_fubini.v`:
+  + notations `fubini1a`, `fubini1b`, `fubini1`, `fubini2` (deprecated since 1.10.0)
+
+- in `lebesgue_Rintegral.v`:
+  + notation `le_normr_integral` (deprecated since 1.10.0)
+
+- in `kernel.v`:
+  + notations `Kernel_isSFinite_subdef`, `Kernel_isSFinite_subdef.Build`,
+    `SFiniteKernel_isFinite`, `SFiniteKernel_isFinite.Build`,
+    `FiniteKernel_isSubProbability`, `FiniteKernel_isSubProbability.Build`,
+    `SubProbability_isProbability`, `SubProbability_isProbability.Build` (deprecated since 1.10.0)
+
+- in `hoelder.v`:
+  + notation `minkowski` (deprecated since 1.10.0)
 
 ## [1.17.0] - 2026-07-31
 
