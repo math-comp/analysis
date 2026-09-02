@@ -231,7 +231,6 @@ subgraph cluster_Reals {
     ]
 }
   "reals/constructive_ereal" -> "reals/all_reals";
-  "reals/prodnormedzmodule" -> "reals/all_reals";
   "reals/real_interval" -> "reals/all_reals";
   "reals/reals" -> "reals/all_reals";
 
@@ -823,7 +822,6 @@ subgraph cluster_Normedtype {
   "classical/functions" -> "theories/normedtype_theory/num_normedtype";
   "classical/set_interval" -> "theories/normedtype_theory/num_normedtype";
   "classical/unstable" -> "theories/normedtype_theory/num_normedtype";
-  "reals/prodnormedzmodule" -> "theories/normedtype_theory/num_normedtype";
   "reals/real_interval" -> "theories/normedtype_theory/num_normedtype";
   "reals/reals" -> "theories/normedtype_theory/num_normedtype";
   "theories/topology_theory/topology" -> "theories/normedtype_theory/num_normedtype";

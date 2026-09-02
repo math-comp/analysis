@@ -453,7 +453,6 @@ digraph dependencies {
 	"reals/reals" -> "theories/topology_theory/pseudometric_structure";
 	"reals/reals" -> "theories/measure_theory/measurable_structure";
 	"reals/real_interval" -> "reals/all_reals";
-	"reals/prodnormedzmodule" -> "reals/all_reals";
 	"reals/all_reals" -> "theories/topology_theory/discrete_topology";
 	"experimental_reals/xfinmap" -> "experimental_reals/discrete";
 	"experimental_reals/discrete" -> "experimental_reals/realseq";
