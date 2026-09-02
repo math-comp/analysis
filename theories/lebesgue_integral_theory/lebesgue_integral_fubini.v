@@ -56,7 +56,7 @@ Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Implicit Types A : set (T1 * T2).
 
 Section xsection.
-Variables (pt2 : T2) (m2 : T1 -> {measure set T2 -> \bar R}).
+Context (pt2 : T2) (m2 : T1 -> {measure set T2 -> \bar R}).
 (* the generalization from m2 : {measure set T2 -> \bar R} to
    T1 -> {measure set T2 -> \bar R} is needed to develop the theory
    of kernels; the original type was sufficient for the development
@@ -80,7 +80,7 @@ Qed.
 End xsection.
 
 Section ysection.
-Variable m1 : {measure set T1 -> \bar R}.
+Context (m1 : {measure set T1 -> \bar R}).
 Let psi A := m1 \o ysection A.
 Let B := [set A | measurable A /\ measurable_fun setT (psi A)].
 
@@ -106,7 +106,7 @@ Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Implicit Types A : set (T1 * T2).
 
 Section xsection.
-Variable (m2 : {measure set T2 -> \bar R}) (D : set T2) (mD : measurable D).
+Context (m2 : {measure set T2 -> \bar R}) (D : set T2) (mD : measurable D).
 Let m2D := mrestr m2 mD.
 HB.instance Definition _ := Measure.on m2D.
 Let phi A := m2D \o xsection A.
@@ -143,7 +143,7 @@ Qed.
 End xsection.
 
 Section ysection.
-Variable (m1 : {measure set T1 -> \bar R}) (D : set T1) (mD : measurable D).
+Context (m1 : {measure set T1 -> \bar R}) (D : set T1) (mD : measurable D).
 Let m1D := mrestr m1 mD.
 HB.instance Definition _ := Measure.on m1D.
 Let psi A := m1D \o ysection A.
@@ -181,8 +181,8 @@ End ysection.
 End measurable_prod_subset.
 
 Section measurable_fun_xsection.
-Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variable m2 : {sigma_finite_measure set T2 -> \bar R}.
+Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
+  {R : realType} (m2 : {sigma_finite_measure set T2 -> \bar R}).
 Implicit Types A : set (T1 * T2).
 
 Let phi A := m2 \o xsection A.
@@ -216,8 +216,8 @@ Qed.
 End measurable_fun_xsection.
 
 Section measurable_fun_ysection.
-Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variable m1 : {sigma_finite_measure set T1 -> \bar R}.
+Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
+  {R : realType} (m1 : {sigma_finite_measure set T1 -> \bar R}).
 Implicit Types A : set (T1 * T2).
 
 Let phi A := m1 \o ysection A.
@@ -264,9 +264,9 @@ Notation "m1 '\x^' m2" := (product_measure2 m1 m2) : ereal_scope.
 
 Section product_measure1.
 Local Open Scope ereal_scope.
-Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variable m1 : {measure set T1 -> \bar R}.
-Variable m2 : {sigma_finite_measure set T2 -> \bar R}.
+Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
+  {R : realType} (m1 : {measure set T1 -> \bar R})
+  (m2 : {sigma_finite_measure set T2 -> \bar R}).
 Implicit Types A : set (T1 * T2).
 
 Let pm10 : (m1 \x m2) set0 = 0.
@@ -316,8 +316,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
-  {R : realType}.
-Variable m12 : subprobability T1 R * subprobability T2 R.
+  {R : realType} (m12 : subprobability T1 R * subprobability T2 R).
 
 Let prod := m12.1 \x m12.2.
 
@@ -355,9 +354,9 @@ End product_subprobability_setC.
 
 Section product_measure_unique.
 Local Open Scope ereal_scope.
-Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variable m1 : {sigma_finite_measure set T1 -> \bar R}.
-Variable m2 : {sigma_finite_measure set T2 -> \bar R}.
+Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
+  {R : realType} (m1 : {sigma_finite_measure set T1 -> \bar R})
+  (m2 : {sigma_finite_measure set T2 -> \bar R}).
 
 Let product_measure_sigma_finite : sigma_finite setT (m1 \x m2).
 Proof.
@@ -414,9 +413,9 @@ End product_measure_unique.
 
 Section product_measure2.
 Local Open Scope ereal_scope.
-Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variable m1 : {sigma_finite_measure set T1 -> \bar R}.
-Variable m2 : {measure set T2 -> \bar R}.
+Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
+  {R : realType} (m1 : {sigma_finite_measure set T1 -> \bar R})
+  (m2 : {measure set T2 -> \bar R}).
 Implicit Types A : set (T1 * T2).
 
 Let pm20 : (m1 \x^ m2) set0 = 0.
@@ -499,9 +498,9 @@ End product_probability_measures.
 
 Section fubini_functions.
 Local Open Scope ereal_scope.
-Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
-Variable f : T1 * T2 -> \bar R.
+Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
+  {R : realType} (m1 : {measure set T1 -> \bar R})
+  (m2 : {measure set T2 -> \bar R}) (f : T1 * T2 -> \bar R).
 
 Definition fubini_F x := \int[m2]_y f (x, y).
 Definition fubini_G y := \int[m1]_x f (x, y).
@@ -510,12 +509,12 @@ End fubini_functions.
 
 Section fubini_tonelli.
 Local Open Scope ereal_scope.
-Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variable m1 : {sigma_finite_measure set T1 -> \bar R}.
-Variable m2 : {sigma_finite_measure set T2 -> \bar R}.
+Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
+ {R : realType} (m1 : {sigma_finite_measure set T1 -> \bar R})
+ (m2 : {sigma_finite_measure set T2 -> \bar R}).
 
 Section indic_fubini_tonelli.
-Variables (A : set (T1 * T2)) (mA : measurable A).
+Context (A : set (T1 * T2)) (mA : measurable A).
 Implicit Types A : set (T1 * T2).
 Let f : (T1 * T2) -> R := \1_A.
 
@@ -810,10 +809,9 @@ Arguments measurable_fun_fubini_tonelli_G {d1 d2 T1 T2 R m1} f.
 
 Section fubini.
 Local Open Scope ereal_scope.
-Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variable m1 : {sigma_finite_measure set T1 -> \bar R}.
-Variable m2 : {sigma_finite_measure set T2 -> \bar R}.
-Variable f : T1 * T2 -> \bar R.
+Context {d1} {d2} {T1 : measurableType d1} {T2 : measurableType d2}
+  {R : realType} (m1 : {sigma_finite_measure set T1 -> \bar R})
+  (m2 : {sigma_finite_measure set T2 -> \bar R}) (f : T1 * T2 -> \bar R).
 
 Lemma integrable12ltyP : measurable_fun setT f ->
   (m1 \x m2).-integrable setT f <-> \int[m1]_x \int[m2]_y `|f (x, y)| < +oo.
@@ -1027,22 +1025,14 @@ Theorem Fubini :
 Proof. by rewrite integral12_prod_meas1 -integral21_prod_meas1. Qed.
 
 End fubini.
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `integrable12ltyP`")]
-Notation fubini1a := integrable12ltyP (only parsing).
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `integrable21ltyP`")]
-Notation fubini1b := integrable21ltyP (only parsing).
-#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `integral12_prod_meas1`")]
-Notation fubini1 := integral12_prod_meas1 (only parsing).
-#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `integral21_prod_meas1`")]
-Notation fubini2 := integral21_prod_meas1 (only parsing).
 
 Section sfinite_fubini.
 Local Open Scope ereal_scope.
-Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
-Variables (m1 : {sfinite_measure set X -> \bar R}).
-Variables (m2 : {sfinite_measure set Y -> \bar R}).
-Variables (f : X * Y -> \bar R) (f0 : forall xy, 0 <= f xy).
-Hypothesis mf : measurable_fun [set: X * Y] f.
+Context {d} {d'} {X : measurableType d} {Y : measurableType d'} {R : realType}
+  (m1 : {sfinite_measure set X -> \bar R})
+  (m2 : {sfinite_measure set Y -> \bar R}) (f : X * Y -> \bar R).
+
+Hypotheses (f0 : forall xy, 0 <= f xy) (mf : measurable_fun [set: X * Y] f).
 
 Lemma sfinite_Fubini :
   \int[m1]_x \int[m2]_y f (x, y) = \int[m2]_y \int[m1]_x f (x, y).

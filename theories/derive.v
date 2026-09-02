@@ -1874,19 +1874,6 @@ Proof. by rewrite -continuous_open_subspace//; exact: ler0_derive1_le. Qed.
 
 End ler0_derive1_le.
 
-#[deprecated(since="mathcomp-analysis 1.10.0",
-  note="use `ler0_derive1_le_cc` instead")]
-Lemma ler0_derive1_nincr (R : realType) (f : R -> R) (a b : R) :
-  (forall x, x \in `]a, b[%R -> derivable f x 1) ->
-  (forall x, x \in `]a, b[%R -> f^`() x <= 0) ->
-  {within `[a, b], continuous f} ->
-  forall x y, a <= x -> x <= y -> y <= b -> f y <= f x.
-Proof.
-move=> df dfle0 cf x y ax xy yb.
-by apply: ler0_derive1_le_cc; [ exact: df | exact: dfle0 | by [] | | | by [] ];
-  rewrite in_itv/= ?ax ?yb ?andbT/= ?(le_trans ax)// (le_trans _ yb).
-Qed.
-
 Section gtr0_derive1_lt.
 Context {R : realType} (f : R -> R) (a b : R).
 Hypothesis df : forall x, x \in `]a, b[%R -> derivable f x 1.
@@ -1928,20 +1915,6 @@ Proof. by rewrite -continuous_open_subspace//; exact: gtr0_derive1_lt. Qed.
 
 End gtr0_derive1_lt.
 
-#[deprecated(since="mathcomp-analysis 1.10.0",
-  note="use `gtr0_le_derive1` instead")]
-Lemma gtr0_derive1_incr (R : realType) (f : R -> R) (a b : R) :
-  (forall x, x \in `]a, b[%R -> derivable f x 1) ->
-  (forall x, x \in `]a, b[%R -> 0 < f^`() x) ->
-  {within `[a, b], continuous f}%classic ->
-  forall x y, a <= x -> x < y -> y <= b -> f x < f y.
-Proof.
-move=> abf abf' cf x y ax xy yb; apply: (@gtr0_derive1_lt_cc _ _ a b) => //;
-  rewrite in_itv/= ?ax ?yb ?andbT/=.
-- by rewrite (le_trans (ltW xy)).
-- by rewrite (le_trans _ (ltW xy)).
-Qed.
-
 Section ltr0_derive1_lt.
 Context {R : realType} (f : R -> R) (a b : R).
 Hypothesis df : forall x, x \in `]a, b[%R -> derivable f x 1.
@@ -1978,21 +1951,6 @@ Lemma ltr0_derive1_lt_oo : {in `]a, b[, continuous f} ->
 Proof. by rewrite -continuous_open_subspace//; exact: ltr0_derive1_lt. Qed.
 
 End ltr0_derive1_lt.
-
-#[deprecated(since="mathcomp-analysis 1.10.0",
-  note="use `ler0_derive1_lt_cc` instead")]
-Lemma ltr0_derive1_decr (R : realType) (f : R -> R) (a b : R) :
-  (forall x, x \in `]a, b[%R -> derivable f x 1) ->
-  (forall x, x \in `]a, b[%R -> f^`() x < 0) ->
-  {within `[a, b], continuous f}%classic ->
-  forall x y, a <= x -> x < y -> y <= b -> f y < f x.
-Proof.
-move=> df f'0 cf x y ax xy yb.
-apply: ltr0_derive1_lt_cc; [ exact: df | exact: f'0 | by [] | | | by [] ];
-  rewrite !in_itv/= ?ax ?yb ?andbT/=.
-  by rewrite (le_trans _ (ltW xy)).
-by rewrite (le_trans (ltW xy)).
-Qed.
 
 #[global] Hint Extern 0 (is_true (_ <= ?x)) => match goal with
     H : x \is_near _ |- _ =>

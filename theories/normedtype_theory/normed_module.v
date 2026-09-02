@@ -478,7 +478,7 @@ Definition self_sub (K : numDomainType) (V W : normedModType K)
 Arguments self_sub {K V W} f x /.
 
 Section NormedModule_numFieldType.
-Variables (K : numFieldType) (V : normedModType K).
+Context {K : numFieldType} {V : normedModType K}.
 
 Lemma normfZV (x : V) : x != 0 -> `| `|x|^-1 *: x | = 1.
 Proof. by rewrite -normr_eq0 -unitfE => /normrZV->. Qed.
@@ -1120,14 +1120,6 @@ move=> [:apoo] [:bnoo] [:poopoo] [:poonoo]; move: a b => [a| |] [b| |] //.
 Unshelve. all: end_near. Qed.
 
 End ecvg_realFieldType.
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `cvgeZl`")]
-Notation cvgeMl := cvgeZl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `is_cvgeZl`")]
-Notation is_cvgeMl := is_cvgeZl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `cvgeZr`")]
-Notation cvgeMr := cvgeZr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `is_cvgeZr`")]
-Notation is_cvgeMr := is_cvgeZr (only parsing).
 
 Section max_cts.
 Context {R : realType} {T : topologicalType}.
@@ -2382,8 +2374,7 @@ End bigcup_ointsub_lemmas.
    the union of disjoint open intervals *)
 Module OpenSetDisjointItvs.
 Section opensetdisjointitvs.
-Context {R : realType}.
-Variable U : set R.
+Context {R : realType} (U : set R).
 Hypothesis oU : open U.
 
 (**md We first work out a proof where disjoint open intervals are indexed by
@@ -2391,7 +2382,7 @@ Hypothesis oU : open U.
    `lt_disjoint_rat_seq`. This is the "sequence" of `bigcup_ointsub U` that
    are non-overlapping. *)
 Section rat_index.
-Variables (f : rat -> nat) (g : nat -> rat).
+Context (f : rat -> nat) (g : nat -> rat).
 Hypotheses (cfg : cancel f g) (cgf : cancel g f).
 
 Definition lt_disjoint := [set q | forall p, U (ratr p) ->
@@ -2552,8 +2543,7 @@ End OpenSetDisjointItvs.
 (* proof that an open set of real numbers can be written as
    the union of disjoint open intervals *)
 Section open_set_disjoint_real_intervals.
-Context {R : realType}.
-Variable U : set R.
+Context {R : realType} (U : set R).
 Hypothesis oU : open U.
 
 (* the sequence of non-overlapping open intervals that cover U *)
@@ -2575,7 +2565,7 @@ Proof. by rewrite /open_disjoint_itv; case: cid => //= I [_]. Qed.
 End open_set_disjoint_real_intervals.
 
 Section EquivalenceNorms.
-Variables (R : realType).
+Context {R : realType}.
 
 (* FIXME: Specialize to vector space with basis and expose this definition
    (see https://github.com/math-comp/analysis/issues/1911).

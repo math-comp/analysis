@@ -180,6 +180,45 @@
 
 - file `prodnormedzmodule.v`
 
+- in `uniform_structure.v`:
+  + notation `complete_ax` (deprecated)
+
+- in `derive.v`:
+  + lemmas `ler0_derive1_nincr`, `gtr0_derive1_incr`, `ltr0_derive1_decr` (deprecated since 1.10.0)
+
+- in `boolp.v`:
+  + notations `eq_fun2`, `eq_fun3`, `eq_forall2`, `eq_forall3`, `eq_exists3` (deprecated since 1.10.0)
+
+- in `set_interval.v`:
+  + notations `set_itv_infty_infty`, `set_itv_o_infty`, `set_itv_c_infty`,
+    `set_itv_infty_o`, `set_itv_infty_c`, `set_itv_pinfty_bnd`,
+    `set_itv_bnd_ninfty` (deprecated since 1.10.0)
+
+- in `real_interval.v:
+  + notations `tv_c_inftyEbigcap`, `itv_bnd_inftyEbigcup`, `itv_o_inftyEbigcup` (deprecated since 1.10.0)
+
+- in `hoelder.v`:
+  + notation `minkowski` (deprecated since 1.10.0)
+
+- in `kernel.v`:
+  + notations `Kernel_isSFinite_subdef`, `Kernel_isSFinite_subdef.Build`,
+    `SFiniteKernel_isFinite`, `SFiniteKernel_isFinite.Build`,
+    `FiniteKernel_isSubProbability`, `FiniteKernel_isSubProbability.Build`,
+    `SubProbability_isProbability`, `SubProbability_isProbability.Build` (deprecated since 1.10.0)
+
+- in `lebesgue_integral_fubini.v`:
+  + notations `fubini1a`, `fubini1b`, `fubini1`, `fubini2` (deprecated since 1.10.0)
+
+- in `lebesgue_Rintegral.v`:
+  + notation `le_normr_integral` (deprecated since 1.10.0)
+
+- in `measurable_function.v`
+  + notations `measurable_fun_prod`, `prod_measurable_funP`,
+    `measurable_pair1`, `measurable_pair2` (deprecated since 1.10.0)
+
+- in `normed_module.v`:
+  + notations `cvgeMl`, `is_cvgeMl`, `cvgeMr`, `is_cvgeMr` (deprecated since 1.10.0)
+
 ### Infrastructure
 
 ### Misc

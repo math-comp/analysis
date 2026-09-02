@@ -328,8 +328,7 @@ Arguments measurable_fun_bool {d1 T1 D f} b.
 
 Section mfun_measurableType.
 Context {d1} {T1 : measurableType d1} {d2} {T2 : measurableType d2}
-  {d3} {T3 : measurableType d3}.
-Variables (f : {mfun T2 >-> T3}) (g : {mfun T1 >-> T2}).
+  {d3} {T3 : measurableType d3} (f : {mfun T2 >-> T3}) (g : {mfun T1 >-> T2}).
 
 Let measurableT_comp_subproof : measurable_fun setT (f \o g).
 Proof. exact: measurableT_comp. Qed.
@@ -415,10 +414,6 @@ Lemma measurable_fun_pair (f : T -> T1) (g : T -> T2) :
 Proof. by move=> mf mg; exact/measurable_fun_pairP. Qed.
 
 End prod_measurable_fun.
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed `measurable_fun_pair`")]
-Notation measurable_fun_prod := measurable_fun_pair (only parsing).
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed `measurable_fun_pairP`")]
-Notation prod_measurable_funP := measurable_fun_pairP (only parsing).
 
 Section prod_measurable_proj.
 Context {d1 d2} {T1 : measurableType d1} {T2 : measurableType d2}.
@@ -528,9 +523,8 @@ by move=> mx my; apply: measurable_fun_ifT => //=; exact: measurableT_comp.
 Qed.
 
 Section pair_measurable_fun.
-Context d d1 d2 (T : measurableType d) (T1 : measurableType d1)
-  (T2 : measurableType d2).
-Variable f : T1 * T2 -> T.
+Context {d} {d1} {d2} {T : measurableType d} {T1 : measurableType d1}
+  {T2 : measurableType d2} (f : T1 * T2 -> T).
 
 Lemma pair1_measurable (x : T1) : measurable_fun [set: T2] (pair x).
 Proof.
@@ -551,10 +545,6 @@ End pair_measurable_fun.
   solve [apply: pair1_measurable] : core.
 #[global] Hint Extern 0 (measurable_fun _ (pair^~ _)) =>
   solve [apply: pair2_measurable] : core.
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed `pair1_measurable`")]
-Notation measurable_pair1 := pair1_measurable (only parsing).
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed `pair2_measurable`")]
-Notation measurable_pair2 := pair2_measurable (only parsing).
 
 (* [Lemma 14.13, Klenke 2014] *)
 Section measurable_section.

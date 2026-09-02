@@ -356,9 +356,6 @@ HB.mixin Record Uniform_isComplete T & PointedUniform T := {
 HB.structure Definition Complete :=
   {T of Uniform T & Uniform_isComplete T & isPointed T}.
 
-#[deprecated(since="mathcomp-analysis 2.0", note="use cauchy_cvg instead")]
-Notation complete_ax := cauchy_cvg (only parsing).
-
 Section completeType1.
 
 Context {T : completeType}.

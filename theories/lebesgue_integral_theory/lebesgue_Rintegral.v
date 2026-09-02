@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order ssralg ssrnum ssrint interval.
 From mathcomp Require Import interval_inference archimedean finmap.
@@ -51,8 +51,8 @@ Notation "\int [ mu ]_ x f" :=
   (Rintegral mu setT (fun x => f)%R) : ring_scope.
 
 Section Rintegral.
-Context d {T : measurableType d} {R : realType}.
-Variable mu : {measure set T -> \bar R}.
+Context d {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}).
 Implicit Types (D A B : set T) (f : T -> R).
 
 Lemma EFin_normr_Rintegral A f : measurable A ->
@@ -191,8 +191,6 @@ by rewrite /Rintegral integralB_EFin// fineB//; exact: integrable_fin_num.
 Qed.
 
 End Rintegral.
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `le_normr_Rintegral`")]
-Notation le_normr_integral := le_normr_Rintegral (only parsing).
 
 Section Rintegral_lebesgue_measure.
 Context {R : realType}.

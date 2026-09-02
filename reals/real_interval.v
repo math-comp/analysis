@@ -21,7 +21,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section interval_has.
-Variable R : realType.
+Context {R : realType}.
 Implicit Types x : R.
 
 Lemma has_sup_half x b (i : itv_bound R) : (i < BSide b x)%O ->
@@ -52,7 +52,7 @@ Hint Extern 0 (has_sup _) => solve[apply: has_sup1 | exact: has_sup_half] : core
 Hint Extern 0 (has_inf _) => solve[apply: has_inf1 | exact: has_inf_half]: core.
 
 Section interval_sup_inf.
-Variable R : realType.
+Context {R : realType}.
 Implicit Types x y : R.
 
 Let sup_itv_infty_bnd x b : sup [set` Interval -oo%O (BSide b x)] = x.
@@ -93,7 +93,7 @@ Proof. by move=> *; rewrite inf_itv. Qed.
 End interval_sup_inf.
 
 Section set_itv_realType.
-Variable R : realType.
+Context {R : realType}.
 Implicit Types x : R.
 
 Lemma itvNycEbigcap b x : `]-oo, x]%classic =
@@ -151,12 +151,6 @@ by rewrite in_itv /= andbT (lt_le_trans _ xny) // ltrDl invr_gt0.
 Qed.
 
 End set_itv_realType.
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `itvcyEbigcap`")]
-Notation itv_c_inftyEbigcap := itvcyEbigcap (only parsing).
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `itvbndyEbigcup`")]
-Notation itv_bnd_inftyEbigcup := itvbndyEbigcup (only parsing).
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `itvoyEbigcup`")]
-Notation itv_o_inftyEbigcup := itvoyEbigcup (only parsing).
 
 Coercion ereal_of_itv_bound T (b : itv_bound T) : \bar T :=
   match b with BSide _ y => y%:E | +oo%O => +oo%E | -oo%O => -oo%E end.
