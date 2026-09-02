@@ -10,6 +10,8 @@ From mathcomp Require Export filter.
 (* notions. The development of topological notions builds on "filtered types" *)
 (* by extending the hierarchy.                                                *)
 (*                                                                            *)
+(* In the identifiers, "nbhs" is an abbreviation for "neighborhoods".         *)
+(*                                                                            *)
 (* ## Mathematical structures                                                 *)
 (* ### Topology                                                               *)
 (* ```                                                                        *)
