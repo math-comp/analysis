@@ -24,7 +24,7 @@ In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the fol
 
 - [Authors](AUTHORS.md)
 - License: [CeCILL-C](LICENSE)
-- Compatible Rocq versions: Rocq 9.0 and 9.1 (or dev)
+- Compatible Rocq versions: Rocq 9.0--9.3 (or dev)
 - Additional dependencies:
   - [MathComp boot 2.6.0 or later](https://math-comp.github.io)
   - [MathComp finite-group 2.6.0 or later](https://math-comp.github.io)
@@ -66,7 +66,7 @@ Each file is documented in its header in ASCII.
 HTML rendering of the source code and inheritance diagrams for the
 mathematical structures that MathComp-Analysis adds on top of
 MathComp's ones (using [`rocqnavi`](https://github.com/affeldt-aist/rocqnavi)):
-- last version: [1.17.0](https://math-comp.github.io/analysis/htmldoc/1_17_0/index.html)
+- last version: [1.18.0](https://math-comp.github.io/analysis/htmldoc/1_18_0/index.html)
 - [master](https://math-comp.github.io/analysis/master/)
 
 Overview presentations:
