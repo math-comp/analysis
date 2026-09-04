@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.ereal</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 00a80bd 2026.09.03-20:52" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 00a80bd 2026.09.04-20:44" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -1308,7 +1308,7 @@ Qed.</div></details>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="ereal_sup_inum" class="id"><div name="ereal_sup_inum" class=" tooltip">ereal_sup_inum<span class='tooltip-area'><p>ereal_sup_inum :
 forall {R : realFieldType} [i : Itv.t],
 (Itv.def ext_num_sem i -> Prop) ->
-Itv.def ext_num_sem (Itv.real1 keep_nonpos i)
+Itv.def ext_num_sem (Itv.real1 IntItv.keep_nonpos i)
 
 ereal_sup_inum is not universe polymorphic
 Arguments ereal_sup_inum {R} [i] S%_function_scope
@@ -1337,7 +1337,7 @@ Qed.</div></details>
 <span class="vernacular">Canonical</span><span class="id"> </span><span id="ereal_inf_inum" class="id"><div name="ereal_inf_inum" class=" tooltip">ereal_inf_inum<span class='tooltip-area'><p>ereal_inf_inum :
 forall {R : realFieldType} [i : Itv.t],
 (Itv.def ext_num_sem i -> Prop) ->
-Itv.def ext_num_sem (Itv.real1 keep_nonneg i)
+Itv.def ext_num_sem (Itv.real1 IntItv.keep_nonneg i)
 
 ereal_inf_inum is not universe polymorphic
 Arguments ereal_inf_inum {R} [i] S%_function_scope

@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.sequences</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 00a80bd 2026.09.03-20:52" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 00a80bd 2026.09.04-20:44" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -1293,7 +1293,15 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> series_convergence</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="arithmetic" class="id"><div name="arithmetic" class=" tooltip">arithmetic<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L868' target='_blank'>Source code</a></span></div></span> (<span id="R:460" class="id"><div name="R:460" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L868' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.nmodule.html#Algebra.Zmodule.Exports.zmodType">zmodType</a></span>)<span class="id"> </span><span id="a:461" class="id"><div name="a:461" class=" tooltip">a<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L868' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="z:462" class="id"><div name="z:462" class=" tooltip">z<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L868' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#R:460">R</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04"> ^nat</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">[sequence</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#a:461">a</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#z:462">z</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#n:463">n</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">]_</a></span><span id="n:463" class="id"><div name="n:463" class=" tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L868' target='_blank'>Source code</a></span></div></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="arithmetic" class="id"><div name="arithmetic" class=" tooltip">arithmetic<span class='tooltip-area'><p>mk_sequence : forall [R : Type], R ^nat -> R ^nat
+
+mk_sequence is not universe polymorphic
+Arguments mk_sequence [R]%_type_scope f / _
+The reduction tactics unfold mk_sequence when applied to 2 arguments
+mk_sequence is transparent
+Expands to: Constant mathcomp.analysis.sequences.mk_sequence
+Declared in library mathcomp.analysis.sequences, line 156, characters 11-22
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L868' target='_blank'>Source code</a></span></div></span> (<span id="R:460" class="id"><div name="R:460" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L868' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.nmodule.html#Algebra.Zmodule.Exports.zmodType">zmodType</a></span>)<span class="id"> </span><span id="a:461" class="id"><div name="a:461" class=" tooltip">a<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L868' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="z:462" class="id"><div name="z:462" class=" tooltip">z<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L868' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#R:460">R</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04"> ^nat</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">[sequence</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#a:461">a</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#z:462">z</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#e9001f602764f7896bb1eb34bf606a23"> *+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#e9001f602764f7896bb1eb34bf606a23"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#n:463">n</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">]_</a></span><span id="n:463" class="id"><div name="n:463" class=" tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L868' target='_blank'>Source code</a></span></div></span>.<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#arithmetic">arithmetic</a></span><span class="id"> {R}</span><span class="id"> a</span><span class="id"> z</span><span class="id"> n</span><span class="id"> /</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="mulrn_arithmetic" class="id"><div name="mulrn_arithmetic" class=" tooltip">mulrn_arithmetic<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L871' target='_blank'>Source code</a></span></div></span> (<span id="R:464" class="id"><div name="R:464" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L871' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.nmodule.html#Algebra.Zmodule.Exports.zmodType">zmodType</a></span>)<span class="id"> :</span><span class="id"> @</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#Dummy.GRing.natmul">GRing</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#Dummy.GRing.natmul">natmul</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#R:464">R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#arithmetic">arithmetic</a></span><span class="id"> 0</span>.<br/>
@@ -1302,14 +1310,15 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#funeq2E">funeq2E</a></span><span class="id"> =&gt;</span><span class="id"> z</span><span class="id"> n</span><span class="id"> /=;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Theory.add0r">add0r</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="geometric" class="id"><div name="geometric" class=" tooltip">geometric<span class='tooltip-area'><p>mk_sequence : forall [R : Type], R ^nat -> R ^nat
+<span class="vernacular">Definition</span><span class="id"> </span><span id="geometric" class="id"><div name="geometric" class=" tooltip">geometric<span class='tooltip-area'><p>series : forall {V : GRing.Zmodule.Exports.zmodType}, V ^nat -> V ^nat
 
-mk_sequence is not universe polymorphic
-Arguments mk_sequence [R]%_type_scope f / _
-The reduction tactics unfold mk_sequence when applied to 2 arguments
-mk_sequence is transparent
-Expands to: Constant mathcomp.analysis.sequences.mk_sequence
-Declared in library mathcomp.analysis.sequences, line 156, characters 11-22
+series is not universe polymorphic
+Arguments series {V} u_ n : simpl never
+  (where some original arguments have been renamed)
+The reduction tactics never unfold series
+series is transparent
+Expands to: Constant mathcomp.analysis.sequences.series
+Declared in library mathcomp.analysis.sequences, line 456, characters 11-17
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L874' target='_blank'>Source code</a></span></div></span> (<span id="R:465" class="id"><div name="R:465" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L874' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.divalg.html#GRing.Field.Exports.fieldType">fieldType</a></span>)<span class="id"> </span><span id="a:466" class="id"><div name="a:466" class=" tooltip">a<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L874' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="z:467" class="id"><div name="z:467" class=" tooltip">z<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L874' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#R:465">R</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04"> ^nat</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">[sequence</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#a:466">a</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#z:467">z</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#n:468">n</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">]_</a></span><span id="n:468" class="id"><div name="n:468" class=" tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L874' target='_blank'>Source code</a></span></div></span>.<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#geometric">geometric</a></span><span class="id"> {R}</span><span class="id"> a</span><span class="id"> z</span><span class="id"> n</span><span class="id"> /</span>.<br/>
 <br/>
@@ -1409,15 +1418,15 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> /</span><span class="id"><a href="mathcomp.analysis.sequences.html#cvg_geometric_series">cvg_geometric_series</a></span><span class="id">/</span><span class="id"><a href="mathcomp.classical.filter.html#cvgP">cvgP</a></span><span class="id">;</span><span class="id"> apply</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="normed_series_of" class="id"><div name="normed_series_of" class=" tooltip">normed_series_of<span class='tooltip-area'><p>series : forall {V : GRing.Zmodule.Exports.zmodType}, V ^nat -> V ^nat
+<span class="vernacular">Definition</span><span class="id"> </span><span id="normed_series_of" class="id"><div name="normed_series_of" class=" tooltip">normed_series_of<span class='tooltip-area'><p>telescope : forall {V : GRing.Zmodule.Exports.zmodType}, V ^nat -> V ^nat
 
-series is not universe polymorphic
-Arguments series {V} u_ n : simpl never
+telescope is not universe polymorphic
+Arguments telescope {V} u_ n : simpl never
   (where some original arguments have been renamed)
-The reduction tactics never unfold series
-series is transparent
-Expands to: Constant mathcomp.analysis.sequences.series
-Declared in library mathcomp.analysis.sequences, line 456, characters 11-17
+The reduction tactics never unfold telescope
+telescope is transparent
+Expands to: Constant mathcomp.analysis.sequences.telescope
+Declared in library mathcomp.analysis.sequences, line 457, characters 11-20
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L949' target='_blank'>Source code</a></span></div></span> (<span id="K:504" class="id"><div name="K:504" class=" tooltip">K<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L949' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span>) (<span id="V:505" class="id"><div name="V:505" class=" tooltip">V<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L949' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.normed_module.html#NormedModule.Exports.normedModType">normedModType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#K:504">K</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="u_:506" class="id"><div name="u_:506" class=" tooltip">u_<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L950' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#V:505">V</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04"> ^nat</a></span>)<span class="id"> &amp;</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#phantom">phantom</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#V:505">V</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#series">series</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u_:506">u_</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#K:504">K</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04"> ^nat</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="mathcomp.analysis.sequences.html#bc57632c901d6913382d86a67ab7e110">[series</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#bc57632c901d6913382d86a67ab7e110"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#d57f8ea5c04769804302899e06b02be3">`|</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#u_:506">u_</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#n:507">n</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#d57f8ea5c04769804302899e06b02be3">|</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#bc57632c901d6913382d86a67ab7e110">]_</a></span><span id="n:507" class="id"><div name="n:507" class=" tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L951' target='_blank'>Source code</a></span></div></span>.<br/>
@@ -1542,15 +1551,29 @@ Qed.</div></details>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="exponential_series.R" class="id"><div name="exponential_series.R" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1054' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> x</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#exponential_series.R">R</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="exp_coeff" class="id"><div name="exp_coeff" class=" tooltip">exp_coeff<span class='tooltip-area'><p>telescope : forall {V : GRing.Zmodule.Exports.zmodType}, V ^nat -> V ^nat
+<span class="vernacular">Definition</span><span class="id"> </span><span id="exp_coeff" class="id"><div name="exp_coeff" class=" tooltip">exp_coeff<span class='tooltip-area'><p>harmonic : forall {R : fieldType}, R ^nat
 
-telescope is not universe polymorphic
-Arguments telescope {V} u_ n : simpl never
+harmonic is not universe polymorphic
+Arguments harmonic {R} n /
   (where some original arguments have been renamed)
-The reduction tactics never unfold telescope
-telescope is transparent
-Expands to: Constant mathcomp.analysis.sequences.telescope
-Declared in library mathcomp.analysis.sequences, line 457, characters 11-20
+The reduction tactics unfold harmonic when applied to 2 arguments
+harmonic is transparent
+Expands to: Constant mathcomp.analysis.sequences.harmonic
+Declared in library mathcomp.analysis.sequences, line 663, characters 11-19
+arithmetic_mean : forall [R : numDomainType], R ^nat -> R ^nat
+
+arithmetic_mean is not universe polymorphic
+Arguments arithmetic_mean [R] u_ _
+arithmetic_mean is transparent
+Expands to: Constant mathcomp.analysis.sequences.arithmetic_mean
+Declared in library mathcomp.analysis.sequences, line 703, characters 11-26
+harmonic_mean : forall [R : numDomainType], R ^nat -> R ^nat
+
+harmonic_mean is not universe polymorphic
+Arguments harmonic_mean [R] u_ _
+harmonic_mean is transparent
+Expands to: Constant mathcomp.analysis.sequences.harmonic_mean
+Declared in library mathcomp.analysis.sequences, line 706, characters 11-24
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1057' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="x:548" class="id"><div name="x:548" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1057' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">[sequence</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#x:548">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#663140372ac3b275aae871b74b140513"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#n:549">n</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.divalg.html#69c431a9c94f6f30a655bd7ddb59037b"> /</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.divalg.html#69c431a9c94f6f30a655bd7ddb59037b"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#n:549">n</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.ssrnat.html#fb85b56582e20c3ab47a4e55b1f6f111">`!</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">]_</a></span><span id="n:549" class="id"><div name="n:549" class=" tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1057' target='_blank'>Source code</a></span></div></span>.<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="exp" class="id"><div name="exp" class=" tooltip">exp<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1059' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#exp_coeff">exp_coeff</a></span>.<br/>
@@ -1679,15 +1702,13 @@ Qed.</div></details>
 <span class="vernacular">End</span><span class="id"> exponential_series</span>.<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#is_cvg_series_exp_coeff">is_cvg_series_exp_coeff</a></span><span class="id"> {R}</span><span class="id"> x</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="expR" class="id"><div name="expR" class=" tooltip">expR<span class='tooltip-area'><p>harmonic : forall {R : fieldType}, R ^nat
+<span class="vernacular">Definition</span><span class="id"> </span><span id="expR" class="id"><div name="expR" class=" tooltip">expR<span class='tooltip-area'><p>root_mean_square : forall [R : realType], R ^nat -> R ^nat
 
-harmonic is not universe polymorphic
-Arguments harmonic {R} n /
-  (where some original arguments have been renamed)
-The reduction tactics unfold harmonic when applied to 2 arguments
-harmonic is transparent
-Expands to: Constant mathcomp.analysis.sequences.harmonic
-Declared in library mathcomp.analysis.sequences, line 663, characters 11-19
+root_mean_square is not universe polymorphic
+Arguments root_mean_square [R] u_ _
+root_mean_square is transparent
+Expands to: Constant mathcomp.analysis.sequences.root_mean_square
+Declared in library mathcomp.analysis.sequences, line 710, characters 11-27
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1162' target='_blank'>Source code</a></span></div></span><span class="id"> {</span><span id="R:582" class="id"><div name="R:582" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1162' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span> (<span id="x:583" class="id"><div name="x:583" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1162' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#R:582">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#R:582">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#limn">limn</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#series">series</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#exp_coeff">exp_coeff</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#x:583">x</a></span>)).<br/>
 <br/>
 <div class="doc">Sequences of natural numbers </div>
@@ -1714,13 +1735,15 @@ Declared in library mathcomp.analysis.sequences, line 663, characters 11-19
 <span class="gallina-kwd">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.order.html#Order.TotalTheory.leNgt">leNgt</a></span><span class="id"> =&gt;</span><span class="id"> /</span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#negP">negP</a></span><span class="id">;</span><span class="id"> apply;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.preorder.html#Order.NatOrder.Exports.ltEnat">ltEnat</a></span><span class="id"> //=;</span><span class="id"> exact:</span><span class="id"> uf</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="nseries" class="id"><div name="nseries" class=" tooltip">nseries<span class='tooltip-area'><p>arithmetic_mean : forall [R : numDomainType], R ^nat -> R ^nat
+<span class="vernacular">Definition</span><span class="id"> </span><span id="nseries" class="id"><div name="nseries" class=" tooltip">nseries<span class='tooltip-area'><p>arithmetic : forall {R : GRing.Zmodule.Exports.zmodType}, R -> R -> R ^nat
 
-arithmetic_mean is not universe polymorphic
-Arguments arithmetic_mean [R] u_ _
-arithmetic_mean is transparent
-Expands to: Constant mathcomp.analysis.sequences.arithmetic_mean
-Declared in library mathcomp.analysis.sequences, line 703, characters 11-26
+arithmetic is not universe polymorphic
+Arguments arithmetic {R} (a z)%_ring_scope n /
+  (where some original arguments have been renamed)
+The reduction tactics unfold arithmetic when applied to 4 arguments
+arithmetic is transparent
+Expands to: Constant mathcomp.analysis.sequences.arithmetic
+Declared in library mathcomp.analysis.sequences, line 868, characters 11-21
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1186' target='_blank'>Source code</a></span></div></span> (<span id="u:591" class="id"><div name="u:591" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1186' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span>)<span class="id"> :=</span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="n:592" class="id"><div name="n:592" class=" tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1186' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.bigop.html#c0980ea1654f471922ad26f5837d48da">\sum_</a></span>(<span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.bigop.html#c0980ea1654f471922ad26f5837d48da"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.bigop.html#c0980ea1654f471922ad26f5837d48da"> </a></span><span id="k:595" class="id"><span id="k:594" class="id"><span id="k:593" class="id"><div name="k:595" class=" tooltip">k<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1186' target='_blank'>Source code</a></span></div></span></span></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.bigop.html#c0980ea1654f471922ad26f5837d48da"> &lt;</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.bigop.html#c0980ea1654f471922ad26f5837d48da"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#n:592">n</a></span>)<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.bigop.html#c0980ea1654f471922ad26f5837d48da"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#u:591">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#k:593">k</a></span>)<span class="id">%N</span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="le_nseries" class="id"><div name="le_nseries" class=" tooltip">le_nseries<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1188' target='_blank'>Source code</a></span></div></span> (<span id="u:596" class="id"><div name="u:596" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1188' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#a5aeb8c3f096bffee5d65fb0b6810e02">{homo</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#a5aeb8c3f096bffee5d65fb0b6810e02"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#nseries">nseries</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:596">u</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#a5aeb8c3f096bffee5d65fb0b6810e02"> :</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#a5aeb8c3f096bffee5d65fb0b6810e02"> </a></span><span id="a:599" class="id"><span id="a:597" class="id"><div name="a:599" class=" tooltip">a<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1188' target='_blank'>Source code</a></span></div></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#a5aeb8c3f096bffee5d65fb0b6810e02"> </a></span><span id="b:600" class="id"><span id="b:598" class="id"><div name="b:600" class=" tooltip">b<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1188' target='_blank'>Source code</a></span></div></span></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#a5aeb8c3f096bffee5d65fb0b6810e02"> /</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#a5aeb8c3f096bffee5d65fb0b6810e02"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#a:597">a</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.ssrnat.html#cb53cf0ee22c036a03b4a9281c68b5a3"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.ssrnat.html#cb53cf0ee22c036a03b4a9281c68b5a3"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#b:598">b</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#a5aeb8c3f096bffee5d65fb0b6810e02">}</a></span><span class="id">%N</span>.<br/>
@@ -1833,21 +1856,34 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Variables</span> (<span id="partial_esum.R" class="id"><div name="partial_esum.R" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1286' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span>) (<span id="partial_esum.u_" class="id"><div name="partial_esum.u_" class=" tooltip">u_<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1286' target='_blank'>Source code</a></span></div></span><span class="id"> :</span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#R:660">R</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="eseries" class="id"><div name="eseries" class=" tooltip">eseries<span class='tooltip-area'><p>harmonic_mean : forall [R : numDomainType], R ^nat -> R ^nat
+<span class="vernacular">Definition</span><span class="id"> </span><span id="eseries" class="id"><div name="eseries" class=" tooltip">eseries<span class='tooltip-area'><p>geometric : forall {R : fieldType}, R -> R -> R ^nat
 
-harmonic_mean is not universe polymorphic
-Arguments harmonic_mean [R] u_ _
-harmonic_mean is transparent
-Expands to: Constant mathcomp.analysis.sequences.harmonic_mean
-Declared in library mathcomp.analysis.sequences, line 706, characters 11-24
+geometric is not universe polymorphic
+Arguments geometric {R} (a z)%_ring_scope n /
+  (where some original arguments have been renamed)
+The reduction tactics unfold geometric when applied to 4 arguments
+geometric is transparent
+Expands to: Constant mathcomp.analysis.sequences.geometric
+Declared in library mathcomp.analysis.sequences, line 874, characters 11-20
+normed_series_of :
+forall {K : numDomainType} {V : normedModType K} (u_ : V ^nat),
+phantom V ^nat (series u_) -> K ^nat
+
+normed_series_of is not universe polymorphic
+Arguments normed_series_of {K V} u_ _ n /
+  (where some original arguments have been renamed)
+The reduction tactics unfold normed_series_of when applied to 5 arguments
+normed_series_of is transparent
+Expands to: Constant mathcomp.analysis.sequences.normed_series_of
+Declared in library mathcomp.analysis.sequences, line 949, characters 11-27
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1288' target='_blank'>Source code</a></span></div></span><span class="id"> :</span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#partial_esum.R">R</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">[sequence</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#98bc974fd64583a6d22eda494d2559c2">\sum_</a></span>(<span class="id">0</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#98bc974fd64583a6d22eda494d2559c2"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#98bc974fd64583a6d22eda494d2559c2"> </a></span><span id="k:666" class="id"><span id="k:665" class="id"><span id="k:664" class="id"><div name="k:666" class=" tooltip">k<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1288' target='_blank'>Source code</a></span></div></span></span></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#98bc974fd64583a6d22eda494d2559c2"> &lt;</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#98bc974fd64583a6d22eda494d2559c2"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#n:663">n</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#98bc974fd64583a6d22eda494d2559c2"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#partial_esum.u_">u_</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#k:664">k</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">]_</a></span><span id="n:663" class="id"><div name="n:663" class=" tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1288' target='_blank'>Source code</a></span></div></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="etelescope" class="id"><div name="etelescope" class=" tooltip">etelescope<span class='tooltip-area'><p>root_mean_square : forall [R : realType], R ^nat -> R ^nat
+<span class="vernacular">Definition</span><span class="id"> </span><span id="etelescope" class="id"><div name="etelescope" class=" tooltip">etelescope<span class='tooltip-area'><p>exp_coeff : forall [R : realType], R -> R ^nat
 
-root_mean_square is not universe polymorphic
-Arguments root_mean_square [R] u_ _
-root_mean_square is transparent
-Expands to: Constant mathcomp.analysis.sequences.root_mean_square
-Declared in library mathcomp.analysis.sequences, line 710, characters 11-27
+exp_coeff is not universe polymorphic
+Arguments exp_coeff [R] x%_ring_scope _
+exp_coeff is transparent
+Expands to: Constant mathcomp.analysis.sequences.exp_coeff
+Declared in library mathcomp.analysis.sequences, line 1057, characters 11-20
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1289' target='_blank'>Source code</a></span></div></span><span class="id"> :</span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#partial_esum.R">R</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">[sequence</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#partial_esum.u_">u_</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#n:667">n</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.ssrnat.html#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'-'_x"> -</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#partial_esum.u_">u_</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#n:667">n</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">]_</a></span><span id="n:667" class="id"><div name="n:667" class=" tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1289' target='_blank'>Source code</a></span></div></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eseriesEnat" class="id"><div name="eseriesEnat" class=" tooltip">eseriesEnat<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1291' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#eseries">eseries</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">[sequence</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#98bc974fd64583a6d22eda494d2559c2">\sum_</a></span>(<span class="id">0</span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#98bc974fd64583a6d22eda494d2559c2"> &lt;=</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#98bc974fd64583a6d22eda494d2559c2"> </a></span><span id="k:671" class="id"><span id="k:670" class="id"><span id="k:669" class="id"><div name="k:671" class=" tooltip">k<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1291' target='_blank'>Source code</a></span></div></span></span></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#98bc974fd64583a6d22eda494d2559c2"> &lt;</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#98bc974fd64583a6d22eda494d2559c2"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#n:668">n</a></span>)<span class="id"><a href="mathcomp.reals.constructive_ereal.html#98bc974fd64583a6d22eda494d2559c2"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#partial_esum.u_">u_</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#k:669">k</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">]_</a></span><span id="n:668" class="id"><div name="n:668" class=" tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L1291' target='_blank'>Source code</a></span></div></span>.<br/>
@@ -2819,43 +2855,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> mine_cvg_0</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sdrop" class="id"><div name="sdrop" class=" tooltip">sdrop<span class='tooltip-area'><p>arithmetic : forall {R : GRing.Zmodule.Exports.zmodType}, R -> R -> R ^nat
-
-arithmetic is not universe polymorphic
-Arguments arithmetic {R} (a z)%_ring_scope n /
-  (where some original arguments have been renamed)
-The reduction tactics unfold arithmetic when applied to 4 arguments
-arithmetic is transparent
-Expands to: Constant mathcomp.analysis.sequences.arithmetic
-Declared in library mathcomp.analysis.sequences, line 868, characters 11-21
-geometric : forall {R : fieldType}, R -> R -> R ^nat
-
-geometric is not universe polymorphic
-Arguments geometric {R} (a z)%_ring_scope n /
-  (where some original arguments have been renamed)
-The reduction tactics unfold geometric when applied to 4 arguments
-geometric is transparent
-Expands to: Constant mathcomp.analysis.sequences.geometric
-Declared in library mathcomp.analysis.sequences, line 874, characters 11-20
-normed_series_of :
-forall {K : numDomainType} {V : normedModType K} (u_ : V ^nat),
-phantom V ^nat (series u_) -> K ^nat
-
-normed_series_of is not universe polymorphic
-Arguments normed_series_of {K V} u_ _ n /
-  (where some original arguments have been renamed)
-The reduction tactics unfold normed_series_of when applied to 5 arguments
-normed_series_of is transparent
-Expands to: Constant mathcomp.analysis.sequences.normed_series_of
-Declared in library mathcomp.analysis.sequences, line 949, characters 11-27
-exp_coeff : forall [R : realType], R -> R ^nat
-
-exp_coeff is not universe polymorphic
-Arguments exp_coeff [R] x%_ring_scope _
-exp_coeff is transparent
-Expands to: Constant mathcomp.analysis.sequences.exp_coeff
-Declared in library mathcomp.analysis.sequences, line 1057, characters 11-20
-expR : forall {R : realType}, R -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sdrop" class="id"><div name="sdrop" class=" tooltip">sdrop<span class='tooltip-area'><p>expR : forall {R : realType}, R -> R
 
 expR is not universe polymorphic
 Arguments expR {R} x%_ring_scope
@@ -2869,6 +2869,24 @@ Arguments nseries u n%_nat_scope
 nseries is transparent
 Expands to: Constant mathcomp.analysis.sequences.nseries
 Declared in library mathcomp.analysis.sequences, line 1186, characters 11-18
+eseries : forall {R : numDomainType}, (\bar R) ^nat -> (\bar R) ^nat
+
+eseries is not universe polymorphic
+Arguments eseries {R} u_ n : simpl never
+  (where some original arguments have been renamed)
+The reduction tactics never unfold eseries
+eseries is transparent
+Expands to: Constant mathcomp.analysis.sequences.eseries
+Declared in library mathcomp.analysis.sequences, line 1288, characters 11-18
+etelescope : forall {R : numDomainType}, (\bar R) ^nat -> (\bar R) ^nat
+
+etelescope is not universe polymorphic
+Arguments etelescope {R} u_ n : simpl never
+  (where some original arguments have been renamed)
+The reduction tactics never unfold etelescope
+etelescope is transparent
+Expands to: Constant mathcomp.analysis.sequences.etelescope
+Declared in library mathcomp.analysis.sequences, line 1289, characters 11-21
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2090' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="T:1428" class="id"><div name="T:1428" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2090' target='_blank'>Source code</a></span></div></span> (<span id="u:1429" class="id"><div name="u:1429" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2090' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#T:1428">T</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span>)<span class="id"> </span><span id="n:1430" class="id"><div name="n:1430" class=" tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2090' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1429">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#k:1432">k</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span id="k:1432" class="id"><div name="k:1432" class=" tooltip">k<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2090' target='_blank'>Source code</a></span></div></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> in</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">[set</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span id="k:1431" class="id"><div name="k:1431" class=" tooltip">k<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2090' target='_blank'>Source code</a></span></div></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> |</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#k:1431">k</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.ssrnat.html#73030c22bc0b1fa771c65aa5414c65f9"> &gt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.ssrnat.html#73030c22bc0b1fa771c65aa5414c65f9"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#n:1430">n</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#075f2dd209aa707f1415a58a026b96d9">]</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">]</a></span><span class="id">%N</span>.<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> sdrop</span>.<br/>
@@ -2897,26 +2915,22 @@ Qed.</div></details>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="sups_infs.R" class="id"><div name="sups_infs.R" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2111' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">r</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#sups_infs.R">R</a></span>) (<span class="id">u</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#sups_infs.R">R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#32d8c90f413029fb5c0e82f0559cd7ef">^o</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sups" class="id"><div name="sups" class=" tooltip">sups<span class='tooltip-area'><p>eseries : forall {R : numDomainType}, (\bar R) ^nat -> (\bar R) ^nat
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sups" class="id"><div name="sups" class=" tooltip">sups<span class='tooltip-area'><p>sdrop : forall [T : Type], T ^nat -> nat -> set T
 
-eseries is not universe polymorphic
-Arguments eseries {R} u_ n : simpl never
-  (where some original arguments have been renamed)
-The reduction tactics never unfold eseries
-eseries is transparent
-Expands to: Constant mathcomp.analysis.sequences.eseries
-Declared in library mathcomp.analysis.sequences, line 1288, characters 11-18
+sdrop is not universe polymorphic
+Arguments sdrop [T]%_type_scope u n%_nat_scope _
+sdrop is transparent
+Expands to: Constant mathcomp.analysis.sequences.sdrop
+Declared in library mathcomp.analysis.sequences, line 2090, characters 11-16
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2114' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="u:1443" class="id"><div name="u:1443" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2114' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">[sequence</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#sup">sup</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#sdrop">sdrop</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1443">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#n:1444">n</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">]_</a></span><span id="n:1444" class="id"><div name="n:1444" class=" tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2114' target='_blank'>Source code</a></span></div></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="infs" class="id"><div name="infs" class=" tooltip">infs<span class='tooltip-area'><p>etelescope : forall {R : numDomainType}, (\bar R) ^nat -> (\bar R) ^nat
+<span class="vernacular">Definition</span><span class="id"> </span><span id="infs" class="id"><div name="infs" class=" tooltip">infs<span class='tooltip-area'><p>sups : forall [R : realType], (R^o) ^nat -> R ^nat
 
-etelescope is not universe polymorphic
-Arguments etelescope {R} u_ n : simpl never
-  (where some original arguments have been renamed)
-The reduction tactics never unfold etelescope
-etelescope is transparent
-Expands to: Constant mathcomp.analysis.sequences.etelescope
-Declared in library mathcomp.analysis.sequences, line 1289, characters 11-21
+sups is not universe polymorphic
+Arguments sups [R] u _
+sups is transparent
+Expands to: Constant mathcomp.analysis.sequences.sups
+Declared in library mathcomp.analysis.sequences, line 2114, characters 11-15
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2116' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="u:1445" class="id"><div name="u:1445" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2116' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">[sequence</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce"> </a></span><span class="id"><a href="mathcomp.reals.reals.html#inf">inf</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#sdrop">sdrop</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1445">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#n:1446">n</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#cd05220b1e247ab6208766198c31bdce">]_</a></span><span id="n:1446" class="id"><div name="n:1446" class=" tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2116' target='_blank'>Source code</a></span></div></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="supsN" class="id"><div name="supsN" class=" tooltip">supsN<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2118' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="u:1447" class="id"><div name="u:1447" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2118' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#sups">sups</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#a8ac36d488c8d5cdcfec5adcde894e5f">-%R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1447">u</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#infs">infs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1447">u</a></span>.<br/>
@@ -3078,22 +3092,27 @@ Qed.</div></details>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="limn_sup_limn_inf.R" class="id"><div name="limn_sup_limn_inf.R" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2248' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">r</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#limn_sup_limn_inf.R">R</a></span>) (<span class="id">u</span><span class="id"> v</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#limn_sup_limn_inf.R">R</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#32d8c90f413029fb5c0e82f0559cd7ef">^o</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="limn_sup" class="id"><div name="limn_sup" class=" tooltip">limn_sup<span class='tooltip-area'><p>sdrop : forall [T : Type], T ^nat -> nat -> set T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="limn_sup" class="id"><div name="limn_sup" class=" tooltip">limn_sup<span class='tooltip-area'><p>infs : forall [R : realType], (R^o) ^nat -> R ^nat
 
-sdrop is not universe polymorphic
-Arguments sdrop [T]%_type_scope u n%_nat_scope _
-sdrop is transparent
-Expands to: Constant mathcomp.analysis.sequences.sdrop
-Declared in library mathcomp.analysis.sequences, line 2090, characters 11-16
+infs is not universe polymorphic
+Arguments infs [R] u _
+infs is transparent
+Expands to: Constant mathcomp.analysis.sequences.infs
+Declared in library mathcomp.analysis.sequences, line 2116, characters 11-15
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2251' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="u:1481" class="id"><div name="u:1481" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2251' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#limn">limn</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#sups">sups</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1481">u</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="limn_inf" class="id"><div name="limn_inf" class=" tooltip">limn_inf<span class='tooltip-area'><p>sups : forall [R : realType], (R^o) ^nat -> R ^nat
+<span class="vernacular">Definition</span><span class="id"> </span><span id="limn_inf" class="id"><div name="limn_inf" class=" tooltip">limn_inf<span class='tooltip-area'><p>limn_sup :
+forall [R : realType],
+(R^o) ^nat ->
+join_order_topology_POrderedPointedTopological_between_Order_POrder_and_filter_PointedNbhs
+  (numFieldTopology.Real_sort__canonical__order_topology_POrderedPointedTopological
+     R)
 
-sups is not universe polymorphic
-Arguments sups [R] u _
-sups is transparent
-Expands to: Constant mathcomp.analysis.sequences.sups
-Declared in library mathcomp.analysis.sequences, line 2114, characters 11-15
+limn_sup is not universe polymorphic
+Arguments limn_sup [R] u
+limn_sup is transparent
+Expands to: Constant mathcomp.analysis.sequences.limn_sup
+Declared in library mathcomp.analysis.sequences, line 2251, characters 11-19
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2253' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="u:1482" class="id"><div name="u:1482" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2253' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#limn">limn</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#infs">infs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1482">u</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="limn_infN" class="id"><div name="limn_infN" class=" tooltip">limn_infN<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2255' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="u:1483" class="id"><div name="u:1483" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2255' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#cvgn">cvgn</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1483">u</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#limn_inf">limn_inf</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#a8ac36d488c8d5cdcfec5adcde894e5f">-%R</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1483">u</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#limn_sup">limn_sup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1483">u</a></span>.<br/>
@@ -3272,27 +3291,29 @@ Qed.</div></details>
 <span class="vernacular">Implicit</span><span class="id"> Types</span> (<span class="id">u</span><span class="id"> :</span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#esups_einfs.R">R</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span>).<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="esups" class="id"><div name="esups" class=" tooltip">esups<span class='tooltip-area'><p>infs : forall [R : realType], (R^o) ^nat -> R ^nat
-
-infs is not universe polymorphic
-Arguments infs [R] u _
-infs is transparent
-Expands to: Constant mathcomp.analysis.sequences.infs
-Declared in library mathcomp.analysis.sequences, line 2116, characters 11-15
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2405' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="u:1506" class="id"><div name="u:1506" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2405' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">[sequence</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65"> </a></span><span class="id"><a href="mathcomp.analysis.ereal.html#ereal_sup">ereal_sup</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#sdrop">sdrop</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1506">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#n:1507">n</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">]_</a></span><span id="n:1507" class="id"><div name="n:1507" class=" tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2405' target='_blank'>Source code</a></span></div></span>.<br/>
-<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="einfs" class="id"><div name="einfs" class=" tooltip">einfs<span class='tooltip-area'><p>limn_sup :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="esups" class="id"><div name="esups" class=" tooltip">esups<span class='tooltip-area'><p>limn_inf :
 forall [R : realType],
 (R^o) ^nat ->
-join_order_topology_POrderedPointedTopological_between_Order_POrder_and_filter_PointedNbhs
-  (numFieldTopology.Real_sort__canonical__order_topology_POrderedPointedTopological
+join_pseudometric_normed_Zmodule_PseudoMetricNormedZmod0_between_Algebra_BaseZmodule_and_filter_PointedNbhs
+  (numFieldNormedType.Real_sort__canonical__pseudometric_normed_Zmodule_PseudoMetricNormedZmod0
      R)
 
-limn_sup is not universe polymorphic
-Arguments limn_sup [R] u
-limn_sup is transparent
-Expands to: Constant mathcomp.analysis.sequences.limn_sup
-Declared in library mathcomp.analysis.sequences, line 2251, characters 11-19
+limn_inf is not universe polymorphic
+Arguments limn_inf [R] u
+limn_inf is transparent
+Expands to: Constant mathcomp.analysis.sequences.limn_inf
+Declared in library mathcomp.analysis.sequences, line 2253, characters 11-19
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2405' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="u:1506" class="id"><div name="u:1506" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2405' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">[sequence</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65"> </a></span><span class="id"><a href="mathcomp.analysis.ereal.html#ereal_sup">ereal_sup</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#sdrop">sdrop</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1506">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#n:1507">n</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">]_</a></span><span id="n:1507" class="id"><div name="n:1507" class=" tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2405' target='_blank'>Source code</a></span></div></span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="einfs" class="id"><div name="einfs" class=" tooltip">einfs<span class='tooltip-area'><p>esups :
+forall {R : realType},
+(\bar R) ^nat -> constructive_ereal_extended__canonical__Order_POrder ^nat
+
+esups is not universe polymorphic
+Arguments esups {R} u _
+esups is transparent
+Expands to: Constant mathcomp.analysis.sequences.esups
+Declared in library mathcomp.analysis.sequences, line 2405, characters 11-16
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2407' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="u:1508" class="id"><div name="u:1508" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2407' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">[sequence</a></span><span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65"> </a></span><span class="id"><a href="mathcomp.analysis.ereal.html#ereal_inf">ereal_inf</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#sdrop">sdrop</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1508">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#n:1509">n</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#2c0dce88808fbe490e9af47ca46d6b65">]_</a></span><span id="n:1509" class="id"><div name="n:1509" class=" tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2407' target='_blank'>Source code</a></span></div></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="esupsN" class="id"><div name="esupsN" class=" tooltip">esupsN<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2409' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="u:1510" class="id"><div name="u:1510" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2409' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#esups">esups</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#b9ea624cf1ed6f77d648bedb1e978b55">-%E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1510">u</a></span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#b9ea624cf1ed6f77d648bedb1e978b55">-%E</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> \o</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#687e14754dadb7c0b04f27d8f71d2638"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#einfs">einfs</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1510">u</a></span>.<br/>
@@ -3395,29 +3416,22 @@ Qed.</div></details>
 <span class="vernacular">Implicit</span><span class="gallina-kwd"> Type</span> (<span class="id">u</span><span class="id"> :</span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#limn_esup_einf.R">R</a></span>)<span class="id"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span>).<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="limn_esup" class="id"><div name="limn_esup" class=" tooltip">limn_esup<span class='tooltip-area'><p>limn_inf :
-forall [R : realType],
-(R^o) ^nat ->
-join_pseudometric_normed_Zmodule_PseudoMetricNormedZmod0_between_Algebra_BaseZmodule_and_filter_PointedNbhs
-  (numFieldNormedType.Real_sort__canonical__pseudometric_normed_Zmodule_PseudoMetricNormedZmod0
-     R)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="limn_esup" class="id"><div name="limn_esup" class=" tooltip">limn_esup<span class='tooltip-area'><p>einfs : forall {R : realType}, (\bar R) ^nat -> (\bar R) ^nat
 
-limn_inf is not universe polymorphic
-Arguments limn_inf [R] u
-limn_inf is transparent
-Expands to: Constant mathcomp.analysis.sequences.limn_inf
-Declared in library mathcomp.analysis.sequences, line 2253, characters 11-19
+einfs is not universe polymorphic
+Arguments einfs {R} u _
+einfs is transparent
+Expands to: Constant mathcomp.analysis.sequences.einfs
+Declared in library mathcomp.analysis.sequences, line 2407, characters 11-16
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2483' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="u:1535" class="id"><div name="u:1535" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2483' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.ereal_normedtype.html#limf_esup">limf_esup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1535">u</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.filter.html#228a5fbd8d7ef28f21231bccff88d0b0">\oo</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="limn_einf" class="id"><div name="limn_einf" class=" tooltip">limn_einf<span class='tooltip-area'><p>esups :
-forall {R : realType},
-(\bar R) ^nat -> constructive_ereal_extended__canonical__Order_POrder ^nat
+<span class="vernacular">Definition</span><span class="id"> </span><span id="limn_einf" class="id"><div name="limn_einf" class=" tooltip">limn_einf<span class='tooltip-area'><p>limn_esup : forall {R : realType}, (\bar R) ^nat -> \bar R
 
-esups is not universe polymorphic
-Arguments esups {R} u _
-esups is transparent
-Expands to: Constant mathcomp.analysis.sequences.esups
-Declared in library mathcomp.analysis.sequences, line 2405, characters 11-16
+limn_esup is not universe polymorphic
+Arguments limn_esup {R} u
+limn_esup is transparent
+Expands to: Constant mathcomp.analysis.sequences.limn_esup
+Declared in library mathcomp.analysis.sequences, line 2483, characters 11-20
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2485' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="u:1536" class="id"><div name="u:1536" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2485' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-'_x">-</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#limn_esup">limn_esup</a></span> (<span class="id"><a href="mathcomp.reals.constructive_ereal.html#bf80dd271000fa448e03c4c14365c369">\-</a></span><span class="id"><a href="mathcomp.reals.constructive_ereal.html#bf80dd271000fa448e03c4c14365c369"> </a></span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1536">u</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="limn_esup_lim" class="id"><div name="limn_esup_lim" class=" tooltip">limn_esup_lim<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2487' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="u:1537" class="id"><div name="u:1537" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2487' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#limn_esup">limn_esup</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1537">u</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.filter.html#limn">limn</a></span> (<span class="id"><a href="mathcomp.analysis.sequences.html#esups">esups</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#u:1537">u</a></span>).<br/>
@@ -3820,21 +3834,7 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="adjacent_cut.R" class="id"><div name="adjacent_cut.R" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/sequences.v#L2832' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> L</span><span class="id"> D</span><span class="id"> E</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.sequences.html#adjacent_cut.R">R</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="adjacent_set" class="id"><div name="adjacent_set" class=" tooltip">adjacent_set<span class='tooltip-area'><p>einfs : forall {R : realType}, (\bar R) ^nat -> (\bar R) ^nat
-
-einfs is not universe polymorphic
-Arguments einfs {R} u _
-einfs is transparent
-Expands to: Constant mathcomp.analysis.sequences.einfs
-Declared in library mathcomp.analysis.sequences, line 2407, characters 11-16
-limn_esup : forall {R : realType}, (\bar R) ^nat -> \bar R
-
-limn_esup is not universe polymorphic
-Arguments limn_esup {R} u
-limn_esup is transparent
-Expands to: Constant mathcomp.analysis.sequences.limn_esup
-Declared in library mathcomp.analysis.sequences, line 2483, characters 11-20
-limn_einf : forall {R : realType}, (\bar R) ^nat -> \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="adjacent_set" class="id"><div name="adjacent_set" class=" tooltip">adjacent_set<span class='tooltip-area'><p>limn_einf : forall {R : realType}, (\bar R) ^nat -> \bar R
 
 limn_einf is not universe polymorphic
 Arguments limn_einf {R} u
