@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.topology_theory.quotient_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 00a80bd 2026.09.04-20:44" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 00a80bd 2026.09.05-20:24" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -282,7 +282,16 @@
 <br/>
 <span class="vernacular">Definition</span><span class="id"> </span><span id="quotient_open" class="id"><div name="quotient_open" class=" tooltip">quotient_open<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/topology_theory/quotient_topology.v#L37' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="U:5" class="id"><div name="U:5" class=" tooltip">U<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/topology_theory/quotient_topology.v#L37' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.generic_quotient.html#3337bf2cd4a8dc684c396fc9814b46a9">\pi_</a></span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#Q">Q</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#U:5">U</a></span>).<br/>
 <br/>
-<span class="id">Program</span><span class="vernacular"> Definition</span><span class="id"> </span><span id="quotient_topologicalType_mixin" class="id"><div name="quotient_topologicalType_mixin" class=" tooltip">quotient_topologicalType_mixin<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/topology_theory/quotient_topology.v#L39' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><br/>
+<span class="id">Program</span><span class="vernacular"> Definition</span><span class="id"> </span><span id="quotient_topologicalType_mixin" class="id"><div name="quotient_topologicalType_mixin" class=" tooltip">quotient_topologicalType_mixin<span class='tooltip-area'><p>set_nbhs : forall {T : topologicalType}, set T -> set (set T)
+
+set_nbhs is not universe polymorphic
+Arguments set_nbhs {T} A%_classical_set_scope _
+set_nbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.separation_axioms.set_nbhs
+Declared in
+library mathcomp.analysis.topology_theory.separation_axioms, line 66, characters 11-19
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/theories/topology_theory/quotient_topology.v#L39' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id">@</span><span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#isOpenTopological.Build">isOpenTopological</a></span>.<span class="id"><a href="mathcomp.analysis.topology_theory.topology_structure.html#isOpenTopological.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#Q">Q</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.topology_theory.quotient_topology.html#quotient_open">quotient_open</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span>.<br/>
 <details>
 <summary class="toggleproof">Next Obligation.</summary>

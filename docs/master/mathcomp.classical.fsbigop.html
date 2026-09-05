@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.classical.fsbigop</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 00a80bd 2026.09.04-20:44" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 00a80bd 2026.09.05-20:24" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -288,13 +288,17 @@
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#tt">tt</a></span>. Qed.</div></details>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="finite_support" class="id"><div name="finite_support" class=" tooltip">finite_support<span class='tooltip-area'><p>nonempty : forall {T : Type}, {pred T} -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="finite_support" class="id"><div name="finite_support" class=" tooltip">finite_support<span class='tooltip-area'><p>prop_within :
+forall {T : predArgType},
+mem_pred T ->
+forall [P : {pred T} -> Prop],
+phantom Prop (forall A : {pred T}, P A : Prop) -> Prop
 
-nonempty is not universe polymorphic
-Arguments nonempty {T}%_type_scope A
-nonempty is transparent
-Expands to: Constant mathcomp.classical.wochoice.nonempty
-Declared in library mathcomp.classical.wochoice, line 41, characters 11-19
+prop_within is not universe polymorphic
+Arguments prop_within {T}%_type_scope d [P]%_function_scope _
+prop_within is transparent
+Expands to: Constant mathcomp.classical.wochoice.prop_within
+Declared in library mathcomp.classical.wochoice, line 50, characters 11-22
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/classical/fsbigop.v#L41' target='_blank'>Source code</a></span></div></span><span class="id"> {</span><span id="I:5" class="id"><div name="I:5" class=" tooltip">I<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/classical/fsbigop.v#L41' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.choice.html#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span><span class="id"> {</span><span id="T:6" class="id"><div name="T:6" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/classical/fsbigop.v#L41' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> Type}</span> (<span id="idx:7" class="id"><div name="idx:7" class=" tooltip">idx<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/classical/fsbigop.v#L41' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#T:6">T</a></span>) (<span id="D:8" class="id"><div name="D:8" class=" tooltip">D<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/classical/fsbigop.v#L41' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#I:5">I</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="F:9" class="id"><div name="F:9" class=" tooltip">F<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/00a80bdd280330eb64f7eaf6a4ead748c323b46a/classical/fsbigop.v#L42' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#I:5">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.fsbigop.html#T:6">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#seq">seq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#I:5">I</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#locked_with">locked_with</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#finite_index_key">finite_index_key</a></span> (<span class="id"><a href="mathcomp.classical.cardinality.html#fset_set">fset_set</a></span> (<span class="id"><a href="mathcomp.classical.fsbigop.html#D:8">D</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id"><a href="mathcomp.classical.fsbigop.html#F:9">F</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> @^-1`</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#9017aea2311f0e1b346e16db298ca58c"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3dde060273a7d21198e50a79e780aafd">[set~</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3dde060273a7d21198e50a79e780aafd"> </a></span><span class="id"><a href="mathcomp.classical.fsbigop.html#idx:7">idx</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#3dde060273a7d21198e50a79e780aafd">]</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.fsbigop.html#I:5">I</a></span>)).<br/>
