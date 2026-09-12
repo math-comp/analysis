@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.lebesgue_measure</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 921d430 2026.09.11-20:55" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 921d430 2026.09.12-20:38" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -1439,14 +1439,17 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> lebesgue_regularity</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="vitali_cover" class="id"><div name="vitali_cover" class=" tooltip">vitali_cover<span class='tooltip-area'><p>elebesgue_measure : forall {R : realType}, set \bar R -> \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="vitali_cover" class="id"><div name="vitali_cover" class=" tooltip">vitali_cover<span class='tooltip-area'><p>vitali_cover :
+forall {R : numFieldType},
+set R -> forall [I : Type], (I -> set R) -> set I -> Prop
 
-elebesgue_measure is not universe polymorphic
-Arguments elebesgue_measure {R} _%_classical_set_scope
-elebesgue_measure is transparent
-Expands to: Constant mathcomp.analysis.lebesgue_measure.elebesgue_measure
+vitali_cover is not universe polymorphic
+Arguments vitali_cover {R} E%_classical_set_scope 
+  [I]%_type_scope B%_function_scope D%_classical_set_scope
+vitali_cover is transparent
+Expands to: Constant mathcomp.analysis.lebesgue_measure.vitali_cover
 Declared in
-library mathcomp.analysis.lebesgue_measure, line 550, characters 11-28
+library mathcomp.analysis.lebesgue_measure, line 1110, characters 11-23
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/theories/lebesgue_measure.v#L1110' target='_blank'>Source code</a></span></div></span><span class="id"> {</span><span id="R:235" class="id"><div name="R:235" class=" tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/theories/lebesgue_measure.v#L1110' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numfield.html#Num.NumField.Exports.numFieldType">numFieldType</a></span><span class="id">}</span> (<span id="E:236" class="id"><div name="E:236" class=" tooltip">E<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/theories/lebesgue_measure.v#L1110' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#R:235">R</a></span>)<span class="id"> </span><span id="I:237" class="id"><div name="I:237" class=" tooltip">I<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/theories/lebesgue_measure.v#L1110' target='_blank'>Source code</a></span></div></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="B:238" class="id"><div name="B:238" class=" tooltip">B<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/theories/lebesgue_measure.v#L1111' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#I:237">I</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#R:235">R</a></span>) (<span id="D:239" class="id"><div name="D:239" class=" tooltip">D<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/theories/lebesgue_measure.v#L1111' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#I:237">I</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="i:240" class="id"><div name="i:240" class=" tooltip">i<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/theories/lebesgue_measure.v#L1112' target='_blank'>Source code</a></span></div></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.normedtype_theory.vitali_lemma.html#is_ball">is_ball</a></span> (<span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#B:238">B</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_measure.html#i:240">i</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><br/>

@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.classical.boolp</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 921d430 2026.09.11-20:55" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 921d430 2026.09.12-20:38" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -686,20 +686,15 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#propeqE">propeqE</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#rwP">rwP</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="asbool" class="id"><div name="asbool" class=" tooltip">asbool<span class='tooltip-area'><p>inj :
-forall {aT rT : nonPropType} {A : set aT} {f : {inj A >-> rT}},
-{in A &, injective f}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="asbool" class="id"><div name="asbool" class=" tooltip">asbool<span class='tooltip-area'><p>phant_inv :
+forall [aT rT : Type] [f : { inv aT >-> rT}],
+phantom (aT -> rT) f -> rT -> aT
 
-inj is not universe polymorphic
-Expanded type for implicit arguments
-inj :
-forall {aT rT : nonPropType} {A : set aT} {f : {inj A >-> rT}} [x y : aT],
-x \in A -> y \in A -> f x = f y -> x = y
-
-Arguments inj {aT rT} {A}%_classical_set_scope {f} [x y] _ _ _
-inj is transparent
-Expands to: Constant mathcomp.classical.functions.inj
-Declared in library mathcomp.classical.functions, line 485, characters 11-14
+phant_inv is not universe polymorphic
+Arguments phant_inv [aT rT]%_type_scope [f] _ _
+phant_inv is transparent
+Expands to: Constant mathcomp.classical.functions.phant_inv
+Declared in library mathcomp.classical.functions, line 293, characters 11-20
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L324' target='_blank'>Source code</a></span></div></span> (<span id="P:292" class="id"><div name="P:292" class=" tooltip">P<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L324' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Prop</span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#pselect">pselect</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#P:292">P</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span>.<br/>
 <br/>
 <span class="vernacular">Notation</span> <span id="cd531d9d29c2247dfa84f185bc7200e2" class="id"><div name="cd531d9d29c2247dfa84f185bc7200e2" class=" tooltip">&quot;`[&lt; P &gt;]&quot;<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L326' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.classical.boolp.html#asbool">asbool</a></span><span class="id"> P</span>)<span class="id"> :</span><span class="id"> bool_scope</span>.<br/>
@@ -788,43 +783,36 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> []</span><span class="id"> [];</span><span class="id"> rewrite</span><span class="id"> ?</span>(<span class="id"><a href="mathcomp.classical.boolp.html#trueE">trueE</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#falseE">falseE</a></span>)<span class="id"> ?</span><span class="id"><a href="mathcomp.classical.boolp.html#propeqE">propeqE</a></span><span class="id">;</span><span class="id"> tauto</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="gen_eq" class="id"><div name="gen_eq" class=" tooltip">gen_eq<span class='tooltip-area'><p>phant_inj :
-forall [aT rT : Type] [A : set aT] [f : {inj A >-> rT}],
-phantom (aT -> rT) f -> {in A &, injective f}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="gen_eq" class="id"><div name="gen_eq" class=" tooltip">gen_eq<span class='tooltip-area'><p>phant_funS :
+forall [aT rT : Type] [A : set aT] [B : set rT] [f : {fun A >-> B}],
+phantom (aT -> rT) f -> set_fun A B f
 
-phant_inj is not universe polymorphic
+phant_funS is not universe polymorphic
 Expanded type for implicit arguments
-phant_inj :
-forall [aT rT : Type] [A : set aT] [f : {inj A >-> rT}],
-phantom (aT -> rT) f ->
-forall [x y : notProp aT], x \in A -> y \in A -> f x = f y -> x = y
+phant_funS :
+forall [aT rT : Type] [A : set aT] [B : set rT] [f : {fun A >-> B}],
+phantom (aT -> rT) f -> forall [x : aT], [eta A] x -> B (f x)
 
-Arguments phant_inj [aT rT]%_type_scope [A]%_classical_set_scope 
-  [f] _ [x y] _ _ _
-phant_inj is transparent
-Expands to: Constant mathcomp.classical.functions.phant_inj
-Declared in library mathcomp.classical.functions, line 487, characters 11-20
+Arguments phant_funS [aT rT]%_type_scope [A B]%_classical_set_scope 
+  [f] _ [x] _
+phant_funS is transparent
+Expands to: Constant mathcomp.classical.functions.phant_funS
+Declared in library mathcomp.classical.functions, line 406, characters 11-21
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L380' target='_blank'>Source code</a></span></div></span> (<span id="T:312" class="id"><div name="T:312" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L380' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>) (<span id="u:313" class="id"><div name="u:313" class=" tooltip">u<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L380' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="v:314" class="id"><div name="v:314" class=" tooltip">v<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L380' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:312">T</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span><span class="id"><a href="mathcomp.classical.boolp.html#u:313">u</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#v:314">v</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">&gt;]</a></span>.<br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="gen_eqP" class="id"><div name="gen_eqP" class=" tooltip">gen_eqP<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L381' target='_blank'>Source code</a></span></div></span> (<span id="T:315" class="id"><div name="T:315" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L381' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#MathCompCompatEquality.Equality.axiom">Equality</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#MathCompCompatEquality.Equality.axiom">axiom</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.boolp.html#gen_eq">gen_eq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:315">T</a></span>).<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> move=&gt;</span><span class="id"> x</span><span class="id"> y;</span><span class="id"> apply:</span> (<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#iffP">iffP</a></span> (<span class="id"><a href="mathcomp.classical.boolp.html#asboolP">asboolP</a></span><span class="id"> _</span>)). Qed.</div></details>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="gen_eqMixin" class="id"><div name="gen_eqMixin" class=" tooltip">gen_eqMixin<span class='tooltip-area'><p>inj_hint :
-forall {aT rT : Type} {A : set aT} {f : {inj A >-> rT}},
-{in A &, injective f}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="gen_eqMixin" class="id"><div name="gen_eqMixin" class=" tooltip">gen_eqMixin<span class='tooltip-area'><p>fun_image_sub :
+forall {aT rT : Type} {A : set aT} {B : set rT} (f : {fun A >-> B}),
+([set f x | x in [eta A]] `<=` [eta B])%classic
 
-inj_hint is not universe polymorphic
-Expanded type for implicit arguments
-inj_hint :
-forall {aT rT : Type} {A : set aT} {f : {inj A >-> rT}} [x y : aT],
-x \in A -> y \in A -> f x = f y -> x = y
-
-Arguments inj_hint {aT rT}%_type_scope {A}%_classical_set_scope 
-  {f} [x y] _ _ _
-inj_hint is transparent
-Expands to: Constant mathcomp.classical.functions.inj_hint
-Declared in library mathcomp.classical.functions, line 491, characters 11-19
+fun_image_sub is not universe polymorphic
+Arguments fun_image_sub {aT rT}%_type_scope {A B}%_classical_set_scope f t _
+fun_image_sub is transparent
+Expands to: Constant mathcomp.classical.functions.fun_image_sub
+Declared in library mathcomp.classical.functions, line 413, characters 11-24
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L383' target='_blank'>Source code</a></span></div></span> (<span id="T:316" class="id"><div name="T:316" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L383' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#hasDecEq">hasDecEq</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:316">T</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#hasDecEq.Build">hasDecEq</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#hasDecEq.Build">Build</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:316">T</a></span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.boolp.html#gen_eqP">gen_eqP</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:316">T</a></span>).<br/>
 <br/>
@@ -839,20 +827,20 @@ Declared in library mathcomp.classical.functions, line 491, characters 11-19
 <br/>
 <span class="vernacular">Section</span><span class="id"> classicType</span>.<br/>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="classicType.T" class="id"><div name="classicType.T" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L396' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="classicType" class="id"><div name="classicType" class=" tooltip">classicType<span class='tooltip-area'><p>phant_funK :
-forall [aT rT : Type] [A : set aT] [f : {splitinj A >-> rT}],
-phantom (aT -> rT) f -> {in A, cancel f f^-1}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="classicType" class="id"><div name="classicType" class=" tooltip">classicType<span class='tooltip-area'><p>mem_fun :
+forall [aT rT : Type] [A : set aT] [B : set rT] (f : {fun A >-> B}),
+{homo f : x / x \in [eta A] >-> x \in [eta B]}
 
-phant_funK is not universe polymorphic
+mem_fun is not universe polymorphic
 Expanded type for implicit arguments
-phant_funK :
-forall [aT rT : Type] [A : set aT] [f : {splitinj A >-> rT}],
-phantom (aT -> rT) f -> forall [x : aT], x \in A -> f^-1 (f x) = x
+mem_fun :
+forall [aT rT : Type] [A : set aT] [B : set rT] (f : {fun A >-> B}) [x : aT],
+(fun x0 : aT => is_true (x0 \in [eta A])) x -> (f x \in [eta B]) = true
 
-Arguments phant_funK [aT rT]%_type_scope [A]%_classical_set_scope [f] _ [x] _
-phant_funK is transparent
-Expands to: Constant mathcomp.classical.functions.phant_funK
-Declared in library mathcomp.classical.functions, line 504, characters 11-21
+Arguments mem_fun [aT rT]%_type_scope [A B]%_classical_set_scope f [x] _
+mem_fun is transparent
+Expands to: Constant mathcomp.classical.functions.mem_fun
+Declared in library mathcomp.classical.functions, line 418, characters 11-18
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L397' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#classicType.T">T</a></span>.<br/>
 <span id="boolp_classicType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_11" class="id"><div name="boolp_classicType__canonical__eqtype_Equality" class=" tooltip">HB<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L398' target='_blank'>Source code</a></span></div></span></span>.<span id="boolp_classicType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_11" class="id"><div name="boolp_classicType__canonical__eqtype_Equality" class=" tooltip">instance<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L398' target='_blank'>Source code</a></span></div></span></span><span id="boolp_classicType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_11" class="id"><div name="boolp_classicType__canonical__eqtype_Equality" class=" tooltip"> Definition<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L398' target='_blank'>Source code</a></span></div></span></span><span id="boolp_classicType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_11" class="id"><div name="boolp_classicType__canonical__eqtype_Equality" class=" tooltip"> _<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L398' target='_blank'>Source code</a></span></div></span></span><span id="boolp_classicType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_11" class="id"><div name="boolp_classicType__canonical__eqtype_Equality" class=" tooltip"> :=<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L398' target='_blank'>Source code</a></span></div></span></span><span id="boolp_classicType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_factory_11" class="id"><div name="boolp_classicType__canonical__eqtype_Equality" class=" tooltip"> gen_eqMixin<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L398' target='_blank'>Source code</a></span></div></span></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#classicType">classicType</a></span>.<br/>
 <span id="boolp_classicType__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_13" class="id"><div name="boolp_classicType__canonical__choice_Choice" class=" tooltip">HB<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L399' target='_blank'>Source code</a></span></div></span></span>.<span id="boolp_classicType__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_13" class="id"><div name="boolp_classicType__canonical__choice_Choice" class=" tooltip">instance<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L399' target='_blank'>Source code</a></span></div></span></span><span id="boolp_classicType__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_13" class="id"><div name="boolp_classicType__canonical__choice_Choice" class=" tooltip"> Definition<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L399' target='_blank'>Source code</a></span></div></span></span><span id="boolp_classicType__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_13" class="id"><div name="boolp_classicType__canonical__choice_Choice" class=" tooltip"> _<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L399' target='_blank'>Source code</a></span></div></span></span><span id="boolp_classicType__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_13" class="id"><div name="boolp_classicType__canonical__choice_Choice" class=" tooltip"> :=<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L399' target='_blank'>Source code</a></span></div></span></span><span id="boolp_classicType__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_13" class="id"><div name="boolp_classicType__canonical__choice_Choice" class=" tooltip"> gen_choiceMixin<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L399' target='_blank'>Source code</a></span></div></span></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#classicType">classicType</a></span>.<br/>
@@ -862,14 +850,23 @@ Declared in library mathcomp.classical.functions, line 504, characters 11-21
 <br/>
 <span class="vernacular">Section</span><span class="id"> eclassicType</span>.<br/>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="eclassicType.T" class="id"><div name="eclassicType.T" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L405' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#Equality.Exports.eqType">eqType</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="eclassicType" class="id"><div name="eclassicType" class=" tooltip">eclassicType<span class='tooltip-area'><p>totalfun_ : forall {aT rT : Type}, set aT -> (aT -> rT) -> aT -> rT
+<span class="vernacular">Definition</span><span class="id"> </span><span id="eclassicType" class="id"><div name="eclassicType" class=" tooltip">eclassicType<span class='tooltip-area'><p>phant_mem_fun :
+forall [aT rT : Type] [A : set aT] [B : set rT] [f : {fun A >-> B}],
+phantom (aT -> rT) f -> {homo f : x / x \in [eta A] >-> x \in [eta B]}
 
-totalfun_ is not universe polymorphic
-Arguments totalfun_ {aT rT}%_type_scope A%_classical_set_scope
-  f%_function_scope _
-totalfun_ is transparent
-Expands to: Constant mathcomp.classical.functions.totalfun_
-Declared in library mathcomp.classical.functions, line 738, characters 11-20
+phant_mem_fun is not universe polymorphic
+Expanded type for implicit arguments
+phant_mem_fun :
+forall [aT rT : Type] [A : set aT] [B : set rT] [f : {fun A >-> B}],
+phantom (aT -> rT) f ->
+forall [x : aT],
+(fun x0 : aT => is_true (x0 \in [eta A])) x -> (f x \in [eta B]) = true
+
+Arguments phant_mem_fun [aT rT]%_type_scope [A B]%_classical_set_scope 
+  [f] _ [x] _
+phant_mem_fun is transparent
+Expands to: Constant mathcomp.classical.functions.phant_mem_fun
+Declared in library mathcomp.classical.functions, line 422, characters 11-24
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L406' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#eclassicType.T">T</a></span>.<br/>
 <span id="boolp_eclassicType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="eqtype_Equality__to__eqtype_hasDecEq" class="id"><span id="HB_unnamed_factory_15" class="id"><div name="boolp_eclassicType__canonical__eqtype_Equality" class=" tooltip">HB<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L407' target='_blank'>Source code</a></span></div></span></span></span></span>.<span id="boolp_eclassicType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="eqtype_Equality__to__eqtype_hasDecEq" class="id"><span id="HB_unnamed_factory_15" class="id"><div name="boolp_eclassicType__canonical__eqtype_Equality" class=" tooltip">instance<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L407' target='_blank'>Source code</a></span></div></span></span></span></span><span id="boolp_eclassicType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="eqtype_Equality__to__eqtype_hasDecEq" class="id"><span id="HB_unnamed_factory_15" class="id"><div name="boolp_eclassicType__canonical__eqtype_Equality" class=" tooltip"> Definition<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L407' target='_blank'>Source code</a></span></div></span></span></span></span><span id="boolp_eclassicType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="eqtype_Equality__to__eqtype_hasDecEq" class="id"><span id="HB_unnamed_factory_15" class="id"><div name="boolp_eclassicType__canonical__eqtype_Equality" class=" tooltip"> _<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L407' target='_blank'>Source code</a></span></div></span></span></span></span><span id="boolp_eclassicType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="eqtype_Equality__to__eqtype_hasDecEq" class="id"><span id="HB_unnamed_factory_15" class="id"><div name="boolp_eclassicType__canonical__eqtype_Equality" class=" tooltip"> :=<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L407' target='_blank'>Source code</a></span></div></span></span></span></span><span id="boolp_eclassicType__canonical__eqtype_Equality" class="id"><span id="HB_unnamed_mixin_17" class="id"><span id="eqtype_Equality__to__eqtype_hasDecEq" class="id"><span id="HB_unnamed_factory_15" class="id"><div name="boolp_eclassicType__canonical__eqtype_Equality" class=" tooltip"> Equality<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L407' target='_blank'>Source code</a></span></div></span></span></span></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#Equality.copy">copy</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#eclassicType">eclassicType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#eclassicType.T">T</a></span>.<br/>
 <span id="boolp_eclassicType__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_18" class="id"><div name="boolp_eclassicType__canonical__choice_Choice" class=" tooltip">HB<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L408' target='_blank'>Source code</a></span></div></span></span>.<span id="boolp_eclassicType__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_18" class="id"><div name="boolp_eclassicType__canonical__choice_Choice" class=" tooltip">instance<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L408' target='_blank'>Source code</a></span></div></span></span><span id="boolp_eclassicType__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_18" class="id"><div name="boolp_eclassicType__canonical__choice_Choice" class=" tooltip"> Definition<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L408' target='_blank'>Source code</a></span></div></span></span><span id="boolp_eclassicType__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_18" class="id"><div name="boolp_eclassicType__canonical__choice_Choice" class=" tooltip"> _<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L408' target='_blank'>Source code</a></span></div></span></span><span id="boolp_eclassicType__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_18" class="id"><div name="boolp_eclassicType__canonical__choice_Choice" class=" tooltip"> :=<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L408' target='_blank'>Source code</a></span></div></span></span><span id="boolp_eclassicType__canonical__choice_Choice" class="id"><span id="HB_unnamed_factory_18" class="id"><div name="boolp_eclassicType__canonical__choice_Choice" class=" tooltip"> gen_choiceMixin<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L408' target='_blank'>Source code</a></span></div></span></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#eclassicType">eclassicType</a></span>.<br/>
@@ -877,17 +874,21 @@ Declared in library mathcomp.classical.functions, line 738, characters 11-20
 <span class="vernacular">Notation</span> <span id="997c1e7add8fdb22258e46473693fc24" class="id"><div name="997c1e7add8fdb22258e46473693fc24" class=" tooltip">&quot;'{eclassic' T }&quot;<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L410' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.classical.boolp.html#eclassicType">eclassicType</a></span><span class="id"> T</span>)<br/>
 &nbsp;(<span class="id">format</span> <span class="id">&quot;'{eclassic'  T }&quot;</span>)<span class="id"> :</span><span class="id"> type_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="canonical_of" class="id"><div name="canonical_of" class=" tooltip">canonical_of<span class='tooltip-area'><p>surjective_ocanV :
-forall {aT rT : Type} {A : set aT} {B : set rT} {f : aT -> rT},
-set_surj A B f -> OCanV.axioms_ aT rT A B f
+<span class="vernacular">Definition</span><span class="id"> </span><span id="canonical_of" class="id"><div name="canonical_of" class=" tooltip">canonical_of<span class='tooltip-area'><p>phant_oinvK :
+forall [aT rT : Type] [A : set aT] [B : set rT] [f : {surj A >-> B}],
+phantom (aT -> rT) f -> {in B, ocancel 'oinv_f f}
 
-surjective_ocanV is not universe polymorphic
-Arguments surjective_ocanV {aT rT}%_type_scope {A B}%_classical_set_scope
-  {f}%_function_scope fS
-surjective_ocanV is a coercion
-surjective_ocanV is transparent
-Expands to: Constant mathcomp.classical.functions.surjective_ocanV
-Declared in library mathcomp.classical.functions, line 902, characters 9-25
+phant_oinvK is not universe polymorphic
+Expanded type for implicit arguments
+phant_oinvK :
+forall [aT rT : Type] [A : set aT] [B : set rT] [f : {surj A >-> B}],
+phantom (aT -> rT) f -> forall [x : rT], x \in B -> oapp f x ('oinv_f x) = x
+
+Arguments phant_oinvK [aT rT]%_type_scope [A B]%_classical_set_scope 
+  [f] _ [x] _
+phant_oinvK is transparent
+Expands to: Constant mathcomp.classical.functions.phant_oinvK
+Declared in library mathcomp.classical.functions, line 430, characters 11-22
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L413' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="T:327" class="id"><div name="T:327" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L413' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="U:328" class="id"><div name="U:328" class=" tooltip">U<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L413' target='_blank'>Source code</a></span></div></span> (<span id="sort:329" class="id"><div name="sort:329" class=" tooltip">sort<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L413' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#U:328">U</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#T:327">T</a></span>)<span class="id"> :=</span><span class="gallina-kwd"> forall</span> (<span id="G:330" class="id"><div name="G:330" class=" tooltip">G<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L413' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:327">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="gallina-kwd">Type</span>)<span class="id">,</span><br/>
 &nbsp;&nbsp;(<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x':331" class="id"><div name="x':331" class=" tooltip">x'<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L414' target='_blank'>Source code</a></span></div></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#G:330">G</a></span> (<span class="id"><a href="mathcomp.classical.boolp.html#sort:329">sort</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x':331">x'</a></span>))<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:332" class="id"><div name="x:332" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L414' target='_blank'>Source code</a></span></div></span><span class="id">,</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#G:330">G</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:332">x</a></span>.<br/>
 <span class="vernacular">Notation</span><span class="id"> </span><span id="canonical_" class="id"><div name="canonical_" class=" tooltip">canonical_<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L415' target='_blank'>Source code</a></span></div></span><span class="id"> sort</span><span class="id"> :=</span> (<span class="id">@</span><span class="id"><a href="mathcomp.classical.boolp.html#canonical_of">canonical_of</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> sort</span>).<br/>
@@ -1224,36 +1225,37 @@ Qed.</div></details>
 <span class="gallina-kwd"> by</span><span class="id"> split=&gt;</span><span class="id"> [/</span><span class="id"><a href="mathcomp.classical.boolp.html#iff_notr">iff_notr</a></span><span class="id">|PQ];</span><span class="id"> [|apply/</span><span class="id"><a href="mathcomp.classical.boolp.html#iff_notr">iff_notr</a></span><span class="id">];</span><span class="id"> rewrite</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#notK">notK</a></span>. Qed.</div></details>
 <br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="predp" class="id"><div name="predp" class=" tooltip">predp<span class='tooltip-area'><p>surjection_of_surj :
-forall {aT rT : Type} {A : set aT} {B : set rT} {f : aT -> rT},
-set_surj A B f -> {surj A >-> B}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="predp" class="id"><div name="predp" class=" tooltip">predp<span class='tooltip-area'><p>phant_oinvS :
+forall [aT rT : Type] [A : set aT] [B : set rT] [f : {surj A >-> B}],
+phantom (aT -> rT) f ->
+{homo 'oinv_f : x / B x >-> [set Some x | x in A]%classic x}
 
-surjection_of_surj is not universe polymorphic
-Arguments surjection_of_surj {aT rT}%_type_scope {A B}%_classical_set_scope
-  {f}%_function_scope fsurj
-surjection_of_surj is a coercion
-surjection_of_surj is transparent
-Expands to: Constant mathcomp.classical.functions.surjection_of_surj
-Declared in library mathcomp.classical.functions, line 910, characters 11-29
+phant_oinvS is not universe polymorphic
+Expanded type for implicit arguments
+phant_oinvS :
+forall [aT rT : Type] [A : set aT] [B : set rT] [f : {surj A >-> B}],
+phantom (aT -> rT) f ->
+forall [x : rT], [eta B] x -> exists2 x0 : aT, A x0 & Some x0 = 'oinv_f x
+
+Arguments phant_oinvS [aT rT]%_type_scope [A B]%_classical_set_scope 
+  [f] _ [x] _
+phant_oinvS is transparent
+Expands to: Constant mathcomp.classical.functions.phant_oinvS
+Declared in library mathcomp.classical.functions, line 435, characters 11-22
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L611' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="T:427" class="id"><div name="T:427" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L611' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:427">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="gallina-kwd">Prop</span>.<br/>
 <br/>
 <span class="id">Identity</span><span class="vernacular"> Coercion</span><span class="id"> fun_of_pred</span><span class="id"> :</span><span class="id"> predp</span><span class="id"> &gt;-&gt;</span><span class="id"> Funclass</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="relp" class="id"><div name="relp" class=" tooltip">relp<span class='tooltip-area'><p>phant_surj :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="relp" class="id"><div name="relp" class=" tooltip">relp<span class='tooltip-area'><p>phant_oinvP :
 forall [aT rT : Type] [A : set aT] [B : set rT] [f : {surj A >-> B}],
-phantom (aT -> rT) f -> set_surj A B f
+phantom (aT -> rT) f -> forall [y : rT], B y -> oinv_spec f y y ('oinv_f y)
 
-phant_surj is not universe polymorphic
-Expanded type for implicit arguments
-phant_surj :
-forall [aT rT : Type] [A : set aT] [B : set rT] [f : {surj A >-> B}],
-phantom (aT -> rT) f -> forall [t : rT], B t -> exists2 x : aT, A x & f x = t
-
-Arguments phant_surj [aT rT]%_type_scope [A B]%_classical_set_scope 
-  [f] _ [t] _
-phant_surj is transparent
-Expands to: Constant mathcomp.classical.functions.phant_surj
-Declared in library mathcomp.classical.functions, line 924, characters 11-21
+phant_oinvP is not universe polymorphic
+Arguments phant_oinvP [aT rT]%_type_scope [A B]%_classical_set_scope 
+  [f] _ [y] _
+phant_oinvP is transparent
+Expands to: Constant mathcomp.classical.functions.phant_oinvP
+Declared in library mathcomp.classical.functions, line 451, characters 11-22
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L615' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="T:428" class="id"><div name="T:428" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L615' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:428">T</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#predp">predp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:428">T</a></span>.<br/>
 <br/>
 <span class="id">Identity</span><span class="vernacular"> Coercion</span><span class="id"> fun_of_rel</span><span class="id"> :</span><span class="id"> rel</span><span class="id"> &gt;-&gt;</span><span class="id"> Funclass</span>.<br/>
@@ -1267,14 +1269,16 @@ Declared in library mathcomp.classical.functions, line 924, characters 11-21
 <span class="vernacular">Notation</span><span class="id"> </span><span id="xpreimp" class="id"><div name="xpreimp" class=" tooltip">xpreimp<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L625' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="gallina-kwd">fun</span><span class="id"> </span><span id="f:440" class="id"><div name="f:440" class=" tooltip">f<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L625' target='_blank'>Source code</a></span></div></span> (<span id="p:441" class="id"><div name="p:441" class=" tooltip">p<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L625' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#predp">predp</a></span><span class="id"> _</span>)<span class="id"> </span><span id="x:442" class="id"><div name="x:442" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L625' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#p:441">p</a></span> (<span class="id"><a href="mathcomp.classical.boolp.html#f:440">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:442">x</a></span>)).<br/>
 <span class="vernacular">Notation</span><span class="id"> </span><span id="xrelpU" class="id"><div name="xrelpU" class=" tooltip">xrelpU<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L626' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="gallina-kwd">fun</span> (<span id="r1:443" class="id"><div name="r1:443" class=" tooltip">r1<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L626' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="r2:444" class="id"><div name="r2:444" class=" tooltip">r2<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L626' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#relp">relp</a></span><span class="id"> _</span>)<span class="id"> </span><span id="x:445" class="id"><div name="x:445" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L626' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="y:446" class="id"><div name="y:446" class=" tooltip">y<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L626' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#r1:443">r1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:445">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#y:446">y</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#f031fe1957c4a4a8e217aa46af2b4e25"> \/</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#f031fe1957c4a4a8e217aa46af2b4e25"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#r2:444">r2</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:445">x</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#y:446">y</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="pred0p" class="id"><div name="pred0p" class=" tooltip">pred0p<span class='tooltip-area'><p>funin : forall {aT rT : Type}, set aT -> (aT -> rT) -> aT -> rT
+<span class="vernacular">Definition</span><span class="id"> </span><span id="pred0p" class="id"><div name="pred0p" class=" tooltip">pred0p<span class='tooltip-area'><p>phant_oinvT :
+forall [aT rT : Type] [A : set aT] [B : set rT] [f : {surj A >-> B}],
+phantom (aT -> rT) f -> forall [x : rT], B x -> 'oinv_f x
 
-funin is not universe polymorphic
-Arguments funin {aT rT}%_type_scope A%_classical_set_scope 
-  f%_function_scope _
-funin is transparent
-Expands to: Constant mathcomp.classical.functions.funin
-Declared in library mathcomp.classical.functions, line 932, characters 11-16
+phant_oinvT is not universe polymorphic
+Arguments phant_oinvT [aT rT]%_type_scope [A B]%_classical_set_scope 
+  [f] _ [x] _
+phant_oinvT is transparent
+Expands to: Constant mathcomp.classical.functions.phant_oinvT
+Declared in library mathcomp.classical.functions, line 459, characters 11-22
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L628' target='_blank'>Source code</a></span></div></span> (<span id="T:447" class="id"><div name="T:447" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L628' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>) (<span id="P:448" class="id"><div name="P:448" class=" tooltip">P<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L628' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#predp">predp</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#T:447">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#bool">bool</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span><span class="id"><a href="mathcomp.classical.boolp.html#P:448">P</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> =1</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#44b19bd81f7a1388073ea8a65e6fa993"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#xpredp0">xpredp0</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">&gt;]</a></span>.<br/>
 <span class="id">Prenex</span><span class="vernacular"> Implicits</span><span class="id"> pred0p</span>.<br/>
 <br/>
@@ -1709,23 +1713,38 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="id"> exact:</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.unstable.html#Order.default_display">Order</a></span>.<span class="id"><a href="mathcomp.classical.unstable.html#Order.default_display">default_display</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="FunOrder.lef" class="id"><div name="FunOrder.lef" class=" tooltip">lef<span class='tooltip-area'><p>to_setT : forall {T : Type}, T -> [set: T]%classic
+<span class="vernacular">Definition</span><span class="id"> </span><span id="FunOrder.lef" class="id"><div name="FunOrder.lef" class=" tooltip">lef<span class='tooltip-area'><p>phant_funoK :
+forall [aT rT : Type] [A : set aT] [f : {inj A >-> rT}],
+phantom (aT -> rT) f -> {in A, pcancel f 'oinv_f}
 
-to_setT is not universe polymorphic
-Arguments to_setT {T}%_type_scope x
-to_setT is transparent
-Expands to: Constant mathcomp.classical.functions.to_setT
-Declared in library mathcomp.classical.functions, line 1301, characters 11-18
+phant_funoK is not universe polymorphic
+Expanded type for implicit arguments
+phant_funoK :
+forall [aT rT : Type] [A : set aT] [f : {inj A >-> rT}],
+phantom (aT -> rT) f -> forall [x : aT], x \in A -> 'oinv_f (f x) = Some x
+
+Arguments phant_funoK [aT rT]%_type_scope [A]%_classical_set_scope 
+  [f] _ [x] _
+phant_funoK is transparent
+Expands to: Constant mathcomp.classical.functions.phant_funoK
+Declared in library mathcomp.classical.functions, line 480, characters 11-22
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L909' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="f:611" class="id"><div name="f:611" class=" tooltip">f<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L909' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="g:612" class="id"><div name="g:612" class=" tooltip">g<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L909' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> </a></span><span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:613" class="id"><div name="x:613" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L909' target='_blank'>Source code</a></span></div></span><span class="id">,</span> (<span class="id"><a href="mathcomp.classical.boolp.html#f:611">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:613">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.preorder.html#4a718365fe6d60a4322f996a7adbd575"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.preorder.html#4a718365fe6d60a4322f996a7adbd575"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#g:612">g</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:613">x</a></span>)<span class="id">%O</span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> &gt;]</a></span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span> <span id="f19451cbaa2069d404dd9bdd9c3b0464" class="id"><div name="f19451cbaa2069d404dd9bdd9c3b0464" class=" tooltip">&quot;f &lt;= g&quot;<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L910' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.classical.boolp.html#FunOrder.lef">lef</a></span><span class="id"> f</span><span class="id"> g</span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="FunOrder.ltf" class="id"><div name="FunOrder.ltf" class=" tooltip">ltf<span class='tooltip-area'><p>setTbij : forall {T : Type}, {splitbij [set: T] >-> [set: [set: T]%classic]}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="FunOrder.ltf" class="id"><div name="FunOrder.ltf" class=" tooltip">ltf<span class='tooltip-area'><p>inj :
+forall {aT rT : nonPropType} {A : set aT} {f : {inj A >-> rT}},
+{in A &, injective f}
 
-setTbij is not universe polymorphic
-Arguments setTbij {T}%_type_scope
-setTbij is transparent
-Expands to: Constant mathcomp.classical.functions.setTbij
-Declared in library mathcomp.classical.functions, line 1308, characters 11-18
+inj is not universe polymorphic
+Expanded type for implicit arguments
+inj :
+forall {aT rT : nonPropType} {A : set aT} {f : {inj A >-> rT}} [x y : aT],
+x \in A -> y \in A -> f x = f y -> x = y
+
+Arguments inj {aT rT} {A}%_classical_set_scope {f} [x y] _ _ _
+inj is transparent
+Expands to: Constant mathcomp.classical.functions.inj
+Declared in library mathcomp.classical.functions, line 485, characters 11-14
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L912' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="f:614" class="id"><div name="f:614" class=" tooltip">f<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L912' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="g:615" class="id"><div name="g:615" class=" tooltip">g<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L912' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2">`[&lt;</a></span> (<span class="gallina-kwd">forall</span><span class="id"> </span><span id="x:616" class="id"><div name="x:616" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L912' target='_blank'>Source code</a></span></div></span><span class="id">,</span> (<span class="id"><a href="mathcomp.classical.boolp.html#f:614">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:616">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.preorder.html#4a718365fe6d60a4322f996a7adbd575"> &lt;=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.preorder.html#4a718365fe6d60a4322f996a7adbd575"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#g:615">g</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:616">x</a></span>)<span class="id">%O</span>)<span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">exists</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="x:617" class="id"><div name="x:617" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L912' target='_blank'>Source code</a></span></div></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#f:614">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:617">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#c385a484ee9d1b4e0615924561a9b75e"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#g:615">g</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:617">x</a></span><span class="id"><a href="mathcomp.classical.boolp.html#cd531d9d29c2247dfa84f185bc7200e2"> &gt;]</a></span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span> <span id="FunOrder.FunOrder.:::x_'&lt;'_x" class="id"><div name="FunOrder.FunOrder.:::x_'&lt;'_x" class=" tooltip">&quot;f &lt; g&quot;<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L913' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id"><a href="mathcomp.classical.boolp.html#FunOrder.ltf">ltf</a></span><span class="id"> f</span><span class="id"> g</span>).<br/>
 <br/>
@@ -1775,21 +1794,36 @@ Qed.</div></details>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="FunOrder.FunLattice.aT" class="id"><div name="FunOrder.FunLattice.aT" class=" tooltip">aT<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L948' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> Type}</span><span class="id"> {</span><span id="FunOrder.FunLattice.d" class="id"><div name="FunOrder.FunLattice.d" class=" tooltip">d<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L948' target='_blank'>Source code</a></span></div></span><span class="id">}</span><span class="id"> {</span><span id="FunOrder.FunLattice.T" class="id"><div name="FunOrder.FunLattice.T" class=" tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L948' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.order.html#Order.Lattice.Exports.latticeType">latticeType</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#d:621">d</a></span><span class="id">}</span>.<br/>
 <span class="vernacular">Implicit</span><span class="id"> Types</span><span class="id"> f</span><span class="id"> g</span><span class="id"> h</span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#FunOrder.FunLattice.aT">aT</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id"><a href="mathcomp.classical.boolp.html#FunOrder.FunLattice.T">T</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="FunOrder.meetf" class="id"><div name="FunOrder.meetf" class=" tooltip">meetf<span class='tooltip-area'><p>seteqfun : forall {T : Type} {A B : set T}, A = B -> A -> B
+<span class="vernacular">Definition</span><span class="id"> </span><span id="FunOrder.meetf" class="id"><div name="FunOrder.meetf" class=" tooltip">meetf<span class='tooltip-area'><p>inj_hint :
+forall {aT rT : Type} {A : set aT} {f : {inj A >-> rT}},
+{in A &, injective f}
 
-seteqfun is not universe polymorphic
-Arguments seteqfun {T}%_type_scope {A B}%_classical_set_scope AB a
-seteqfun is transparent
-Expands to: Constant mathcomp.classical.functions.seteqfun
-Declared in library mathcomp.classical.functions, line 1357, characters 11-19
+inj_hint is not universe polymorphic
+Expanded type for implicit arguments
+inj_hint :
+forall {aT rT : Type} {A : set aT} {f : {inj A >-> rT}} [x y : aT],
+x \in A -> y \in A -> f x = f y -> x = y
+
+Arguments inj_hint {aT rT}%_type_scope {A}%_classical_set_scope 
+  {f} [x y] _ _ _
+inj_hint is transparent
+Expands to: Constant mathcomp.classical.functions.inj_hint
+Declared in library mathcomp.classical.functions, line 491, characters 11-19
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L951' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="f:623" class="id"><div name="f:623" class=" tooltip">f<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L951' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="g:624" class="id"><div name="g:624" class=" tooltip">g<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L951' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="gallina-kwd"> fun</span><span class="id"> </span><span id="x:625" class="id"><div name="x:625" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L951' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.order.html#Order.meet">Order</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.order.html#Order.meet">meet</a></span> (<span class="id"><a href="mathcomp.classical.boolp.html#f:623">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:625">x</a></span>) (<span class="id"><a href="mathcomp.classical.boolp.html#g:624">g</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:625">x</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="FunOrder.joinf" class="id"><div name="FunOrder.joinf" class=" tooltip">joinf<span class='tooltip-area'><p>incl : forall {T : Type} {A B : set T}, (A `<=` B)%classic -> T -> T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="FunOrder.joinf" class="id"><div name="FunOrder.joinf" class=" tooltip">joinf<span class='tooltip-area'><p>phant_funK :
+forall [aT rT : Type] [A : set aT] [f : {splitinj A >-> rT}],
+phantom (aT -> rT) f -> {in A, cancel f f^-1}
 
-incl is not universe polymorphic
-Arguments incl {T}%_type_scope {A B}%_classical_set_scope AB x
-incl is transparent
-Expands to: Constant mathcomp.classical.functions.incl
-Declared in library mathcomp.classical.functions, line 1372, characters 11-15
+phant_funK is not universe polymorphic
+Expanded type for implicit arguments
+phant_funK :
+forall [aT rT : Type] [A : set aT] [f : {splitinj A >-> rT}],
+phantom (aT -> rT) f -> forall [x : aT], x \in A -> f^-1 (f x) = x
+
+Arguments phant_funK [aT rT]%_type_scope [A]%_classical_set_scope [f] _ [x] _
+phant_funK is transparent
+Expands to: Constant mathcomp.classical.functions.phant_funK
+Declared in library mathcomp.classical.functions, line 504, characters 11-21
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L952' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="f:626" class="id"><div name="f:626" class=" tooltip">f<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L952' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="g:627" class="id"><div name="g:627" class=" tooltip">g<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L952' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="gallina-kwd"> fun</span><span class="id"> </span><span id="x:628" class="id"><div name="x:628" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L952' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.order.html#Order.join">Order</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.order.html#Order.join">join</a></span> (<span class="id"><a href="mathcomp.classical.boolp.html#f:626">f</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:628">x</a></span>) (<span class="id"><a href="mathcomp.classical.boolp.html#g:627">g</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#x:628">x</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="FunOrder.meetfC" class="id"><div name="FunOrder.meetfC" class=" tooltip">meetfC<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/classical/boolp.v#L954' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#commutative">commutative</a></span><span class="id"> </span><span class="id"><a href="mathcomp.classical.boolp.html#FunOrder.meetf">meetf</a></span>.<br/>

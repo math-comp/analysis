@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.probability_theory.beta_distribution</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 921d430 2026.09.11-20:55" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 921d430 2026.09.12-20:38" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -489,15 +489,15 @@ Qed.</div></details>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br/>
 <span class="vernacular">Local</span><span class="vernacular"> Notation</span><span class="id"> </span><span id="XMonemX" class="id"><div name="XMonemX" class=" tooltip">XMonemX<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/theories/probability_theory/beta_distribution.v#L200' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id">@</span><span class="id"><a href="mathcomp.analysis.probability_theory.beta_distribution.html#XMonemX">XMonemX</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.beta_distribution.html#beta_fun.R">R</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="beta_fun" class="id"><div name="beta_fun" class=" tooltip">beta_fun<span class='tooltip-area'><p>beta_fun : forall {R : realType}, nat -> nat -> R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="beta_fun" class="id"><div name="beta_fun" class=" tooltip">beta_fun<span class='tooltip-area'><p>XMonemX : forall {R : numDomainType}, nat -> nat -> R -> R
 
-beta_fun is not universe polymorphic
-Arguments beta_fun {R} (a b)%_nat_scope
-beta_fun is transparent
+XMonemX is not universe polymorphic
+Arguments XMonemX {R} (a b)%_nat_scope x%_ring_scope
+XMonemX is transparent
 Expands to: Constant
-            mathcomp.analysis.probability_theory.beta_distribution.beta_fun
+            mathcomp.analysis.probability_theory.beta_distribution.XMonemX
 Declared in
-library mathcomp.analysis.probability_theory.beta_distribution, line 202, characters 11-19
+library mathcomp.analysis.probability_theory.beta_distribution, line 107, characters 11-18
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/theories/probability_theory/beta_distribution.v#L202' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="a:73" class="id"><div name="a:73" class=" tooltip">a<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/theories/probability_theory/beta_distribution.v#L202' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="b:74" class="id"><div name="b:74" class=" tooltip">b<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/theories/probability_theory/beta_distribution.v#L202' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.beta_distribution.html#beta_fun.R">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#2b06fa1f371e8a16533c60b425cce675">\int[</a></span><span class="id"><a href="mathcomp.analysis.probability_theory.beta_distribution.html#mu">mu</a></span><span class="id"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html#2b06fa1f371e8a16533c60b425cce675">]_</a></span><span id="x:75" class="id"><div name="x:75" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/theories/probability_theory/beta_distribution.v#L202' target='_blank'>Source code</a></span></div></span> (<span class="id"><a href="mathcomp.analysis.probability_theory.beta_distribution.html#XMonemX">XMonemX</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.beta_distribution.html#a:73">a</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.ssrnat.html#::nat_scope:x_'.-1'">-1</a></span><span class="id"> </span><span class="id"><a href="mathcomp.analysis.probability_theory.beta_distribution.html#b:74">b</a></span>.<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.ssrnat.html#::nat_scope:x_'.-1'">-1</a></span><span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> \_</a></span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">`[</a></span><span class="id">0</span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">,</a></span><span class="id">1</span><span class="id"><a href="mathcomp.classical.classical_sets.html#0d46aeacdf83c1ab2ebf3404fa8daa4b">]</a></span>)<span class="id"><a href="mathcomp.classical.functions.html#2eecca447d655b6f816ae395946692f2"> x</a></span>.<br/>
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
