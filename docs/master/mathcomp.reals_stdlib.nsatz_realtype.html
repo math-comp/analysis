@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.reals_stdlib.nsatz_realtype</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 921d430 2026.09.13-20:43" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 921d430 2026.09.14-21:53" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -276,71 +276,61 @@ Reference:
 <div class="proofscript">
 <span class="gallina-kwd"> by</span><span class="id"> constructor</span><span class="id"> =&gt;</span><span class="id"> [x</span><span class="id"> //|x</span><span class="id"> y</span><span class="id"> //|x</span><span class="id"> y</span><span class="id"> z</span><span class="id"> -&gt;]</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType0" class="id"><div name="Nsatz_realType0" class=" tooltip">Nsatz_realType0<span class='tooltip-area'><p>mulr_infty :
-forall {R : realDomainType},
-(forall r : R, (r%:E * +oo)%E = ((sgr r)%:E * +oo)%E) *
-(forall r : R, (+oo * r%:E)%E = ((sgr r)%:E * +oo)%E) *
-(forall r : R, (r%:E * -oo)%E = ((sgr r)%:E * -oo)%E) *
-(forall r : R, (-oo * r%:E)%E = ((sgr r)%:E * -oo)%E)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType0" class="id"><div name="Nsatz_realType0" class=" tooltip">Nsatz_realType0<span class='tooltip-area'><p>expe : forall {R : numDomainType}, \bar R -> nat -> \bar R
 
-mulr_infty is not universe polymorphic
-Arguments mulr_infty {R}
-mulr_infty is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.mulr_infty
+expe is not universe polymorphic
+Arguments expe {R} x%_ereal_scope n%_nat_scope
+expe is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.expe
 Declared in
-library mathcomp.reals.constructive_ereal, line 1944, characters 11-21
+library mathcomp.reals.constructive_ereal, line 568, characters 11-15
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/reals_stdlib/nsatz_realtype.v#L29' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id">0</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType1" class="id"><div name="Nsatz_realType1" class=" tooltip">Nsatz_realType1<span class='tooltip-area'><p>esg : forall {R : realDomainType}, \bar R -> \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType1" class="id"><div name="Nsatz_realType1" class=" tooltip">Nsatz_realType1<span class='tooltip-area'><p>parse : Number.signed_int -> Inatmul
 
-esg is not universe polymorphic
-Arguments esg {R} x%_ereal_scope
-esg is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.esg
+parse is not universe polymorphic
+Arguments parse x
+parse is transparent
+Expands to: Constant
+            mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.parse
 Declared in
-library mathcomp.reals.constructive_ereal, line 3024, characters 11-14
+library mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras, line 4029, characters 11-16
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/reals_stdlib/nsatz_realtype.v#L30' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id">1</span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_add" class="id"><div name="Nsatz_realType_add" class=" tooltip">Nsatz_realType_add<span class='tooltip-area'><p>inveM_def : forall [R : realFieldType], \bar R -> \bar R -> bool
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_add" class="id"><div name="Nsatz_realType_add" class=" tooltip">Nsatz_realType_add<span class='tooltip-area'><p>print : Inatmul -> option Number.signed_int
 
-inveM_def is not universe polymorphic
-Arguments inveM_def [R] (x y)%_ereal_scope
-inveM_def is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.inveM_def
+print is not universe polymorphic
+Arguments print x
+print is transparent
+Expands to: Constant
+            mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.print
 Declared in
-library mathcomp.reals.constructive_ereal, line 3455, characters 11-20
+library mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras, line 4039, characters 11-16
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/reals_stdlib/nsatz_realtype.v#L31' target='_blank'>Source code</a></span></div></span> (<span id="x:3" class="id"><div name="x:3" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/reals_stdlib/nsatz_realtype.v#L31' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="y:4" class="id"><div name="y:4" class=" tooltip">y<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/reals_stdlib/nsatz_realtype.v#L31' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:3">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:4">y</a></span>)<span class="id">%R</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_mul" class="id"><div name="Nsatz_realType_mul" class=" tooltip">Nsatz_realType_mul<span class='tooltip-area'><p>ltee_pV2 :
-forall R : realFieldType,
-{in [pred x | (0%R <= x)%E] &, {mono inve : y x / (x <= y)%E >-> (y <= x)%E}} *
-{in [pred x | (0%R <= x)%E] &, {mono inve : y x / (x < y)%E >-> (y < x)%E}}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_mul" class="id"><div name="Nsatz_realType_mul" class=" tooltip">Nsatz_realType_mul<span class='tooltip-area'><p>fin_num : forall {R : numDomainType}, qualifier 1 \bar R
 
-ltee_pV2 is not universe polymorphic
-Arguments ltee_pV2 R
-ltee_pV2 is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.ltee_pV2
+fin_num is not universe polymorphic
+Arguments fin_num {R}
+fin_num is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.fin_num
 Declared in
-library mathcomp.reals.constructive_ereal, line 3531, characters 11-19
+library mathcomp.reals.constructive_ereal, line 878, characters 11-18
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/reals_stdlib/nsatz_realtype.v#L32' target='_blank'>Source code</a></span></div></span> (<span id="x:5" class="id"><div name="x:5" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/reals_stdlib/nsatz_realtype.v#L32' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="y:6" class="id"><div name="y:6" class=" tooltip">y<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/reals_stdlib/nsatz_realtype.v#L32' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:5">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:6">y</a></span>)<span class="id">%R</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_sub" class="id"><div name="Nsatz_realType_sub" class=" tooltip">Nsatz_realType_sub<span class='tooltip-area'><p>sqrte :
-forall [R : rcfType],
-\bar R ->
-\bar (join_Num_POrderNmodule_between_Algebra_BaseAddUMagma_and_Order_Preorder
-        R)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_sub" class="id"><div name="Nsatz_realType_sub" class=" tooltip">Nsatz_realType_sub<span class='tooltip-area'><p>adde_def : forall {R : numDomainType}, \bar R -> \bar R -> bool
 
-sqrte is not universe polymorphic
-Arguments sqrte [R] x%_ereal_scope
-sqrte is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.sqrte
+adde_def is not universe polymorphic
+Arguments adde_def {R} (x y)%_ereal_scope
+adde_def is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.adde_def
 Declared in
-library mathcomp.reals.constructive_ereal, line 3769, characters 11-16
+library mathcomp.reals.constructive_ereal, line 960, characters 11-19
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/reals_stdlib/nsatz_realtype.v#L33' target='_blank'>Source code</a></span></div></span> (<span id="x:7" class="id"><div name="x:7" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/reals_stdlib/nsatz_realtype.v#L33' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="y:8" class="id"><div name="y:8" class=" tooltip">y<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/reals_stdlib/nsatz_realtype.v#L33' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:7">x</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:x_'-'_x"> -</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:x_'-'_x"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:8">y</a></span>)<span class="id">%R</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_opp" class="id"><div name="Nsatz_realType_opp" class=" tooltip">Nsatz_realType_opp<span class='tooltip-area'><p>ext_num_sem : forall {R : numDomainType}, interval int -> \bar R -> bool
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_opp" class="id"><div name="Nsatz_realType_opp" class=" tooltip">Nsatz_realType_opp<span class='tooltip-area'><p>mule_def : forall {R : numDomainType}, \bar R -> \bar R -> bool
 
-ext_num_sem is not universe polymorphic
-Arguments ext_num_sem {R} i x%_ereal_scope
-ext_num_sem is transparent
-Expands to: Constant mathcomp.reals.constructive_ereal.ext_num_sem
+mule_def is not universe polymorphic
+Arguments mule_def {R} (x y)%_ereal_scope
+mule_def is transparent
+Expands to: Constant mathcomp.reals.constructive_ereal.mule_def
 Declared in
-library mathcomp.reals.constructive_ereal, line 3829, characters 11-22
+library mathcomp.reals.constructive_ereal, line 1089, characters 11-19
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/reals_stdlib/nsatz_realtype.v#L34' target='_blank'>Source code</a></span></div></span> (<span id="x:9" class="id"><div name="x:9" class=" tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/reals_stdlib/nsatz_realtype.v#L34' target='_blank'>Source code</a></span></div></span> <span class="id"> :</span><span class="id"> </span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span> (<span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x">-</a></span><span class="id"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x"> </a></span><span class="id"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:9">x</a></span>)<span class="id">%R</span>.<br/>
 <br/>
 <span class="id">#[global]</span><br/>
