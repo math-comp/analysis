@@ -358,6 +358,91 @@ Qed.
 
 End hahn_banach_normed.
 
+
+HB.mixin Record isLine {R : numDomainType} {V : lmodType R} (x : V) (y : V):= {
+  isline : exists t, y == t *: x
+}.
+
+#[short(type = "lineType")]
+HB.structure Definition Line {R : numDomainType} {V : lmodType R} (x : V) := {
+  y of @isLine R V x y
+}.
+
+Section linepred.
+Variable (R : numDomainType) (V : lmodType R) (x : V).
+
+Definition linepred : {pred V} :=
+  mem [set y | exists t, y = t *: x ].
+
+Definition linepred_key : pred_key linepred. Proof. exact. Qed.
+
+Canonical linepred_keyed := KeyedPred linepred_key.
+
+End linepred.
+
+Section line.
+Variable (R : numDomainType) (V : lmodType R) (x : V).
+
+Notation T := (@Line.type R V x).
+
+Notation linepred := (@linepred R V x).
+
+Section Sub.
+Context (y : V) (yP : y \in linepred).
+
+#[local] Lemma test : exists t, y == t *: x.
+Proof. by move: yP; rewrite inE  => -[t ->]; exists t. Qed.
+
+
+#[local] Definition linepred_Sub_subproof :=
+  @isLine.Build R V x y (test).
+
+#[local] HB.instance Definition _ := linepred_Sub_subproof.
+
+Definition linepred_Sub : (@lineType _ _ _) := y.
+
+End Sub.
+
+
+Let linepred_rect (K : T -> Type) :
+  (forall f (Pf : f \in linepred), K (linepred_Sub Pf)) -> forall u : T, K u.
+Proof.
+move=> Ksub [y] [[/[dup] Py1]] Py2.
+set G := (G in K G).
+have Py : y \in linepred by rewrite inE; move: Py1=> [t] /eqP ->; exists t.
+suff -> : G = linepred_Sub Py by apply: Ksub.
+rewrite {}/G.
+congr (Line.Pack (@Line.Class R V x y _ )).
+by congr isLine.Axioms_; exact: Prop_irrelevance.
+Qed.
+
+Let linepred_valP y (Py : y \in linepred) : linepred_Sub Py = y :> V.
+Proof. by []. Qed.
+
+HB.instance Definition _ := isSub.Build _ _ T linepred_rect linepred_valP.
+
+HB.instance Definition _ := [Choice of T by <:].
+
+End line.
+
+Section line_sublmodtype.
+Variable (R : numDomainType) (V : lmodType R) (x : V).
+
+#[local] Lemma line_submod_closed : submod_closed (@linepred R V x).
+Proof.
+split; first by rewrite inE; exists 0; rewrite scale0r.
+move=> t y z; rewrite !inE => -[ty ->] -[tz ->]; exists (t * ty + tz).
+by rewrite scalerDl scalerA.
+Qed.
+
+HB.instance Definition _ :=
+  @GRing.isSubmodClosed.Build _  _  (@linepred R V x) line_submod_closed.
+
+HB.instance Definition _ :=
+  [SubChoice_isSubLmodule of ((@Line.type R V x))  by <:].
+
+End line_sublmodtype.
+
 Section hahn_banach_extension_ctvs.
 Variable (R : realType) (V : convexTvsType R) (F : pred V).
 (* In contrary to the normed case, the extention thm is not true for any subtopology on F,
@@ -442,13 +527,15 @@ pose g' : {linear_continuous V -> R | *%R} := HB.pack (g : V -> R) lcg.
 by exists g'.
 Qed.
 
+
 (* 7.2.3 in Jarchow *)
 Lemma hahn_banach_extension_hausdorff :
 (hausdorff_space V) <-> (forall x : V,  x != 0 -> exists l : {linear_continuous V -> R^o}, l(x) != 0).
 Proof.
 split; last first.
 (* proof in here is different than in the book - Jarchow mentions "a" continuous seminorm in 7.2.3 but refers to 2.7.1 which proves the results for a seminorm of the set of seminorm generating the topology - its probably lacks an argument saying that continuous seminorms are always bounded by this set of seminorms, which we haven't formalised here *)
-  move => H. pose P := (@seminorm_of R V).
+  move => H.
+  pose P := (@seminorm_of R V).
   pose P0 := (@seminorm_ofneq0 R V).
   suff : hausdorff_space (seminorm_on P0).
     have [contVs _ ] := (seminorm_convextvs V).
@@ -460,15 +547,19 @@ split; last first.
     by rewrite scaleN1r ltrNr oppr0.
   have /linear_continuous_seminorm [p [sp _] /= lp] :=  (@continuous_fun _ _ l).
   by exists p => //; apply: lt_le_trans; last by apply: lp.
-
-(* todo : construct the sublmodtype structures on lines and hyerplanes inside a lmodtype *)
-(*
-pose vectx := {y | exists t : R, y = t *: x}.
-pose val_subdef := fun y : vectx => (svalP y).
-have Sub : forall y, (exists t : R, y = t *: x) -> vectx. admit.
-have Sub_rect : forall K (_ : forall x Px, K (@Sub x Px)) u, K u;
-  SubK_subproof : forall x Px, val_subdef (@Sub x Px) = x
-}.*) admit.
+move=> haus x x0.
+Check (Line.type x).
+have y : Line.type x. admit.
+Search "isline".
+Check ((@isline _ _ _ y)). Search (exists _, _) "P". Check xchoose.
+pose l := fun ( y : Line.type x) => xchoose (@isline R V x y).
+have llinear: linear l. admit.
+pose linlP := GRing.isLinear.Build _ _ _ _ l llinear.
+pose linl : {linear _ -> _} := HB.pack l linlP.
+(*have lcontinuous: continuous l. admit.
+pose linlP := GRing.isLinear.Build _ _ _ _ l llinear.
+pose linl : {linear _ -> _} := HB.pack l linlP.
+*)
 Admitted.
 
 End hahn_banach_extension_ctvs.
