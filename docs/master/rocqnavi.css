@@ -44,6 +44,11 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0.5em;
 }
 
+div.graph svg {
+  max-width: 100%;
+  height: auto;
+}
+
 div.sidebar{
     padding: 1em;
 }
@@ -59,8 +64,9 @@ div.content {
 }
 
 div.coq code {
-    padding: 0.3em;
-    font-family: "Fira Code", monospace;
+  padding: 0.0em;
+  font-family: "Fira Code", monospace;
+  font-variant-ligatures: none;
 }
 div.coq li {
   margin-left: 2em;
@@ -103,18 +109,21 @@ span.bracket {
   color: #008000;
 }
 
-span.vernacular {
+.vernacular {
   color:  #9400d3;
 }
 
-span.gallina-kwd {
+.gallina-kwd {
   color:  #228b22;
 }
 
 .hierarchy-builder {
   color: #ff4500;
-  margin: 2em 0;
   border: solid 1px #cd0000;
+}
+
+span.quoted {
+    color: #8B2252; //VioletRed4 (same as proofgeneral)
 }
 
 span.comment {

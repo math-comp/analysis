@@ -1,7 +1,16 @@
 
 function renderMarkdowns()
 {
-    const md = markdownit({html:true})
+    const md = markdownit({
+        html: true,
+        highlight: function (str, lang) {
+            if (lang && hljs.getLanguage(lang)) {
+                try { return hljs.highlight(str, { language: lang }).value; }
+                catch (__) {}
+            }
+            return '';
+        }
+    })
           .use(texmath, { engine: katex,
                           delimiters: 'dollars'} )
           .use(markdownitDeflist);
@@ -43,9 +52,23 @@ function setUpSavingDetails() {
     });
 }
 
+function setUpGraphZoom() {
+    // Zoom for Graphviz SVG
+    document.querySelectorAll("div.graph svg").forEach(svg => {
+        svgPanZoom(svg, {
+            zoomEnabled: true,
+            mouseWheelZoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true
+        });
+    });
+};
+
 function init()
 {
     renderMarkdowns();
     showDarkmodeWidget();
     setUpSavingDetails();
+    setUpGraphZoom();
 }

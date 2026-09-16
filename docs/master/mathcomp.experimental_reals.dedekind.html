@@ -5,16 +5,21 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.experimental_reals.dedekind</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 921d430 2026.09.15-21:22" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis a0582da 2026.09.16-21:22" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/coq.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath/texmath.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
 <link href="rocqnavi.css" rel="stylesheet" type="text/css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script type="text/javascript" src="rocqnavi.js"> </script>
+<script type="text/javascript" src="rocqnavi.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
 </head>
 
 <body onload="init()">
@@ -242,7 +247,7 @@
     <div class="content">
       <p>
         <a href="./index.html">Top</a>
-        <a href="https://github.com/math-comp/analysis/tree/921d4308101175617f4425de645ce81c4da89c41/./experimental_reals/dedekind.v">source</a>
+        <a href="https://github.com/math-comp/analysis/tree/a0582da47ba6aa1ab4c08b47c1906488a00f961a/./experimental_reals/dedekind.v">source</a>
       </p>
       <h1 class="title">Module mathcomp.experimental_reals.dedekind</h1>
 <br/>
@@ -270,21 +275,21 @@
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
-<span class="gallina-kwd"> by</span><span class="id"> case:</span> (<span class="id">lpo</span> (<span class="gallina-kwd">fun</span> (_<span class="id"> :</span><span class="id"> unit</span>)<span class="id"> =&gt;</span><span class="id"> P</span>)<span class="id"> tt</span>). Qed.</div></details>
+<span class="id"> by</span><span class="id"> case:</span> (<span class="id">lpo</span> (<span class="gallina-kwd">fun</span> (_<span class="id"> :</span><span class="id"> unit</span>)<span class="id"> =&gt;</span><span class="id"> P</span>)<span class="id"> tt</span>). Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> decT</span><span class="id"> {T</span><span class="id"> :</span><span class="id"> Type}</span> (<span class="id">P</span><span class="id"> :</span><span class="gallina-kwd"> Prop</span>) (<span class="id">x</span><span class="id"> y</span><span class="id"> :</span><span class="id"> T</span>)<span class="id">:</span><br/>
 &nbsp;&nbsp;<span class="id">P</span><span class="id"> -&gt;</span> (<span class="gallina-kwd">if</span><span class="id"> dec</span><span class="id"> P</span><span class="gallina-kwd"> then</span><span class="id"> x</span><span class="gallina-kwd"> else</span><span class="id"> y</span>)<span class="id"> =</span><span class="id"> x</span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
-<span class="gallina-kwd"> by</span><span class="id"> case:</span> (<span class="id">dec</span><span class="id"> _</span>). Qed.</div></details>
+<span class="id"> by</span><span class="id"> case:</span> (<span class="id">dec</span><span class="id"> _</span>). Qed.</div></details>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> decF</span><span class="id"> {T</span><span class="id"> :</span><span class="id"> Type}</span> (<span class="id">P</span><span class="id"> :</span><span class="gallina-kwd"> Prop</span>) (<span class="id">x</span><span class="id"> y</span><span class="id"> :</span><span class="id"> T</span>)<span class="id">:</span><br/>
 &nbsp;&nbsp;<span class="id">~P</span><span class="id"> -&gt;</span> (<span class="gallina-kwd">if</span><span class="id"> dec</span><span class="id"> P</span><span class="gallina-kwd"> then</span><span class="id"> x</span><span class="gallina-kwd"> else</span><span class="id"> y</span>)<span class="id"> =</span><span class="id"> y</span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
-<span class="gallina-kwd"> by</span><span class="id"> case:</span> (<span class="id">dec</span><span class="id"> _</span>). Qed.</div></details>
+<span class="id"> by</span><span class="id"> case:</span> (<span class="id">dec</span><span class="id"> _</span>). Qed.</div></details>
 <span class="vernacular">End</span><span class="vernacular"> Classical</span>.<br/>
 <br/>
 <span class="vernacular">Import</span><span class="vernacular"> Classical</span>.<br/>
@@ -299,7 +304,7 @@
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
-<span class="gallina-kwd"> by</span><span class="id"> []</span>. Qed.</div></details>
+<span class="id"> by</span><span class="id"> []</span>. Qed.</div></details>
 <span class="vernacular">Definition</span><span class="id"> ratx_of_pred</span>   <span class="id"> k</span><span class="id"> :=</span><span class="id"> locked_with</span><span class="id"> k</span><span class="id"> RatX</span>.<br/>
 <span class="vernacular">Canonical</span> <span class="id"> ratx_unlockable</span><span class="id"> k</span><span class="id"> :=</span><span class="id"> [unlockable</span><span class="gallina-kwd"> fun</span><span class="id"> ratx_of_pred</span><span class="id"> k]</span>.<br/>
 <br/>
@@ -314,19 +319,19 @@
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
-<span class="id">apply:</span> (<span class="id">iffP</span><span class="id"> idP</span>)<span class="id">=&gt;</span><span class="id"> [|&lt;-];</span><span class="id"> last</span><span class="gallina-kwd"> by</span><span class="id"> rewrite</span><span class="id"> /eqrx</span><span class="id"> decT</span>.<br/>
+<span class="id">apply:</span> (<span class="id">iffP</span><span class="id"> idP</span>)<span class="id">=&gt;</span><span class="id"> [|&lt;-];</span><span class="id"> last</span><span class="id"> by</span><span class="id"> rewrite</span><span class="id"> /eqrx</span><span class="id"> decT</span>.<br/>
 <span class="id">rewrite</span><span class="id"> /eqrx;</span><span class="id"> case:</span> (<span class="id">dec</span><span class="id"> _</span>)<span class="id">=&gt;</span><span class="id"> //=</span><span class="id"> eqv</span><span class="id"> h</span>.<br/>
-<span class="gallina-kwd">by</span><span class="id"> case:</span><span class="id"> X1</span><span class="id"> X2</span><span class="id"> eqv</span><span class="id"> =&gt;</span><span class="id"> [X1]</span><span class="id"> [X2]</span><span class="id"> /=</span><span class="id"> eqv;</span><span class="id"> rewrite</span> (<span class="id">@pex</span><span class="id"> _</span><span class="id"> X1</span><span class="id"> X2</span>).<br/>
+<span class="id">by</span><span class="id"> case:</span><span class="id"> X1</span><span class="id"> X2</span><span class="id"> eqv</span><span class="id"> =&gt;</span><span class="id"> [X1]</span><span class="id"> [X2]</span><span class="id"> /=</span><span class="id"> eqv;</span><span class="id"> rewrite</span> (<span class="id">@pex</span><span class="id"> _</span><span class="id"> X1</span><span class="id"> X2</span>).<br/>
 Qed.</div></details>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> ratx_eqMixin</span><span class="id"> :=</span><span class="id"> EqMixin</span><span class="id"> eqrxP</span>.<br/>
 <span class="vernacular">Canonical</span> <span class="id"> ratx_eqType</span> <span class="id"> :=</span><span class="vernacular"> Eval</span><span class="id"> hnf</span><span class="gallina-kwd"> in</span><span class="id"> EqType</span><span class="id"> ratx</span><span class="id"> ratx_eqMixin</span>.<br/>
 <br/>
 <span class="vernacular">CoInductive</span><span class="id"> is_cut</span> (<span class="id">X</span><span class="id"> :</span><span class="id"> rat</span><span class="id"> -&gt;</span><span class="gallina-kwd"> Prop</span>)<span class="id"> :</span><span class="gallina-kwd"> Prop</span><span class="id"> :=</span><br/>
-&nbsp;&nbsp;<span class="id">IsCut</span> (<span class="id">ub</span><span class="id"> :</span><span class="gallina-kwd"> exists</span><span class="id"> a,</span><span class="id"> X</span><span class="id"> a</span>)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id">lb</span><span class="id"> :</span><span class="gallina-kwd"> exists</span><span class="id"> a,</span><span class="id"> ~</span><span class="id"> X</span><span class="id"> a</span>)<br/>
+&nbsp;&nbsp;<span class="id">IsCut</span> (<span class="id">ub</span><span class="id"> :</span><span class="id"> exists</span><span class="id"> a,</span><span class="id"> X</span><span class="id"> a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id">lb</span><span class="id"> :</span><span class="id"> exists</span><span class="id"> a,</span><span class="id"> ~</span><span class="id"> X</span><span class="id"> a</span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id">filter</span><span class="id"> :</span><span class="gallina-kwd"> forall</span><span class="id"> a</span><span class="id"> b,</span><span class="id"> X</span><span class="id"> a</span><span class="id"> -&gt;</span> (<span class="id">a</span><span class="id"> &lt;</span><span class="id"> b</span>)<span class="id">%R</span><span class="id"> -&gt;</span><span class="id"> X</span><span class="id"> b</span>)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id">open</span><span class="id"> :</span><span class="gallina-kwd"> forall</span><span class="id"> a,</span><span class="id"> X</span><span class="id"> a</span><span class="id"> -&gt;</span><span class="gallina-kwd"> exists2</span><span class="id"> b,</span><span class="id"> X</span><span class="id"> b</span><span class="id"> &amp;</span> (<span class="id">b</span><span class="id"> &lt;</span><span class="id"> a</span>)<span class="id">%R</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id">open</span><span class="id"> :</span><span class="gallina-kwd"> forall</span><span class="id"> a,</span><span class="id"> X</span><span class="id"> a</span><span class="id"> -&gt;</span><span class="id"> exists2</span><span class="id"> b,</span><span class="id"> X</span><span class="id"> b</span><span class="id"> &amp;</span> (<span class="id">b</span><span class="id"> &lt;</span><span class="id"> a</span>)<span class="id">%R</span>).<br/>
 <br/>
 <span class="vernacular">Definition</span><span class="id"> is_cutb</span> (<span class="id">X</span><span class="id"> :</span><span class="id"> rat</span><span class="id"> -&gt;</span><span class="gallina-kwd"> Prop</span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">if</span><span class="id"> dec</span> (<span class="id">is_cut</span><span class="id"> X</span>)<span class="gallina-kwd"> then</span><span class="id"> true</span><span class="gallina-kwd"> else</span><span class="id"> false</span>.<br/>
@@ -337,7 +342,7 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">Canonical</span><span class="id"> cut_subType</span><span class="id"> :=</span><span class="vernacular"> Eval</span><span class="id"> hnf</span><span class="gallina-kwd"> in</span><span class="id"> [subType</span><span class="gallina-kwd"> for</span><span class="id"> ltc]</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> cut_eqMixin</span><span class="id"> :=</span><span class="vernacular"> Eval</span><span class="id"> hnf</span><span class="gallina-kwd"> in</span><span class="id"> [eqMixin</span><span class="id"> of</span><span class="id"> cut</span><span class="gallina-kwd"> by</span><span class="id"> &lt;:]</span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> cut_eqMixin</span><span class="id"> :=</span><span class="vernacular"> Eval</span><span class="id"> hnf</span><span class="gallina-kwd"> in</span><span class="id"> [eqMixin</span><span class="id"> of</span><span class="id"> cut</span><span class="id"> by</span><span class="id"> &lt;:]</span>.<br/>
 <span class="vernacular">Canonical</span> <span class="id"> cut_eqType</span> <span class="id"> :=</span><span class="vernacular"> Eval</span><span class="id"> hnf</span><span class="gallina-kwd"> in</span><span class="id"> EqType</span><span class="id"> cut</span><span class="id"> cut_eqMixin</span>.<br/>
 
       <div class="footer"><hr/>Generated by <a href="https://github.com/affeldt-aist/rocqnavi/">rocqnavi</a></div>
