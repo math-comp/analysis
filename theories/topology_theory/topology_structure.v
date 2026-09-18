@@ -127,6 +127,9 @@ Definition open_nbhs (p : T) (A : set T) := open A /\ A p.
 Definition basis (B : set_system T) :=
   B `<=` open /\ forall x, filter_from [set U | B U /\ U x] id --> x.
 
+Definition nbhs_basis (x : T) (B : set (set T)) :=
+  (B `<=` nbhs x) /\ filter_from [set U | B U] id --> x.
+
 Definition second_countable := exists2 B, countable B & basis B.
 
 Global Instance nbhs_pfilter (p : T) : ProperFilter (nbhs p).
@@ -514,6 +517,12 @@ HB.instance Definition _ := Nbhs_isTopological.Build T
 
 HB.end.
 
+Definition openU_from (T : Type) (I : Type) (D : set I) (b : I -> set T) :=
+  [set \bigcup_(i in D') b i | D' in subset^~ D].
+
+#[deprecated(since="mathcomp-analysis 1.17.0", use=openU_from)]
+Notation open_from := openU_from (only parsing).
+
 (** Topology defined by a base of open sets *)
 
 HB.factory Record isBaseTopological T & Choice T := {
@@ -524,9 +533,6 @@ HB.factory Record isBaseTopological T & Choice T := {
   b_join : forall i j t, D i -> D j -> b i t -> b j t ->
     exists k, [/\ D k, b k t & b k `<=` b i `&` b j]
 }.
-
-Definition openU_from T I (D : set I) (b : I -> set T) :=
-  [set \bigcup_(i in D') b i | D' in subset^~ D].
 
 HB.builders Context T & isBaseTopological T.
 
@@ -577,8 +583,6 @@ HB.instance Definition _ := isOpenTopological.Build T
 
 HB.end.
 
-#[deprecated(since="mathcomp-analysis 1.17.0", use=openU_from)]
-Notation open_from := openU_from (only parsing).
 
 HB.factory Record isSubBaseTopological T & Choice T := {
   I : pointedType ;

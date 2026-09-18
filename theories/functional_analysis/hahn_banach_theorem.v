@@ -3,7 +3,7 @@ From mathcomp Require Import boot order algebra interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp contra classical_sets filter.
-From mathcomp Require Import reals convex topology normedtype.
+From mathcomp Require Import reals convex topology normedtype unstable.
 
 (**md**************************************************************************)
 (* # The Hahn-Banach theorem                                                  *)
@@ -357,3 +357,229 @@ by exists g'.
 Qed.
 
 End hahn_banach_normed.
+
+
+HB.mixin Record isLine {R : numDomainType} (V : lmodType R) (x : V) (y : V):= {
+  isline : exists t, y == t *: x
+}.
+
+#[short(type = "lineType")]
+HB.structure Definition Line {R : numDomainType} {V : lmodType R} (x : V) := {
+  y of @isLine R V x y
+}.
+
+Section linepred.
+Variable (R : numDomainType) (V : lmodType R) (x : V).
+
+Definition linepred : {pred V} :=
+  mem [set y | exists t, y = t *: x ].
+
+Definition linepred_key : pred_key linepred. Proof. exact. Qed.
+
+Canonical linepred_keyed := KeyedPred linepred_key.
+
+End linepred.
+
+Section line.
+Variable (R : numDomainType) (V : lmodType R) (x : V).
+
+Notation T := (@Line.type R V x).
+
+Notation linepred := (@linepred R V x).
+
+Section Sub.
+Context (y : V) (yP : y \in linepred).
+
+#[local] Lemma test : exists t, y == t *: x.
+Proof. by move: yP; rewrite inE  => -[t ->]; exists t. Qed.
+
+
+#[local] Definition linepred_Sub_subproof :=
+  @isLine.Build R V x y (test).
+
+#[local] HB.instance Definition _ := linepred_Sub_subproof.
+
+Definition linepred_Sub : (@lineType _ _ _) := y.
+
+End Sub.
+
+
+Let linepred_rect (K : T -> Type) :
+  (forall f (Pf : f \in linepred), K (linepred_Sub Pf)) -> forall u : T, K u.
+Proof.
+move=> Ksub [y] [[/[dup] Py1]] Py2.
+set G := (G in K G).
+have Py : y \in linepred by rewrite inE; move: Py1=> [t] /eqP ->; exists t.
+suff -> : G = linepred_Sub Py by apply: Ksub.
+rewrite {}/G.
+congr (Line.Pack (@Line.Class R V x y _ )).
+by congr isLine.Axioms_; exact: Prop_irrelevance.
+Qed.
+
+Let linepred_valP y (Py : y \in linepred) : linepred_Sub Py = y :> V.
+Proof. by []. Qed.
+
+HB.instance Definition _ := isSub.Build _ _ T linepred_rect linepred_valP.
+
+HB.instance Definition _ := [Choice of T by <:].
+
+End line.
+
+Section line_sublmodtype.
+Variable (R : numDomainType) (V : lmodType R) (x : V).
+
+#[local] Lemma line_submod_closed : submod_closed (@linepred R V x).
+Proof.
+split; first by rewrite inE; exists 0; rewrite scale0r.
+move=> t y z; rewrite !inE => -[ty ->] -[tz ->]; exists (t * ty + tz).
+by rewrite scalerDl scalerA.
+Qed.
+
+HB.instance Definition _ :=
+  @GRing.isSubmodClosed.Build _  _  (@linepred R V x) line_submod_closed.
+
+HB.instance Definition _ :=
+  [SubChoice_isSubLmodule of ((@Line.type R V x))  by <:].
+
+End line_sublmodtype.
+
+Section hahn_banach_extension_ctvs.
+Variable (R : realType) (V : convexTvsType R) (F : pred V).
+(* In contrary to the normed case, the extention thm is not true for any subtopology on F,
+ but only for the finest one *)
+
+Import Norm.
+
+(* A first version specifying the seminorm bounding the function *)
+(* 7.1.2 Jarchow *)
+Theorem hahn_banach_extension_subctvs  (F' : subConvexTvsType F)
+ (f : {linear F' -> R}) :
+  (exists2 p : SemiNorm.type V, seminorm_of p & forall z : F', f z <= p (val z)) ->
+  exists g : {linear_continuous V -> R}, forall x : F', g (val x) = f x.
+Proof.
+move=> [p ps fp].
+have convp : @convex_function _ _ [set: V] p.
+  rewrite /convex_function /conv => l v1 v2 _ _ /=.
+  rewrite [in leRHS]/conv /=.
+  apply: le_trans; first by exact : @ler_normD _ _ p (l%:num *: v1) (l%:num.~ *: v2).
+  rewrite  !normZ -![_ *: _]/(_ * _) (@ger0_norm _ l%:num)//.
+  by rewrite (@ger0_norm _ l%:num.~)// ?mulrA// onem_ge0.
+have := (@hahn_banach_extension R V _ F' f p convp fp).
+move=> [g majgp F_eqgf].
+have ling : linear (g : V -> R) by exact: linearP.
+have contg : continuous (g : V -> R).
+  by apply/lcfun_seminorm; exists p; first by apply: continuous_seminorm_of.
+pose lcg := isLinearContinuous.Build _ _ _ _ g ling contg.
+pose g' : {linear_continuous V -> R | *%R} := HB.pack (g : V -> R) lcg.
+by exists g'.
+Qed.
+
+
+(* A second version where F is a subspace of V, meaning endowed with the initial topology wrt to val*)
+(* 7.2.1 Jarchow *)
+Theorem hahn_banach_extension_initialsubctvs  (F' : subLmodType F)
+ (f : {linear_continuous (init_subconvextvs F') -> R^o}) :
+  exists g : {linear_continuous V -> R}, forall x : F', g (val x) = f x.
+Proof.
+have [[openBasisV BasisV] _] := has_open_nbhs_basis V.
+have [p' ps' fp'] : exists2 p : SemiNorm.type V, seminorm_of p & forall z : F', f z <= p (val z).
+  have /linear_continuous_seminorm: continuous (f : (init_subconvextvs F') -> R^o) by apply: continuous_fun.
+  move=> [p [cp ps] /= fp].
+  have [/= nF] := cp.
+  move=> [] onF /= pF.
+  have [/(_ nF onF) + _] := basis_opennbhsbasis (init_subconvextvs F').
+  move=> [oF [[/= oV] ooV oVF] oF0 oFn].
+  have /BasisV [/= bV obV boV] : nbhs 0 oV.
+    rewrite nbhsE; exists oV => //; split => //.
+    apply: (@image_preimage_subset _ _ (val : F'-> V)).
+    by rewrite oVF; exists 0; rewrite ?linear0.
+  exists (gauge_fun_basis obV).
+    by exists bV; exists obV => //.
+  move=> z.
+  set pVz := (X in _ <= X).
+  apply: le_trans; first by apply: fp.
+  rewrite pF; apply: inf_le.
+  - move=> x /= [r [r0]]; rewrite inE => -[v bVv rvalz] <-; exists (- r); split => //; exists r; split => //.
+    rewrite inE; exists (r^-1 *: z).
+      apply: oFn; rewrite -oVF /=; apply: boV.
+      by rewrite linearZ /= -rvalz scalerA mulrC divff ?scale1r ?lt0r_neq0.
+    by rewrite scalerA divff ?scale1r ?lt0r_neq0.
+  - have [/= s s0 szbV]:= absorbing_opennbhsbasis obV (val z).
+    exists s^-1; split; rewrite ?invr_gt0 // inE /=; exists (s *: val z); first by apply/set_mem.
+    by rewrite scalerA mulrC divff ?scale1r ?lt0r_neq0.
+  - split; last by exists 0 => r [? _]; rewrite ltW.
+    have [/= s s0 sznF]:= absorbing_opennbhsbasis onF z.
+    exists s^-1; split; rewrite ?invr_gt0 // inE /=; exists (s *: z); first by apply/set_mem.
+    by rewrite scalerA mulrC divff ?scale1r ?lt0r_neq0.
+have convp : @convex_function _ _ [set: V] p'. (* or apply the previous thm but typing *)
+  rewrite /convex_function /conv => l v1 v2 _ _ /=.
+  rewrite [in leRHS]/conv /=.
+  apply: le_trans; first by exact : @ler_normD _ _ p' (l%:num *: v1) (l%:num.~ *: v2).
+  rewrite  !normZ -![_ *: _]/(_ * _) (@ger0_norm _ l%:num)//.
+  by rewrite (@ger0_norm _ l%:num.~)// ?mulrA// onem_ge0.
+have := (@hahn_banach_extension R V _ F' f p' convp fp').
+move=> [g majgp F_eqgf].
+have ling : linear (g : V -> R) by exact: linearP.
+have contg : continuous (g : V -> R).
+  by apply/lcfun_seminorm; exists p'; first by apply: continuous_seminorm_of.
+pose lcg := isLinearContinuous.Build _ _ _ _ g ling contg.
+pose g' : {linear_continuous V -> R | *%R} := HB.pack (g : V -> R) lcg.
+by exists g'.
+Qed.
+End hahn_banach_extension_ctvs.
+
+
+(* 7.2.3 in Jarchow *)
+Lemma hahn_banach_extension_hausdorff (R : realType) (V : convexTvsType R) :
+(hausdorff_space V) <-> (forall x : V,  x != 0 -> exists l : {linear_continuous V -> R^o}, l(x) != 0).
+Proof.
+split; last first.
+(* proof in here is different than in the book - Jarchow mentions "a" continuous seminorm in 7.2.3 but refers to 2.7.1 which proves the results for a seminorm of the set of seminorm generating the topology - its probably lacks an argument saying that continuous seminorms are always bounded by this set of seminorms, which we haven't formalised here *)
+  move => H.
+  pose P := (@seminorm_of R V).
+  pose P0 := (@seminorm_ofneq0 R V).
+  suff : hausdorff_space (seminorm_on P0).
+    have [contVs _ ] := (seminorm_convextvs V).
+    by move=> + x y cs; apply => a b /contVs nsa /contVs nsb; apply: cs => //.
+  apply/hausdorff_seminorm_on=> x /H [l].
+  have [l0|l0|] := ltrgtP (l x) (0 : R) => //.
+    have /linear_continuous_seminorm [p [sp _] /= lp] :=  (@continuous_fun _ _ (-1 *: l)).
+    exists p => //; apply: lt_le_trans; last by apply: lp.
+    by rewrite scaleN1r ltrNr oppr0.
+  have /linear_continuous_seminorm [p [sp _] /= lp] :=  (@continuous_fun _ _ l).
+  by exists p => //; apply: lt_le_trans; last by apply: lp.
+move=> haus x x0.
+pose l := fun ( y : Line.type x) => xchoose (@isline R V x y).
+have llinear: linear_for ( *:%R) l.
+  rewrite /l => t u v /=. Search xchoose.
+  move: (@isline _ _ x u)=>  H; move/eqP: (xchooseP H) => xu.
+  move: (@isline _ _ x v)=>  H'; move/eqP: (xchooseP H') => xv.
+  move: (@isline _ _ x (t *: u + v))=>  Hs; move/eqP: (xchooseP Hs) => xs.
+  have : val (t *: u + v) = (t * xchoose H + xchoose H') *: x.
+    rewrite linearP /=. (*Set Printing Coercions. *) Fail rewrite xv. admit.
+  rewrite linearP /= => lem.
+  suff : xchoose Hs *: x = (t *: xchoose H + xchoose H') *: x.
+  (* where is left injectivity of scaler *) admit.
+  by rewrite -xs scalerDl -xv -scalerA -xu.
+pose linlP := GRing.isLinear.Build _ _ _ _ l llinear.
+pose linl : {linear _ -> _} := HB.pack l linlP.
+have lcont : continuous (l : (init_subconvextvs (lineType x)) -> R^o).
+  move=> /= v /= A [r /= r0]; rewrite /ball_ /= => Ar.
+  admit.
+pose contlP := isContinuous.Build _ _ _ lcont.
+pose lcl : {linear_continuous (init_subconvextvs (lineType x)) -> R^o} := 
+HB.pack (l : (init_subconvextvs (lineType x)) -> R^o) linlP contlP.
+have := (hahn_banach_extension_initialsubctvs lcl) => -[g Pg]; exists g.
+have xline : exists t, x == t *: x by  exists 1; rewrite scale1r.
+pose xP := isLine.Build _ _ _ x xline.
+pose x' : (lineType x) := HB.pack x xP.
+have := Pg x'.
+have -> : \val x'= x by [].
+have -> : lcl x' = 1. admit.
+by move=>  -> //=.
+Admitted.
+
+
+Section hahn_banach_separation_ctvs.
+(* TODO *)
+End hahn_banach_separation_ctvs.
