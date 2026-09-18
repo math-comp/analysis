@@ -2277,6 +2277,8 @@ have []:= (eqVneq (f @^-1` [set 0]) [set : F]).
   by rewrite -h /=.
 move=> /setTPn [x] /[swap] /closure_id ->.
 rewrite /closure /= => /existsNP [U] /not_implyP [nU] /nonemptyPn.
+move=> H; apply: continuousfor0_continuous.
+move=> /= V [r /= r0] /=; rewrite linear0 => rV.
 Admitted.
 
 
