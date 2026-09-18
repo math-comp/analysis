@@ -373,10 +373,8 @@ move=> x y xy.
 exists (ball x (`|x-y|/2)); split; rewrite ?inE /=; first by apply: ball_open.
   by apply: ballxx; rewrite mulr_gt0 ?normr_gt0 ?invr_gt0 ?subr_eq0.
 rewrite /ball /= ltr_pdivlMr //= gtr_pMr ?normr_gt0 ?subr_eq0 //.
-apply/negP. Fail rewrite -leNgt.
-admit.
-Admitted.
-
+by rewrite ltrn1.
+Qed.
 
 Section TopologicalLmodule_theory.
 Variables (R : numFieldType) (E : topologicalType) (F G : topologicalLmodType R).
