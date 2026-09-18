@@ -367,6 +367,17 @@ HB.structure Definition TopologicalLmodule (K : numDomainType) :=
 (*HB.instance Definition _ (K : numDomainType) (T : topologicalLmodType K) : TopologicalLmodule K T :=
   ConvexSpace.copy T (convex_lmodType T).*)
 
+Lemma accessible_field (K : numFieldType) : accessible_space K^o.
+Proof.
+move=> x y xy.
+exists (ball x (`|x-y|/2)); split; rewrite ?inE /=; first by apply: ball_open.
+  by apply: ballxx; rewrite mulr_gt0 ?normr_gt0 ?invr_gt0 ?subr_eq0.
+rewrite /ball /= ltr_pdivlMr //= gtr_pMr ?normr_gt0 ?subr_eq0 //.
+apply/negP. Fail rewrite -leNgt.
+admit.
+Admitted.
+
+
 Section TopologicalLmodule_theory.
 Variables (R : numFieldType) (E : topologicalType) (F G : topologicalLmodType R).
 
@@ -406,7 +417,6 @@ have -> : (fun y => f y - f x) = (fun y => f (y - x)).
 apply: cvg_comp; last by rewrite -(linear0 f); exact: cont0.
 by move => A nA /=; apply: continuous_shift; rewrite subrr.
 Qed.
-
 
 Lemma hausdorff_convextvs : (hausdorff_space F) <-> closed ([set 0 : F]).
 Proof.
@@ -2250,3 +2260,26 @@ by move/linear_continuous_seminorm => [p [_ cp] lpx]; exists p.
 Qed.
 
 End generating_seminorm.
+
+Section kernel.
+Context (R : realFieldType) (F : convexTvsType R).
+(* Necessary to use has_open_nbhs_basis *)
+
+(* Introduce a notation for kernels ?*)
+Lemma continuous_closedkernel (f : {linear F -> R^o}): continuous f <-> closed (f @^-1` [set 0]).
+Proof.
+split.
+  move=> /continuous_closedP /(_ [set 0]); apply.
+  apply: accessible_closed_set1; apply: accessible_field.
+have []:= (eqVneq (f @^-1` [set 0]) [set : F]).
+  move => h _.
+  suff -> : f = (fun y=> 0) :> (F -> R) by apply: cst_continuous.
+  apply: funext => x.
+  have : [set : F] x by [].
+  by rewrite -h /=.
+move=> /setTPn [x] /[swap] /closure_id ->.
+rewrite /closure /= => /existsNP [U] /not_implyP [nU] /nonemptyPn.
+Admitted.
+
+
+End kernel.
