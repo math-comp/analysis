@@ -359,7 +359,7 @@ Qed.
 End hahn_banach_normed.
 
 
-HB.mixin Record isLine {R : numDomainType} {V : lmodType R} (x : V) (y : V):= {
+HB.mixin Record isLine {R : numDomainType} (V : lmodType R) (x : V) (y : V):= {
   isline : exists t, y == t *: x
 }.
 
@@ -526,10 +526,11 @@ pose lcg := isLinearContinuous.Build _ _ _ _ g ling contg.
 pose g' : {linear_continuous V -> R | *%R} := HB.pack (g : V -> R) lcg.
 by exists g'.
 Qed.
+End hahn_banach_extension_ctvs.
 
 
 (* 7.2.3 in Jarchow *)
-Lemma hahn_banach_extension_hausdorff :
+Lemma hahn_banach_extension_hausdorff (R : realType) (V : convexTvsType R) :
 (hausdorff_space V) <-> (forall x : V,  x != 0 -> exists l : {linear_continuous V -> R^o}, l(x) != 0).
 Proof.
 split; last first.
@@ -548,21 +549,36 @@ split; last first.
   have /linear_continuous_seminorm [p [sp _] /= lp] :=  (@continuous_fun _ _ l).
   by exists p => //; apply: lt_le_trans; last by apply: lp.
 move=> haus x x0.
-Check (Line.type x).
-have y : Line.type x. admit.
-Search "isline".
-Check ((@isline _ _ _ y)). Search (exists _, _) "P". Check xchoose.
 pose l := fun ( y : Line.type x) => xchoose (@isline R V x y).
-have llinear: linear l. admit.
+have llinear: linear_for ( *:%R) l.
+  rewrite /l => t u v /=. Search xchoose.
+  move: (@isline _ _ x u)=>  H; move/eqP: (xchooseP H) => xu.
+  move: (@isline _ _ x v)=>  H'; move/eqP: (xchooseP H') => xv.
+  move: (@isline _ _ x (t *: u + v))=>  Hs; move/eqP: (xchooseP Hs) => xs.
+  have : val (t *: u + v) = (t * xchoose H + xchoose H') *: x.
+    rewrite linearP /=. (*Set Printing Coercions. *) Fail rewrite xv. admit.
+  rewrite linearP /= => lem.
+  suff : xchoose Hs *: x = (t *: xchoose H + xchoose H') *: x.
+  (* where is left injectivity of scaler *) admit.
+  by rewrite -xs scalerDl -xv -scalerA -xu.
 pose linlP := GRing.isLinear.Build _ _ _ _ l llinear.
 pose linl : {linear _ -> _} := HB.pack l linlP.
-(*have lcontinuous: continuous l. admit.
-pose linlP := GRing.isLinear.Build _ _ _ _ l llinear.
-pose linl : {linear _ -> _} := HB.pack l linlP.
-*)
+have lcont : continuous (l : (init_subconvextvs (lineType x)) -> R^o).
+  move=> /= v /= A [r /= r0]; rewrite /ball_ /= => Ar.
+  admit.
+pose contlP := isContinuous.Build _ _ _ lcont.
+pose lcl : {linear_continuous (init_subconvextvs (lineType x)) -> R^o} := 
+HB.pack (l : (init_subconvextvs (lineType x)) -> R^o) linlP contlP.
+have := (hahn_banach_extension_initialsubctvs lcl) => -[g Pg]; exists g.
+have xline : exists t, x == t *: x by  exists 1; rewrite scale1r.
+pose xP := isLine.Build _ _ _ x xline.
+pose x' : (lineType x) := HB.pack x xP.
+have := Pg x'.
+have -> : \val x'= x by [].
+have -> : lcl x' = 1. admit.
+by move=>  -> //=.
 Admitted.
 
-End hahn_banach_extension_ctvs.
 
 Section hahn_banach_separation_ctvs.
 (* TODO *)
