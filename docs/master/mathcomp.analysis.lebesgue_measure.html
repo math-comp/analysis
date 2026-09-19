@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.lebesgue_measure</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis a0582da 2026.09.18-20:52" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis a0582da 2026.09.19-20:29" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -823,7 +823,16 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> elebesgue_measure</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="elebesgue_measure.R" class="id"><div name="elebesgue_measure.R" class="id anchor tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/a0582da47ba6aa1ab4c08b47c1906488a00f961a/theories/lebesgue_measure.v#L548' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="elebesgue_measure" class="id"><div name="elebesgue_measure" class="id anchor tooltip">elebesgue_measure<span class='tooltip-area'><p>LebesgueMeasure.lebesgue_measure :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="elebesgue_measure" class="id"><div name="elebesgue_measure" class="id anchor tooltip">elebesgue_measure<span class='tooltip-area'><p>LebesgueMeasure.hlength : forall {R : realType}, set (ocitv_type R) -> \bar R
+
+LebesgueMeasure.hlength is not universe polymorphic
+Arguments LebesgueMeasure.hlength {R} A%_classical_set_scope
+LebesgueMeasure.hlength is transparent
+Expands to: Constant
+            mathcomp.analysis.lebesgue_measure.LebesgueMeasure.hlength
+Declared in
+library mathcomp.analysis.lebesgue_measure, line 60, characters 11-18
+LebesgueMeasure.lebesgue_measure :
 forall {R : realType},
 set (g_sigma_algebraType (R.-ocitv).-measurable%classic) -> \bar R
 
