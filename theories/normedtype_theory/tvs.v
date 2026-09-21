@@ -2259,9 +2259,19 @@ Qed.
 
 End generating_seminorm.
 
+
 Section kernel.
 Context (R : realFieldType) (F : convexTvsType R).
 (* Necessary to use has_open_nbhs_basis *)
+
+(*TBA topology *)
+Lemma closed_Ndense (S : set F) : (S != [set: F]) -> closed S ->  ~ (dense S).
+Proof.
+move=> /setTPn [t] nSt.
+have S0: (~` S) !=set0 by exists t.
+rewrite -openC => /[swap] /(_ _) /[swap] oS /(_ (~` S) S0 oS).
+by move=> -[a [+ Sa]]; move=> /(_ Sa).
+Qed.
 
 (* Introduce a notation for kernels ?*)
 Lemma continuous_closedkernel (f : {linear F -> R^o}): continuous f <-> closed (f @^-1` [set 0]).
@@ -2275,10 +2285,24 @@ have []:= (eqVneq (f @^-1` [set 0]) [set : F]).
   apply: funext => x.
   have : [set : F] x by [].
   by rewrite -h /=.
-move=> /setTPn [x] /[swap] /closure_id ->.
-rewrite /closure /= => /existsNP [U] /not_implyP [nU] /nonemptyPn.
-move=> H; apply: continuousfor0_continuous.
-move=> /= V [r /= r0] /=; rewrite linear0 => rV.
+move=> s0 /closed_Ndense; move=> /(_ s0).
+move=> /existsNP [U] /not_implyP [[x Ux]].
+move=> /not_implyP [oU] /forallNP /= H.
+have [B Bconv [B0 Bbasis]] := (@locally_convex _ F).
+have /nbhsE0 [V' /Bbasis [/= V BV VV'] VU]: nbhs x U by rewrite nbhsE; exists U.
+have nfU: forall z, U z -> f z != f x. admit.
+have [/=M fM]: exists M, forall z, U z -> `|f z | < M. admit.
+have M0 : 0 < M. admit.
+apply: continuousfor0_continuous => /= A; rewrite linear0 => -[r /= r0] rA. 
+apply: (@filterS  _  _ _ ( *:%R (r * M^-1) @` U )).
+  move=> z /= [t] Ut <-; rewrite linearE /=; apply: rA => /=. Search  (_ *: _) ( _* _). 
+  rewrite sub0r normrN  -[_ *: _]/(_ * _)  normrM -ltr_pdivlMl.
+    rewrite normr_gt0; apply: mulf_neq0 => //; first by apply: lt0r_neq0.
+    by apply: invr_neq0; apply: lt0r_neq0.
+  rewrite [in X in _ <X ]gtr0_norm  ?mulr_gt0 ?invr_gt0 //.
+  rewrite invfM mulrAC mulVf ?lt0r_neq0 ?invrK ?mul1r //.
+  by apply: fM.
+Check (nbhsZ).
 Admitted.
 
 
