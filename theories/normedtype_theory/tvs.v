@@ -1028,7 +1028,7 @@ HB.factory Record NbhsSubbasisAt0_isConvexTvs (R : numFieldType) E
   absorbing_nbhssubbasis_at0 : nbhssubbasis_at0 `<=` @absorbing_set _ E ;
   absconvex_nbhssubbasis_at0 : nbhssubbasis_at0 `<=` @absolutely_convex_set _ E ;
   expand_nbhssubbasis_at0 : forall B r, nbhssubbasis_at0 B ->
-  exists2 U, nbhssubbasis_at0 U & ( *:%R r) @` U `<=` B  (* implies circled *) }.
+  exists2 U, nbhssubbasis_at0 U & ( *:%R r) @` U `<=` B }.
 
 Definition finI_fromsubbasis0 (R : numFieldType) (E : zmodType)
     (nbhssubbasis0 : set_system E)  :=
@@ -2287,22 +2287,65 @@ have []:= (eqVneq (f @^-1` [set 0]) [set : F]).
   by rewrite -h /=.
 move=> s0 /closed_Ndense; move=> /(_ s0).
 move=> /existsNP [U] /not_implyP [[x Ux]].
-move=> /not_implyP [oU] /forallNP /= H.
+move=> /not_implyP [oU] /forallNP /= Uf.
 have [B Bconv [B0 Bbasis]] := (@locally_convex _ F).
 have /nbhsE0 [V' /Bbasis [/= V BV VV'] VU]: nbhs x U by rewrite nbhsE; exists U.
-have nfU: forall z, U z -> f z != f x. admit.
-have [/=M fM]: exists M, forall z, U z -> `|f z | < M. admit.
-have M0 : 0 < M. admit.
-apply: continuousfor0_continuous => /= A; rewrite linear0 => -[r /= r0] rA. 
-apply: (@filterS  _  _ _ ( *:%R (r * M^-1) @` U )).
-  move=> z /= [t] Ut <-; rewrite linearE /=; apply: rA => /=. Search  (_ *: _) ( _* _). 
-  rewrite sub0r normrN  -[_ *: _]/(_ * _)  normrM -ltr_pdivlMl.
-    rewrite normr_gt0; apply: mulf_neq0 => //; first by apply: lt0r_neq0.
-    by apply: invr_neq0; apply: lt0r_neq0.
+have [_ aV]: absolutely_convex_set V by apply: Bconv; rewrite inE.
+have nfU: forall z, V z -> f z != f x.
+  move=> z Vz; apply/eqP => fzx.
+  have Vnz : V (- z).
+    rewrite -scaleN1r; apply: aV; last by exists z => //.
+    by rewrite normrN normr1.
+  apply: Uf; split; first by apply: VU ; exists (-z); first by apply: VV'.
+  by rewrite linearB; rewrite fzx subrr.
+have [/=M fM]: exists M, forall z, V z -> `|f z | < M.
+  apply: contrapT; rewrite -forallNE /= => /(_  (`|f x|)) /existsNP [y].
+  move=> /not_implyP [Vy] /negP; rewrite -leNgt => fxy.
+  have fy0 : f y != 0.
+    apply/eqP => fy0; move: fxy; rewrite fy0 normr0 normr_le0 => /eqP fx0.
+    by apply: (Uf x); split.
+  have Vyx : V ((`| f x|/ `| f y|) *: y).
+    apply: aV; last by exists y.
+    rewrite ger0_norm ?mulr_ge0 ?invr_ge0 //.
+    rewrite ler_pdivrMr ?mul1r // normr_gt0; apply/eqP => fy.
+    have := fxy; rewrite fy normr0 normr_le0 => /eqP fx0.
+    by apply: (Uf x); split.
+  have Vnyx : V ( - (`| f x|/ `| f y|) *: y).
+    apply: aV; last by exists ((`| f x|/ `| f y|) *: y); rewrite // scalerA -mulN1r.
+    by rewrite normrN normr1.
+  have [] := ltgtP 0 ((f x)/(f y)).
+  - move=> fxy0.
+    apply: (Uf ( x - (`|f x| / `|f y|) *: y)); split.
+      apply: VU; exists (- (`|f x| / `|f y|) *: y); first by apply: VV'.
+      by rewrite scaleNr.
+    rewrite linearD linearN linearZ /=.
+    have -> : `|f x| / `|f y| = (f x)/(f y) by rewrite -normfV -normrM gtr0_norm.
+    by rewrite -[_ *: _]/(_ * _) -mulrA mulVf ?mulr1 ?subrr.
+  - move=> fxy0.
+    apply: (Uf ( x + (`|f x| / `|f y|) *: y)); split.
+      by apply: VU; exists ((`|f x| / `|f y|) *: y); first by apply: VV'.
+    rewrite linearD linearZ /=.
+    have -> : `|f x| / `|f y| = - (f x)/(f y).
+      by rewrite -normfV -normrM ltr0_norm ?mulNr.
+    by rewrite -[_ *: _]/(_ * _) -mulrA mulVf ?mulr1 ?subrr.
+  - move=> /eqP; rewrite eq_sym mulf_eq0 => /orP [] /eqP.
+      by move=> fx0; apply: (Uf x); split.
+    by rewrite -invr0 => /invr_inj fyn0; move/eqP: fy0; apply.
+have M0 : 0 < M.
+    have [M0|M0|M0] := ltgtP 0 M; first by [].
+    have := (fM 0); move => /(_ (nbhs_singleton _)); move=> /(_ (B0 V BV)).
+    by move=> /lt_trans /(_ M0); rewrite normr_lt0.
+  admit.
+apply: continuousfor0_continuous => /= A; rewrite linear0 => -[r /= r0] rA.
+have rM0 : r/ M != 0 by apply: lt0r_neq0; rewrite ?mulr_gt0 ?invr_gt0 //. 
+apply: (@filterS  _  _ _ ( *:%R (r * M^-1) @` V)).
+  move=> z /= [t] Vt <-; rewrite linearE /=; apply: rA => /=.
+  rewrite sub0r normrN  -[_ *: _]/(_ * _) normrM -ltr_pdivlMl.
+    by rewrite normr_gt0 //.
   rewrite [in X in _ <X ]gtr0_norm  ?mulr_gt0 ?invr_gt0 //.
   rewrite invfM mulrAC mulVf ?lt0r_neq0 ?invrK ?mul1r //.
   by apply: fM.
-Check (nbhsZ).
+by rewrite -(@scaler0 _ _ (r/M)); apply: nbhsZ; last by apply: B0.
 Admitted.
 
 
