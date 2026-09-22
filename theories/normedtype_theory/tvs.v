@@ -2331,22 +2331,19 @@ have [/=M fM]: exists M, forall z, V z -> `|f z | < M.
   - move=> /eqP; rewrite eq_sym mulf_eq0 => /orP [] /eqP.
       by move=> fx0; apply: (Uf x); split.
     by rewrite -invr0 => /invr_inj fyn0; move/eqP: fy0; apply.
-have [M0|M0|M0] := ltgtP M 0 => //.
-  - have := (fM 0); move => /(_ (nbhs_singleton _)); move=> /(_ (B0 V BV)).
-    by move=> /lt_trans /(_ M0); rewrite normr_lt0.
-  - apply: continuousfor0_continuous => /= A; rewrite linear0 => -[r /= r0] rA.
-    have rM0 : r/ M != 0 by apply: lt0r_neq0; rewrite ?mulr_gt0 ?invr_gt0 //.
-    apply: (@filterS  _  _ _ ( *:%R (r * M^-1) @` V)).
-      move=> z /= [t] Vt <-; rewrite linearE /=; apply: rA => /=.
-      rewrite sub0r normrN  -[_ *: _]/(_ * _) normrM -ltr_pdivlMl.
-        by rewrite normr_gt0 //.
-      rewrite [in X in _ <X ]gtr0_norm  ?mulr_gt0 ?invr_gt0 //.
-      rewrite invfM mulrAC mulVf ?lt0r_neq0 ?invrK ?mul1r //.
-      by apply: fM.
-    by rewrite -(@scaler0 _ _ (r/M)); apply: nbhsZ; last by apply: B0.
-  - have := (fM 0); move => /(_ (nbhs_singleton _)); move=> /(_ (B0 V BV)).
-    by rewrite M0 normr_lt0. (* join with first case with appropriate case disjunction *)
-Qed. 
+have [M0|M0] := leP M 0 => //.
+  have := (fM 0); move => /(_ (nbhs_singleton _)); move=> /(_ (B0 V BV)).
+  by move=> /lt_le_trans /(_ M0); rewrite normr_lt0.
+apply: continuousfor0_continuous => /= A; rewrite linear0 => -[r /= r0] rA.
+have rM0 : r/ M != 0 by apply: lt0r_neq0; rewrite ?mulr_gt0 ?invr_gt0 //.
+apply: (@filterS  _  _ _ ( *:%R (r * M^-1) @` V)); last first.
+  by rewrite -(@scaler0 _ _ (r/M)); apply: nbhsZ; last by apply: B0.
+move=> z /= [t] Vt <-; rewrite linearE /=; apply: rA => /=.
+rewrite sub0r normrN  -[_ *: _]/(_ * _) normrM -ltr_pdivlMl.
+  by rewrite normr_gt0 //.
+rewrite [in X in _ <X ]gtr0_norm  ?mulr_gt0 ?invr_gt0 //.
+by rewrite invfM mulrAC mulVf ?lt0r_neq0 ?invrK ?mul1r //; apply: fM.
+Qed.
 
 
 End kernel.
