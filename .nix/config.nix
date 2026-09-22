@@ -77,7 +77,6 @@ in {
       coq.override.version = "9.2";
       mathcomp.override.version = "2.6.0";
       ssprove.job = false;  # not yet available for 9.2
-      mathcomp-infotheo.job = false;  # interval not yet available for 9.2
     };
   };
 
