@@ -358,7 +358,7 @@ Qed.
 
 End hahn_banach_normed.
 
-
+(*
 HB.mixin Record isLine {R : numDomainType} (V : lmodType R) (x : V) (y : V):= {
   isline : exists t, y == t *: x
 }.
@@ -442,6 +442,32 @@ HB.instance Definition _ :=
   [SubChoice_isSubLmodule of ((@Line.type R V x))  by <:].
 
 End line_sublmodtype.
+*)
+
+Section line_lmodtype.
+Variable (R : numDomainType) (V: lmodType R) (x : V).
+
+Definition linepred  : {pred V} :=   mem [set y | exists t, y = t *: x ].
+Definition line := {y | linepred y}.
+
+#[local] Lemma line_submod_closed : submod_closed (linepred).
+Proof.
+split; first by rewrite inE; exists 0; rewrite scale0r.
+move=> t y z; rewrite !inE => -[ty ->] -[tz ->]; exists (t * ty + tz).
+by rewrite scalerDl scalerA.
+Qed.
+
+HB.instance Definition _ :=
+  @GRing.isSubmodClosed.Build _  _  linepred line_submod_closed.
+
+
+HB.instance Definition _ := SubChoice.on line.
+
+HB.instance Definition _ := [SubChoice_isSubLmodule of line  by <:].
+
+Check (line : lmodType R).
+Check (line : subLmodType linepred).
+End line_lmodtype.
 
 Section hahn_banach_extension_ctvs.
 Variable (R : realType) (V : convexTvsType R) (F : pred V).
@@ -549,7 +575,7 @@ split; last first.
   have /linear_continuous_seminorm [p [sp _] /= lp] :=  (@continuous_fun _ _ l).
   by exists p => //; apply: lt_le_trans; last by apply: lp.
 move=> haus x x0.
-pose l := fun ( y : Line.type x) => xchoose (@isline R V x y).
+(*pose l := fun ( y : line x) => xchoose (linepred x (sval y)).
 have llinear: linear_for ( *:%R) l.
   rewrite /l => t u v /=. Search xchoose.
   move: (@isline _ _ x u)=>  H; move/eqP: (xchooseP H) => xu.
@@ -576,7 +602,7 @@ pose x' : (lineType x) := HB.pack x xP.
 have := Pg x'.
 have -> : \val x'= x by [].
 have -> : lcl x' = 1. admit.
-by move=>  -> //=.
+by move=>  -> //=.*)
 Admitted.
 
 
