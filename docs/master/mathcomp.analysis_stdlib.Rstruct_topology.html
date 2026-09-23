@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis_stdlib.Rstruct_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis fd300fa 2026.09.22-21:21" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis fd300fa 2026.09.23-21:18" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -376,7 +376,15 @@ Qed.</div></details>
 <br/>
 <span class="vernacular">End</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="RexpE" class="id"><div name="RexpE" class="id anchor tooltip">RexpE<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/fd300fa3e3d78c7ad5940d5cdb6813722414e4b6/analysis_stdlib/Rstruct_topology.v#L115' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<span class="id link"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="RexpE" class="id"><div name="RexpE" class="id anchor tooltip">RexpE<span class='tooltip-area'><p>RexpE : forall x : R, exp x = expR x
+
+RexpE is not universe polymorphic
+Arguments RexpE x%_R_scope
+RexpE is transparent
+Expands to: Constant mathcomp.analysis_stdlib.Rstruct_topology.RexpE
+Declared in
+library mathcomp.analysis_stdlib.Rstruct_topology, line 115, characters 11-16
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/fd300fa3e3d78c7ad5940d5cdb6813722414e4b6/analysis_stdlib/Rstruct_topology.v#L115' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<span class="id link"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#RexpE">RexpE</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RlnE" class="id"><div name="RlnE" class="id anchor tooltip">RlnE<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/fd300fa3e3d78c7ad5940d5cdb6813722414e4b6/analysis_stdlib/Rstruct_topology.v#L117' target='_blank'>Source code</a></span></div></span> (<span id="x:22" class="id"><div name="x:22" class="id anchor tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/fd300fa3e3d78c7ad5940d5cdb6813722414e4b6/analysis_stdlib/Rstruct_topology.v#L117' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rdefinitions.html#RbaseSymbolsImpl.R">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln">Rpower</a></span>.<span class="id link"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rpower.html#ln">ln</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#x:22">x</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id link"><a href="mathcomp.analysis.exp.html#ln">exp</a></span>.<span class="id link"><a href="mathcomp.analysis.exp.html#ln">ln</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis_stdlib.Rstruct_topology.html#x:22">x</a></span>.<br/>
 <details>
