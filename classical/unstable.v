@@ -55,6 +55,33 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
 
+Section Clamp.
+Context {R : realFieldType}.
+
+Definition clamp (x : R) :=
+  Num.max (Num.min x 1) 0.
+
+Lemma ge0_clamp x : 0 <= clamp x.
+Proof. by rewrite le_max lexx orbT. Qed.
+
+Lemma le1_clamp x : clamp x <= 1.
+Proof. by rewrite ge_max ge_min lexx ler01 orbT. Qed.
+
+Definition cp01_clamp := (ge0_clamp, le1_clamp).
+
+Lemma clamp_in01 x : 0 <= x <= 1 -> clamp x = x.
+Proof. by case/andP=> ge0_x le1_x; rewrite /clamp min_l ?max_l. Qed.
+
+Lemma clamp_id x : clamp (clamp x) = clamp x.
+Proof. by rewrite clamp_in01 // !cp01_clamp. Qed.
+
+Lemma clamp0 : clamp 0 = 0.
+Proof. by rewrite clamp_in01 // lexx ler01. Qed.
+
+Lemma clamp1 : clamp 1 = 1.
+Proof. by rewrite clamp_in01 // lexx ler01. Qed.
+End Clamp.
+
 Module Order.
 Import Order.
 Definition default_display : disp_t.
