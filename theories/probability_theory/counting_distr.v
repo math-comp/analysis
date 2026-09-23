@@ -4,9 +4,17 @@ From mathcomp.classical Require Import boolp classical_sets mathcomp_compat.
 From mathcomp Require Import xfinmap constructive_ereal reals discrete.
 From mathcomp Require Import esum ereal.
 From mathcomp Require Import cardinality fsbigop topology normedtype sequences.
+From mathcomp Require Import unstable.
 
 (* Should be removed *)
 From mathcomp Require Import numfun.
+
+(**md**************************************************************************)
+(* # SubDistribution                                                             *)
+(*                                                                            *)
+(* ```                                                                        *)
+(* ```                                                                        *)
+(******************************************************************************)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -47,17 +55,17 @@ Local Notation "\`| f |" := (fun x => `|f x|) (at level 2).
 
 (* -------------------------------------------------------------------- *)
 
-HB.mixin Record isDistribution (R : realType) (T : choiceType) (mu : T -> R) :=
+HB.mixin Record isSubDistribution (R : realType) (T : choiceType) (mu : T -> R) :=
   {
     mu_positive :  forall x, 0 <= mu x ;
     mu_summable :  esummable [set: T] (EFin \o mu);
     mu_sum_le_one  :  (esum [set: T] (EFin \o mu) <= 1)%E;
   }.
 
-HB.structure Definition Distribution (R : realType) (T : choiceType) :=
-  {f of @isDistribution R T f}.
+HB.structure Definition SubDistribution (R : realType) (T : choiceType) :=
+  {f of @isSubDistribution R T f}.
 
-Notation "{ 'distr' T / R }" := (@Distribution.type R T)
+Notation "{ 'distr' T / R }" := (@SubDistribution.type R T)
   (at level 0, T at level 2, format "{ 'distr'  T  /  R }")
     : type_scope.
 
@@ -77,34 +85,6 @@ End DistrCoreTh.
 
 #[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: ge0_mu] : core.
 #[global] Hint Resolve le1_mu summable_mu : core.
-
-(* -------------------------------------------------------------------- *)
-Section Clamp.
-Context {R : realType}.
-
-Definition clamp (x : R) :=
-  Num.max (Num.min x 1) 0.
-
-Lemma ge0_clamp x : 0 <= clamp x.
-Proof. by rewrite le_max lexx orbT. Qed.
-
-Lemma le1_clamp x : clamp x <= 1.
-Proof. by rewrite ge_max ge_min lexx ler01 orbT. Qed.
-
-Definition cp01_clamp := (ge0_clamp, le1_clamp).
-
-Lemma clamp_in01 x : 0 <= x <= 1 -> clamp x = x.
-Proof. by case/andP=> ge0_x le1_x; rewrite /clamp min_l ?max_l. Qed.
-
-Lemma clamp_id x : clamp (clamp x) = clamp x.
-Proof. by rewrite clamp_in01 // !cp01_clamp. Qed.
-
-Lemma clamp0 : clamp 0 = 0.
-Proof. by rewrite clamp_in01 // lexx ler01. Qed.
-
-Lemma clamp1 : clamp 1 = 1.
-Proof. by rewrite clamp_in01 // lexx ler01. Qed.
-End Clamp.
 
 (* -------------------------------------------------------------------- *)
 Section StdDefs.
@@ -140,13 +120,14 @@ Notation "\E?_[ mu ] f"    := (has_esp mu f).
 Notation dweight mu        := (\P_[mu] predT).
 
 (* -------------------------------------------------------------------- *)
-Section DistrTheory.
-Context {R : realType} {T : choiceType} (mu : T -> R).
+HB.factory Record isSubDistr {R : realType} {T : choiceType} (mu : T -> R) := {
+    distr_pos: (forall x, 0 <= mu x);
+    distr_lee_one: (forall J, uniq J -> \sum_(j <- J) mu j <= 1)
+  }.
 
-Definition isdistr :=
-  (forall x, 0 <= mu x) /\ (forall J, uniq J -> \sum_(j <- J) mu j <= 1).
-
-Hypothesis isd : isdistr.
+HB.builders
+  Context {R : realType} {T : choiceType} (mu : T -> R)
+                         (isd : @isSubDistr R T mu).
 
 Local Lemma isd1 : forall x, 0 <= mu x.
 Proof. by case: isd. Qed.
@@ -174,15 +155,15 @@ rewrite fsumEFin // lee_fin fsbig_finite //=.
 by apply: h2.
 Qed.
 
-Definition mkdistrd := @isDistribution.Build R T mu isd1 isd2 isd3.
+HB.instance Definition _ := @isSubDistribution.Build R T mu isd1 isd2 isd3.
 
-Definition ispredistr {T : choiceType} (mu : T -> R) :=
-  [/\ forall x, 0 <= mu x & esummable [set: T] (EFin \o mu)].
+HB.end.
 
-End DistrTheory.
+Definition sub_distr {R : realType} {T : choiceType} (mu : T -> R) :=
+  (forall x, 0 <= mu x) /\ (forall J, uniq J -> \sum_(j <- J) mu j <= 1).
 
 Lemma isdistr_finP {R : realType} {I : finType} (mu : I -> R) :
-  (isdistr mu) <-> (forall x, 0 <= mu x) /\ (\sum_j mu j <= 1).
+  (sub_distr mu) <-> (forall x, 0 <= mu x) /\ (\sum_j mu j <= 1).
 Proof.
 split=> -[ ge0_mu le1]; split=> //.
 + by apply/le1; rewrite /index_enum -enumT enum_uniq.
@@ -207,10 +188,11 @@ Context {R : realType} {T : choiceType}.
 
 Definition dnull_fun := fun x : T => (0 : R).
 
-Lemma isd_mnull : isdistr dnull_fun.
+Lemma isd_mnull : sub_distr dnull_fun.
 Proof. by split=> // J _; rewrite big1 ?ler01. Qed.
 
-HB.instance Definition _ := @mkdistrd R T dnull_fun isd_mnull.
+HB.instance Definition _ :=
+  @isSubDistr.Build R T dnull_fun (proj1 isd_mnull) (proj2 isd_mnull).
 
 Definition dnull := @locked {distr T / R} dnull_fun.
 
@@ -231,7 +213,7 @@ Context (R : realType) (T : choiceType) (p : pred T).
 Definition drestr_fun (mu : {distr T / R}) :=
   fun x => if p x then mu x else 0.
 
-Lemma isd_drestr (mu : {distr T / R}) : isdistr (drestr_fun mu).
+Lemma isd_drestr (mu : {distr T / R}) : sub_distr (drestr_fun mu).
 Proof.
 split=> [x|J]; first by rewrite /drestr_fun; case: ifP.
 move=> eqJ; apply/(@le_trans _ _ (\sum_(j <- J) `|mu j|)).
@@ -246,7 +228,7 @@ move=> eqJ; apply/(@le_trans _ _ (\sum_(j <- J) `|mu j|)).
 Qed.
 
 HB.instance Definition _ (mu : {distr T / R}) :=
-  @mkdistrd R T (drestr_fun mu) (isd_drestr mu).
+  @isSubDistr.Build R T (drestr_fun mu) (proj1 (isd_drestr mu)) (proj2 (isd_drestr mu)).
 
 Definition drestr (mu : {distr T / R}) := @locked {distr T / R} (drestr_fun mu).
 
@@ -286,7 +268,7 @@ Definition drat_fun (s : seq T) : T -> R :=
 Lemma ge0_drat s : forall x, 0 <= drat_fun s x.
 Proof. by move=> x; rewrite mulr_ge0 ?invr_ge0 // ler0n. Qed.
 
-Local Lemma has_sup_drat s J : uniq J -> \sum_(i <- J) drat_fun s i <= 1.
+Lemma has_sup_drat s J : uniq J -> \sum_(i <- J) drat_fun s i <= 1.
 Proof.
 move=> uqJ; rewrite -mulr_suml /= -natr_sum; case: (size s =P 0%N).
   by move=> ->; rewrite invr0 mulr0 ler01.
@@ -303,7 +285,7 @@ apply/uniq_perm; rewrite ?filter_uniq ?undup_uniq //.
 by move=> x; rewrite !mem_filter mem_undup andbC.
 Qed.
 
-Local Lemma drat_sup s : (0 < size s)%N ->
+Lemma drat_sup s : (0 < size s)%N ->
   \sum_(i <- undup s) drat_fun s i = 1.
 Proof.
 move=> gt0_s; rewrite -mulr_suml -natr_sum.
@@ -313,7 +295,7 @@ rewrite -sum1_size -[in RHS]big_undup_iterop_count/=; apply: eq_bigr => i _.
 by rewrite Monoid.iteropE iter_addn addn0 mul1n.
 Qed.
 
-Local Lemma summable_drat s: esummable [set :T] (EFin \o (drat_fun s)).
+Lemma summable_drat s: esummable [set :T] (EFin \o (drat_fun s)).
 Proof.
 rewrite /esummable (@le_lt_trans _ _ 1%:E) ?ltey//.
 rewrite ge0_esum.
@@ -325,11 +307,11 @@ rewrite (eq_bigr (drat_fun s)).
 by apply/has_sup_drat.
 Qed.
 
-Lemma isd_drat s : isdistr (drat_fun s).
+Lemma isd_drat s : sub_distr (drat_fun s).
 Proof. by split; [apply/ge0_drat | apply/has_sup_drat]. Qed.
 
 HB.instance Definition _ (s : seq T) :=
-  @mkdistrd R T (drat_fun s) (isd_drat s).
+  @isSubDistr.Build R T (drat_fun s) (proj1 (isd_drat s)) (proj2 (isd_drat s)).
 
 Definition drat (s : seq T) := @locked {distr T / R} (drat_fun s).
 
@@ -364,17 +346,19 @@ End DRat.
 Section Flip.
 Context {R : realType}.
 
+Local Notation clamp := (@clamp R 0 1).
+
 Definition dflip_fun (xt : R) :=
   fun b => if b then clamp xt else 1 - clamp xt.
 
-Lemma isd_dflip xt : isdistr (dflip_fun xt).
+Lemma isd_dflip xt : sub_distr (dflip_fun xt).
 Proof. apply/isdistr_finP; split=> [b|].
-+ by case: b; rewrite ?subr_ge0 cp01_clamp.
++ by case: b; rewrite ?subr_ge0 clamp_gele.
 + by rewrite /index_enum !unlock /= addr0 addrC subrK.
 Qed.
 
 HB.instance Definition _ (xt : R) :=
-  @mkdistrd R _ (dflip_fun xt) (isd_dflip xt).
+  @isSubDistr.Build R _ (dflip_fun xt) (proj1 (isd_dflip xt)) (proj2 (isd_dflip xt)).
 
 Definition dflip (xt : R) := @locked {distr bool / R} (dflip_fun xt).
 
@@ -397,7 +381,7 @@ rewrite -lee_fin -{}h esum_ge0 // => ??.
 by rewrite EFinM mule_ge0 //= lee_tofin.
 Qed.
 
-Lemma isd_dlet : isdistr dlet_fun.
+Lemma isd_dlet : sub_distr dlet_fun.
 Proof.
 split=> [x|J uqJ].
 + exact: dlet_pos.
@@ -418,7 +402,7 @@ split=> [x|J uqJ].
   by have := (summable_mu (f i)); rewrite esummableE.
 Qed.
 
-HB.instance Definition _ :=  @mkdistrd R U dlet_fun isd_dlet.
+HB.instance Definition _ :=  @isSubDistr.Build R U dlet_fun (proj1 isd_dlet) (proj2 isd_dlet).
 
 Definition dlet := @locked {distr U / R} dlet_fun.
 
@@ -662,42 +646,6 @@ by move=> ndu; apply/esym/cvg_lim => //; exact: ereal_nondecreasing_cvgn.
 Qed.
 
 (* -------------------------------------------------------------------- *)
-(* Generic facts about [einfs] / [limn_einf] missing from sequences.v,  *)
-(* used below to make [dlim] total on sequences of subdistributions.    *)
-Lemma einfs_le {R : realType} (u : (\bar R)^nat) n m :
-  (n <= m)%N -> (einfs u n <= u m)%E.
-Proof. by move=> nm; apply: ereal_inf_lbound; exists m; [exact: nm | by []]. Qed.
-
-Lemma einfs_lift {R : realType} (u : (\bar R)^nat) p n :
-  einfs (fun k => u (k + p)%N) n = einfs u (n + p)%N.
-Proof.
-congr (ereal_inf _); apply/seteqP; split => _ /= [k /= nk] <-.
-- by exists (k + p)%N => //=; rewrite leq_add2r.
-- have pk : (p <= k)%N by apply: leq_trans nk; exact: leq_addl.
-  exists (k - p)%N => /=; last by rewrite subnK.
-  by rewrite -(leq_add2r p) subnK.
-Qed.
-
-Lemma limn_einf_lift {R : realType} (u : (\bar R)^nat) p :
-  limn_einf (fun n => u (n + p)%N) = limn_einf u.
-Proof.
-rewrite !limn_einf_lim.
-have -> : einfs (fun k => u (k + p)%N) = (fun n => einfs u (n + p)%N).
-  by apply/funext => n; exact: einfs_lift.
-by apply/cvg_lim => //; rewrite (cvg_shiftn p (einfs u)); exact: is_cvg_einfs.
-Qed.
-
-Lemma limn_einf_bump {R : realType} (u : (\bar R)^nat) :
-  limn_einf (fun n => u n.+1) = limn_einf u.
-Proof.
-rewrite -(limn_einf_lift u 1); congr limn_einf.
-by apply/funext => n; rewrite addn1.
-Qed.
-
-Lemma limn_einf_cst {R : realType} (c : \bar R) : limn_einf (fun=> c) = c.
-Proof. by rewrite is_cvg_limn_einfE ?lim_cst//; exact: is_cvg_cst. Qed.
-
-(* -------------------------------------------------------------------- *)
 Section dlim.
 Context {R : realType} (T : choiceType).
 
@@ -718,7 +666,7 @@ Qed.
 Lemma le1_liminf f x : (limn_einf (fun n => (f n x)%:E) <= 1%:E)%E.
 Proof.
 rewrite limn_einf_lim; apply: lime_le; first exact: is_cvg_einfs.
-apply: nearW => n; apply: (@le_trans _ _ ((f n x)%:E)); first exact: einfs_le.
+apply: nearW => n; apply: (@le_trans _ _ ((f n x)%:E)); first exact: ge_einfs.
 by rewrite lee_fin le1_mu1.
 Qed.
 
@@ -749,7 +697,7 @@ move=> ndu fu; elim => [|a L IH].
     by apply: lee_sum => j _; exact: ndu.
 Qed.
 
-Lemma isd_dlim f : isdistr (dlim_fun f).
+Lemma isd_dlim f : sub_distr (dlim_fun f).
 Proof.
 split=> [x|J uqJ].
   by rewrite /dlim_fun; apply: fine_ge0; exact: ge0_liminf.
@@ -763,13 +711,14 @@ rewrite (sumlim ndE finE); apply: lime_le.
   apply: ereal_nondecreasing_is_cvgn => n m nm.
   by apply: lee_sum => j _; exact: ndE.
 apply: nearW => n; apply: (@le_trans _ _ (\sum_(j <- J) (f n j)%:E)).
-  by apply: lee_sum => j _; exact: einfs_le.
+  by apply: lee_sum => j _; exact: ge_einfs.
 rewrite sumEFin.
 apply: (@le_trans _ _ (esum [set: T] (EFin \o f n))); last exact: le1_mu.
 exact: sum_esum_ge.
 Qed.
 
-HB.instance Definition _ f := @mkdistrd R T (dlim_fun f) (isd_dlim f).
+HB.instance Definition _ f := @isSubDistr.Build R T (dlim_fun f)
+                                (proj1 (isd_dlim f)) (proj2 (isd_dlim f)).
 
 Definition dlim f := @locked {distr T / R} (dlim_fun f).
 
@@ -824,10 +773,10 @@ by move=> x; rewrite dlimE limn_einf_cst.
 Qed.
 
 Lemma dlim_bump f : \dlim_(n) f n.+1 =1 dlim f.
-Proof. by move=> x; rewrite !dlimE (limn_einf_bump (fun n => (f n x)%:E)). Qed.
+Proof. by move=> x; rewrite !dlimE (limn_einf_shiftS (fun n => (f n x)%:E)). Qed.
 
 Lemma dlim_lift f p : \dlim_(n) f (n + p)%N =1 dlim f.
-Proof. by move=> x; rewrite !dlimE (limn_einf_lift (fun n => (f n x)%:E) p). Qed.
+Proof. by move=> x; rewrite !dlimE (limn_einf_shift_new (fun n => (f n x)%:E) p). Qed.
 
 Lemma ge0_dlim f : forall x, 0 <= dlim f x.
 Proof. exact: mu_positive. Qed.
@@ -841,7 +790,7 @@ Proof.
 move=> le x; rewrite -lee_fin !dlim_EFin !limn_einf_lim.
 apply: lee_lim; [exact: is_cvg_einfs | exact: is_cvg_einfs |].
 apply: nearW => n; apply: le_ereal_inf_tmp => _ [m /= nm] <-.
-apply: (@le_trans _ _ ((f m x)%:E)); first exact: einfs_le.
+apply: (@le_trans _ _ ((f m x)%:E)); first exact: ge_einfs.
 by rewrite lee_fin; exact: le.
 Qed.
 
