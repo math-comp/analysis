@@ -13,6 +13,29 @@
   + lemma `limn_einf_cst`
 - in `uniform_structure.v`:
   + lemma `unif_continuous_continuous`
+- in `uniform_structure.v`:
+  + lemma `unif_continuous_comp`
+
+- in `initial_topology.v`:
+  + lemma `initial_unif_continuous`
+  + lemma `initial_unif_continuous_comp`
+  + lemma `initial_unif_continuous_comp_fst`
+  + lemma `initial_unif_continuous_comp_snd`
+
+- in `product_topology.v`:
+  + lemma `entourage_prod_exS`
+  + definition `interchange_prod`
+  + lemma `entourage_interchange_prod`
+  + lemma `pair_unif_continuous`
+  + lemma `fst_unif_continuous`
+  + lemma `snd_unif_continuous`
+
+- in `metric_space.v`:
+  + definition `prod_mdist`
+
+- in `pseudometric_normed_Zmodule.v`:
+  + lemma `PseudoMetricNormedZmod0_add_unif_continuous`
+  + lemma `PseudoMetricNormedZmod0_opp_unif_continuous`
 
 ### Changed
 
@@ -38,9 +61,23 @@
 
 ### Generalized
 
+- in `pseudometric_normed_Zmodule.v`:
+  + from `pseudoMetricNormedZmodType` to `PseudoMetricNormedZmod0.type`:
+    * lemma `cvg_bounded`
+    * lemma `bounded_cst`
+  + from `realFieldType` to `numFieldType`
+    * lemma `bounded_funN`
+    * lemma `bounded_funD`
+
 ### Deprecated
 
 ### Removed
+
+- in `tvs.v`:
+  + structure `PreUniformLmodule`
+  + mixin `PreUniformLmodule_isUniformLmodule`
+  + structure `UniformLmodule`
+  + factory `UniformNmodule_isUniformLmodule` (?)
 
 ### Infrastructure
 

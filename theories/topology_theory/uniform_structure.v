@@ -80,7 +80,6 @@ HB.structure Definition Uniform :=
 HB.structure Definition PointedUniform :=
   {T of PointedTopological T & Nbhs_isUniform_mixin T}.
 
-
 HB.factory Record Nbhs_isUniform M & Nbhs M := {
   entourage : set_system (M * M);
   entourage_filter : Filter entourage;
@@ -341,6 +340,10 @@ rewrite /Y' /=.
 rewrite -image_sub => v [] u' /= Yfuu' <-.
 exact: YX.
 Qed.
+
+Lemma unif_continuous_comp {U V W : uniformType} (f : U -> V) (g : V -> W) :
+  unif_continuous f -> unif_continuous g -> unif_continuous (g \o f).
+Proof. by move=> cf cg A /cg /cf; exact. Qed.
 
 Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
   exists2 B, entourage B & forall PQ, A PQ -> forall p q,

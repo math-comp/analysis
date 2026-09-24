@@ -74,7 +74,6 @@ Reserved Notation "k .-lipschitz f" (at level 2, format "k .-lipschitz  f").
 Reserved Notation "[ 'lipschitz' E | x 'in' A ]"
   (at level 0, x name, format "[ 'lipschitz'  E  |  x  'in'  A ]").
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -87,8 +86,8 @@ Local Open Scope ring_scope.
 
 (** Modules with a norm depending on a numDomain *)
 
-HB.mixin Record PseudoMetricNormedZmod_ConvexTvs_isNormedModule K V
-    & PseudoMetricNormedZmod K V & ConvexTvs K V := {
+HB.mixin Record PseudoMetricNormedZmod_ConvexTvs_isNormedModule
+    (K : numDomainType) V & PseudoMetricNormedZmod K V & ConvexTvs K V := {
   normrZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
 
@@ -110,12 +109,6 @@ HB.factory Record PseudoMetricNormedZmod_Lmodule_isNormedModule
 }.
 
 HB.builders Context K V & PseudoMetricNormedZmod_Lmodule_isNormedModule K V.
-
-(**md `add_continuous` has been moved to `pseudometric_normed_Zmodule.v`,
-  `scale_continuous` is proved but is not proved again anymore later in this
-  file. *)
-Let add_continuous : continuous (fun x : V * V => x.1 + x.2).
-Proof. exact: add_continuous. Qed.
 
 (** NB: we have almost the same proof in `tvs.v` *)
 Let scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
@@ -157,11 +150,13 @@ move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
 by exists (ball x r) => //; split; [exists x, r|exact: ballxx].
 Qed.
 
-HB.instance Definition _ :=
-  PreTopologicalNmodule_isTopologicalNmodule.Build V add_continuous.
+(* NB: was needed until version 1.18.0 *)
+(*HB.instance Definition _ :=
+  PreTopologicalNmodule_isTopologicalNmodule.Build V add_continuous.*)
 HB.instance Definition _ :=
   TopologicalNmodule_isTopologicalLmodule.Build K V scale_continuous.
 HB.instance Definition _ := Uniform_isConvexTvs.Build K V locally_convex_set.
+
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_ConvexTvs_isNormedModule.Build K V normrZ.
 
@@ -175,6 +170,11 @@ HB.structure Definition NormedVector (K : numDomainType) :=
   `pseudometric_normed_Zmodule.v` *)
 Section standard_topology_normedMod.
 Variable R : numFieldType.
+
+(* NB: was need until version 1.18.0
+HB.instance Definition _ := TopologicalZmodule_isTopologicalLmodule.Build
+  R^o R^o (@standard_scale_continuous R).
+*)
 
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_ConvexTvs_isNormedModule.Build R R^o (@normrM _).
@@ -372,6 +372,12 @@ HB.instance Definition _ := isPointed.Build M 0.
 HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R M erefl.
 
 HB.instance Definition _ := isPseudoMetricNormedZmodule.Build R M.
+
+HB.instance Definition _ := PreUniformNmodule_isUniformNmodule.Build
+  M (@PseudoMetricNormedZmod0_add_unif_continuous _ M).
+
+HB.instance Definition _ := UniformNmodule_isUniformZmodule.Build
+  M (@PseudoMetricNormedZmod0_opp_unif_continuous _ M).
 
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R M normrZ.
@@ -2661,6 +2667,12 @@ HB.instance Definition _ (V : vectType R) :=
 
 HB.instance Definition _ (V : vectType R) :=
   isPseudoMetricNormedZmodule.Build _ (max_space V).
+
+HB.instance Definition _ (V : vectType R) := PreUniformNmodule_isUniformNmodule.Build
+  (max_space V) (@PseudoMetricNormedZmod0_add_unif_continuous _ (max_space V)).
+
+HB.instance Definition _ (V : vectType R) := UniformNmodule_isUniformZmodule.Build
+  (max_space V) (@PseudoMetricNormedZmod0_opp_unif_continuous _ (max_space V)).
 
 HB.instance Definition _ (V : vectType R) :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R (max_space V)
