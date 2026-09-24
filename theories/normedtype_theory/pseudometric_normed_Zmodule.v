@@ -353,49 +353,11 @@ End PseudoMetricNormedZmod0_numDomainType.
 
 #[short(type="pseudoMetricNormedZmodType")]
 HB.structure Definition PseudoMetricNormedZmod (R : numDomainType) :=
-  {T of PseudoMetricNormedZmod0 R T & Metric R T}.
+  {T of PseudoMetricNormedZmod0 R T & Metric R T & TopologicalZmodule T}.
 
-HB.factory Record isPseudoMetricNormedZmodule
-  (K : numDomainType) T & PseudoMetricNormedZmod0 K T := { }.
-
-HB.builders Context K T & isPseudoMetricNormedZmodule K T.
-
-Let mdist (x y : T) : K := `|x - y|.
-
-Let mdist_ge0 x y : 0 <= mdist x y. Proof. by rewrite /mdist. Qed.
-
-Let mdist_positivity x y : mdist x y = 0 -> x = y.
-Proof. by move=> /normr0_eq0/subr0_eq. Qed.
-
-Let ballEmdist x d : ball x d = [set y | mdist x y < d].
-Proof. by rewrite -ball_normE. Qed.
-
-HB.instance Definition _ :=
-  @PseudoMetric_isMetric.Build K T mdist mdist_ge0 mdist_positivity ballEmdist.
-
-HB.end.
-
-(* alternative definition of a PseudoMetricNormedZmod *)
-HB.factory Record NormedZmoduleMetric (R : numDomainType) T
-    & Num.NormedZmodule R T & Metric R T & isPointed T := {
-  mdist_norm : forall x y : T, mdist x y = `|y - x|
-}.
-
-HB.builders Context (R : numDomainType) T & NormedZmoduleMetric R T.
-
-Let pseudo_metric_ball_norm : ball = ball_ (fun x : T => `| x |).
-Proof.
-apply/funext => /= t; apply/funext => d; rewrite ballEmdist.
-by apply/seteqP; split => [y|y]/=; rewrite mdist_norm distrC.
-Qed.
-
-HB.instance Definition _ :=
-  NormedZmod_PseudoMetric_eq.Build R T pseudo_metric_ball_norm.
-
-HB.end.
-
-Section pseudoMetricNormedZmod_numDomainType.
-Context {K : numDomainType} {V : pseudoMetricNormedZmodType K}.
+(* was Section pseudoMetricNormedZmod_numDomainType. *)
+Section PseudoMetricNormedZmod0_numDomainType.
+Context {K : numDomainType} {V : PseudoMetricNormedZmod0.type K}.
 
 Lemma ball_open (x : V) (r : K) : open (ball x r).
 Proof.
@@ -565,7 +527,7 @@ rewrite funeqE => A; rewrite /= !near_simpl (near_shift (y + x)).
 by rewrite (_ : _ \o _ = A \o f) // funeqE=> z; rewrite /= opprD addNKr addrNK.
 Qed.
 
-End pseudoMetricNormedZmod_numDomainType.
+End PseudoMetricNormedZmod0_numDomainType.
 #[global] Hint Resolve normr_ge0 : core.
 Arguments cvgr_dist_lt {_ _ _ F FF}.
 Arguments cvgr_distC_lt {_ _ _ F FF}.
@@ -587,9 +549,9 @@ Arguments cvgr0_norm_le {_ _ _ F FF}.
 #[global] Hint Extern 0 (is_true (`|?x| <= _)) => match goal with
   H : x \is_near _ |- _ => solve[near: x; now apply: cvgr0_norm_le] end : core.
 
-Section pseudoMetricNormedZmod_realDomainType.
+Section PseudoMetricNormedZmod0_realDomainType.
 
-Lemma le0_ball0 (R : realDomainType) (V : pseudoMetricNormedZmodType R) (a : V) (r : R) :
+Lemma le0_ball0 (R : realDomainType) (V : PseudoMetricNormedZmod0.type R) (a : V) (r : R) :
   r <= 0 -> ball a r = set0.
 Proof.
 move=> r0; rewrite -subset0 => y.
@@ -597,10 +559,10 @@ rewrite -ball_normE /ball_/= ltNge => /negP; apply.
 by rewrite (le_trans r0).
 Qed.
 
-End pseudoMetricNormedZmod_realDomainType.
+End PseudoMetricNormedZmod0_realDomainType.
 
-Section pseudoMetricNormedZmod_numFieldType.
-Variables (R : numFieldType) (V : pseudoMetricNormedZmodType R).
+Section PseudoMetricNormedZmod0_numFieldType.
+Variables (R : numFieldType) (V : PseudoMetricNormedZmod0.type R).
 
 Lemma norm_hausdorff : hausdorff_space V.
 Proof.
@@ -672,9 +634,67 @@ Proof.
 by move=> xlt ylt; rewrite -[y]opprK (@distm_lt_split 0) ?subr0 ?opprK ?add0r.
 Qed.
 
-End pseudoMetricNormedZmod_numFieldType.
+End PseudoMetricNormedZmod0_numFieldType.
 #[global]
 Hint Extern 0 (hausdorff_space _) => solve[apply: norm_hausdorff] : core.
+
+HB.factory Record isPseudoMetricNormedZmodule
+  (K : numFieldType) T & PseudoMetricNormedZmod0 K T := { }.
+
+HB.builders Context K T & isPseudoMetricNormedZmodule K T.
+
+Let mdist (x y : T) : K := `|x - y|.
+
+Let mdist_ge0 x y : 0 <= mdist x y. Proof. by rewrite /mdist. Qed.
+
+Let mdist_positivity x y : mdist x y = 0 -> x = y.
+Proof. by move=> /normr0_eq0/subr0_eq. Qed.
+
+Let ballEmdist x d : ball x d = [set y | mdist x y < d].
+Proof. by rewrite -ball_normE. Qed.
+
+HB.instance Definition _ :=
+  @PseudoMetric_isMetric.Build K T mdist mdist_ge0 mdist_positivity ballEmdist.
+
+Let add_continuous : continuous (fun x : T * T => x.1 + x.2).
+Proof.
+move=> [/= x y].
+apply/cvgrPdist_lt=> _/posnumP[e]; near=> a b => /=.
+by rewrite opprD addrACA normm_lt_split.
+Unshelve. all: by end_near. Qed.
+
+HB.instance Definition _ :=
+  PreTopologicalNmodule_isTopologicalNmodule.Build T add_continuous.
+
+Let opp_continuous : continuous (-%R : T -> T).
+Proof.
+move=> x.
+apply/cvgrPdist_lt=> _/posnumP[e]; near=> a => /=.
+by rewrite opprK addrC.
+Unshelve. all: by end_near. Qed.
+
+HB.instance Definition _ := TopologicalNmodule_isTopologicalZmodule.Build T opp_continuous.
+
+HB.end.
+
+(* alternative definition of a PseudoMetricNormedZmod *)
+HB.factory Record NormedZmoduleMetric (R : numDomainType) T
+    & Num.NormedZmodule R T & Metric R T & isPointed T := {
+  mdist_norm : forall x y : T, mdist x y = `|y - x|
+}.
+
+HB.builders Context (R : numDomainType) T & NormedZmoduleMetric R T.
+
+Let pseudo_metric_ball_norm : ball = ball_ (fun x : T => `| x |).
+Proof.
+apply/funext => /= t; apply/funext => d; rewrite ballEmdist.
+by apply/seteqP; split => [y|y]/=; rewrite mdist_norm distrC.
+Qed.
+
+HB.instance Definition _ :=
+  NormedZmod_PseudoMetric_eq.Build R T pseudo_metric_ball_norm.
+
+HB.end.
 
 Section prod_pseudoMetricNormedZmod.
 Context {K : numDomainType} {U V : pseudoMetricNormedZmodType K}.
@@ -692,9 +712,14 @@ Proof. by rewrite /= - ball_prod_normE. Qed.
 HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build K (U * V)%type
   prod_norm_ball.
 
+End prod_pseudoMetricNormedZmod.
+
+Section prod_pseudoMetricNormedZmod_new.
+Context {K : numFieldType} {U V : pseudoMetricNormedZmodType K}.
+
 HB.instance Definition _ := isPseudoMetricNormedZmodule.Build _ (U * V)%type.
 
-End prod_pseudoMetricNormedZmod.
+End prod_pseudoMetricNormedZmod_new.
 
 Section prod_NormedModule_lemmas.
 Context {T : Type} {K : numDomainType} {U V : pseudoMetricNormedZmodType K}.
@@ -734,7 +759,37 @@ HB.instance Definition _ := Num.NormedZmodule.on R^o.
 
 HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R R^o erefl.
 
+Let standard_add_continuous : continuous (fun x : R^o * R^o => x.1 + x.2).
+Proof.
+move=> [/= x y]; apply/cvgrPdist_lt => _/posnumP[e]; near=> a b => /=.
+by rewrite opprD addrACA normm_lt_split.
+Unshelve. all: by end_near. Qed.
+
+Fail Check R^o : TopologicalNmodule.type.
+
+HB.instance Definition _ := PreTopologicalNmodule_isTopologicalNmodule.Build R^o standard_add_continuous.
+
+Check R^o : TopologicalNmodule.type.
+
 End standard_topology_pseudoMetricNormedZmod.
+
+Section standard_topology_pseudoMetricNormedZmod2.
+Variable R : realFieldType.
+
+Let opp_continuous : continuous (-%R : R^o -> R^o).
+Proof.
+move=> x.
+red.
+apply/cvgrPdist_lt => //=.
+move=> _/posnumP[e]; near=> a => /=.
+by rewrite opprK addrC.
+Unshelve. all: by end_near. Qed.
+
+HB.instance Definition _ := TopologicalNmodule_isTopologicalZmodule.Build R^o opp_continuous.
+
+Check R^o : pseudoMetricNormedZmodType R.
+
+End standard_topology_pseudoMetricNormedZmod2.
 
 Lemma ball_itv {R : realFieldType} (x r : R) :
   ball x r = `]x - r, x + r[%classic.
@@ -777,11 +832,11 @@ End continuity_pseudoMetricNormedZmodType.
 (*#[deprecated(since="mathcomp-analysis 1.11.0", note="renamed to `oppr_continuous`")]
 Notation opp_continuous := oppr_continuous (only parsing).*)
 
-(* TODO: generalize to R : numFieldType *)
+(* TODO: generalize to R : numFieldType DONE?! *)
 Section hausdorff.
 
 #[deprecated(since="mathcomp-analysis 1.10.0", note="use `norm_hausdorff` instead")]
-Lemma pseudoMetricNormedZModType_hausdorff (R : realFieldType)
+Lemma pseudoMetricNormedZModType_hausdorff (R : numFieldType)
     (V : pseudoMetricNormedZmodType R) :
   hausdorff_space V.
 Proof. exact: norm_hausdorff. Qed.
@@ -1476,7 +1531,7 @@ Qed.
 End limit_composition_pseudometric.
 
 Section domination.
-Context {T : Type} {K : numDomainType} {V W : pseudoMetricNormedZmodType K}.
+Context {T : Type} {K : numDomainType} {V W : PseudoMetricNormedZmod0.type K}.
 
 Definition dominated_by (h : T -> V) (k : K) (f : T -> W) (F : set_system T) :=
   F [set x | `|f x| <= k * `|h x|].
@@ -1499,7 +1554,7 @@ Lemma sub_dominatedr (T : Type) (K : numDomainType)
 Proof. by move=> le_fg; apply: filterS2 le_fg => x; apply: le_trans. Qed.
 
 Section ex_dom_bound.
-Context {T : Type} {K : numFieldType} {V W : pseudoMetricNormedZmodType K}.
+Context {T : Type} {K : numFieldType} {V W : PseudoMetricNormedZmod0.type K}.
 
 Lemma ex_dom_bound (h : T -> V) (f : T -> W) (F : set_system T)
     {PF : ProperFilter F} :

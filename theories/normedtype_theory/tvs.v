@@ -491,11 +491,13 @@ Section standard_topology.
 Variable R : numFieldType.
 
 (** NB: we have almost the same proof in `pseudometric_normed_Zmodule.v` *)
+(*
 Let standard_add_continuous : continuous (fun x : R^o * R^o => x.1 + x.2).
 Proof.
 move=> [/= x y]; apply/cvgrPdist_lt=> _/posnumP[e]; near=> a b => /=.
 by rewrite opprD addrACA normm_lt_split.
 Unshelve. all: by end_near. Qed.
+*)
 
 Let standard_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: z.2).
 Proof.
