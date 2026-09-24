@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.topology_theory.order_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis fd300fa 2026.09.23-21:18" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis fd300fa 2026.09.24-21:24" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -475,7 +475,18 @@ Qed.</div></details>
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> rray_closed</span><span class="id"> :</span><span class="id"> core</span>.<br/>
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> itv_closed</span><span class="id"> :</span><span class="id"> core</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="order_topology" class="id"><div name="order_topology" class="id anchor tooltip">order_topology<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/fd300fa3e3d78c7ad5940d5cdb6813722414e4b6/theories/topology_theory/order_topology.v#L197' target='_blank'>Source code</a></span></div></span> (<span id="T:61" class="id"><div name="T:61" class="id anchor tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/fd300fa3e3d78c7ad5940d5cdb6813722414e4b6/theories/topology_theory/order_topology.v#L197' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.order_topology.html#T:61">T</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="order_topology" class="id"><div name="order_topology" class="id anchor tooltip">order_topology<span class='tooltip-area'><p>one_point_nbhs :
+forall {X : topologicalType},
+one_point_compactification X -> set_system (one_point_compactification X)
+
+one_point_nbhs is not universe polymorphic
+Arguments one_point_nbhs {X} x _
+one_point_nbhs is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.one_point_compactification.one_point_nbhs
+Declared in
+library mathcomp.analysis.topology_theory.one_point_compactification, line 33, characters 11-25
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/fd300fa3e3d78c7ad5940d5cdb6813722414e4b6/theories/topology_theory/order_topology.v#L197' target='_blank'>Source code</a></span></div></span> (<span id="T:61" class="id"><div name="T:61" class="id anchor tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/fd300fa3e3d78c7ad5940d5cdb6813722414e4b6/theories/topology_theory/order_topology.v#L197' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.order_topology.html#T:61">T</a></span>.<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> induced_order_topology</span>.<br/>
 <br/>
