@@ -328,6 +328,28 @@ Qed.
 Definition unif_continuous (U V : uniformType) (f : U -> V) :=
   (fun xy => (f xy.1, f xy.2)) @ entourage --> entourage.
 
+Lemma unif_continuous_continuous (U V : uniformType) (f : U -> V) :
+  unif_continuous f -> continuous f.
+Proof.
+move=> ucf /= u N fuN.
+have [V0 entV0 V0N] : exists2 V0 : set (V * V),
+    entourage V0 & xsection V0 (f u) `<=` N.
+  move: fuN; rewrite -filter_from_entourageE => -[V1 entV1 V1fuN].
+  by exists V1.
+have [U0 entU0 U0V0] : exists2 U0 : set (U * U),
+    entourage U0 & (fun x => (f x.1, f x.2)) @` U0 `<=` V0.
+  exists ((fun x => (f x.1, f x.2)) @^-1` V0).
+    exact: ucf.
+  by move=> [_ _]/= [x V0fx [<- <-]].
+have fU0uN : f @` (xsection U0 u) `<=` N.
+  move=> _/= [u0 U0u0 <-]; apply: V0N => /=.
+  by apply/mem_set/U0V0 => /=; exists (u, u0) => //=; exact/set_mem.
+apply/nbhsP; exists U0 => //.
+have := @preimage_subset _ _ f _ _ fU0uN.
+apply: subset_trans => u0/= U0uu0.
+by exists u0.
+Qed.
+
 Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
   exists2 B, entourage B & forall PQ, A PQ -> forall p q,
     PQ.1 p -> PQ.2 q -> B (p,q).
