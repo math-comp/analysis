@@ -2419,6 +2419,20 @@ by rewrite [in RHS](_ : u = -%E \o -%E \o u);
   rewrite ?esupsN funeqE => n /=; rewrite oppeK.
 Qed.
 
+Lemma einfs_le (* {R : realType}*) u n m :
+  (n <= m)%N -> (einfs u n <= u m)%E.
+Proof. by move=> nm; apply: ereal_inf_lbound; exists m; [exact: nm | by []]. Qed.
+
+Lemma einfs_lift u p n :
+  einfs (fun k => u (k + p)%N) n = einfs u (n + p)%N.
+Proof.
+congr (ereal_inf _); apply/seteqP; split => _ /= [k /= nk] <-.
+- by exists (k + p)%N => //=; rewrite leq_add2r.
+- have pk : (p <= k)%N by apply: leq_trans nk; exact: leq_addl.
+  exists (k - p)%N => /=; last by rewrite subnK.
+  by rewrite -(leq_add2r p) subnK.
+Qed.
+
 Lemma nonincreasing_esups u : nonincreasing_seq (esups u).
 Proof.
 move=> m n mn; apply: ereal_sup_le => _ /= [k nk <-]; exists k => //=.
@@ -2641,6 +2655,25 @@ Proof.
 move=> /cvg_ex[l ul]; have [_ ->] := cvg_limn_einf_sup ul.
 by move/cvg_lim : ul => ->.
 Qed.
+
+Lemma limn_einf_lift u p :
+  limn_einf (fun n => u (n + p)%N) = limn_einf u.
+Proof.
+rewrite !limn_einf_lim.
+have -> : einfs (fun k => u (k + p)%N) = (fun n => einfs u (n + p)%N).
+  by apply/funext => n; exact: einfs_lift.
+by apply/cvg_lim => //; rewrite (cvg_shiftn p (einfs u)); exact: is_cvg_einfs.
+Qed.
+
+Lemma limn_einf_bump u :
+  limn_einf (fun n => u n.+1) = limn_einf u.
+Proof.
+rewrite -(limn_einf_lift u 1); congr limn_einf.
+by apply/funext => n; rewrite addn1.
+Qed.
+
+Lemma limn_einf_cst (c : \bar R) : limn_einf (fun=> c) = c.
+Proof. by rewrite is_cvg_limn_einfE ?lim_cst//; exact: is_cvg_cst. Qed.
 
 End lim_esup_inf.
 
