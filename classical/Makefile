@@ -1,7 +1,7 @@
 # -*- Makefile -*-
 
 # setting variables
-COQPROJECT?=Make
+ROCQPROJECT?=Make
 
 # Main Makefile
 include ../Makefile.common
