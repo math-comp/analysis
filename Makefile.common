@@ -6,14 +6,11 @@
 # pre-makefile::, this-clean:: and __always__:: may be extended      #
 # Additionally, the following variables may be customized:           #
 SUBDIRS?=
-COQBIN?=$(dir $(shell command -v rocq))
-COQMAKEFILE?="$(COQBIN)rocq makefile"
-COQC?="$(COQBIN)rocq c"
-COQDEP?="$(COQBIN)rocq dep"
-COQDOC?="$(COQBIN)rocq doc"
-COQPROJECT?=_CoqProject
-COQMAKEOPTIONS?=
-COQMAKEFILEOPTIONS?=
+ROCQBIN?=$(dir $(shell command -v rocq))
+ROCQ?="$(ROCQBIN)rocq"
+ROCQPROJECT?=_CoqProject
+ROCQMAKEOPTIONS?=
+ROCQMAKEFILEOPTIONS?=
 V?=
 VERBOSE?=V
 ######################################################################
@@ -22,16 +19,16 @@ VERBOSE?=V
 .PHONY: all config build clean distclean __always__
 .SUFFIXES:
 
-COQMAKE = $(MAKE) -f Makefile.coq $(COQMAKEOPTIONS)
+ROCQMAKE = $(MAKE) -f Makefile.rocq $(ROCQMAKEOPTIONS)
 
 # all: ---------------------------------------------------------------
 all: config build
 
-# Makefile.coq: ------------------------------------------------------
+# Makefile.rocq ------------------------------------------------------
 .PHONY: pre-makefile
 
-Makefile.coq: pre-makefile $(COQPROJECT) Makefile
-	$(COQMAKEFILE) $(COQMAKEFILEOPTIONS) -f $(COQPROJECT) -o Makefile.coq
+Makefile.rocq: pre-makefile $(ROCQPROJECT) Makefile
+	$(ROCQ) makefile $(ROCQMAKEFILEOPTIONS) -f $(ROCQPROJECT) -o Makefile.rocq
 
 # Global config, build, clean and distclean --------------------------
 config: sub-config this-config
@@ -47,27 +44,27 @@ distclean: sub-distclean this-distclean
 
 this-config:: __always__
 
-this-build:: this-config Makefile.coq
-	+$(COQMAKE)
+this-build:: this-config Makefile.rocq
+	+$(ROCQMAKE)
 
 this-distclean:: this-clean
-	rm -f Makefile.coq Makefile.coq.conf Makefile.coq
+	rm -f Makefile.rocq Makefile.rocq.conf Makefile.rocq
 
 this-clean:: __always__
-	@if [ -f Makefile.coq ]; then $(COQMAKE) cleanall; fi
+	@if [ -f Makefile.rocq ]; then $(ROCQMAKE) cleanall; fi
 
 # Install target -----------------------------------------------------
 .PHONY: install
 
-install: __always__ Makefile.coq
-	$(COQMAKE) install
-# counting lines of Coq code -----------------------------------------
+install: __always__ Makefile.rocq
+	$(ROCQMAKE) install
+# counting lines of Rocqcode -----------------------------------------
 .PHONY: count
 
-COQFILES = $(shell grep '.v$$' $(COQPROJECT))
+ROCQFILES = $(shell grep '.v$$' $(ROCQPROJECT))
 
 count:
-	@coqwc $(COQFILES) | tail -1 | \
+	@rocq wc $(ROCQFILES) | tail -1 | \
 	  awk '{printf ("%d (spec=%d+proof=%d)\n", $$1+$$2, $$1, $$2)}'
 # Additionally cleaning backup (*~) files ----------------------------
 this-distclean::
@@ -83,8 +80,8 @@ sub-%: __always__
 endif
 
 # Make of individual .vo ---------------------------------------------
-%.vo: __always__ Makefile.coq
-	+$(COQMAKE) $@
+%.vo: __always__ Makefile.rocq
+	+$(ROCQMAKE) $@
 
 # Html documentation
 
@@ -98,7 +95,7 @@ GITHUB_URL="https://github.com/math-comp/analysis/tree/$(shell git rev-parse HEA
 
 $(DOCDIR)/dependency_graph.pre:
 	mkdir -p $(DOCDIR)
-	coqdep -f _CoqProject | perl etc/builddoc_dependency_dot.pl > $(DOCDIR)/dependency_graph.pre
+	$(ROCQ) dep -f $(ROCQPROJECT) | perl etc/builddoc_dependency_dot.pl > $(DOCDIR)/dependency_graph.pre
 
 $(DOCDIR)/dependency_graph.dot: $(DOCDIR)/dependency_graph.pre
 	tred $(DOCDIR)/dependency_graph.pre > $(DOCDIR)/dependency_graph.dot
@@ -116,8 +113,8 @@ html: build $(DOCDIR)/dependency_graph.dot
 	-coqlib https://rocq-prover.org/doc/V9.1.0/stdlib/ \
 	-file-graph $(DOCDIR)/dependency_graph.dot \
 	-structure-graph $(DOCDIR)/hierarchy_graph.dot \
-        -index-blacklist etc/rocqnavi_index-blacklist \
-        -show-type-information-using-coqtop-process \
+	-index-blacklist etc/rocqnavi_index-blacklist \
+	-show-type-information-using-coqtop-process \
 	-doc-source-url $(GITHUB_URL) \
 	-external https://math-comp.github.io/htmldoc_2_6_0/ mathcomp.order \
 	-external https://math-comp.github.io/htmldoc_2_6_0/ mathcomp.boot \
