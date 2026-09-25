@@ -255,7 +255,7 @@ HB.mixin Record PreUniformNmodule_isUniformNmodule M & PreUniformNmodule M := {
 }.
 
 HB.structure Definition UniformNmodule :=
-  {M of PreUniformNmodule M & PreUniformNmodule_isUniformNmodule M}.
+  {M of PreUniformNmodule M & PreUniformNmodule_isUniformNmodule M & TopologicalNmodule M}.
 
 HB.structure Definition PreUniformZmodule := {M of Uniform M & GRing.Zmodule M}.
 
@@ -265,12 +265,51 @@ HB.mixin Record UniformNmodule_isUniformZmodule M
 }.
 
 HB.structure Definition UniformZmodule :=
-  {M of UniformNmodule M & GRing.Zmodule M & UniformNmodule_isUniformZmodule M}.
+  {M of UniformNmodule M & GRing.Zmodule M & UniformNmodule_isUniformZmodule M & TopologicalZmodule M}.
 
 HB.factory Record PreUniformNmodule_isUniformZmodule M
     & Uniform M & GRing.Zmodule M := {
   sub_unif_continuous : unif_continuous (fun x : M * M => x.1 - x.2)
 }.
+
+(* TODO: move *)
+Lemma unif_continuous_continuous (X Y : uniformType) (f : X -> Y) :
+  unif_continuous f -> continuous f.
+Proof.
+move=> ucf /= x.
+rewrite /continuous_at => N fxN.
+have [V Vent VN] : exists2 V : set (Y * Y),
+    V \in @entourage Y & xsection V (f x) `<=` N.
+  move: fxN.
+  rewrite -filter_from_entourageE => -[V entV VfxN].
+  exists V => //.
+  exact/mem_set.
+have [U Uent UV] : exists2 U : set (X * X), U \in @entourage X &
+    (fun x => (f x.1, f x.2)) @` U `<=` V.
+  exists ((fun xy : X * X => (f xy.1, f xy.2)) @^-1` V) => /=.
+    apply/mem_set.
+    apply: ucf.
+    exact/set_mem.
+  by move=> [_ _]/= [y Vfy [<- <-]].
+pose Ux := xsection U x.
+have xUx : nbhs x Ux.
+  apply: nbhs_entourage.
+  exact/set_mem.
+have fUxN : f @` Ux `<=` N.
+  move=> _/= [x0 Ux0 <-]; apply: VN => /=.
+  by apply/mem_set/UV => /=; exists (x, x0) => //=; exact/set_mem.
+apply/nbhsP.
+rewrite /nbhs_.
+red.
+simpl.
+exists U => //.
+exact/set_mem.
+have := @preimage_subset _ _ f _ _ fUxN.
+apply: subset_trans.
+move=> y/=.
+rewrite /xsection/= => xyU.
+by exists y => //.
+Qed.
 
 HB.builders Context M & PreUniformNmodule_isUniformZmodule M.
 
@@ -304,8 +343,25 @@ rewrite -comp_preimage/=/comp/=.
 by congr entourage; rewrite eqEsubset; split=> x /=; rewrite !opprK.
 Qed.
 
+Lemma add_continuous : continuous (fun x : M * M => x.1 + x.2).
+Proof.
+apply: unif_continuous_continuous.
+exact: add_unif_continuous.
+Qed.
+
+HB.instance Definition _ := PreTopologicalNmodule_isTopologicalNmodule.Build M add_continuous.
+
 HB.instance Definition _ :=
   PreUniformNmodule_isUniformNmodule.Build M add_unif_continuous.
+
+Lemma opp_continuous : continuous (-%R : M -> M).
+Proof.
+apply: unif_continuous_continuous.
+exact: opp_unif_continuous.
+Qed.
+
+HB.instance Definition _ := TopologicalNmodule_isTopologicalZmodule.Build M opp_continuous.
+
 HB.instance Definition _ :=
   UniformNmodule_isUniformZmodule.Build M opp_unif_continuous.
 
@@ -353,7 +409,7 @@ End PseudoMetricNormedZmod0_numDomainType.
 
 #[short(type="pseudoMetricNormedZmodType")]
 HB.structure Definition PseudoMetricNormedZmod (R : numDomainType) :=
-  {T of PseudoMetricNormedZmod0 R T & Metric R T & TopologicalZmodule T}.
+  {T of PseudoMetricNormedZmod0 R T & Metric R T & UniformZmodule T}.
 
 (* was Section pseudoMetricNormedZmod_numDomainType. *)
 Section PseudoMetricNormedZmod0_numDomainType.
@@ -786,6 +842,41 @@ by rewrite opprK addrC.
 Unshelve. all: by end_near. Qed.
 
 HB.instance Definition _ := TopologicalNmodule_isTopologicalZmodule.Build R^o opp_continuous.
+
+Check R^o : PseudoMetricNormedZmod0.type R.
+
+Check R^o : Metric.type R.
+
+Check R^o : uniformType.
+
+Lemma unif_add_continuousR : unif_continuous (fun x : R^o * R^o => x.1 + x.2).
+Proof.
+apply/unif_continuousP => /= e e0.
+exists (e / 2).
+  by rewrite divr_gt0.
+move=> -[[a b] [u v]]/=.
+rewrite /ball/= /prod_ball.
+rewrite -!ball_normE/= => -[ab ub].
+rewrite opprD addrACA.
+rewrite (le_lt_trans (ler_normD _ _))//.
+by rewrite (splitr e) ltrD//.
+Qed.
+
+HB.instance Definition _ := PreUniformNmodule_isUniformNmodule.Build R^o unif_add_continuousR.
+
+Lemma unif_opp_continuousR : unif_continuous (-%R : R^o -> R^o).
+Proof.
+apply/unif_continuousP => /= e e0.
+exists e => // -[a b]/=.
+rewrite -!ball_normE/=.
+by rewrite -opprD normrN.
+Qed.
+
+HB.instance Definition _ := UniformNmodule_isUniformZmodule.Build R^o unif_opp_continuousR.
+
+Check R^o : UniformNmodule.type.
+
+Check R^o : UniformZmodule.type.
 
 Check R^o : pseudoMetricNormedZmodType R.
 
