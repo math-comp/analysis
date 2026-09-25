@@ -450,6 +450,12 @@ Variable (R : numDomainType) (V: lmodType R) (x : V).
 Definition linepred  : {pred V} :=   mem [set y | exists t, y = t *: x ].
 Definition line := {y | linepred y}.
 
+Lemma line_linepred (y : line) : exists t, val(y) == t *: x.
+Proof.
+by move: y => [yv] /= /asboolP [t] ->; exists t.
+Qed.
+
+
 #[local] Lemma line_submod_closed : submod_closed (linepred).
 Proof.
 split; first by rewrite inE; exists 0; rewrite scale0r.
@@ -554,6 +560,23 @@ by exists g'.
 Qed.
 End hahn_banach_extension_ctvs.
 
+Check scalerI.
+Check scaler_injl.
+
+(* TBA : to classical *)
+Lemma scaler_eq0 (R : numFieldType) (V: lmodType R) (a : V) t :  a != 0 -> (t *: a = 0 -> t = 0).
+Proof.
+move=> a0 ta; apply: contrapT => /eqP t0.
+have : t^-1 *: (t *: a) = 0 by rewrite ta scaler0.
+by rewrite scalerA mulVf// scale1r; apply/eqP.
+Qed.
+
+Lemma scaleIl (R : numFieldType) (V: lmodType R) (a : V) :  a != 0 -> injective (fun t => t *: a).
+Proof.
+move=> a0 s t => /eqP; rewrite -subr_eq0 -scalerBl => /eqP /(scaler_eq0 a0) /eqP.
+by rewrite subr_eq0 => /eqP.
+Qed.
+(*END TBA *)
 
 (* 7.2.3 in Jarchow *)
 Lemma hahn_banach_extension_hausdorff (R : realType) (V : convexTvsType R) :
@@ -575,36 +598,46 @@ split; last first.
   have /linear_continuous_seminorm [p [sp _] /= lp] :=  (@continuous_fun _ _ l).
   by exists p => //; apply: lt_le_trans; last by apply: lp.
 move=> haus x x0.
-(*pose l := fun ( y : line x) => xchoose (linepred x (sval y)).
+pose l := fun ( y : line x) => xchoose (line_linepred y).
 have llinear: linear_for ( *:%R) l.
-  rewrite /l => t u v /=. Search xchoose.
-  move: (@isline _ _ x u)=>  H; move/eqP: (xchooseP H) => xu.
-  move: (@isline _ _ x v)=>  H'; move/eqP: (xchooseP H') => xv.
-  move: (@isline _ _ x (t *: u + v))=>  Hs; move/eqP: (xchooseP Hs) => xs.
-  have : val (t *: u + v) = (t * xchoose H + xchoose H') *: x.
-    rewrite linearP /=. (*Set Printing Coercions. *) Fail rewrite xv. admit.
-  rewrite linearP /= => lem.
-  suff : xchoose Hs *: x = (t *: xchoose H + xchoose H') *: x.
-  (* where is left injectivity of scaler *) admit.
-  by rewrite -xs scalerDl -xv -scalerA -xu.
+  rewrite /l /= => t /= u v; apply: scaleIl; first by exact: x0.
+  rewrite scalerDl -scalerA.
+  move/eqP: (xchooseP (line_linepred u)) => <-.
+  move/eqP: (xchooseP (line_linepred v)) => <-.
+  move/eqP: (xchooseP (line_linepred (t *: u + v))) => <-.
+  by rewrite (@GRing.valD _ _ (line x)) (*why is it necessary to have the @? *) GRing.valZ.
 pose linlP := GRing.isLinear.Build _ _ _ _ l llinear.
-pose linl : {linear _ -> _} := HB.pack l linlP.
-have lcont : continuous (l : (init_subconvextvs (lineType x)) -> R^o).
-  move=> /= v /= A [r /= r0]; rewrite /ball_ /= => Ar.
-  admit.
+pose linl : {linear ((init_subconvextvs (line x))) -> R^o} := HB.pack l linlP.
+have lcont : continuous linl.
+  apply/continuous_closedkernel.
+  have -> : (linl @^-1` [set 0]) = [set 0].
+    apply/seteqP; split => u /=.
+      move/eqP: (xchooseP (line_linepred u)) => /[swap]; rewrite /l => ->.
+      by rewrite scale0r -(@GRing.val0 _ _ (line x)) => /val_inj.
+    move=> u0; move/eqP: (xchooseP (line_linepred u)).
+    rewrite u0 /= /l; move/eqP; rewrite eq_sym => /eqP.
+    by move/(scaler_eq0 x0).
+  apply: accessible_closed_set1; apply: hausdorff_accessible.
+  by apply: hausdorff_init_convextvs.
 pose contlP := isContinuous.Build _ _ _ lcont.
-pose lcl : {linear_continuous (init_subconvextvs (lineType x)) -> R^o} := 
-HB.pack (l : (init_subconvextvs (lineType x)) -> R^o) linlP contlP.
+pose lcl : {linear_continuous (init_subconvextvs (line x)) -> R^o} :=
+  HB.pack (l : (init_subconvextvs (line x)) -> R^o) linlP contlP.
 have := (hahn_banach_extension_initialsubctvs lcl) => -[g Pg]; exists g.
-have xline : exists t, x == t *: x by  exists 1; rewrite scale1r.
-pose xP := isLine.Build _ _ _ x xline.
-pose x' : (lineType x) := HB.pack x xP.
-have := Pg x'.
-have -> : \val x'= x by [].
-have -> : lcl x' = 1. admit.
-by move=>  -> //=.*)
-Admitted.
-
+have xlinepred : (linepred x) x by apply/asboolP; exists 1; rewrite scale1r.
+pose xline := exist (linepred x) _ xlinepred.
+have <- : \val xline = x by [].
+rewrite Pg.
+have -> // : lcl xline = 1.
+    rewrite /lcl /= /l.
+    move/eqP: (xchooseP (line_linepred xline)).
+set xline':= (X in X =_ -> _).
+have -> : xline' = x by [].
+set x':= (X in X =_ -> _).
+rewrite  -(scale1r x').
+move/scaleIl => H.
+apply/eqP; rewrite eq_sym; apply/eqP.
+by apply: H.
+Qed.
 
 Section hahn_banach_separation_ctvs.
 (* TODO *)
