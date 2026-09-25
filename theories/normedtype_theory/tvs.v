@@ -698,6 +698,21 @@ HB.instance Definition _ :=
   @Uniform_isConvexTvs.Build R init_subconvextvs locally_convex_sub.
 HB.instance Definition _ := GRing.SubLmodule.on init_subconvextvs.
 
+Lemma hausdorff_init_convextvs : hausdorff_space V -> hausdorff_space init_subconvextvs.
+Proof.
+move=> hV x y;
+rewrite /cluster /= /nbhs /= => cl.
+apply: val_inj; apply: hV; rewrite nbhsE => A B /= [A' [oA Ax AA']].
+rewrite nbhsE /= => -[B' [oB By BB']].
+have valA: nbhs_of_open (initial_open \val) x (\val @^-1` A').
+   by rewrite /nbhs_of_open; exists (\val @^-1` A'); split => //=; exists A'.
+have : nbhs_of_open (initial_open \val) y (\val @^-1` B').
+   by rewrite /nbhs_of_open; exists (\val @^-1` B'); split => //=; exists B'.
+move/(cl (val @^-1` A')  (val @^-1` B') valA) => [z /= [Az Bz]]; exists (val z); split.
+ by apply: AA'.
+by apply: BB'.
+Qed.
+
 End SubLmodule_isSubConvexTvs.
 
 Section properties_of_topologicalLmodule.
