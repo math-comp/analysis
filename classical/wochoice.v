@@ -210,7 +210,7 @@ have RUanti: {in U &, antisymmetric R}.
   move=> x y /asboolP[X Xx indX] /asboolP[Y Yy indY].
   without loss [sXY _]: x y X Y Xx Yy {indX} indY / init_seg X Y.
     move=> IH.
-    by case: (init_total X Y) => // {}/IH-IH; [|rewrite andbC] => /IH->.
+    by (case: (init_total X Y) => // {}/IH-IH; [|rewrite andbC]) => /IH->.
   have [/wo_chain_antisymmetric RYanti _] := indY.
   by apply: RYanti => //; apply: sXY.
 have Uch: Well U.
