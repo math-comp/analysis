@@ -432,8 +432,8 @@ move: x y => [x||] [y||] //; rewrite /Order.comparable !lee_fin -!realE.
 - by rewrite /lee/= => _ ->.
 Qed.
 
-Lemma real_ltry r : r%:E < +oo = (r \is Num.real). Proof. by []. Qed.
-Lemma real_ltNyr r : -oo < r%:E = (r \is Num.real). Proof. by []. Qed.
+Lemma real_ltry r : (r%:E < +oo) = (r \is Num.real). Proof. by []. Qed.
+Lemma real_ltNyr r : (-oo < r%:E) = (r \is Num.real). Proof. by []. Qed.
 
 Lemma real_leey x : (x <= +oo) = (fine x \is Num.real).
 Proof. by case: x => //=; rewrite real0. Qed.
@@ -798,10 +798,10 @@ Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) :=
 Local Tactic Notation "elift" constr(lm) ":" ident(x) ident(y) ident(z) :=
   by case: x y z => [?||] [?||] [?||]; first by rewrite ?eqe; apply: lm.
 
-Lemma lee0N1 : 0 <= (-1)%:E :> \bar R = false.
+Lemma lee0N1 : (0 <= (-1)%:E :> \bar R) = false.
 Proof. by rewrite lee_fin ler0N1. Qed.
 
-Lemma lte0N1 : 0 < (-1)%:E :> \bar R = false.
+Lemma lte0N1 : (0 < (-1)%:E :> \bar R) = false.
 Proof. by rewrite lte_fin ltr0N1. Qed.
 
 Lemma lteN10 : -1 < 0 :> \bar R.
@@ -1062,7 +1062,7 @@ Lemma muleC x y : x * y = y * x.
 Proof. by move: x y => [r||] [s||]//=; rewrite -EFinM mulrC. Qed.
 
 Lemma onee_neq0 : 1 != 0 :> \bar R. Proof. exact: oner_neq0. Qed.
-Lemma onee_eq0 : 1 == 0 :> \bar R = false. Proof. exact: oner_eq0. Qed.
+Lemma onee_eq0 : (1 == 0 :> \bar R) = false. Proof. exact: oner_eq0. Qed.
 
 Lemma mule1 x : x * 1 = x.
 Proof.
@@ -1167,7 +1167,7 @@ Lemma fin_numD x y :
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
 Lemma sum_fin_num (T : Type) (s : seq T) (P : pred T) (f : T -> \bar R) :
-  \sum_(i <- s | P i) f i \is a fin_num =
+  (\sum_(i <- s | P i) f i \is a fin_num) =
   all [pred x | x \is a fin_num] [seq f i | i <- s & P i].
 Proof.
 by rewrite -big_all big_map big_filter; exact: (big_morph _ fin_numD).
@@ -1282,7 +1282,7 @@ Lemma adde_Neq_ninfty x y : x != +oo -> y != +oo ->
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
 Lemma adde_ss_eq0 x y : (0 <= x) && (0 <= y) || (x <= 0) && (y <= 0) ->
-  x + y == 0 = (x == 0) && (y == 0).
+  (x + y == 0) = (x == 0) && (y == 0).
 Proof. by move=> /orP[|] /andP[]; [exact: padde_eq0|exact: nadde_eq0]. Qed.
 
 Lemma esum_eqNyP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
@@ -1681,22 +1681,22 @@ Lemma dadde_Neq_ninfty x y : x != +oo -> y != +oo ->
   (x + y != -oo) = (x != -oo) && (y != -oo).
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
-Lemma ndadde_eq0 x y : x <= 0 -> y <= 0 -> x + y == 0 = (x == 0) && (y == 0).
+Lemma ndadde_eq0 x y : x <= 0 -> y <= 0 -> (x + y == 0) = (x == 0) && (y == 0).
 Proof.
 move: x y => [x||] [y||] //.
 - by rewrite !lee_fin -dEFinD !eqe; exact: naddr_eq0.
-- by rewrite /adde/= (_ : -oo == 0 = false)// andbF.
+- by rewrite /adde/= (_ : (-oo == 0) = false)// andbF.
 Qed.
 
-Lemma pdadde_eq0 x y : 0 <= x -> 0 <= y -> x + y == 0 = (x == 0) && (y == 0).
+Lemma pdadde_eq0 x y : 0 <= x -> 0 <= y -> (x + y == 0) = (x == 0) && (y == 0).
 Proof.
 move: x y => [x||] [y||] //.
 - by rewrite !lee_fin -dEFinD !eqe; exact: paddr_eq0.
-- by rewrite /adde/= (_ : +oo == 0 = false)// andbF.
+- by rewrite /adde/= (_ : (+oo == 0) = false)// andbF.
 Qed.
 
 Lemma dadde_ss_eq0 x y : (0 <= x) && (0 <= y) || (x <= 0) && (y <= 0) ->
-  x + y == 0 = (x == 0) && (y == 0).
+  (x + y == 0) = (x == 0) && (y == 0).
 Proof. move=> /orP[|] /andP[]; [exact: pdadde_eq0|exact: ndadde_eq0]. Qed.
 
 Lemma desum_eqyP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar^d R) :
@@ -2154,13 +2154,13 @@ Lemma lte_nmul2r z : z \is a fin_num -> z < 0 -> {mono *%E^~ z : x y /~ x < y}.
 Proof. by move=> zfin z0 x y; rewrite -!(muleC z) lte_nmul2l. Qed.
 
 Lemma lte_pmulr x y : y \is a fin_num -> 0 < y -> (y < y * x) = (1 < x).
-Proof. by move=> yfin y0; rewrite -[X in X < _ = _]mule1 lte_pmul2l. Qed.
+Proof. by move=> yfin y0; rewrite -[X in (X < _) = _]mule1 lte_pmul2l. Qed.
 
 Lemma lte_pmull x y : y \is a fin_num -> 0 < y -> (y < x * y) = (1 < x).
 Proof. by move=> yfin y0; rewrite muleC lte_pmulr. Qed.
 
 Lemma lte_nmulr x y : y \is a fin_num -> y < 0 -> (y < y * x) = (x < 1).
-Proof. by move=> yfin y0; rewrite -[X in X < _ = _]mule1 lte_nmul2l. Qed.
+Proof. by move=> yfin y0; rewrite -[X in (X < _) = _]mule1 lte_nmul2l. Qed.
 
 Lemma lte_nmull x y : y \is a fin_num -> y < 0 -> (y < x * y) = (x < 1).
 Proof. by move=> yfin y0; rewrite muleC lte_nmulr. Qed.
@@ -4497,35 +4497,35 @@ Implicit Type x : (Itv.def (@ext_num_sem R) (Itv.Real xi)).
 Implicit Type y : (Itv.def (@ext_num_sem R) (Itv.Real yi)).
 
 Lemma num_lee_max a x y :
-  a <= maxe x%:num y%:num = (a <= x%:num) || (a <= y%:num).
+  (a <= maxe x%:num y%:num) = (a <= x%:num) || (a <= y%:num).
 Proof. by rewrite -comparable_le_max// ereal_comparable. Qed.
 
 Lemma num_gee_max a x y :
-  maxe x%:num  y%:num <= a = (x%:num <= a) && (y%:num <= a).
+  (maxe x%:num y%:num <= a) = (x%:num <= a) && (y%:num <= a).
 Proof. by rewrite -comparable_ge_max// ereal_comparable. Qed.
 
 Lemma num_lee_min a x y :
-  a <= mine x%:num y%:num = (a <= x%:num) && (a <= y%:num).
+  (a <= mine x%:num y%:num) = (a <= x%:num) && (a <= y%:num).
 Proof. by rewrite -comparable_le_min// ereal_comparable. Qed.
 
 Lemma num_gee_min a x y :
-  mine x%:num y%:num <= a = (x%:num <= a) || (y%:num <= a).
+  (mine x%:num y%:num <= a) = (x%:num <= a) || (y%:num <= a).
 Proof. by rewrite -comparable_ge_min// ereal_comparable. Qed.
 
 Lemma num_lte_max a x y :
-  a < maxe x%:num y%:num = (a < x%:num) || (a < y%:num).
+  (a < maxe x%:num y%:num) = (a < x%:num) || (a < y%:num).
 Proof. by rewrite -comparable_lt_max// ereal_comparable. Qed.
 
 Lemma num_gte_max a x y :
-  maxe x%:num  y%:num < a = (x%:num < a) && (y%:num < a).
+  (maxe x%:num  y%:num < a) = (x%:num < a) && (y%:num < a).
 Proof. by rewrite -comparable_gt_max// ereal_comparable. Qed.
 
 Lemma num_lte_min a x y :
-  a < mine x%:num y%:num = (a < x%:num) && (a < y%:num).
+  (a < mine x%:num y%:num) = (a < x%:num) && (a < y%:num).
 Proof. by rewrite -comparable_lt_min// ereal_comparable. Qed.
 
 Lemma num_gte_min a x y :
-  mine x%:num y%:num < a = (x%:num < a) || (y%:num < a).
+  (mine x%:num y%:num < a) = (x%:num < a) || (y%:num < a).
 Proof. by rewrite -comparable_gt_min// ereal_comparable. Qed.
 
 End MorphReal.

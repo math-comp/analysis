@@ -73,10 +73,8 @@ From mathcomp Require Import lebesgue_measure lebesgue_integral hoelder.
 
 Reserved Notation "'{' 'RV' P >-> R '}'"
   (at level 0, format "'{' 'RV'  P  '>->'  R '}'").
-Reserved Notation "''E_' P [ X ]"
-  (at level 5, P, X at level 4, format "''E_' P [ X ]").
-Reserved Notation "''V_' P [ X ]"
-  (at level 5, P, X at level 4, format "''V_' P [ X ]").
+Reserved Notation "''E_' P [ X ]" (P at level 4, format "''E_' P [ X ]").
+Reserved Notation "''V_' P [ X ]" (P at level 4, format "''V_' P [ X ]").
 Reserved Notation "'M_ P X" (at level 5, P, X at level 4, format "''M_' P  X").
 Reserved Notation "{ 'dmfun' aT >-> T }" (format "{ 'dmfun'  aT  >->  T }").
 Reserved Notation "'{' 'dRV' P >-> R '}'" (format "'{' 'dRV'  P  '>->'  R '}'").

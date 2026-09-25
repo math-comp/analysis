@@ -46,10 +46,10 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Reserved Notation "\int [ mu ]_ ( i 'in' D ) F"
-  (at level 36, F at level 36, i, D at level 60,
+  (at level 34, F at level 41, i at level 60,
   format "'[' \int [ mu ]_ ( i  'in'  D ) '/  '  F ']'").
 Reserved Notation "\int [ mu ]_ i F"
-  (F at level 36, i at level 0,
+  (F at level 41, i at level 0,
     right associativity, format "'[' \int [ mu ]_ i '/  '  F ']'").
 
 (** Definition of simple integrals: *)

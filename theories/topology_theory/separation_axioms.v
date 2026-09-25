@@ -1110,7 +1110,7 @@ Lemma perfectTP {T} : perfect_set [set: T] <-> forall x : T, ~ open [set x].
 Proof.
 split.
   case=> _; rewrite eqEsubset; case=> _ + x Ox => /(_ x I [set x]).
-  by case; [by apply: open_nbhs_nbhs; split |] => y [+ _] => /[swap] -> /eqP.
+  by (case; [by apply: open_nbhs_nbhs; split |]) => y [+ _] => /[swap] -> /eqP.
 move=> NOx; split; [exact: closedT |]; rewrite eqEsubset; split => x // _.
 move=> U; rewrite nbhsE; case=> V [] oV Vx VU.
 have Vnx: V != [set x] by apply/eqP => M; apply: (NOx x); rewrite -M.

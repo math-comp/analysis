@@ -186,7 +186,7 @@ move=> [[A B]] /=; rewrite -!entourage_ballE.
 move=> [[_/posnumP[eA] sbA] [_/posnumP[eB] sbB] sABP].
 exists (Num.min eA eB)%:num => //= -[[a b] [c d] [/= bac bbd]].
 suff /sABP [] : (A `*` B) ((a, c), (b, d)) by move=> [[??] [??]] ? [<-<-<-<-].
-split; [apply: sbA|apply: sbB] => /=.
+(split; [apply: sbA|apply: sbB]) => /=.
   by apply: le_ball bac; rewrite num_le ge_min lexx.
 by apply: le_ball bbd; rewrite num_le ge_min lexx orbT.
 Qed.

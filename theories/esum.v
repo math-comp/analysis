@@ -24,7 +24,7 @@ From mathcomp Require Import reals topology ereal sequences normedtype numfun.
 (******************************************************************************)
 
 Reserved Notation "\esum_ ( i 'in' P ) F"
-  (at level 41, F at level 41, format "\esum_ ( i  'in'  P )  F").
+  (at level 34, F at level 41, format "\esum_ ( i  'in'  P )  F").
 
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.

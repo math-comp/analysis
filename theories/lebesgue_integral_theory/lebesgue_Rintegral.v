@@ -96,7 +96,7 @@ by congr fine; under eq_integral do rewrite EFinM; exact: integralZl.
 Qed.
 
 Lemma RintegralZr D f r : measurable D -> mu.-integrable D (EFin \o f) ->
-  \int[mu]_(x in D) (f x * r) = \int[mu]_(x in D) f x * r.
+  \int[mu]_(x in D) f x * r = (\int[mu]_(x in D) f x) * r.
 Proof.
 move=> mD intf; rewrite mulrC -RintegralZl//.
 by under eq_Rintegral do rewrite mulrC.

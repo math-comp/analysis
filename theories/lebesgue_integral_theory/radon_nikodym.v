@@ -33,7 +33,7 @@ From mathcomp Require Import lebesgue_integral_definition lebesgue_integrable
 (*                                                                            *)
 (******************************************************************************)
 
-Reserved Notation "'d nu '/d mu" (mu at next level,
+Reserved Notation "'d nu '/d mu" (mu at level 0,
   format "''d'  nu  ''/d'  mu").
 
 Declare Scope charge_scope.

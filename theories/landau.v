@@ -263,7 +263,7 @@ Reserved Notation "[Omega_ x e 'of' f ]"
 Reserved Notation "[Omega '_' x e 'of' f ]"
   (at level 0, x, e at level 0, format "[Omega '_' x  e  'of'  f ]").
 Reserved Notation "'Omega_ F g"
-  (at level 0, F at level 0, format "''Omega_' F g").
+  (at level 0, F, g at level 0, format "''Omega_' F g").
 Reserved Notation "f '=Omega_' F h"
   (at level 70, no associativity,
    F at level 0, h at next level,
@@ -281,7 +281,7 @@ Reserved Notation "[Theta_ x e 'of' f ]"
 Reserved Notation "[Theta '_' x e 'of' f ]"
   (at level 0, x at level 0, format "[Theta '_' x  e  'of'  f ]").
 Reserved Notation "'Theta_ F g"
-  (at level 0, F at level 0, format "''Theta_' F g").
+  (at level 0, F, g at level 0, format "''Theta_' F g").
 Reserved Notation "f '=Theta_' F h"
   (at level 70, no associativity,
    F at level 0, h at next level,

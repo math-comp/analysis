@@ -316,7 +316,7 @@ by rewrite lee_fin ltW// truncnS_gt.
 Unshelve. all: by end_near. Qed.
 
 Lemma ge0_integralZr k : (forall x, D x -> 0 <= f x) ->
-  0 <= k -> \int[mu]_(x in D) (f x * k) = \int[mu]_(x in D) (f x) * k.
+  0 <= k -> \int[mu]_(x in D) f x * k = (\int[mu]_(x in D) f x) * k.
 Proof.
 move=> f0 k0; under eq_integral do rewrite muleC.
 by rewrite ge0_integralZl// muleC.

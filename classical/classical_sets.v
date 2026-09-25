@@ -285,7 +285,7 @@ Definition set T := T -> Prop.
 Definition in_set T (A : set T) : pred T := (fun x => `[<A x>]).
 Canonical set_predType T := @PredType T (set T) (@in_set T).
 
-Lemma in_setE T (A : set T) x : x \in A = A x :> Prop.
+Lemma in_setE T (A : set T) x : (x \in A) = A x :> Prop.
 Proof. by rewrite propeqE; split => [] /asboolP. Qed.
 
 Definition inE := (inE, in_setE).
@@ -447,7 +447,7 @@ Lemma nat_nonempty : [set: nat] !=set0. Proof. by exists 1%N. Qed.
 
 #[global] Hint Resolve nat_nonempty : core.
 
-Lemma in_set1 {T : eqType} (a : T) (x : T) : x \in [set a] = (x == a).
+Lemma in_set1 {T : eqType} (a : T) (x : T) : (x \in [set a]) = (x == a).
 Proof. by apply/(sameP _ idP)/(equivP idP); rewrite inE eq_opE. Qed.
 
 Lemma itv_sub_in2 d (T : porderType d) (P : T -> T -> Prop) (i j : interval T) :
@@ -517,7 +517,7 @@ Lemma mem_setT (u : T)    : u \in [set: T]. Proof. by rewrite inE. Qed.
 Lemma mem_setK {A} {u : T} : cancel (@mem_set A u) set_mem. Proof. by []. Qed.
 Lemma set_memK {A} {u : T} : cancel (@set_mem A u) mem_set. Proof. by []. Qed.
 
-Lemma memNset (A : set T) (u : T) : ~ A u -> u \in A = false.
+Lemma memNset (A : set T) (u : T) : ~ A u -> (u \in A) = false.
 Proof. by apply: contra_notF; rewrite inE. Qed.
 
 Lemma notin_setE (A : set T) x : (x \notin A : Prop) = (~ A x).
@@ -1273,13 +1273,13 @@ Proof. by rewrite IIS setUDK// => x [->/=]; rewrite ltnn. Qed.
 
 Lemma setI_II m n : `I_m `&` `I_n = `I_(minn m n).
 Proof.
-by case: leqP => mn; [rewrite setIidl// | rewrite setIidr//]
+by (case: leqP => mn; [rewrite setIidl// | rewrite setIidr//])
    => k /= /leq_trans; apply => //; apply: ltnW.
 Qed.
 
 Lemma setU_II m n : `I_m `|` `I_n = `I_(maxn m n).
 Proof.
-by case: leqP => mn; [rewrite setUidr// | rewrite setUidl//]
+by (case: leqP => mn; [rewrite setUidr// | rewrite setUidl//])
    => k /= /leq_trans; apply => //; apply: ltnW.
 Qed.
 
@@ -1815,19 +1815,19 @@ by apply/disj_setPS/disj_setPS; rewrite -some_setI -some_set0 sub_image_someP.
 Qed.
 
 Lemma inl_in_set_inr A B (x : A) (Y : set B) :
-  inl x \in [set inr y | y in Y] = false.
+  (inl x \in [set inr y | y in Y]) = false.
 Proof. by apply/negP; rewrite inE/= => -[]. Qed.
 
 Lemma inr_in_set_inl A B (y : B) (X : set A) :
-  inr y \in [set inl x | x in X] = false.
+  (inr y \in [set inl x | x in X]) = false.
 Proof. by apply/negP; rewrite inE/= => -[]. Qed.
 
 Lemma inr_in_set_inr A B (y : B) (Y : set B) :
-  inr y \in [set @inr A B y | y in Y] = (y \in Y).
+  (inr y \in [set @inr A B y | y in Y]) = (y \in Y).
 Proof. by apply/idP/idP => [/[!inE][/= [x ? [<-]]]|/[!inE]]//; exists y. Qed.
 
 Lemma inl_in_set_inl A B (x : A) (X : set A) :
-  inl x \in [set @inl A B x | x in X] = (x \in X).
+  (inl x \in [set @inl A B x | x in X]) = (x \in X).
 Proof. by apply/idP/idP => [/[!inE][/= [y ? [<-]]]|/[!inE]]//; exists x. Qed.
 
 Section bigop_lemmas.
@@ -2505,7 +2505,7 @@ Definition is_subset1 {T} (A : set T) := forall x y, A x -> A y -> x = y.
 Definition is_fun {T1 T2} (f : T1 -> T2 -> Prop) := Logic.all (is_subset1 \o f).
 Definition is_total {T1 T2} (f : T1 -> T2 -> Prop) := Logic.all (nonempty \o f).
 Definition is_totalfun {T1 T2} (f : T1 -> T2 -> Prop) :=
-  forall x, f x !=set0 /\ is_subset1 (f x).
+  forall x, (f x !=set0) /\ is_subset1 (f x).
 
 Definition xget {T : choiceType} x0 (P : set T) : T :=
   if pselect (exists x : T, `[<P x>]) isn't left exP then x0
@@ -3113,9 +3113,9 @@ Proof. by move=> Ey; apply. Qed.
 Definition down A : set T := [set x | exists y, A y /\ (x <= y)%O].
 
 Definition has_ubound A := ubound A !=set0.
-Definition has_sup A := A !=set0 /\ has_ubound A.
+Definition has_sup A := (A !=set0) /\ has_ubound A.
 Definition has_lbound A := lbound A !=set0.
-Definition has_inf A := A !=set0 /\ has_lbound A.
+Definition has_inf A := (A !=set0) /\ has_lbound A.
 
 Lemma has_ub_set1 x : has_ubound [set x].
 Proof. by exists x; rewrite ub_set1. Qed.

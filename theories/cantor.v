@@ -283,7 +283,7 @@ Let split_clopen (U : set T) := projT1 (cid (split_clopen' U)).
 
 Let c_ind n (V : set T) (b : bool) :=
   let Wn :=
-    if pselect ((U_ n) `&` V !=set0 /\ ~` (U_ n) `&` V !=set0)
+    if pselect ((U_ n `&` V !=set0) /\ ~` U_ n `&` V !=set0)
     then U_ n else split_clopen V in
   (if b then Wn else ~` Wn) `&` V.
 
@@ -294,7 +294,7 @@ Local Lemma cantor_map : exists f : cantor_space -> T,
 Proof.
 have [] := @tree_map_props (fun=> bool) T c_ind c_invar cmptT hsdfT.
 - move=> n V; rewrite eqEsubset; split => [t Vt|t [? ? []]//].
-  have [?|?] := pselect (U_ n `&` V !=set0 /\ ~` U_ n `&` V !=set0).
+  have [?|?] := pselect ((U_ n `&` V !=set0) /\ ~` U_ n `&` V !=set0).
   + have [Unt|Unt] := pselect (U_ n t).
     * by exists true => //; rewrite /c_ind; case: pselect.
     * by exists false => //; rewrite /c_ind; case: pselect.
