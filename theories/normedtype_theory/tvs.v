@@ -333,10 +333,6 @@ HB.end.
 HB.structure Definition PreTopologicalLmodule (K : numDomainType) :=
   {M of Topological M & GRing.Lmodule K M}.
 
-(*
-HB.instance Definition _ (K : numDomainType) (T : preTopologicalLmodType K) : PreTopologicalLmodule K T :=
-  ConvexSpace.copy T (convex_lmodType T).
-*)
 
 HB.mixin Record TopologicalZmodule_isTopologicalLmodule (R : numDomainType) M
     & Topological M & GRing.Lmodule R M := {
@@ -347,9 +343,6 @@ HB.mixin Record TopologicalZmodule_isTopologicalLmodule (R : numDomainType) M
 HB.structure Definition TopologicalLmodule (K : numDomainType) :=
   {M of TopologicalZmodule M & GRing.Lmodule K M
         & TopologicalZmodule_isTopologicalLmodule K M}.
-
-(*HB.instance Definition _ (K : numDomainType) (T : topologicalLmodType K) : TopologicalLmodule K T :=
-  ConvexSpace.copy T (convex_lmodType T).*)
 
 Section TopologicalLmodule_theory.
 Variables (R : numFieldType) (E : topologicalType) (F G : topologicalLmodType R).
@@ -566,9 +559,6 @@ HB.structure Definition SubConvexSpace (R : numDomainType) (V : convType R) S :=
 HB.structure Definition SubConvexTvs (R : numDomainType) (V : convexTvsType R)
     (S : pred V) :=
   { U of SubTopological V S U & ConvexTvs R U & @GRing.SubLmodule R V S U}.
-
-(*HB.instance Definition _ (K : numDomainType) (V : convType K) (S : pred V) (T : @subConvexTvsType K V S) : @SubConvexTvs K S T :=
-  ConvexSpace.copy T (convex_lmodType T).*)
 
 Section SubLmodule_isSubConvexTvs.
 Context (R : numFieldType) (V : convexTvsType R) (S : pred V) (U : subLmodType S).
@@ -805,11 +795,9 @@ HB.factory Record NbhsBasisAt0_isConvexTvs (R : numFieldType) E
   absorbing_nbhsbasis_at0 : nbhsbasis_at0 `<=` @absorbing_set _ E ;
   absconvex_nbhsbasis_at0 : nbhsbasis_at0 `<=` @absolutely_convex_set _ E ;
   expand_nbhsbasis_at0 : forall B r, nbhsbasis_at0 B ->
-    exists2 U, nbhsbasis_at0 U & ( *:%R r) @` U `<=` B (* implies circled *) ;
-  (* *)
+    exists2 U, nbhsbasis_at0 U & ( *:%R r) @` U `<=` B ;
   nbhsbasis_at0I : forall U V, nbhsbasis_at0 U -> nbhsbasis_at0 V ->
-    exists2 W, nbhsbasis_at0 W & W `<=` U `&` V
-  (* *) }.
+    exists2 W, nbhsbasis_at0 W & W `<=` U `&` V }.
 
 Definition filter_from_basis0 (R : numFieldType) (E : zmodType)
     (nbhsbasis_at0 : set_system E) (x : E) :=
@@ -983,7 +971,7 @@ HB.factory Record NbhsSubbasisAt0_isConvexTvs (R : numFieldType) E
   absorbing_nbhssubbasis_at0 : nbhssubbasis_at0 `<=` @absorbing_set _ E ;
   absconvex_nbhssubbasis_at0 : nbhssubbasis_at0 `<=` @absolutely_convex_set _ E ;
   expand_nbhssubbasis_at0 : forall B r, nbhssubbasis_at0 B ->
-    exists2 U, nbhssubbasis_at0 U & ( *:%R r) @` U `<=` B  (* implies circled *) }.
+    exists2 U, nbhssubbasis_at0 U & ( *:%R r) @` U `<=` B }.
 
 Definition finI_fromsubbasis0 (R : numFieldType) (E : zmodType)
     (nbhssubbasis0 : set_system E)  :=
@@ -1010,7 +998,6 @@ Proof.
 move=> [/= I fI IV] [/=J fJ JU].
 exists (U `&` V) => //; exists (I `|` J)%fset.
   move => /= W; rewrite inE => /orP [WI|WJ]; rewrite mem_set //=.
-  (* extremely hard to understand that asboolE is to be used here *)
     by have := fI _ WI; rewrite asboolE.
   by have := fJ _ WJ; rewrite asboolE.
 by rewrite -IV -JU -bigcap_setU set_fsetU.
@@ -1024,7 +1011,7 @@ Qed.
 #[local] Lemma expand_nbhsbasis_at0 B r : nbhsbasis_at0 B ->
   exists2 U, nbhsbasis_at0 U & ( *:%R r) @` U `<=` B.
 Proof.
-move=> [/= I fI BI]. (* Change to a type I'*)
+move=> [/= I fI BI].
 have H i : (i \in I) -> exists2 V, nbhssubbasis_at0 V & ( *:%R r) @` V `<=` i.
   move=> /(fI i); rewrite asboolE => /(expand_nbhssubbasis_at0 r) /= [V nV rVi].
   by exists V.
@@ -1050,7 +1037,7 @@ have /= H : forall i, i \in I -> exists r : {posnum R}, r%:num *: x \in i.
   by exists (PosNum r0).
 pose f (i : set E) : {posnum R} :=
   [elaborate if (i \in I) =P true is ReflectT h then sval (cid (H i h)) else 1%:pos].
-  (*elaborate???*)
+  (*why is elaborate necessary here ???*)
 have /= Hr i : i \in I -> (f i)%:num *: x \in i.
  by rewrite /f; case: eqP => // h _; case: cid.
 pose r0 : {posnum R} := [elaborate \big[Order.min/1%:pos]_(i <- I) f i].
@@ -1210,8 +1197,7 @@ Let standard_ball_convex_set (x : R^o) (r : R) : convex_set (ball x r).
 Proof.
 apply/convex_setW => z y; rewrite !inE -!ball_normE /= => zx yx l l0 l1.
 rewrite inE/=.
-rewrite [X in `|X|](_ : _ = (x - z (*: convex_lmodType _*)) <| l |>
-                            (x - y (*: convex_lmodType _*))).
+rewrite [X in `|X|](_ : _ = (x - z) <| l |> (x - y)).
   by rewrite opprD -[in LHS](convmm l x) addrACA -scalerBr -scalerBr.
 rewrite (le_lt_trans (ler_normD _ _))// !normrM.
 rewrite (@ger0_norm _ l%:num)// (@ger0_norm _ l%:num.~) ?onem_ge0//.
@@ -1307,7 +1293,7 @@ HB.structure Definition LinearContinuous (K : numDomainType) (E : NbhsLmodule.ty
   (F : NbhsZmodule.type) (s : K -> F -> F) :=
   {f of @GRing.Linear K E F s f &  @Continuous E F f }.
 
-(* https://github.com/math-comp/math-comp/issues/1536
+(* see https://github.com/math-comp/math-comp/issues/1536
    we use GRing.Scale.law even though it is claimed to be internal *)
 HB.factory Structure isLinearContinuous (K : numDomainType) (E : NbhsLmodule.type K)
   (F : NbhsZmodule.type) (s : GRing.Scale.law K F) (f : E -> F) := {
@@ -1732,7 +1718,8 @@ rewrite sub0r normrN => ballx [y].
 rewrite sub0r normrE => bally <-; rewrite (splitr e).
 apply: le_lt_trans; last first.
   by apply: ltrD; [exact: ballx|exact: bally].
-(* Beware that now that we opened the Norm module ler_normD refers to semiNorm and not to norm*)
+(* Beware that now that we opened the Norm module ler_normD refers to semiNorm
+and not to norm*)
 apply: le_trans; last exact: Num.Theory.ler_normD.
 have : p (x + y) <= p x + p y by exact: ler_normD.
 by rewrite ger0_le_norm ?nnegrE ?addr_ge0 ?norm_ge0.
@@ -1924,7 +1911,6 @@ Qed.
 
 From mathcomp Require Import finmap.
 
-(* TODO : uniformise the usage of `+ or (+%R~ @) withine lemmas *)
 Theorem seminorm_convextvs : continuous (id : E -> seminormE) /\ (continuous (id : seminormE -> E)).
 Proof.
 pose B := open_nbhsbasis_convextvs.
@@ -1976,12 +1962,11 @@ Qed.
 
 HB.instance Definition _ := @isSemiNorm.Build R E cst0 cst00 cst0_ge0 ler_cst0D cst0Z.
 
-(** The litterature usually states the following lemmas using a family of
+(* The litterature usually states the following lemmas using a family of
   seminorms p_i, a family of multiplicative constants Ci and bounds the abs
   value of l : `|l i| <= sup C_i p_i (x).
   We simplify these arguments using the linearity of l to get rid of the
   absolute value. *)
-(* 6.6.4 in Jarchow *)
 Lemma linear_continuous_seminorm (l : {scalar E}) :
   continuous l ->
     exists2 p : SemiNorm.type E, (seminorm_of p /\ continuous p) & (forall x, l x <= p x).
