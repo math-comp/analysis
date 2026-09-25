@@ -1303,7 +1303,7 @@ exists [set E | exists P Q, [/\ M P, N Q & E = P `&` Q] ]; first split.
 - by exists (M0 `&` N0), M0, N0.
 - move=> E /= [P [Q [MP MQ ->]]]; have entPQ : F (P `&` Q).
     by apply: filterI; [exact: entM | exact: entN].
-  by split; [apply: (subM _ _ MP) | apply: (subN _ _ MQ)] => // ? [].
+  by (split; [apply: (subM _ _ MP) | apply: (subN _ _ MQ)]) => // ? [].
 Qed.
 
 Lemma near_small_set : \forall E \near powerset_filter_from, F E.
@@ -1609,7 +1609,7 @@ rewrite eqEsubset; split.
   exists (\bigcap_(i in [set` (N `\ x)%fset]) f i) => //.
   by rewrite -bigcap_setU1 set_fsetD1 setD1K.
 move=> A [n _]; elim: n A.
-  move=> a [-> |[i Di <-]]; [exists fset0 | exists [fset i]%fset] => //.
+  (move=> a [-> |[i Di <-]]; [exists fset0 | exists [fset i]%fset]) => //.
   - by rewrite set_fset0 bigcap_set0.
   - by move=> ?; rewrite !inE => /eqP ->.
   - by rewrite set_fset1 bigcap_set1.
