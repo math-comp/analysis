@@ -624,21 +624,13 @@ pose lcl : {linear_continuous (init_subconvextvs (line x)) -> R^o} :=
   HB.pack (l : (init_subconvextvs (line x)) -> R^o) linlP contlP.
 have := (hahn_banach_extension_initialsubctvs lcl) => -[g Pg]; exists g.
 have xlinepred : (linepred x) x by apply/asboolP; exists 1; rewrite scale1r.
-pose xline := exist (linepred x) _ xlinepred.
-have <- : \val xline = x by [].
+pose xline := exist (linepred x) _ xlinepred;have <- : \val xline = x by [].
 rewrite Pg.
-have -> // : lcl xline = 1.
-    rewrite /lcl /= /l.
-    move/eqP: (xchooseP (line_linepred xline)).
-set xline':= (X in X =_ -> _).
-have -> : xline' = x by [].
-set x':= (X in X =_ -> _).
-rewrite  -(scale1r x').
-move/scaleIl => H.
-apply/eqP; rewrite eq_sym; apply/eqP.
+suff -> : lcl xline = 1 by [].
+move/eqP: (xchooseP (line_linepred xline)).
+set xline':= (X in X =_ -> _); have -> : xline' = x by []. (*weakness of line, to be understood *)
+set x':= (X in X =_ -> _); rewrite  -(scale1r x').
+move/scaleIl => H; apply/eqP; rewrite eq_sym; apply/eqP.
 by apply: H.
 Qed.
-
-Section hahn_banach_separation_ctvs.
-(* TODO *)
-End hahn_banach_separation_ctvs.
+(* TODO : more hahn banach separation theorems *)
