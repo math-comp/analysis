@@ -115,7 +115,7 @@ HB.builders Context K V & PseudoMetricNormedZmod_Lmodule_isNormedModule K V.
   `scale_continuous` is proved but is not proved again anymore later in this
   file. *)
 Let add_continuous : continuous (fun x : V * V => x.1 + x.2).
-Proof. exact: add_continuous. Qed.
+Proof. exact: pseudoMetricNormedZmodType_add_continuous. Qed.
 
 (** NB: we have almost the same proof in `tvs.v` *)
 Let scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
