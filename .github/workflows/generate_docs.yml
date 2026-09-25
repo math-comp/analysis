@@ -5,6 +5,10 @@ on:
     branches-ignore: ["gh-pages"]
   pull_request:
 
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+
 jobs:
   generate-artifacts:
     runs-on: ubuntu-latest
