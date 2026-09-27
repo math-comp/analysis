@@ -2090,8 +2090,17 @@ End mine_cvg_0.
 Definition sdrop T (u : T^nat) n := [set u k | k in [set k | k >= n]]%N.
 
 Section sdrop.
-Variables (d : Order.disp_t) (R : porderType d).
+Context {d} {R : porderType d}.
 Implicit Types (u : R^o^nat).
+
+Lemma sdrop_shift u N n : sdrop (fun i => u (i + N)%N) n = sdrop u (n + N).
+Proof.
+apply/seteqP; split => _ /= [i /= ni] <-.
+- by exists (i + N)%N => //=; rewrite leq_add2r.
+- have Ni : (N <= i)%N by rewrite (leq_trans _ ni)// leq_addl.
+  exists (i - N)%N => /=; last by rewrite subnK.
+  by rewrite -(leq_add2r N) (leq_trans ni)// subnK.
+Qed.
 
 Lemma has_lbound_sdrop u : has_lbound (range u) ->
   forall m, has_lbound (sdrop u m).
@@ -2419,19 +2428,11 @@ by rewrite [in RHS](_ : u = -%E \o -%E \o u);
   rewrite ?esupsN funeqE => n /=; rewrite oppeK.
 Qed.
 
-Lemma einfs_le (* {R : realType}*) u n m :
-  (n <= m)%N -> (einfs u n <= u m)%E.
-Proof. by move=> nm; apply: ereal_inf_lbound; exists m; [exact: nm | by []]. Qed.
+Lemma ge_einfs u n m : (m <= n)%N -> einfs u m <= u n.
+Proof. by move=> mn; apply: ereal_inf_lbound; exists n; first exact: mn. Qed.
 
-Lemma einfs_lift u p n :
-  einfs (fun k => u (k + p)%N) n = einfs u (n + p)%N.
-Proof.
-congr (ereal_inf _); apply/seteqP; split => _ /= [k /= nk] <-.
-- by exists (k + p)%N => //=; rewrite leq_add2r.
-- have pk : (p <= k)%N by apply: leq_trans nk; exact: leq_addl.
-  exists (k - p)%N => /=; last by rewrite subnK.
-  by rewrite -(leq_add2r p) subnK.
-Qed.
+Lemma einfs_shift u N n : einfs (fun k => u (k + N)%N) n = einfs u (n + N)%N.
+Proof. by congr ereal_inf; exact: sdrop_shift. Qed.
 
 Lemma nonincreasing_esups u : nonincreasing_seq (esups u).
 Proof.
@@ -2525,7 +2526,7 @@ Local Open Scope ereal_scope.
 Context {R : realType}.
 Implicit Types (u v : (\bar R)^nat) (l : \bar R).
 
-Lemma limn_einf_shift u l : l \is a fin_num ->
+Lemma limn_einf_addl u l : l \is a fin_num ->
   limn_einf (fun x => l + u x) = l + limn_einf u.
 Proof.
 move=> lfin; rewrite !limn_einf_lim; apply/cvg_lim => //.
@@ -2656,26 +2657,25 @@ move=> /cvg_ex[l ul]; have [_ ->] := cvg_limn_einf_sup ul.
 by move/cvg_lim : ul => ->.
 Qed.
 
-Lemma limn_einf_lift u p :
-  limn_einf (fun n => u (n + p)%N) = limn_einf u.
+#[deprecated(since="mathcomp-analysis 1.19.0", note="to be renamed `limn_einf_shift`")]
+Lemma limn_einf_shift_new u N :
+  limn_einf (fun n => u (n + N)%N) = limn_einf u.
 Proof.
 rewrite !limn_einf_lim.
-have -> : einfs (fun k => u (k + p)%N) = (fun n => einfs u (n + p)%N).
-  by apply/funext => n; exact: einfs_lift.
-by apply/cvg_lim => //; rewrite (cvg_shiftn p (einfs u)); exact: is_cvg_einfs.
+rewrite [X in limn X = _](_ : _ = (fun n => einfs u (n + N)%N)).
+  by apply/funext => n; exact: einfs_shift.
+by apply/cvg_lim => //; rewrite (cvg_shiftn N (einfs u)); exact: is_cvg_einfs.
 Qed.
 
-Lemma limn_einf_bump u :
-  limn_einf (fun n => u n.+1) = limn_einf u.
-Proof.
-rewrite -(limn_einf_lift u 1); congr limn_einf.
-by apply/funext => n; rewrite addn1.
-Qed.
+Lemma limn_einf_shiftS u : limn_einf (fun n => u n.+1) = limn_einf u.
+Proof. by under eq_fun do rewrite -addn1; exact: limn_einf_shift_new. Qed.
 
-Lemma limn_einf_cst (c : \bar R) : limn_einf (fun=> c) = c.
+Lemma limn_einf_cst (c : \bar R) : limn_einf (cst c) = c.
 Proof. by rewrite is_cvg_limn_einfE ?lim_cst//; exact: is_cvg_cst. Qed.
 
 End lim_esup_inf.
+#[deprecated(since="mathcomp-analysis 1.19.0", note="renamed to `limn_einf_addl`")]
+Notation limn_einf_shift := limn_einf_addl (only parsing).
 
 Lemma geometric_le_lim {R : realType} (n : nat) (a x : R) :
   0 <= a -> 0 < x -> `|x| < 1 -> series (geometric a x) n <= a * (1 - x)^-1.
