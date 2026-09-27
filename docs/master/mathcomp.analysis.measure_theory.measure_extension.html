@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.measure_theory.measure_extension</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 374700f 2026.09.26-21:06" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 374700f 2026.09.27-21:19" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -336,15 +336,19 @@ completed_measure_extension mu == similar to measure_extension but returns
 <br/>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="sigma_subadditive" class="id"><div name="sigma_subadditive" class="id anchor tooltip">sigma_subadditive<span class='tooltip-area'><p>SetRing.type : Type -> Type
+<span class="vernacular">Definition</span><span class="id"> </span><span id="sigma_subadditive" class="id"><div name="sigma_subadditive" class="id anchor tooltip">sigma_subadditive<span class='tooltip-area'><p>pushforward :
+forall {d1 d2 : measure_display} {T1 : sigmaRingType d1}
+  {T2 : sigmaRingType d2} {R : realFieldType},
+(set T1 -> \bar R) -> (T1 -> T2) -> set T2 -> \bar R
 
-SetRing.type is not universe polymorphic
-Arguments SetRing.type T%_type_scope
-SetRing.type is transparent
+pushforward is not universe polymorphic
+Arguments pushforward {d1 d2}%_measure_display_scope 
+  {T1 T2 R} (m f)%_function_scope A%_classical_set_scope
+pushforward is transparent
 Expands to: Constant
-            mathcomp.analysis.measure_theory.measure_function.SetRing.type
+            mathcomp.analysis.measure_theory.measure_function.pushforward
 Declared in
-library mathcomp.analysis.measure_theory.measure_function, line 694, characters 11-15
+library mathcomp.analysis.measure_theory.measure_function, line 660, characters 11-22
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/374700f0dde6e9df20a718a609ba3462c632554c/theories/measure_theory/measure_extension.v#L93' target='_blank'>Source code</a></span></div></span><span class="id"> {</span><span id="T:1" class="id"><div name="T:1" class="id anchor tooltip">T<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/374700f0dde6e9df20a718a609ba3462c632554c/theories/measure_theory/measure_extension.v#L93' target='_blank'>Source code</a></span></div></span><span class="id">}</span><span class="id"> {</span><span id="R:2" class="id"><div name="R:2" class="id anchor tooltip">R<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/374700f0dde6e9df20a718a609ba3462c632554c/theories/measure_theory/measure_extension.v#L93' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numfield.html#Num.NumField.Exports.numFieldType">numFieldType</a></span><span class="id">}</span><br/>
 &nbsp;&nbsp;(<span id="mu:3" class="id"><div name="mu:3" class="id anchor tooltip">mu<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/374700f0dde6e9df20a718a609ba3462c632554c/theories/measure_theory/measure_extension.v#L94' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_extension.html#T:1">T</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_extension.html#R:2">R</a></span>)<span class="id"> :=</span><span class="gallina-kwd"> forall</span> (<span id="F:4" class="id"><div name="F:4" class="id anchor tooltip">F<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/374700f0dde6e9df20a718a609ba3462c632554c/theories/measure_theory/measure_extension.v#L94' target='_blank'>Source code</a></span></div></span><span class="id"> :</span> (<span class="id link"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_extension.html#T:1">T</a></span>)<span class="id link"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04"> ^nat</a></span>)<span class="id">,</span><br/>
 &nbsp;&nbsp;<span class="id link"><a href="mathcomp.analysis.measure_theory.measure_extension.html#mu:3">mu</a></span> (<span class="id link"><a href="mathcomp.classical.classical_sets.html#4652af423267d4923a164c1104e1273f">\bigcup_</a></span><span id="n:5" class="id"><div name="n:5" class="id anchor tooltip">n<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/374700f0dde6e9df20a718a609ba3462c632554c/theories/measure_theory/measure_extension.v#L95' target='_blank'>Source code</a></span></div></span> (<span class="id link"><a href="mathcomp.analysis.measure_theory.measure_extension.html#F:4">F</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_extension.html#n:5">n</a></span>))<span class="id link"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> &lt;=</a></span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#63b01a542aec2e4c61e028256cf5a548"> </a></span><span class="id link"><a href="mathcomp.analysis.sequences.html#acaaf5f54a6a8a222320424b6e0ccad5">\sum_</a></span>(<span id="i:8" class="id"><span id="i:7" class="id"><span id="i:6" class="id"><div name="i:8" class="id anchor tooltip">i<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/374700f0dde6e9df20a718a609ba3462c632554c/theories/measure_theory/measure_extension.v#L95' target='_blank'>Source code</a></span></div></span></span></span><span class="id link"><a href="mathcomp.analysis.sequences.html#acaaf5f54a6a8a222320424b6e0ccad5"> &lt;oo</a></span>)<span class="id link"><a href="mathcomp.analysis.sequences.html#acaaf5f54a6a8a222320424b6e0ccad5"> </a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_extension.html#mu:3">mu</a></span> (<span class="id link"><a href="mathcomp.analysis.measure_theory.measure_extension.html#F:4">F</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_extension.html#i:6">i</a></span>).<br/>
@@ -481,7 +485,16 @@ Qed.</div></details>
 <span class="id">Unshelve</span>. <span class="id">all:</span><span class="id"> by</span><span class="id"> end_near</span>. Qed.</div></details>
 <span class="vernacular">Local</span><span class="vernacular"> Close</span><span class="vernacular"> Scope</span><span class="id"> ereal_scope</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="caratheodory_measurable" class="id"><div name="caratheodory_measurable" class="id anchor tooltip">caratheodory_measurable<span class='tooltip-area'><p>SetRing.display : measure_display -> measure_display
+<span class="vernacular">Definition</span><span class="id"> </span><span id="caratheodory_measurable" class="id"><div name="caratheodory_measurable" class="id anchor tooltip">caratheodory_measurable<span class='tooltip-area'><p>SetRing.type : Type -> Type
+
+SetRing.type is not universe polymorphic
+Arguments SetRing.type T%_type_scope
+SetRing.type is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.measure_function.SetRing.type
+Declared in
+library mathcomp.analysis.measure_theory.measure_function, line 694, characters 11-15
+SetRing.display : measure_display -> measure_display
 
 SetRing.display is not universe polymorphic
 Arguments SetRing.display _%_measure_display_scope
