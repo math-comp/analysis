@@ -1443,7 +1443,7 @@ Lemma itv_continuous_inj_ge f (I : interval R) :
   {in I &, {mono f : x y /~ x <= y}}.
 Proof.
 move=> [a [b [aI bI ab fbfa]]] fC fI x y xI yI.
-suff : (- f) y <= (- f) x = (y <= x) by rewrite lerNl opprK.
+suff : ((- f) y <= (- f) x) = (y <= x) by rewrite lerNl opprK.
 apply: itv_continuous_inj_le xI => // [|x1 x1I | x1 x2 x1I x2I].
 - by exists a, b; split => //; rewrite lerNl opprK.
 - by apply/continuousN/fC.

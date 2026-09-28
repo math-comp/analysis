@@ -773,7 +773,7 @@ by move=> fA x; rewrite -[A in RHS]fset_setK//; apply/idP/idP; rewrite ?inE.
 Qed.
 
 Lemma fset_set_sub (T : choiceType) (A B : set T) :
-  finite_set A -> finite_set B -> A `<=` B = (fset_set A `<=` fset_set B)%fset.
+  finite_set A -> finite_set B -> (A `<=` B) = (fset_set A `<=` fset_set B)%fset.
 Proof.
 move=> finA finB; apply/propext; split=> [AB|/fsubsetP AB t].
   by apply/fsubsetP => t; rewrite in_fset_set// in_fset_set// 2!inE => /AB.

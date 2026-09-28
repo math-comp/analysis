@@ -637,7 +637,7 @@ have [x0|x0] := leP 0 x; last first.
 rewrite [X in measurable X](_ : _ = `]-oo, (- x)[ `|` `]x, +oo[); last first.
   exact: measurableU.
 rewrite predeqE => r; split => [|[|]]; rewrite preimage_itv ?in_itv ?andbT/=.
-- have [r0|r0] := leP 0 r; [rewrite ger0_norm|rewrite ltr0_norm] => // xr;
+- (have [r0|r0] := leP 0 r; [rewrite ger0_norm|rewrite ltr0_norm]) => // xr;
     rewrite 2!in_itv/=.
   + by right; rewrite xr.
   + by left; rewrite ltrNr.

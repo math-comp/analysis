@@ -268,7 +268,7 @@ Arguments last_filterP {d T a} P s.
 Inductive boxed T := Box of T.
 
 Reserved Notation "`1- r" (format "`1- r", at level 2).
-Reserved Notation "f \^-1" (at level 35, format "f \^-1").
+Reserved Notation "f \^-1" (at level 1, format "f \^-1").
 
 (* PR in progress: https://github.com/math-comp/finmap/pull/149 *)
 Lemma fset_nat_maximum (X : choiceType) (A : {fset X})

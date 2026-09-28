@@ -360,8 +360,8 @@ Unshelve. all: by end_near. Qed.
 Lemma is_cvg_restrict f u_ :
   cvgn [sequence if (n <= N)%nat then f n else u_ n]_n = cvgn u_.
 Proof.
-by rewrite propeqE; split;
-  [rewrite cvg_restrict|rewrite -(cvg_restrict f)] => /cvgP.
+by (rewrite propeqE; split;
+  [rewrite cvg_restrict|rewrite -(cvg_restrict f)]) => /cvgP.
 Qed.
 
 Lemma cvg_centern u_ l :
@@ -2164,7 +2164,7 @@ Lemma infs_le_sups u n : cvgn u -> infs u n <= sups u n.
 Proof.
 move=> cu; rewrite /infs /sups /=; set A := sdrop _ _.
 have [a Aa] : A !=set0 by exists (u n); rewrite /A /=; exists n => //=.
-rewrite (@le_trans _ _ a) //; [apply/ge_inf|apply/ub_le_sup] => //.
+(rewrite (@le_trans _ _ a) //; [apply/ge_inf|apply/ub_le_sup]) => //.
 - exact/has_lbound_sdrop/bounded_fun_has_lbound/cvg_seq_bounded.
 - exact/has_ubound_sdrop/bounded_fun_has_ubound/cvg_seq_bounded.
 Qed.

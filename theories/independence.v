@@ -580,7 +580,7 @@ rewrite fubini_tonelli1//=.
   apply/measurable_EFinP => /=; apply/measurableT_comp => //=.
   exact/measurable_funM.
 rewrite /fubini_F/=.
-rewrite [ltLHS](_ : _ = \int[distribution P X]_x `|x|%:E *
+rewrite [ltLHS](_ : _ = (\int[distribution P X]_x `|x|%:E) *
                         \int[distribution P Y]_y `|y|%:E).
   rewrite -ge0_integralZr//=.
     exact/measurable_EFinP.
@@ -645,7 +645,7 @@ transitivity (\sum_(y \in range f) (\sum_(y' \in range g)
   under eq_integral do rewrite EFinM.
   by rewrite integralZl//; exact/integrable_indic/measurableI.
 transitivity (\sum_(y \in range f) (\sum_(y' \in range g)
-  ((y * y')%:E * (\int[P]_w (\1_(f @^-1` [set y]) w)%:E *
+  ((y * y')%:E * ((\int[P]_w (\1_(f @^-1` [set y]) w)%:E) *
                   \int[P]_w (\1_(g @^-1` [set y']) w)%:E)))).
   apply: eq_fsbigr => y fy; apply: eq_fsbigr => y' gy'; congr *%E.
   transitivity ('E_P[\1_(f @^-1` [set y] `&` g @^-1` [set y'])]).

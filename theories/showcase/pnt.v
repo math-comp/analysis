@@ -85,7 +85,7 @@ apply: (@Order.NatMonotonyTheory.incn_inP _ nat predT) => // {m n} [n /= _ _].
 exact: next_prime_lt.
 Qed.
 
-Lemma mem_prime_seq (p : nat) : p \in range prime_seq = prime p.
+Lemma mem_prime_seq (p : nat) : (p \in range prime_seq) = prime p.
 Proof.
 apply/idP/idP => [|primep].
   by rewrite inE => -[] [|n] _ <- //=; apply: prime_next_prime.

@@ -1289,7 +1289,7 @@ move=> W; wlog Wf : f W / W f.
   move=> + FW /equicontinuous_closure => /(_ f (closure (W : set {ptws X -> Y}))) Q.
   split => Ff; last by apply: pointwise_cvg_compact_family.
   apply/Q => //.
-    by rewrite closureEcvg; exists F; [|split] => // ? /= /filterS; apply.
+    by (rewrite closureEcvg; exists F; [|split]) => // ? /= /filterS; apply.
   by apply: (filterS _ FW) => z Wz; apply: subset_closure.
 move=> FW ectsW; split=> [ptwsF|]; last exact: pointwise_cvg_compact_family.
 apply/fam_cvgP => K ? U /=; rewrite uniform_nbhs => [[E [eE EsubU]]].
@@ -1463,7 +1463,7 @@ have [R Rv RO] : exists2 R, nbhs v R & forall z, closure R z -> O (f u z).
   have [] := reg v (f u @^-1` O); first by apply: cfp; exact: open_nbhs_nbhs.
   by move=> R ? ?; exists R.
 exists (f @^-1` [set g | g @` (B `&` closure R) `<=` O], B `&` closure R).
-  split; [apply/cf/open_nbhs_nbhs; split | apply: filterI] => //.
+  (split; [apply/cf/open_nbhs_nbhs; split | apply: filterI]) => //.
   - apply: compact_open_open => //; apply: compact_closedI => //.
     exact: closed_closure.
   - by move=> ? [x [? + <-]]; apply: RO.

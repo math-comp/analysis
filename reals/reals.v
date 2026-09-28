@@ -850,13 +850,13 @@ have : exists m, -(m2.+1 : int) <= m <= m1.+1 /\ m%:~R - 1 <= x *+ n < m%:~R.
   have [m [Bm infB]] := int_lbound_has_minimum (ex_intro _ _ m1B) m2B.
   have mN1B : ~ B (m - 1).
     by move=> /infB; apply/negP; rewrite -ltNge ltrBlDr ltzD1.
-  exists m; split; [apply/andP; split|apply/andP; split] => //.
+  exists m; (split; [apply/andP; split|apply/andP; split]) => //.
   - by move: m2B; rewrite /lbound /= => /(_ _ Bm); rewrite intz.
   - exact: infB.
   - by rewrite leNgt; apply/negP; rewrite /B /= intrD in mN1B.
 move=> [m [/andP[m2m mm1] /andP[mnx nxm]]].
 have [/andP[a b] c] : x *+ n < m%:~R <= 1 + x *+ n /\ 1 + x *+ n < y *+ n.
-  split; [apply/andP; split|] => //; first by rewrite -lerBlDl.
+  (split; [apply/andP; split|]) => //; first by rewrite -lerBlDl.
   by move: nyx; rewrite mulrnDl -ltrBrDr mulNrn.
 have n_gt0 : n != 0%N by apply: contraTN nyx => /eqP ->; rewrite mulr0n ltr10.
 exists (m%:Q / n%:Q); rewrite in_itv /= fmorph_div/= ratr_nat ratr_int.
