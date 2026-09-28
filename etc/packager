@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 set -x
 
@@ -57,23 +57,28 @@ else
 # variables useful for package construction
   URLLINE="src: \"$ARCHIVEURL\""
   CHECKSUMLINE="checksum: \"sha256=$SUM\""
-  PKGS=$(ls -fs -d -1 $EXTRACTED/*/*.opam \
+  PKGS=$(ls -fs -d -1 $EXTRACTED/*/rocq*.opam \
         | $SED -r "s?.*rocq-mathcomp-([^/]+).opam?\1?" \
         | paste -sd " " -)
   PKGPREFIX="$GITROOT/opam/released/packages"
 fi
+echo $PKGS
 
 # for each package, we pick the corresponding opam and descr file and
 # rewrite them to adapt them to single package construction and
 # version numbers
-for pkg in $PKGS
-do pkgdir="$PKGPREFIX/rocq-mathcomp-$pkg/rocq-mathcomp-$pkg.$VERSION"
+declare -a CoqName=("coq" "rocq")
+for name in "${CoqName[@]}"
+do for pkg in $PKGS
+do pkgdir="$PKGPREFIX/$name-mathcomp-$pkg/$name-mathcomp-$pkg.$VERSION"
    mkdir -p $pkgdir
    if [ $VERSION == "dev" ]
-   then cp $GITROOT/rocq-mathcomp-$pkg.opam $pkgdir/opam
-   else git show "$BRANCH:rocq-mathcomp-$pkg.opam" > $pkgdir/opam
+   then cp $GITROOT/$name-mathcomp-$pkg.opam $pkgdir/opam
+   else if git show "$BRANCH:$name-mathcomp-$pkg.opam" > $pkgdir/opam ; then
         $SED -r "/^version/d" -i $pkgdir/opam
-   fi
+   else
+        echo "Warning; no $name-mathcomp-$pkg.opam"
+   fi ; fi
    echo "" >> $pkgdir/opam
    echo "url {" >> $pkgdir/opam
    echo $URLLINE >> $pkgdir/opam
@@ -81,6 +86,7 @@ do pkgdir="$PKGPREFIX/rocq-mathcomp-$pkg/rocq-mathcomp-$pkg.$VERSION"
    then echo $CHECKSUMLINE >> $pkgdir/opam
    fi
    echo "}" >> $pkgdir/opam
+done
 done
 
 # finally test the existence of the archive
