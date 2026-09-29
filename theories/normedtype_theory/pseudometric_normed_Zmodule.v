@@ -31,6 +31,21 @@ From mathcomp Require Import num_normedtype.
 (*                                                                            *)
 (* ## Normed topological abelian groups                                       *)
 (* ```                                                                        *)
+(*         PreTopologicalNmodule == HB class, join of Topological and Nmodule *)
+(*            TopologicalNmodule == HB class, PreTopologicalNmodule with a    *)
+(*                                  continuous addition                       *)
+(*         PreTopologicalZmodule == HB class, join of Topological and Zmodule *)
+(*           topologicalZmodType == topological abelian group                 *)
+(*                                  The HB class is TopologicalZmodule, join  *)
+(*                                  of TopologicalNmodule and Zmodule with a  *)
+(*                                  continuous opposite operator              *)
+(*             PreUniformNmodule == HB class, join of Uniform and Nmodule     *)
+(*                UniformNmodule == HB class, join of Uniform and Nmodule     *)
+(*                                  with a uniformly continuous addition      *)
+(*             PreUniformZmodule == HB class, join of Uniform and Zmodule     *)
+(*                UniformZmodule == HB class, join of UniformNmodule and      *)
+(*                                  Zmodule with uniformly continuous         *)
+(*                                  opposite operator                         *)
 (*     PseudoMetricNormedZmod0 R == interface type for a normed topological   *)
 (*                                  abelian group equipped with a norm        *)
 (*  pseudoMetricNormedZmodType R == PseudoMetricNormedZmod0 R + Metric R      *)
@@ -279,7 +294,7 @@ End prod_TopologicalNmodule.
 Section prod_UniformNmodule.
 Context {E F : UniformNmodule.type}.
 
-Lemma prod_add_unif_continuous :
+Let prod_add_unif_continuous :
   unif_continuous (fun x : (E * F) * (E * F) => x.1 + x.2).
 Proof.
 move=> P /= /entourage_prod_exS[A [B [entA entB ABP]]].
@@ -834,15 +849,6 @@ HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build K (U * V)%type
 
 End prod_pseudoMetricNormedZmod.
 
-(*
-Section prod_pseudoMetricNormedZmod_new.
-Context {K : numFieldType} {U V : pseudoMetricNormedZmodType K}.
-
-HB.instance Definition _ := isPseudoMetricNormedZmodule.Build _ (U * V)%type.
-
-End prod_pseudoMetricNormedZmod_new.
-*)
-
 Section prod_NormedModule_lemmas.
 Context {T : Type} {K : numDomainType} {U V : pseudoMetricNormedZmodType K}.
 
@@ -946,7 +952,6 @@ End continuity_pseudoMetricNormedZmodType.
 (*#[deprecated(since="mathcomp-analysis 1.11.0", note="renamed to `oppr_continuous`")]
 Notation opp_continuous := oppr_continuous (only parsing).*)
 
-(* TODO: generalize to R : numFieldType DONE?! *)
 Section hausdorff.
 
 #[deprecated(since="mathcomp-analysis 1.10.0", note="use `norm_hausdorff` instead")]

@@ -36,6 +36,7 @@
 - in `pseudometric_normed_Zmodule.v`:
   + lemma `PseudoMetricNormedZmod0_add_unif_continuous`
   + lemma `PseudoMetricNormedZmod0_opp_unif_continuous`
+  + lemma `standard_scale_continuous`
 
 ### Changed
 
@@ -53,6 +54,24 @@
 
 ### Changed
 
+- moved from `tvs.v` to `pseudometric_normed_Zmodule.v`
+  + mixin `PreTopologicalNmodule_isTopologicalNmodule`
+  + structure `TopologicalNmodule`
+  + lemmas `fun_cvgD`, `cvg_sum`, `sum_continuous`
+  + mixin `TopologicalNmodule_isTopologicalZmodule`
+  + structure `TopologicalZmodule`, type `topologicalZmodType`
+  + lemmas `sub_continuous`, `fun_cvgN`
+  + factory `PreTopologicalNmodule_isTopologicalZmodule`
+  + mixin `PreUniformNmodule_isUniformNmodule`
+  + structure `UniformNmodule`
+  + mixin `UniformNmodule_isUniformZmodule`
+  + structure `UniformZmodule`
+  + factory `PreUniformNmodule_isUniformZmodule`
+  + lemma `sub_unif_continuous`
+
+- in `tvs.v`:
+  + structure `ConvexTvs` now inherits from `UniformZmodule`
+
 ### Renamed
 
 - in `sequences.v`:
@@ -63,6 +82,7 @@
 
 - in `pseudometric_normed_Zmodule.v`:
   + from `pseudoMetricNormedZmodType` to `PseudoMetricNormedZmod0.type`:
+    * lemma `le0_ball0`
     * lemma `cvg_bounded`
     * lemma `bounded_cst`
   + from `realFieldType` to `numFieldType`
@@ -77,7 +97,8 @@
   + structure `PreUniformLmodule`
   + mixin `PreUniformLmodule_isUniformLmodule`
   + structure `UniformLmodule`
-  + factory `UniformNmodule_isUniformLmodule` (?)
+  + factory `UniformNmodule_isUniformLmodule`
+  + lemma `prod_add_continuous` (remains accessible via the generic `add_continuous` of `TopologicalNmodule.type`)
 
 ### Infrastructure
 
