@@ -105,9 +105,9 @@ Proof. by move=> Dx; rewrite gg_. Qed.
 Local Lemma dominated_cvg0 : [sequence \int[mu]_(x in D) g_ n x]_n @ \oo --> 0.
 Proof.
 have := fatou mu mD mgg gg_ge0.
-rewrite [X in X <= _ -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x) ).
+rewrite [X in X <= _ -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x)).
   apply: eq_integral => t; rewrite inE => Dt.
-  rewrite limn_einf_shift//; first by rewrite fin_numM// fing.
+  rewrite limn_einf_addl//; first by rewrite fin_numM// fing.
   rewrite is_cvg_limn_einfE//.
     by apply: is_cvgeN; apply/cvg_ex; eexists; exact: cvg_g_.
   rewrite [X in _ + X](_ : _ = 0) ?adde0//; apply/cvg_lim => //.
@@ -124,7 +124,7 @@ rewrite [X in _ <= X -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x)  + -
   by apply/limn_esup_le_cvg => // n; rewrite integral_ge0// => x _; rewrite /g_.
 rewrite (_ : (fun _ => _) = (fun n => \int[mu]_(x in D) (2%:E * g x)  +
     \int[mu]_(x in D) - g_ n x)); last first.
-  rewrite limn_einf_shift // -limn_einfN; congr (_ + limn_einf _).
+  rewrite limn_einf_addl// -limn_einfN; congr (_ + limn_einf _).
   by rewrite funeqE => n /=; rewrite -integral_ge0N// => x Dx; rewrite /g_.
 rewrite funeqE => n; rewrite integralB//; last 1 first.
 - by rewrite -integral_ge0N// => x Dx//; rewrite /g_.
