@@ -424,7 +424,7 @@ End reassociate_products.
 Lemma swapK {T1 T2 : Type} : cancel (@swap T1 T2) (@swap T2 T1).
 Proof. by case=> ? ?. Qed.
 
-Definition map_pair {S U : Type} (f : S -> U) (x : (S * S)) : (U * U) :=
+Definition map_pair {S U : Type} (f : S -> U) (x : S * S) : (U * U) :=
   (f x.1, f x.2).
 
 Section order_min.

@@ -1,6 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra all_classical.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import topology_structure.
 
 (**md**************************************************************************)
@@ -326,28 +328,18 @@ by apply: nbhs_singleton; apply: nbhs_interior; exact: nbhs_entourage.
 Qed.
 
 Definition unif_continuous (U V : uniformType) (f : U -> V) :=
-  (fun xy => (f xy.1, f xy.2)) @ entourage --> entourage.
+  (map_pair f) @ entourage --> entourage.
 
 Lemma unif_continuous_continuous (U V : uniformType) (f : U -> V) :
   unif_continuous f -> continuous f.
 Proof.
-move=> ucf /= u N fuN.
-have [V0 entV0 V0N] : exists2 V0 : set (V * V),
-    entourage V0 & xsection V0 (f u) `<=` N.
-  move: fuN; rewrite -filter_from_entourageE => -[V1 entV1 V1fuN].
-  by exists V1.
-have [U0 entU0 U0V0] : exists2 U0 : set (U * U),
-    entourage U0 & (fun x => (f x.1, f x.2)) @` U0 `<=` V0.
-  exists ((fun x => (f x.1, f x.2)) @^-1` V0).
-    exact: ucf.
-  by move=> [_ _]/= [x V0fx [<- <-]].
-have fU0uN : f @` (xsection U0 u) `<=` N.
-  move=> _/= [u0 U0u0 <-]; apply: V0N => /=.
-  by apply/mem_set/U0V0 => /=; exists (u, u0) => //=; exact/set_mem.
-apply/nbhsP; exists U0 => //.
-have := @preimage_subset _ _ f _ _ fU0uN.
-apply: subset_trans => u0/= U0uu0.
-by exists u0.
+rewrite /unif_continuous /cvg_to !nbhs_simpl => ucf.
+rewrite /cvg_to /= => u X; rewrite !nbhs_simpl /= -!nbhs_entourageE.
+case => Y /ucf /=; set Y' := (Y' in entourage Y') => eY' YX.
+exists Y' => //.
+rewrite /Y' /=.
+rewrite -image_sub => v [] u' /= Yfuu' <-.
+exact: YX.
 Qed.
 
 Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
