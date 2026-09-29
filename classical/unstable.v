@@ -56,30 +56,31 @@ Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
 
 Section Clamp.
-Context {R : realFieldType}.
+Context {R : realDomainType} (min max : R).
+Hypothesis minmax : min <= max.
 
-Definition clamp (x : R) :=
-  Num.max (Num.min x 1) 0.
+Definition clamp (x : R) := Num.max (Num.min x max) min.
 
-Lemma ge0_clamp x : 0 <= clamp x.
+Lemma clamp_gemin x : min <= clamp x.
 Proof. by rewrite le_max lexx orbT. Qed.
 
-Lemma le1_clamp x : clamp x <= 1.
-Proof. by rewrite ge_max ge_min lexx ler01 orbT. Qed.
+Lemma clamp_lemax x : clamp x <= max.
+Proof. by rewrite ge_max ge_min lexx minmax orbT. Qed.
 
-Definition cp01_clamp := (ge0_clamp, le1_clamp).
+Definition clamp_gele := (clamp_gemin, clamp_lemax).
 
-Lemma clamp_in01 x : 0 <= x <= 1 -> clamp x = x.
-Proof. by case/andP=> ge0_x le1_x; rewrite /clamp min_l ?max_l. Qed.
+Lemma minmax_clamp x : min <= x <= max -> clamp x = x.
+Proof. by case/andP => minx xmax; rewrite /clamp min_l ?max_l. Qed.
 
 Lemma clamp_id x : clamp (clamp x) = clamp x.
-Proof. by rewrite clamp_in01 // !cp01_clamp. Qed.
+Proof. by rewrite minmax_clamp// !clamp_gele. Qed.
 
-Lemma clamp0 : clamp 0 = 0.
-Proof. by rewrite clamp_in01 // lexx ler01. Qed.
+Lemma clamp_min : clamp min = min.
+Proof. by rewrite minmax_clamp// lexx minmax. Qed.
 
-Lemma clamp1 : clamp 1 = 1.
-Proof. by rewrite clamp_in01 // lexx ler01. Qed.
+Lemma clamp_max : clamp max = max.
+Proof. by rewrite minmax_clamp// lexx minmax. Qed.
+
 End Clamp.
 
 Module Order.
