@@ -560,6 +560,7 @@ subgraph cluster_Topology {
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/uniform_structure";
+  "classical/unstable" -> "theories/topology_theory/uniform_structure";
   "theories/topology_theory/topology_structure" -> "theories/topology_theory/uniform_structure";
 
 subgraph cluster_Topology {
