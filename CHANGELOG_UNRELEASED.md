@@ -25,13 +25,6 @@
     from level 36 to 34 and level of `F` from 36 to 41.
     In particular, this means that `\int[mu]_(x in D) f x * g x`
     now parses as `\int[mu]_(x in D) (f x * g x)`.
-- in file `function_spaces.v`,
-  + new lemma `within_continuous_big`.
-- in file `nat_topology.v`,
-  + new lemma `near_infty_after`.
-- in file `num_topology.v`,
-  + new lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
-    `at_left_shift`, and `at_right_shift`.
 - in `sequences.v`,
   + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
 
