@@ -3,21 +3,32 @@
 ## [Unreleased]
 
 ### Added
-- in classical_sets.v
+
+- in `unstable.v`:
+  + lemma `itv_boundlr_lt`,
+  + module `EndlessDense`
+    * definitions `is_endless`, `is_dense`
+    * lemmas `itv_bound_half_dense`
+    * defintions `dual_itv_bound`, `dual_itv`
+    * lemmas `dual_itvE`, `dual_itv_sub_memP`, `dual_is_dense`, `dual_is_endless`,
+      ` dual_itv_boundK`, `dual_itv_bound_lt`, `dual_itv_bound_le`
+    * lemmas `subitvP`, `numDomain_is_endless`, `numField_is_dense`
+  + lemma `real_subitvP`
+
+- in `classical_sets.v`:
   + lemma `powerset0`, `powerset1`, `powerset2`, `powersetS`,
     `setorder_itv_setUl_image`, `setorder_itv_setUr_image`,
     `setorder_itv_setDl_image`
 
 - in set_interval.v
-  + lemmas `itv_open_endsPn`, `itv_closed_endsPn`, `itv_open_ends_boundlr`,
-    `setUitv2`, `setDitv2`, `setDitvoo`, `setDitvoy`, `setDitvNyo`,
-    `setDccitv`, `setDcitvy`, `setDcitvNy`
+  + lemmas `itv_open_endsPn`, `itv_closed_endsPn`, `itv_open_ends_boundlr`
 
 - in topology_structure.v
   + lemmas `closureEbigcap_itvcy`,`interiorEbigcup_itvNyc`,
     `closureEbigcap_itvcc`,`interiorEbigcup_itvcc`
 
 - in num_topology.v
+  + module `EndlessDenseTopology` (internal)
   + lemmas `open_itv_open_ends`, `closed_itv_closed_ends`,
     `itv_closureE`, `itv_interiorE`
 

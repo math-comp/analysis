@@ -42,12 +42,19 @@ From mathcomp Require Import vector archimedean interval matrix.
 (*                           (@maxr {nonneg _}) to be used with caution       *)
 (* ```                                                                        *)
 (*                                                                            *)
+(* In module `EndlessDense`:                                                  *)
+(* ```                                                                        *)
+(*       is_endless {d} T == forall x, (exists y, y < x) /\ (exists y, x < y) *)
+(*         is_dense {d} T == forall x y, x < y -> exists z, x < z < y         *)
+(* ```                                                                        *)
+(* The implementation of this module is likely to change following the review *)
+(* of https://github.com/math-comp/math-comp/pull/1597.                       *)
+(*                                                                            *)
 (******************************************************************************)
 
 Attributes warn(note="The unstable.v file should only be used inside analysis.",
   cats="internal-analysis").
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -720,8 +727,8 @@ Export ProdNormedZmodule.Exports.
 
 Section interval.
 Local Open Scope order_scope.
-Variable (disp : Order.disp_t) (T : porderType disp).
-Implicit Types (x y z : T) (b bl br : itv_bound T) (i : interval T).
+Context {disp} {T : porderType disp}.
+Implicit Types (x : T) (bl br : itv_bound T).
 
 Lemma itv_boundlr_lt bl br x : x \in Interval bl br -> bl < br.
 Proof.
@@ -731,19 +738,21 @@ Qed.
 
 End interval.
 
-Module EndlessDenseOrderTheory.
-
-Section theory.
+Module EndlessDense.
 Local Open Scope order_scope.
 
-Definition is_endless_porderType {d} (T : porderType d) :=
+Definition is_endless {d} (T : porderType d) :=
   forall x : T, (exists y, y < x) /\ (exists y, x < y).
 
-Definition is_dense_porderType {d} (T : porderType d) :=
+Definition is_dense {d} (T : porderType d) :=
   forall x y : T, x < y -> exists z, x < z < y.
 
-Let fin_itv_bound_half_dense {d} {T : porderType d} bl br (L R : T) :
-  is_dense_porderType T ->
+Section endless_dense_porderType.
+Context {d} {T : porderType d}.
+Implicit Type i j : itv_bound T.
+
+Let fin_itv_bound_half_dense bl br (L R : T) :
+  is_dense T ->
   BSide bl L < BSide br R ->
   exists y, BSide bl L <= BLeft y < BSide br R.
 Proof.
@@ -755,8 +764,8 @@ case: bl; case: br; rewrite !bnd_simp.
 - by exists R; rewrite !bnd_simp andbT.
 Qed.
 
-Let linfty_itv_bound_half_dense {d} {T : porderType d} (x : T) bl (j : itv_bound T) :
-  is_endless_porderType T ->
+Let linfty_itv_bound_half_dense (x : T) bl j :
+  is_endless T ->
   BInfty _ bl < j ->
   exists y, BInfty _ bl <= BLeft y < j.
 Proof.
@@ -767,8 +776,8 @@ case: bl; case: j => [[] J | []//]; rewrite !bnd_simp//.
 - by exists x; rewrite !bnd_simp.
 Qed.
 
-Let rinfty_itv_bound_half_dense {d} {T : porderType d} (x : T) br (i : itv_bound T) :
-  is_endless_porderType T ->
+Let rinfty_itv_bound_half_dense (x : T) br i :
+  is_endless T ->
   i < BInfty _ br ->
   exists y, i <= BLeft y < BInfty _ br.
 Proof.
@@ -779,9 +788,9 @@ case: br; case: i => [[] I | []//]; rewrite !bnd_simp//.
 - by exists x; rewrite !bnd_simp.
 Qed.
 
-Lemma itv_bound_half_dense {d} {T : porderType d} (x : T) (i j : itv_bound T) :
-  is_endless_porderType T ->
-  is_dense_porderType T ->
+Lemma itv_bound_half_dense (x : T) i j :
+  is_endless T ->
+  is_dense T ->
   i < j -> exists y, i <= BLeft y < j.
 Proof.
 move=> T_endless T_dense.
@@ -792,9 +801,11 @@ case: i => [? ? | ?]; case j => [? ? | ?].
 - exact: linfty_itv_bound_half_dense.
 Qed.
 
-Let subitvP_half1 {d} {T : orderType d} (i j : interval T) x :
-  is_endless_porderType T ->
-  is_dense_porderType T ->
+End endless_dense_porderType.
+
+Local Lemma subitvP_half1 {d} {T : orderType d} (i j : interval T) x :
+  is_endless T ->
+  is_dense T ->
   x \in i -> {subset i <= j} -> j.1 <= i.1.
 Proof.
 case: i => il ir; case: j => jl jr /=.
@@ -817,8 +828,11 @@ Definition dual_itv_bound {d} {T : porderType d} (ib : itv_bound T) :
 Definition dual_itv {d} {T : porderType d} (i : interval T) : interval T^d :=
   @Interval T^d (dual_itv_bound i.2) (dual_itv_bound i.1).
 
-Lemma dual_itvE {d} {T : porderType d} (i : interval T) :
-  dual_itv i =i i.
+Section dual_porderType.
+Context {d} {T : porderType d}.
+Implicit Types i j : interval T.
+
+Lemma dual_itvE i : dual_itv i =i i.
 Proof.
 case: i => l r; move=> p; rewrite /dual_itv /dual_itv_bound.
 case: l => [[] x | []]; case: r => [[] y | []]//=.
@@ -826,40 +840,43 @@ all: rewrite /= !in_itv/=  !(@in_itv d T)/= ?ltEdual ?leEdual.
 all: by rewrite ?andbT// ?andbF// andbC.
 Qed.
 
-Lemma dual_itv_sub_memP {d} {T : porderType d} (i j : interval T) :
+Lemma dual_itv_sub_memP i j :
   {subset i <= j} <-> {subset dual_itv i <= dual_itv j}.
 Proof. by split => + x => /(_ x); rewrite !dual_itvE. Qed.
 
-Lemma dual_is_dense {d} {T : porderType d} :
-  is_dense_porderType T -> is_dense_porderType T^d.
+Lemma dual_is_dense : is_dense T -> is_dense T^d.
 Proof.
 move=> + x y xy /= => /(_ y x xy) [] z yzx.
 by exists z; rewrite !ltEdual andbC.
 Qed.
 
-Lemma dual_is_endless {d} {T : porderType d} :
-  is_endless_porderType T -> is_endless_porderType T^d.
+Lemma dual_is_endless : is_endless T -> is_endless T^d.
 Proof.
 move=> + x => /(_ x) [[y yx] [z xz]]; split.
   by exists z; rewrite ltEdual.
 by exists y; rewrite ltEdual.
 Qed.
 
-Lemma dual_itv_boundK {d} {T : porderType d} (ib : itv_bound T) :
+Lemma dual_itv_boundK (ib : itv_bound T) :
   dual_itv_bound (dual_itv_bound ib) = ib.
 Proof. by case: ib => [[]?|[]]. Qed.
 
-Lemma dual_itv_bound_lt {d} {T : porderType d} (l r : itv_bound T) :
+Lemma dual_itv_bound_lt (l r : itv_bound T) :
   (dual_itv_bound l < dual_itv_bound r) = (r < l).
 Proof. by case: l => [[]?|[]]; case: r => [[]?|[]]. Qed.
 
-Lemma dual_itv_bound_le {d} {T : porderType d} (l r : itv_bound T) :
+Lemma dual_itv_bound_le (l r : itv_bound T) :
   (dual_itv_bound l <= dual_itv_bound r) = (r <= l).
 Proof. by case: l => [[]?|[]]; case: r => [[]?|[]]. Qed.
 
-Let subitvP_half2 {d} {T : orderType d} (i j : interval T) x :
-  is_endless_porderType T ->
-  is_dense_porderType T ->
+End dual_porderType.
+
+Section endless_dense_orderType.
+Context {d} {T : orderType d}.
+
+Let subitvP_half2 (i j : interval T) x :
+  is_endless T ->
+  is_dense T ->
   x \in i -> {subset i <= j} -> i.2 <= j.2.
 Proof.
 case: i => il ir; case: j => jl jr.
@@ -871,32 +888,32 @@ move/(_ T_endless T_dense xi isubj).
 by rewrite dual_itv_bound_le.
 Qed.
 
-Lemma subitvP {d} {T : orderType d} (i j : interval T) x :
-  is_endless_porderType T ->
-  is_dense_porderType T ->
+Lemma subitvP (i j : interval T) x :
+  is_endless T ->
+  is_dense T ->
   x \in i ->
   i <= j <-> {subset i <= j}.
 Proof.
 case: i => ? ?; case: j => ? ?.
 move=> *; split; first exact: subitvP.
 move=> isubj; apply/andP; split.
-  move/(@subitvP_half1 _ _ _ _ x): isubj; exact.
-move/(@subitvP_half2 _ _ _ _ x): isubj; exact.
+- by move/(@subitvP_half1 _ _ _ _ x): isubj; exact.
+- by move/(@subitvP_half2 _ _ x): isubj; exact.
 Qed.
 
-End theory.
+End endless_dense_orderType.
 
 Section num.
 Local Open Scope ring_scope.
 
-Lemma numDomain_is_endless (R : numDomainType) : is_endless_porderType R.
+Lemma numDomain_is_endless (R : numDomainType) : is_endless R.
 Proof.
 move=> x; split.
-  by exists (x - 1); rewrite gtrBl.
-by exists (x + 1); rewrite ltrDl.
+- by exists (x - 1); rewrite gtrBl.
+- by exists (x + 1); rewrite ltrDl.
 Qed.
 
-Lemma numField_is_dense (R : numFieldType) : is_dense_porderType R.
+Lemma numField_is_dense (R : numFieldType) : is_dense R.
 Proof.
 move=> x y xy; exists (2^-1 * (x + y)).
 rewrite -(@ltr_pM2l _ 2)// -[X in _ && X](@ltr_pM2l _ 2)//.
@@ -906,18 +923,17 @@ Qed.
 
 End num.
 
-End EndlessDenseOrderTheory.
+End EndlessDense.
 
 Section interval_realFieldType.
-Variable R : realFieldType.
-Implicit Types x : R.
+Context {R : realFieldType}.
 Local Open Scope order_scope.
 
-Let R_is_endless := @EndlessDenseOrderTheory.numDomain_is_endless R.
-Let R_is_dense := @EndlessDenseOrderTheory.numField_is_dense R.
-
-Lemma real_subitvP (i j : interval R) x :
-  x \in i -> i <= j <-> {subset i <= j}.
-Proof. exact: EndlessDenseOrderTheory.subitvP. Qed.
+Lemma real_subitvP (i j : interval R) x : x \in i -> i <= j <-> {subset i <= j}.
+Proof.
+apply: EndlessDense.subitvP.
+- exact: EndlessDense.numDomain_is_endless.
+- exact: EndlessDense.numField_is_dense.
+Qed.
 
 End interval_realFieldType.

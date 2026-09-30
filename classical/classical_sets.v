@@ -3586,31 +3586,31 @@ Proof. by []. Qed.
 
 End relation.
 
-Lemma powerset0 {T : Type} :
-  [set X | X `<=` set0] = [set set0] :> set (set T).
+Section powerset.
+Context {T : Type}.
+Implicit Types (a b : T) (A B : set T).
+
+Lemma powerset0 : [set X | X `<=` set0] = [set set0] :> set_system T.
 Proof. by apply/funext => X /=; rewrite subset0. Qed.
 
-Lemma powerset1 {T : Type} (a : T) :
-  [set X | X `<=` [set a]] = [set set0; [set a]].
+Lemma powerset1 a : [set X | X `<=` [set a]] = [set set0; [set a]].
 Proof. by apply/seteqP; split => X/=; [move/subset_set1|case=> ->]. Qed.
 
-Lemma powerset2 {T : Type} (a b : T) :
+Lemma powerset2 a b :
   [set X | X `<=` [set a; b]] = [set set0; [set a]; [set b]; [set a; b]].
 Proof.
 apply/seteqP; split => X/=; first by move/subset_set2; rewrite or4E !orA.
 by move=> [[[]|]|] ->.
 Qed.
 
-Lemma powersetS {T : Type} (A B : set T) :
-  (A `<=` B) = ([set X | X `<=` A] `<=` [set X | X `<=` B]).
+Lemma powersetS A B : (A `<=` B) = ([set X | X `<=` A] `<=` [set X | X `<=` B]).
 Proof.
 apply: propext; split; first by move=> AB X/= /subset_trans; apply.
 by move=> + a Aa => /(_ [set a])/= /(_ _ a); apply => // ? ->.
 Qed.
 
-Lemma setorder_itv_setUl_image {T : Type} (A B : set T) :
-  A `<=` B ->
-  `[A, B]%classic = (setU A) @` [set X | X `<=` B `\` A].
+Lemma setorder_itv_setUl_image A B :
+  A `<=` B -> `[A, B] = setU A @` [set X | X `<=` B `\` A].
 Proof.
 move=> AB; apply/seteqP; split => Y/=.
   rewrite in_itv/= => /andP[]; rewrite !subsetEset => AY YB.
@@ -3619,22 +3619,22 @@ case=> X XBA <-; rewrite in_itv/= Order.JoinTheory.leUl/=.
 by rewrite -(setDUK AB) Order.JoinTheory.leU2// subsetEset.
 Qed.
 
-Lemma setorder_itv_setUr_image {T : Type} (A B : set T) :
-  A `<=` B ->
-  `[A, B]%classic = (setU^~ A) @` [set X | X `<=` B `\` A].
+Lemma setorder_itv_setUr_image A B :
+  A `<=` B -> `[A, B] = setU^~ A @` [set X | X `<=` B `\` A].
 Proof.
 by (under eq_imagel do rewrite setUC); exact: setorder_itv_setUl_image.
 Qed.
 
-Lemma setorder_itv_setDl_image {T : Type} (A B : set T) :
-  A `<=` B ->
-  `[A, B]%classic = (setD B) @` [set X | X `<=` B `\` A].
+Lemma setorder_itv_setDl_image A B :
+  A `<=` B -> `[A, B] = setD B @` [set X | X `<=` B `\` A].
 Proof.
 move=> AB; apply/seteqP; split => Y/=.
   rewrite in_itv/= => /andP[]; rewrite !subsetEset => AY YB.
   by exists (B `\` Y); [exact: setDS | rewrite setDD setIidr].
 case=> X XBA <-; rewrite in_itv/= Order.MeetTheory.leIl andbT.
-rewrite (@Order.POrderTheory.le_trans _ _ (B `\` (B `\` A)))//; last first.
-  by rewrite subsetEset; exact: setDS.
-by rewrite setDD setIidr.
+rewrite (@Order.POrderTheory.le_trans _ _ (B `\` (B `\` A)))//.
+  by rewrite setDD setIidr.
+by rewrite subsetEset; exact: setDS.
 Qed.
+
+End powerset.
