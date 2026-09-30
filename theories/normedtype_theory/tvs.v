@@ -154,7 +154,7 @@ HB.mixin Record Uniform_isConvexTvs (R : numDomainType) E
 
 #[short(type="convexTvsType")]
 HB.structure Definition ConvexTvs (R : numDomainType) :=
-  {E of Uniform_isConvexTvs R E & Uniform E & UniformZmodule E & TopologicalLmodule R E}.
+  {E of Uniform_isConvexTvs R E & UniformZmodule E & TopologicalLmodule R E}.
 
 #[short(type="subConvexTvsType")]
 HB.structure Definition SubConvexTvs (R : numDomainType) (V : convexTvsType R)

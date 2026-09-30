@@ -86,25 +86,36 @@ Local Open Scope ring_scope.
 
 (** Modules with a norm depending on a numDomain *)
 
-HB.mixin Record PseudoMetricNormedZmod_ConvexTvs_isNormedModule
-    (K : numDomainType) V & PseudoMetricNormedZmod K V & ConvexTvs K V := {
+HB.mixin Record MetricNormedZmod_ConvexTvs_isNormedModule
+    (K : numDomainType) V & MetricNormedZmodule K V & ConvexTvs K V := {
   normrZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
 
+#[deprecated(since="mathcomp-analysis 1.19.0",
+             use=MetricNormedZmod_ConvexTvs_isNormedModule)]
+Notation PseudoMetricNormedZmod_ConvexTvs_isNormedModule x1 x2 :=
+  (MetricNormedZmod_ConvexTvs_isNormedModule x1 x2).
+
+Module PseudoMetricNormedZmod_ConvexTvs_isNormedModule.
+#[deprecated(since="mathcomp-analysis 1.19.0",
+             use=MetricNormedZmod_ConvexTvs_isNormedModule.Build)]
+Notation Build x1 x2 x3 :=
+  (MetricNormedZmod_ConvexTvs_isNormedModule.Build x1 x2 x3) (only parsing).
+End PseudoMetricNormedZmod_ConvexTvs_isNormedModule.
+
 #[short(type="normedModType")]
 HB.structure Definition NormedModule (K : numDomainType) :=
-  {T of PseudoMetricNormedZmod K T & ConvexTvs K T
-   & PseudoMetricNormedZmod_ConvexTvs_isNormedModule K T}.
+  {T of MetricNormedZmodule K T & ConvexTvs K T
+     & MetricNormedZmod_ConvexTvs_isNormedModule K T}.
 
 #[short(type="subNormedModType")]
 HB.structure Definition SubNormedModule (R : numDomainType)
-  (V : normedModType R) (S : pred V) :=
+    (V : normedModType R) (S : pred V) :=
   { U of SubChoice V S U & NormedModule R U & @GRing.SubLmodule R V S U
-       & @Num.SubNormedZmodule(*Zmodule_isSubSemiNormed*) R V S U &
-       @SubConvexTvs R V S U}.
+       & @Num.SubNormedZmodule R V S U & @SubConvexTvs R V S U}.
 
 HB.factory Record PseudoMetricNormedZmod_Lmodule_isNormedModule
-  (K : numFieldType) V & PseudoMetricNormedZmod K V & GRing.Lmodule K V := {
+  (K : numFieldType) V & MetricNormedZmodule K V & GRing.Lmodule K V := {
  normrZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
 
@@ -158,7 +169,7 @@ HB.instance Definition _ :=
 HB.instance Definition _ := Uniform_isConvexTvs.Build K V locally_convex_set.
 
 HB.instance Definition _ :=
-  PseudoMetricNormedZmod_ConvexTvs_isNormedModule.Build K V normrZ.
+  MetricNormedZmod_ConvexTvs_isNormedModule.Build K V normrZ.
 
 HB.end.
 
@@ -166,7 +177,7 @@ HB.end.
 HB.structure Definition NormedVector (K : numDomainType) :=
   {T of NormedModule K T & Vector K T}.
 
-(**md see also `Section standard_topology_pseudoMetricNormedZmod` in
+(**md see also `Section standard_topology_metricNormedZmod` in
   `pseudometric_normed_Zmodule.v` *)
 Section standard_topology_normedMod.
 Variable R : numFieldType.
@@ -177,7 +188,7 @@ HB.instance Definition _ := TopologicalZmodule_isTopologicalLmodule.Build
 *)
 
 HB.instance Definition _ :=
-  PseudoMetricNormedZmod_ConvexTvs_isNormedModule.Build R R^o (@normrM _).
+  MetricNormedZmod_ConvexTvs_isNormedModule.Build R R^o (@normrM _).
 
 End standard_topology_normedMod.
 
@@ -257,7 +268,7 @@ End numFieldNormedType.
 Import numFieldNormedType.Exports.
 
 Lemma within_continuous_compN {R : realFieldType} {K : numDomainType}
-    {U : pseudoMetricNormedZmodType K} (f : R -> U) (a b : R) :
+    {U : metricNormedZmodType K} (f : R -> U) (a b : R) :
   {within `[- b, - a], continuous f} -> {within `[a, b], continuous f \o -%R}.
 Proof.
 have [ab|ba _ |-> _] := ltgtP a b; last 2 first.
@@ -374,10 +385,10 @@ HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R M erefl.
 HB.instance Definition _ := isPseudoMetricNormedZmodule.Build R M.
 
 HB.instance Definition _ := PreUniformNmodule_isUniformNmodule.Build
-  M (@PseudoMetricNormedZmod0_add_unif_continuous _ M).
+  M (@PseudoMetricNormedZmodule_add_unif_continuous _ M).
 
 HB.instance Definition _ := UniformNmodule_isUniformZmodule.Build
-  M (@PseudoMetricNormedZmod0_opp_unif_continuous _ M).
+  M (@PseudoMetricNormedZmodule_opp_unif_continuous _ M).
 
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R M normrZ.
@@ -1763,17 +1774,16 @@ apply/connected_intervalP/connected_continuous_connected => //.
 exact: segment_connected.
 Qed.
 
-Section prod_NormedModule.
+Section prod_normedModType.
 Context {K : numFieldType} {U V : normedModType K}.
 
 Let prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
 Proof. by rewrite prod_normE /= !normrZ maxr_pMr. Qed.
 
-HB.instance Definition _ :=
-  PseudoMetricNormedZmod_ConvexTvs_isNormedModule.Build K (U * V)%type
-  prod_norm_scale.
+HB.instance Definition _ := MetricNormedZmod_ConvexTvs_isNormedModule.Build
+  K (U * V)%type prod_norm_scale.
 
-End prod_NormedModule.
+End prod_normedModType.
 
 (* Local properties in R *)
 
@@ -2668,11 +2678,13 @@ HB.instance Definition _ (V : vectType R) :=
 HB.instance Definition _ (V : vectType R) :=
   isPseudoMetricNormedZmodule.Build _ (max_space V).
 
-HB.instance Definition _ (V : vectType R) := PreUniformNmodule_isUniformNmodule.Build
-  (max_space V) (@PseudoMetricNormedZmod0_add_unif_continuous _ (max_space V)).
+HB.instance Definition _ (V : vectType R) :=
+    PreUniformNmodule_isUniformNmodule.Build (max_space V)
+  (@PseudoMetricNormedZmodule_add_unif_continuous _ (max_space V)).
 
-HB.instance Definition _ (V : vectType R) := UniformNmodule_isUniformZmodule.Build
-  (max_space V) (@PseudoMetricNormedZmod0_opp_unif_continuous _ (max_space V)).
+HB.instance Definition _ (V : vectType R) :=
+    UniformNmodule_isUniformZmodule.Build (max_space V)
+  (@PseudoMetricNormedZmodule_opp_unif_continuous _ (max_space V)).
 
 HB.instance Definition _ (V : vectType R) :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R (max_space V)

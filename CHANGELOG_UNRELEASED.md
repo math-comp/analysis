@@ -34,8 +34,8 @@
   + definition `prod_mdist`
 
 - in `pseudometric_normed_Zmodule.v`:
-  + lemma `PseudoMetricNormedZmod0_add_unif_continuous`
-  + lemma `PseudoMetricNormedZmod0_opp_unif_continuous`
+  + lemma `PseudoMetricNormedZmodule_add_unif_continuous`
+  + lemma `PseudoMetricNormedZmodule_opp_unif_continuous`
   + lemma `standard_scale_continuous`
 
 ### Changed
@@ -77,6 +77,13 @@
 - in `sequences.v`:
   + `limn_einf_shift` -> `limn_einf_addl`
   + `series_le_cvg` -> `series_squeeze_is_cvgn`
+- in `pseudometric_normed_Zmodule.v`:
+  + `PseudoMetricNormedZmod0` -> `PseudoMetricNormedZmodule`
+  + `pseudoMetricNormedZmodType` -> `metricNormedZmodType`
+  + `PseudoMetricNormedZmod` -> `MetricNormedZmodule`
+
+- in `normed_module.v`:
+  + `PseudoMetricNormedZmod_ConvexTvs_isNormedModule` -> `MetricNormedZmod_ConvexTvs_isNormedModule`
 
 ### Generalized
 
@@ -99,6 +106,9 @@
   + structure `UniformLmodule`
   + factory `UniformNmodule_isUniformLmodule`
   + lemma `prod_add_continuous` (remains accessible via the generic `add_continuous` of `TopologicalNmodule.type`)
+
+- in `pseudometric_normred_Zmodule.v`:
+  + lemma `pseudoMetricNormedZModType_hausdorff` (deprecated since 1.10.0)
 
 ### Infrastructure
 

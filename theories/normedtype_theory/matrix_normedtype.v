@@ -293,10 +293,10 @@ Section matrix_UniformNZmodule.
 Context {K : numFieldType} {m n : nat}.
 
 HB.instance Definition _ := PreUniformNmodule_isUniformNmodule.Build
-  'M[K]_(m, n) (@PseudoMetricNormedZmod0_add_unif_continuous _ _).
+  'M[K]_(m, n) (@PseudoMetricNormedZmodule_add_unif_continuous _ _).
 
 HB.instance Definition _ := UniformNmodule_isUniformZmodule.Build
-  'M[K]_(m, n) (@PseudoMetricNormedZmod0_opp_unif_continuous _ _).
+  'M[K]_(m, n) (@PseudoMetricNormedZmodule_opp_unif_continuous _ _).
 
 End matrix_UniformNZmodule.
 
