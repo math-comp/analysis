@@ -299,7 +299,8 @@ have unif : unif_continuous (fun x => (0, x) : M * M).
   by rewrite inE/= => -[[[a1 a2] [b1 b2]]]/= /[swap]-[] -> -> <-.
 move=> /= U /sub_unif_continuous /unif /=.
 rewrite -comp_preimage/= /comp/= /nbhs/=.
-by congr entourage => /=; rewrite eqEsubset; split=> x /=; rewrite !sub0r.
+congr entourage => /=; rewrite eqEsubset.
+by split=> x; rewrite /map_pair/= !sub0r.
 Qed.
 
 Lemma add_unif_continuous : unif_continuous (fun x : M * M => x.1 + x.2).
@@ -311,12 +312,12 @@ have unif: unif_continuous (fun x => (x.1, -x.2) : M * M).
       ((fun xy => (xy.1.1, xy.2.1, (-xy.1.2, -xy.2.2))) @^-1` (U1 `*` U2))).
     move=> /= [] [] a1 a2 [] b1 b2/= [] ab1 ab2.
     have /U12 : (a1, b1, (-a2, -b2)) \in U1 `*` U2 by rewrite !inE.
-    by rewrite inE/= => [] [] [] [] c1 c2 [] d1 d2/= cd [] <- <- <- <-.
+    by rewrite /map_pair inE/= => [] [] [] [] c1 c2 [] d1 d2/= cd [] <- <- <- <-.
   exists (U1, ((fun xy : M * M => (- xy.1, - xy.2)) @^-1` U2)); first by split.
   by move=> /= [] [] a1 a2 [] b1 b2/= [] aU bU; exists (a1, b1, (a2, b2)).
 move=> /= U /sub_unif_continuous/unif; rewrite /nbhs/=.
 rewrite -comp_preimage/=/comp/=.
-by congr entourage; rewrite eqEsubset; split=> x /=; rewrite !opprK.
+by congr entourage; rewrite eqEsubset; split=> x /=; rewrite /map_pair !opprK.
 Qed.
 
 HB.instance Definition _ :=
@@ -339,7 +340,7 @@ apply: (@filterS _ _ entourage_filter
     ((fun xy => (xy.1.1, xy.2.1, (- xy.1.2, - xy.2.2))) @^-1` (U1 `*` U2))).
   move=> /= [] [] a1 a2 [] b1 b2/= [] ab1 ab2.
   have /U12 : (a1, b1, (-a2, -b2)) \in U1 `*` U2 by rewrite !inE.
-  by rewrite inE/= => [] [] [] [] c1 c2 [] d1 d2/= cd [] <- <- <- <-.
+  by rewrite /map_pair inE/= => [] [] [] [] c1 c2 [] d1 d2/= cd [] <- <- <- <-.
 exists (U1, ((fun xy : M * M => (- xy.1, - xy.2)) @^-1` U2)); first by split.
 by move=> /= [] [] a1 a2 [] b1 b2/= [] aU bU; exists (a1, b1, (a2, b2)).
 Qed.
@@ -374,11 +375,11 @@ have unif: unif_continuous (fun x => (-1, x) : R^o * M).
   have /U12 : ((-1, -1), x) \in U1 `*` U2.
     rewrite in_setX/= (mem_set xU2) andbT.
     by apply/mem_set; exact: entourage_refl.
-  by rewrite inE/= => [[[]]] [] a1 a2 [] b1 b2/= abU [] {2}<- <- <-/=.
+  by rewrite /map_pair inE/= => [[[]]] [] a1 a2 [] b1 b2/= abU [] {2}<- <- <-/=.
 move=> /= U /scale_unif_continuous/unif/=.
 rewrite /nbhs/=.
 rewrite -comp_preimage/=/comp/=.
-by congr entourage; rewrite eqEsubset; split=> x /=; rewrite !scaleN1r.
+by congr entourage; rewrite eqEsubset; split=> x /=; rewrite /map_pair !scaleN1r.
 Qed.
 
 #[warning="-HB.no-new-instance"]

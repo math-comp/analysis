@@ -1,6 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra all_classical.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import topology_structure.
 
 (**md**************************************************************************)
@@ -326,7 +328,19 @@ by apply: nbhs_singleton; apply: nbhs_interior; exact: nbhs_entourage.
 Qed.
 
 Definition unif_continuous (U V : uniformType) (f : U -> V) :=
-  (fun xy => (f xy.1, f xy.2)) @ entourage --> entourage.
+  (map_pair f) @ entourage --> entourage.
+
+Lemma unif_continuous_continuous (U V : uniformType) (f : U -> V) :
+  unif_continuous f -> continuous f.
+Proof.
+rewrite /unif_continuous /cvg_to !nbhs_simpl => ucf.
+rewrite /cvg_to /= => u X; rewrite !nbhs_simpl /= -!nbhs_entourageE.
+case => Y /ucf /=; set Y' := (Y' in entourage Y') => eY' YX.
+exists Y' => //.
+rewrite /Y' /=.
+rewrite -image_sub => v [] u' /= Yfuu' <-.
+exact: YX.
+Qed.
 
 Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
   exists2 B, entourage B & forall PQ, A PQ -> forall p q,

@@ -11,6 +11,8 @@
   + lemma `limn_einf_shift_new`
   + lemma `limn_einf_shiftS`
   + lemma `limn_einf_cst`
+- in `uniform_structure.v`:
+  + lemma `unif_continuous_continuous`
 
 ### Changed
 
