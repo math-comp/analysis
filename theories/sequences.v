@@ -986,9 +986,9 @@ have := su_cv; rewrite near_swap => su_cvC; near=> m => /=; rewrite sub_series.
 by have [|/ltnW]:= leqP m.2 m.1 => m12; rewrite ?normrN; near: m.
 Unshelve. all: by end_near. Qed.
 
-Lemma series_le_cvg {R : realType} (u_ v_ : R ^nat) :
-    (forall n, 0 <= u_ n) -> (forall n, 0 <= v_ n) ->
-    (forall n, u_ n <= v_ n) ->
+Lemma series_squeeze_is_cvgn {R : realType} (u_ v_ : R ^nat) :
+  (forall n, 0 <= u_ n) -> (forall n, 0 <= v_ n) ->
+  (forall n, u_ n <= v_ n) ->
   cvgn (series v_) -> cvgn (series u_).
 Proof.
 move=> u_ge0 v_ge0 le_uv /cvg_seq_bounded/bounded_fun_has_ubound[M v_M].
@@ -996,8 +996,10 @@ apply: nondecreasing_is_cvgn; first exact: nondecreasing_series.
 exists M => _ [n _ <-].
 by apply: le_trans (v_M (series v_ n) _); [exact: ler_sum | exists n].
 Qed.
+#[deprecated(since="mathcomp-analysis 1.19.0", use=series_squeeze_is_cvgn)]
+Notation series_le_cvg := series_squeeze_is_cvgn (only parsing).
 
-Lemma series_near_le_cvg {R : realType} (u_ v_ : R^nat) :
+Lemma near_series_squeeze_is_cvgn {R : realType} (u_ v_ : R^nat) :
     (\forall n \near \oo, 0 <= u_ n) -> (\forall n \near \oo, 0 <= v_ n) ->
     (\forall n \near \oo, u_ n <= v_ n) ->
   cvgn (series v_) -> cvgn (series u_).
@@ -1072,19 +1074,18 @@ move=> k_gt0 Cf Hg.
 apply: (@cvg_to_0_linear _ _ (limn (series f)) k) => // h hLk; rewrite mulrC.
 have Ckf : cvgn (series (`|h| *: f)) := @is_cvg_seriesZ _ _ `|h| Cf.
 have Cng : cvgn [normed series (g h)].
-  apply: series_le_cvg (Hg _ hLk) _ => [//|?|].
+  apply: series_squeeze_is_cvgn (Hg _ hLk) _ => [//|?|].
     exact: le_trans (Hg _ hLk _).
   by under eq_fun do rewrite mulrC.
 apply: (le_trans (@lim_series_norm _ R^o _ Cng)).
 rewrite -[_ * _](lim_seriesZ _ Cf) (lim_series_le Cng Ckf) // => n.
-by rewrite [leRHS]mulrC; apply: Hg.
+by rewrite [leRHS]mulrC; exact: Hg.
 Qed.
 
 End series_linear.
 
 Section exponential_series.
-
-Variable R : realType.
+Context {R : realType}.
 Implicit Types x : R.
 
 Definition exp_coeff x := [sequence x ^+ n / n`!%:R]_n.

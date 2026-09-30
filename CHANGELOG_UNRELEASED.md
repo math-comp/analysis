@@ -33,7 +33,7 @@
   + new lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
     `at_left_shift`, and `at_right_shift`.
 - in `sequences.v`,
-  + lemmas `is_cvg_series_shiftn`, `series_near_le_cvg`
+  + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
 
 ### Changed
 
@@ -41,6 +41,7 @@
 
 - in `sequences.v`:
   + `limn_einf_shift` -> `limn_einf_addl`
+  + `series_le_cvg` -> `series_squeeze_is_cvgn`
 
 ### Generalized
 

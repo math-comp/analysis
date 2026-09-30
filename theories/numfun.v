@@ -1407,7 +1407,8 @@ exists (lim (h_ @ \oo)); split.
   rewrite -fmap_comp /comp /h_ => <-.
   under [fun _ : nat => _]eq_fun => ? do rewrite /series /= fct_sumE.
   have cvg_gt : cvgn [normed series (g_^~ t)].
-    apply: (series_le_cvg _ _ (g_bd ^~ t) (is_cvg_geometric_series _)) => //.
+    apply: (series_squeeze_is_cvgn _ _ (g_bd ^~ t)
+      (is_cvg_geometric_series _)) => //.
     by move=> n; rewrite mulr_ge0.
   rewrite (le_trans (lim_series_norm _))//; apply: le_trans.
     exact/(lim_series_le cvg_gt _ (g_bd ^~ t))/is_cvg_geometric_series.

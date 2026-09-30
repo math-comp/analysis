@@ -59,7 +59,6 @@ From mathcomp Require Import landau sequences derive realfun exp realfun.
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -156,7 +155,7 @@ Proof. by rewrite /sin_coeff /= odd_double /= !mul0r. Qed.
 Lemma is_cvg_series_sin_coeff x : cvg (series (sin_coeff x) @ \oo).
 Proof.
 apply: normed_cvg.
-apply: series_le_cvg; last exact: (is_cvg_series_exp_coeff `|x|).
+apply: series_squeeze_is_cvgn; last exact: (is_cvg_series_exp_coeff `|x|).
 - by move=> n; rewrite normr_ge0.
 - by move=> n; rewrite divr_ge0.
 - move=> n /=; rewrite /exp_coeff /sin_coeff /=.
@@ -234,7 +233,7 @@ Qed.
 Lemma is_cvg_series_cos_coeff x : cvg (series (cos_coeff x) @ \oo).
 Proof.
 apply: normed_cvg.
-apply: series_le_cvg; last exact: (is_cvg_series_exp_coeff `|x|).
+apply: series_squeeze_is_cvgn; last exact: (is_cvg_series_exp_coeff `|x|).
 - by move=> n; rewrite normr_ge0.
 - by move=> n; rewrite divr_ge0.
 - move=> n /=; rewrite /exp_coeff /cos_coeff /=.
