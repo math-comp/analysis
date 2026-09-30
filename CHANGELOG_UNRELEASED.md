@@ -32,11 +32,6 @@
   + lemmas `open_itv_open_ends`, `closed_itv_closed_ends`,
     `itv_closureE`, `itv_interiorE`
 
-- in order_topology.v
-  + lemma `itv_closed_ends_closed`
-- in classical_sets.v
-  + lemma `in_set1_eq`
-
 - in `sequences.v`:
   + lemma `sdrop_shift`
   + lemma `ge_einfs`
@@ -48,11 +43,6 @@
   + lemma `unif_continuous_continuous`
 
 ### Changed
-- in set_interval.v
-  + `setDitv1l`, `setDitv1r` (generalized)
-
-- in set_interval.v
-  + `itv_is_closed_unbounded` (fix the definition)
 
 - in `esum.v`:
   + level of notation `\esum_ ( i 'in' P ) F`
