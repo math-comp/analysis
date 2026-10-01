@@ -1386,7 +1386,7 @@ exists (lim (h_ @ \oo)); split.
 - move=> t /set_mem At; have /pointwise_cvgP/(_ t)/(cvg_lim (@Rhausdorff _)) :=
     [elaborate pointwise_uniform_cvg _ cvgh].
   rewrite -fmap_comp /comp /h_ => <-; apply/esym/(@cvg_lim _ (@Rhausdorff R)).
-  apply: (@cvg_zero R R^o); apply: norm_cvg0; under eq_fun => n.
+  apply: (@cvg_zero _ R^o); apply: norm_cvg0; under eq_fun => n.
     rewrite distrC /series /cst /= -mulN1r fct_sumE mulr_sumr.
     under [fun _ : nat => _]eq_fun => ? do rewrite mulN1r -fgE opprB.
     rewrite telescope_sumr //= subrKC.

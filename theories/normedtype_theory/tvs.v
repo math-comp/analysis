@@ -13,8 +13,6 @@ From mathcomp Require Import pseudometric_normed_Zmodule.
 (*                                                                            *)
 (* This file introduces locally convex topological vector spaces.             *)
 (* ```                                                                        *)
-(*              NbhsNmodule == HB class, join of Nbhs and Nmodule             *)
-(*              NbhsZmodule == HB class, join of Nbhs and Zmodule             *)
 (*            NbhsLmodule K == HB class, join of Nbhs and Lmodule over K      *)
 (*                             K is a numDomainType.                          *)
 (* preTopologicalLmodType K == topological space and Lmodule over K           *)
@@ -78,15 +76,6 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-(* HB.structure Definition PointedNmodule := {M of Pointed M & GRing.Nmodule M}. *)
-(* HB.structure Definition PointedZmodule := {M of Pointed M & GRing.Zmodule M}. *)
-(* HB.structure Definition PointedLmodule (K : numDomainType) := *)
-(*   {M of Pointed M & GRing.Lmodule K M}. *)
-
-(* HB.structure Definition FilteredNmodule := {M of Filtered M M & GRing.Nmodule M}. *)
-(* HB.structure Definition FilteredZmodule := {M of Filtered M M & GRing.Zmodule M}. *)
-(* HB.structure Definition FilteredLmodule (K : numDomainType) := *)
-(*   {M of Filtered M M & GRing.Lmodule K M}. *)
 HB.structure Definition NbhsLmodule (K : numDomainType) :=
   {M of Nbhs M & GRing.Lmodule K M}.
 
@@ -95,7 +84,7 @@ HB.structure Definition PreTopologicalLmodule (K : numDomainType) :=
   {M of Topological M & GRing.Lmodule K M}.
 
 HB.mixin Record TopologicalZmodule_isTopologicalLmodule (R : numDomainType) M
-    & Topological M & GRing.Lmodule R M := {
+    & PreTopologicalLmodule R M := {
   scale_continuous : continuous (fun z : R^o * M => z.1 *: z.2) ;
 }.
 
@@ -105,7 +94,7 @@ HB.structure Definition TopologicalLmodule (K : numDomainType) :=
         & TopologicalZmodule_isTopologicalLmodule K M}.
 
 Section TopologicalLmodule_theory.
-Variables (R : numFieldType) (E : topologicalType) (F : topologicalLmodType R).
+Context {R : numFieldType} (E : topologicalType) (F : topologicalLmodType R).
 
 Lemma fun_cvgZ (U : set_system E) {FF : Filter U} (l : E -> R) (f : E -> F)
     (r : R) a :
@@ -122,7 +111,7 @@ Proof. by apply: fun_cvgZ => //; exact: cvg_cst. Qed.
 End TopologicalLmodule_theory.
 
 HB.factory Record TopologicalNmodule_isTopologicalLmodule (R : numDomainType) M
-    & Topological M & GRing.Lmodule R M := {
+    & PreTopologicalLmodule R M := {
   scale_continuous : continuous (fun z : R^o * M => z.1 *: z.2) ;
 }.
 
@@ -313,7 +302,7 @@ Unshelve. all: by end_near. Qed.
 End properties_of_topologicalLmodule.
 
 HB.factory Record PreTopologicalLmod_isConvexTvs (R : numDomainType) E
-    & Topological E & GRing.Lmodule R E := {
+    & PreTopologicalLmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
   scale_continuous : continuous (fun z : R^o * E => z.1 *: z.2) ;
   locally_convex : exists2 B : set_system E,
@@ -523,13 +512,6 @@ move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
 by exists (ball x r) => //=; split; [exists x, r|exact: ballxx].
 Qed.
 
-(*
-Check R^o : TopologicalNmodule.type.
-
-HB.instance Definition _ :=
-  PreTopologicalNmodule_isTopologicalNmodule.Build R^o standard_add_continuous.
-*)
-
 HB.instance Definition _ :=
   TopologicalNmodule_isTopologicalLmodule.Build R R^o standard_scale_continuous.
 
@@ -707,13 +689,13 @@ Proof. by apply: cst_continuous. Qed.
 HB.instance Definition _ := isContinuous.Build E F \0 null_fun_continuous.
 
 #[local] Lemma lcfun_continuousD f g : continuous (f \+ g).
-Proof. by move=> /= x; apply: fun_cvgD; exact: continuous_fun. Qed.
+Proof. by move=> /= x; apply: cvgD; exact: continuous_fun. Qed.
 
 HB.instance Definition _ f g :=
   isContinuous.Build E F (f \+ g) (@lcfun_continuousD f g).
 
 #[local] Lemma lcfun_continuousN f : continuous (\- f).
-Proof. by move=> /= x; apply: fun_cvgN; exact: continuous_fun. Qed.
+Proof. by move=> /= x; apply: cvgN; exact: continuous_fun. Qed.
 
 HB.instance Definition _ f :=
   isContinuous.Build E F (\- f) (@lcfun_continuousN f).

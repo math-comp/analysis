@@ -37,6 +37,7 @@
   + lemma `PseudoMetricNormedZmodule_add_unif_continuous`
   + lemma `PseudoMetricNormedZmodule_opp_unif_continuous`
   + lemma `standard_scale_continuous`
+  + notation `topologicalNmodType`
 
 ### Changed
 
@@ -72,6 +73,11 @@
 - in `tvs.v`:
   + structure `ConvexTvs` now inherits from `UniformZmodule`
 
+- move to `pseudometric_structure.v`:
+  + definitions `closed_ball_`, `closed_ball`
+  + lemmas `closure_ballE`, `closed_ballxx`, `closed_ball_closed`, `subset_closed_ball`,
+    `subset_closure_half`, `le_closed_ball`
+
 ### Renamed
 
 - in `sequences.v`:
@@ -96,7 +102,17 @@
     * lemma `bounded_funN`
     * lemma `bounded_funD`
 
+- in `pseudometric_normed_Zmodule.v`:
+  + lemmas `cvgD`, `cvg0D`, `cvgD0`, `cvgN`, `cvgNP`, `cvgB`, `cvg0B`, `cvgB0`, `cvgN0`,
+    `cvg_sub0`, `cvg0`, `subr_cvg0`
+  + lemmas `within_continuousD`, `within_continuousB`, `within_continuousN`
+  + lemmas `le_closed_ball`, `closed_ball0`
+
 ### Deprecated
+
+- in `pseudometric_normed_Zmodule.v`:
+  + lemma `fun_cvgD` (use `cvgD` instead)
+  + lemma `fun_cvgN` (use `cvgN` instead)
 
 ### Removed
 

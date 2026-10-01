@@ -41,6 +41,12 @@ From mathcomp Require Import uniform_structure.
 (*                 cauchy_ball F <-> the set of sets F is a cauchy filter     *)
 (*                                   (using the near notations)               *)
 (* ```                                                                        *)
+(* ## Closed balls                                                            *)
+(* ```                                                                        *)
+(*             closed_ball_ norm x e := [set y | norm (x - y) <= e]           *)
+(*                       closed_ball == closure of a ball                     *)
+(* ```                                                                        *)
+(*                                                                            *)
 (******************************************************************************)
 
 Import Order.TTheory GRing.Theory Num.Theory.
@@ -433,3 +439,41 @@ near F => x; exists x; near: x; apply: (@nearP_dep _ _ F F).
 exact/Fcauchy/entourage_ball.
 Unshelve. all: by end_near. Qed.
 Arguments cauchyP {R T} F {PF}.
+
+Definition closed_ball_ {R : numDomainType} {V : zmodType} (norm : V -> R)
+  (x : V) (e : R) := [set y | norm (x - y) <= e].
+
+Definition closed_ball {R : numDomainType} {V : pseudoMetricType R}
+  (x : V) (e : R) := closure (ball x e).
+
+Section closed_ball_lemmas.
+Context {R : numDomainType} {V : pseudoMetricType R}.
+Implicit Types (x : V) (r : R).
+
+Lemma closure_ballE x r : closure (ball x r) = closed_ball x r.
+Proof. by []. Qed.
+
+Lemma closed_ballxx x r : 0 < r -> closed_ball x r x.
+Proof. by move=> ?; exact/subset_closure/ballxx. Qed.
+
+Lemma closed_ball_closed x r : closed (closed_ball x r).
+Proof. exact: closed_closure. Qed.
+
+Lemma subset_closed_ball x r : ball x r `<=` closed_ball x r.
+Proof. exact: subset_closure. Qed.
+
+Lemma le_closed_ball x r1 r2 : (r1 <= r2)%O ->
+  closed_ball x r1 `<=` closed_ball x r2.
+Proof. by rewrite /closed_ball => le; apply/closureS/le_ball. Qed.
+
+End closed_ball_lemmas.
+#[deprecated(since="mathcomp-analysis 1.14.0", note="renamed to `closure_ballE`")]
+Notation closure_ball := closure_ballE (only parsing).
+
+Lemma subset_closure_half {R : numFieldType} {V : pseudoMetricType R} (x : V)
+  (r : R) : 0 < r -> closed_ball x (r / 2) `<=` ball x r.
+Proof.
+move:r => _/posnumP[r] z /(_ (ball z ((r%:num/2)%:pos)%:num)) [].
+  exact: nbhsx_ballx.
+by move=> y [+/ball_sym]; rewrite [t in ball x t z]splitr; apply: ball_triangle.
+Qed.
