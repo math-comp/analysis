@@ -10,9 +10,17 @@ From mathcomp Require Import unstable.
 From mathcomp Require Import numfun.
 
 (**md**************************************************************************)
-(* # SubDistribution                                                             *)
+(* # SubDistribution                                                          *)
 (*                                                                            *)
 (* ```                                                                        *)
+(*        SubDistribution T R == subdistribution for choicetype T with values *)
+(*                               in R                                         *)
+(*                 isSubDistr == interface for functions that satisfy the     *)
+(*                               property of SubDistribution.                 *)
+(*                      dnull == the zero distribution (null distribution)    *)
+(*                      dunit == degenerate distribution                      *)
+(*                       dlet == monadic bind for distribution                *)
+(*                       dlim == limite for index distribution                *)
 (* ```                                                                        *)
 (******************************************************************************)
 
