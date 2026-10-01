@@ -38,21 +38,9 @@
   + lemma `PseudoMetricNormedZmodule_opp_unif_continuous`
   + lemma `standard_scale_continuous`
   + notation `topologicalNmodType`
-  + lemmas `cvg0D`, `cvgD0`, `cvg0B`, `cvgB0`, `cvgN0`
 
-- in `normed_module.v`:
-  + lemmas `cvg1M`, `cvgM1`, `cvg0M`, `cvgM0`
-  + lemmas `cvg1Z`, `cvg0Z`, `cvgZ0`
-
-- in `function_spaces.v`:
-  + lemma `within_continuous_big`
-
-- in `nat_topology.v`:
-  + lemma `near_infty_leq`
-
-- in `num_topology.v`:
-  + lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`,
-    `at_left_shift`, `at_right_shift`
+- in `sequences.v`,
+  + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
 
 - in `num_normedtype.v`,
   + lemmas `pinftyV`, `ninftyV`, `cvgryV`, `cvgrNyV`, `lt0_cvgMlNy`, 
@@ -60,9 +48,10 @@
 
 - in `pseudometric_normed_Zmodule.v`,
   + lemmas `fmap_at_left0P`, `fmap_at_right0E`
+  + lemma `near_shiftE`
 
 - in `tvs.v`,
-  + lemmas `near_shiftE`, `nearZE`
+  + lemma `nearZE`
 
 - in `ereal.v`:
   + lemma `ge0_addBefctE`
@@ -258,10 +247,6 @@
     from level 36 to 34 and level of `F` from 36 to 41.
     In particular, this means that `\int[mu]_(x in D) f x * g x`
     now parses as `\int[mu]_(x in D) (f x * g x)`.
-- in `sequences.v`,
-  + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
-
-### Changed
 
 - moved from `tvs.v` to `pseudometric_normed_Zmodule.v`
   + mixin `PreTopologicalNmodule_isTopologicalNmodule`
@@ -287,9 +272,12 @@
     `subset_closure_half`, `le_closed_ball`
 
 - moved from `metric_structure.v` to `num_topology.v`: 
-  + lemma `cvg_at_right_left_dnbhs`, generalized to `topologicalType` from `metricType`.
-- moved from `metric_structure.v` to `num_topology.v`: 
   + lemma `cvg_at_right_left_dnbhs`, generalized to `topologicalType` from `metricType`
+
+- moved from `tvs.v` to `pseudometric_normed_Zmodule.v`
+  and generalized:
+  + lemma `nbhsB_subproof`, `nbhsT_subproof`
+  + lemma `nbhsB`
 
 ### Renamed
 
@@ -320,8 +308,10 @@
     `cvg_sub0`, `cvg0`, `subr_cvg0`
   + lemmas `within_continuousD`, `within_continuousB`, `within_continuousN`
   + lemmas `le_closed_ball`, `closed_ball0`
+
 - in `tvs.v`:
-  + lemma `nbhsB`
+  + lemmas `fun_cvgZ`, `fun_cvgZr`
+  + lemmas `nbhsZ`, `nbhs0Z`
 
 ### Deprecated
 
