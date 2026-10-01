@@ -14,6 +14,7 @@ From mathcomp Require Import vector archimedean interval matrix.
 (* and mention it in the changelog.                                           *)
 (*                                                                            *)
 (* ```                                                                        *)
+(*                clamp x := max (min x max) min                              *)
 (*                 swap x := (x.2, x.1)                                       *)
 (*           map_pair f x := (f x.1, f x.2)                                   *)
 (*    nondecreasing_fun f == the function f is non-decreasing                 *)
@@ -47,7 +48,6 @@ From mathcomp Require Import vector archimedean interval matrix.
 Attributes warn(note="The unstable.v file should only be used inside analysis.",
   cats="internal-analysis").
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
