@@ -94,19 +94,50 @@ HB.structure Definition TopologicalLmodule (K : numDomainType) :=
         & TopologicalZmodule_isTopologicalLmodule K M}.
 
 Section TopologicalLmodule_theory.
-Context {R : numFieldType} (E : topologicalType) (F : topologicalLmodType R).
+Context {R : numFieldType} (E : topologicalLmodType R).
 
-Lemma fun_cvgZ (U : set_system E) {FF : Filter U} (l : E -> R) (f : E -> F)
-    (r : R) a :
+Lemma fun_cvgZ (T : Type) (U : set_system T) {FF : Filter U} (l : T -> R)
+    (f : T -> E) (r : R) a :
   l @ U --> r -> f @ U --> a ->
   l x *: f x @[x --> U] --> r *: a.
 Proof.
 by move=> *; apply: continuous2_cvg => //; exact: (scale_continuous (_, _)).
 Qed.
 
-Lemma fun_cvgZr (U : set_system E) {FF : Filter U} k (f : E -> F) a :
+Lemma fun_cvgZr (T : Type) (U : set_system T) {FF : Filter U} k (f : T -> E) a :
   f @ U --> a -> k \*: f @ U --> k *: a.
 Proof. by apply: fun_cvgZ => //; exact: cvg_cst. Qed.
+
+Lemma nbhs0Z (U : set E) (r : R) : r != 0 -> nbhs 0 U -> nbhs 0 ( *:%R r @` U ).
+Proof.
+move=> r0 U0; have /= := scale_continuous (r^-1, 0) U.
+rewrite scaler0 => /(_ U0)[]/= B [B1 B2] BU.
+near=> x => //=; exists (r^-1 *: x); last by rewrite scalerA divff// scale1r.
+by apply: (BU (r^-1, x)); split => //=;[exact: nbhs_singleton|near: x].
+Unshelve. all: by end_near. Qed.
+
+Lemma nbhsZ (U : set E) (r : R) (x :E) :
+  r != 0 -> nbhs x U -> nbhs (r *:x) ( *:%R r @` U ).
+Proof.
+move=> r0 U0; have /= := scale_continuous ((r^-1, r *: x)) U.
+rewrite scalerA mulVf// scale1r =>/(_ U0)[] /= B [B1 B2] BU.
+near=> z; exists (r^-1 *: z); last by rewrite scalerA divff// scale1r.
+by apply: (BU (r^-1,z)); split; [exact: nbhs_singleton|near: z].
+Unshelve. all: by end_near. Qed.
+
+Lemma nearZE (c : R) (x : E) (P : set E) :
+  c != 0 -> (\forall y \near c *: x, P y) = (\near x, P (c *: x)).
+Proof.
+move=> c_neq0.
+have cinv_neq0 : c^-1 != 0 by apply: invr_neq0.
+eqProp.
+- move/(nbhsZ cinv_neq0).
+  rewrite scalerK//.
+  apply: filterS => ? [y Py <-].
+  by rewrite scalerKV.
+- move/(nbhsZ c_neq0).
+  by apply: filterS => ? [y Pcy <-].
+Qed.
 
 End TopologicalLmodule_theory.
 
@@ -281,24 +312,6 @@ Lemma nbhs0N_subproof (f : continuous (fun z : R^o * E => z.1 *: z.2)) :
   nbhs 0 U -> nbhs 0 (-%R @` U).
 Proof. by move => Ux; rewrite -oppr0; exact: nbhsN_subproof. Qed.
 
-Lemma nbhsT_subproof (f : continuous (fun x : E * E => x.1 + x.2)) (x : E) :
-  nbhs 0 U -> nbhs x (+%R x @` U).
-Proof.
-move => U0; have /= := f (x, -x) U; rewrite subrr => /(_ U0).
-move=> [B] [B1 B2] BU; near=> x0.
-exists (x0 - x); last by rewrite addrC subrK.
-by apply: (BU (x0, -x)); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
-Unshelve. all: by end_near. Qed.
-
-Lemma nbhsB_subproof (f : continuous (fun x : E * E => x.1 + x.2)) (z x : E) :
-  nbhs z U -> nbhs (x + z) (+%R x @` U).
-Proof.
-move=> U0; have /= := f (x + z, -x) U; rewrite [x + z]addrC addrK.
-move=> /(_ U0)[B] [B1 B2] BU; near=> x0.
-exists (x0 - x); last by rewrite addrC subrK.
-by apply: (BU (x0, -x)); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
-Unshelve. all: by end_near. Qed.
-
 End properties_of_topologicalLmodule.
 
 HB.factory Record PreTopologicalLmod_isConvexTvs (R : numDomainType) E
@@ -458,61 +471,6 @@ Lemma nbhsT (x :E) : nbhs 0 U -> nbhs x (+%R x @` U).
 Proof. exact/nbhsT_subproof/add_continuous. Qed.
 
 End ConvexTvs_numDomain.
-
-Lemma nbhsB {R : numDomainType} {E : topologicalLmodType R} (U : set E)
-    (z x : E) :
-  nbhs z U -> nbhs (x + z) (+%R x @` U).
-Proof. exact/nbhsB_subproof/add_continuous. Qed.
-
-(* NB: similar to nbhsDl *)
-Lemma near_shiftE (R : numDomainType) (E : topologicalLmodType R) (U : set E) (x a : E) :
-  (\forall y \near x + a, U y) = (\near x, U (x + a)).
-Proof.
-eqProp; rewrite -!nbhs_nearE.
-- move/(nbhsB (-a)).
-  rewrite addrC addrK.
-  apply: filterS => _ [y Uy <-].
-  by rewrite addrC addNKr.
-- move/(nbhsB a); rewrite addrC.
-  apply: filterS => ? [y Uya <-].
-  by rewrite addrC.
-Qed.
-
-Section ConvexTvs_numField.
-
-Lemma nbhs0Z (R : numFieldType) (E : convexTvsType R) (U : set E) (r : R) :
-  r != 0 -> nbhs 0 U -> nbhs 0 ( *:%R r @` U ).
-Proof.
-move=> r0 U0; have /= := scale_continuous (r^-1, 0) U.
-rewrite scaler0 => /(_ U0)[]/= B [B1 B2] BU.
-near=> x => //=; exists (r^-1 *: x); last by rewrite scalerA divff// scale1r.
-by apply: (BU (r^-1, x)); split => //=;[exact: nbhs_singleton|near: x].
-Unshelve. all: by end_near. Qed.
-
-Lemma nbhsZ (R : numFieldType) (E : convexTvsType R) (U : set E) (r : R) (x :E) :
-  r != 0 -> nbhs x U -> nbhs (r *:x) ( *:%R r @` U ).
-Proof.
-move=> r0 U0; have /= := scale_continuous ((r^-1, r *: x)) U.
-rewrite scalerA mulVf// scale1r =>/(_ U0)[] /= B [B1 B2] BU.
-near=> z; exists (r^-1 *: z); last by rewrite scalerA divff// scale1r.
-by apply: (BU (r^-1,z)); split; [exact: nbhs_singleton|near: z].
-Unshelve. all: by end_near. Qed.
-
-Lemma nearZE (R : numFieldType) (T : convexTvsType R) (c : R) (x : T) (P : set T) :
-  c != 0 -> (\forall y \near c *: x, P y) = (\near x, P (c *: x)).
-Proof.
-move=> c_neq0.
-have cinv_neq0 : c^-1 != 0 by apply: invr_neq0.
-eqProp.
-- move/(nbhsZ cinv_neq0).
-  rewrite scalerK//.
-  apply: filterS => ? [y Py <-].
-  by rewrite scalerKV.
-- move/(nbhsZ c_neq0).
-  by apply: filterS => ? [y Pcy <-].
-Qed.
-
-End ConvexTvs_numField.
 
 Section standard_topology.
 Context {R : numFieldType}.

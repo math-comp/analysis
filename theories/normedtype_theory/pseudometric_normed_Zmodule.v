@@ -212,6 +212,31 @@ End within_continuous_topologicalNmodType.
 HB.structure Definition PreTopologicalZmodule :=
   {M of Topological M & GRing.Zmodule M}.
 
+Section PreTopologicalZmoduleTheory.
+Context {M : PreTopologicalZmodule.type}.
+
+Lemma nbhsB_subproof (U : set M) (f : continuous (fun x : M * M => x.1 + x.2))
+    (z x : M) :
+  nbhs z U -> nbhs (x + z) (+%R x @` U).
+Proof.
+move=> U0; have /= := f (x + z, -x) U; rewrite [x + z]addrC addrK.
+move=> /(_ U0)[B] [B1 B2] BU; near=> x0.
+exists (x0 - x); last by rewrite addrC subrK.
+by apply: (BU (x0, -x)); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
+Unshelve. all: by end_near. Qed.
+
+Lemma nbhsT_subproof (U : set M) (f : continuous (fun x : M * M => x.1 + x.2))
+    (x : M) :
+  nbhs 0 U -> nbhs x (+%R x @` U).
+Proof.
+move => U0; have /= := f (x, -x) U; rewrite subrr => /(_ U0).
+move=> [B] [B1 B2] BU; near=> x0.
+exists (x0 - x); last by rewrite addrC subrK.
+by apply: (BU (x0, -x)); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
+Unshelve. all: by end_near. Qed.
+
+End PreTopologicalZmoduleTheory.
+
 HB.mixin Record TopologicalNmodule_isTopologicalZmodule M
     & PreTopologicalZmodule M := {
   opp_continuous : continuous (-%R : M -> M) ;
@@ -231,6 +256,25 @@ move=> x; apply: (@continuous_comp _ _ _ (fun x => (x.1, - x.2))
   (fun x : M * M => x.1 + x.2)); last exact: add_continuous.
 apply: cvg_pair; first exact: cvg_fst.
 by apply: continuous_comp; [exact: cvg_snd|exact: opp_continuous].
+Qed.
+
+Lemma nbhsB (U : set M) (z x : M) : nbhs z U -> nbhs (x + z) (+%R x @` U).
+Proof. exact/nbhsB_subproof/add_continuous. Qed.
+
+(**md NB: This lemma is similar to `nbhsDl` later in this file but using
+  different structures, there could be only one lemma were we to state it
+  for MetricNormedZmodule. *)
+Lemma near_shiftE (U : set M) (x a : M) :
+  (\forall y \near x + a, U y) = (\near x, U (x + a)).
+Proof.
+eqProp; rewrite -!nbhs_nearE.
+- move/(nbhsB (-a)).
+  rewrite addrC addrK.
+  apply: filterS => _ [y Uy <-].
+  by rewrite addrC addNKr.
+- move/(nbhsB a); rewrite addrC.
+  apply: filterS => ? [y Uya <-].
+  by rewrite addrC.
 Qed.
 
 End TopologicalZmoduleTheory.
@@ -1123,20 +1167,19 @@ Proof.
 by rewrite at_leftN -?fmap_comp; under [_ \o _]eq_fun => ? do rewrite /= opprK.
 Qed.
 
-Lemma fmap_at_left0P {T : Type} {R : numFieldType} x (f : R -> T) : (f (x - e) @[e --> 0^'+]) = (f @ x^'-).
+Lemma fmap_at_left0P {T : Type} {R : numFieldType} x (f : R -> T) :
+  (f (x - e) @[e --> 0^'+]) = (f @ x^'-).
 Proof.
-rewrite -(subrr (-x)) at_right_shift at_rightN -fmap_comp.
-apply: near_eq_cvg_eq.
-apply: (nearW (F := x^'-)) => y /=.
-by rewrite opprB addNKr opprK.
+rewrite -(subrr (- x)) at_right_shift at_rightN -fmap_comp.
+by apply: near_eq_cvg_eq; apply/nearW => y/=; rewrite opprB addNKr opprK.
 Qed.
 
-Lemma fmap_at_right0E {T : Type} {R : numFieldType} (x : R) (f : R -> T) : (f (x + e) @[e --> 0^'+]) = (f @ x^'+).
+Lemma fmap_at_right0E {T : Type} {R : numFieldType} (x : R) (f : R -> T) :
+  (f (x + e) @[e --> 0^'+]) = (f @ x^'+).
 Proof.
 rewrite -(subrr x) at_right_shift.
 apply: near_eq_cvg_eq.
-apply: (nearW (F := x^'+)) => y.
-by rewrite addrC subrK.
+by apply/nearW => /= y; rewrite addrC subrK.
 Qed.
 
 Section at_left_right_pseudoMetricNormedZmod.
