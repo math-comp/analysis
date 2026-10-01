@@ -39,6 +39,20 @@
   + lemma `standard_scale_continuous`
   + notation `topologicalNmodType`
 
+- in `sequences.v`,
+  + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
+
+- in `num_normedtype.v`,
+  + lemmas `pinftyV`, `ninftyV`, `cvgryV`, `cvgrNyV`, `lt0_cvgMlNy`, 
+    `lt0_cvgMrNy`, `lt0_cvgMly`, `lt0_cvgMry`
+
+- in `pseudometric_normed_Zmodule.v`,
+  + lemmas `fmap_at_left0P`, `fmap_at_right0E`
+  + lemma `near_shiftE`
+
+- in `tvs.v`,
+  + lemma `nearZE`
+
 - in `unstable.v`:
   + definitions `clamp`, `clamp_gele`
   + lemmas `clamp_gemin`, `clamp_lemax`, `minmax_clamp`,
@@ -55,10 +69,6 @@
     from level 36 to 34 and level of `F` from 36 to 41.
     In particular, this means that `\int[mu]_(x in D) f x * g x`
     now parses as `\int[mu]_(x in D) (f x * g x)`.
-- in `sequences.v`,
-  + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
-
-### Changed
 
 - moved from `tvs.v` to `pseudometric_normed_Zmodule.v`
   + mixin `PreTopologicalNmodule_isTopologicalNmodule`
@@ -82,6 +92,14 @@
   + definitions `closed_ball_`, `closed_ball`
   + lemmas `closure_ballE`, `closed_ballxx`, `closed_ball_closed`, `subset_closed_ball`,
     `subset_closure_half`, `le_closed_ball`
+
+- moved from `metric_structure.v` to `num_topology.v`: 
+  + lemma `cvg_at_right_left_dnbhs`, generalized to `topologicalType` from `metricType`
+
+- moved from `tvs.v` to `pseudometric_normed_Zmodule.v`
+  and generalized:
+  + lemma `nbhsB_subproof`, `nbhsT_subproof`
+  + lemma `nbhsB`
 
 ### Renamed
 
@@ -112,6 +130,10 @@
     `cvg_sub0`, `cvg0`, `subr_cvg0`
   + lemmas `within_continuousD`, `within_continuousB`, `within_continuousN`
   + lemmas `le_closed_ball`, `closed_ball0`
+
+- in `tvs.v`:
+  + lemmas `fun_cvgZ`, `fun_cvgZr`
+  + lemmas `nbhsZ`, `nbhs0Z`
 
 ### Deprecated
 
