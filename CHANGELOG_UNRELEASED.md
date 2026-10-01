@@ -44,6 +44,9 @@
   + lemmas `clamp_gemin`, `clamp_lemax`, `minmax_clamp`,
     `clamp_id`, `clamp_min`, `clamp_max`
 
+- in `ftc.v`:
+  + lemmas `parameterized_integralN`, `parameterized_integralN_continuous`
+
 ### Changed
 
 - in `esum.v`:
