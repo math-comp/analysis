@@ -66,7 +66,7 @@ Proof.
 move=> Cx zLx; have [K [Kreal Kf]] := cvg_series_bounded Cx.
 have Kzxn n : 0 <= `|K + 1| * `|z ^+ n| / `|x ^+ n| by rewrite !mulr_ge0.
 apply: normed_cvg.
-apply: series_le_cvg Kzxn _ _ => [//=| /= n|].
+apply: series_squeeze_is_cvgn Kzxn _ _ => [//=| /= n|].
   rewrite (_ : `|_ * _| = `|f n * x ^+ n| * `|z ^+ n| / `|x ^+ n|).
     rewrite !normrM normr_id mulrAC mulfK // normr_eq0 expf_eq0 andbC.
     by case: ltrgt0P zLx; rewrite //= normr_lt0.
@@ -1470,7 +1470,7 @@ have : forall n, harmonic n <= riemannR a n.
   move=> [/=|n]; first by rewrite powR1 invr1.
   rewrite -[leRHS]div1r ler_pdivlMr ?powR_gt0// mulrC ler_pdivrMr//.
   by rewrite mul1r -[leRHS]powRr1// ler_powR// ler1n.
-move/(series_le_cvg harmonic_ge0 (fun i => ltW (riemannR_gt0 i a0))).
+move/(series_squeeze_is_cvgn harmonic_ge0 (fun i => ltW (riemannR_gt0 i a0))).
 by move/contra_not; apply; exact: dvg_harmonic.
 Qed.
 

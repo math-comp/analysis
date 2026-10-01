@@ -25,11 +25,16 @@
     from level 36 to 34 and level of `F` from 36 to 41.
     In particular, this means that `\int[mu]_(x in D) f x * g x`
     now parses as `\int[mu]_(x in D) (f x * g x)`.
+- in `sequences.v`,
+  + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
+
+### Changed
 
 ### Renamed
 
 - in `sequences.v`:
   + `limn_einf_shift` -> `limn_einf_addl`
+  + `series_le_cvg` -> `series_squeeze_is_cvgn`
 
 ### Generalized
 

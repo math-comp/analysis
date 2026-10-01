@@ -558,7 +558,7 @@ Proof. by rewrite telescopeK/= addrC addrNK. Qed.
 
 Section series_patched.
 Context (N : nat) {K : numFieldType} {V : normedModType K}.
-Implicit Types (f : nat -> V) (u : V ^nat)  (l : set_system V).
+Implicit Types (f : nat -> V) (u : V ^nat) (l : set_system V).
 
 Lemma is_cvg_series_restrict u_ :
   cvgn [sequence \sum_(N <= k < n) u_ k]_n = cvgn (series u_).
@@ -570,6 +570,20 @@ suff -> : (fun n => \sum_(N <= k < n) u_ k) =
 rewrite funeqE => n; case: leqP => // ltNn; apply: (canRL (addrK _)).
 by rewrite seriesEnat addrC -big_cat_nat// ltnW.
 Qed.
+
+Lemma is_cvg_series_shiftn u_ : cvgn (series u_) <-> cvgn [series u_ (n + N)]_n.
+Proof.
+split.
+- rewrite -is_cvg_series_restrict => /cvg_ex[/= l +].
+  rewrite -(cvg_shiftn N)/= => Nnul; apply: cvgP; apply: cvg_trans Nnul.
+  apply: near_eq_cvg; near=> n.
+  rewrite /series/=.
+  by rewrite -{1}(add0n N) big_addn addnK.
+- move=> cvgu; rewrite -is_cvg_series_restrict.
+  apply: cvgP; rewrite -(cvg_shiftn N)/=; apply: cvg_trans cvgu.
+  apply: near_eq_cvg; near=> n => /=.
+  by rewrite -{2}(add0n N) big_addn addnK.
+Unshelve. all: by end_near. Qed.
 
 End series_patched.
 
@@ -972,7 +986,7 @@ have := su_cv; rewrite near_swap => su_cvC; near=> m => /=; rewrite sub_series.
 by have [|/ltnW]:= leqP m.2 m.1 => m12; rewrite ?normrN; near: m.
 Unshelve. all: by end_near. Qed.
 
-Lemma series_le_cvg (R : realType) (u_ v_ : R ^nat) :
+Lemma series_squeeze_is_cvgn {R : realType} (u_ v_ : R ^nat) :
   (forall n, 0 <= u_ n) -> (forall n, 0 <= v_ n) ->
   (forall n, u_ n <= v_ n) ->
   cvgn (series v_) -> cvgn (series u_).
@@ -980,8 +994,29 @@ Proof.
 move=> u_ge0 v_ge0 le_uv /cvg_seq_bounded/bounded_fun_has_ubound[M v_M].
 apply: nondecreasing_is_cvgn; first exact: nondecreasing_series.
 exists M => _ [n _ <-].
-by apply: le_trans (v_M (series v_ n) _); [apply: ler_sum | exists n].
+by apply: le_trans (v_M (series v_ n) _); [exact: ler_sum | exists n].
 Qed.
+#[deprecated(since="mathcomp-analysis 1.19.0", use=series_squeeze_is_cvgn)]
+Notation series_le_cvg := series_squeeze_is_cvgn (only parsing).
+
+Lemma near_series_squeeze_is_cvgn {R : realType} (u_ v_ : R^nat) :
+    (\forall n \near \oo, 0 <= u_ n) -> (\forall n \near \oo, 0 <= v_ n) ->
+    (\forall n \near \oo, u_ n <= v_ n) ->
+  cvgn (series v_) -> cvgn (series u_).
+Proof.
+move=> u0 v0 uv cvg_v.
+near \oo => N; apply/(is_cvg_series_shiftn N).
+move: cvg_v => /(is_cvg_series_shiftn N); apply: series_le_cvg => /= n.
+- have : forall n, (n >= N)%N -> 0 <= u_ n.
+    by near: N; exact: (iffLR (near_infty_leq _)).
+  by apply; exact: leq_addl.
+- have : forall n, (n >= N)%N -> 0 <= v_ n.
+    by near: N; exact: (iffLR (near_infty_leq _)).
+  by apply; exact: leq_addl.
+- have : forall n, (n >= N)%N -> u_ n <= v_ n.
+    by near: N; exact: (iffLR (near_infty_leq _)).
+  by apply; exact: leq_addl.
+Unshelve. all: by end_near. Qed.
 
 Lemma normed_cvg {R : realType} (V : completeNormedModType R) (u_ : V ^nat) :
   cvgn [normed series u_] -> cvgn (series u_).
@@ -1039,19 +1074,18 @@ move=> k_gt0 Cf Hg.
 apply: (@cvg_to_0_linear _ _ (limn (series f)) k) => // h hLk; rewrite mulrC.
 have Ckf : cvgn (series (`|h| *: f)) := @is_cvg_seriesZ _ _ `|h| Cf.
 have Cng : cvgn [normed series (g h)].
-  apply: series_le_cvg (Hg _ hLk) _ => [//|?|].
+  apply: series_squeeze_is_cvgn (Hg _ hLk) _ => [//|?|].
     exact: le_trans (Hg _ hLk _).
   by under eq_fun do rewrite mulrC.
 apply: (le_trans (@lim_series_norm _ R^o _ Cng)).
 rewrite -[_ * _](lim_seriesZ _ Cf) (lim_series_le Cng Ckf) // => n.
-by rewrite [leRHS]mulrC; apply: Hg.
+by rewrite [leRHS]mulrC; exact: Hg.
 Qed.
 
 End series_linear.
 
 Section exponential_series.
-
-Variable R : realType.
+Context {R : realType}.
 Implicit Types x : R.
 
 Definition exp_coeff x := [sequence x ^+ n / n`!%:R]_n.
