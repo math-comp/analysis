@@ -592,7 +592,7 @@ have GacFa : G x @[x --> a^'+] --> (- c + F a)%R.
     apply/cvgrPdist_le => /= e e0; near=> t.
     rewrite opprB GFc; first by rewrite in_itv/=; apply/andP.
     by rewrite addNr normr0 ltW.
-  have := @cvgD _ _ _ _ Fap _ _ _ _ GFac Fa.
+  have := @cvgD _ _ _ Fap _ _ _ _ GFac Fa.
   rewrite (_ : (G \- F) + F = G)%R//.
   by apply/funext => x/=; rewrite subrK.
 have GbcFb : G x @[x --> b^'-] --> (- c + F b)%R.
@@ -601,7 +601,7 @@ have GbcFb : G x @[x --> b^'-] --> (- c + F b)%R.
     apply/cvgrPdist_le => /= e e0; near=> t.
     rewrite opprB GFc; first by rewrite in_itv/=; apply/andP.
     by rewrite addNr normr0 ltW.
-  have := @cvgD _ _ _ _ Fbn _ _ _ _ GFbc Fb.
+  have := @cvgD _ _ _ Fbn _ _ _ _ GFbc Fb.
   rewrite (_ : G \- F + F = G)%R //.
   by apply/funext => x/=; rewrite subrK.
 have contF : {within `[a, b], continuous F}.

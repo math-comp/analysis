@@ -13,11 +13,11 @@ From mathcomp Require Import uniform_structure pseudometric_structure compact.
 (* - topology                                                                 *)
 (* - uniform space                                                            *)
 (* - pseudometric space                                                       *)
+(* - metric space                                                             *)
 (******************************************************************************)
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -70,7 +70,6 @@ by exists (a, q) => //=; apply: pqA; split => //; exact: nbhs_singleton.
 Qed.
 
 (** product of two uniform spaces *)
-
 Section prod_Uniform.
 Local Open Scope relation_scope.
 Context {U V : uniformType}.
@@ -154,13 +153,69 @@ HB.instance Definition _ := Nbhs_isUniform.Build (U * V)%type
 
 End prod_Uniform.
 
+Lemma entourage_prod_exS (U V : uniformType) (P : set ((U * V) * (U * V))) :
+    entourage P ->
+  exists (A : set (U * U)) (B : set (V * V)),
+    [/\ entourage A, entourage B &
+      [set x | A (x.1.1, x.2.1) /\ B (x.1.2, x.2.2)] `<=` P].
+Proof.
+move=> [[A B] /= [entA entB] ABP].
+exists A, B; split => // -[[x1 y1] [x2 y2]] /= [Axx Byy].
+have /ABP [[[a b] [c d]] Pabcd]/= : (A `*` B) ((x1, x2), (y1, y2)) by [].
+by case=> <- <- <- <-.
+Qed.
+
+(**md TODO: mv to `unstable.v`? *)
+Definition interchange_prod {T U} (x : (T * U) * (T * U)) : (T * T) * (U * U) :=
+  (x.1.1, x.2.1, (x.1.2, x.2.2)).
+
+Lemma entourage_interchange_prod {U V : uniformType}
+  (B : set (U * U)) (C : set (V * V)) :
+entourage B -> entourage C -> entourage (interchange_prod @^-1` (B `*` C)).
+Proof.
+move=> entB entC; exists (B, C) => //= -[[x1 x2] [x3 x4]] [/= HB HC].
+by exists (x1, x3, (x2, x4)).
+Qed.
+
+Section unif_continuous_pair.
+Context {U V W : uniformType}.
+
+Lemma pair_unif_continuous (f : U -> V) (g : U -> W) :
+  unif_continuous f -> unif_continuous g ->
+  unif_continuous (fun x => (f x, g x)).
+Proof.
+move=> cf cg A entA.
+have [/= BC [entB entC] BCA] : exists2 BC, entourage BC.1 /\ entourage BC.2 &
+    interchange_prod @^-1` (BC.1 `*` BC.2) `<=` A.
+  move: entA => -[[B C]] entBD BCA; exists (B, C) => //=.
+  move=> [[x1 x2] [x3 x4]] [/=] Bx Cx.
+  have /= := BCA (x1, x3, _) (conj Bx Cx).
+  by move=> [[[a1 a2] [b1 b2]]]/= ? [<- <- <- <-].
+apply: (@filterS _ _ _ (map_pair f @^-1` BC.1 `&` (map_pair g) @^-1` BC.2)).
+  by move=> xy [Bxy Cxy]; exact: BCA.
+by apply: filterI; [exact: cf|exact: cg].
+Qed.
+
+Lemma fst_unif_continuous : unif_continuous (@fst U V).
+Proof.
+move=> A entA; exists (A, setT) => /=; first by split => //; exact: entourageT.
+by move=> [[x1 x2] [y1 y2]] [/= Ax _]; exists (x1, y1, (x2, y2)).
+Qed.
+
+Lemma snd_unif_continuous : unif_continuous (@snd U V).
+Proof.
+move=> B entB; exists (setT, B) => /=; first by split => //; exact: entourageT.
+by move=> [[x1 x2] [y1 y2]] [/= _ Bx]; exists (x1, y1, (x2, y2)).
+Qed.
+
+End unif_continuous_pair.
+
 (** product of two pseudoMetric spaces *)
 Section prod_PseudoMetric.
 Context {R : numDomainType} {U V : pseudoMetricType R}.
 Implicit Types (x y : U * V).
 
-Definition prod_ball x (eps : R) y :=
-  ball (fst x) eps (fst y) /\ ball (snd x) eps (snd y).
+Definition prod_ball x (eps : R) y := ball x.1 eps y.1 /\ ball x.2 eps y.2.
 
 Lemma prod_ball_center x (eps : R) : 0 < eps -> prod_ball x eps x.
 Proof. by move=> /posnumP[?]. Qed.
@@ -185,7 +240,8 @@ rewrite predeqE => P; split; last first.
 move=> [[A B]] /=; rewrite -!entourage_ballE.
 move=> [[_/posnumP[eA] sbA] [_/posnumP[eB] sbB] sABP].
 exists (Num.min eA eB)%:num => //= -[[a b] [c d] [/= bac bbd]].
-suff /sABP [] : (A `*` B) ((a, c), (b, d)) by move=> [[??] [??]] ? [<-<-<-<-].
+suff /sABP [] : (A `*` B) ((a, c), (b, d)).
+  by move=> [[? ?] [? ?]] ? [<- <- <- <-].
 (split; [apply: sbA|apply: sbB]) => /=.
   by apply: le_ball bac; rewrite num_le ge_min lexx.
 by apply: le_ball bbd; rewrite num_le ge_min lexx orbT.

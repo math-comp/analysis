@@ -4,7 +4,7 @@ From mathcomp Require Import boot order algebra all_classical.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import interval_inference reals topology_structure.
-From mathcomp Require Import uniform_structure order_topology.
+From mathcomp Require Import uniform_structure product_topology order_topology.
 From mathcomp Require Import pseudometric_structure.
 
 (**md**************************************************************************)
@@ -178,6 +178,33 @@ HB.instance Definition _ := @Nbhs_isUniform.Build (initial_topology f)
   initial_ent_split initial_ent_nbhs.
 
 End initial_uniform.
+
+Section initial_unif_continuous.
+Context {T : choiceType} {U : uniformType} (f : T -> U).
+
+Lemma initial_unif_continuous : unif_continuous (f : initial_topology f -> U).
+Proof. by move=> A entA; by exists A. Qed.
+
+Lemma initial_unif_continuous_comp
+    (V : uniformType) (g : V -> initial_topology f) :
+  unif_continuous (f \o g : V -> U) -> unif_continuous g.
+Proof. by move=> fg /= A [B entB BA]; apply: filterS _ _ BA _; exact: fg. Qed.
+
+Lemma initial_unif_continuous_comp_fst (V : uniformType) :
+  unif_continuous (fun x : initial_topology f * V => f x.1).
+Proof.
+by apply: unif_continuous_comp;
+  [exact: fst_unif_continuous|exact: initial_unif_continuous].
+Qed.
+
+Lemma initial_unif_continuous_comp_snd (V : uniformType) :
+  unif_continuous (fun x : V * initial_topology f => f x.2).
+Proof.
+by apply: unif_continuous_comp;
+  [exact: snd_unif_continuous|exact: initial_unif_continuous].
+Qed.
+
+End initial_unif_continuous.
 
 HB.instance Definition _ (pS : pointedType) (U : uniformType) (f : pS -> U) :=
   Pointed.on (initial_topology f).

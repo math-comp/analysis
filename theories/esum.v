@@ -1016,7 +1016,7 @@ suff: ((fun n => C_ n - (A - B)) @ \oo --> (0 : R^o))%R.
   rewrite [X in  X - _]esummable_nneseries_lim//; first exact/esummable_funepos.
   rewrite [X in _ - X]esummable_nneseries_lim//; first exact/esummable_funeneg.
   rewrite -EFinB; apply/cvg_lim => //; apply/fine_cvgP; split; last first.
-    exact: (@cvg_sub0 _ _ _ _ _ _ (cst (A - B)%R) _ CAB).
+    exact: (@cvg_sub0 _ _ _ _ _ (cst (A - B)%R)).
   apply: nearW => n; rewrite fin_num_abs; apply: le_lt_trans Pf => /=.
   by rewrite -nneseries_esum// (le_trans (lee_abs_sum _ _ _))// nneseries_lim_ge.
 have : ((fun x => A_ x - B_ x) @ \oo --> A - B)%R.

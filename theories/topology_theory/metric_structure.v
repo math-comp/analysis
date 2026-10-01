@@ -92,6 +92,44 @@ Qed.
 
 End metric_lemmas.
 
+Section prod_metric.
+Context {K : numDomainType} (T U : metricType K).
+
+Let M := (T * U)%type.
+
+Let cmp (x y : M) : mdist x.1 y.1 >=< mdist x.2 y.2.
+Proof. by apply: real_comparable; apply: ger0_real; exact: mdist_ge0. Qed.
+
+Definition prod_mdist (x y : M) := maxr (mdist x.1 y.1) (mdist x.2 y.2).
+
+Let prod_mdist_ge0 x y : 0 <= prod_mdist x y.
+Proof. by rewrite /prod_mdist comparable_le_max// mdist_ge0. Qed.
+
+Let prod_mdist_positivity x y : prod_mdist x y = 0 -> x = y.
+Proof.
+rewrite /prod_mdist /= => m0.
+have le01 : mdist x.1 y.1 <= 0 by rewrite -m0 comparable_le_max// lexx.
+have le02 : mdist x.2 y.2 <= 0 by rewrite -m0 comparable_le_max// lexx orbT.
+have eq01 : mdist x.1 y.1 = 0 by apply/le_anti; rewrite le01 mdist_ge0.
+have eq02 : mdist x.2 y.2 = 0 by apply/le_anti; rewrite le02 mdist_ge0.
+rewrite (surjective_pairing x) (surjective_pairing y).
+by congr pair; exact: mdist_positivity.
+Qed.
+
+Let ballEprod_mdist x d : ball x d = [set y | prod_mdist x y < d].
+Proof.
+apply/seteqP; split => [y []|y /= xyd].
+  rewrite !ballEmdist/= /prod_mdist => b1 b2.
+  by rewrite comparable_gt_max// b1 b2.
+rewrite /ball/= /prod_ball/= !ballEmdist/=.
+by apply/andP; rewrite -comparable_gt_max.
+Qed.
+
+HB.instance Definition _ := PseudoMetric_isMetric.Build K (T * U)%type
+  prod_mdist_ge0 prod_mdist_positivity ballEprod_mdist.
+
+End prod_metric.
+
 HB.factory Record isMetric (K : numFieldType) (M : Type) & Choice M := {
   mdist : M -> M -> K ;
   mdistxx : forall x, mdist x x = 0 ;

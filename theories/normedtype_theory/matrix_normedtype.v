@@ -286,6 +286,20 @@ elim/big_ind2 : _ => // [|a b c d bE dE]; first by rewrite mulr0.
 by rewrite !num_max bE dE maxr_pMr.
 Qed.
 
+HB.instance Definition _ (K : numFieldType) (m n : nat) :=
+  Uniform.on ('M[K]_(m, n)).
+
+Section matrix_UniformNZmodule.
+Context {K : numFieldType} {m n : nat}.
+
+HB.instance Definition _ := PreUniformNmodule_isUniformNmodule.Build
+  'M[K]_(m, n) (@PseudoMetricNormedZmodule_add_unif_continuous _ _).
+
+HB.instance Definition _ := UniformNmodule_isUniformZmodule.Build
+  'M[K]_(m, n) (@PseudoMetricNormedZmodule_opp_unif_continuous _ _).
+
+End matrix_UniformNZmodule.
+
 HB.instance Definition _ (K : numFieldType) m n :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build K 'M[K]_(m, n)
     (@mx_normZ K m n).
