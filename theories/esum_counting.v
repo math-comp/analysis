@@ -3,8 +3,10 @@ From mathcomp Require Import boot order algebra.
 From mathcomp.classical Require Import boolp classical_sets mathcomp_extra functions.
 From mathcomp Require Import xfinmap constructive_ereal reals discrete.
 From mathcomp Require Import realseq realsum.
-From mathcomp Require Import esum sequences normedtype ereal cardinality fsbigop.
+From mathcomp Require Import topology esum sequences normedtype ereal.
+From mathcomp Require Import cardinality fsbigop.
 From mathcomp Require Import measure lebesgue_integral.
+From mathcomp Require Import counting_distr.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -15,15 +17,11 @@ Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope ring_scope.
 
-(* -------------------------------------------------------------------- *)
-Local Notation simpm := Monoid.simpm.
-
-Local Open Scope classical_set_scope.
 
 (* -------------------------------------------------------------------- *)
-(* TODO: Do PR for this lemma; replace esum_bigcupT in esum.v*)
-Lemma esum_bigcup_set {R : realType} (T1 T2 : choiceType) (K : set T1) (J : T1 -> set T2)
-    (a : T2 -> \bar R) :
+(* TODO: PR.  This generalizes `esum_bigcupT` (esum.v) *)
+Lemma esum_bigcup_set {R : realType} (T1 T2 : choiceType) (K : set T1)
+    (J : T1 -> set T2) (a : T2 -> \bar R) :
     trivIset setT J -> (forall x, (0 <= a x)%E) ->
   (\esum_(i in \bigcup_(k in K) J k) a i =
    \esum_(k in K) \esum_(j in J k) a j)%E.
@@ -36,6 +34,11 @@ move=> tJ a0; rewrite esum_esum//; apply: reindex_esum => //; split.
   by rewrite iE j12.
 - by move=> j [i Ki Jij]/=; exists (i, j).
 Qed.
+
+(* -------------------------------------------------------------------- *)
+Local Notation simpm := Monoid.simpm.
+
+Local Open Scope classical_set_scope.
 
 (* -------------------------------------------------------------------- *)
 Definition discrete_measurable_space (T : choiceType) : Type := T.
@@ -146,3 +149,49 @@ move=> f0 ; apply/eqP; rewrite eq_le; apply/andP; split.
 Qed.
 
 End Counting.
+
+Lemma esum_setT_discrete {R : realType} (T : choiceType) (f : T -> \bar R) :
+  (\esum_(x in [set: discrete_measurable_space T]) f x
+     = \esum_(x in [set: T]) f x)%E.
+Proof.
+apply: (@reindex_esum R T (discrete_measurable_space T)
+          [set: T] [set: discrete_measurable_space T] id f); split.
+- by move=> x.
+- by move=> x y _ _.
+- by move=> x _; exists x.
+Qed.
+
+Section SubDistribution.
+  Context (R : realType) (T : choiceType) (mu: {distr T / R}).
+
+Definition P (S : set (discrete_measurable_space T)) :=
+    \esum_(x in S) (EFin \o mu) x.
+
+Let P0 : P set0 = 0%E.
+Proof. by rewrite /P esum_set0. Qed.
+
+Let P_ge0 (S : set (discrete_measurable_space T)) : (0 <= P S)%E.
+Proof. by apply: esum_ge0 => x _; rewrite lee_fin. Qed.
+
+Let P_sigma_additive : semi_sigma_additive P.
+Proof.
+move=> F _ tF _.
+have -> : P (\bigcup_n F n) = (\sum_(i <oo) P (F i))%E.
+  rewrite nneseries_esumT; first by move=> n; exact: P_ge0.
+  apply: esum_bigcup_set => //.
+  by move=> x; rewrite lee_fin.
+apply: cvg_toP => //.
+apply: is_cvg_nneseries => n _ _; rewrite /P.
+by apply: esum_ge0 => x _; rewrite lee_fin.
+Qed.
+
+HB.instance Definition _ := isMeasure.Build _ _ _ P
+  P0 P_ge0 P_sigma_additive.
+
+Let P_setT : (P [set: discrete_measurable_space T] <= 1)%E.
+Proof. by rewrite /P esum_setT_discrete; exact: le1_mu. Qed.
+
+HB.instance Definition _ :=
+  @Measure_isSubProbability.Build _ _ R P P_setT.
+
+End SubDistribution.
