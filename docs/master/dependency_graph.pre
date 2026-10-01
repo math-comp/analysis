@@ -589,6 +589,7 @@ subgraph cluster_Topology {
   "classical/unstable" -> "theories/topology_theory/initial_topology";
   "reals/reals" -> "theories/topology_theory/initial_topology";
   "theories/topology_theory/order_topology" -> "theories/topology_theory/initial_topology";
+  "theories/topology_theory/product_topology" -> "theories/topology_theory/initial_topology";
   "theories/topology_theory/pseudometric_structure" -> "theories/topology_theory/initial_topology";
   "theories/topology_theory/topology_structure" -> "theories/topology_theory/initial_topology";
   "theories/topology_theory/uniform_structure" -> "theories/topology_theory/initial_topology";
