@@ -39,6 +39,11 @@
   + lemma `standard_scale_continuous`
   + notation `topologicalNmodType`
 
+- in `unstable.v`:
+  + definitions `clamp`, `clamp_gele`
+  + lemmas `clamp_gemin`, `clamp_lemax`, `minmax_clamp`,
+    `clamp_id`, `clamp_min`, `clamp_max`
+
 ### Changed
 
 - in `esum.v`:

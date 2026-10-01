@@ -14,6 +14,7 @@ From mathcomp Require Import vector archimedean interval matrix.
 (* and mention it in the changelog.                                           *)
 (*                                                                            *)
 (* ```                                                                        *)
+(*                clamp x := max (min x max) min                              *)
 (*                 swap x := (x.2, x.1)                                       *)
 (*           map_pair f x := (f x.1, f x.2)                                   *)
 (*    nondecreasing_fun f == the function f is non-decreasing                 *)
@@ -47,13 +48,40 @@ From mathcomp Require Import vector archimedean interval matrix.
 Attributes warn(note="The unstable.v file should only be used inside analysis.",
   cats="internal-analysis").
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
+
+Section Clamp.
+Context {R : realDomainType} (min max : R).
+Hypothesis minmax : min <= max.
+
+Definition clamp (x : R) := Num.max (Num.min x max) min.
+
+Lemma clamp_gemin x : min <= clamp x.
+Proof. by rewrite le_max lexx orbT. Qed.
+
+Lemma clamp_lemax x : clamp x <= max.
+Proof. by rewrite ge_max ge_min lexx minmax orbT. Qed.
+
+Definition clamp_gele := (clamp_gemin, clamp_lemax).
+
+Lemma minmax_clamp x : min <= x <= max -> clamp x = x.
+Proof. by case/andP => minx xmax; rewrite /clamp min_l ?max_l. Qed.
+
+Lemma clamp_id x : clamp (clamp x) = clamp x.
+Proof. by rewrite minmax_clamp// !clamp_gele. Qed.
+
+Lemma clamp_min : clamp min = min.
+Proof. by rewrite minmax_clamp// lexx minmax. Qed.
+
+Lemma clamp_max : clamp max = max.
+Proof. by rewrite minmax_clamp// lexx minmax. Qed.
+
+End Clamp.
 
 Module Order.
 Import Order.
