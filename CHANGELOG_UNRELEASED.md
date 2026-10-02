@@ -86,6 +86,17 @@
   + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
 
 - new file `edist.v`
+- in `classical_sets.v`
+  + lemma `bigcup_idset1`
+
+- in `esumv.v`:
+  + lemma `nonempty_esumy`
+  + lemma `infinite_esum_cst`
+
+- new file `counting_lebesgue.v`:
+  + defintion `discrete_measurable_space`
+  + lemmas `counting_set1`, `counting_esum_cst`, `discrete_integral_set1`,
+    `discrete_integral_sum`, `integral_counting_esum`
 
 - in `random_variable.v`:
   + lemma `not_range_pmf0`
