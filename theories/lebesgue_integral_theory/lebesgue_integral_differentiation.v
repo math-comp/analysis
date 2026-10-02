@@ -739,7 +739,7 @@ Implicit Types f g : R -> R.
 
 Definition lim_sup_davg f x := lime_sup (davg f x) 0.
 
-Local Notation "f ^*" := (lim_sup_davg f).
+Local Notation "f ^*" := (lim_sup_davg f) : ring_scope.
 
 Lemma lim_sup_davg_ge0 f x : 0 <= f^* x.
 Proof. by apply: limf_esup_ge0 => // => y; exact: iavg_ge0. Qed.
@@ -854,7 +854,8 @@ Lemma continuous_lebesgue_pt {R : realType} (f : R -> R) x (U : set R) :
   open_nbhs x U -> measurable U -> measurable_fun U f ->
   {for x, continuous f} -> lebesgue_pt f x.
 Proof.
-move=> xU mU mUf xf; rewrite /lebesgue_pt -[X in _ --> X](@davg0 _ f x 0)//.
+move=> xU mU mUf xf.
+rewrite /lebesgue_pt -[X in _ --> X](@davg0 _ f x 0) => [//|].
 apply: cvg_at_right_filter; rewrite davg0//.
 exact: (continuous_cvg_davg xU mU mUf).
 Qed.
