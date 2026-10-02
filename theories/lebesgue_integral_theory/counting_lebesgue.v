@@ -1,7 +1,7 @@
 From HB Require Import structures.
-From mathcomp Require Import boot order algebra.
+From mathcomp Require Import boot order algebra finmap.
 From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
-From mathcomp Require Import xfinmap reals ereal sequences esum measure.
+From mathcomp Require Import reals ereal sequences esum measure.
 From mathcomp Require Import simple_functions lebesgue_integral_definition
   lebesgue_integral_nonneg.
 
