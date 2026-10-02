@@ -1,5 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import boot order ssralg ssrnum interval_inference finmap.
+From mathcomp Require Import boot order ssralg ssrnum interval_inference
+  archimedean finmap.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
@@ -26,7 +27,6 @@ From mathcomp Require Import reals topology ereal sequences normedtype numfun.
 Reserved Notation "\esum_ ( i 'in' P ) F"
   (at level 34, F at level 41, format "\esum_ ( i  'in'  P )  F").
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -570,6 +570,29 @@ Lemma esum_ge1 {R : realType} {T : choiceType} (I : set T) (f : T -> \bar R) :
   forall x, I x -> f x <= \esum_(i in I) f i.
 Proof. by move=> f0 x Ix; rewrite ge0_esum//; exact: PosEsum.pos_esum_ge1. Qed.
 
+Lemma nonempty_esumy {R : realType} {T : choiceType}  (A : set T) : A !=set0 ->
+  \esum_(_ in A) +oo%E = +oo%E :> \bar R.
+Proof.
+move=> [x Ax]; apply/eqP; rewrite eq_le leey/=.
+by apply: esum_ge1 Ax => i _; exact: leey.
+Qed.
+
+Lemma infinite_esum_cst {R : realType} {T : choiceType} (c : \bar R) (A : set T) :
+  (0 < c)%E -> infinite_set A -> \esum_(_ in A) c = +oo%E.
+Proof.
+move=> c0 infA; apply/eqyP => r r0.
+have [->|] := eqVneq c +oo%E.
+  by rewrite nonempty_esumy ?leey//; exact: infinite_setN0.
+move: c c0 => [c| |]//; rewrite lte_fin => c0 _.
+have [B BA Brc] := infinite_set_fset (Num.truncn (r / c)).+1 infA.
+apply: esum_ge; first by move=> i _; rewrite lee_fin ltW.
+exists [set` B]; first by split=> //; apply/subsetP => x; rewrite inE => /BA.
+rewrite fsbig_finite//= set_fsetK sumEFin big_const_seq count_predT.
+rewrite iter_addr addr0 -mulr_natr lee_fin -ler_pdivrMl//.
+rewrite (@le_trans _ _ ((Num.truncn (r / c)).+1)%:R) ?ler_nat//.
+by rewrite mulrC ltW// truncnS_gt.
+Qed.
+
 Section esumZ.
 Context {R : realType} {T : choiceType} (A : set T) (f : T -> \bar R).
 
@@ -776,8 +799,8 @@ Qed.
 Arguments esum_set_image {R T} a e P.
 
 Section esum_bigcup.
-Context {R : realType} {T : choiceType} (K : set nat).
-Implicit Types (J : nat -> set T) (a : T -> \bar R).
+Context {R : realType} {T I : choiceType} (K : set I).
+Implicit Types (J : I -> set T) (a : T -> \bar R).
 
 Lemma esum_bigcupT J a : trivIset setT J -> (forall x, 0 <= a x) ->
   \esum_(i in \bigcup_(k in K) (J k)) a i =
@@ -823,9 +846,8 @@ by move=> /eqP/(congr1 (@^~ (a x)))/=; rewrite propeqE => -[->]//; exists x.
 Qed.
 
 End esum_bigcup.
-
-Arguments esum_bigcupT {R T K} J a.
-Arguments esum_bigcup {R T K} J a.
+Arguments esum_bigcupT {R T I K} J a.
+Arguments esum_bigcup {R T I K} J a.
 
 Lemma nneseries_sum_bigcup {R : realType} (T : choiceType) (F : (set T)^nat)
     (f : T -> \bar R) : trivIset [set: nat] F -> (forall i, 0 <= f i)%E ->
