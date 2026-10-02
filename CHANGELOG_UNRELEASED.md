@@ -46,7 +46,6 @@
     `clamp_id`, `clamp_min`, `clamp_max`
   + lemma `seminorm_normrB`
 
-
 - in `topology_structure.v`:
   + lemma `id_continuous`
   + definition `nbhs_basis`
@@ -55,16 +54,24 @@
 - in `normed_module.v`:
   + lemma `ball_convex_set` (was a `Let`)
 
+- in `classical_sets.v`:
+  + notation ``... `+ ...``
+  + lemmas `addsetS`, `add0set`, `addsetI`, `addsetA`
+
+- in `convex.v`:
+  + lemmas `lt_conv`, `le_conv`
+  + lemma `convD`
+
+- in `pseudmetric_normed_Zmodule.v`:
+  + lemma `continuous_shift`
+  + lemma `nbhs_add1set`
+
 - in `tvs.v`:
   + definition `balanced_set`
   + definition `absolutely_convex_set`
   + lemma `absolutely_convex0`
   + definition `absorbing_set`
   + lemma `absolutely_convex_setX`
-  + notation `... `+ ...`
-  + lemmas `addsetS`, `add0set`, `addsetI`, `addsetA`
-  + lemma `continuous_shift`
-  + lemma `nbhs_add1set`
   + definition `init_subconvextvs`
   + factory `NbhsBasisAt0_isConvexTvs`
   + definition `filter_from_basis0`
@@ -139,6 +146,9 @@
   + definitions `closed_ball_`, `closed_ball`
   + lemmas `closure_ballE`, `closed_ballxx`, `closed_ball_closed`, `subset_closed_ball`,
     `subset_closure_half`, `le_closed_ball`
+
+- in `tvs.v`:
+  + mixin `Uniform_isConvexTvs` (now uses `absolutely_convex_set` and `nbhs_basis 0`)
 
 ### Renamed
 
