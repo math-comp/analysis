@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Export simple_functions.
 From mathcomp Require Export measurable_fun_approximation.
 From mathcomp Require Export lebesgue_integral_definition.
@@ -11,3 +11,4 @@ From mathcomp Require Export lebesgue_integral_under.
 From mathcomp Require Export lebesgue_integral_fubini.
 From mathcomp Require Export lebesgue_integral_differentiation.
 From mathcomp Require Export radon_nikodym.
+From mathcomp Require Export counting_lebesgue.

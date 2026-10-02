@@ -2183,7 +2183,7 @@ End bigop_lemmas.
 Arguments bigcup_setD1 {T I} x.
 Arguments bigcap_setD1 {T I} x.
 
-Lemma bigcup_id {T: Type} (P: set T) : \bigcup_(i in P) [set i] = P.
+Lemma bigcup_idset1 {T : Type} (P : set T) : \bigcup_(i in P) [set i] = P.
 Proof.  by rewrite bigcup_imset1 // image_id. Qed.
 
 Lemma setD_bigcup {T} (I : eqType) (F : I -> set T) (P : set I) (j : I) : P j ->

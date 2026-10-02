@@ -134,6 +134,7 @@ theories/lebesgue_integral_theory/lebesgue_integral_differentiation.v
 theories/lebesgue_integral_theory/lebesgue_integral.v
 theories/lebesgue_integral_theory/radon_nikodym.v
 theories/lebesgue_integral_theory/giry.v
+theories/lebesgue_integral_theory/counting_lebesgue.v
 
 theories/ftc.v
 theories/hoelder.v
@@ -161,7 +162,6 @@ theories/all_analysis.v
 theories/showcase/summability.v
 theories/showcase/pnt.v
 
-theories/esum_counting.v
 
 analysis_stdlib/Rstruct_topology.v
 analysis_stdlib/showcase/uniform_bigO.v
