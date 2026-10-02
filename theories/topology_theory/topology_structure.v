@@ -1028,8 +1028,7 @@ Context {T : topologicalType}.
 Definition basis (B : set (set T)) :=
   B `<=` open /\ forall x, filter_from [set U | B U /\ U x] id --> x.
 
-Definition separable_set (A : set T) :=
-exists D,
+Definition separable_set (A : set T) := exists D,
   [/\ countable D, D `<=` A & forall O, A`&`O !=set0 -> open O -> O`&`D !=set0].
 
 Definition separable := separable_set setT.
@@ -1037,7 +1036,7 @@ Definition separable := separable_set setT.
 Definition second_countable := exists2 B, countable B & basis B.
 
 Lemma basisP {B : set_system T} : basis B <-> B `<=`open
-/\ (forall U: set T, open U -> U = \bigcup_(V in [set W | B W /\ W `<=`U]) V).
+  /\ (forall U: set T, open U -> U = \bigcup_(V in [set W | B W /\ W `<=`U]) V).
 Proof.
 split=> [[oB bB]|[Bo dec]]. split=> //U oU.
   rewrite eqEsubset /bigcup; split=>[x Ux/=|x [A/= [BA AU] /AU //]].
@@ -1072,8 +1071,9 @@ rewrite setTI/= => [/[swap] /BB -> /bigcup_nonempty [V [BV VU] /set0P/eqP nV0]].
 exists (f V); split; exists V=>//. exact: nef.
 Qed.
 
-Lemma bigcupT_separable [A : (set T)^nat] : (forall n, separable_set (A n)) ->
-separable_set (\bigcup_n A n).
+Lemma bigcupT_separable [A : (set T)^nat] :
+  (forall n, separable_set (A n)) ->
+    separable_set (\bigcup_n A n).
 Proof.
 move=>/choice [D_ /all_and3 [cDx DAx dDx]]. exists (\bigcup_n D_ n); split.
   exact: bigcup_countable. exact: subset_bigcup. move=> O [x [[n _ Anx] Ox] oO].
@@ -1082,8 +1082,8 @@ by exists y; split=>//; exists n.
 Qed.
 
 Lemma bigcup_separable [A : (set T)^nat] [P : set nat] :
-(forall n, P n -> separable_set (A n))
--> separable_set (\bigcup_(i in P) A i).
+  (forall n, P n -> separable_set (A n))
+    -> separable_set (\bigcup_(i in P) A i).
 Proof.
 rewrite bigcup_mkcond => nsPA. apply: bigcupT_separable=>n.
 case: ifPn=>[|_]. rewrite in_setE. apply: (nsPA n).
