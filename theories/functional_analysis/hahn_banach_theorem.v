@@ -18,7 +18,6 @@ From mathcomp Require Import reals convex topology normedtype.
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -360,7 +359,7 @@ End hahn_banach_normed.
 
 Section hahn_banach_extension_ctvs.
 Variable (R : realType) (V : convexTvsType R) (F : pred V).
-(* In contrary to the normed case, the extention thm is not true for any subtopology on F,
+(* In contrary to the normed case, the extension thm is not true for any subtopology on F,
  but only for the finest one *)
 
 Import Norm.
