@@ -562,7 +562,8 @@ Import MeasurableR.
 Lemma independent_Lfun1_expectation_product_measure_lty (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y ->
   (X : _ -> _) \in Lfun P 1 -> (Y : _ -> _) \in Lfun P 1 ->
-  'E_(P \x P) [(fun x => `|X x.1 * Y x.2|)%R] < +oo.
+  'E_((P \x P) : probability (T * T)%type R)
+     [(fun x => `|X x.1 * Y x.2|)%R] < +oo.
 Proof.
 move=> indeXY iX iY.
 rewrite unlock [ltLHS](_ : _ =
@@ -653,7 +654,7 @@ transitivity (\sum_(y \in range f) (\sum_(y' \in range g)
   transitivity ('E_P[\1_(f @^-1` [set y])] * 'E_P[\1_(g @^-1` [set y'])]);
     last by rewrite unlock.
   rewrite expectation_indic//; first exact: measurableI.
-  by rewrite !expectation_indic// fg.
+  by rewrite !expectation_indic//; apply: fg.
 transitivity (
     (\sum_(y \in range f) (y%:E * (\int[P]_w (\1_(f @^-1` [set y]) w)%:E))) *
     (\sum_(y' \in range g) (y'%:E * \int[P]_w (\1_(g @^-1` [set y']) w)%:E))).
