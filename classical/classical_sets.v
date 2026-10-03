@@ -281,7 +281,7 @@ Reserved Notation "F `#` G"
   (at level 48, left associativity, format "F  `#`  G").
 Reserved Notation "'`I_' n" (at level 8, n at level 2, format "'`I_' n").
 Reserved Notation "A `x` B"  (at level 46, left associativity).
-Reserved Notation "A `+ B" (at level 54, left associativity).
+Reserved Notation "A `+ B" (at level 50).
 
 Definition set T := T -> Prop.
 (* we use fun x => instead of pred to prevent inE from working *)
