@@ -783,7 +783,7 @@ have [r0|] := eqVneq r 0.
 have [V0 fV0 rV0] := split_nbhsbasis_at0 fV.
 have [V' fV' rV'] := split_nbhsbasis_at0 fV0.
 have [V'' fV'' rV''] := expand_nbhsbasis_at0 r fV'.
-have [/= s [s0]] := absorbing_nbhsbasis_at0 fV'' x.
+have [/= s s0] := absorbing_nbhsbasis_at0 fV'' x.
 rewrite inE => xV''.
 have [convV'' balV''] := absconvex_nbhsbasis_at0 fV''.
 exists ([set r] `+ (ball_ normr 0 (Num.min `|r| `|r * s|)), [set x] `+ V'') => //=.
@@ -817,7 +817,7 @@ exists (y *: t) => //; apply: rV''; exists ((r^-1 * y) *: t); last first.
   by rewrite scalerA mulrA divff// mul1r.
 apply: (balV'' (r^-1 * y)); last by exists t.
 rewrite normrM normfV// ler_pdivrMl ?normr_gt0// mulr1.
-by apply: (le_trans (ltW yr)); rewrite /minr; case : real_ltP.
+by apply: (le_trans (ltW yr)); rewrite /minr; case: real_ltP.
 Qed.
 
 Let locally_convex : exists2 B : set_system E,
@@ -1597,7 +1597,7 @@ have lepr : - (t * r) <= sup (-%R @` [set s | 0 < s /\ y \in ( *:%R s ) @` A]).
     rewrite inE; exists (t^-1 *: (r^-1 *: y)).
       have := rytb; rewrite inE => -[z bz <-].
       by rewrite scalerA mulVf ?gt_eqF// scale1r.
-    by rewrite scalerA -invfM scalerA divff ?scale1r// gt_eqF// mulr_gt0.
+    by rewrite (scalerA t^-1) -invfM scalerA divff ?scale1r// gt_eqF// mulr_gt0.
   have: has_ubound B by exists 0 => ? [s [s0 _]] <-; rewrite ltW // oppr_lt0.
   by move/ub_le_sup/(_ _ Br).
 apply: le_lt_trans; first by rewrite lerNl; exact lepr.
