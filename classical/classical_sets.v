@@ -117,6 +117,9 @@ From mathcomp Require Import boolp wochoice.
 (*                     X `x` Y := cross fst snd X Y                           *)
 (* ```                                                                        *)
 (*                                                                            *)
+(* ``A `+ B``                                                                 *)
+(* : $\{ x + y | x\in A, x\in B\}$                                            *)
+(*                                                                            *)
 (* ```                                                                        *)
 (*                                                                            *)
 (*                      R ^nat == notation for the type of sequences, i.e.,   *)
@@ -278,6 +281,7 @@ Reserved Notation "F `#` G"
   (at level 48, left associativity, format "F  `#`  G").
 Reserved Notation "'`I_' n" (at level 8, n at level 2, format "'`I_' n").
 Reserved Notation "A `x` B"  (at level 46, left associativity).
+Reserved Notation "A `+ B" (at level 50).
 
 Definition set T := T -> Prop.
 (* we use fun x => instead of pred to prevent inE from working *)
@@ -1737,6 +1741,46 @@ End cross.
 
 Definition cross12 {T1 T2 : Type} := @cross (T1 * T2)%type T1 T2 fst snd.
 Notation "A `x` B" := (cross12 A B) : classical_set_scope.
+
+Notation "A `+ B" := [set (x + y)%R | x in A & y in B].
+
+Section addsetTheory.
+Context {E : zmodType}.
+Import GRing.Theory.
+Local Open Scope ring_scope.
+Implicit Types A B C D : set E.
+
+Lemma addsetS A B C D : A `<=` B -> C `<=` D -> A `+ C `<=` B `+ D.
+Proof.
+by move=> AB CD z [a /AB Ba [c /CD Dc <-]]; exists a => //; exists c.
+Qed.
+
+Lemma add0set A : [set 0] `+ A = A.
+Proof.
+apply/seteqP; split => z /=.
+  by move=> [+ -> [y]]; rewrite add0r => + + <-.
+by move=> Az; exists 0 => //; exists z; rewrite ?add0r.
+Qed.
+
+Lemma addsetI A B (x : E) :
+  [set x] `+ (A `&` B) = ([set x] `+ A) `&` ([set x] `+ B).
+Proof.
+apply/seteqP; split => z.
+  by move => [r Cr] [y [Ay By] <- {z}]; split => /=; exists r => //;
+    exists y.
+move=> /= [[r ->] [y Ay] <- {z}] [x' ->] [y' By'] /(congr1 (fun h => h - x)).
+rewrite addrAC subrr add0r addrAC subrr add0r => yy'.
+move: By'; rewrite yy' {y' yy'} => By.
+by exists x => //;  exists y.
+Qed.
+
+Lemma addsetA x y A : [set x + y] `+ A `<=` [set x] `+ ([set y] `+ A).
+Proof.
+move=> _/= [_ ->] [z Az <-]; exists x => //; exists (y + z); last exact: addrA.
+by exists y => //; exists z.
+Qed.
+
+End addsetTheory.
 
 Lemma subKimage {T T'} {P : set_system T'} (f : T -> T') (g : T' -> T) :
   cancel f g -> [set A | P (f @` A)] `<=` [set g @` A | A in P].

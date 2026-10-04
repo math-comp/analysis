@@ -49,6 +49,32 @@ Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
+Lemma lt_conv {R : realFieldType} (x y r e : R) :
+  0 <= r -> r <= 1 -> x < e -> y < e -> r * x + r.~ * y < e.
+Proof.
+move => r0 r1 xe ye.
+have [->|] := eqVneq r 0; first by rewrite mul0r /onem subr0 add0r mul1r.
+have [->|] := eqVneq r 1; first by  rewrite mul1r /onem subrr mul0r addr0.
+move=> rneq0 rneq1.
+have -> : e = r * e + (1 -r) * e by rewrite -mulrDl addrCA subrr addr0 mul1r.
+apply: ltrD.
+rewrite lter_pM2l lt_neqAle; apply/andP; split => //; first by rewrite eq_sym.
+by move: xe; rewrite lt_def; move/andP => []; rewrite eq_sym //.
+by apply: ltW.
+rewrite lter_pM2l /onem ?subr_gt0 ?ltW //.
+by rewrite lt_def; apply/andP; split => //; rewrite eq_sym.
+Qed.
+
+Lemma le_conv {R : realFieldType} (x y r e : R):
+  0 <= r -> r <= 1 -> 0 <= x -> x <= e -> 0 <= y -> y <= e -> r * x + r.~ * y <= e.
+Proof.
+move => r0 r1 x0 xe y0 ye.
+rewrite /onem.
+have -> : e = r * e + (1 -r) * e by rewrite -mulrDl addrCA subrr addr0 mul1r.
+apply: lerD; first by rewrite ler_pM.
+by rewrite ler_pM ?subr_ge0 //.
+Qed.
+
 Declare Scope convex_scope.
 Local Open Scope convex_scope.
 
@@ -162,6 +188,15 @@ HB.instance Definition _ :=
   isConvexSpace.Build R E avg1 avgI avgC avgA.
 
 End lmodType_convex_space.
+
+Lemma convD (R : numDomainType) (E : lmodType R) (t : {i01 R}) (x y z' : convex_lmodType E) :
+  x <| t |> y + z' = (x + z' : convex_lmodType _) <| t |> (y + z').
+Proof.
+rewrite /conv/=.
+rewrite !scalerDr -[in RHS]addrA.
+rewrite [in X in (_ =  _ + X)]addrCA  [in X in (_ =  _ + ( _ + X))]scalerBl.
+by rewrite [in X in (_ =  _ +  ( _ + X))]addrCA addrN addr0 scale1r addrA.
+Qed.
 
 Definition convex_numDomainType (R : numDomainType) : Type := R^o.
 
