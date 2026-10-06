@@ -83,6 +83,9 @@
   + lemmas `closure_ballE`, `closed_ballxx`, `closed_ball_closed`, `subset_closed_ball`,
     `subset_closure_half`, `le_closed_ball`
 
+- in `topology/topology_structure.v`:
+  + lemma `bigcap_open`
+
 ### Renamed
 
 - in `sequences.v`:

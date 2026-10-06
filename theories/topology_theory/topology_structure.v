@@ -191,6 +191,14 @@ rewrite openE => fop p [i Di].
 by have /fop fiop := Di; move/fiop; apply: filterS => ??; exists i.
 Qed.
 
+Lemma bigcap_open (F : (set T) ^nat) :
+  (forall i, open (F i)) ->
+  forall i, open (\bigcap_(j < i) F j).
+Proof.
+move=> HU; elim; [rewrite bigcap_mkord big_ord0; apply: openT|move=> n IH].
+by rewrite bigcap_mkord big_ord_recr -bigcap_mkord; apply: openI.
+Qed.
+
 Lemma openU : setU_closed (@open T).
 Proof.
 by move=> A B /[!openE] AA BB p [/AA|/BB]; apply: filterS => ? ?; [left|right].
