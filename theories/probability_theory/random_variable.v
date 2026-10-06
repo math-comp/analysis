@@ -521,17 +521,17 @@ Qed.
 End complementary_cumulative_distribution_function.
 
 HB.lock Definition expectation {d} {T : measurableType d} {R : realType}
-  (P : probability T R) (X : T -> R) := (\int[P]_w (X w)%:E)%E.
+  (P : subprobability T R) (X : T -> R) := (\int[P]_w (X w)%:E)%E.
 Canonical expectation_unlockable := Unlockable expectation.unlock.
 Arguments expectation {d T R} P _%_R.
 Notation "''E_' P [ X ]" := (@expectation _ _ _ P X) : ereal_scope.
 
-Section expectation_lemmas.
+Section expectation_lemmas_subprobability.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType) (P : probability T R).
+Context d (T : measurableType d) (R : realType) (P : subprobability T R).
 Import MeasurableR.
 
-Lemma expectation_def (X : {RV P >-> R}) : 'E_P[X] = (\int[P]_w (X w)%:E)%E.
+Lemma expectation_def (X : T -> R) : 'E_P[X] = (\int[P]_w (X w)%:E)%E.
 Proof. by rewrite unlock. Qed.
 
 Lemma expectation_fin_num (X : T -> R) : X \in Lfun P 1 ->
@@ -540,14 +540,11 @@ Proof.
 by move=> ?; rewrite unlock integrable_fin_num//; exact/Lfun1_integrable.
 Qed.
 
-Lemma expectation_cst r : 'E_P[cst r] = r%:E.
-Proof. by rewrite unlock/= integral_cst//= probability_setT mule1. Qed.
-
 Lemma expectation_indic (A : set T) (mA : measurable A) : 'E_P[\1_A] = P A.
 Proof. by rewrite unlock integral_indic// setIT. Qed.
 
-Lemma integrable_expectation (X : {RV P >-> R}) :
-  (X : T -> R) \in Lfun P 1 -> `| 'E_P[X] | < +oo.
+Lemma integrable_expectation (X : T -> R) :
+  X \in Lfun P 1 -> `| 'E_P[X] | < +oo.
 Proof.
 move/Lfun1_integrable => /integrableP[? Xoo]; rewrite (le_lt_trans _ Xoo)//.
 by rewrite expectation_def (le_trans (le_abse_integral _ _ _)).
@@ -591,6 +588,18 @@ Proof.
 by move=> ? ?; rewrite unlock integralB_EFin//; exact/Lfun1_integrable.
 Qed.
 
+End expectation_lemmas_subprobability.
+
+Section expectation_lemmas_probability.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+Import MeasurableR.
+
+Lemma expectation_cst r : 'E_P[cst r] = r%:E.
+Proof.
+by rewrite unlock/= integral_cst//= probability_setT mule1.
+Qed.
+
 Lemma expectation_sum (X : seq (T -> R)) :
     (forall Xi, Xi \in X -> Xi \in Lfun P 1) ->
   'E_P[\sum_(Xi <- X) Xi] = \sum_(Xi <- X) 'E_P[Xi].
@@ -602,7 +611,7 @@ rewrite !big_cons expectationD.
 by rewrite IHX//= => Xi XiX; rewrite intX// inE XiX orbT.
 Qed.
 
-End expectation_lemmas.
+End expectation_lemmas_probability.
 
 Section tail_expectation_formula.
 Local Open Scope ereal_scope.
