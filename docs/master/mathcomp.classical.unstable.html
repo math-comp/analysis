@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.classical.unstable</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 9c9f64f 2026.10.04-21:21" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 9c9f64f 2026.10.06-00:12" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -324,7 +324,14 @@ and mention it in the changelog.
 <div class="proofscript">
 <span class="id"> by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.order.html#Order.TotalTheory.ge_max">ge_max</a></span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.order.html#Order.TotalTheory.ge_min">ge_min</a></span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.order.html#Order.POrderTheory.lexx">lexx</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.unstable.html#Clamp.minmax">minmax</a></span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#orbT">orbT</a></span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="clamp_gele" class="id"><div name="clamp_gele" class="id anchor tooltip">clamp_gele<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/9c9f64f7eeee4ead8415e740a1699de87061b846/classical/unstable.v#L70' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id link"><a href="mathcomp.classical.unstable.html#clamp_gemin">clamp_gemin</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id link"><a href="mathcomp.classical.unstable.html#clamp_lemax">clamp_lemax</a></span>).<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="clamp_gele" class="id"><div name="clamp_gele" class="id anchor tooltip">clamp_gele<span class='tooltip-area'><p>clamp : forall {R : realDomainType}, R -> R -> R -> R
+
+clamp is not universe polymorphic
+Arguments clamp {R} (min max x)%_ring_scope
+clamp is transparent
+Expands to: Constant mathcomp.classical.unstable.clamp
+Declared in library mathcomp.classical.unstable, line 62, characters 11-16
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/9c9f64f7eeee4ead8415e740a1699de87061b846/classical/unstable.v#L70' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span> (<span class="id link"><a href="mathcomp.classical.unstable.html#clamp_gemin">clamp_gemin</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079"> </a></span><span class="id link"><a href="mathcomp.classical.unstable.html#clamp_lemax">clamp_lemax</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="minmax_clamp" class="id"><div name="minmax_clamp" class="id anchor tooltip">minmax_clamp<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/9c9f64f7eeee4ead8415e740a1699de87061b846/classical/unstable.v#L72' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="x:9" class="id"><div name="x:9" class="id anchor tooltip">x<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/9c9f64f7eeee4ead8415e740a1699de87061b846/classical/unstable.v#L72' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.unstable.html#Clamp.min">min</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id link"><a href="mathcomp.classical.unstable.html#x:9">x</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> &lt;=</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#5285549f1bd0c3f181a17cc59d549bc0"> </a></span><span class="id link"><a href="mathcomp.classical.unstable.html#Clamp.max">max</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id link"><a href="mathcomp.classical.unstable.html#clamp">clamp</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.unstable.html#x:9">x</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id link"><a href="mathcomp.classical.unstable.html#x:9">x</a></span>.<br/>
 <details>
@@ -354,18 +361,7 @@ and mention it in the changelog.
 <br/>
 <span class="vernacular">Module</span><span class="id"> </span><span id="Order" class="id"><div name="Order" class="id anchor tooltip">Order<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/9c9f64f7eeee4ead8415e740a1699de87061b846/classical/unstable.v#L86' target='_blank'>Source code</a></span></div></span>.<br/>
 <span class="vernacular">Import</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.order.html#Order">Order</a></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Order.default_display" class="id"><div name="Order.default_display" class="id anchor tooltip">default_display<span class='tooltip-area'><p>clamp_gele :
-forall {R : realDomainType} [min max : R],
-(min <= max)%R ->
-(forall x : R, (min <= clamp min max x)%R) *
-(forall x : R, (clamp min max x <= max)%R)
-
-clamp_gele is not universe polymorphic
-Arguments clamp_gele {R} [min max]%_ring_scope minmax
-clamp_gele is transparent
-Expands to: Constant mathcomp.classical.unstable.clamp_gele
-Declared in library mathcomp.classical.unstable, line 70, characters 11-21
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/9c9f64f7eeee4ead8415e740a1699de87061b846/classical/unstable.v#L88' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.preorder.html#Order.disp_t">disp_t</a></span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Order.default_display" class="id"><div name="Order.default_display" class="id anchor tooltip">default_display<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/9c9f64f7eeee4ead8415e740a1699de87061b846/classical/unstable.v#L88' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.preorder.html#Order.disp_t">disp_t</a></span>.<br/>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">

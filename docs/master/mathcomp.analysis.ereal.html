@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.ereal</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 9c9f64f 2026.10.04-21:21" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 9c9f64f 2026.10.06-00:12" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -746,21 +746,7 @@ Qed.</div></details>
 <span class="id">by</span><span class="id"> move=&gt;</span><span class="id"> /</span>(_<span class="id"> </span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#d5becfdd26043e7de5a21e6270f35a00">+oo</a></span>)<span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.boolp.html#contra_notP">contra_notP</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="ereal_sup" class="id"><div name="ereal_sup" class="id anchor tooltip">ereal_sup<span class='tooltip-area'><p>ocitv_measure :
-forall {R : realType},
-{measure set MeasurableRopen.measurableTypeR R -> \bar R}%R ->
-set (measurableTypeR R) -> \bar R
-
-ocitv_measure is not universe polymorphic
-Arguments ocitv_measure {R} mu _%_classical_set_scope
-ocitv_measure is transparent
-Expands to: Constant
-            mathcomp.analysis.lebesgue_stieltjes_measure.MeasurableRopen.ocitv_measure
-Declared in
-library mathcomp.analysis.lebesgue_stieltjes_measure, line 549, characters 11-24
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/9c9f64f7eeee4ead8415e740a1699de87061b846/theories/ereal.v#L417' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="S:277" class="id"><div name="S:277" class="id anchor tooltip">S<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/9c9f64f7eeee4ead8415e740a1699de87061b846/theories/ereal.v#L417' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#supremum">supremum</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-oo'">-oo</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.ereal.html#S:277">S</a></span>.<br/>
-<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="ereal_inf" class="id"><div name="ereal_inf" class="id anchor tooltip">ereal_inf<span class='tooltip-area'><p>wlength : forall {R : realType}, (R -> R) -> set (ocitv_type R) -> \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="ereal_sup" class="id"><div name="ereal_sup" class="id anchor tooltip">ereal_sup<span class='tooltip-area'><p>wlength : forall {R : realType}, (R -> R) -> set (ocitv_type R) -> \bar R
 
 wlength is not universe polymorphic
 Arguments wlength {R} f%_function_scope A%_classical_set_scope
@@ -768,6 +754,20 @@ wlength is transparent
 Expands to: Constant mathcomp.analysis.lebesgue_stieltjes_measure.wlength
 Declared in
 library mathcomp.analysis.lebesgue_stieltjes_measure, line 589, characters 11-18
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/9c9f64f7eeee4ead8415e740a1699de87061b846/theories/ereal.v#L417' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="S:277" class="id"><div name="S:277" class="id anchor tooltip">S<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/9c9f64f7eeee4ead8415e740a1699de87061b846/theories/ereal.v#L417' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#supremum">supremum</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-oo'">-oo</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.ereal.html#S:277">S</a></span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="ereal_inf" class="id"><div name="ereal_inf" class="id anchor tooltip">ereal_inf<span class='tooltip-area'><p>ocitv_lebesgue_stieltjes_measure :
+forall {R : realType},
+cumulative R R ->
+set (g_sigma_algebraType (R.-ocitv).-measurable%classic) -> \bar R
+
+ocitv_lebesgue_stieltjes_measure is not universe polymorphic
+Arguments ocitv_lebesgue_stieltjes_measure {R} f _%_classical_set_scope
+ocitv_lebesgue_stieltjes_measure is transparent
+Expands to: Constant
+            mathcomp.analysis.lebesgue_stieltjes_measure.ocitv_lebesgue_stieltjes_measure
+Declared in
+library mathcomp.analysis.lebesgue_stieltjes_measure, line 893, characters 11-43
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/9c9f64f7eeee4ead8415e740a1699de87061b846/theories/ereal.v#L419' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="S:278" class="id"><div name="S:278" class="id anchor tooltip">S<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/9c9f64f7eeee4ead8415e740a1699de87061b846/theories/ereal.v#L419' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-'_x">-</a></span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-'_x"> </a></span><span class="id link"><a href="mathcomp.analysis.ereal.html#ereal_sup">ereal_sup</a></span> (<span class="id link"><a href="mathcomp.reals.constructive_ereal.html#b9ea624cf1ed6f77d648bedb1e978b55">-%E</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> </a></span><span class="id link"><a href="mathcomp.analysis.ereal.html#S:278">S</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="ereal_sup0" class="id"><div name="ereal_sup0" class="id anchor tooltip">ereal_sup0<span class='tooltip-area'><hr/><a href='https://github.com/math-comp/analysis/tree/9c9f64f7eeee4ead8415e740a1699de87061b846/theories/ereal.v#L421' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.ereal.html#ereal_sup">ereal_sup</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:'-oo'">-oo</a></span><br/>
@@ -1314,19 +1314,7 @@ Qed.</div></details>
 &nbsp;&nbsp;<span class="id">+</span><span class="id"> by</span><span class="id"> move=&gt;</span><span class="id"> /</span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.order.order.html#Order.POrderTheory.le_trans">le_trans</a></span><span class="id">;</span><span class="id"> apply;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#lee_fin">lee_fin</a></span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.ssrint.html#lerz0">lerz0</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Canonical</span><span class="id"> </span><span id="ereal_sup_inum" class="id"><div name="ereal_sup_inum" class="id anchor tooltip">ereal_sup_inum<span class='tooltip-area'><p>ocitv_lebesgue_stieltjes_measure :
-forall {R : realType},
-cumulative R R ->
-set (g_sigma_algebraType (R.-ocitv).-measurable%classic) -> \bar R
-
-ocitv_lebesgue_stieltjes_measure is not universe polymorphic
-Arguments ocitv_lebesgue_stieltjes_measure {R} f _%_classical_set_scope
-ocitv_lebesgue_stieltjes_measure is transparent
-Expands to: Constant
-            mathcomp.analysis.lebesgue_stieltjes_measure.ocitv_lebesgue_stieltjes_measure
-Declared in
-library mathcomp.analysis.lebesgue_stieltjes_measure, line 893, characters 11-43
-lebesgue_stieltjes_measure :
+<span class="vernacular">Canonical</span><span class="id"> </span><span id="ereal_sup_inum" class="id"><div name="ereal_sup_inum" class="id anchor tooltip">ereal_sup_inum<span class='tooltip-area'><p>lebesgue_stieltjes_measure :
 forall {R : realType},
 cumulative R R -> set (g_sigma_algebraType open) -> \bar R
 
