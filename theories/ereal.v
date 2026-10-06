@@ -1640,8 +1640,11 @@ Context {R : numFieldType} {F : set_system \bar R} {FF : Filter F}.
 
 Lemma fine_fcvg a : F --> a%:E -> fine @ F --> a.
 Proof.
-move=> /(_ _)/= Fa; apply/(@metricType_numDomainType.cvgrPdist_lt _ R^o) => // _/posnumP[e]; rewrite near_simpl.
-by apply: Fa; apply/nbhs_EFin => /=; apply: (@metricType_numDomainType.cvgr_dist_lt _ _ _).
+move=> /(_ _)/= Fa.
+apply/(@metricType_numDomainType.cvgrPdist_lt _ R^o) => // _/posnumP[e].
+rewrite near_simpl.
+apply: Fa; apply/nbhs_EFin.
+exact: (@metricType_numDomainType.cvgr_dist_lt _ _ _ (nbhs a)).
 Qed.
 
 End filter.
