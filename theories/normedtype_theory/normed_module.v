@@ -855,45 +855,8 @@ Notation continuousZr := continuousZl_tmp (only parsing).
 Notation continuousZl := continuousZr_tmp (only parsing).
 
 Section cvg_fin.
-Context {R : numFieldType}.
-
-Section filter.
-Context {F : set_system \bar R} {FF : Filter F}.
-
-Lemma fine_fcvg a : F --> a%:E -> fine @ F --> a.
-Proof.
-move=> /(_ _)/= Fa; apply/cvgrPdist_lt=> // _/posnumP[e]; rewrite near_simpl.
-by apply: Fa; apply/nbhs_EFin => /=; apply: (@cvgr_dist_lt _ _ _ (nbhs a)).
-(* BUG: using cvgr_dist_lt without (nbhs _) expands the definition of nbhs, *)
-(*    so that it is not recognized as a filter anymore *)
-Qed.
-
-Lemma fcvg_is_fine a : F --> a%:E -> \near F, F \is a fin_num.
-Proof. by apply; apply/nbhs_EFin; near=> x. Unshelve. all: by end_near. Qed.
-
-End filter.
-
-Section limit.
-Context {I : Type} {F : set_system I} {FF : Filter F} (f : I -> \bar R).
-
-Lemma fine_cvg a : f @ F --> a%:E -> fine \o f @ F --> a.
-Proof. exact: fine_fcvg. Qed.
-
-Lemma cvg_is_fine a : f @ F --> a%:E -> \near F, f F \is a fin_num.
-Proof. exact: fcvg_is_fine. Qed.
-
-Lemma cvg_EFin a : (\near F, f F \is a fin_num) -> fine \o f @ F --> a ->
-  f @ F --> a%:E.
-Proof.
-move=> Ffin Fa P/= /nbhs_EFin /Fa; rewrite !near_simpl.
-by apply: filterS2 Ffin => x /fineK->.
-Qed.
-
-Lemma fine_cvgP a :
-   f @ F --> a%:E <-> (\near F, f F \is a fin_num) /\ fine \o f @ F --> a.
-Proof.
-by split;[split;[exact: (@cvg_is_fine a)|exact: fine_cvg]|case; apply: cvg_EFin].
-Qed.
+Context {R : numFieldType}
+  {I : Type} {F : set_system I} {FF : Filter F} (f : I -> \bar R).
 
 Lemma neq0_fine_cvgP a : a != 0 -> f @ F --> a%:E <-> fine \o f @ F --> a.
 Proof.
@@ -903,8 +866,6 @@ have lea : e <= `|a| by near: e; apply: nbhs_right_le; rewrite normr_gt0.
 near=> x; have : `|a - fine (f x)| < e by near: x; apply: cvgr_dist_lt.
 by case: f=> //=; rewrite subr0; apply: contra_ltT.
 Unshelve. all: by end_near. Qed.
-
-End limit.
 
 End cvg_fin.
 

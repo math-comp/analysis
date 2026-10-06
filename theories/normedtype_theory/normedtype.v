@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Export num_normedtype.
 From mathcomp Require Export pseudometric_normed_Zmodule.
 From mathcomp Require Export ereal_normedtype.

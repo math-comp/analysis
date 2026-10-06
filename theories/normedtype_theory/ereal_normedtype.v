@@ -461,9 +461,6 @@ Proof. by rewrite cvgeryP cvgrnyP. Qed.
 Section nbhs_ereal.
 Context {R : numFieldType} (P : \bar R -> Prop).
 
-Lemma nbhs_EFin (x : R) : (\forall y \near x%:E, P y) <-> \near x, P x%:E.
-Proof. done. Qed.
-
 Lemma nbhs_ereal_pinfty :
   (\forall x \near +oo%E, P x) <-> [/\ P +oo%E & \forall x \near +oo, P x%:E].
 Proof.

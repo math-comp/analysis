@@ -1006,7 +1006,7 @@ Lemma near_series_squeeze_is_cvgn {R : realType} (u_ v_ : R^nat) :
 Proof.
 move=> u0 v0 uv cvg_v.
 near \oo => N; apply/(is_cvg_series_shiftn N).
-move: cvg_v => /(is_cvg_series_shiftn N); apply: series_le_cvg => /= n.
+move: cvg_v => /(is_cvg_series_shiftn N); apply: series_squeeze_is_cvgn => /= n.
 - have : forall n, (n >= N)%N -> 0 <= u_ n.
     by near: N; exact: (iffLR (near_infty_leq _)).
   by apply; exact: leq_addl.
