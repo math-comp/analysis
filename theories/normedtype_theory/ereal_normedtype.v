@@ -474,6 +474,7 @@ Proof.
 split=> [|[Py]] [x [xr Px]]; last by exists x; split=> // -[y||]//; apply: Px.
 by split; [|exists x; split=> // y xy]; apply: Px.
 Qed.
+
 End nbhs_ereal.
 
 Section ereal_OrderNbhs.

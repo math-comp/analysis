@@ -1,13 +1,12 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import boot order finmap ssralg ssrnum ssrint.
-From mathcomp Require Import interval interval_inference archimedean.
+From mathcomp Require Import boot order ssralg ssrnum interval.
+From mathcomp Require Import interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import boolp classical_sets functions cardinality.
-From mathcomp Require Import set_interval reals.
-From mathcomp Require Import topology ereal edist num_normedtype.
-From mathcomp Require Import pseudometric_normed_Zmodule tvs normed_module.
+From mathcomp Require Import boolp classical_sets functions set_interval.
+From mathcomp Require Import reals.
+From mathcomp Require Import topology ereal edist num_normedtype normed_module.
 
 (**md**************************************************************************)
 (* # Urysohn's lemma                                                          *)
