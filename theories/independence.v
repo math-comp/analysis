@@ -13,20 +13,21 @@ From mathcomp Require Import hoelder probability.
 (**md**************************************************************************)
 (* # Independence                                                             *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*   independent_events I E == the events E indexed by the set I are          *)
-(*                             independent                                    *)
-(*                             The measurability of events is not assumed by  *)
-(*                             the definition.                                *)
-(*  mutual_independence I F == the set systems F indexed by I are independent *)
-(*      independent_RVs I X == the random variables X indexed by I are        *)
-(*                             independent                                    *)
-(*     independent_RVs2 X Y == the random variables X and Y are independent   *)
-(* ```                                                                        *)
+(* `independent_events I E`                                                   *)
+(* : the events `E` indexed by the set `I` are independent                    *)
+(* : The measurability of events is not assumed by the definition.            *)
+(*                                                                            *)
+(* `mutual_independence I F`                                                  *)
+(* : the set systems `F` indexed by `I` are independent                       *)
+(*                                                                            *)
+(* `independent_RVs I X`                                                      *)
+(* : the random variables `X` indexed by `I` are independent                  *)
+(*                                                                            *)
+(* `independent_RVs2 X Y`                                                     *)
+(* : the random variables `X` and `Y` are independent                         *)
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -654,7 +655,7 @@ transitivity (\sum_(y \in range f) (\sum_(y' \in range g)
   transitivity ('E_P[\1_(f @^-1` [set y])] * 'E_P[\1_(g @^-1` [set y'])]);
     last by rewrite unlock.
   rewrite expectation_indic//; first exact: measurableI.
-  by rewrite !expectation_indic//; apply: fg.
+  by rewrite !expectation_indic//; exact: fg.
 transitivity (
     (\sum_(y \in range f) (y%:E * (\int[P]_w (\1_(f @^-1` [set y]) w)%:E))) *
     (\sum_(y' \in range g) (y'%:E * \int[P]_w (\1_(g @^-1` [set y']) w)%:E))).

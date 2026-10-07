@@ -30,7 +30,8 @@ From mathcomp Require Import lebesgue_measure lebesgue_integral hoelder.
 (* :  Declared as an instance of probability measure.                         *)
 (*                                                                            *)
 (* `'E_P[X]`                                                                  *)
-(* :  expectation of the real measurable function `X`                         *)
+(* : expectation of the real function `X` where `P` is a sub-probability      *)
+(* : measure                                                                  *)
 (*                                                                            *)
 (* `covariance X Y`                                                           *)
 (* :  covariance between real random variable `X` and `Y`                     *)
@@ -592,13 +593,11 @@ End expectation_lemmas_subprobability.
 
 Section expectation_lemmas_probability.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType) (P : probability T R).
+Context {d} {T : measurableType d} {R : realType} (P : probability T R).
 Import MeasurableR.
 
 Lemma expectation_cst r : 'E_P[cst r] = r%:E.
-Proof.
-by rewrite unlock/= integral_cst//= probability_setT mule1.
-Qed.
+Proof. by rewrite unlock/= integral_cst//= probability_setT mule1. Qed.
 
 Lemma expectation_sum (X : seq (T -> R)) :
     (forall Xi, Xi \in X -> Xi \in Lfun P 1) ->
