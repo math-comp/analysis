@@ -211,8 +211,8 @@ Reserved Notation "'\near' x & y , P"
   (at level 200, x, y at level 99, P at level 200,
    format "'\near'  x  &  y ,  P", only parsing).
 (*Reserved Notation "[ 'filter' 'of' x ]" (format "[ 'filter'  'of'  x ]").*)
-Reserved Notation "F `=>` G" (at level 70, format "F  `=>`  G").
-Reserved Notation "F --> G" (at level 70, format "F  -->  G").
+Reserved Notation "F `=>` G" (at level 55, format "F  `=>`  G").
+Reserved Notation "F --> G" (at level 55, format "F  -->  G").
 Reserved Notation "[ 'lim' F 'in' T ]" (format "[ 'lim'  F  'in'  T ]").
 Reserved Notation "[ 'cvg' F 'in' T ]" (format "[ 'cvg'  F  'in'  T ]").
 Reserved Notation "x \is_near F" (at level 10, format "x  \is_near  F").
@@ -220,10 +220,10 @@ Reserved Notation "E @[ x --> F ]"
   (at level 60, x name, format "E  @[ x  -->  F ]").
 Reserved Notation "E @[ x \oo ]"
   (at level 60, x name, format "E  @[ x  \oo ]").
-Reserved Notation "f @ F" (at level 60, format "f  @  F").
+Reserved Notation "f @ F" (at level 52, format "f  @  F").
 Reserved Notation "E `@[ x --> F ]"
   (at level 60, x name, format "E  `@[ x  -->  F ]").
-Reserved Notation "f `@ F" (at level 60, format "f  `@  F").
+Reserved Notation "f `@ F" (at level 52, format "f  `@  F").
 
 HB.mixin Record isFiltered U T := {
   nbhs : T -> set_system U
