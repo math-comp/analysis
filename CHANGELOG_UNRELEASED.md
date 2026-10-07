@@ -44,6 +44,18 @@
   + lemmas `clamp_gemin`, `clamp_lemax`, `minmax_clamp`,
     `clamp_id`, `clamp_min`, `clamp_max`
 
+- in `classical_sets.v`
+  + lemma `bigcup_idset1`
+
+- in `esumv.v`:
+  + lemma `nonempty_esumy`
+  + lemma `infinite_esum_cst`
+
+- new file `counting_lebesgue.v`:
+  + defintion `discrete_measurable_space`
+  + lemmas `counting_set1`, `counting_esum_cst`, `discrete_integral_set1`,
+    `discrete_integral_sum`, `integral_counting_esum`
+
 ### Changed
 
 - in `esum.v`:
@@ -115,6 +127,9 @@
     `cvg_sub0`, `cvg0`, `subr_cvg0`
   + lemmas `within_continuousD`, `within_continuousB`, `within_continuousN`
   + lemmas `le_closed_ball`, `closed_ball0`
+
+- in `esum.v`:
+  + lemmas `esum_bigcupT`, `esum_bigcup`
 
 ### Deprecated
 

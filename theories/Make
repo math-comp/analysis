@@ -101,6 +101,7 @@ lebesgue_integral_theory/lebesgue_integral_differentiation.v
 lebesgue_integral_theory/radon_nikodym.v
 lebesgue_integral_theory/lebesgue_integral.v
 lebesgue_integral_theory/giry.v
+lebesgue_integral_theory/counting_lebesgue.v
 
 ftc.v
 hoelder.v
