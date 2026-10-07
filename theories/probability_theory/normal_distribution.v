@@ -209,7 +209,6 @@ Qed.
 End normal_density.
 
 Section normal_prob_def.
-
 Import MeasurableR.
 Context {R : realType}.
 

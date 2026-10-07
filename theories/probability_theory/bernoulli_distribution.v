@@ -53,7 +53,6 @@ End bernoulli_pmf.
 
 Section bernoulli_pmf.
 Context {R : realType}.
-
 Import MeasurableR.
 
 Lemma measurable_bernoulli_pmf D n :
