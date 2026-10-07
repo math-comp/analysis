@@ -335,3 +335,166 @@ Lemma expectationE (f : T ->  R) : (forall x, 0 <= f x)%R ->
 Proof. by move => h; rewrite -integral_P // expectation_def. Qed.
 
 End Expectation.
+
+(* -------------------------------------------------------------------- *)
+(* The probability mass function of a random variable is a subdistribution *)
+Section pmf_subdistribution.
+Context d (T : measurableType d) (R : realType) (Pr : probability T R).
+Variable X : {RV Pr >-> R}.
+
+Let mX1 (r : R) : measurable (X @^-1` [set r]).
+Proof. exact: measurable_funPTI. Qed.
+
+Lemma pmf_fin_bigcup (J : seq R) : uniq J ->
+  \sum_(j <- J) (pmf X j)%:E
+    = Pr (\bigcup_(j in [set` J]) X @^-1` [set j]).
+Proof.
+move=> uJ.
+rewrite (@measure_fin_bigcup _ _ _ Pr _ [set` J] (fun j : R => X @^-1` [set j])).
+- exact: finite_seq.
+- exact: trivIset_preimage1.
+- by move=> j _; exact: mX1.
+- rewrite fsbig_seq//; apply: eq_fsbigr => j _.
+  by rewrite /pmf fineK// fin_num_measure.
+Qed.
+
+Lemma pmf_uniq_le1 (J : seq R) : uniq J -> (\sum_(j <- J) pmf X j <= 1)%R.
+Proof.
+move=> uJ; rewrite -lee_fin -sumEFin pmf_fin_bigcup//.
+apply: probability_le1; apply: fin_bigcup_measurable.
+- exact: finite_seq.
+- by move=> j _; exact: mX1.
+Qed.
+
+HB.instance Definition _ :=
+  @isSubDistr.Build R R (pmf X) (@pmf_ge0 _ _ _ Pr X) pmf_uniq_le1.
+
+Lemma summable_pmf : esummable [set: R] (EFin \o pmf X).
+Proof. exact: mu_summable. Qed.
+
+Lemma esum_pmf_le1 : esum [set: R] (EFin \o pmf X) <= 1.
+Proof. exact: mu_sum_le1. Qed.
+
+End pmf_subdistribution.
+
+(* -------------------------------------------------------------------- *)
+(* In general the pmf only accounts for the atomic part of the law of X.  *)
+Section pmf_le_distribution.
+Context d (T : measurableType d) (R : realType) (Pr : probability T R).
+Variable X : {RV Pr >-> R}.
+
+Lemma esum_pmf_set_le (A : set R) : measurable A ->
+  \esum_(r in A) (pmf X r)%:E <= distribution Pr X A.
+Proof.
+move=> mA.
+have mF (j : R) : measurable (X @^-1` [set j]) by exact: measurable_funPTI.
+rewrite ge0_esum.
+- by move=> r _; rewrite lee_fin pmf_ge0.
+- apply: ge_ereal_sup => /= _ [F [finF FA]] <-.
+  have -> : \sum_(x \in F) (pmf X x)%:E
+          = Pr (\bigcup_(j in F) X @^-1` [set j]).
+    rewrite (@measure_fin_bigcup _ _ _ Pr _ F (fun j : R => X @^-1` [set j])).
+    + exact: finF.
+    + exact: trivIset_preimage1.
+    + by move=> j _; exact: mF.
+    + by apply: eq_fsbigr => j _; rewrite /pmf fineK// fin_num_measure.
+  rewrite /distribution/= /pushforward.
+  apply: le_measure.
+  + apply: mem_set; apply: fin_bigcup_measurable.
+    * exact: finF.
+    * by move=> j _; exact: mF.
+  + by apply: mem_set; exact: measurable_funPTI.
+  + by move=> t [j Fj /= ->]; exact: FA.
+Qed.
+
+Lemma esum_pmf_pred (A : set R) :
+  esum [set: R] (EFin \o (fun r : R => ((r \in A)%:R * pmf X r)%R))
+    = \esum_(r in A) (pmf X r)%:E.
+Proof.
+rewrite [RHS]esum_mkcond; apply: eq_esum => r _.
+by case: (r \in A) => /=; rewrite ?mul1r ?mul0r.
+Qed.
+
+Lemma pr_pmf_le (A : set R) : measurable A ->
+  (\P_[pmf X] (fun r => r \in A))%:E <= distribution Pr X A.
+Proof.
+move=> mA.
+have h := esum_pmf_set_le mA.
+have e0 : 0 <= \esum_(r in A) (pmf X r)%:E.
+  by apply: esum_ge0 => r _; rewrite lee_fin pmf_ge0.
+have efin : \esum_(r in A) (pmf X r)%:E \is a fin_num.
+  rewrite ge0_fin_numE//; apply: (le_lt_trans h).
+  by rewrite ltey_eq fin_num_measure.
+by rewrite /pr esum_pmf_pred fineK.
+Qed.
+
+End pmf_le_distribution.
+
+(* -------------------------------------------------------------------- *)
+(* A discrete random variable has a pmf of total mass 1.                 *)
+Section pmf_dRV.
+Context d (T : pmeasurableType d) (R : realType) (Pr : probability T R).
+Variable X : {dRV Pr >-> R}.
+
+Local Notation pmfX := (@pmf _ _ _ Pr X).
+
+Lemma pmf_out (r : R) : ~ range X r -> pmfX r = 0%R.
+Proof. by move=> nr; rewrite /pmf preimage10// measure0. Qed.
+
+Lemma esum_pmf_range :
+  esum [set: R] (EFin \o pmfX) = \esum_(r in range X) (pmfX r)%:E.
+Proof.
+rewrite (esumID (range X) [set: R] (EFin \o pmfX)).
+- by move=> i _; rewrite lee_fin pmf_ge0.
+- rewrite setTI [X in _ + X]esum1 ?adde0//= => r [_ /= nr].
+  by rewrite pmf_out.
+Qed.
+
+Lemma esum_pmf_dRV : esum [set: R] (EFin \o pmfX) = 1.
+Proof.
+rewrite esum_pmf_range.
+rewrite (reindex_esum (dRV_dom X) (range X) (dRV_enum X)
+          (fun r => (pmfX r)%:E))//.
+transitivity (\esum_(k in dRV_dom X) enum_prob X k).
+  apply: eq_esum => k kd.
+  by rewrite /enum_prob patchE mem_set// /pmf fineK// fin_num_measure.
+rewrite -[X in \esum_(k in X) _]set_mem_set -nneseries_esum.
+- by move=> n _; rewrite /enum_prob patchE; case: ifP.
+- rewrite eseries_mkcond -[RHS](@sum_enum_prob _ _ _ _ _ Pr X measurable_set1).
+  apply: eq_eseriesr => k _.
+  case: ifPn => // kd.
+  by rewrite /enum_prob patchE (negbTE kd).
+Qed.
+Lemma esum_pmf_set_dRV (A : set R) : measurable A ->
+  \esum_(r in A) (pmfX r)%:E = distribution Pr X A.
+Proof.
+move=> mA.
+pose g (r : R) := if r \in A then (pmfX r)%:E else 0.
+have g0 r : ~ range X r -> g r = 0.
+  by move=> nr; rewrite /g pmf_out//; case: ifP.
+transitivity (\esum_(r in [set: R]) g r); first exact: esum_mkcond.
+transitivity (\esum_(r in range X) g r).
+  rewrite (esumID (range X) [set: R] g).
+  - move=> i _; rewrite /g; case: ifPn => // _.
+    by rewrite lee_fin pmf_ge0.
+  - rewrite setTI [X in _ + X]esum1 ?adde0//= => r [_ /= nr].
+    exact: g0.
+rewrite (reindex_esum (dRV_dom X) (range X) (dRV_enum X) g)//.
+rewrite -[X in \esum_(k in X) _]set_mem_set -nneseries_esum.
+- move=> n _; rewrite /g; case: ifPn => // _.
+  by rewrite lee_fin pmf_ge0.
+- rewrite eseries_mkcond.
+  rewrite [RHS](@distribution_dRV _ _ _ _ _ Pr X measurable_set1 A mA).
+  apply: eq_eseriesr => k _.
+  rewrite /g /enum_prob patchE diracE; case: ifPn => kd; last by rewrite mul0e.
+  rewrite /pmf fineK ?fin_num_measure//.
+  by case: ifPn => _; rewrite ?mule1 ?mule0.
+Qed.
+
+Lemma pr_pmf_dRV (A : set R) : measurable A ->
+  (\P_[pmfX] (fun r => r \in A))%:E = distribution Pr X A.
+Proof.
+by move=> mA; rewrite /pr esum_pmf_pred esum_pmf_set_dRV// fineK ?fin_num_measure.
+Qed.
+
+End pmf_dRV.
