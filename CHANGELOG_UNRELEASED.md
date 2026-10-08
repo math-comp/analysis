@@ -44,6 +44,9 @@
   + lemmas `clamp_gemin`, `clamp_lemax`, `minmax_clamp`,
     `clamp_id`, `clamp_min`, `clamp_max`
 
+- in `measure_theory/measure_function.v`:
+  + lemma `semi_cvg_measure_bigcap`
+
 ### Changed
 
 - in `esum.v`:
@@ -112,6 +115,9 @@
     `cvg_sub0`, `cvg0`, `subr_cvg0`
   + lemmas `within_continuousD`, `within_continuousB`, `within_continuousN`
   + lemmas `le_closed_ball`, `closed_ball0`
+
+- in `measure_theory/measure_function.v`:
+  + lemma `semi_cvg_measure_bigcap`
 
 ### Deprecated
 
