@@ -57,11 +57,8 @@ Lemma esum_setT_discrete {R : realType} (T : choiceType) (f : T -> \bar R) :
   (\esum_(x in [set: discrete_measurable_space T]) f x
      = \esum_(x in [set: T]) f x)%E.
 Proof.
-apply: (@reindex_esum R T (discrete_measurable_space T)
+by apply: (@reindex_esum R T (discrete_measurable_space T)
           [set: T] [set: discrete_measurable_space T] id f); split.
-- by move=> x.
-- by move=> x y _ _.
-- by move=> x _; exists x.
 Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -307,8 +304,7 @@ Context (R : realType) (T : choiceType) (mu : R.-distr T).
 Lemma maxe_distrM (a : \bar R) x :
   (maxe (a * (mu x)%:E) 0 = maxe a 0 * (mu x)%:E)%E.
 Proof.
-rewrite [in LHS]muleC [in RHS]muleC maxe_pMr.
-- by [].
+rewrite [in LHS]muleC [in RHS]muleC maxe_pMr => //=.
 - by rewrite lee_fin.
 - by rewrite mule0.
 Qed.
@@ -329,9 +325,9 @@ Proof.
 move=> f0.
 rewrite (@integral_density _ (discrete_measurable_space T) R
           (@counting (discrete_measurable_space T) R) (P mu) mu)//=.
-+ move=> A _; rewrite /P integral_counting_esum_set; try by [].
++ move=> A _; rewrite /P integral_counting_esum_set => //=.
   by move=> x; rewrite lee_fin.
-rewrite /espe -esum_setT_discrete integral_counting_esum; try by [].
+rewrite /espe -esum_setT_discrete integral_counting_esum => //=.
 by move=> x; apply: mule_ge0; [exact: f0|rewrite lee_fin].
 Qed.
 
@@ -353,9 +349,6 @@ Section pmf_subdistribution.
 Context d (T : measurableType d) (R : realType) (Pr : probability T R).
 Variable X : {RV Pr >-> R}.
 
-Let mX1 (r : R) : measurable (X @^-1` [set r]).
-Proof. exact: measurable_funPTI. Qed.
-
 Lemma pmf_fin_bigcup (J : seq R) : uniq J ->
   \sum_(j <- J) (pmf X j)%:E
     = Pr (\bigcup_(j in [set` J]) X @^-1` [set j]).
@@ -364,7 +357,7 @@ move=> uJ.
 rewrite (@measure_fin_bigcup _ _ _ Pr _ [set` J] (fun j : R => X @^-1` [set j])).
 - exact: finite_seq.
 - exact: trivIset_preimage1.
-- by move=> j _; exact: mX1.
+- by move=> j _; exact: measurable_funPTI.
 - rewrite fsbig_seq//; apply: eq_fsbigr => j _.
   by rewrite /pmf fineK// fin_num_measure.
 Qed.
@@ -374,7 +367,7 @@ Proof.
 move=> uJ; rewrite -lee_fin -sumEFin pmf_fin_bigcup//.
 apply: probability_le1; apply: fin_bigcup_measurable.
 - exact: finite_seq.
-- by move=> j _; exact: mX1.
+- by move=> j _; exact: measurable_funPTI.
 Qed.
 
 HB.instance Definition _ :=
