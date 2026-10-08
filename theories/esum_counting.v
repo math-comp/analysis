@@ -469,9 +469,7 @@ Local Notation pmfX := (@pmf _ _ _ Pr X).
 Lemma distribution_integral_counting (A : set R) : measurable A ->
   distribution Pr X A = \int[@counting R R]_(r in A) (pmfX r)%:E.
 Proof.
-move=> mA; rewrite integral_counting_esum_set.
-- exact: measurable_set1.
-- exact: mA.
+move=> mA; rewrite integral_counting_esum_set => //=.
 - by apply/measurable_EFinP; exact: pmf_measurable.
 - by move=> r; rewrite lee_fin pmf_ge0.
 - by rewrite esum_pmf_set_dRV.
@@ -490,12 +488,9 @@ have step1 : espe pmfX f = \int[@counting R R]_r (f r * (pmfX r)%:E).
   rewrite /espe -integral_counting_esum//; exact: measurable_set1.
 have step2 : \int[distribution Pr X]_r f r
            = \int[@counting R R]_r (f r * (pmfX r)%:E).
-  apply: (@integral_density _ R R (@counting R R) (distribution Pr X) pmfX).
+  apply: (@integral_density _ R R (@counting R R) (distribution Pr X) pmfX) => //=.
   - exact: pmf_measurable.
-  - exact: pmf_ge0.
   - exact: distribution_integral_counting.
-  - exact: mf.
-  - exact: f0.
 have step3 : \int[distribution Pr X]_r f r = \int[Pr]_w f (X w).
   by rewrite /distribution ge0_integral_pushforward.
 by rewrite step1 -step2 step3.
@@ -507,15 +502,13 @@ have mE : measurable_fun [set: R] (EFin : R -> \bar R) by apply/measurable_EFinP
 rewrite /espe esumE expectation_def integralE; congr (_ - _).
 - transitivity (espe pmfX (EFin^\+)).
     by rewrite /espe; apply: eq_esum => r _; rewrite !funeposE maxe_distrM.
-  rewrite ge0_espe_pmf.
+  rewrite ge0_espe_pmf => //=.
   + exact: measurable_funepos.
-  + by move=> r; exact: funepos_ge0.
   + by apply: eq_integral => w _; rewrite !funeposE.
 - transitivity (espe pmfX (EFin^\-)).
     by rewrite /espe; apply: eq_esum => r _; rewrite !funenegE maxeN_distrM.
-  rewrite ge0_espe_pmf.
+  rewrite ge0_espe_pmf => //=.
   + exact: measurable_funeneg.
-  + by move=> r; exact: funeneg_ge0.
   + by apply: eq_integral => w _; rewrite !funenegE.
 Qed.
 
