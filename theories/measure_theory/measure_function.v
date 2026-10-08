@@ -1732,21 +1732,30 @@ apply: nondecreasing_cvg_measure => [i||n m nm]; [exact: bigcup_measurable|
 by apply/subsetPset => x [i/= i_n Aix]; exists i => //=; exact: leq_trans nm.
 Qed.
 
+Lemma semi_cvg_measure_bigcap d (T : algebraOfSetsType d) {R : realFieldType}
+  (mu : {measure set T -> \bar R}) (F : (set T)^nat) :
+  (mu (F 0%N) < +oo)%E ->
+  (forall i : nat, d.-measurable (F i)) ->
+  (d.-measurable (\bigcap_i (F i))) ->
+  (mu \o (fun n => (\bigcap_(i < n) F i))) x @[x --> \oo] --> mu (\bigcap_n F n).
+Proof.
+move=> Foo mF mFoo.
+have H : \bigcap_n F n = \bigcap_n (\bigcap_(i < n.+1) F i).
+  by apply/seteqP; split => x Fx n _ => [i ni|]; apply: Fx => /=.
+rewrite -cvg_shiftS H; apply: nonincreasing_cvg_measure; rewrite -?H//.
+- by rewrite bigcap_mkord big_ord1.
+- by move=> n; exact: fin_bigcap_measurable.
+apply/nonincreasing_seqP => n.
+rewrite !bigcap_mkord big_ord_recr/= subsetEset; apply: subIsetl.
+Qed.
+
 Lemma cvg_measure_bigcap {d} {M : measurableType d} {R : realFieldType}
     {mu : {measure set M -> \bar R}} (A : (set M)^nat)
     (mA : forall i, measurable (A i)) :
-  mu (A 0%N) \is a fin_num ->
-  mu (\bigcap_(i < n.+1) A i) @[n-->\oo] --> mu (\bigcap_n A n).
+  mu (A 0%N) < +oo ->
+  mu (\bigcap_(i < n) A i) @[n-->\oo] --> mu (\bigcap_n A n).
 Proof.
-move=> muA0.
-rewrite [\bigcap_n A n] (_:_ = \bigcap_n (\bigcap_(i < n.+1) A i)).
-  by rewrite eqEsubset/bigcap; split=> [a/= + j _  i _|a/= aIa i _];
-    [exact|exact: (aIa i.+1)].
-apply: nonincreasing_cvg_measure.
-- by rewrite bigcap_mkord big_ord1 -ge0_fin_numE.
-- by move=> i; exact: bigcap_measurableType.
-- by apply: bigcap_measurableType=> k _; exact: bigcap_measurableType.
-- by move=> n m nm; apply/subsetPset=> x + i/= i_n; apply; exact: leq_trans nm.
+move=> ?; apply: semi_cvg_measure_bigcap => //; exact: bigcap_measurable.
 Qed.
 
 End measure_continuity.
