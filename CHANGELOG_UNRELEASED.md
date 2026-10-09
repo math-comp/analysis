@@ -136,6 +136,9 @@
   + lemmas `within_continuousD`, `within_continuousB`, `within_continuousN`
   + lemmas `le_closed_ball`, `closed_ball0`
 
+- in `esum.v`:
+  + lemmas `esum_bigcupT`, `esum_bigcup`
+
 ### Deprecated
 
 - in `pseudometric_normed_Zmodule.v`:
