@@ -89,14 +89,14 @@
 - in `classical_sets.v`
   + lemma `bigcup_idset1`
 
-- in `esumv.v`:
+- in `esum.v`:
   + lemma `nonempty_esumy`
   + lemma `infinite_esum_cst`
 
 - new file `counting_lebesgue.v`:
-  + defintion `discrete_measurable_space`
-  + lemmas `counting_set1`, `counting_esum_cst`, `discrete_integral_set1`,
-    `discrete_integral_sum`, `integral_counting_esum`
+  + lemmas `counting_esum_cst`, `sintegral_counting_esum`,
+    `integral_counting_esum_ge0`, `integral_counting_esum`,
+    `integral_counting_esum_set`
 
 - in `random_variable.v`:
   + lemma `not_range_pmf0`
