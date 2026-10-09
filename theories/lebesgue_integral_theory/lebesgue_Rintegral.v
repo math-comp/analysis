@@ -15,17 +15,19 @@ From mathcomp Require Import lebesgue_integral_dominated_convergence.
 (**md**************************************************************************)
 (* # The Lebesgue Integral for real-valued functions                          *)
 (*                                                                            *)
-(* Detailed contents:                                                         *)
-(* ```                                                                        *)
-(*       Rintegral mu D f := fine (\int[mu]_(x in D) f x).                    *)
-(* ```                                                                        *)
-(*                                                                            *)
 (* This file recasts lemmas about `integral` to `Rintegral`. It also          *)
-(* established that Continuous functions are dense in $L^1$.                  *)
+(* establishes that continuous functions are dense in $L^1$.                  *)
+(*                                                                            *)
+(* `Rintegral mu D f`                                                         *)
+(* : Definition for `fine (\int[mu]_(x in D) f x)`                            *)
+(*                                                                            *)
+(* `induced_measure mf f0`                                                    *)
+(* : measure induced by `f : T -> R`                                          *)
+(* : `mf` is a proof that `f` is measurable and `f0`, a proof that it is      *)
+(* : non-negative                                                             *)
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -191,6 +193,145 @@ by rewrite /Rintegral integralB_EFin// fineB//; exact: integrable_fin_num.
 Qed.
 
 End Rintegral.
+
+Section induced_charge.
+Context d (T : measurableType d) {R : realType} (mu : {measure set T -> \bar R}).
+Local Open Scope ereal_scope.
+
+Lemma semi_sigma_additive_nng_induced (f : T -> \bar R) :
+  measurable_fun setT f -> (forall x, 0 <= f x) ->
+  semi_sigma_additive (fun A => \int[mu]_(t in A) f t).
+Proof.
+move=> mf f0 /= F mF tF mUF; rewrite ge0_integral_bigcup//=.
+  exact: measurable_funTS.
+by apply: is_cvg_ereal_nneg_natsum_cond => // n _ _; exact: integral_ge0.
+Qed.
+
+End induced_charge.
+
+Section induced_measure_def.
+Import MeasurableR.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}).
+
+Definition induced_measure (f : T -> R)
+    (mf : measurable_fun [set: T] f)
+    (f0 : forall x, 0 <= f x) :=
+  fun A => (\int[mu]_(t in A) (f t)%:E)%E.
+
+End induced_measure_def.
+
+(* NB: this does not rely on the Lebesgue measure, just on the Borel sigma-algebra *)
+Section induced_measure.
+Import MeasurableR.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (f : T -> R).
+
+Hypotheses (mf : measurable_fun [set: T] f) (f0 : forall x, (0 <= f x)%R).
+
+Local Notation m' := (induced_measure mu mf f0).
+
+Let m'0 : m' set0 = 0.
+Proof. exact: integral_set0. Qed.
+
+Let m'_ge0 A : (0 <= m' A)%E.
+Proof. by apply: integral_ge0 => t At; rewrite lee_fin. Qed.
+
+Let m'_semi_sigma_additive : semi_sigma_additive m'.
+Proof.
+by apply: semi_sigma_additive_nng_induced => //; exact/measurable_EFinP.
+Qed.
+
+HB.instance Definition _ := isMeasure.Build d T R m'
+  m'0 m'_ge0 m'_semi_sigma_additive.
+
+End induced_measure.
+
+Section integral_induced_measure.
+Import MeasurableR.
+Local Open Scope ereal_scope.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (h : T -> R).
+
+Hypothesis mh : measurable_fun [set: T] h.
+Hypothesis h0 : forall x, (0 <= h x)%R.
+
+Let mu' : {measure set _ -> \bar _} := induced_measure mu mh h0.
+
+Lemma integral_induced_measure_indic (A : set T) : measurable A ->
+  \int[mu]_x ((\1_A x)%:E * (h x)%:E) = mu' A.
+Proof.
+move=> mA; rewrite [RHS]integral_mkcond; apply: eq_integral => x _.
+rewrite patchE indicE; case: ifP => _; first by rewrite mul1e.
+by rewrite mul0e.
+Qed.
+
+Lemma integral_induced_measureMindic (r : R) (A : set T) : measurable A ->
+  (0 <= r)%R ->
+  \int[mu]_x (r%:E * (\1_A x)%:E * (h x)%:E) = r%:E * mu' A.
+Proof.
+move=> mA r0.
+under eq_integral do rewrite -muleA.
+rewrite ge0_integralZl//=.
+- apply: emeasurable_funM => //; by apply /measurable_EFinP.
+- by move=> x _; apply: mule_ge0; rewrite ?lee_fin.
+- by rewrite integral_induced_measure_indic.
+Qed.
+
+Import HBNNSimple.
+
+Lemma sintegral_induced_measure (g : {nnsfun T >-> R}) :
+  sintegral mu' g = \int[mu]_x ((g x)%:E * (h x)%:E).
+Proof.
+transitivity (\sum_(r \in range g)
+    \int[mu]_x (r%:E * (\1_(g @^-1` [set r]) x)%:E * (h x)%:E)).
+  rewrite sintegralE; apply: eq_fsbigr => r /set_mem[x0 _ <-].
+  by rewrite integral_induced_measureMindic.
+transitivity (\int[mu]_x (\sum_(r \in range g)
+    ((r * (\1_(g @^-1` [set r]) x))%:E * (h x)%:E))).
+  rewrite ge0_integral_fsum//=.
+  - move=> r.
+    under eq_fun do rewrite EFinM -muleA.
+    apply: measurable_funeM.
+    by apply: emeasurable_funM => //; exact/measurable_EFinP.
+  - move=> r x _; have [r0|r0] := leP 0%R r.
+      by rewrite mule_ge0// lee_fin// mulr_ge0.
+    by rewrite preimage_nnfun0// indic0/= mulr0 mul0e.
+apply: eq_integral => x _.
+rewrite -ge0_mule_fsuml; first by move=> _ [t _ <-]; rewrite lee_fin mulr_ge0.
+by rewrite fsumEFin// [in RHS](fimfunE g).
+Qed.
+
+Lemma integral_induced_measure (f : T -> \bar R) :
+    measurable_fun [set: T] f -> (forall x, 0 <= f x) ->
+  \int[mu']_x f x = \int[mu]_x (f x * (h x)%:E).
+Proof.
+move=> mf f0.
+pose g := nnsfun_approx measurableT mf.
+pose gE := fun n => EFin \o g n.
+have mgE n : measurable_fun [set: T] (EFin \o g n) by exact/measurable_EFinP.
+have gE_ge0 n x : 0 <= gE n x by rewrite lee_fin.
+have nd_gE x : {homo gE ^~ x : n p / (n <= p)%O >-> n <= p}.
+  by move=> *; exact/lefP/nd_nnsfun_approx.
+transitivity (limn (fun n => \int[mu']_x gE n x)).
+  rewrite -monotone_convergence//; apply: eq_integral => t _.
+  by apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
+transitivity (limn (fun n => \int[mu]_x (gE n x * (h x)%:E))).
+  apply: congr_lim; apply/funext => n.
+  by rewrite integralT_nnsfun sintegral_induced_measure.
+have mgEh n : measurable_fun [set: T] (fun x => gE n x * (h x)%:E).
+  by apply: emeasurable_funM => //; exact/measurable_EFinP.
+have gEh_ge0 n x : 0 <= gE n x * (h x)%:E by rewrite mule_ge0// lee_fin.
+have nd_gEh x :
+    {homo (fun n => gE n x * (h x)%:E) : n p / (n <= p)%O >-> n <= p}.
+  by move=> p q pq; rewrite lee_wpmul2r ?lee_fin//; exact: nd_gE.
+rewrite -monotone_convergence//.
+apply: eq_integral => x _.
+apply: cvg_lim => //; apply: cvgeZr => //.
+exact: cvg_nnsfun_approx.
+Qed.
+
+End integral_induced_measure.
 
 Section Rintegral_lebesgue_measure.
 Context {R : realType}.

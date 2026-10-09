@@ -135,6 +135,10 @@
     `lhopital_Ninfty`, `lhopital_pinfty`, `lhopital_ninfty`,
     `lhopital_Ninfty_at_pinfty`, `lhopital_pinfty_at_pinfty`, `lhopital_ninfty_at_pinfty`,
     `lhopital_Ninfty_at_ninfty`, `lhopital_pinfty_at_ninfty`, `lhopital_ninfty_at_ninfty`
+- in `lebesgue_Rintegral.v`:
+  + definition `induced_measure`
+  + lemmas `integral_induced_measure_indic`, `sintegral_induced_measure`,
+    `integral_induced_measure`
 
 ### Changed
 
@@ -205,6 +209,9 @@
 - moved from `pseudometric_normed_Zmodule.v` to `num_topology.v`:
   + lemmas `cvg_at_right_filter`,
     `cvg_at_left_filter`, `cvg_at_right_within`, `cvg_at_left_within`
+
+- moved to `lebesgue_Rintegral.v` from `radon_nikodym.v`:
+  + lemma `semi_sigma_additive_nng_induced`
 
 ### Renamed
 
