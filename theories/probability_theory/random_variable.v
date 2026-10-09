@@ -6,7 +6,7 @@ From mathcomp Require Import interval archimedean finmap interval_inference.
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
 From mathcomp Require Import reals ereal topology normedtype sequences measure.
-From mathcomp Require Import exp numfun realfun measurable_realfun.
+From mathcomp Require Import exp numfun realfun esum measurable_realfun.
 From mathcomp Require Import lebesgue_measure lebesgue_integral hoelder.
 
 (**md**************************************************************************)
@@ -172,6 +172,10 @@ Definition pmf (X : {RV P >-> R}) (r : R) : R := fine (P (X @^-1` [set r])).
 
 Lemma pmf_ge0 (X : {RV P >-> R}) (r : R) : 0 <= pmf X r.
 Proof. by rewrite fine_ge0. Qed.
+
+Lemma not_range_pmf0 (X : {RV P >-> R}) (r : R) :
+  ~ range X r -> pmf X r = 0%R.
+Proof. by move=> nr; rewrite /pmf preimage10// measure0. Qed.
 
 End pmf_definition.
 
@@ -1291,6 +1295,38 @@ by rewrite [RHS]eseries_mkcond; apply: eq_eseriesr => k _; rewrite diracT mule1.
 Qed.
 
 End distribution_dRV.
+
+Section pmf_dRV.
+Import MeasurableR.
+Context {d} {T : pmeasurableType d} {R : realType} (P : probability T R)
+  (X : {dRV P >-> R}).
+
+Local Notation pmfX := (@pmf _ _ _ P X).
+
+Lemma dRV_esum_pmf_distribution (A : set R) : measurable A ->
+  \esum_(r in A) (pmfX r)%:E = distribution P X A.
+Proof.
+move=> mA.
+pose g r := if r \in A then (pmfX r)%:E else 0.
+rewrite esum_mkcond -/g.
+transitivity (\esum_(r in range X) g r).
+  rewrite (esumID (range X) [set: R]).
+  - move=> i _; rewrite /g; case: ifPn => // _.
+    by rewrite lee_fin pmf_ge0.
+  - rewrite setTI [X in _ + X]esum1 ?adde0//= => r [_ /= /not_range_pmf0].
+    by rewrite /g; case: ifPn => // _ ->.
+rewrite (reindex_esum (dRV_dom X) (range X) (dRV_enum X) g)//.
+rewrite -[X in \esum_(k in X) _]set_mem_set -nneseries_esum.
+  by move=> n _; rewrite /g; case: ifPn => // _; rewrite lee_fin pmf_ge0.
+rewrite eseries_mkcond.
+rewrite [RHS](@distribution_dRV _ _ _ _ _ P X measurable_set1 A mA).
+apply: eq_eseriesr => k _.
+rewrite /g /enum_prob patchE diracE; case: ifPn => kd; last by rewrite mul0e.
+rewrite fineK ?fin_num_measure//.
+by case: ifPn => _; rewrite ?mule1 ?mule0.
+Qed.
+
+End pmf_dRV.
 
 Section discrete_distribution.
 Local Open Scope ereal_scope.
