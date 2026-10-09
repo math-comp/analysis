@@ -735,6 +735,27 @@ subgraph cluster_Topology {
   "theories/topology_theory/uniform_structure" -> "theories/topology_theory/function_spaces";
 
 subgraph cluster_Topology {
+    "theories/topology_theory/edist"[
+        label="edist",
+        URL="mathcomp.analysis.topology_theory.edist.html",
+        fillcolor=4
+    ]
+}
+  "classical/boolp" -> "theories/topology_theory/edist";
+  "classical/classical_sets" -> "theories/topology_theory/edist";
+  "classical/functions" -> "theories/topology_theory/edist";
+  "classical/set_interval" -> "theories/topology_theory/edist";
+  "classical/unstable" -> "theories/topology_theory/edist";
+  "reals/reals" -> "theories/topology_theory/edist";
+  "theories/ereal" -> "theories/topology_theory/edist";
+  "theories/topology_theory/metric_structure" -> "theories/topology_theory/edist";
+  "theories/topology_theory/num_topology" -> "theories/topology_theory/edist";
+  "theories/topology_theory/product_topology" -> "theories/topology_theory/edist";
+  "theories/topology_theory/pseudometric_structure" -> "theories/topology_theory/edist";
+  "theories/topology_theory/separation_axioms" -> "theories/topology_theory/edist";
+  "theories/topology_theory/topology_structure" -> "theories/topology_theory/edist";
+
+subgraph cluster_Topology {
     "theories/homotopy_theory/homotopy"[
         label="homotopy",
         URL="mathcomp.analysis.homotopy_theory.homotopy.html",
@@ -944,7 +965,6 @@ subgraph cluster_Normedtype {
     ]
 }
   "classical/boolp" -> "theories/normedtype_theory/urysohn";
-  "classical/cardinality" -> "theories/normedtype_theory/urysohn";
   "classical/classical_sets" -> "theories/normedtype_theory/urysohn";
   "classical/functions" -> "theories/normedtype_theory/urysohn";
   "classical/set_interval" -> "theories/normedtype_theory/urysohn";
@@ -953,8 +973,7 @@ subgraph cluster_Normedtype {
   "theories/ereal" -> "theories/normedtype_theory/urysohn";
   "theories/normedtype_theory/normed_module" -> "theories/normedtype_theory/urysohn";
   "theories/normedtype_theory/num_normedtype" -> "theories/normedtype_theory/urysohn";
-  "theories/normedtype_theory/pseudometric_normed_Zmodule" -> "theories/normedtype_theory/urysohn";
-  "theories/normedtype_theory/tvs" -> "theories/normedtype_theory/urysohn";
+  "theories/topology_theory/edist" -> "theories/normedtype_theory/urysohn";
   "theories/topology_theory/topology" -> "theories/normedtype_theory/urysohn";
 
 subgraph cluster_Normedtype {

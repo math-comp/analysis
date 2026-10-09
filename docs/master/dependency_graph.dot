@@ -272,6 +272,9 @@ digraph dependencies {
 		"theories/topology_theory/weak_topology"	[URL="mathcomp.analysis.topology_theory.weak_topology.html",
 			fillcolor=4,
 			label=weak_topology];
+		"theories/topology_theory/edist"	[URL="mathcomp.analysis.topology_theory.edist.html",
+			fillcolor=4,
+			label=edist];
 		"theories/homotopy_theory/homotopy"	[URL="mathcomp.analysis.homotopy_theory.homotopy.html",
 			fillcolor=4,
 			label=homotopy];
@@ -458,6 +461,7 @@ digraph dependencies {
 	"experimental_reals/discrete" -> "experimental_reals/realseq";
 	"experimental_reals/realseq" -> "experimental_reals/realsum";
 	"experimental_reals/realsum" -> "experimental_reals/distr";
+	"theories/ereal" -> "theories/topology_theory/edist";
 	"theories/ereal" -> "theories/normedtype_theory/pseudometric_normed_Zmodule";
 	"theories/ereal" -> "theories/normedtype_theory/ereal_normedtype";
 	"theories/esum" -> "experimental_reals/realsum";
@@ -509,6 +513,7 @@ digraph dependencies {
 	"theories/topology_theory/topology_structure" -> "theories/topology_theory/uniform_structure";
 	"theories/topology_theory/uniform_structure" -> "theories/topology_theory/pseudometric_structure";
 	"theories/topology_theory/uniform_structure" -> "theories/topology_theory/supremum_topology";
+	"theories/topology_theory/edist" -> "theories/normedtype_theory/urysohn";
 	"theories/homotopy_theory/continuous_path" -> "theories/homotopy_theory/homotopy";
 	"theories/homotopy_theory/wedge_sigT" -> "theories/homotopy_theory/continuous_path";
 	"theories/ess_sup_inf" -> "theories/hoelder";
