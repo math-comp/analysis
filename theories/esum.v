@@ -776,8 +776,8 @@ Qed.
 Arguments esum_set_image {R T} a e P.
 
 Section esum_bigcup.
-Context {R : realType} {T : choiceType} (K : set nat).
-Implicit Types (J : nat -> set T) (a : T -> \bar R).
+Context {R : realType} {T U : choiceType} (K : set U).
+Implicit Types (J : U -> set T) (a : T -> \bar R).
 
 Lemma esum_bigcupT J a : trivIset setT J -> (forall x, 0 <= a x) ->
   \esum_(i in \bigcup_(k in K) (J k)) a i =
@@ -824,8 +824,8 @@ Qed.
 
 End esum_bigcup.
 
-Arguments esum_bigcupT {R T K} J a.
-Arguments esum_bigcup {R T K} J a.
+Arguments esum_bigcupT {R T U K} J a.
+Arguments esum_bigcup {R T U K} J a.
 
 Lemma nneseries_sum_bigcup {R : realType} (T : choiceType) (F : (set T)^nat)
     (f : T -> \bar R) : trivIset [set: nat] F -> (forall i, 0 <= f i)%E ->
