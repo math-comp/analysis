@@ -764,6 +764,20 @@ rewrite funeqE => x /=; rewrite !fctE/=; have [fx0|/ltW fx0] := leP (f x) 0.
   by move: fx0; rewrite -{1}oppr0 lerNl => /max_idPr ->; rewrite addr0.
 Qed.
 
+Lemma le_funrpos f x: `|f^\+ x| <= `|f x|.
+Proof.
+rewrite ger0_norm ?funrpos_ge0//.
+have := funrposDneg f => /(congr1 (fun g => g x)); rewrite /= => <-.
+by rewrite lerDl funrneg_ge0.
+Qed.
+
+Lemma le_funrneg f x: `|f^\- x| <= `|f x|.
+Proof.
+rewrite ger0_norm ?funrneg_ge0//.
+have := funrposDneg f => /(congr1 (fun g => g x)); rewrite /= => <-.
+by rewrite lerDr funrpos_ge0.
+Qed.
+
 Lemma funrposBneg f : f^\+ - f^\- = f.
 Proof.
 apply/funext => x.
