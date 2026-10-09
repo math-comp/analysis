@@ -44,6 +44,11 @@
   + lemmas `clamp_gemin`, `clamp_lemax`, `minmax_clamp`,
     `clamp_id`, `clamp_min`, `clamp_max`
 
+- in `sequences.v`,
+  + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
+
+- new file `edist.v`
+
 ### Changed
 
 - in `esum.v`:
@@ -55,10 +60,6 @@
     from level 36 to 34 and level of `F` from 36 to 41.
     In particular, this means that `\int[mu]_(x in D) f x * g x`
     now parses as `\int[mu]_(x in D) (f x * g x)`.
-- in `sequences.v`,
-  + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
-
-### Changed
 
 - moved from `tvs.v` to `pseudometric_normed_Zmodule.v`
   + mixin `PreTopologicalNmodule_isTopologicalNmodule`
@@ -85,6 +86,25 @@
 
 - in `topology/topology_structure.v`:
   + lemma `bigcap_open`
+- moved to `ereal.v` from `ereal_normedtype.v`:
+  + lemma `nbhs_EFin`
+
+- moved to `ereal.v` from `normed_module.v`:
+  + lemma `fcvg_is_fine`
+  + lemma `fine_fcvg`
+  + lemma `cvg_EFin`
+  + lemma `fine_cvg`
+  + lemma `cvg_is_fine`
+  + lemma `fine_cvgP`
+
+- moved to `edist.v` from `urysohn.v`:
+  + definitions `edist`, `edist_inf`
+  + lemmas `edist_ge0`, `edist_neqNy`, `edist_lt_ball`, `edist_fin`,
+    `edist_pinftyP`, `edist_finP`, `edist_fin_open`, `edist_fin_closed`,
+    `edist_pinfty_open`, `edist_sym`, `edist_triangle`, `edist_continuous`,
+    `edist_closeP`, `edist_refl`, `edist_closel`
+  + lemmas `edist_inf_ge0`, `edist_inf_neqNy`, `edist_inf_triangle`,
+    `edist_inf_continuous`, `edist_inf0`
 
 ### Renamed
 

@@ -52,7 +52,6 @@ From mathcomp Require Import topology.
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -1619,3 +1618,58 @@ rewrite truncn_le_nat invf_plt ?posrE// => ltnd; apply: dP; last first.
   by rewrite addrC -subr_eq0 addrK invr_eq0 lt0r_neq0.
 by rewrite /= opprD addNKr normrN normfV natr1 gtr0_norm.
 Qed.
+
+Section nbhs_ereal.
+Context {R : numFieldType} (P : \bar R -> Prop).
+
+Lemma nbhs_EFin (x : R) : (\forall y \near x%:E, P y) <-> \near x, P x%:E.
+Proof. done. Qed.
+
+End nbhs_ereal.
+
+Section cvg_fin.
+Context {R : numFieldType} {F : set_system \bar R} {FF : Filter F}.
+
+Lemma fcvg_is_fine a : F --> a%:E -> \near F, F \is a fin_num.
+Proof. by apply; apply/nbhs_EFin; near=> x. Unshelve. all: by end_near. Qed.
+
+End cvg_fin.
+
+Section filter.
+Context {R : numFieldType} {F : set_system \bar R} {FF : Filter F}.
+
+Lemma fine_fcvg a : F --> a%:E -> fine @ F --> a.
+Proof.
+move=> /(_ _)/= Fa.
+apply/(@metricType_numDomainType.cvgrPdist_lt _ R^o) => // _/posnumP[e].
+rewrite near_simpl.
+apply: Fa; apply/nbhs_EFin.
+exact: (@metricType_numDomainType.cvgr_dist_lt _ _ _ (nbhs a)).
+Qed.
+
+End filter.
+
+Section limit.
+Context {R : numFieldType} {I : Type} {F : set_system I} {FF : Filter F}
+  (f : I -> \bar R).
+
+Lemma cvg_EFin a : (\near F, f F \is a fin_num) -> fine \o f @ F --> a ->
+  f @ F --> a%:E.
+Proof.
+move=> Ffin Fa P/= /nbhs_EFin /Fa; rewrite !near_simpl.
+by apply: filterS2 Ffin => x /fineK->.
+Qed.
+
+Lemma fine_cvg a : f @ F --> a%:E -> fine \o f @ F --> a.
+Proof. exact: fine_fcvg. Qed.
+
+Lemma cvg_is_fine a : f @ F --> a%:E -> \near F, f F \is a fin_num.
+Proof. exact: fcvg_is_fine. Qed.
+
+Lemma fine_cvgP a :
+   f @ F --> a%:E <-> (\near F, f F \is a fin_num) /\ fine \o f @ F --> a.
+Proof.
+by split;[split;[exact: (@cvg_is_fine a)|exact: fine_cvg]|case; apply: cvg_EFin].
+Qed.
+
+End limit.
