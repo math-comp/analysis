@@ -59,19 +59,10 @@ Definition induced_charge d (T : measurableType d) {R : realType}
 Notation induced := induced_charge (only parsing).
 
 Section induced_charge.
-Context d (T : measurableType d) {R : realType} (mu : {measure set T -> \bar R}).
+Context d (T : measurableType d) {R : realType}
+  (mu : {measure set T -> \bar R}) (f : T -> \bar R).
 Local Open Scope ereal_scope.
 
-Lemma semi_sigma_additive_nng_induced (f : T -> \bar R) :
-  measurable_fun setT f -> (forall x, 0 <= f x) ->
-  semi_sigma_additive (fun A => \int[mu]_(t in A) f t).
-Proof.
-move=> mf f0 /= F mF tF mUF; rewrite ge0_integral_bigcup//=.
-  exact: measurable_funTS.
-by apply: is_cvg_ereal_nneg_natsum_cond => // n _ _; exact: integral_ge0.
-Qed.
-
-Variable f : T -> \bar R.
 Hypothesis intf : mu.-integrable setT f.
 
 Local Notation nu := (induced_charge intf).

@@ -49,6 +49,11 @@
 
 - new file `edist.v`
 
+- in `lebesgue_Rintegral.v`:
+  + definition `induced_measure`
+  + lemmas `integral_induced_measure_indic`, `sintegral_induced_measure`,
+    `integral_induced_measure`
+
 ### Changed
 
 - in `esum.v`:
@@ -105,6 +110,9 @@
     `edist_closeP`, `edist_refl`, `edist_closel`
   + lemmas `edist_inf_ge0`, `edist_inf_neqNy`, `edist_inf_triangle`,
     `edist_inf_continuous`, `edist_inf0`
+
+- moved to `lebesgue_Rintegral.v` from `radon_nikodym.v`:
+  + lemma `semi_sigma_additive_nng_induced`
 
 ### Renamed
 
