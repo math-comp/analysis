@@ -288,17 +288,16 @@ Arguments near_ball {R M} y eps.
 
 Section pseudoMetricType_numFieldType.
 Context {R : numFieldType} {M : pseudoMetricType R}.
-Implicit Types x y z p : M.
 
-Lemma ball_split z x y (e : R) :
+Lemma ball_split (z x y : M) (e : R) :
   ball x (e / 2) z -> ball z (e / 2) y -> ball x e y.
 Proof. by move=> /ball_triangle h /h; rewrite -splitr. Qed.
 
-Lemma ball_splitr z x y (e : R) :
+Lemma ball_splitr (z x y : M) (e : R) :
   ball z (e / 2) x -> ball z (e / 2) y -> ball x e y.
 Proof. by move=> /ball_sym /ball_split; apply. Qed.
 
-Lemma ball_splitl z x y (e : R) :
+Lemma ball_splitl (z x y : M) (e : R) :
   ball x (e / 2) z -> ball y (e / 2) z -> ball x e y.
 Proof. by move=> bxz /ball_sym /(ball_split bxz). Qed.
 
