@@ -1607,6 +1607,19 @@ rewrite (@integral_itvbb_itvoo _ _ (EFin \o g))//; first exact/measurable_EFinP.
 by apply: eq_integral => z; rewrite inE/= => zxy; congr EFin; exact: fg.
 Qed.
 
+Lemma integral_itvD (f : R -> \bar R) (a b c : itv_bound R) :
+  measurable_fun [set` Interval a c] f ->
+  (a <= b)%O -> (b <= c)%O ->
+  \int[mu]_(t in [set` Interval a c]) f t  =
+  \int[mu]_(t in [set` Interval a b]) f t +
+  \int[mu]_(t in [set` Interval b c]) f t.
+Proof.
+move=> mf ab bc.
+rewrite (itv_bndbnd_setU (x := b))// integral_setU// -?itv_bndbnd_setU//.
+apply/disj_setPS => x /= [/andP[_ +] /andP[+ _]].
+by move=> /le_trans /[apply]; rewrite bnd_simp ltxx.
+Qed.
+
 End lebesgue_measure_integral.
 Arguments integral_Sset1 {R f A} r.
 #[deprecated(since="mathcomp-analysis 1.16.0", note="renamed_to `integral_setD1`")]

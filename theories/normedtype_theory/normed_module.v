@@ -274,8 +274,8 @@ Proof.
 have [ab|ba _ |-> _] := ltgtP a b; last 2 first.
   by rewrite set_itv_ge ?bnd_simp -?ltNge//; exact: continuous_subspace0.
   by rewrite set_itv1; exact: continuous_subspace1.
-move/continuous_within_itvP; rewrite ltrN2 => /(_ ab)[cf fb fa].
-apply/(continuous_within_itvP _ ab); split.
+move/continuous_within_itvccP; rewrite ltrN2 => /(_ ab)[cf fb fa].
+apply/(continuous_within_itvccP _ ab); split.
 - move=> t tab.
   apply: (@cvg_comp _ _ _ -%R f); first exact: oppr_continuous.
   by apply: cf; rewrite oppr_itvoo !opprK.
@@ -1099,6 +1099,61 @@ Unshelve. all: end_near. Qed.
 
 End ecvg_realFieldType.
 
+Section within_econtinuous.
+Context {T : topologicalType} {R : realFieldType}.
+Implicit Types (f g u v : T -> \bar R) (A : set T).
+Local Open Scope ereal_scope.
+
+Lemma within_econtinuousD f g A :
+  {in A, forall x, f x +? g x} ->
+  {within A, continuous f} -> {within A, continuous g} ->
+  {within A, continuous f \+ g}.
+Proof.
+rewrite !subspace_continuousP => fg_def + + x Ax.
+move=> /(_ x Ax) + /(_ x Ax) +; apply: cvgeD.
+by apply: fg_def; apply/mem_set.
+Qed.
+
+Lemma within_econtinuousN f A :
+  {within A, continuous f} -> {within A, continuous \- f}.
+Proof.
+by rewrite !subspace_continuousP => + x Ax => /(_ x Ax); exact: cvgeN.
+Qed.
+
+Lemma within_econtinuousB f g A :
+  {in A, forall x, f x +? - g x} ->
+  {within A, continuous f} -> {within A, continuous g} ->
+  {within A, continuous f \- g}.
+Proof. by move=> + + /within_econtinuousN; exact: within_econtinuousD. Qed.
+
+Lemma within_econtinuousM f g A :
+  {in A, forall x, f x *? g x} ->
+  {within A, continuous f} -> {within A, continuous g} ->
+  {within A, continuous f \* g}.
+Proof.
+rewrite !subspace_continuousP => fg_def + + x Ax.
+move=> /(_ x Ax) + /(_ x Ax) +; apply: cvgeM.
+by apply: fg_def; apply/mem_set.
+Qed.
+
+Lemma within_continuous_fine f A :
+  {in A, forall x, f x \is a fin_num} ->
+  {within A, continuous f} -> {within A, continuous fine \o f}.
+Proof.
+rewrite !subspace_continuousP => f_fin + x Ax => /(_ x Ax).
+rewrite /from_subspace /comp -(@fineK _ (f x)); first by apply/f_fin/mem_set.
+exact/fine_cvg.
+Qed.
+
+Lemma within_econtinuous_EFin (f : T -> R) A :
+  {within A, continuous f} -> {within A, continuous EFin \o f}.
+Proof.
+rewrite !subspace_continuousP => + x Ax => /(_ x Ax) cf.
+by apply: cvg_EFin; first by apply: nearW.
+Qed.
+
+End within_econtinuous.
+
 Section max_cts.
 Context {R : realType} {T : topologicalType}.
 
@@ -1253,12 +1308,6 @@ Proof. by move=> cf cg fg; apply/cvg_lim => //; exact: cvgeM. Qed.
 Lemma limeN f : cvg (f @ F) -> lim (\- f @ F) = - lim (f @ F).
 Proof. by move=> cf; apply/cvg_lim => //; apply: cvgeN. Qed.
 
-Lemma cvge_ge f a b : (\forall x \near F, b <= f x) -> f @ F --> a -> b <= a.
-Proof. by move=> ? fa; rewrite -(cvg_lim _ fa) ?lime_ge//=; apply: cvgP fa. Qed.
-
-Lemma cvge_le f a b : (\forall x \near F, b >= f x) -> f @ F --> a -> b >= a.
-Proof. by move=> ? fa; rewrite -(cvg_lim _ fa) ?lime_le//=; apply: cvgP fa. Qed.
-
 Lemma cvg_nnesum (J : Type) (r : seq J) (f : J -> I -> \bar R)
    (l : J -> \bar R) (P : pred J) :
   (forall j, P j -> \near F, 0 <= f j F) ->
@@ -1271,7 +1320,7 @@ elim: r => [|x r IHr]/= f0 fl; rewrite bigsimp; under eq_fun do rewrite bigsimp.
 case: ifPn => [Px|Pnx]; last exact: IHr.
 apply: cvgeD; [|exact: fl|exact: IHr].
 by rewrite ge0_adde_def ?inE// ?sume_ge0// => [|j Pj];
-   rewrite (cvge_ge _ (fl _ _))//; apply: f0.
+  rewrite (cvge_to_ge (fl _ _))//; apply: f0.
 Qed.
 
 Lemma lim_nnesum (J : Type) (r : seq J) (f : J -> I -> \bar R)
@@ -1395,6 +1444,48 @@ have Fg := squeeze_fin fgh Ff Fh; split=> //.
 apply: squeeze_cvgr fl hl; near=> x => /=.
 by have /(_ _)/andP[//|fg gh] := near fgh x; rewrite !fine_le//=; near: x.
 Unshelve. all: end_near. Qed.
+
+Lemma cvge_lt f (y : \bar R) :
+  f @ a --> y -> forall z, z > y -> \forall t \near a, f t < z.
+Proof.
+case: y => [y||]; last 2 first.
+- by move=> _ ?; rewrite ltNge leey.
+- move=> /cvgeNy_lt + [z||] // _ => /(_ 0%R) lt0.
+  by near do apply: (lt_trans (y := 0)) => //.
+move=> /[dup] /fine_fcvg + /fcvg_is_fine + z.
+rewrite -fmap_comp near_map => /cvgr_lt fine_lt near_fin.
+case: z => [z||] //.
+- rewrite lte_fin => /fine_lt fine_ltz. 
+  by near do rewrite -[ltLHS]fineK ?lte_fin.
+- by move=> _; near do (rewrite ltey_eq; apply/orP; left).
+Unshelve. all: by end_near. Qed.
+
+Lemma cvge_gt f (y : \bar R) :
+  f @ a --> y -> forall z, z < y -> \forall t \near a, f t > z.
+Proof.
+case: y => [y||]; last 2 first.
+- move=> /cvgey_gt + [z||] // _ => /(_ 0%R) lt0.
+  by near do apply: (lt_trans (y := 0)) => //.
+- by move=> _ ?; rewrite ltNge leNye.
+- move=> /[dup] /fine_fcvg + /fcvg_is_fine + z.
+  rewrite -fmap_comp near_map => /cvgr_gt fine_gt near_fin.
+  case: z => [z||] //.
+  + rewrite lte_fin => /fine_gt fine_gtz. 
+    by near do rewrite -[ltRHS]fineK ?lte_fin.
+  + by move=> _; near do (rewrite ltNye_eq; apply/orP; left).
+Unshelve. all: by end_near. Qed.
+
+Lemma cvge_le f (y : \bar R) :
+  f @ a --> y -> forall z, z > y -> \forall t \near a, f t <= z.
+Proof.
+by move=> /cvge_lt + z => /(_ z) /[apply]; apply: filterS => ?; exact: ltW.
+Qed.
+
+Lemma cvge_ge f (y : \bar R) :
+  f @ a --> y -> forall z, z < y -> \forall t \near a, f t >= z.
+Proof.
+by move=> /cvge_gt + z => /(_ z) /[apply]; apply: filterS => ?; exact: ltW.
+Qed.
 
 End FilterERealType.
 Arguments squeeze_fin {T a Fa R} f g h.
