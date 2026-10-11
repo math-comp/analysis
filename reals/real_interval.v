@@ -186,27 +186,95 @@ move: a b => [[]a|[]] [[]b|[]] //=; rewrite ?lte_fin ?in_itv //= => /andP[] //;
 by do ?[move->|move/ltW|move=>_].
 Qed.
 
-Lemma itv_cyy : `[+oo%E, +oo[%classic = [set +oo%E] :> set (\bar R).
+(* 'y' and 'Ny' = interval bound infinity 
+   'ye' and 'Nye' = ereal infinity*)
+
+Lemma itv_cyey : `[+oo%E, +oo[%classic = [set +oo%E] :> set (\bar R).
 Proof.
 by rewrite set_itvE predeqE => t; split => /= [|<-//]; rewrite leye_eq => /eqP.
 Qed.
 
-Lemma itv_oyy : `]+oo%E, +oo[%classic = set0 :> set (\bar R).
+Lemma itv_oyey : `]+oo%E, +oo[%classic = set0 :> set (\bar R).
 Proof.
 by rewrite set_itvE predeqE => t; split => //=; apply/negP; rewrite -leNgt leey.
 Qed.
 
-Lemma itv_cNyy : `[-oo%E, +oo[%classic = setT :> set (\bar R).
+Lemma itv_cNyNye : `]-oo, -oo%E]%classic = [set -oo%E] :> set (\bar R).
+Proof.
+by rewrite set_itvE predeqE => x; split => /= [|->//]; rewrite leeNy_eq => /eqP.
+Qed.
+
+Lemma itv_oNyNye : `]-oo, -oo%E[%classic = set0 :> set (\bar R).
+Proof.
+by rewrite set_itvE predeqE; split => //=; apply/negP; rewrite -leNgt leNye.
+Qed.
+
+Lemma itv_cNyey : `[-oo%E, +oo[%classic = setT :> set (\bar R).
 Proof. by rewrite set_itvE predeqE => t; split => //= _; rewrite leNye. Qed.
 
-Lemma itv_oNyy : `]-oo%E, +oo[%classic = ~` [set -oo]%E :> set (\bar R).
+Lemma itv_oNyey : `]-oo%E, +oo[%classic = ~` [set -oo]%E :> set (\bar R).
 Proof.
 rewrite set_itvE predeqE => x; split => /=.
 - by move: x => [x| |]; rewrite ?ltxx.
 - by move: x => [x h|//|/(_ erefl)]; rewrite ?ltNyr.
 Qed.
 
+Lemma itv_cNyye : `]-oo, +oo%E]%classic = setT :> set (\bar R).
+Proof. by rewrite set_itvE predeqE => x /=; rewrite leey trueE. Qed.
+
+Lemma itv_oNyye : `]-oo, +oo%E[%classic = ~` [set +oo]%E :> set (\bar R).
+Proof.
+rewrite set_itvE predeqE => x; split => /=; first by case: x.
+by case: x => [x||] //; rewrite ltry.
+Qed.
+
+Lemma itv_ccNyeye : `[-oo%E, +oo%E]%classic = setT :> set (\bar R).
+Proof. by rewrite set_itvE predeqE => x /=; rewrite leNye leey trueE. Qed.
+
+Lemma itv_coNyeye : `[-oo%E, +oo%E[%classic = ~` [set +oo%E] :> set (\bar R).
+Proof. 
+by rewrite set_itvE predeqE => x /=; rewrite leNye ltey/=; split=> /eqP. 
+Qed.
+
+Lemma itv_ocNyeye : `]-oo%E, +oo%E]%classic = ~` [set -oo%E] :> set (\bar R).
+by rewrite set_itvE predeqE => x /=; rewrite leey andbT ltNye; split=> /eqP.
+Qed.
+
+Lemma itv_ooNyeye : `]-oo%E, +oo%E[%classic = [set` fin_num] :> set (\bar R).
+Proof. by rewrite set_itvE predeqE => x /=; rewrite fin_numElt. Qed.
+
+Lemma itv_oNyey_bigcup : (`]-oo%E, +oo[ = \bigcup_(r : R) `]r%:E, +oo[)%classic.
+Proof.
+rewrite set_itvE; under eq_bigcupr do rewrite set_itvE.
+apply/seteqP; split; last first.
+  move=> x [/= r _].
+  by apply: lt_trans; exact: ltNyr.
+case=> [x||] //= _; last by (exists 0 => //; exact: lt0y).
+exists (x - 1) => //=.
+by rewrite lte_fin gtrBl.
+Qed.
+
+Lemma itv_oNyye_bigcup : (`]-oo, +oo%E[ = \bigcup_(r : R) `]-oo, r%:E[)%classic.
+Proof.
+rewrite set_itvE; under eq_bigcupr do rewrite set_itvE.
+apply/seteqP; split; last first.
+  move=> x [/= r _] /lt_trans.
+  by apply; exact: ltNyr.
+case=> [x||] //= _; last by (exists 0 => //; exact: lt0y).
+exists (x + 1) => //=.
+by rewrite lte_fin ltrDl.
+Qed.
+
 End itv_realDomainType.
+
+#[deprecated(since="analysis 1.19.0", note="Use itv_cyey instead.")]
+Notation itv_cyy := itv_cyey (only parsing).
+#[deprecated(since="analysis 1.19.0", note="Use itv_oyey instead.")]
+Notation itv_oyy := itv_oyey (only parsing).
+#[deprecated(since="analysis 1.19.0", note="Use itv_cNyey instead.")]
+Notation itv_cNyy := itv_cNyey (only parsing).
+#[deprecated(since="analysis 1.19.0", note="Use itv_oNyey instead.")]
+Notation itv_oNyy := itv_oNyey (only parsing).
 
 Section set_ereal.
 Context (R : realType) T (f g : T -> \bar R).
