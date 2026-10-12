@@ -1553,8 +1553,7 @@ transitivity
   by apply/cvg_lim => //; exact: ereal_nondecreasing_cvgn.
 transitivity (limn ((EFin \o f) \- cst (f n)%:E)); last first.
   apply/cvg_lim => //; apply: cvgeB => //.
-  - exact: fin_num_adde_defl.
-  - by apply: ereal_nondecreasing_is_cvgn => x y xy; rewrite lee_fin ndf.
+  by apply: ereal_nondecreasing_is_cvgn => x y xy; rewrite lee_fin ndf.
 have := @ereal_nondecreasing_cvgn _ _ nd_sumf.
 rewrite -(cvg_restrict n (EFin \o f \- cst (f n)%:E)) => /cvg_lim <-//.
 apply: congr_lim; apply/funext => k/=.
@@ -2566,8 +2565,7 @@ Proof.
 move=> lfin; rewrite !limn_einf_lim; apply/cvg_lim => //.
 apply: cvg_trans; last first.
   apply: (@cvgeD _ \oo _ _ (cst l) (einfs u) _ (limn (einfs u))) => //.
-  - by rewrite fin_num_adde_defr.
-  - exact: is_cvg_einfs.
+  exact: is_cvg_einfs.
 suff : einfs (fun n => l + u n) = (fun n => l + einfs u n) by move=> ->.
 rewrite funeqE => n.
 apply/eqP; rewrite eq_le; apply/andP; split.

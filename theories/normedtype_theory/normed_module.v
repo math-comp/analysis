@@ -908,6 +908,14 @@ move: a b => [a| |] [b| |] //= _; rewrite ?(addey, addye, addeNy, addNye)//=;
 - by move=> /[swap]; rewrite addfC; apply: NyE.
 Unshelve. all: by end_near. Qed.
 
+Lemma cvgeD0 f g (a : \bar R) :
+  f @ F --> a -> g @ F --> 0 -> f \+ g @ F --> a.
+Proof. by rewrite -{2}(adde0 a); apply: cvgeD. Qed.
+
+Lemma cvge0D f g (a : \bar R) :
+  f @ F --> 0 -> g @ F --> a -> f \+ g @ F --> a.
+Proof. by rewrite -{2}(add0e a); apply: cvgeD. Qed.
+
 Lemma cvgeN f x : f @ F --> x -> - f x @[x --> F] --> - x.
 Proof. by move=> ?; apply: continuous_cvg => //; exact: oppe_continuous. Qed.
 
@@ -916,9 +924,16 @@ Proof.
 by split=> /cvgeN//; rewrite oppeK//; under eq_cvg do rewrite /= oppeK.
 Qed.
 
+Lemma cvgeN0 f : f @ F --> 0 -> \- f @ F --> 0.
+Proof. by move/cvgeN; rewrite oppe0. Qed.
+
 Lemma cvgeB f g a b :
   a +? - b -> f @ F --> a -> g @ F --> b -> f \- g @ F --> a - b.
 Proof. by move=> ab fa gb; apply: cvgeD => //; exact: cvgeN. Qed.
+
+Lemma cvgeB0 f g (a : \bar R) :
+  f @ F --> a -> g @ F --> 0 -> f \- g @ F --> a.
+Proof. by rewrite -{2}(sube0 a); apply: cvgeB. Qed.
 
 Lemma sube_cvg0 f (k : \bar R) :
   k \is a fin_num -> (fun x => f x - k) @ F --> 0 <-> f @ F --> k.
@@ -980,6 +995,10 @@ Lemma cvgeZl f x y : y \is a fin_num ->
   f @ F --> x -> (fun n => y * f n) @ F --> y * x.
 Proof. by move: y => [r| |]// _ /cvg_comp; apply; exact: mule_continuous. Qed.
 
+Lemma cvgeZ0 f x : x \is a fin_num ->
+  f @ F --> 0 -> (fun t => x * f t) @ F --> 0.
+Proof. by move=> /cvgeZl /[apply]; rewrite mule0. Qed.
+
 Lemma is_cvgeZl f y : y \is a fin_num ->
   cvg (f @ F) -> cvg ((fun n => y * f n) @ F).
 Proof. by move=> fy /(cvgeZl fy)/cvgP. Qed.
@@ -989,6 +1008,10 @@ Lemma cvgeZr f x y : y \is a fin_num ->
 Proof.
 by move=> ? ?; rewrite muleC; under eq_fun do rewrite muleC; exact: cvgeZl.
 Qed.
+
+Lemma cvge0Z f x : x \is a fin_num ->
+  f @ F --> 0 -> (fun t => f t * x) @ F --> 0.
+Proof. by move=> /cvgeZr /[apply]; rewrite mul0e. Qed.
 
 Lemma is_cvgeZr f y : y \is a fin_num ->
   cvg (f @ F) -> cvg ((fun n => f n * y) @ F).
@@ -1005,7 +1028,7 @@ have [fx0|fx0] := leP 0 (f x); first by rewrite gee0_abs.
 by rewrite (lte0_abs fx0) contractN normrN.
 Qed.
 
-Let cvgeM_gt0_pinfty f g b :
+Lemma gt0_cvgeyM f g b :
   (0 < b)%R -> f @ F --> +oo -> g @ F --> b%:E -> f \* g @ F --> +oo.
 Proof.
 move=> b_gt0 /cvgeyPge foo /fine_cvgP[gfin gb]; apply/cvgeyPgey.
@@ -1017,7 +1040,14 @@ rewrite -(@fineK _ (g n)) ?lee_fin; first by near: n; exact: gfin.
 by near: n; apply: (cvgr_ge b).
 Unshelve. all: end_near. Qed.
 
-Let cvgeM_lt0_pinfty  f g b :
+Lemma gt0_cvgeMy f g b :
+  (0 < b)%R -> f @ F --> b%:E -> g @ F --> +oo -> f \* g @ F --> +oo.
+Proof.
+move=> /gt0_cvgeyM + /[swap] => /[apply] /[apply].
+by under eq_cvg do rewrite muleC.
+Qed.
+
+Lemma lt0_cvgeyM  f g b :
   (b < 0)%R -> f @ F --> +oo -> g @ F --> b%:E -> f \* g @ F --> -oo.
 Proof.
 move=> b0 /cvgeyPge foo /fine_cvgP -[gfin gb]; apply/cvgeNyPleNy.
@@ -1031,22 +1061,43 @@ near: n; apply: (cvgr_ge (- b)); rewrite 1?cvgNP//.
 by near: e; apply: nbhs_right_lt; rewrite oppr_gt0.
 Unshelve. all: end_near. Qed.
 
-Let cvgeM_gt0_ninfty f g b :
+Lemma lt0_cvgeMy f g b :
+  (b < 0)%R -> f @ F --> b%:E -> g @ F --> +oo -> f \* g @ F --> -oo.
+Proof.
+move=> /lt0_cvgeyM + /[swap] => /[apply] /[apply].
+by under eq_cvg do rewrite muleC.
+Qed.
+
+Lemma gt0_cvgeNyM f g b :
   (0 < b)%R -> f @ F --> -oo -> g @ F --> b%:E -> f \* g @ F --> -oo.
 Proof.
 move=> b0 foo gb; under eq_fun do rewrite -muleNN.
-apply: (@cvgeM_lt0_pinfty _ _ (- b)%R); first by rewrite oppr_lt0.
+apply: (@lt0_cvgeyM _ _ (- b)%R); first by rewrite oppr_lt0.
 - by rewrite -(oppeK +oo); apply: cvgeN.
 - by rewrite EFinN; apply: cvgeN.
 Qed.
 
-Let cvgeM_lt0_ninfty f g b :
+Lemma gt0_cvgeMNy f g b :
+  (0 < b)%R -> f @ F --> b%:E -> g @ F --> -oo -> f \* g @ F --> -oo.
+Proof.
+move=> /gt0_cvgeNyM + /[swap] => /[apply] /[apply].
+by under eq_cvg do rewrite muleC.
+Qed.
+
+Lemma lt0_cvgeNyM f g b :
   (b < 0)%R -> f @ F --> -oo -> g @ F --> b%:E -> f \* g @ F --> +oo.
 Proof.
 move=> b0 foo gb; under eq_fun do rewrite -muleNN.
-apply: (@cvgeM_gt0_pinfty _ _ (- b)%R); first by rewrite oppr_gt0.
+apply: (@gt0_cvgeyM _ _ (- b)%R); first by rewrite oppr_gt0.
 - by rewrite -(oppeK +oo); apply: cvgeN.
 - by rewrite EFinN; apply: cvgeN.
+Qed.
+
+Lemma lt0_cvgeMNy f g b :
+  (b < 0)%R -> f @ F --> b%:E -> g @ F --> -oo -> f \* g @ F --> +oo.
+Proof.
+move=> /lt0_cvgeNyM + /[swap] => /[apply] /[apply].
+by under eq_cvg do rewrite muleC.
 Qed.
 
 Lemma cvgeM f g (a b : \bar R) :
@@ -1055,25 +1106,24 @@ Proof.
 move=> [:apoo] [:bnoo] [:poopoo] [:poonoo]; move: a b => [a| |] [b| |] //.
 - move=> _ /fine_cvgP[finf fa] /fine_cvgP[fing gb].
   apply/fine_cvgP; split.
-    by near do apply: fin_numM; [apply: finf | apply: fing].
+    by near do apply: fin_numM.
   apply: (@cvg_trans _ (((fine \o f) \* (fine \o g)) @ F)%R).
-    apply: near_eq_cvg; near=> n => //=.
-    rewrite -[in RHS](@fineK _ (f n)); first by near: n; exact: finf.
-    by rewrite -[in RHS](@fineK _ (g n)) //; near: n; exact: fing.
+    apply: near_eq_cvg. 
+    by near do rewrite /= fineM//.
   exact: cvgM.
 - move: f g a; abstract: apoo.
   move=> {}f {}g {}a + fa goo; have [a0 _|a0 _|->] := ltgtP a 0%R.
   + rewrite mulry ltr0_sg// mulN1e.
-    by under eq_fun do rewrite muleC; exact: (cvgeM_lt0_pinfty a0).
+    by under eq_fun do rewrite muleC; exact: (lt0_cvgeyM a0).
   + rewrite mulry gtr0_sg// mul1e.
-    by under eq_fun do rewrite muleC; exact: (cvgeM_gt0_pinfty a0).
+    by under eq_fun do rewrite muleC; exact: (gt0_cvgeyM a0).
   + by rewrite /mule_def eqxx.
 - move: f g a; abstract: bnoo.
   move=> {}f {}g {}a + fa goo; have [a0 _|a0 _|->] := ltgtP a 0%R.
   + rewrite mulrNy ltr0_sg// mulN1e.
-    by under eq_fun do rewrite muleC; exact: (cvgeM_lt0_ninfty a0).
+    by under eq_fun do rewrite muleC; exact: (lt0_cvgeNyM a0).
   + rewrite mulrNy gtr0_sg// mul1e.
-    by under eq_fun do rewrite muleC; exact: (cvgeM_gt0_ninfty a0).
+    by under eq_fun do rewrite muleC; exact: (gt0_cvgeNyM a0).
   + by rewrite /mule_def eqxx.
 - rewrite mule_defC => ? foo gb; rewrite muleC.
   by under eq_fun do rewrite muleC; exact: apoo.
@@ -1096,6 +1146,22 @@ move=> [:apoo] [:bnoo] [:poopoo] [:poonoo]; move: a b => [a| |] [b| |] //.
   by under eq_fun do rewrite -muleNN; apply: poopoo;
     rewrite -/(- -oo); apply: cvgeN.
 Unshelve. all: end_near. Qed.
+
+Lemma cvgeM0 f g (a : R) :
+  f @ F --> a%:E -> g @ F --> 0 -> f \* g @ F --> 0.
+Proof. by rewrite -{2}(mule0 a%:E); apply: cvgeM. Qed.
+
+Lemma cvge0M f g (a : R) :
+  f @ F --> 0 -> g @ F --> a%:E -> f \* g @ F --> 0.
+Proof. by rewrite -{2}(mul0e a%:E); apply: cvgeM. Qed.
+
+Lemma cvgeM1 f g (a : \bar R) :
+  f @ F --> a -> g @ F --> 1 -> f \* g @F --> a.
+Proof. by rewrite -{2}(mule1 a); apply: cvgeM. Qed.
+
+Lemma cvge1M f g (a : \bar R) :
+  f @ F --> 1 -> g @ F --> a -> f \* g @F --> a.
+Proof. by rewrite -{2}(mul1e a); apply: cvgeM. Qed.
 
 End ecvg_realFieldType.
 
