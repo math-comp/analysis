@@ -348,9 +348,8 @@ rewrite -[X in _ = _ - X](@divee _ (p - 1)).
 - by rewrite fin_numB//; apply/andP.
 - by rewrite sube_eq// add0e.
 rewrite -muleBl//.
-- rewrite fin_numV//; first by rewrite sube_eq// add0e.
+rewrite fin_numV//; first by rewrite sube_eq// add0e.
   by rewrite sube_eq// -ltNye.
-- by rewrite fin_num_adde_defr.
 by rewrite oppeB ?fin_num_adde_defl// addeA subee// add0e.
 Qed.
 
