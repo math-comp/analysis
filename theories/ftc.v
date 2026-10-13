@@ -442,7 +442,7 @@ Lemma parameterized_integral_continuous a b (f : R -> R) : a <= b ->
 Proof.
 rewrite le_eqVlt => /predU1P[<- _|ab intf].
   by rewrite set_itv1; exact: continuous_subspace1.
-apply/(continuous_within_itvP _ ab); split; first last.
+apply/(continuous_within_itvccP _ ab); split; first last.
   exact: parameterized_integral_cvg_at_left.
   apply/cvg_at_right_filter.
   rewrite {2}/int /parameterized_integral set_itv1 Rintegral_set1.
@@ -605,7 +605,7 @@ have GbcFb : G x @[x --> b^'-] --> (- c + F b)%R.
   rewrite (_ : G \- F + F = G)%R //.
   by apply/funext => x/=; rewrite subrK.
 have contF : {within `[a, b], continuous F}.
-  apply/(continuous_within_itvP _ ab); split => //.
+  apply/(continuous_within_itvccP _ ab); split => //.
   move=> z zab; apply/differentiable_continuous/derivable1_diffP.
   by case: dF => /= + _ _; exact.
 have iabfab : mu.-integrable `[a, b] (EFin \o fab).
@@ -691,13 +691,13 @@ transitivity (\sum_(0 <= i <oo) ((F (a + i.+1%:R))%:E - (F (a + i%:R))%:E)).
         apply: derivable_within_continuous => /= x.
         rewrite in_itv/= => /andP[aSn _].
         by apply: dF; rewrite (lt_le_trans _ aSn)// ltrDl.
-      move/continuous_within_itvP.
+      move/continuous_within_itvccP.
       by rewrite ltrD2l ltr_nat ltnS => /(_ (ltnSn _))[].
   - have : {within `[(a + n%:R + 2^-1%R)%R, (a + n.+1%:R)%R], continuous F}.
       apply: derivable_within_continuous => x.
       rewrite in_itv/= => /andP[aSn _].
       by apply: dF; rewrite (lt_le_trans _ aSn)// -addrA ltrDl ltr_wpDl.
-    move/continuous_within_itvP.
+    move/continuous_within_itvccP.
     suff: (a + n%:R + 2^-1 < a + n.+1%:R)%R by move=> /[swap] /[apply] => -[].
     by rewrite -[in ltRHS]natr1 addrA ltrD2l invf_lt1// ltr1n.
 rewrite nondecreasing_telescope_sumey; last 1 first.
@@ -1058,15 +1058,15 @@ have PGFbFa : derivable_oo_LRcontinuous PG (F b) (F a).
       by move: xFbFa; rewrite lte_fin in_itv/= => /andP[].
     exact: (within_continuous_continuous (ltW _) _ xFbFa).
   - have := parameterized_integral_continuous (ltW FbFa) intG.
-    by move=> /(continuous_within_itvP _ FbFa)[].
+    by move=> /(continuous_within_itvccP _ FbFa)[].
   - exact: parameterized_integral_cvg_at_left.
 rewrite (@continuous_FTC2 _ _ PG _ _ FbFa cG).
 - split.
   + move=> x /[dup]xFbFa; rewrite in_itv/= => /andP[Fbx xFa].
     apply: (continuous_FTC1 xFa intG Fbx _).1.
-    by move: cG => /(continuous_within_itvP _ FbFa)[+ _ _]; exact.
+    by move: cG => /(continuous_within_itvccP _ FbFa)[+ _ _]; exact.
   + have := parameterized_integral_continuous (ltW FbFa) intG.
-    by move=> /(continuous_within_itvP _ FbFa)[].
+    by move=> /(continuous_within_itvccP _ FbFa)[].
   + exact: parameterized_integral_cvg_at_left.
 - move=> x xFbFa.
   have xFa : (x < F a)%R by move: xFbFa; rewrite in_itv/= => /andP[].
@@ -1094,10 +1094,10 @@ have DPGFE : {in `]a, b[, (- (PG \o F))%R^`() =1 ((G \o F) * (- f))%R}.
 rewrite -[LHS]oppeK oppeB// addrC.
 under eq_integral do rewrite mulrN EFinN.
 rewrite oppeD//= -(continuous_FTC2 ab _ _ DPGFE).
-- apply/(continuous_within_itvP _ ab); split.
+- apply/(continuous_within_itvccP _ ab); split.
   + move=> x xab; apply: continuousM; first apply: continuous_comp.
-    * by move: cF => /(continuous_within_itvP _ ab)[+ _ _]; exact.
-    * move/(continuous_within_itvP _ FbFa) : cG => [+ _ _]; apply.
+    * by move: cF => /(continuous_within_itvccP _ ab)[+ _ _]; exact.
+    * move/(continuous_within_itvccP _ FbFa) : cG => [+ _ _]; apply.
       exact: decreasing_image_oo.
     * have : -%R F^`() @ x --> (- f x)%R.
         by rewrite -fE//; apply: cvgN; exact: cF'.
@@ -1107,21 +1107,21 @@ rewrite oppeD//= -(continuous_FTC2 ab _ _ DPGFE).
       by move=> z; rewrite inE/= => zab; rewrite fctE fE.
   + apply: cvgM.
       apply: (decreasing_cvg_at_right_comp _ decrF) => //.
-      * by move/continuous_within_itvP : cF => /(_ ab)[].
-      * by move/continuous_within_itvP : cG => /(_ FbFa)[].
+      * by move/continuous_within_itvccP : cF => /(_ ab)[].
+      * by move/continuous_within_itvccP : cG => /(_ FbFa)[].
     rewrite fctE {2}/f eqxx; apply: cvgN.
     apply: cvg_trans F'ar; apply: near_eq_cvg.
     by near=> z; rewrite fE// in_itv/=; apply/andP; split.
   + apply: cvgM.
       apply: (decreasing_cvg_at_left_comp _ decrF) => //.
-      * by move/continuous_within_itvP : cF => /(_ ab)[].
-      * by move/continuous_within_itvP : cG => /(_ FbFa)[].
+      * by move/continuous_within_itvccP : cF => /(_ ab)[].
+      * by move/continuous_within_itvccP : cG => /(_ FbFa)[].
     rewrite fctE {2}/f gt_eqF// eqxx.
     apply: cvgN; apply: cvg_trans F'bl; apply: near_eq_cvg.
     by near=> z; rewrite fE// in_itv/=; apply/andP; split.
 - have [/= dF rF lF] := Fab.
   have := derivable_oo_LRcontinuous_within PGFbFa.
-  move=> /(continuous_within_itvP _ FbFa)[_ PGFb PGFa]; split => /=.
+  move=> /(continuous_within_itvccP _ FbFa)[_ PGFb PGFa]; split => /=.
   - move=> x xab; apply/derivable1_diffP; apply: differentiable_comp => //.
     apply: differentiable_comp; apply/derivable1_diffP.
       by case: Fab => + _ _; exact.
@@ -1189,14 +1189,14 @@ transitivity (\int[mu]_(x in `[F a, F b]) (((G \o -%R) \o -%R) x)%:E).
   by apply/eq_integral => x ? /=; rewrite opprK.
 have FaFb : (F a < F b)%R by rewrite incrF// in_itv/= lexx (ltW ab).
 have cGN : {within `[- F b, - F a]%classic%R, continuous (G \o -%R)}.
-  apply/continuous_within_itvP; [by rewrite ltrN2|split].
+  apply/continuous_within_itvccP; [by rewrite ltrN2|split].
   - move=> x /[dup]xab /[!in_itv]/= /andP[ax xb].
     apply: continuous_comp; first exact: continuousN.
-  - move/(continuous_within_itvP _ FaFb) : cG => [+ _ _]; apply.
+  - move/(continuous_within_itvccP _ FaFb) : cG => [+ _ _]; apply.
     by rewrite in_itv/= ltrNr xb ltrNl.
-  - move/(continuous_within_itvP _ FaFb) : cG => [_ _].
+  - move/(continuous_within_itvccP _ FaFb) : cG => [_ _].
     by rewrite /= opprK => /cvg_at_leftNP.
-  - move/(continuous_within_itvP _ FaFb) : cG => [_ + _].
+  - move/(continuous_within_itvccP _ FaFb) : cG => [_ + _].
     by rewrite /= opprK => /cvg_at_rightNP.
 rewrite -(integration_by_substitution_oppr (ltW FaFb))//.
 rewrite (@integration_by_substitution_decreasing (- F)%R).
@@ -1383,7 +1383,7 @@ rewrite integration_by_substitution_decreasing.
   + exact: cFa.
   + apply/cvg_at_left_filter/differentiable_continuous/derivable1_diffP/dF.
     by rewrite in_itv/= andbT ltr_pwDr.
-- apply/continuous_within_itvP.
+- apply/continuous_within_itvccP.
   + by rewrite decrF ?ltr_pwDr ?in_itv ?andbT//= lerDl.
   + split.
     * by move=> y yFaFa; apply: cG; rewrite in_itv/= (itvP yFaFa).

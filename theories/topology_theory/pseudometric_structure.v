@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import boot order algebra all_classical.
+From mathcomp Require Import boot order algebra archimedean all_classical.
 From mathcomp Require Import interval_inference reals topology_structure.
 From mathcomp Require Import uniform_structure.
 
@@ -288,20 +288,67 @@ Arguments near_ball {R M} y eps.
 
 Section pseudoMetricType_numFieldType.
 Context {R : numFieldType} {M : pseudoMetricType R}.
+Implicit Types x y z p : M.
 
-Lemma ball_split (z x y : M) (e : R) :
+Lemma ball_split z x y (e : R) :
   ball x (e / 2) z -> ball z (e / 2) y -> ball x e y.
 Proof. by move=> /ball_triangle h /h; rewrite -splitr. Qed.
 
-Lemma ball_splitr (z x y : M) (e : R) :
+Lemma ball_splitr z x y (e : R) :
   ball z (e / 2) x -> ball z (e / 2) y -> ball x e y.
 Proof. by move=> /ball_sym /ball_split; apply. Qed.
 
-Lemma ball_splitl (z x y : M) (e : R) :
+Lemma ball_splitl z x y (e : R) :
   ball x (e / 2) z -> ball y (e / 2) z -> ball x e y.
 Proof. by move=> bxz /ball_sym /(ball_split bxz). Qed.
 
 End pseudoMetricType_numFieldType.
+
+Lemma cvg_withinP {T : topologicalType} {R : archiRealFieldType} 
+  {M : pseudoMetricType R} (f : M -> T) (p : M) (l : T) (A : set M) : 
+  f @ within A (nbhs p) --> l <->
+  (forall u : M^nat, (forall n, A (u n)) /\ u @ \oo --> p -> 
+    f (u n) @[n --> \oo] --> l).
+Proof.
+split=> [fpl u [Au up]|ful].
+  move=> V Vnb.
+  have := fpl _ Vnb; rewrite {1 2 4}/nbhs/= /within/= near_nbhs => Unb.
+  have [N _ {}up] := up _ Unb.
+  by exists N => // n /= Nn; apply: up.
+apply: contrapT => fpl; move: ful; apply/existsNP.
+suff: exists2 u : M^nat,
+    (forall k, A (u k)) /\ u @ \oo --> p & ~ f (u n) @[n --> \oo] --> l.
+  by move=> [x_] h; exists x_; exact/not_implyP.
+have [V Vnb hV] : exists2 V : set T, nbhs l V & forall d : {posnum R},
+    exists xn : M, [/\ A xn, ball xn d%:num p & ~ V (f xn)].
+  apply: contrapT; apply: contra_not fpl => /forallPNP h.
+  move=> V Vnb; have /existsNP[d] := h V Vnb; move/forallNP => {}h. 
+  rewrite nbhs_nearE near_map near_withinE; near=> t => At.
+  have /not_and3P[//|bp|/contrapT //] := h t.
+  exfalso; apply: bp.
+  by rewrite ball_symE; near: t; rewrite !near_nbhs; apply: near_ball.
+have invn n : 0 < n.+1%:R^-1 :> R by rewrite invr_gt0.
+exists (fun n => sval (cid (hV (PosNum (invn n))))).
+- split => [k|]; first by rewrite /sval/=; case: cid => x [].
+  apply/cvg_ballP => r r0; near=> n.
+  rewrite /sval/=; case: cid => x [Ax xpn _].
+  rewrite ball_symE; apply: le_ball xpn.
+  rewrite -(@invrK _ r) lef_pV2 ?posrE ?invr_gt0//.
+  near: n; exists (Num.truncn r^-1) => // s /= rs.
+  by apply/ltW; rewrite -truncn_le_nat. 
+- move=> /(_ V Vnb)[N _] /(_ _ (leqnn _)).
+  by rewrite /sval/=; case: cid => // x [Ax xpN].
+Unshelve. all: by end_near. Qed.
+
+Lemma cvg_nbhsP {T : topologicalType} {R : archiRealFieldType} 
+  {M : pseudoMetricType R} (f : M -> T) (p : M) (l : T) :
+  f @ p --> l <->
+  (forall u : M^nat, u @ \oo --> p -> f (u n) @[n --> \oo] --> l).
+Proof.
+rewrite -(withinET (F := nbhs p)) cvg_withinP withinET.
+apply/propeqP; apply: eq_forall => u; congr (_ -> _).
+by apply/propeqP; split=> [[]|].
+Qed.
 
 Section entourages.
 Variable R : numDomainType.
