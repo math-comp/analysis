@@ -53,6 +53,10 @@
   + lemma `not_range_pmf0`
   + lemma `dRV_esum_pmf_distribution`
 
+- new file `absolute_continuity.v`
+  + definitions `abs_cont`, `abs_cont_order`
+  + lemma `abs_contP`
+
 ### Changed
 
 - in `esum.v`:
