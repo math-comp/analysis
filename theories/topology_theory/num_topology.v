@@ -339,6 +339,30 @@ Lemma at_right_shift (T : Type) x a (f : R -> T) :
   (f @ (x + a)^'+) = (f (y + a) @[y --> x^'+]).
 Proof. by rewrite at_rightD. Qed.
 
+Context {V : topologicalType} (f : R -> V) (x : R).
+
+Lemma cvg_at_right_filter (l : V) :
+  f z @[z --> x] --> l -> f z @[z --> x^'+] --> l.
+Proof. exact: (@cvg_within_filter _ _ _ (nbhs x)). Qed.
+
+Lemma cvg_at_left_filter (l : V) :
+  f z @[z --> x] --> l -> f z @[z --> x^'-] --> l.
+Proof. exact: (@cvg_within_filter _ _ _ (nbhs x)). Qed.
+
+Lemma cvg_at_right_within : f x @[x --> x^'+] --> f x ->
+  f x @[x --> within (fun u => x <= u) (nbhs x)] --> f x.
+Proof.
+move=> fxr U Ux; rewrite ?near_simpl ?near_withinE; near=> z; rewrite le_eqVlt.
+by move/predU1P => [<-|]; [exact: nbhs_singleton | near: z; exact: fxr].
+Unshelve. all: by end_near. Qed.
+
+Lemma cvg_at_left_within : f x @[x --> x^'-] --> f x ->
+  f x @[x --> within (fun u => u <= x) (nbhs x)] --> f x.
+Proof.
+move=> fxr U Ux; rewrite ?near_simpl ?near_withinE; near=> z; rewrite le_eqVlt.
+by move/predU1P => [->|]; [exact: nbhs_singleton | near: z; exact: fxr].
+Unshelve. all: by end_near. Qed.
+
 End at_left_right.
 #[global] Typeclasses Opaque at_left at_right.
 Notation "x ^'-" := (at_left x) : classical_set_scope.
@@ -498,6 +522,27 @@ Qed.
 Lemma lt_le_nbhsr {R : realFieldType} (t x : R) :
   t < x -> \forall y \near nbhs x, t <= y.
 Proof. by move/lt_nbhsr; apply: filterS => y /ltW. Qed.
+
+Lemma not_nearP {T : topologicalType} (p : T) (P : set T) : 
+  ~ (\forall x \near p, P x) <->
+  forall (V : set T), nbhs p V -> exists2 x, V x & ~ P x.
+Proof.
+split.
+- contra => -[V Vnbhs hV].
+  by apply: filterS Vnbhs.
+- by move=> /(_ P) /[apply] => -[].
+Unshelve. all: by end_near. Qed.
+
+Lemma not_nearPball {R : numDomainType} {M : pseudoMetricType R} 
+  (p : M) (P : set M) :
+  ~ (\forall x \near p, P x) <->
+  forall (e : {posnum R}), exists2 x, ball p e%:num x & ~ P x.
+Proof.
+rewrite not_nearP; split.
+- by move=> + e; apply; apply: nbhsx_ballx.
+- rewrite -nbhs_ballE => + V [/= e e0 beV].
+  by move=> /(_ (PosNum e0))[x /beV ? ?]; exists x.
+Qed.
 
 Global Instance Proper_dnbhs_regular_numFieldType (R : numFieldType) (x : R^o) :
   ProperFilter x^'.

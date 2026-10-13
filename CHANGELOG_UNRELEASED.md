@@ -4,6 +4,57 @@
 
 ### Added
 
+- in file `real_interval.v`,
+  + new lemmas `itv_cNyNye`, `itv_oNyNye`, `itv_cNyye`, `itv_oNyye`, `itv_ccNyeye`, 
+    `itv_coNyeye`, `itv_ocNyeye`, `itv_ooNyeye`, `itv_oNyey_bigcup`, 
+    `itv_oNyye_bigcup`.
+- in `lebesgue_integral_nonneg.v`,
+  + new lemma `integral_itvD`.
+- in `lebesgue_integral_under.v`,
+  + new lemma `econtinuity_under_integral`.
+- in `ereal_normedtype.v`,
+  + new lemmas `nbhs_right_lte`, `nbhs_left_gte`, `nbhs_right_lee`, `nbhs_left_gee`.
+- in `normed_module.v`,
+  + new lemmas `within_econtinuousD`, `within_econtinuousN`, 
+    `within_econtinuousB`, `within_econtinuousM`, `within_continuous_fine`, 
+    `within_econtinuous_EFin`, `cvge_lt`, `cvge_gt`, `cvge_ge`, `cvge_le`.
+- in `num_normedtype.v`,
+  + new lemmas `continuous_within_itvbbP`,
+    `continuous_within_itvocP`, `continuous_within_itvcoP`, 
+    `continuous_within_itvbyP`, `continuous_within_itvNybP`.
+- in `num_topology.v`,
+  + new lemma `not_nearP`.
+- in `pseudometric_structure.v`,
+  + new lemma `cvg_withinP`.
+
+### Changed
+
+- moved from `pseudometric_normed_Zmodule.v` to `num_normedtype.v`:
+  + lemmas `continuous_within_itvP`, `continuous_within_itvcyP`, `continuous_within_itvNycP`, `within_continuous_continuous`.
+- moved from `pseudometric_normed_Zmodule.v` to `num_topology.v`:
+  + lemmas `cvg_at_right_filter`, 
+    `cvg_at_left_filter`, `cvg_at_right_within`, `cvg_at_left_within`.
+
+### Renamed
+
+- in `real_interval.v`:
+  + `itv_cyy` -> `itv_cyey`
+  + `itv_oyy` -> `itv_oyey`
+  + `itv_cNyy` -> `itv_cNyey`
+  + `itv_oNyy` -> `itv_oNyey`
+- in `pseudometric_normed_Zmodule.v`:
+  + `continuous_within_itvP` -> `continuous_within_itvccP`
+
+### Generalized
+
+- in `num_normedtype.v`: 
+    `continuous_within_itvcyP`, 
+    `continuous_within_itvNycP`, `continuous_within_itvP`, 
+    `within_continuous_continuous` generalized from `pseudoMetricNormedZmodType` to `pseudoMetricType`.
+- in `pseudometric_structure.v`: 
+  + lemma `cvg_nbhsP` generalized from `metricType` to `pseudoMetricType`.
+- in `realfun.v`:
+  + lemmas `cvg_at_rightP`, `cvg_at_leftP`, `cvgr_dnbhsP`, `cvge_at_rightP`, `cvge_at_leftP`, `cvge_dnbhsP` generalized from `realType` to `archiRealFieldType` 
 - in `sequences.v`:
   + lemma `sdrop_shift`
   + lemma `ge_einfs`
@@ -155,6 +206,8 @@
 
 ### Removed
 
+- in `normed_module.v`,
+  + lemmas `cvge_ge` and `cvge_le`, redundant with existing `cvge_to_ge` and `cvge_to_le`
 - in `tvs.v`:
   + structure `PreUniformLmodule`
   + mixin `PreUniformLmodule_isUniformLmodule`

@@ -467,7 +467,7 @@ apply: withinU_continuous.
   move: e0; rewrite le_eqVlt => /predU1P[<-|e0].
     rewrite g'a0.
     by apply: continuous_subspaceT; exact: continuous_normal_pdf0.
-  apply/continuous_within_itvP; first by rewrite -(opprK e) ler_ltB// opprK gtrN.
+  apply/continuous_within_itvccP; first by rewrite -(opprK e) ler_ltB// opprK gtrN.
   split.
   + move=> x xae.
     rewrite /continuous_at /g' ifT; first by rewrite ball_itv inE.

@@ -971,6 +971,9 @@ Proof. by move: x y => [x| |] [y | |]. Qed.
 Lemma fin_num_adde_defl x y : y \is a fin_num -> x +? y.
 Proof. by rewrite adde_defC; exact: fin_num_adde_defr. Qed.
 
+Local Hint Extern 0 (is_true (_ +? _)) => 
+  solve [now apply: fin_num_adde_defr | now apply: fin_num_adde_defl] : core.
+
 Lemma adde_defN x y : x +? - y = - x +? y.
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
@@ -998,7 +1001,7 @@ Lemma adde_def_sum I h t (P : pred I) (f : I -> \bar R) :
     {in P, forall i : I, f h +? f i} ->
   f h +? \sum_(j <- t | P j) f j.
 Proof.
-move=> fhi; elim/big_rec : _; first by rewrite fin_num_adde_defl.
+move=> fhi; elim/big_rec : _ => //.
 by move=> i x Pi fhx; rewrite adde_defDr// fhi.
 Qed.
 
@@ -1050,7 +1053,7 @@ Lemma oppeD x y : x +? y -> - (x + y) = - x - y.
 Proof. by move: x y => [x| |] [y| |] //= _; rewrite opprD. Qed.
 
 Lemma fin_num_oppeD x y : y \is a fin_num -> - (x + y) = - x - y.
-Proof. by move=> finy; rewrite oppeD// fin_num_adde_defl. Qed.
+Proof. by move=> finy; rewrite oppeD. Qed.
 
 Lemma sube0 x : x - 0 = x.
 Proof. by move: x => [x| |] //; rewrite -EFinB subr0. Qed.
@@ -1113,6 +1116,12 @@ Proof. by case: x y => [?||] [?||]. Qed.
 Lemma mule_def_infty_neq0 x y : x \isn't a fin_num -> y != 0 -> x *? y.
 Proof. by case: x y => [?||] [?||]. Qed.
 
+Lemma mule_def1r x : x *? 1.
+Proof. by case: x => //; apply: mule_def_infty_neq0. Qed.
+
+Lemma mule_def1l x : 1 *? x.
+Proof. by case: x => //; apply: mule_def_neq0_infty. Qed.
+
 Lemma neq0_mule_def x y :  x * y != 0 -> x *? y.
 Proof.
 by move: x y => [x| |] [y| |] //=;
@@ -1160,7 +1169,7 @@ Lemma oppeB x y : x +? - y -> - (x - y) = - x + y.
 Proof. by move=> xy; rewrite oppeD// oppeK. Qed.
 
 Lemma fin_num_oppeB x y : y \is a fin_num -> - (x - y) = - x + y.
-Proof. by move=> ?; rewrite oppeB// adde_defN fin_num_adde_defl. Qed.
+Proof. by move=> ?; rewrite oppeB// adde_defN. Qed.
 
 Lemma fin_numD x y :
   (x + y \is a fin_num) = (x \is a fin_num) && (y \is a fin_num).
@@ -1546,6 +1555,10 @@ Notation "x +? y" := (adde_def x y) : ereal_scope.
 Notation "x *? y" := (mule_def x%dE y%dE) : ereal_dual_scope.
 Notation "x *? y" := (mule_def x y) : ereal_scope.
 
+#[global] Hint Extern 0 (is_true (_ +? _)) => 
+  solve [now apply: fin_num_adde_defr | now apply: fin_num_adde_defl] : core.
+#[global] Hint Resolve mule_def1r mule_def1l : core.
+
 Notation maxe := (@Order.max ereal_display _).
 Notation "@ 'maxe' R" := (@Order.max ereal_display R)
   (at level 10, R at level 8, only parsing) : function_scope.
@@ -1622,7 +1635,7 @@ Lemma doppeD x y : x +? y -> - (x + y) = - x - y.
 Proof. by move: x y => [x| |] [y| |] //= _; rewrite opprD. Qed.
 
 Lemma fin_num_doppeD x y : y \is a fin_num -> - (x + y) = - x - y.
-Proof. by move=> finy; rewrite doppeD// fin_num_adde_defl. Qed.
+Proof. by move=> finy; rewrite doppeD. Qed.
 
 Lemma dsube0 x : x - 0 = x.
 Proof. by move: x => [x| |] //; rewrite -dEFinB subr0. Qed.
@@ -3573,7 +3586,7 @@ Lemma Nyconjugate x y : x \is a fin_num -> y != -oo ->
 Proof.
 move=> xfin yNy; have [->|x1] := eqVneq x 1.
   rewrite subee// inve0 mul1e inve1 => /eqP.
-  rewrite -addeC eq_sym -sube_eq//; first by rewrite fin_num_adde_defl.
+  rewrite -addeC eq_sym -sube_eq//.
   rewrite subee// => /eqP /esym; case: y yNy => // r _.
   rewrite inver; case: ifPn => // r0 [] /(congr1 (fun z => z^-1)%R).
   by rewrite invrK invr0 => /eqP; rewrite (negbTE r0).
@@ -3588,9 +3601,8 @@ have xNy : x != -oo by move: xfin; rewrite fin_numE => /andP[].
 move=> /eqP; rewrite eq_sym addeC -sube_eq//.
   by rewrite fin_num_adde_defl// fin_numV.
 move=> /eqP /(congr1 inve) /=; rewrite inveK => <-.
-rewrite -[X in X - _](@divee x)// -[X in _ - X]div1e -muleBl.
-- by rewrite fin_numV// ?gt_eqF// ltNye.
-- by rewrite fin_num_adde_defl.
+rewrite -[X in X - _](@divee x)// -[X in _ - X]div1e -muleBl//.
+  by rewrite fin_numV// ?gt_eqF// ltNye.
 move: x xfin {xNy} x1 x0 => [x| |]// _; rewrite !eqe => x1 x0.
 rewrite inver/= (negbTE x0)/= -EFinD -EFinM.
 rewrite inver mulf_eq0 subr_eq0 (negbTE x1)/= invr_eq0.

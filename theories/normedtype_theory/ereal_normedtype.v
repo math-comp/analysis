@@ -3,7 +3,8 @@ From HB Require Import structures.
 From mathcomp Require Import boot order ssralg ssrnum interval
   interval_inference.
 From mathcomp Require Import boolp classical_sets ereal reals real_interval.
-From mathcomp Require Import topology ereal num_normedtype.
+From mathcomp Require Import topology ereal num_normedtype
+  pseudometric_normed_Zmodule.
 
 (**md**************************************************************************)
 (* # Preliminaries for norm-related notions                                   *)
@@ -476,6 +477,42 @@ by split; [|exists x; split=> // y xy]; apply: Px.
 Qed.
 
 End nbhs_ereal.
+
+Section at_left_right_ereal.
+Context {R : realFieldType}.
+Implicit Types (x : R) (z : \bar R).
+
+Lemma nbhs_right_lte x z  : (x%:E < z)%E -> \forall y \near x^'+, (y%:E < z)%E.
+Proof.
+case: z => [z|_|] //; last first.
+  by apply: nearW => ?; exact: ltry.
+rewrite lte_fin => xz; near do rewrite lte_fin.
+move: xz; exact: nbhs_right_lt.
+Unshelve. all: by end_near. Qed. 
+
+Lemma nbhs_left_gte x z : (x%:E > z)%E -> \forall y \near x^'-, (y%:E > z)%E.
+Proof.
+case: z => [z||_] //; last first.
+  by apply: nearW => ?; exact: ltNyr.
+rewrite lte_fin => xz; near do rewrite lte_fin.
+move: xz; exact: nbhs_left_gt.
+Unshelve. all: by end_near. Qed.
+
+Lemma nbhs_right_lee x z : (x%:E < z)%E -> \forall y \near x^'+, (y%:E <= z)%E.
+Proof.
+case: z => [z|_|] //; last first.
+  by apply: nearW => ?; exact: leey.
+by move=> xz; near do apply: ltW; exact: (nbhs_right_lte xz).
+Unshelve. all: by end_near. Qed.
+
+Lemma nbhs_left_gee x z : (x%:E > z)%E -> \forall y \near x^'-, (y%:E >= z)%E.
+Proof.
+case: z => [z||_] //; last first.
+  by apply: nearW => ?; exact: leNye.
+by move=> xz; near do apply: ltW; exact: (nbhs_left_gte xz).
+Unshelve. all: by end_near. Qed.
+
+End at_left_right_ereal.
 
 Section ereal_OrderNbhs.
 Variable R : realFieldType.
