@@ -244,6 +244,119 @@ rewrite addrC addKr Rintegral_itvob_itvcb//.
 by apply: integrableS itf => //; exact/subset_itvr/ltW.
 Qed.
 
+Lemma Rintegral_gt0 f D :
+  mu.-integrable D (EFin \o f) ->
+  open D ->
+  {in D, continuous f} ->
+  {in D, forall x : R, 0 <= f x} ->
+  ~ {in D, forall x : R, f x == 0} ->
+  0 < \int[mu]_(x in D) f x.
+Proof.
+move=> f_ble oD cf f_ge0 /existsNP [] c /not_implyP [] cD /negP fc_neq0.
+have fc_gt0 : f c > 0 by rewrite lt_neqAle eq_sym fc_neq0 f_ge0.
+pose U := `]f c / 2, +oo[%classic.
+have oU : open U by exact: itv_open_ends_open.
+have /(continuous_inP _ oD)/(_ U oU) oDfU:= cf.
+have mD : measurable D by exact: open_measurable.
+have : D `&` f @^-1` U != set0.
+  apply/set0P; exists c; split => /=; first by move/set_mem: cD.
+  rewrite /U /= in_itv/= andbT.
+  by rewrite -[fc in fc / _]add0r midf_lt.
+have -> := open_bigcup_basis real_basis oDfU.
+case/eqP/bigcup0P/existsNP => I /not_implyP[] I_spec /eqP/set0P[]/= p Ip.
+have := I_spec => -[]/= [] a _ [] b _ IE IDfU.
+have mI : measurable I by rewrite -IE; exact: open_measurable.
+have ID : I `<=` D by apply: (subset_trans IDfU); exact: subIsetl.
+rewrite -fine0; apply: fine_lt => //; first exact: integrable_fin_num.
+suff : (0 < \int[mu]_(x in I) (f x)%:E)%E.
+  move/lt_le_trans; apply.
+  apply: ge0_subset_integral => //=.
+    apply/measurable_EFinP.
+    exact: open_continuous_measurable_fun.
+  by move=> x Dx; apply: f_ge0; rewrite inE.
+apply: (@lt_le_trans _ _ (\int[mu]_(x in I) (cst (f c / 2)%:E x))%E).
+  rewrite integral_cst//=.
+  apply: mule_gt0; first by rewrite lte_fin divr_gt0.
+  rewrite -IE lebesgue_measure_itv/= lte_fin.
+  suff ab : a < b by rewrite ab lte_fin subr_gt0.
+  by move: Ip; rewrite -IE/= in_itv/= => /andP[] /lt_trans /[apply].
+apply: ge0_le_integral => //=.
+- by move=> ? ?; rewrite lee_fin divr_ge0// ltW.
+- apply/measurable_EFinP.
+  apply: open_continuous_measurable_fun; first by rewrite -IE.
+  by move=> ?; rewrite inE => ?; apply: cf; rewrite inE; apply: ID.
+move=> x Ix; rewrite lee_fin ltW//.
+move: Ix => /IDfU[] Dx /=.
+by rewrite /U/= in_itv/= andbT.
+Qed.
+
+Lemma Rintegral_gt0_itvcc f (a b : R) :
+  a < b ->
+  {in `[a, b], continuous f} ->
+  {in `[a, b], forall x : R, 0 <= f x} ->
+  ~ {in `[a, b], forall x : R, f x == 0} ->
+  0 < \int[mu]_(x in `[a, b]) f x.
+Proof.
+move=> ab cf f_ge0 f_neq0.
+have ooSab : `]a, b[ `<=` `[a, b] by exact: subset_itvW.
+have cf_oo := sub_in1 ooSab cf.
+have within_cf := continuous_subspace_itv cf.
+have := f_neq0 => /existsNP[] p /not_implyP[] pab /negP fp_neq0.
+have fp_gt0 : 0 < f p by rewrite lt_neqAle eq_sym fp_neq0/= f_ge0.
+have f_ble : mu.-integrable `[a, b] (EFin \o f).
+  apply: compact_continuous_Rintegrable => //; first by exists p.
+  exact: segment_compact.
+have f_ble_oo : mu.-integrable `]a, b[ (EFin \o f).
+  exact: (integrableS _ _ _ f_ble).
+suff : (0 < \int[mu]_(x in `[a, b]) (f x)%:E)%E.
+  move/fine_lt; apply => //.
+  exact: integrable_fin_num.
+rewrite integral_itvbb_itvoo/=.
+  apply/measurable_EFinP.
+  apply: subspace_continuous_measurable_fun => //.
+  exact: continuous_subspace_itv.
+rewrite -[ltRHS]fineK ?integrable_fin_num//=.
+rewrite lte_fin Rintegral_gt0//.
+- by rewrite -in1_mksetP.
+- by rewrite -in1_mksetP; apply: (sub_in1 ooSab).
+(* the rest of the proof is just for ~ {in `]a, b[, forall x : R, f x == 0},
+   i.e., about extending a constant function on an open interval to its closure *)
+move=> f_eq0oo.
+have faboo_sing : f @` `]a, b[%classic = [set 0].
+  apply/seteqP; split => x /=.
+    by case => y /mem_set /f_eq0oo /eqP -> /esym.
+  move->; exists (miditv `]a, b[); first exact: mem_miditv.
+  by apply/eqP/f_eq0oo; rewrite inE; exact: mem_miditv.
+have: `[a, b]%classic p by [].
+rewrite -(setUitv_set2 false true) ?ltW//.
+case; first by move/mem_set/f_eq0oo; rewrite (negPf fp_neq0).
+case => [pa|pb]/=.
+  have : connected `[a, b[%classic.
+    exact/connected_intervalP/interval_is_interval.
+  have : {within `[a, b[, continuous f}.
+    have := within_cf; apply: continuous_subspaceW.
+    by apply/subset_itvl; rewrite bnd_simp.
+  move/connected_continuous_connected/[apply].
+  rewrite -setU_1itvob ?bnd_simp// image_setU faboo_sing -pa image_set1.
+  apply/connectedPn; exists (fun b => if b then [set 0] else [set f p]).
+  split => //; first by case; [exists 0 | exists (f p)].
+  split.
+    by rewrite -(closure_id [set _]).1// set1I in_set1 (negPf fp_neq0).
+  by rewrite -(closure_id [set _]).1// set1I in_set1 (negPf fp_neq0).
+have : connected `]a, b]%classic.
+  exact/connected_intervalP/interval_is_interval.
+have : {within `]a, b], continuous f}.
+  have := within_cf; apply: continuous_subspaceW.
+  by apply/subset_itvr; rewrite bnd_simp.
+move/connected_continuous_connected/[apply].
+rewrite -setU_itvob1 ?bnd_simp// image_setU faboo_sing -pb image_set1.
+apply/connectedPn; exists (fun b => if b then [set f p] else [set 0]).
+split => //; first by case; [exists (f p) | exists 0].
+split.
+  by rewrite -(closure_id [set _]).1// setI1 in_set1 (negPf fp_neq0).
+by rewrite -(closure_id [set _]).1// setI1 in_set1 (negPf fp_neq0).
+Qed.
+
 End Rintegral_lebesgue_measure.
 #[deprecated(since="mathcomp-analysis 1.17.0", use=Rintegral_itvbo_itvbc)]
 Notation Rintegral_itv_bndo_bndc := Rintegral_itvbo_itvbc (only parsing).

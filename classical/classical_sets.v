@@ -443,6 +443,10 @@ Notation "`] a , '+oo' [" :=
 Notation "`] -oo , '+oo' [" :=
   [set` Interval -oo%O +oo%O] : classical_set_scope.
 
+Lemma in1_mksetP (T : Type) (p : {pred T}) (P : T -> Prop) :
+  {in p, forall x, P x} <-> {in [set` p], forall x, P x}.
+Proof. by split => H x; rewrite ?inE/= => xp; apply: H => //; rewrite inE. Qed.
+
 Lemma nat_nonempty : [set: nat] !=set0. Proof. by exists 1%N. Qed.
 
 #[global] Hint Resolve nat_nonempty : core.
