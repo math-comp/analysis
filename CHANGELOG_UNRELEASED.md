@@ -143,6 +143,10 @@
 - in `esum.v`:
   + lemmas `esum_bigcupT`, `esum_bigcup`
 
+- in `metric_structure.v`:
+  + lemmas `metric_sym`, `mdistxx`, `mdist_gt0`
+  + lemmas `metric_triangle`, `metric_hausdorff`
+
 ### Deprecated
 
 - in `pseudometric_normed_Zmodule.v`:
