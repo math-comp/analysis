@@ -311,47 +311,6 @@ End at_left_right_metricType.
 
 End metricType_numDomainType.
 
-Section cvg_nbhsP.
-Variables (R : realType) (V : metricType R).
-
-Import metricType_numDomainType.
-
-Lemma cvg_nbhsP (f : V -> V) (p l : V) : f x @[x --> p] --> l <->
-  (forall u : nat -> V, (u n @[n --> \oo] --> p) -> f (u n) @[n --> \oo] --> l).
-Proof.
-split=> [/cvgrPdist_le /= fpl u /cvgrPdist_lt /= uyp|pfl].
-  apply/cvgrPdist_le => e /fpl.
-  rewrite -filter_from_mdist_nbhs => -[d d0 pdf].
-  by apply: filterS (uyp d d0) => t /pdf.
-apply: contrapT => fpl; move: pfl; apply/existsNP.
-suff: exists2 x : nat -> V,
-    x n @[n --> \oo] --> p & ~ f (x n) @[n --> \oo] --> l.
-  by move=> [x_] hp; exists x_; exact/not_implyP.
-have [e He] : exists e : {posnum R}, forall d : {posnum R},
-    exists xn, mdist xn p < d%:num /\ mdist (f xn) l >= e%:num.
-  apply: contrapT; apply: contra_not fpl => /forallNP h.
-  apply/cvgrPdist_le => e e0; have /existsNP[d] := h (PosNum e0).
-  move/forallNP => {}h; near=> t.
-  have /not_andP[abs|/negP] := h t.
-  - absurd: abs.
-    near: t.
-    rewrite !near_simpl /prop_near1 -nbhs_nbhs_mdist.
-    by exists d%:num => //= z/=; rewrite metric_sym.
-  - by rewrite -ltNge metric_sym => /ltW.
-exists (fun n => sval (cid (He n.+1%:R^-1%:pos))).
-  apply/cvgrPdist_lt => r r0; near=> t.
-  rewrite /sval/=; case: cid => x [xpt _].
-  rewrite metric_sym (lt_le_trans xpt)//.
-  rewrite -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0//.
-  near: t; exists (truncn r^-1) => // s /= rs.
-  by apply/ltW; rewrite -truncn_le_nat.
-move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
-rewrite /sval/=; case: cid => // x [px xpn].
-by rewrite ltNge metric_sym => /negP.
-Unshelve. all: end_near. Qed.
-
-End cvg_nbhsP.
-
 Section at_left_rightR.
 Variable (R : numFieldType).
 

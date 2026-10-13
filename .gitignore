@@ -16,3 +16,5 @@ Makefile.rocq
 Makefile.rocq.conf
 
 html/
+_opam/
+.vscode/
