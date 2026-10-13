@@ -29,79 +29,6 @@
 
 ### Changed
 
-- moved from `pseudometric_normed_Zmodule.v` to `num_normedtype.v`:
-  + lemmas `continuous_within_itvP`, `continuous_within_itvcyP`, `continuous_within_itvNycP`, `within_continuous_continuous`.
-- moved from `pseudometric_normed_Zmodule.v` to `num_topology.v`:
-  + lemmas `cvg_at_right_filter`, 
-    `cvg_at_left_filter`, `cvg_at_right_within`, `cvg_at_left_within`.
-
-### Renamed
-
-- in `real_interval.v`:
-  + `itv_cyy` -> `itv_cyey`
-  + `itv_oyy` -> `itv_oyey`
-  + `itv_cNyy` -> `itv_cNyey`
-  + `itv_oNyy` -> `itv_oNyey`
-- in `pseudometric_normed_Zmodule.v`:
-  + `continuous_within_itvP` -> `continuous_within_itvccP`
-
-### Generalized
-
-- in `num_normedtype.v`: 
-    `continuous_within_itvcyP`, 
-    `continuous_within_itvNycP`, `continuous_within_itvP`, 
-    `within_continuous_continuous` generalized from `pseudoMetricNormedZmodType` to `pseudoMetricType`.
-- in `pseudometric_structure.v`: 
-  + lemma `cvg_nbhsP` generalized from `metricType` to `pseudoMetricType`.
-- in `realfun.v`:
-  + lemmas `cvg_at_rightP`, `cvg_at_leftP`, `cvgr_dnbhsP`, `cvge_at_rightP`, `cvge_at_leftP`, `cvge_dnbhsP` generalized from `realType` to `archiRealFieldType` 
-- in `sequences.v`:
-  + lemma `sdrop_shift`
-  + lemma `ge_einfs`
-  + lemma `einfs_shift`
-  + lemma `limn_einf_shift_new`
-  + lemma `limn_einf_shiftS`
-  + lemma `limn_einf_cst`
-- in `uniform_structure.v`:
-  + lemma `unif_continuous_continuous`
-- in `uniform_structure.v`:
-  + lemma `unif_continuous_comp`
-
-- in `initial_topology.v`:
-  + lemma `initial_unif_continuous`
-  + lemma `initial_unif_continuous_comp`
-  + lemma `initial_unif_continuous_comp_fst`
-  + lemma `initial_unif_continuous_comp_snd`
-
-- in `product_topology.v`:
-  + lemma `entourage_prod_exS`
-  + definition `interchange_prod`
-  + lemma `entourage_interchange_prod`
-  + lemma `pair_unif_continuous`
-  + lemma `fst_unif_continuous`
-  + lemma `snd_unif_continuous`
-
-- in `metric_space.v`:
-  + definition `prod_mdist`
-
-- in `pseudometric_normed_Zmodule.v`:
-  + lemma `PseudoMetricNormedZmodule_add_unif_continuous`
-  + lemma `PseudoMetricNormedZmodule_opp_unif_continuous`
-  + lemma `standard_scale_continuous`
-  + notation `topologicalNmodType`
-
-- in `unstable.v`:
-  + definitions `clamp`, `clamp_gele`
-  + lemmas `clamp_gemin`, `clamp_lemax`, `minmax_clamp`,
-    `clamp_id`, `clamp_min`, `clamp_max`
-
-- in `sequences.v`,
-  + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
-
-- new file `edist.v`
-
-### Changed
-
 - in `esum.v`:
   + level of notation `\esum_ ( i 'in' P ) F`
     from level 41 to 34
@@ -157,6 +84,12 @@
   + lemmas `edist_inf_ge0`, `edist_inf_neqNy`, `edist_inf_triangle`,
     `edist_inf_continuous`, `edist_inf0`
 
+- moved from `pseudometric_normed_Zmodule.v` to `num_normedtype.v`:
+  + lemmas `continuous_within_itvP`, `continuous_within_itvcyP`, `continuous_within_itvNycP`, `within_continuous_continuous`.
+- moved from `pseudometric_normed_Zmodule.v` to `num_topology.v`:
+  + lemmas `cvg_at_right_filter`, 
+    `cvg_at_left_filter`, `cvg_at_right_within`, `cvg_at_left_within`.
+
 ### Renamed
 
 - in `sequences.v`:
@@ -169,6 +102,14 @@
 
 - in `normed_module.v`:
   + `PseudoMetricNormedZmod_ConvexTvs_isNormedModule` -> `MetricNormedZmod_ConvexTvs_isNormedModule`
+
+- in `real_interval.v`:
+  + `itv_cyy` -> `itv_cyey`
+  + `itv_oyy` -> `itv_oyey`
+  + `itv_cNyy` -> `itv_cNyey`
+  + `itv_oNyy` -> `itv_oNyey`
+- in `pseudometric_normed_Zmodule.v`:
+  + `continuous_within_itvP` -> `continuous_within_itvccP`
 
 ### Generalized
 
@@ -189,6 +130,61 @@
 
 - in `esum.v`:
   + lemmas `esum_bigcupT`, `esum_bigcup`
+
+
+
+- in `num_normedtype.v`: 
+    `continuous_within_itvcyP`, 
+    `continuous_within_itvNycP`, `continuous_within_itvP`, 
+    `within_continuous_continuous` generalized from `pseudoMetricNormedZmodType` to `pseudoMetricType`.
+- in `pseudometric_structure.v`: 
+  + lemma `cvg_nbhsP` generalized from `metricType` to `pseudoMetricType`.
+- in `realfun.v`:
+  + lemmas `cvg_at_rightP`, `cvg_at_leftP`, `cvgr_dnbhsP`, `cvge_at_rightP`, `cvge_at_leftP`, `cvge_dnbhsP` generalized from `realType` to `archiRealFieldType` 
+- in `sequences.v`:
+  + lemma `sdrop_shift`
+  + lemma `ge_einfs`
+  + lemma `einfs_shift`
+  + lemma `limn_einf_shift_new`
+  + lemma `limn_einf_shiftS`
+  + lemma `limn_einf_cst`
+- in `uniform_structure.v`:
+  + lemma `unif_continuous_continuous`
+- in `uniform_structure.v`:
+  + lemma `unif_continuous_comp`
+
+- in `initial_topology.v`:
+  + lemma `initial_unif_continuous`
+  + lemma `initial_unif_continuous_comp`
+  + lemma `initial_unif_continuous_comp_fst`
+  + lemma `initial_unif_continuous_comp_snd`
+
+- in `product_topology.v`:
+  + lemma `entourage_prod_exS`
+  + definition `interchange_prod`
+  + lemma `entourage_interchange_prod`
+  + lemma `pair_unif_continuous`
+  + lemma `fst_unif_continuous`
+  + lemma `snd_unif_continuous`
+
+- in `metric_space.v`:
+  + definition `prod_mdist`
+
+- in `pseudometric_normed_Zmodule.v`:
+  + lemma `PseudoMetricNormedZmodule_add_unif_continuous`
+  + lemma `PseudoMetricNormedZmodule_opp_unif_continuous`
+  + lemma `standard_scale_continuous`
+  + notation `topologicalNmodType`
+
+- in `unstable.v`:
+  + definitions `clamp`, `clamp_gele`
+  + lemmas `clamp_gemin`, `clamp_lemax`, `minmax_clamp`,
+    `clamp_id`, `clamp_min`, `clamp_max`
+
+- in `sequences.v`,
+  + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
+
+- new file `edist.v`
 
 ### Deprecated
 
