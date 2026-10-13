@@ -1749,6 +1749,12 @@ apply/nonincreasing_seqP => n.
 rewrite !bigcap_mkord big_ord_recr/= subsetEset; apply: subIsetl.
 Qed.
 
+(**md Before MathComp-Analysis 1.19.0, the conclusion of this lemmas was
+```
+mu (\bigcap_(i < n.+1) A i) @[n-->\oo] --> mu (\bigcap_n A n)
+```
+Notice the `.+1` increment for the range of the index.
+This previous version of the lemma can be recovered by using the lemma `cvg_shiftS`. *)
 Lemma cvg_measure_bigcap {d} {M : measurableType d} {R : realFieldType}
     {mu : {measure set M -> \bar R}} (A : (set M)^nat)
     (mA : forall i, measurable (A i)) :

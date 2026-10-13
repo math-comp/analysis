@@ -52,6 +52,7 @@
 - in `random_variable.v`:
   + lemma `not_range_pmf0`
   + lemma `dRV_esum_pmf_distribution`
+
 - in `measure_theory/measure_function.v`:
   + lemma `semi_cvg_measure_bigcap`
 
@@ -149,7 +150,7 @@
   + lemmas `metric_sym`, `mdistxx`, `mdist_gt0`
   + lemmas `metric_triangle`, `metric_hausdorff`
 - in `measure_theory/measure_function.v`:
-  + lemma `semi_cvg_measure_bigcap`
+  + lemma `cvg_measure_bigcap`
 
 ### Deprecated
 
