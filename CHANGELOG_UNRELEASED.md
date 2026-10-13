@@ -49,6 +49,10 @@
 
 - new file `edist.v`
 
+- in `random_variable.v`:
+  + lemma `not_range_pmf0`
+  + lemma `dRV_esum_pmf_distribution`
+
 ### Changed
 
 - in `esum.v`:
