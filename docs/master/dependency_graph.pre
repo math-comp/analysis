@@ -1995,6 +1995,7 @@ subgraph cluster_Probability {
   "classical/unstable" -> "theories/probability_theory/random_variable";
   "reals/reals" -> "theories/probability_theory/random_variable";
   "theories/ereal" -> "theories/probability_theory/random_variable";
+  "theories/esum" -> "theories/probability_theory/random_variable";
   "theories/exp" -> "theories/probability_theory/random_variable";
   "theories/hoelder" -> "theories/probability_theory/random_variable";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/random_variable";
