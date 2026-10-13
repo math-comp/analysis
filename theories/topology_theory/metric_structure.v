@@ -43,40 +43,58 @@ HB.mixin Record PseudoMetric_isMetric (K : numDomainType) M & PseudoMetric K M :
 HB.structure Definition Metric (K : numDomainType) :=
   { M of PseudoMetric K M & PseudoMetric_isMetric K M }.
 
-Section metric_lemmas.
-Context {R : realFieldType} (T : metricType R).
+Section metric_numDomainType.
+Context {R : numDomainType} (T : metricType R).
 
 Let dist := @mdist R T.
 
 Lemma metric_sym x y : dist x y = dist y x.
 Proof.
-apply/eqP; rewrite eq_le; apply/andP; split; rewrite leNgt; apply/negP => xy.
-- have := @ball_sym _ _ y x (dist x y); rewrite !ballEmdist/= => /(_ xy).
+have cxy : dist x y >=< dist y x.
+  by apply: real_comparable; apply: ger0_real; exact: mdist_ge0.
+apply/eqP; rewrite eq_le; apply/andP; split.
+- rewrite comparable_leNgt//; apply/negP => xy.
+  have := @ball_sym _ _ y x (dist x y); rewrite !ballEmdist/= => /(_ xy).
   by rewrite ltxx.
-- have := @ball_sym _ _ x y (dist y x); rewrite !ballEmdist/= => /(_ xy).
+- rewrite comparable_leNgt//; first by rewrite comparable_sym.
+  apply/negP => xy.
+  have := @ball_sym _ _ x y (dist y x); rewrite !ballEmdist/= => /(_ xy).
   by rewrite ltxx.
 Qed.
 
 Lemma mdistxx x : dist x x = 0.
 Proof.
-apply/eqP; rewrite eq_le mdist_ge0 andbT; apply/ler_addgt0Pl => /= e e0.
-rewrite addr0 leNgt; apply/negP => exx.
-by have := @ball_center _ _ x (PosNum e0); rewrite ballEmdist/= ltNge (ltW exx).
+have := mdist_ge0 x x.
+rewrite /dist le_eqVlt => /predU1P[<-//|].
+by move/(ballxx x); rewrite ballEmdist /= ltxx.
 Qed.
 
 Lemma mdist_gt0 x y : (0 < dist x y) = (x != y).
 Proof.
 rewrite lt_neqAle mdist_ge0 andbT.
 apply/negPn/negPn => [/eqP/esym/mdist_positivity/eqP//|/eqP ->].
-by rewrite mdistxx.
+by rewrite [eqbRHS]mdistxx.
 Qed.
+
+End metric_numDomainType.
+
+Section metric_numFieldType.
+Context {R : numFieldType} (T : metricType R).
+
+Let dist := @mdist R T.
 
 Lemma metric_triangle x y z : dist x z <= dist x y + dist y z.
 Proof.
-apply/ler_addgt0Pl => /= e e0; rewrite leNgt; apply/negP => xyz.
-have := @ball_triangle _ _ y x z (dist x y + e / 2) (dist y z + e / 2).
-rewrite !ballEmdist/= addrACA -splitr !ltrDl !divr_gt0// => /(_ isT isT).
-by rewrite ltNge => /negP; apply; rewrite addrC ltW.
+have c : dist x z >=< dist x y + dist y z.
+  by rewrite real_comparable// ger0_real ?addr_ge0// mdist_ge0.
+rewrite (comparable_leNgt c); apply/negP => xy.
+set e := dist x z - (dist x y + dist y z).
+have e0 : 0 < e by rewrite subr_gt0.
+have e20 : 0 < e / 2 by rewrite divr_gt0.
+have xe2y : ball x (dist x y + e / 2) y by rewrite ballEmdist/= ltrDl.
+have ye2z : ball y (dist y z + e / 2) z by rewrite ballEmdist/= ltrDl.
+have := ball_triangle xe2y ye2z.
+by rewrite ballEmdist/= addrACA -splitr subrKC ltxx.
 Qed.
 
 Lemma metric_hausdorff : hausdorff_space T.
@@ -90,7 +108,7 @@ move/set0P/eqP; apply; rewrite -subset0 => x [pDx /ball_sym qDx].
 by have := ball_triangle pDx qDx; rewrite -splitr.
 Qed.
 
-End metric_lemmas.
+End metric_numFieldType.
 
 Section prod_metric.
 Context {K : numDomainType} (T U : metricType K).
