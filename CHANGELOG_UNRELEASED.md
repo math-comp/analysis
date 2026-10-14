@@ -4,57 +4,6 @@
 
 ### Added
 
-- in file `real_interval.v`,
-  + new lemmas `itv_cNyNye`, `itv_oNyNye`, `itv_cNyye`, `itv_oNyye`, `itv_ccNyeye`, 
-    `itv_coNyeye`, `itv_ocNyeye`, `itv_ooNyeye`, `itv_oNyey_bigcup`, 
-    `itv_oNyye_bigcup`.
-- in `lebesgue_integral_nonneg.v`,
-  + new lemma `integral_itvD`.
-- in `lebesgue_integral_under.v`,
-  + new lemma `econtinuity_under_integral`.
-- in `ereal_normedtype.v`,
-  + new lemmas `nbhs_right_lte`, `nbhs_left_gte`, `nbhs_right_lee`, `nbhs_left_gee`.
-- in `normed_module.v`,
-  + new lemmas `within_econtinuousD`, `within_econtinuousN`, 
-    `within_econtinuousB`, `within_econtinuousM`, `within_continuous_fine`, 
-    `within_econtinuous_EFin`, `cvge_lt`, `cvge_gt`, `cvge_ge`, `cvge_le`.
-- in `num_normedtype.v`,
-  + new lemmas `continuous_within_itvbbP`,
-    `continuous_within_itvocP`, `continuous_within_itvcoP`, 
-    `continuous_within_itvbyP`, `continuous_within_itvNybP`.
-- in `num_topology.v`,
-  + new lemma `not_nearP`.
-- in `pseudometric_structure.v`,
-  + new lemma `cvg_withinP`.
-
-### Changed
-
-- moved from `pseudometric_normed_Zmodule.v` to `num_normedtype.v`:
-  + lemmas `continuous_within_itvP`, `continuous_within_itvcyP`, `continuous_within_itvNycP`, `within_continuous_continuous`.
-- moved from `pseudometric_normed_Zmodule.v` to `num_topology.v`:
-  + lemmas `cvg_at_right_filter`, 
-    `cvg_at_left_filter`, `cvg_at_right_within`, `cvg_at_left_within`.
-
-### Renamed
-
-- in `real_interval.v`:
-  + `itv_cyy` -> `itv_cyey`
-  + `itv_oyy` -> `itv_oyey`
-  + `itv_cNyy` -> `itv_cNyey`
-  + `itv_oNyy` -> `itv_oNyey`
-- in `pseudometric_normed_Zmodule.v`:
-  + `continuous_within_itvP` -> `continuous_within_itvccP`
-
-### Generalized
-
-- in `num_normedtype.v`: 
-    `continuous_within_itvcyP`, 
-    `continuous_within_itvNycP`, `continuous_within_itvP`, 
-    `within_continuous_continuous` generalized from `pseudoMetricNormedZmodType` to `pseudoMetricType`.
-- in `pseudometric_structure.v`: 
-  + lemma `cvg_nbhsP` generalized from `metricType` to `pseudoMetricType`.
-- in `realfun.v`:
-  + lemmas `cvg_at_rightP`, `cvg_at_leftP`, `cvgr_dnbhsP`, `cvge_at_rightP`, `cvge_at_leftP`, `cvge_dnbhsP` generalized from `realType` to `archiRealFieldType` 
 - in `sequences.v`:
   + lemma `sdrop_shift`
   + lemma `ge_einfs`
@@ -106,6 +55,15 @@
 
 - in `measure_theory/measure_function.v`:
   + lemma `semi_cvg_measure_bigcap`
+- in `num_normedtype.v`,
+  + `continuous_within_itvbbP`,
+    `continuous_within_itvocP`, `continuous_within_itvcoP`,
+    `continuous_within_itvbyP`, `continuous_within_itvNybP`
+- in `num_topology.v`:
+  + lemma `not_nearP`
+  + lemma `not_nearPball`
+- in `pseudometric_structure.v`,
+  + lemma `cvg_withinP`
 
 ### Changed
 
@@ -164,6 +122,12 @@
   + lemmas `edist_inf_ge0`, `edist_inf_neqNy`, `edist_inf_triangle`,
     `edist_inf_continuous`, `edist_inf0`
 
+- moved from `pseudometric_normed_Zmodule.v` to `num_normedtype.v`:
+  + lemmas `continuous_within_itvP`, `continuous_within_itvcyP`, `continuous_within_itvNycP`, `within_continuous_continuous`.
+- moved from `pseudometric_normed_Zmodule.v` to `num_topology.v`:
+  + lemmas `cvg_at_right_filter`,
+    `cvg_at_left_filter`, `cvg_at_right_within`, `cvg_at_left_within`.
+
 ### Renamed
 
 - in `sequences.v`:
@@ -176,6 +140,9 @@
 
 - in `normed_module.v`:
   + `PseudoMetricNormedZmod_ConvexTvs_isNormedModule` -> `MetricNormedZmod_ConvexTvs_isNormedModule`
+
+- in `pseudometric_normed_Zmodule.v`:
+  + `continuous_within_itvP` -> `continuous_within_itvccP`
 
 ### Generalized
 
@@ -205,6 +172,14 @@
 
 - in `numfun.v`:
   + lemma `itv_partition_nth_ge`
+- in `num_normedtype.v`:
+    `continuous_within_itvcyP`,
+    `continuous_within_itvNycP`, `continuous_within_itvP`,
+    `within_continuous_continuous` generalized from `pseudoMetricNormedZmodType` to `pseudoMetricType`.
+- in `pseudometric_structure.v`:
+  + lemma `cvg_nbhsP` generalized from `metricType` to `pseudoMetricType`.
+- in `realfun.v`:
+  + lemmas `cvg_at_rightP`, `cvg_at_leftP`, `cvgr_dnbhsP`, `cvge_at_rightP`, `cvge_at_leftP`, `cvge_dnbhsP` generalized from `realType` to `archiRealFieldType`
 
 ### Deprecated
 
