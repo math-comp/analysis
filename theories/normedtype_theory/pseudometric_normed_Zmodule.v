@@ -261,22 +261,6 @@ Qed.
 Lemma nbhsB (U : set M) (z x : M) : nbhs z U -> nbhs (x + z) (+%R x @` U).
 Proof. exact/nbhsB_subproof/add_continuous. Qed.
 
-(**md NB: This lemma is similar to `nbhsDl` later in this file but using
-  different structures, there could be only one lemma were we to state it
-  for MetricNormedZmodule. *)
-Lemma near_shiftE (U : set M) (x a : M) :
-  (\forall y \near x + a, U y) = (\near x, U (x + a)).
-Proof.
-eqProp; rewrite -!nbhs_nearE.
-- move/(nbhsB (-a)).
-  rewrite addrC addrK.
-  apply: filterS => _ [y Uy <-].
-  by rewrite addrC addNKr.
-- move/(nbhsB a); rewrite addrC.
-  apply: filterS => ? [y Uya <-].
-  by rewrite addrC.
-Qed.
-
 End TopologicalZmoduleTheory.
 
 HB.factory Record PreTopologicalNmodule_isTopologicalZmodule M

@@ -48,10 +48,6 @@
 
 - in `pseudometric_normed_Zmodule.v`,
   + lemmas `fmap_at_left0P`, `fmap_at_right0E`
-  + lemma `near_shiftE`
-
-- in `tvs.v`,
-  + lemma `nearZE`
 
 - in `unstable.v`:
   + definitions `clamp`, `clamp_gele`

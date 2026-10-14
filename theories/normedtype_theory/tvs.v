@@ -125,20 +125,6 @@ near=> z; exists (r^-1 *: z); last by rewrite scalerA divff// scale1r.
 by apply: (BU (r^-1,z)); split; [exact: nbhs_singleton|near: z].
 Unshelve. all: by end_near. Qed.
 
-Lemma nearZE (c : R) (x : E) (P : set E) :
-  c != 0 -> (\forall y \near c *: x, P y) = (\near x, P (c *: x)).
-Proof.
-move=> c_neq0.
-have cinv_neq0 : c^-1 != 0 by apply: invr_neq0.
-eqProp.
-- move/(nbhsZ cinv_neq0).
-  rewrite scalerK//.
-  apply: filterS => ? [y Py <-].
-  by rewrite scalerKV.
-- move/(nbhsZ c_neq0).
-  by apply: filterS => ? [y Pcy <-].
-Qed.
-
 End TopologicalLmodule_theory.
 
 HB.factory Record TopologicalNmodule_isTopologicalLmodule (R : numDomainType) M
