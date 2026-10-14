@@ -77,7 +77,7 @@
     In particular, this means that `\int[mu]_(x in D) f x * g x`
     now parses as `\int[mu]_(x in D) (f x * g x)`.
 
-- moved from `tvs.v` to `pseudometric_normed_Zmodule.v`
+- moved from `tvs.v` to `pseudometric_normed_Zmodule.v`:
   + mixin `PreTopologicalNmodule_isTopologicalNmodule`
   + structure `TopologicalNmodule`
   + lemmas `fun_cvgD`, `cvg_sum`, `sum_continuous`
@@ -123,10 +123,10 @@
     `edist_inf_continuous`, `edist_inf0`
 
 - moved from `pseudometric_normed_Zmodule.v` to `num_normedtype.v`:
-  + lemmas `continuous_within_itvP`, `continuous_within_itvcyP`, `continuous_within_itvNycP`, `within_continuous_continuous`.
+  + lemmas `continuous_within_itvP`, `continuous_within_itvcyP`, `continuous_within_itvNycP`, `within_continuous_continuous`
 - moved from `pseudometric_normed_Zmodule.v` to `num_topology.v`:
   + lemmas `cvg_at_right_filter`,
-    `cvg_at_left_filter`, `cvg_at_right_within`, `cvg_at_left_within`.
+    `cvg_at_left_filter`, `cvg_at_right_within`, `cvg_at_left_within`
 
 ### Renamed
 

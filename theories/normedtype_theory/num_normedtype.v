@@ -45,7 +45,6 @@ Reserved Notation "f @`] a , b [" (format "f  @`] a ,  b [").
 Reserved Notation "+oo_ R" (at level 3, left associativity, format "+oo_ R").
 Reserved Notation "-oo_ R" (at level 3, left associativity, format "-oo_ R").
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -78,7 +77,7 @@ Notation "f @`] a , b [" :=
   (`](minr (f a) (f b)), (maxr (f a) (f b))[%classic) : classical_set_scope.
 
 Section image_interval.
-Variable R : realDomainType.
+Context {R : realDomainType}.
 Implicit Types (a b : R) (f : R -> R).
 
 Lemma mono_mem_image_segment a b f : monotonic `[a, b] f ->
@@ -502,8 +501,8 @@ by rewrite le_gtF ?expr0 ?mul1r ?lez_nat ?ceil_ge0//; near: n; apply: Foo.
 Unshelve. all: by end_near. Qed.
 
 Section gt0_cvg.
-Context {R : realFieldType} {F : set_system R} {FF : Filter F}.
-Variables (M : R) (f : R -> R).
+Context {R : realFieldType} {F : set_system R} {FF : Filter F} (M : R)
+  (f : R -> R).
 Hypothesis M0 : 0 < M.
 
 Lemma gt0_cvgMlNy : (f r) @[r --> F] --> -oo -> (f r * M)%R @[r --> F] --> -oo.
@@ -730,7 +729,7 @@ by [].
 Unshelve. all: by end_near. Qed.
 
 Section interval.
-Variable R : numDomainType.
+Context {R : numDomainType}.
 
 Definition is_interval (E : set R) :=
   forall x y, E x -> E y -> forall z, x <= z <= y -> E z.
@@ -763,7 +762,7 @@ by apply: (iX y z); rewrite ?ltW.
 Qed.
 
 Section open_union_rat.
-Variable R : realType.
+Context {R : realType}.
 Implicit Types A U : set R.
 
 Let ointsub A U := [/\ open A, is_interval A & A `<=` U].
@@ -826,7 +825,7 @@ Qed.
 End open_union_rat.
 
 Section ball_realFieldType.
-Variables (R : realFieldType).
+Context {R : realFieldType}.
 
 Lemma ball0 (a r : R) : ball a r = set0 <-> r <= 0.
 Proof.
@@ -840,7 +839,7 @@ Qed.
 End ball_realFieldType.
 
 Section interval_realType.
-Variable R : realType.
+Context {R : realType}.
 
 Lemma interval_left_unbounded_interior (X : set R) : is_interval X ->
   ~ has_lbound X -> has_ubound X -> X° = [set r | r < sup X].
@@ -937,8 +936,7 @@ Definition interior_itv :=
 End interval_realType.
 
 Section continuous_within_itvP.
-Context {R : realFieldType} {K : numDomainType}
-  {U : pseudoMetricType K}.
+Context {R : realFieldType} {K : numDomainType} {U : pseudoMetricType K}.
 Implicit Type f : R -> U.
 
 Let near_at_left (a : itv_bound R) b f eps : (a < BLeft b)%O -> 0 < eps ->
@@ -981,8 +979,8 @@ Qed.
 
 Lemma continuous_within_itvbbP a b (ba bb : bool) f : a < b ->
   {within [set` Interval (BSide ba a) (BSide bb b)], continuous f} <->
-  [/\ {in `]a, b[, continuous f}, 
-    ba -> f @ a^'+ --> f a & 
+  [/\ {in `]a, b[, continuous f},
+    ba -> f @ a^'+ --> f a &
     ~~ bb -> f @ b^'- --> f b].
 Proof.
 move=> a_lt_b; split=> [abf|].
@@ -991,9 +989,9 @@ move=> a_lt_b; split=> [abf|].
   split=> [|baT|bbT]; [| apply/cvg_ballP => e e0 ..].
   - apply/in_continuous_mksetP; rewrite -continuous_open_subspace//.
     by apply: continuous_subspaceW abf; apply: subset_itvW.
-  - by move: baT abf => -> abf; apply: (near_at_right (b := BSide bb b)).
-  - move: bbT abf => /negbTE -> abf. 
-    by apply: (near_at_left (a := BSide ba a)) => //; rewrite bnd_simp. 
+  - by move: baT abf => -> abf; exact: (@near_at_right _ (BSide bb b)).
+  - move: bbT abf => /negbTE -> abf.
+    by apply: (@near_at_left (BSide ba a)) => //; rewrite bnd_simp.
 case=> ctsoo ctsL ctsR.
 apply/subspace_continuousP => x /=.
 rewrite in_itv/= => /andP[ax xb].
@@ -1004,8 +1002,8 @@ have : a = x /\ ba \/ a < x.
 have : b = x /\ (bb = false) \/ x < b.
   clear - xb. case: bb xb => /=; first by right.
   by case: ltgtP => //; [right|left].
-clear ax xb.
-case=> [[<- ->]|xb] [[+ ->]|ax].
+move=> {ax xb}.
+move=> [[<- ->]|xb] [[+ ->]|ax].
 - by move/eqP; rewrite lt_eqF.
 - move=> _ /(_ erefl) /cvg_at_left_within; apply: cvg_trans.
   apply: cvg_app; apply: within_subset.
@@ -1043,7 +1041,7 @@ move=> ab; rewrite continuous_within_itvbbP//.
 by split=> [[+ /(_ erefl) + _]|[]].
 Qed.
 
-Lemma continuous_within_itvbyP a (ba : bool) f : 
+Lemma continuous_within_itvbyP a (ba : bool) f :
   {within [set` Interval (BSide ba a) +oo%O], continuous f} <->
   ({in `]a, +oo[, continuous f} /\ (ba -> f @ a^'+ --> f a)).
 Proof.
@@ -1052,7 +1050,7 @@ split=> [cf|].
   split=> [|baT]; [| apply/cvg_ballP => e e0].
   - apply/in_continuous_mksetP; rewrite -continuous_open_subspace//.
     by apply: continuous_subspaceW cf; apply: subset_itvr; rewrite bnd_simp.
-  - by move: baT cf => -> cf; apply: (near_at_right (b := +oo%O)).
+  - by move: baT cf => -> cf; exact: (@near_at_right _ +oo%O).
 case=> ctsoo ctsL.
 apply/subspace_continuousP => x /=.
 rewrite in_itv/= andbT => ax.
@@ -1060,10 +1058,10 @@ move: ctsL.
 have : a = x /\ ba \/ a < x.
   clear - ax. case: ba ax => /=; last by right.
   by case: ltgtP => //; [right|left].
-case=> [[<- ->]|{}ax].
+move=> [[<- ->]|{}ax].
 - move=> /(_ erefl) /cvg_at_right_within; apply: cvg_trans.
   apply: cvg_app; apply: within_subset.
-  by move=> ? /=; rewrite in_itv/= => /andP[].
+  by move=> ? /= /itvP ->.
 - move=> _; have aboox : x \in `]a, +oo[ by rewrite !in_itv/= ax.
   rewrite within_interior; last exact: ctsoo.
   suff : `]a, +oo[ `<=` [set` Interval (BSide ba a) +oo%O]° by exact.
@@ -1079,7 +1077,7 @@ rewrite continuous_within_itvbyP.
 by apply/propeqP; congr and; apply/propeqP; split=> // /(_ erefl).
 Qed.
 
-Lemma continuous_within_itvNybP b (bb : bool) f : 
+Lemma continuous_within_itvNybP b (bb : bool) f :
   {within [set` Interval -oo%O (BSide bb b)], continuous f} <->
   ({in `]-oo, b[, continuous f} /\ (~~ bb -> f @ b^'- --> f b)).
 Proof.
@@ -1088,19 +1086,19 @@ split=> [cf|].
   split=> [|bbT]; [| apply/cvg_ballP => e e0].
   - apply/in_continuous_mksetP; rewrite -continuous_open_subspace//.
     by apply: continuous_subspaceW cf; apply: subset_itvl; rewrite bnd_simp.
-  - move: bbT cf => /negbTE -> cf. 
-    by apply: (near_at_left (a := -oo%O)) => //; rewrite bnd_simp. 
+  - move: bbT cf => /negbTE -> cf.
+    by apply: (@near_at_left -oo%O) => //; rewrite bnd_simp.
 case=> ctsoo ctsR.
 apply/subspace_continuousP => x /=.
 rewrite in_itv/= => xb.
 move: ctsR.
-have : b = x /\ (bb = false) \/ x < b.
+have : b = x /\ bb = false \/ x < b.
   clear - xb. case: bb xb => /=; first by right.
   by case: ltgtP => //; [right|left].
 case=> [[<- ->]|{}xb].
 - move=> /(_ erefl) /cvg_at_left_within; apply: cvg_trans.
   apply: cvg_app; apply: within_subset.
-  by move=> ? /=; rewrite in_itv.
+  by move=> ? /= /itvP ->.
 - move=> _; have aboox : x \in `]-oo, b[ by rewrite !in_itv/= xb.
   rewrite within_interior; last exact: ctsoo.
   suff : `]-oo, b[ `<=` [set` Interval -oo%O (BSide bb b)]° by exact.
@@ -1123,10 +1121,10 @@ Notation continuous_within_itvP := continuous_within_itvccP (only parsing).
 
 Lemma within_continuous_continuous {R : realFieldType} {K : numDomainType}
     {U : pseudoMetricType K} a b (ba bb : bool) (f : R -> U) x : (a <= b)%R ->
-  {within [set` Interval (BSide ba a) (BSide bb b)], continuous f} -> 
+  {within [set` Interval (BSide ba a) (BSide bb b)], continuous f} ->
   x \in `]a, b[%R -> {for x, continuous f}.
 Proof.
 rewrite le_eqVlt => /predU1P[<- _|ab].
-  rewrite itv_ge ?bnd_simp//.
+  by rewrite itv_ge ?bnd_simp.
 by move=> /continuous_within_itvbbP -/(_ ab)[+ _ _]; exact.
 Qed.

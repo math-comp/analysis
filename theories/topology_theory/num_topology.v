@@ -31,7 +31,7 @@ HB.instance Definition _ (R : numDomainType) := hasNbhs.Build R^o
 
 Module TopologicalNumDomainType.
 Section TopologicalNumDomainType.
-Variable (R : numDomainType).
+Context {R : numDomainType}.
 
 Lemma nbhs_filter (p : R^o) : ProperFilter (nbhs p).
 Proof.
@@ -523,23 +523,22 @@ Lemma lt_le_nbhsr {R : realFieldType} (t x : R) :
   t < x -> \forall y \near nbhs x, t <= y.
 Proof. by move/lt_nbhsr; apply: filterS => y /ltW. Qed.
 
-Lemma not_nearP {T : topologicalType} (p : T) (P : set T) : 
+Lemma not_nearP {T : topologicalType} (p : T) (P : set T) :
   ~ (\forall x \near p, P x) <->
-  forall (V : set T), nbhs p V -> exists2 x, V x & ~ P x.
+  forall V : set T, nbhs p V -> exists2 x, V x & ~ P x.
 Proof.
 split.
-- contra => -[V Vnbhs hV].
-  by apply: filterS Vnbhs.
+- by contra => -[V + hV]; exact: filterS.
 - by move=> /(_ P) /[apply] => -[].
 Unshelve. all: by end_near. Qed.
 
-Lemma not_nearPball {R : numDomainType} {M : pseudoMetricType R} 
-  (p : M) (P : set M) :
+Lemma not_nearPball {R : numDomainType} {M : pseudoMetricType R}
+    (p : M) (P : set M) :
   ~ (\forall x \near p, P x) <->
   forall (e : {posnum R}), exists2 x, ball p e%:num x & ~ P x.
 Proof.
 rewrite not_nearP; split.
-- by move=> + e; apply; apply: nbhsx_ballx.
+- by move=> + e; apply; exact: nbhsx_ballx.
 - rewrite -nbhs_ballE => + V [/= e e0 beV].
   by move=> /(_ (PosNum e0))[x /beV ? ?]; exists x.
 Qed.
