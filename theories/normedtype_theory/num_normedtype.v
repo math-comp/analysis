@@ -45,7 +45,6 @@ Reserved Notation "f @`] a , b [" (format "f  @`] a ,  b [").
 Reserved Notation "+oo_ R" (at level 3, left associativity, format "+oo_ R").
 Reserved Notation "-oo_ R" (at level 3, left associativity, format "-oo_ R").
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -78,7 +77,7 @@ Notation "f @`] a , b [" :=
   (`](minr (f a) (f b)), (maxr (f a) (f b))[%classic) : classical_set_scope.
 
 Section image_interval.
-Variable R : realDomainType.
+Context {R : realDomainType}.
 Implicit Types (a b : R) (f : R -> R).
 
 Lemma mono_mem_image_segment a b f : monotonic `[a, b] f ->
@@ -502,8 +501,8 @@ by rewrite le_gtF ?expr0 ?mul1r ?lez_nat ?ceil_ge0//; near: n; apply: Foo.
 Unshelve. all: by end_near. Qed.
 
 Section gt0_cvg.
-Context {R : realFieldType} {F : set_system R} {FF : Filter F}.
-Variables (M : R) (f : R -> R).
+Context {R : realFieldType} {F : set_system R} {FF : Filter F} (M : R)
+  (f : R -> R).
 Hypothesis M0 : 0 < M.
 
 Lemma gt0_cvgMlNy : (f r) @[r --> F] --> -oo -> (f r * M)%R @[r --> F] --> -oo.
@@ -730,7 +729,7 @@ by [].
 Unshelve. all: by end_near. Qed.
 
 Section interval.
-Variable R : numDomainType.
+Context {R : numDomainType}.
 
 Definition is_interval (E : set R) :=
   forall x y, E x -> E y -> forall z, x <= z <= y -> E z.
@@ -763,7 +762,7 @@ by apply: (iX y z); rewrite ?ltW.
 Qed.
 
 Section open_union_rat.
-Variable R : realType.
+Context {R : realType}.
 Implicit Types A U : set R.
 
 Let ointsub A U := [/\ open A, is_interval A & A `<=` U].
@@ -826,7 +825,7 @@ Qed.
 End open_union_rat.
 
 Section ball_realFieldType.
-Variables (R : realFieldType).
+Context {R : realFieldType}.
 
 Lemma ball0 (a r : R) : ball a r = set0 <-> r <= 0.
 Proof.
@@ -840,7 +839,7 @@ Qed.
 End ball_realFieldType.
 
 Section interval_realType.
-Variable R : realType.
+Context {R : realType}.
 
 Lemma interval_left_unbounded_interior (X : set R) : is_interval X ->
   ~ has_lbound X -> has_ubound X -> X° = [set r | r < sup X].
@@ -935,3 +934,197 @@ Definition interior_itv :=
   (interior_itv_bnd, interior_itv_bndy, interior_itv_Nybnd, interior_itv_Nyy).
 
 End interval_realType.
+
+Section continuous_within_itvP.
+Context {R : realFieldType} {K : numDomainType} {U : pseudoMetricType K}.
+Implicit Type f : R -> U.
+
+Let near_at_left (a : itv_bound R) b f eps : (a < BLeft b)%O -> 0 < eps ->
+  {within [set` Interval a (BRight b)], continuous f} ->
+  \forall t \near b^'-, ball (f b) eps (f t).
+Proof.
+move=> ab eps_gt0 cf.
+move/continuous_withinNx/cvg_ballP/(_ _ eps_gt0) : (cf b).
+rewrite /dnbhs/= near_withinE !near_simpl /prop_near1 /nbhs/=.
+rewrite -nbhs_subspace_in//.
+  rewrite /= in_itv/= lexx andbT.
+  by move: a ab {cf} => [[a|a]/=|[|]//]; rewrite bnd_simp// => /ltW.
+rewrite /within/= near_simpl; apply: filter_app.
+move: a ab {cf} => [a0 a/= /[!bnd_simp] ab|[_|//]].
+- exists (b - a); rewrite /= ?subr_gt0// => c cba + ac.
+  apply=> //; rewrite ?lt_eqF// !in_itv/= (ltW ac)/= andbT; move: cba => /=.
+  rewrite gtr0_norm ?subr_gt0// ltrD2l ltrNr opprK => {}ac.
+  by case: a0 => //=; exact/ltW.
+- by exists 1%R => //= c cb1 + bc; apply; rewrite ?lt_eqF ?in_itv/= ?ltW.
+Qed.
+
+Let near_at_right a (b : itv_bound R) f eps : (BRight a < b)%O -> 0 < eps ->
+  {within [set` Interval (BLeft a) b], continuous f} ->
+  \forall t \near a^'+, ball (f a) eps (f t).
+Proof.
+move=> ab eps_gt0 cf.
+move/continuous_withinNx/cvg_ballP/(_ _ eps_gt0) : (cf a).
+rewrite /dnbhs/= near_withinE !near_simpl// /prop_near1 /nbhs/=.
+rewrite -nbhs_subspace_in//.
+  rewrite /= in_itv/= lexx//=.
+  by move: b ab {cf} => [[b|b]/=|[|]//]; rewrite bnd_simp// => /ltW.
+rewrite /within/= near_simpl; apply: filter_app.
+move: b ab {cf} => [b0 b/= /[!bnd_simp] ab|[//|_]].
+- exists (b - a); rewrite /= ?subr_gt0// => c cba + ac.
+  apply=> //; rewrite ?gt_eqF// !in_itv/= (ltW ac)/=; move: cba => /=.
+  rewrite ltr0_norm ?subr_lt0// opprB ltrD2r.
+  by case: b0 => //= /ltW.
+- by exists 2%R => //= c ca1 + ac; apply; rewrite ?gt_eqF ?in_itv/= ?ltW.
+Qed.
+
+Lemma continuous_within_itvbbP a b (ba bb : bool) f : a < b ->
+  {within [set` Interval (BSide ba a) (BSide bb b)], continuous f} <->
+  [/\ {in `]a, b[, continuous f},
+    ba -> f @ a^'+ --> f a &
+    ~~ bb -> f @ b^'- --> f b].
+Proof.
+move=> a_lt_b; split=> [abf|].
+  have Fa : Filter a^'+ by exact: at_right_proper_filter.
+  have Fb : Filter b^'- by exact: at_left_proper_filter.
+  split=> [|baT|bbT]; [| apply/cvg_ballP => e e0 ..].
+  - apply/in_continuous_mksetP; rewrite -continuous_open_subspace//.
+    by apply: continuous_subspaceW abf; apply: subset_itvW.
+  - by move: baT abf => -> abf; exact: (@near_at_right _ (BSide bb b)).
+  - move: bbT abf => /negbTE -> abf.
+    by apply: (@near_at_left (BSide ba a)) => //; rewrite bnd_simp.
+case=> ctsoo ctsL ctsR.
+apply/subspace_continuousP => x /=.
+rewrite in_itv/= => /andP[ax xb].
+move: ctsL ctsR.
+have : a = x /\ ba \/ a < x.
+  clear - ax. case: ba ax => /=; last by right.
+  by case: ltgtP => //; [right|left].
+have : b = x /\ (bb = false) \/ x < b.
+  clear - xb. case: bb xb => /=; first by right.
+  by case: ltgtP => //; [right|left].
+move=> {ax xb}.
+move=> [[<- ->]|xb] [[+ ->]|ax].
+- by move/eqP; rewrite lt_eqF.
+- move=> _ /(_ erefl) /cvg_at_left_within; apply: cvg_trans.
+  apply: cvg_app; apply: within_subset.
+  by move=> ? /=; rewrite in_itv/= => /andP[].
+- move=> <- /(_ erefl) /cvg_at_right_within + _; apply: cvg_trans.
+  apply: cvg_app; apply: within_subset.
+  by move=> ? /=; rewrite in_itv/= => /andP[].
+- move=> _ _; have aboox : x \in `]a, b[ by rewrite !in_itv/= ax.
+  rewrite within_interior; last exact: ctsoo.
+  suff : `]a, b[ `<=` [set` Interval (BSide ba a) (BSide bb b)]° by exact.
+  by rewrite -open_subsetE; [exact: interval_open | exact: subset_itvW].
+Qed.
+
+Lemma continuous_within_itvccP a b f : a < b ->
+  {within `[a, b], continuous f} <->
+  [/\ {in `]a, b[, continuous f}, f @ a^'+ --> f a & f @ b^'- --> f b].
+Proof.
+move=> ab; rewrite continuous_within_itvbbP//.
+by apply/propeqP; congr and3; apply/propeqP; split=> // /(_ erefl).
+Qed.
+
+Lemma continuous_within_itvocP a b f : a < b ->
+  {within `]a, b], continuous f} <->
+  ({in `]a, b[, continuous f} /\ f @ b^'- --> f b).
+Proof.
+move=> ab; rewrite continuous_within_itvbbP//.
+by split=> [[+ _ /(_ erefl)]|[]].
+Qed.
+
+Lemma continuous_within_itvcoP a b f : a < b ->
+  {within `[a, b[, continuous f} <->
+  ({in `]a, b[, continuous f} /\ f @ a^'+ --> f a).
+Proof.
+move=> ab; rewrite continuous_within_itvbbP//.
+by split=> [[+ /(_ erefl) + _]|[]].
+Qed.
+
+Lemma continuous_within_itvbyP a (ba : bool) f :
+  {within [set` Interval (BSide ba a) +oo%O], continuous f} <->
+  ({in `]a, +oo[, continuous f} /\ (ba -> f @ a^'+ --> f a)).
+Proof.
+split=> [cf|].
+  have Fa : Filter a^'+ by exact: at_right_proper_filter.
+  split=> [|baT]; [| apply/cvg_ballP => e e0].
+  - apply/in_continuous_mksetP; rewrite -continuous_open_subspace//.
+    by apply: continuous_subspaceW cf; apply: subset_itvr; rewrite bnd_simp.
+  - by move: baT cf => -> cf; exact: (@near_at_right _ +oo%O).
+case=> ctsoo ctsL.
+apply/subspace_continuousP => x /=.
+rewrite in_itv/= andbT => ax.
+move: ctsL.
+have : a = x /\ ba \/ a < x.
+  clear - ax. case: ba ax => /=; last by right.
+  by case: ltgtP => //; [right|left].
+move=> [[<- ->]|{}ax].
+- move=> /(_ erefl) /cvg_at_right_within; apply: cvg_trans.
+  apply: cvg_app; apply: within_subset.
+  by move=> ? /= /itvP ->.
+- move=> _; have aboox : x \in `]a, +oo[ by rewrite !in_itv/= ax.
+  rewrite within_interior; last exact: ctsoo.
+  suff : `]a, +oo[ `<=` [set` Interval (BSide ba a) +oo%O]° by exact.
+  rewrite -open_subsetE; first exact: interval_open.
+  by apply: subset_itvr; rewrite bnd_simp.
+Qed.
+
+Lemma continuous_within_itvcyP a f :
+  {within `[a, +oo[, continuous f} <->
+  {in `]a, +oo[, continuous f} /\ f x @[x --> a^'+] --> f a.
+Proof.
+rewrite continuous_within_itvbyP.
+by apply/propeqP; congr and; apply/propeqP; split=> // /(_ erefl).
+Qed.
+
+Lemma continuous_within_itvNybP b (bb : bool) f :
+  {within [set` Interval -oo%O (BSide bb b)], continuous f} <->
+  ({in `]-oo, b[, continuous f} /\ (~~ bb -> f @ b^'- --> f b)).
+Proof.
+split=> [cf|].
+  have Fb : Filter b^'- by exact: at_left_proper_filter.
+  split=> [|bbT]; [| apply/cvg_ballP => e e0].
+  - apply/in_continuous_mksetP; rewrite -continuous_open_subspace//.
+    by apply: continuous_subspaceW cf; apply: subset_itvl; rewrite bnd_simp.
+  - move: bbT cf => /negbTE -> cf.
+    by apply: (@near_at_left -oo%O) => //; rewrite bnd_simp.
+case=> ctsoo ctsR.
+apply/subspace_continuousP => x /=.
+rewrite in_itv/= => xb.
+move: ctsR.
+have : b = x /\ bb = false \/ x < b.
+  clear - xb. case: bb xb => /=; first by right.
+  by case: ltgtP => //; [right|left].
+case=> [[<- ->]|{}xb].
+- move=> /(_ erefl) /cvg_at_left_within; apply: cvg_trans.
+  apply: cvg_app; apply: within_subset.
+  by move=> ? /= /itvP ->.
+- move=> _; have aboox : x \in `]-oo, b[ by rewrite !in_itv/= xb.
+  rewrite within_interior; last exact: ctsoo.
+  suff : `]-oo, b[ `<=` [set` Interval -oo%O (BSide bb b)]° by exact.
+  rewrite -open_subsetE; first exact: interval_open.
+  by apply: subset_itvl; rewrite bnd_simp.
+Qed.
+
+Lemma continuous_within_itvNycP b f :
+  {within `]-oo, b], continuous f} <->
+  {in `]-oo, b[, continuous f} /\ f x @[x --> b^'-] --> f b.
+Proof.
+rewrite continuous_within_itvNybP.
+by apply/propeqP; congr and; apply/propeqP; split=> // /(_ erefl).
+Qed.
+
+End continuous_within_itvP.
+
+#[deprecated(since="analysis 1.19.0", note="Use continuous_within_itvccP instead.")]
+Notation continuous_within_itvP := continuous_within_itvccP (only parsing).
+
+Lemma within_continuous_continuous {R : realFieldType} {K : numDomainType}
+    {U : pseudoMetricType K} a b (ba bb : bool) (f : R -> U) x : (a <= b)%R ->
+  {within [set` Interval (BSide ba a) (BSide bb b)], continuous f} ->
+  x \in `]a, b[%R -> {for x, continuous f}.
+Proof.
+rewrite le_eqVlt => /predU1P[<- _|ab].
+  by rewrite itv_ge ?bnd_simp.
+by move=> /continuous_within_itvbbP -/(_ ab)[+ _ _]; exact.
+Qed.

@@ -55,6 +55,15 @@
 
 - in `measure_theory/measure_function.v`:
   + lemma `semi_cvg_measure_bigcap`
+- in `num_normedtype.v`:
+  + `continuous_within_itvbbP`,
+    `continuous_within_itvocP`, `continuous_within_itvcoP`,
+    `continuous_within_itvbyP`, `continuous_within_itvNybP`
+- in `num_topology.v`:
+  + lemma `not_nearP`
+  + lemma `not_nearPball`
+- in `pseudometric_structure.v`:
+  + lemma `cvg_withinP`
 
 ### Changed
 
@@ -68,7 +77,7 @@
     In particular, this means that `\int[mu]_(x in D) f x * g x`
     now parses as `\int[mu]_(x in D) (f x * g x)`.
 
-- moved from `tvs.v` to `pseudometric_normed_Zmodule.v`
+- moved from `tvs.v` to `pseudometric_normed_Zmodule.v`:
   + mixin `PreTopologicalNmodule_isTopologicalNmodule`
   + structure `TopologicalNmodule`
   + lemmas `fun_cvgD`, `cvg_sum`, `sum_continuous`
@@ -113,6 +122,12 @@
   + lemmas `edist_inf_ge0`, `edist_inf_neqNy`, `edist_inf_triangle`,
     `edist_inf_continuous`, `edist_inf0`
 
+- moved from `pseudometric_normed_Zmodule.v` to `num_normedtype.v`:
+  + lemmas `continuous_within_itvP`, `continuous_within_itvcyP`, `continuous_within_itvNycP`, `within_continuous_continuous`
+- moved from `pseudometric_normed_Zmodule.v` to `num_topology.v`:
+  + lemmas `cvg_at_right_filter`,
+    `cvg_at_left_filter`, `cvg_at_right_within`, `cvg_at_left_within`
+
 ### Renamed
 
 - in `sequences.v`:
@@ -125,6 +140,9 @@
 
 - in `normed_module.v`:
   + `PseudoMetricNormedZmod_ConvexTvs_isNormedModule` -> `MetricNormedZmod_ConvexTvs_isNormedModule`
+
+- in `pseudometric_normed_Zmodule.v`:
+  + `continuous_within_itvP` -> `continuous_within_itvccP`
 
 ### Generalized
 
@@ -154,6 +172,14 @@
 
 - in `numfun.v`:
   + lemma `itv_partition_nth_ge`
+- in `num_normedtype.v`:
+    `continuous_within_itvcyP`,
+    `continuous_within_itvNycP`, `continuous_within_itvP`,
+    `within_continuous_continuous` generalized from `pseudoMetricNormedZmodType` to `pseudoMetricType`
+- in `pseudometric_structure.v`:
+  + lemma `cvg_nbhsP` generalized from `metricType` to `pseudoMetricType`
+- in `realfun.v`:
+  + lemmas `cvg_at_rightP`, `cvg_at_leftP`, `cvgr_dnbhsP`, `cvge_at_rightP`, `cvge_at_leftP`, `cvge_dnbhsP` generalized from `realType` to `archiRealFieldType`
 
 ### Deprecated
 
@@ -163,6 +189,8 @@
 
 ### Removed
 
+- in `normed_module.v`,
+  + lemmas `cvge_ge` and `cvge_le`, redundant with existing `cvge_to_ge` and `cvge_to_le`
 - in `tvs.v`:
   + structure `PreUniformLmodule`
   + mixin `PreUniformLmodule_isUniformLmodule`
