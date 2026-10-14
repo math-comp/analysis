@@ -55,14 +55,14 @@
 
 - in `measure_theory/measure_function.v`:
   + lemma `semi_cvg_measure_bigcap`
-- in `num_normedtype.v`,
+- in `num_normedtype.v`:
   + `continuous_within_itvbbP`,
     `continuous_within_itvocP`, `continuous_within_itvcoP`,
     `continuous_within_itvbyP`, `continuous_within_itvNybP`
 - in `num_topology.v`:
   + lemma `not_nearP`
   + lemma `not_nearPball`
-- in `pseudometric_structure.v`,
+- in `pseudometric_structure.v`:
   + lemma `cvg_withinP`
 
 ### Changed
@@ -175,9 +175,9 @@
 - in `num_normedtype.v`:
     `continuous_within_itvcyP`,
     `continuous_within_itvNycP`, `continuous_within_itvP`,
-    `within_continuous_continuous` generalized from `pseudoMetricNormedZmodType` to `pseudoMetricType`.
+    `within_continuous_continuous` generalized from `pseudoMetricNormedZmodType` to `pseudoMetricType`
 - in `pseudometric_structure.v`:
-  + lemma `cvg_nbhsP` generalized from `metricType` to `pseudoMetricType`.
+  + lemma `cvg_nbhsP` generalized from `metricType` to `pseudoMetricType`
 - in `realfun.v`:
   + lemmas `cvg_at_rightP`, `cvg_at_leftP`, `cvgr_dnbhsP`, `cvge_at_rightP`, `cvge_at_leftP`, `cvge_dnbhsP` generalized from `realType` to `archiRealFieldType`
 
