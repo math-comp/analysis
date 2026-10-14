@@ -152,6 +152,9 @@
 - in `measure_theory/measure_function.v`:
   + lemma `cvg_measure_bigcap`
 
+- in `numfun.v`:
+  + lemma `itv_partition_nth_ge`
+
 ### Deprecated
 
 - in `pseudometric_normed_Zmodule.v`:

@@ -123,13 +123,14 @@ Proof.
 by elim: s a => [a/= /itv_partition_nil//|y t ih a /= /itv_partition_cons/ih].
 Qed.
 
-Lemma itv_partition_nth_ge a b s m : (m < (size s).+1)%N ->
-  itv_partition a b s -> (a <= nth b (a :: s) m)%O.
+Lemma itv_partition_nth_ge def a b s m : (m < (size s).+1)%N ->
+  itv_partition a b s -> (a <= nth def (a :: s) m)%O.
 Proof.
-elim: m s a b => [s a b _//|n ih [//|h t] a b].
+elim: m s a b def => [s a b ? _//|n ih [//|h t] a b def].
 rewrite ltnS => nh [/= /andP[ah ht] lb].
-by rewrite (le_trans (ltW ah))// ih.
+by rewrite (le_trans (ltW ah))//; exact: (ih _ _ b).
 Qed.
+Arguments itv_partition_nth_ge def {a} b.
 
 Lemma itv_partition_nth_le a b s m : (m < (size s).+1)%N ->
   itv_partition a b s -> (nth b (a :: s) m <= b)%O.
@@ -151,13 +152,16 @@ have [ms|ms] := ltnP m (size s).+1; last first.
   by move=> /(leq_ltn_trans mn); rewrite ltnS leqNgt ms.
 have [ns|ns] := ltnP n (size s).+1; last first.
   rewrite [in leRHS]nth_default//=; apply/ndf/itv_partition_nth_le => //.
-    by rewrite in_itv/= itv_partition_nth_le// andbT itv_partition_nth_ge.
+    rewrite in_itv/= itv_partition_nth_le// andbT.
+    exact: (itv_partition_nth_ge b b).
   by rewrite in_itv/= lexx andbT; exact: (itv_partition_le abs).
 move: abs; rewrite /itv_partition => -[] sa sab.
 move: mn; rewrite leq_eqVlt => /predU1P[->//|mn].
 apply/ndf/ltW/sorted_ltn_nth => //=; last exact: lt_trans.
-  by rewrite in_itv/= itv_partition_nth_le// andbT itv_partition_nth_ge.
-by rewrite in_itv/= itv_partition_nth_le// andbT itv_partition_nth_ge.
+  rewrite in_itv/= itv_partition_nth_le// andbT.
+  exact: (itv_partition_nth_ge b b).
+rewrite in_itv/= itv_partition_nth_le// andbT.
+exact: (itv_partition_nth_ge b b).
 Qed.
 
 (** given a partition of [a, b] and c, returns a partition of [a, c] *)
