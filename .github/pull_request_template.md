@@ -2,15 +2,14 @@
 
 <!-- if this PR fixes an issue, use "fixes #XYZ" -->
 
-<!-- you may also explain what remains to do if the fix is incomplete -->
+<!-- briefly explain what the PR provides (and what it does not do if applicable, e.g., incomplete fixes), mention related issues, PRs, Zulip conversations, papers, etc. so that readers (including reviewers) have maximum context -->
 
 ##### Checklist
 
-- [ ] added corresponding entries in `CHANGELOG_UNRELEASED.md`
+- [ ] appended entries in the relevant sections of `CHANGELOG_UNRELEASED.md`
 
-<!-- rebasing often messes with CHANGELOG_UNRELEASED.md -->
-<!-- consider using a temporary CHANGELOG_PR1234.md instead -->
-<!-- only append to minimize problems when merging/rebasing -->
+<!-- append contents at the end of each relevant sections to minimize conflicts and ease rebasing/merging -->
+<!-- consider using a temporary CHANGELOG_PR1234.md instead to avoid conclict while working on the PR -->
 <!-- consider the use of `changelog/changes.sh` from
      https://github.com/math-comp/tools to generate the changelog -->
 
@@ -24,7 +23,7 @@ Reference: [How to document](https://github.com/math-comp/math-comp/wiki/How-to-
 
 As a rule of thumb:
 - PRs with several commits that make sense individually and that
-  all compile are preferentially merged into master.
+  all compile are likely to be merged as they are into master.
 - PRs with disorganized commits are very likely to be squash-rebased.
 
 ##### Reminder to reviewers
