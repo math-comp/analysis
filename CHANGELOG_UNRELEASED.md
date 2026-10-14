@@ -147,6 +147,9 @@
   + lemmas `metric_sym`, `mdistxx`, `mdist_gt0`
   + lemmas `metric_triangle`, `metric_hausdorff`
 
+- in `numfun.v`:
+  + lemma `itv_partition_nth_ge`
+
 ### Deprecated
 
 - in `pseudometric_normed_Zmodule.v`:
