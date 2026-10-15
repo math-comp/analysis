@@ -2847,68 +2847,63 @@ End lhopital.
 
 Section lhopital_pinfty_at_right.
 Context {R : realType} (f df g dg : R -> R) (a l : R).
-Hypothesis near_der_f : \forall x \near a^'+, is_derive x (1 :> R) f (df x).
-Hypothesis near_der_g : \forall x \near a^'+, is_derive x (1 :> R) g (dg x).
-Hypothesis g_cvgy : g @ a^'+ --> +oo.
-Hypothesis near_dg_neq0 : (\forall x \near a^'+, dg x != 0).
-Hypothesis dfdg_cvg : df x / dg x @[x --> a^'+] --> l.
+Hypotheses
+  (near_der_f : \forall x \near a^'+, is_derive x (1 :> R) f (df x))
+  (near_der_g : \forall x \near a^'+, is_derive x (1 :> R) g (dg x))
+  (g_cvgy : g @ a^'+ --> +oo)
+  (near_dg_neq0 : \forall x \near a^'+, dg x != 0)
+  (dfdg_cvg : df x / dg x @[x --> a^'+] --> l).
 
 Lemma lhopital_pinfty_at_right : f x / g x @[x --> a^'+] --> l.
 Proof.
 have [b a_lt_b in_ab] : exists2 b : R, a < b &
-      {in `]a, b[%R, forall x : R, [/\
-      is_derive x 1 f (df x),
-      is_derive x 1 g (dg x) &
-      dg x != 0 ]}.
+    {in `]a, b[%R, forall x : R, [/\
+    is_derive x 1 f (df x),
+    is_derive x 1 g (dg x) &
+    dg x != 0 ]}.
   near a^'+ => b.
   exists b => //.
   near: b; apply/near_right_in_itv.
   by near do split.
 apply/cvgrPdistC_lt => /= eps eps0.
-near (0 :> R)^'+ => d.
-move: dfdg_cvg => /cvgrPdistC_lt /(_ d) [] //=.
+near (0 : R)^'+ => d.
+move: dfdg_cvg => /cvgrPdistC_lt /(_ d)[] //=.
 move=> r r0 withinr_withind.
 near a^'+ => y; near=> x.
 have := @cauchy_MVT R f df g dg x y.
-have /[swap] /[apply] : x < y by done.
+have /[swap] /[apply] : x < y by [].
 have /[swap] /[apply] : {within `[x, y], continuous f}.
   apply: (@continuous_subspaceW _ _ _ `]a, b[).
     by apply: subset_itv; rewrite bnd_simp.
   rewrite continuous_open_subspace// => /= z /set_mem/= z_ab.
   apply: differentiable_continuous; apply/derivable1_diffP.
-  apply: ex_derive.
-  by apply in_ab.
+  by apply: ex_derive; apply in_ab.
 have /[swap] /[apply] : {within `[x, y], continuous g}.
-  apply: (continuous_subspaceW (B := `]a, b[)).
+  apply: (@continuous_subspaceW _ _ _ `]a, b[).
     by apply: subset_itv; rewrite bnd_simp.
   rewrite continuous_open_subspace// => /= z /set_mem/= z_ab.
-  apply: differentiable_continuous.
-  apply/derivable1_diffP.
-  apply: ex_derive.
-  by apply in_ab.
+  apply: differentiable_continuous; apply/derivable1_diffP.
+  by apply: ex_derive; apply in_ab.
 have xy_and z : z \in `]x, y[%R ->
     [/\ is_derive z 1 f (df z), is_derive z 1 g (dg z) & dg z != 0].
-  rewrite in_itv/= => /andP[x_lt_z z_lt_y].
-  apply: in_ab.
-  by rewrite in_itv/= (lt_trans _ x_lt_z)// (lt_trans z_lt_y).
-move=> /(_ (fun z z_xy => let (h, _, _) := xy_and z z_xy in h)).
-move=> /(_ (fun z z_xy => let (_, h, _) := xy_and z z_xy in h)).
-move=> /(_ (fun z z_xy => let (_, _, h) := xy_and z z_xy in h)).
-clear xy_and in_ab.
-move=> [c + +].
+  move=> zxy; apply in_ab.
+  rewrite in_itv/= (@lt_trans _ _ x) ?(itvP zxy)//=.
+  by rewrite (@lt_trans _ _ y) ?(itvP zxy)//=.
+move=> /(_ (fun z z_xy => and3proj1 (xy_and _ z_xy))).
+move=> /(_ (fun z z_xy => and3proj2 (xy_and _ z_xy))).
+move=> /(_ (fun z z_xy => and3proj3 (xy_and _ z_xy))).
+move=> {xy_and in_ab} [c + +].
 rewrite in_itv/= => /andP[x_lt_c c_lt_y] dfdgc.
 have : `|(f y - f x) / (g y - g x) - l| < d.
   rewrite -dfdgc.
-  have a_lt_c : a < c by apply: (lt_trans (y := x)).
+  have a_lt_c : a < c by apply: (@lt_trans _ _ x).
   apply: withinr_withind => //=.
   rewrite ltr0_norm ?subr_lt0// opprB ltrBlDl.
-  apply: (lt_trans c_lt_y).
+  rewrite (lt_trans c_lt_y)//.
   near: y; apply: nbhs_right_lt.
   by rewrite ltrDl.
-have gx_gt_gy : g x > g y.
-  by near: x; exact: cvgry_gt.
-have gx_gt0 : 0 < g x.
-  by near: x; exact: cvgry_gt.
+have gx_gt_gy : g x > g y by near: x; exact: cvgry_gt.
+have gx_gt0 : 0 < g x by near: x; exact: cvgry_gt.
 have -> : (f y - f x) / (g y - g x) = (f x / g x - f y / g x) / (1 - g y / g x).
   rewrite -[LHS]divrNN !opprB.
   rewrite -(@divrr _ (g x)) ?unitf_gt0// -!mulrBl.
@@ -2950,31 +2945,31 @@ End lhopital_pinfty_at_right.
 
 Section lhopital_pinfty_at_pinfty.
 Context {R : realType} (f df g dg : R -> R) (a l : R).
-Hypothesis near_der_f : \forall x \near +oo, is_derive x (1 :> R) f (df x).
-Hypothesis near_der_g : \forall x \near +oo, is_derive x (1 :> R) g (dg x).
-Hypothesis g_cvgy : g @ +oo --> +oo.
-Hypothesis near_dg_neq0 : (\forall x \near +oo, dg x != 0).
-Hypothesis dfdg_cvg : df x / dg x @[x --> +oo] --> l.
+Hypotheses (near_der_f : \forall x \near +oo, is_derive x (1 :> R) f (df x))
+  (near_der_g : \forall x \near +oo, is_derive x (1 :> R) g (dg x))
+  (g_cvgy : g @ +oo --> +oo)
+  (near_dg_neq0 : \forall x \near +oo, dg x != 0)
+  (dfdg_cvg : df x / dg x @[x --> +oo] --> l).
 
 Lemma lhopital_pinfty_at_pinfty : f x / g x @[x --> +oo] --> l.
 Proof.
 apply: cvg_trans.
-  apply: (near_eq_cvg (f := fun x => f x^-1^-1 / g x^-1^-1)).
+  apply: (@near_eq_cvg _ _ _ _ (fun x => f x^-1^-1 / g x^-1^-1)).
   by near=> x; rewrite !invrK.
 apply: (cvg_comp _ (fun x => f x^-1 / g x^-1)); first by rewrite pinftyV.
 apply: lhopital_pinfty_at_right.
 - near=> x.
-  apply: (is_derive1_comp (a := df x^-1)).
+  apply: (@is_derive1_comp _ _ _ _ (df x^-1)).
     near: x.
     rewrite -pinftyV near_map.
     by near do rewrite invrK.
   exact: is_deriveV.
 - near=> x.
-  apply: (is_derive1_comp (a := dg x^-1)).
+  apply: (@is_derive1_comp _ _ _ _ (dg x^-1)).
     near: x.
     rewrite -pinftyV near_map.
     by near do rewrite invrK.
-  by apply: is_deriveV.
+  exact: is_deriveV.
 - apply: cvg_comp => //.
   apply: cvg_trans g_cvgy.
   apply: cvg_fmap2.
