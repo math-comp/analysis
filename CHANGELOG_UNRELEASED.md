@@ -103,6 +103,15 @@
 - in `pseudometric_structure.v`:
   + lemma `cvg_withinP`
 
+- in `ftc.v`:
+  + lemma `integration_by_partsy_ge0_ge0`
+  + lemma `integration_by_partsy_le0_ge0`
+  + lemma `integration_by_partsy_le0_le0`
+  + lemma `integration_by_partsy_ge0_le0`
+
+- in `realfun.v`:
+  + lemma `derivable_oy_RcontinuousN`
+  
 ### Changed
 
 - in `esum.v`:
