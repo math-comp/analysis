@@ -84,10 +84,6 @@
 
 - in `sequences.v`,
   + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
-- in `filter.v`:
-  + mixin `isSubNbhs`, structure `SubNbhs`, notation `subNbhsType`
-  + new lemmas `near_eq_cvgE`, `near_eq_is_cvg`, `near_eq_lim`, 
-    `cvg_to_eq`, `cvg_to_withinP`, and `within_cvg_to_within`.
 
 - new file `edist.v`
 
@@ -127,25 +123,11 @@
 - in file `num_topology.v`,
   + new lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
     `at_left_shift`, `at_right_shift`, `near_right_in_itv`, and `near_left_in_itv`.
+- in file `nat_topology.v`:
+  + lemma `near_infty_after`
 
-- in file `num_normedtype.v`,
-  + new lemmas `pinftyV`, `ninftyV`, `cvgryV`, `cvgrNyV`, `lt0_cvgMlNy`, 
-    `lt0_cvgMrNy`, `lt0_cvgMly`, and `lt0_cvgMry`.
-- in file `pseudometric_normed_Zmodule.v`,
-  + new lemmas `fmap_at_left0P`, and `fmap_at_right0E`.
-- in file `tvs.v`,
-  + new lemmas `near_shiftE`, and `nearZE`.
-
-- in file `realfun.v`,
-  + new lemmas `lhopital_pinfty_at_right`, and 
-    `lhopital_pinfty_at_pinfty`.
-
-- in file `normed_module.v`,
-  + new lemmas `cvg1MC`, `cvg1M`, `cvgCM1`, `cvgM1`, `cvg0MC`, `cvg0M`, 
-    `cvgCM0`, and `cvgM0`.
-- in file `pseudometric_normed_Zmodule.v`,
-  + new lemmas `cvgDl`, `cvgDr`, `cvgBl`, `cvgBr`, `cvg0D`, `cvg0DC`, 
-    `cvgD0`, `cvgCD0`, `cvg0B`, `cvg0BC`, `cvgB0`, `cvgCB0`, and `cvgN0`.
+- in file `realfun.v`:
+  + lemmas `lhopital_pinfty_at_right`, `lhopital_pinfty_at_pinfty`
 
 ### Changed
 
