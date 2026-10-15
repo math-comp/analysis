@@ -39,6 +39,16 @@
   + lemma `standard_scale_continuous`
   + notation `topologicalNmodType`
 
+- in `sequences.v`,
+  + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
+
+- in `num_normedtype.v`,
+  + lemmas `pinftyV`, `ninftyV`, `cvgryV`, `cvgrNyV`, `lt0_cvgMlNy`, 
+    `lt0_cvgMrNy`, `lt0_cvgMly`, `lt0_cvgMry`
+
+- in `pseudometric_normed_Zmodule.v`,
+  + lemmas `fmap_at_left0P`, `fmap_at_right0E`
+
 - in `unstable.v`:
   + definitions `clamp`, `clamp_gele`
   + lemmas `clamp_gemin`, `clamp_lemax`, `minmax_clamp`,
@@ -121,6 +131,13 @@
     `edist_closeP`, `edist_refl`, `edist_closel`
   + lemmas `edist_inf_ge0`, `edist_inf_neqNy`, `edist_inf_triangle`,
     `edist_inf_continuous`, `edist_inf0`
+- moved from `metric_structure.v` to `num_topology.v`: 
+  + lemma `cvg_at_right_left_dnbhs`, generalized to `topologicalType` from `metricType`
+
+- moved from `tvs.v` to `pseudometric_normed_Zmodule.v`
+  and generalized:
+  + lemma `nbhsB_subproof`, `nbhsT_subproof`
+  + lemma `nbhsB`
 
 - moved from `pseudometric_normed_Zmodule.v` to `num_normedtype.v`:
   + lemmas `continuous_within_itvP`, `continuous_within_itvcyP`, `continuous_within_itvNycP`, `within_continuous_continuous`
@@ -160,6 +177,10 @@
     `cvg_sub0`, `cvg0`, `subr_cvg0`
   + lemmas `within_continuousD`, `within_continuousB`, `within_continuousN`
   + lemmas `le_closed_ball`, `closed_ball0`
+
+- in `tvs.v`:
+  + lemmas `fun_cvgZ`, `fun_cvgZr`
+  + lemmas `nbhsZ`, `nbhs0Z`
 
 - in `esum.v`:
   + lemmas `esum_bigcupT`, `esum_bigcup`
