@@ -1,5 +1,8 @@
 digraph Hierarchy { FinNumFun -> AdditiveCharge;
   node [target="_blank"]
+"Real" [URL="mathcomp.reals.reals.html#Real"];
+"Norm.Norm" [URL="mathcomp.classical.unstable.html#Norm.Norm"];
+"Norm.SemiNorm" [URL="mathcomp.classical.unstable.html#Norm.SemiNorm"];
 "SplitBij" [URL="mathcomp.classical.functions.html#SplitBij"];
 "Bij" [URL="mathcomp.classical.functions.html#Bij"];
 "SplitInjFun" [URL="mathcomp.classical.functions.html#SplitInjFun"];
@@ -20,6 +23,7 @@ digraph Hierarchy { FinNumFun -> AdditiveCharge;
 "Nbhs" [URL="mathcomp.classical.filter.html#Nbhs"];
 "PointedFiltered" [URL="mathcomp.classical.filter.html#PointedFiltered"];
 "Filtered" [URL="mathcomp.classical.filter.html#Filtered"];
+"Empty" [URL="mathcomp.classical.classical_sets.html#Empty"];
 "BiPointed" [URL="mathcomp.classical.classical_sets.html#BiPointed"];
 "Pointed" [URL="mathcomp.classical.classical_sets.html#Pointed"];
 "FImFun" [URL="mathcomp.classical.cardinality.html#FImFun"];
@@ -87,6 +91,7 @@ digraph Hierarchy { FinNumFun -> AdditiveCharge;
 "SFiniteMeasure" [URL="mathcomp.analysis.measure_theory.measure_function.html#SFiniteMeasure"];
 "Measure" [URL="mathcomp.analysis.measure_theory.measure_function.html#Measure"];
 "Content" [URL="mathcomp.analysis.measure_theory.measure_function.html#Content"];
+"OuterMeasure" [URL="mathcomp.analysis.measure_theory.measure_extension.html#OuterMeasure"];
 "PMeasurable" [URL="mathcomp.analysis.measure_theory.measurable_structure.html#PMeasurable"];
 "Measurable" [URL="mathcomp.analysis.measure_theory.measurable_structure.html#Measurable"];
 "SigmaRing" [URL="mathcomp.analysis.measure_theory.measurable_structure.html#SigmaRing"];
@@ -96,6 +101,8 @@ digraph Hierarchy { FinNumFun -> AdditiveCharge;
 "MeasurableFun" [URL="mathcomp.analysis.measure_theory.measurable_function.html#MeasurableFun"];
 "CumulativeBounded" [URL="mathcomp.analysis.lebesgue_stieltjes_measure.html#CumulativeBounded"];
 "Cumulative" [URL="mathcomp.analysis.lebesgue_stieltjes_measure.html#Cumulative"];
+"HBNNSimple.NonNegSimpleFun" [URL="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#HBNNSimple.NonNegSimpleFun"];
+"HBSimple.SimpleFun" [URL="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#HBSimple.SimpleFun"];
 "ProbabilityKernel" [URL="mathcomp.analysis.kernel.html#ProbabilityKernel"];
 "SubProbabilityKernel" [URL="mathcomp.analysis.kernel.html#SubProbabilityKernel"];
 "FiniteKernel" [URL="mathcomp.analysis.kernel.html#FiniteKernel"];
@@ -103,7 +110,10 @@ digraph Hierarchy { FinNumFun -> AdditiveCharge;
 "SigmaFiniteTransitionKernel" [URL="mathcomp.analysis.kernel.html#SigmaFiniteTransitionKernel"];
 "SFiniteKernel" [URL="mathcomp.analysis.kernel.html#SFiniteKernel"];
 "Kernel" [URL="mathcomp.analysis.kernel.html#Kernel"];
-"Lfunction" [URL="mathcomp.analysis.hoelder.html#Lfunction"]
+"Path" [URL="mathcomp.analysis.homotopy_theory.continuous_path.html#Path"];
+"LebesgueSpace" [URL="mathcomp.analysis.hoelder.html#LebesgueSpace"];
+"Lfunction" [URL="mathcomp.analysis.hoelder.html#Lfunction"];
+"ConvexSpace" [URL="mathcomp.analysis.convex.html#ConvexSpace"]
 RingOfSets -> AlgebraOfSets;
 SemiRingOfSets -> AlgebraOfSets;
 BiPointed -> BiPointedTopological;

@@ -602,6 +602,7 @@ subgraph cluster_Topology {
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/num_topology";
+  "classical/unstable" -> "theories/topology_theory/num_topology";
   "reals/reals" -> "theories/topology_theory/num_topology";
   "theories/topology_theory/matrix_topology" -> "theories/topology_theory/num_topology";
   "theories/topology_theory/order_topology" -> "theories/topology_theory/num_topology";
