@@ -2696,3 +2696,99 @@ by rewrite diff_row_mx// !diff_val.
 Qed.
 
 End is_diff_row_mx.
+
+Section derivative_limit_thm_right.
+Context (R : realType) (f df : R -> R) (a l : R).
+Hypothesis cfa : f @ a^'+ --> f a.
+Hypothesis der_f : \forall x \near a^'+, is_derive x (1 :> R) f (df x).
+Hypothesis df_rcvg : df @ a^'+ --> l.
+
+Lemma right_derivative_limit : 
+  h^-1 *: (f (h + a) - f a) @[h --> 0^'+] --> l.
+Proof.
+apply/cvgrPdist_lt => /= e e0. 
+have [/= r r0 dfr] := der_f.
+move: df_rcvg => /cvgrPdist_lt /(_ e e0) [/= s s0 dfs].
+near=> h.
+have aha : a < h + a by rewrite ltrDr.
+have [//|||c + ->] := @MVT _ f df a (h + a).
+- move=> x; rewrite in_itv/= => /andP[ax xha].
+  apply: dfr => //=.
+  rewrite ltr0_norm ?subr_lt0// opprB ltrBlDr.
+  apply: (lt_trans xha); rewrite ltrD2r.
+  by near: h; apply: nbhs_right_lt.
+- apply/continuous_within_itvccP => //; split => //.
+  + move=> x; rewrite in_itv/= => /andP[ax xha].
+    apply/differentiable_continuous/derivable1_diffP/ex_derive.
+    apply: dfr => //=.
+    rewrite ltr0_norm ?subr_lt0// opprB ltrBlDr.
+    apply: (lt_trans xha); rewrite ltrD2r.
+    by near: h; apply: nbhs_right_lt.
+  + apply: cvg_at_left_filter.
+    apply/differentiable_continuous/derivable1_diffP/ex_derive.
+    apply: dfr => //=.
+    by rewrite addrC opprD subrK normrN gtr0_norm.
+rewrite in_itv/= => /andP[ac cha].
+rewrite addrK mulrC [X in `|_ - X|]mulKr ?unitf_gt0//.
+apply: dfs => //=.
+rewrite ltr0_norm ?subr_lt0// opprB ltrBlDr.
+apply: (lt_trans cha); rewrite ltrD2r.
+by near: h; apply: nbhs_right_lt.
+Unshelve. all: by end_near. Qed.
+
+End derivative_limit_thm_right.
+
+Section derivative_limit_thm_left.
+Context (R : realType) (f df : R -> R) (b l : R).
+Hypothesis cfb : f @ b^'- --> f b.
+Hypothesis der_f : \forall x \near b^'-, is_derive x (1 :> R) f (df x).
+Hypothesis df_lcvg : df @ b^'- --> l.
+
+Lemma left_derivative_limit : 
+  h^-1 *: (f (h + b) - f b) @[h --> 0^'-] --> l.
+Proof.
+have := @right_derivative_limit _ (f \o -%R) (\- df \o -%R) (-b) (-l).
+rewrite /= !opprK.
+have /[swap] /[apply] : (f \o -%R) x @[x --> (- b)^'+] --> f b.
+  by apply: (iffLR (cvg_at_leftNP _ _ _)).
+have /[swap] /[apply] : 
+    (\forall x \near (- b)^'+, is_derive x (1 :> R) (f \o -%R) (- df (- x))).
+  rewrite at_rightN near_map; near=> x. 
+  apply: is_derive_eq.
+    apply: (is_derive1_comp (a := df x)) => //.
+    by rewrite opprK; near: x.
+  by rewrite derive_val mulrN1 opprK.
+have /[swap] /[apply] : 
+    (\- df \o -%R) x @[x --> (- b)^'+] --> - l.
+  by apply: cvgN; apply/cvg_at_leftNP.
+move=> /cvg_at_rightNP /cvgN; rewrite oppr0 opprK.
+apply: cvg_trans; apply: near_eq_cvg.
+near=> h.
+by rewrite {1}/GRing.opp/= opprB invrN scaleNr !opprK (addrC b).
+Unshelve. all: by end_near. Qed.
+
+End derivative_limit_thm_left.
+
+Section derivative_limit_thm.
+Context (R : realType) (f df : R -> R) (a l : R).
+Hypothesis cfa : continuous_at a f.
+Hypothesis der_f : \forall x \near a^', is_derive x (1 :> R) f (df x).
+Hypothesis df_dcvg : df @ a^' --> l.
+
+Lemma derivative_limit : is_derive a 1 f l.
+Proof.
+suff dcvg : h^-1 *: (f (h%:A + a) - f a) @[h --> 0^'] --> l.
+  by split; [ exact: cvgP dcvg | exact: norm_cvg_lim dcvg ].
+under eq_cvg do rewrite scaler1.
+apply: cvg_at_right_left_dnbhs.
+- apply: (right_derivative_limit (df := df)) => //.
+  + exact: cvg_at_right_filter cfa.
+  + by apply: within_subset der_f => ? /gt_eqF ->.
+  + by apply: cvg_dnbhs_at_right.
+- apply: (left_derivative_limit (df := df)) => //.
+  + exact: cvg_at_left_filter cfa.
+  + by apply: within_subset der_f => ? /lt_eqF ->.
+  + by apply: cvg_dnbhs_at_left.
+Qed.
+
+End derivative_limit_thm.
