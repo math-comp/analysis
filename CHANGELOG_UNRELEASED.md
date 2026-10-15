@@ -128,6 +128,13 @@
 
 - in file `realfun.v`:
   + new lemmas `lhopital_at_pinfty`, `lhopital_at_ninfty`, `lhopital_Ninfty_at_right`, `lhopital_ninfty_at_right`, `lhopital_Ninfty_at_left`, `lhopital_pinfty_at_left`, `lhopital_ninfty_at_left`, `lhopital_Ninfty`, `lhopital_pinfty`, `lhopital_ninfty`, `lhopital_Ninfty_at_pinfty`,  `lhopital_ninfty_at_pinfty`, `lhopital_Ninfty_at_ninfty`,  `lhopital_pinfty_at_ninfty`, `lhopital_ninfty_at_ninfty`.
+- in `realfun.v`:
+  + lemmas `lhopital_at_pinfty`, `lhopital_at_ninfty`,
+    `lhopital_Ninfty_at_right`, `lhopital_pinfty_at_right`, `lhopital_ninfty_at_right`,
+    `lhopital_Ninfty_at_left`, `lhopital_pinfty_at_left`, `lhopital_ninfty_at_left`,
+    `lhopital_Ninfty`, `lhopital_pinfty`, `lhopital_ninfty`,
+    `lhopital_Ninfty_at_pinfty`, `lhopital_pinfty_at_pinfty`, `lhopital_ninfty_at_pinfty`,
+    `lhopital_Ninfty_at_ninfty`, `lhopital_pinfty_at_ninfty`, `lhopital_ninfty_at_ninfty`
 
 ### Changed
 

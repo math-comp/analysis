@@ -41,9 +41,37 @@ From mathcomp Require Import derive sequences real_interval numfun.
 (* ```                                                                        *)
 (*   discontinuity f r == r is a discontinuity of function f                  *)
 (* ```                                                                        *)
+(*                                                                            *)
+(* About l'Hopital's rule: several statements depending on whether            *)
+(* $x\to \{a^+,b^-c,-\infty,+\infty\}$ and $g\to \{0, +\infty, -\infty\}$.    *)
+(*                                                                            *)
+(* |-----------------------------|------|------|                              *)
+(* |                             | x--> | g--> |                              *)
+(* |-----------------------------|------|------|                              *)
+(* | `lhopital_at_right`         | a+   | 0    |                              *)
+(* | `lhopital_at_left`          | b-   | 0    |                              *)
+(* | `lhopital`                  | c    | 0    |                              *)
+(* | `lhopital_at_pinfty`        | +oo  | 0    |                              *)
+(* | `lhopital_at_ninfty`        | -oo  | 0    |                              *)
+(* | `lhopital_Ninfty_at_right`  | a+   |      |                              *)
+(* | `lhopital_pinfty_at_right`  | a+   | +oo  |                              *)
+(* | `lhopital_ninfty_at_right`  | a+   | -oo  |                              *)
+(* | `lhopital_Ninfty_at_left`   | b-   |      |                              *)
+(* | `lhopital_pinfty_at_left`   | b-   | +oo  |                              *)
+(* | `lhopital_ninfty_at_left`   | b-   | -oo  |                              *)
+(* | `lhopital_Ninfty`           | a'   |      |                              *)
+(* | `lhopital_pinfty`           | a'   | +oo  |                              *)
+(* | `lhopital_ninfty`           | a'   | -oo  |                              *)
+(* | `lhopital_Ninfty_at_pinfty` | +oo  | +oo  |                              *)
+(* | `lhopital_pinfty_at_pinfty` | +oo  | +oo  |                              *)
+(* | `lhopital_ninfty_at_pinfty` | +oo  | -oo  |                              *)
+(* | `lhopital_Ninfty_at_ninfty` | -oo  |      |                              *)
+(* | `lhopital_pinfty_at_ninfty` | -oo  | +oo  |                              *)
+(* | `lhopital_ninfty_at_ninfty` | -oo  | -oo  |                              *)
+(* |-----------------------------|------|------|                              *)
+(*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -142,7 +170,7 @@ Lemma cvge_at_leftP f p l :
     f (u n) @[n --> \oo] --> l).
 Proof. exact: cvg_withinP. Qed.
 
-Lemma cvge_dnbhsP f p l : 
+Lemma cvge_dnbhsP f p l :
   f x @[x --> p^'] --> l <->
   (forall u : R^nat, (forall n, u n != p) /\ (u n @[n --> \oo] --> p) ->
     f (u n) @[n --> \oo] --> l).
@@ -2846,11 +2874,10 @@ Qed.
 End lhopital.
 
 Section lhopital_at_pinfty.
-Context {R : realType}.
-Variables (f df g dg : R -> R) (l : R).
+Context {R : realType} (f df g dg : R -> R) (l : R).
 Hypotheses (fdf : \forall x \near +oo, is_derive x (1 :> R) f (df x))
-           (gdg : \forall x \near +oo, is_derive x (1 :> R) g (dg x)).
-Hypotheses (fy0 : f @ +oo --> 0) (gy0 : g @ +oo --> 0)
+           (gdg : \forall x \near +oo, is_derive x (1 :> R) g (dg x))
+           (fy0 : f @ +oo --> 0) (gy0 : g @ +oo --> 0)
            (cdg : \forall x \near +oo, dg x != 0).
 
 Let F x := f x^-1.
@@ -2858,23 +2885,21 @@ Let G x := g x^-1.
 Let dF x := - x^-2 * df x^-1.
 Let dG x := - x^-2 * dg x^-1.
 
-Import field_tactic.
-
 Lemma lhopital_at_pinfty :
   df x / dg x @[x --> +oo] --> l -> f x / g x @[x --> +oo] --> l.
 Proof.
 move=> dfdg.
 apply: cvg_trans.
-  apply: (near_eq_cvg (f := fun x => f x^-1^-1 / g x^-1^-1)).
+  apply: (@near_eq_cvg _ _ _ _ (fun x => f x^-1^-1 / g x^-1^-1)).
   by near do rewrite invrK//.
 apply: (cvg_comp _ (fun y => f y^-1 / g y^-1)).
-  rewrite pinftyV//.
+  by rewrite pinftyV.
 near (0 :> R)^'+ => a.
-apply: (lhopital_at_right (df := dF) (dg := dG) (b := a)) => //.  
+apply: (@lhopital_at_right _ _ dF _ dG _ a) => //.
 - near: a; apply/near_right_in_itv.
   rewrite -pinftyV near_map; near=> x.
   apply: is_derive_eq.
-    apply: (is_derive1_comp (a := df x)).
+    apply: (@is_derive1_comp _ _ _ _ (df x)).
     + by rewrite invrK; near: x.
     + apply: is_deriveV.
       by rewrite gt_eqF// invr_gt0.
@@ -2882,7 +2907,7 @@ apply: (lhopital_at_right (df := dF) (dg := dG) (b := a)) => //.
 - near: a; apply/near_right_in_itv.
   rewrite -pinftyV near_map; near=> x.
   apply: is_derive_eq.
-    apply: (is_derive1_comp (a := dg x)).
+    apply: (@is_derive1_comp _ _ _ _ (dg x)).
     + by rewrite invrK; near: x.
     + apply: is_deriveV.
       by rewrite gt_eqF// invr_gt0.
@@ -2897,12 +2922,13 @@ apply: (lhopital_at_right (df := dF) (dg := dG) (b := a)) => //.
     by rewrite invrK; near: x.
   by rewrite oppr_eq0 -exprVn invrK sqrf_eq0 lt0r_neq0.
 apply: cvg_trans.
-  apply: (near_eq_cvg (f := fun x => df x^-1 / dg x^-1)); near=> x.
+  apply: (@near_eq_cvg _ _ _ _ (fun x => df x^-1 / dg x^-1)); near=> x.
   have x0 : x != 0 by rewrite lt0r_neq0.
   have dg0 : dg x^-1 != 0.
     near: x; rewrite -pinftyV near_map.
     by under eq_near do rewrite invrK.
-  by rewrite /dF /dG; field.
+  rewrite /dF /dG (invfM (- x ^- 2)) mulrACA divff ?mul1r// !oppr_eq0.
+  by rewrite -exprVn sqrf_eq0 invr_eq0.
 rewrite -pinftyV -fmap_comp.
 apply: cvg_trans dfdg; apply: near_eq_cvg.
 by near do by rewrite /= invrK.
@@ -2911,30 +2937,29 @@ Unshelve. all: by end_near. Qed.
 End lhopital_at_pinfty.
 
 Section lhopital_at_ninfty.
-Context {R : realType}.
-Variables (f df g dg : R -> R) (l : R).
+Context {R : realType} (f df g dg : R -> R) (l : R).
 Hypotheses (fdf : \forall x \near -oo, is_derive x (1 :> R) f (df x))
-           (gdg : \forall x \near -oo, is_derive x (1 :> R) g (dg x)).
-Hypotheses (fy0 : f @ -oo --> 0) (gy0 : g @ -oo --> 0)
+           (gdg : \forall x \near -oo, is_derive x (1 :> R) g (dg x))
+           (fy0 : f @ -oo --> 0) (gy0 : g @ -oo --> 0)
            (cdg : \forall x \near -oo, dg x != 0).
 
 Lemma lhopital_at_ninfty :
   df x / dg x @[x --> -oo] --> l -> f x / g x @[x --> -oo] --> l.
 Proof.
 move=> /cvgNy_compNP/= dfdg; apply/cvgNy_compNP => /=.
-apply: (lhopital_at_pinfty (df := \- df \o -%R) (dg := \- dg \o -%R)).
+apply: (@lhopital_at_pinfty _ _ (\- df \o -%R) _ (\- dg \o -%R)).
 - rewrite -ninftyN near_map; near=> x => /=.
   apply: is_derive_eq.
-    apply: (is_derive1_comp (a := df x)) => //.
+    apply: (@is_derive1_comp _ _ _ _ (df x)) => //.
     by rewrite opprK; near: x.
   by rewrite derive_val mulrN1 opprK.
 - rewrite -ninftyN near_map; near=> x => /=.
   apply: is_derive_eq.
-    apply: (is_derive1_comp (a := dg x)) => //.
+    apply: (@is_derive1_comp _ _ _ _ (dg x)) => //.
     by rewrite opprK; near: x.
   by rewrite derive_val mulrN1 opprK.
-- by apply/cvgNy_compNP.
-- by apply/cvgNy_compNP.
+- exact/cvgNy_compNP.
+- exact/cvgNy_compNP.
 - rewrite -ninftyN near_map.
   by under eq_near do rewrite /= opprK oppr_eq0.
 - by under eq_cvg do rewrite divrNN.
@@ -2951,7 +2976,7 @@ Hypotheses
 
 Import field_tactic.
 
-Lemma lhopital_Ninfty_at_right : 
+Lemma lhopital_Ninfty_at_right :
   `|g x| @[x --> a^'+] --> +oo ->
   df x / dg x @[x --> a^'+] --> l ->
   f x / g x @[x --> a^'+] --> l.
@@ -2961,8 +2986,8 @@ have g_neq0 : \forall x \near a^'+, g x != 0.
   by near do apply: gtr0_norm_neq0; apply: cvgry_gt.
 have g_cvgV0 : (g x)^-1 @[x --> a^'+] --> 0.
   apply: norm_cvg0.
-  apply: (cvg_trans (G := `|g x|^-1 @[x --> a^'+])); last first.
-    by apply: cvgryV.
+  apply: (@cvg_trans _ (`|g x|^-1 @[x --> a^'+])); last first.
+    exact: cvgryV.
   by apply: near_eq_cvg; near do rewrite normrV// ?unitfE.
 have [b a_lt_b in_ab] : exists2 b : R, a < b &
     {in `]a, b[%R, forall x : R, [/\
@@ -3004,7 +3029,7 @@ move=> {xy_and in_ab} [c + +].
 rewrite in_itv/= => /andP[x_lt_c c_lt_y] dfdgc.
 have : `|(f y - f x) / (g y - g x) - l| < d.
   rewrite -dfdgc.
-  have a_lt_c : a < c by apply: (@lt_trans _ _ x).
+  have a_lt_c : a < c by exact: (@lt_trans _ _ x).
   apply: withinr_withind => //=.
   rewrite ltr0_norm ?subr_lt0// opprB ltrBlDl.
   rewrite (lt_trans c_lt_y)//.
@@ -3018,10 +3043,10 @@ have gxBgy_neq0 : g x - g y != 0.
 have -> : (f y - f x) / (g y - g x) = (f x / g x - f y / g x) / (1 - g y / g x).
   rewrite -[LHS]divrNN !opprB.
   rewrite -(@divrr _ (g x)) ?unitfE// -!mulrBl.
-  by field.
+  by rewrite invfM mulrACA divff ?mulr1// invr_neq0.
 have oneBgygx_gt0 : 0 < 1 - g y / g x.
   rewrite subr_gt0; near: x; apply: (cvgr_lt 0) => //.
-  by apply: cvgM0.
+  exact: cvgM0.
 rewrite ltr_distl ltr_pdivlMr// ltrBrDr ltr_pdivrMr//.
 rewrite ltrBlDr => /andP[fg_gt fg_lt]; rewrite ltr_distl.
 apply/andP; split.
@@ -3033,8 +3058,8 @@ apply/andP; split.
   apply: cvgD0.
   + apply: cvgM1 => //.
     apply: cvgB0 => //.
-    by apply: cvgM0.
-  + by apply: cvgM0.
+    exact: cvgM0.
+  + exact: cvgM0.
 - apply: (lt_trans fg_lt).
   near: x.
   apply: (cvgr_lt (l + d)); last first.
@@ -3043,13 +3068,13 @@ apply/andP; split.
   apply: cvgD0.
   + apply: cvgM1 => //.
     apply: cvgB0 => //.
-    by apply: cvgM0.
-  + by apply: cvgM0.
+    exact: cvgM0.
+  + exact: cvgM0.
 Unshelve. all: by end_near. Qed.
 
-Lemma lhopital_pinfty_at_right : 
-  g @ a^'+ --> +oo -> 
-  df x / dg x @[x --> a^'+] --> l -> 
+Lemma lhopital_pinfty_at_right :
+  g @ a^'+ --> +oo ->
+  df x / dg x @[x --> a^'+] --> l ->
   f x / g x @[x --> a^'+] --> l.
 Proof.
 move=> g_cvgy; apply: lhopital_Ninfty_at_right => //.
@@ -3057,9 +3082,9 @@ apply: cvg_trans (g_cvgy); apply: near_eq_cvg.
 by near do rewrite /= gtr0_norm//; apply: cvgry_gt.
 Unshelve. all: by end_near. Qed.
 
-Lemma lhopital_ninfty_at_right : 
-  g @ a^'+ --> -oo -> 
-  df x / dg x @[x --> a^'+] --> l -> 
+Lemma lhopital_ninfty_at_right :
+  g @ a^'+ --> -oo ->
+  df x / dg x @[x --> a^'+] --> l ->
   f x / g x @[x --> a^'+] --> l.
 Proof.
 move=> g_cvgNy; apply: lhopital_Ninfty_at_right => //.
@@ -3076,7 +3101,7 @@ Hypotheses
   (near_der_g : \forall x \near b^'-, is_derive x (1 :> R) g (dg x))
   (near_dg_neq0 : \forall x \near b^'-, dg x != 0).
 
-Lemma lhopital_Ninfty_at_left : 
+Lemma lhopital_Ninfty_at_left :
   `|g x| @[x --> b^'-] --> +oo ->
   df x / dg x @[x --> b^'-] --> l ->
   f x / g x @[x --> b^'-] --> l.
@@ -3086,23 +3111,23 @@ under eq_cvg do rewrite /= -divrNN; move=> dfdg.
 apply/cvg_at_leftNP; apply: lhopital_Ninfty_at_right dfdg.
 - rewrite at_rightN near_map; near=> x.
   apply: is_derive_eq.
-    apply: (is_derive1_comp (a := df x)) => //.
+    apply: (@is_derive1_comp _ _ _ _ (df x)) => //.
     by rewrite opprK; near: x.
   by rewrite derive_val mulrN1 opprK.
 - rewrite at_rightN near_map; near=> x.
   apply: is_derive_eq.
-    apply: (is_derive1_comp (a := dg x)) => //.
+    apply: (@is_derive1_comp _ _ _ _ (dg x)) => //.
     by rewrite opprK; near: x.
   by rewrite derive_val mulrN1 opprK.
-- rewrite at_rightN near_map. 
+- rewrite at_rightN near_map.
   by near do rewrite opprK oppr_eq0.
 - rewrite at_rightN -fmap_comp.
   by under eq_cvg do rewrite /= opprK.
 Unshelve. all: by end_near. Qed.
 
-Lemma lhopital_pinfty_at_left : 
-  g @ b^'- --> +oo -> 
-  df x / dg x @[x --> b^'-] --> l -> 
+Lemma lhopital_pinfty_at_left :
+  g @ b^'- --> +oo ->
+  df x / dg x @[x --> b^'-] --> l ->
   f x / g x @[x --> b^'-] --> l.
 Proof.
 move=> g_cvgy; apply: lhopital_Ninfty_at_left => //.
@@ -3110,14 +3135,14 @@ apply: cvg_trans (g_cvgy); apply: near_eq_cvg.
 by near do rewrite /= gtr0_norm//; apply: cvgry_gt.
 Unshelve. all: by end_near. Qed.
 
-Lemma lhopital_ninfty_at_left : 
-  g @ b^'- --> -oo -> 
-  df x / dg x @[x --> b^'-] --> l -> 
+Lemma lhopital_ninfty_at_left :
+  g @ b^'- --> -oo ->
+  df x / dg x @[x --> b^'-] --> l ->
   f x / g x @[x --> b^'-] --> l.
 Proof.
 move=> g_cvgNy; apply: lhopital_Ninfty_at_left => //.
 move: (g_cvgNy) => /cvgNry; apply: cvg_trans; apply: near_eq_cvg.
-by near do rewrite /= ltr0_norm//; apply: cvgrNy_lt.
+by near do rewrite /= ltr0_norm//; exact: cvgrNy_lt.
 Unshelve. all: by end_near. Qed.
 
 End lhopital_infty_at_left.
@@ -3129,7 +3154,7 @@ Hypotheses
   (near_der_g : \forall x \near a^', is_derive x (1 :> R) g (dg x))
   (near_dg_neq0 : \forall x \near a^', dg x != 0).
 
-Lemma lhopital_Ninfty : 
+Lemma lhopital_Ninfty :
   `|g x| @[x --> a^'] --> +oo ->
   df x / dg x @[x --> a^'] --> l ->
   f x / g x @[x --> a^'] --> l.
@@ -3138,34 +3163,34 @@ move=> Ngy dfdg.
 have subl : a^' `<=` a^'+ by apply: within_subset => ? /gt_eqF ->.
 have subr : a^' `<=` a^'- by apply: within_subset => ? /lt_eqF ->.
 have Ngy_l : `|g x| @[x --> a^'+] --> +oo.
-  by apply: cvg_trans Ngy; apply: cvg_app.
+  by apply: cvg_trans Ngy; exact: cvg_app.
 have Ngy_r : `|g x| @[x --> a^'-] --> +oo.
-  by apply: cvg_trans Ngy; apply: cvg_app.
+  by apply: cvg_trans Ngy; exact: cvg_app.
 have dfdg_l : df x / dg x @[x --> a^'+] --> l by apply: cvg_dnbhs_at_right.
 have dfdg_r : df x / dg x @[x --> a^'-] --> l by apply: cvg_dnbhs_at_left.
 apply: cvg_at_right_left_dnbhs.
-- by apply: (lhopital_Ninfty_at_right (df := df) (dg := dg)) => //; apply: subl.
-- by apply: (lhopital_Ninfty_at_left (df := df) (dg := dg)) => //; apply: subr.
+- by apply: (@lhopital_Ninfty_at_right _ _ df _ dg) => //; exact: subl.
+- by apply: (@lhopital_Ninfty_at_left _ _ df _ dg) => //; exact: subr.
 Qed.
 
-Lemma lhopital_pinfty : 
+Lemma lhopital_pinfty :
   g x @[x --> a^'] --> +oo ->
   df x / dg x @[x --> a^'] --> l ->
   f x / g x @[x --> a^'] --> l.
 Proof.
 move=> g_cvgy; apply: lhopital_Ninfty => //.
 apply: cvg_trans (g_cvgy); apply: near_eq_cvg.
-by near do rewrite /= gtr0_norm//; apply: cvgry_gt.
+by near do rewrite /= gtr0_norm//; exact: cvgry_gt.
 Unshelve. all: by end_near. Qed.
 
-Lemma lhopital_ninfty : 
+Lemma lhopital_ninfty :
   g x @[x --> a^'] --> -oo ->
   df x / dg x @[x --> a^'] --> l ->
   f x / g x @[x --> a^'] --> l.
 Proof.
 move=> g_cvgNy; apply: lhopital_Ninfty => //.
 move: (g_cvgNy) => /cvgNry; apply: cvg_trans; apply: near_eq_cvg.
-by near do rewrite /= ltr0_norm//; apply: cvgrNy_lt.
+by near do rewrite /= ltr0_norm//; exact: cvgrNy_lt.
 Unshelve. all: by end_near. Qed.
 
 End lhopital_infty.
@@ -3176,9 +3201,9 @@ Hypotheses (near_der_f : \forall x \near +oo, is_derive x (1 :> R) f (df x))
   (near_der_g : \forall x \near +oo, is_derive x (1 :> R) g (dg x))
   (near_dg_neq0 : \forall x \near +oo, dg x != 0).
 
-Lemma lhopital_Ninfty_at_pinfty : 
+Lemma lhopital_Ninfty_at_pinfty :
   `|g x| @[x --> +oo] --> +oo ->
-  df x / dg x @[x --> +oo] --> l -> 
+  df x / dg x @[x --> +oo] --> l ->
   f x / g x @[x --> +oo] --> l.
 Proof.
 move=> Ng_cvgy dfdg.
@@ -3215,9 +3240,9 @@ apply: lhopital_Ninfty_at_right.
   by rewrite unitrV unitrX// unitrV unitf_gt0.
 Unshelve. all: by end_near. Qed.
 
-Lemma lhopital_pinfty_at_pinfty : 
+Lemma lhopital_pinfty_at_pinfty :
   g x @[x --> +oo] --> +oo ->
-  df x / dg x @[x --> +oo] --> l -> 
+  df x / dg x @[x --> +oo] --> l ->
   f x / g x @[x --> +oo] --> l.
 Proof.
 move=> g_cvgy; apply: lhopital_Ninfty_at_pinfty => //.
@@ -3225,7 +3250,7 @@ apply: cvg_trans (g_cvgy); apply: near_eq_cvg.
 by near do rewrite /= gtr0_norm//; apply: cvgry_gt.
 Unshelve. all: by end_near. Qed.
 
-Lemma lhopital_ninfty_at_pinfty : 
+Lemma lhopital_ninfty_at_pinfty :
   g x @[x --> +oo] --> -oo ->
   df x / dg x @[x --> +oo] --> l ->
   f x / g x @[x --> +oo] --> l.
@@ -3243,9 +3268,9 @@ Hypotheses (near_der_f : \forall x \near -oo, is_derive x (1 :> R) f (df x))
   (near_der_g : \forall x \near -oo, is_derive x (1 :> R) g (dg x))
   (near_dg_neq0 : \forall x \near -oo, dg x != 0).
 
-Lemma lhopital_Ninfty_at_ninfty : 
+Lemma lhopital_Ninfty_at_ninfty :
   `|g x| @[x --> -oo] --> +oo ->
-  df x / dg x @[x --> -oo] --> l -> 
+  df x / dg x @[x --> -oo] --> l ->
   f x / g x @[x --> -oo] --> l.
 Proof.
 move=> Ng_cvgy dfdg.
@@ -3282,9 +3307,9 @@ apply: lhopital_Ninfty_at_left.
   by rewrite unitrV unitrX// unitrV unitf_lt0.
 Unshelve. all: by end_near. Qed.
 
-Lemma lhopital_pinfty_at_ninfty : 
+Lemma lhopital_pinfty_at_ninfty :
   g x @[x --> -oo] --> +oo ->
-  df x / dg x @[x --> -oo] --> l -> 
+  df x / dg x @[x --> -oo] --> l ->
   f x / g x @[x --> -oo] --> l.
 Proof.
 move=> g_cvgy; apply: lhopital_Ninfty_at_ninfty => //.
@@ -3292,7 +3317,7 @@ apply: cvg_trans (g_cvgy); apply: near_eq_cvg.
 by near do rewrite /= gtr0_norm//; apply: cvgry_gt.
 Unshelve. all: by end_near. Qed.
 
-Lemma lhopital_ninfty_at_ninfty : 
+Lemma lhopital_ninfty_at_ninfty :
   g x @[x --> -oo] --> -oo ->
   df x / dg x @[x --> -oo] --> l ->
   f x / g x @[x --> -oo] --> l.
