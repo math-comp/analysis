@@ -982,8 +982,7 @@ rewrite closureEbigcap; apply: eq_bigcapl.
 by split => ? /=; rewrite in_itv/= -subsetEset andbT.
 Qed.
 
-Lemma interiorEbigcup_itvNyc A :
-  A° = \bigcup_(x in open `&` `]-oo, A]) x.
+Lemma interiorEbigcup_itvNyc A : A° = \bigcup_(x in open `&` `]-oo, A]) x.
 Proof.
 apply: setC_inj; rewrite -closureC closureEbigcap_itvcy setC_bigcup.
 rewrite -[RHS](bigcap_image _ setC); apply: eq_bigcapl.
