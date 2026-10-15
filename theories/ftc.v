@@ -824,20 +824,28 @@ Qed.
 
 End integration_by_parts.
 
-Section integration_by_partsy_ge0.
-Context {R : realType}.
+Section integration_by_partsy.
+Context {R : realType} (G g : R -> R) (a : R).
 Notation mu := lebesgue_measure.
 Local Open Scope ereal_scope.
 Local Open Scope classical_set_scope.
 
-Variables (F G f g : R -> R) (a FGoo : R).
-Hypothesis cf : {within `[a, +oo[, continuous f}.
-Hypothesis Foy : derivable_oy_Rcontinuous F a.
-Hypothesis Ff : {in `]a, +oo[%R, F^`() =1 f}.
-Hypothesis cg : {within `[a, +oo[, continuous g}.
-Hypothesis Goy : derivable_oy_Rcontinuous G a.
-Hypothesis Gg : {in `]a, +oo[%R, G^`() =1 g}.
-Hypothesis cvgFG : (F * G)%R x @[x --> +oo%R] --> FGoo.
+Hypotheses (cg : {within `[a, +oo[, continuous g})
+  (Goy : derivable_oy_Rcontinuous G a)
+  (Gg : {in `]a, +oo[%R, G^`() =1 g}).
+
+Let Ggai i : {in `]a + i%:R, a + i.+1%:R[%R, G^`() =1 g}.
+Proof.
+by apply/(in1_subset_itv _ Gg)/subset_itv => //; rewrite bnd_simp lerDl.
+Qed.
+
+Section integration_by_partsy_ge0.
+Context (F f : R -> R) (FGoo : R).
+
+Hypotheses (cf : {within `[a, +oo[, continuous f})
+  (Foy : derivable_oy_Rcontinuous F a)
+  (Ff : {in `]a, +oo[%R, F^`() =1 f})
+  (cvgFG : (F * G)%R x @[x --> +oo%R] --> FGoo).
 
 Let mFg : measurable_fun `]a, +oo[ (F * g)%R.
 Proof.
@@ -865,11 +873,6 @@ Proof.
 by apply/(in1_subset_itv _ Ff)/subset_itv => //; rewrite bnd_simp lerDl.
 Qed.
 
-Let Ggai i : {in `]a + i%:R, a + i.+1%:R[%R, G^`() =1 g}.
-Proof.
-by apply/(in1_subset_itv _ Gg)/subset_itv => //; rewrite bnd_simp lerDl.
-Qed.
-
 Let FGaoo :
   (F (a + x.-1%:R) * G (a + x.-1%:R) - F a * G a)%:E @[x --> \oo] -->
   (FGoo - F a * G a)%:E.
@@ -889,7 +892,8 @@ rewrite integral_itvob_itvcb/=.
   by apply/measurable_EFinP; exact: measurable_funS mfG.
 apply: integrable_fin_num => //=.
 apply: continuous_compact_integrable; first exact: segment_compact.
-by apply: continuous_subspaceW cfG; exact: subset_itvoSo_cSc.
+apply: continuous_subspaceW cfG.
+by move/closureS: cday; rewrite !itv_closureE//; exact/neitvP.
 Qed.
 
 Let sum_integral_limn :
@@ -1023,19 +1027,12 @@ Qed.
 End integration_by_partsy_ge0.
 
 Section integration_by_partsy_le0.
-Context {R: realType}.
-Notation mu := lebesgue_measure.
-Local Open Scope ereal_scope.
-Local Open Scope classical_set_scope.
+Context (F f : R -> R) (FGoo : R).
 
-Variables (F G f g : R -> R) (a FGoo : R).
-Hypothesis cf : {within `[a, +oo[, continuous f}.
-Hypothesis Foy : derivable_oy_Rcontinuous F a.
-Hypothesis Ff : {in `]a, +oo[%R, F^`() =1 f}.
-Hypothesis cg : {within `[a, +oo[, continuous g}.
-Hypothesis Goy : derivable_oy_Rcontinuous G a.
-Hypothesis Gg : {in `]a, +oo[%R, G^`() =1 g}.
-Hypothesis cvgFG : (F \* G)%R x @[x --> +oo%R] --> FGoo.
+Hypotheses (cf : {within `[a, +oo[, continuous f})
+  (Foy : derivable_oy_Rcontinuous F a)
+  (Ff : {in `]a, +oo[%R, F^`() =1 f})
+  (cvgFG : (F \* G)%R x @[x --> +oo%R] --> FGoo).
 
 Let mFg : measurable_fun `]a, +oo[ (F * g)%R.
 Proof.
@@ -1084,13 +1081,10 @@ Lemma integration_by_partsy_le0_le0 :
   \int[mu]_(x in `[a, +oo[) (- (f x * G x)%:E).
 Proof.
 move=> fG0 Fg0; rewrite NintNFg//.
-rewrite (@integration_by_partsy_ge0_ge0 R (- F)%R G (- f)%R g a (- FGoo)).
+rewrite (@integration_by_partsy_ge0_ge0 (- F)%R (- f)%R  (- FGoo)).
 - by move=> ?; apply: cvgN; exact: cf.
 - exact: derivable_oy_RcontinuousN.
 - by move=> ? ?; rewrite fctE derive1N ?Ff => [|//|//]; apply: Foy.1.
-- by [].
-- by [].
-- by [].
 - by under eq_cvg do rewrite fctE/= mulNr; apply: cvgN.
 - by move=> ? ?; rewrite mulNr EFinN oppe_ge0; apply: fG0.
 - by move=> ? ?; rewrite mulNr EFinN oppe_ge0; apply: Fg0.
@@ -1106,13 +1100,10 @@ Lemma integration_by_partsy_ge0_le0 :
   \int[mu]_(x in `[a, +oo[) (- (f x * G x)%:E).
 Proof.
 move=> fG0 Fg0; rewrite NintNFg//.
-rewrite (@integration_by_partsy_le0_ge0 R (- F)%R G (- f)%R g a (- FGoo)).
+rewrite (@integration_by_partsy_le0_ge0 (- F)%R (- f)%R (- FGoo)).
 - by move=> ?; apply: cvgN; exact: cf.
 - exact: derivable_oy_RcontinuousN.
 - by move=> ? ?; rewrite fctE derive1N ?Ff//; move: Foy => [+ _]; apply.
-- by [].
-- by [].
-- by [].
 - by under eq_cvg do rewrite fctE/= mulNr; apply: cvgN.
 - by move=> ? ?; rewrite mulNr EFinN oppe_le0; exact: fG0.
 - by move=> ? ?; rewrite mulNr EFinN oppe_ge0; exact: Fg0.
@@ -1122,6 +1113,8 @@ by under eq_integral do rewrite mulNr EFinN.
 Qed.
 
 End integration_by_partsy_le0.
+
+End integration_by_partsy.
 
 Section Rintegration_by_parts.
 Context {R : realType}.
