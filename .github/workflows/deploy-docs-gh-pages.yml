@@ -29,7 +29,9 @@ jobs:
             rocq-extra-dev: https://rocq-prover.org/opam/extra-dev
 
       - name: Build Mathcomp Analysis
-        run: opam install -y --deps-only . --with-doc && opam exec -- make -j 4
+        run: |
+          opam pin add -y rocq-navi "git+https://github.com/affeldt-aist/rocqnavi.git#mca2html"
+          opam install -y --deps-only . --with-doc && opam exec -- make -j 4
 
       - name: Generate Documents
         run: opam exec -- make html
