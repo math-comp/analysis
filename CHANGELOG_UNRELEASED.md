@@ -199,9 +199,6 @@
   + lemmas `cvg_at_right_filter`,
     `cvg_at_left_filter`, `cvg_at_right_within`, `cvg_at_left_within`
 
-- moved from `metric_structure.v` to `num_topology.v`: 
-  + lemma `cvg_at_right_left_dnbhs`, generalized to `topologicalType` from `metricType`.
-
 ### Renamed
 
 - in `sequences.v`:
