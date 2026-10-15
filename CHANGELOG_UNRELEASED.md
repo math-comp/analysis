@@ -112,6 +112,11 @@
 - in `realfun.v`:
   + lemma `derivable_oy_RcontinuousN`
   
+- in `topology_structure.v`:
+  + definitions `separable_set`, `separable`
+  + lemmas `basisP`, `separableTE`, `second_countable_separable`,
+    `bigcupT_separable`, `bigcup_separable`
+
 ### Changed
 
 - in `esum.v`:

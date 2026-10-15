@@ -13,46 +13,90 @@ From mathcomp Require Export filter.
 (* In the identifiers, "nbhs" is an abbreviation for "neighborhoods".         *)
 (*                                                                            *)
 (* ## Mathematical structures                                                 *)
-(* ### Topology                                                               *)
-(* ```                                                                        *)
-(*          topologicalType == interface type for topological space           *)
-(*                             structure                                      *)
-(*                             the HB class is Topological.                   *)
-(*     subTopologicalType S == join of SubNbhs and Topological where S has    *)
-(*                             pred V with V a topologicalType                *)
-(*                             the HB class is SubTopological.                *)
-(*         ptopologicalType == a pointed topologicalType                      *)
-(*                     open == set of open sets                               *)
-(*                   closed == set of closed sets                             *)
-(*                 clopen U == U is both open and closed                      *)
-(*              open_nbhs p == set of open neighbourhoods of p                *)
-(*                  basis B == a family of open sets that converges to        *)
-(*                             each point                                     *)
-(*       second_countable T == T has a countable basis                        *)
-(*              [locally P] := forall a, A a -> G (within A (nbhs x)) if P    *)
-(*                             is convertible to G (globally A)               *)
-(*                       U° == all of the points which are locally in U,      *)
-(*                             i.e., the largest open set contained in U      *)
-(*                             This is a notation for `interior U`.           *)
-(*                closure U == the smallest closed set containing U           *)
-(*                regopen U == U is regular open,                             *)
-(*                             i.e., equal to the interior of its closure     *)
-(*              regclosed U == U is regular closed,                           *)
-(*                             i.e., equal to the closure of its interior     *)
-(*           open_of_nbhs B == the open sets induced by neighborhoods         *)
-(*           nbhs_of_open B == the neighborhoods induced by open sets         *)
-(*                      x^' == set of neighbourhoods of x where x is          *)
-(*                             excluded (a "deleted neighborhood")            *)
-(*            limit_point E == the set of limit points of E                   *)
-(*               isolated A == the set of isolated points of A                *)
-(*                  dense S == the set (S : set T) is dense in T, with T of   *)
-(*                             type topologicalType                           *)
-(*           continuousType == type of continuous functions                   *)
-(*                             The HB structures is Continuous.               *)
-(*              mkcts f_cts == object of type continuousType corresponding to *)
-(*                             the function f (f_cts : continuous f)          *)
 (*                                                                            *)
-(* ```                                                                        *)
+(* ### Topology                                                               *)
+(*                                                                            *)
+(* `topologicalType`                                                          *)
+(* : interface type for topological space structure                           *)
+(* : The HB class is `Topological`.                                           *)
+(*                                                                            *)
+(* `subTopologicalType S`                                                     *)
+(* : join of `SubNbhs` and `Topological` where `S` has type `pred V` with `V` *)
+(* : a `topologicalType`                                                      *)
+(* : The HB class is `SubTopological`.                                        *)
+(*                                                                            *)
+(* `ptopologicalType`                                                         *)
+(* : a pointed `topologicalType`                                              *)
+(*                                                                            *)
+(* `open`                                                                     *)
+(* : set of open sets                                                         *)
+(*                                                                            *)
+(* `closed`                                                                   *)
+(* : set of closed sets                                                       *)
+(*                                                                            *)
+(* `clopen U`                                                                 *)
+(* : `U` is both open and closed                                              *)
+(*                                                                            *)
+(* `open_nbhs p`                                                              *)
+(* : set of open neighbourhoods of `p`                                        *)
+(*                                                                            *)
+(* `dense S`                                                                  *)
+(* : the set `S : set T` is dense in `T`, with `T` of type `topologicalType`  *)
+(*                                                                            *)
+(* `basis B`                                                                  *)
+(*  : a family of open sets that converges to each point                      *)
+(*                                                                            *)
+(* `separable_set A`                                                          *)
+(* : `A : set T` admits a countable dense subset                              *)
+(*                                                                            *)
+(* `separable T`                                                              *)
+(* : `separable_set T [set: T]`                                               *)
+(*                                                                            *)
+(* `second_countable T`                                                       *)
+(* : `T` has a countable basis                                                *)
+(*                                                                            *)
+(* `[locally P]`                                                              *)
+(* : `forall a, A a -> G (within A (nbhs x))` if `P` is convertible to        *)
+(* : `G (globally A)`                                                         *)
+(*                                                                            *)
+(* `U°`                                                                       *)
+(* : all of the points which are locally in `U`, i.e., the largest open set   *)
+(* : contained in `U`                                                         *)
+(* : This is a notation for `interior U`.                                     *)
+(*                                                                            *)
+(* `closure U`                                                                *)
+(* : the smallest closed set containing `U`                                   *)
+(*                                                                            *)
+(* `regopen U`                                                                *)
+(* : `U` is regular open, i.e., equal to the interior of its closure          *)
+(*                                                                            *)
+(* `regclosed U`                                                              *)
+(* : `U` is regular closed, i.e., equal to the closure of its interior        *)
+(*                                                                            *)
+(* `open_of_nbhs B`                                                           *)
+(* : the open sets induced by neighborhoods                                   *)
+(*                                                                            *)
+(* `nbhs_of_open B`                                                           *)
+(* : the neighborhoods induced by open sets                                   *)
+(*                                                                            *)
+(* `x^'`                                                                      *)
+(* : set of neighbourhoods of `x` where `x` is excluded                       *)
+(* : (a "deleted neighborhood")                                               *)
+(*                                                                            *)
+(* `limit_point E`                                                            *)
+(* : the set of limit points of E                                             *)
+(*                                                                            *)
+(* `isolated A`                                                               *)
+(* : the set of isolated points of `A`                                        *)
+(*                                                                            *)
+(* `continuousType`                                                           *)
+(* : type of continuous functions                                             *)
+(* : The HB structures is `Continuous`.                                       *)
+(*                                                                            *)
+(* `mkcts f_cts`                                                              *)
+(* : object of type `continuousType` corresponding to the function `f`        *)
+(* : (`f_cts : continuous f`)                                                 *)
+(*                                                                            *)
 (* ### Factories                                                              *)
 (* ```                                                                        *)
 (*           Nbhs_isNbhsTopological == factory for a topology defined by a    *)
@@ -86,7 +130,6 @@ Reserved Notation "A °" (format "A °").
 Reserved Notation "[ 'locally' P ]" (format "[ 'locally'  P ]").
 Reserved Notation "x ^'" (format "x ^'").
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -123,11 +166,6 @@ Section Topological1.
 Context {T : topologicalType}.
 
 Definition open_nbhs (p : T) (A : set T) := open A /\ A p.
-
-Definition basis (B : set_system T) :=
-  B `<=` open /\ forall x, filter_from [set U | B U /\ U x] id --> x.
-
-Definition second_countable := exists2 B, countable B & basis B.
 
 Global Instance nbhs_pfilter (p : T) : ProperFilter (nbhs p).
 Proof. by apply: nbhs_pfilter_subproof; case: T p => ? []. Qed.
@@ -1074,6 +1112,84 @@ apply/not_implyP; split; first exact/set0P/setT0.
 apply/not_implyP; split; first exact: openT.
 by rewrite setTI => -[].
 Qed.
+
+Section basis.
+Context {T : topologicalType}.
+
+Definition basis (B : set_system T) :=
+  B `<=` open /\ forall x : T, filter_from [set U | B U /\ U x] id --> x.
+
+Definition separable_set (A : set T) := exists D,
+  [/\ countable D, D `<=` A &
+      forall O, A `&` O !=set0 -> open O -> O `&` D !=set0].
+
+Lemma separable_set0 : separable_set set0.
+Proof.
+by exists set0; split => // U; rewrite set0I => /set0P; rewrite eqxx.
+Qed.
+
+Definition separable := separable_set setT.
+
+Definition second_countable := exists2 B, countable B & basis B.
+
+Lemma basisP (B : set_system T) : basis B <-> B `<=`open
+  /\ (forall U: set T, open U -> U = \bigcup_(V in [set W | B W /\ W `<=`U]) V).
+Proof.
+split=> [[oB bB]|[Bo dec]].
+- split=> // U oU.
+  apply/seteqP; split => [x Ux/=|]; last by apply: bigcup_sub => V /= [].
+  have : nbhs x U by exact: open_nbhs_nbhs.
+  by move=> /(bB x U)[V [BV Vx] VU]; exists V.
+- split=> // x.
+  rewrite /cvg_to nbhsE/= => P [U [/(dec U)->] [A [BA AU] Ax] UP].
+  by exists A => // t At; apply: UP; exists A.
+Qed.
+
+Lemma separableTE : separable = exists A : set T, countable A /\ dense A.
+Proof.
+apply: eq_exists => A.
+rewrite [X in [/\ _, _ & X]] (_ : _ = dense A)//.
+  by under eq_forall do rewrite setTI.
+by apply/propext; split=> [|] [].
+Qed.
+
+Lemma second_countable_separable : second_countable -> separable.
+Proof.
+have [T0 _|/set0P[x _]] := eqVneq [set: T] set0.
+  by rewrite /separable T0; exact: separable_set0.
+move=> [B] /(sub_countable (card_le_setD B [set set0])) cB /basisP[BO BB].
+have /choice[f nef] : forall U, exists x, (B `\ set0) U -> U x.
+  move=> U.
+  have [[BU /eqP/set0P[y Uy]]|/not_andP[|/contrapT]] := pselect ((B `\ set0) U).
+  - by exists y.
+  - by move=> BU; exists x => -[].
+  - by move=> U0; exists x => -[].
+exists (f @` (B `\ set0)); split => //.
+  exact: (card_le_trans (card_image_le _ _)).
+move=> U; rewrite setTI/= => /[swap] /BB -> /bigcup_nonempty[V [BV VU]] V0.
+have ? : (B `\ set0) V by split => //; exact/eqP/set0P.
+by exists (f V); split; exists V => //; exact: nef.
+Qed.
+
+Lemma bigcupT_separable (A : (set T)^nat) :
+  (forall n, separable_set (A n)) -> separable_set (\bigcup_n A n).
+Proof.
+move=> /choice[D_ /all_and3[cDx DAx dDx]].
+exists (\bigcup_n D_ n); split; [exact: bigcup_countable|exact: subset_bigcup|].
+move=> O [x [[n _ Anx] Ox] oO].
+have /dDx/(_ oO)[y [Oy Dny]] : A n `&` O !=set0 by exists x.
+by exists y; split => //; exact: bigcup_sup Dny.
+Qed.
+
+Lemma bigcup_separable (A : (set T)^nat) (P : set nat) :
+  (forall n, P n -> separable_set (A n)) ->
+  separable_set (\bigcup_(i in P) A i).
+Proof.
+rewrite bigcup_mkcond => nPsA; apply: bigcupT_separable => n.
+by case: ifPn => [/set_mem/nPsA//|_]; exact: separable_set0.
+Qed.
+
+End basis.
 
 Section ClopenSets.
 Implicit Type T : topologicalType.
