@@ -136,6 +136,9 @@
     `lhopital_Ninfty_at_pinfty`, `lhopital_pinfty_at_pinfty`, `lhopital_ninfty_at_pinfty`,
     `lhopital_Ninfty_at_ninfty`, `lhopital_pinfty_at_ninfty`, `lhopital_ninfty_at_ninfty`
 
+- in `ftc.v`:
+  + lemmas `parameterized_integralN`, `parameterized_integralN_continuous`
+
 ### Changed
 
 - in `esum.v`:
