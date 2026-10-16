@@ -43,13 +43,15 @@ From mathcomp Require Import derive sequences real_interval numfun.
 (* ```                                                                        *)
 (*                                                                            *)
 (* There are several statements for l'Hopital's rule depending on whether     *)
-(* $x\to \{a^+,b^-,c,-\infty,+\infty\}$ and $g\to \{0, +\infty, -\infty\}$:   *)
+(* $x\to \{a^+,b^-,c,-\infty,+\infty\}$ and $g\to \{0, +\infty, -\infty\}$.:  *)
+(* Statements labelled `Ninfty` instead require                               *)
+(* $|g|$ to converge to $+\infty$.                                            *)
 (*                                                                            *)
 (* | Lemmas                      | x--> | g--> |                              *)
 (* |-----------------------------|------|------|                              *)
 (* | `lhopital_at_right`         | a+   | 0    |                              *)
 (* | `lhopital_at_left`          | b-   | 0    |                              *)
-(* | `lhopital`                  | c    | 0    |                              *)
+(* | `lhopital`                  | c'   | 0    |                              *)
 (* | `lhopital_at_pinfty`        | +oo  | 0    |                              *)
 (* | `lhopital_at_ninfty`        | -oo  | 0    |                              *)
 (* | `lhopital_Ninfty_at_right`  | a+   |      |                              *)
@@ -58,15 +60,17 @@ From mathcomp Require Import derive sequences real_interval numfun.
 (* | `lhopital_Ninfty_at_left`   | b-   |      |                              *)
 (* | `lhopital_pinfty_at_left`   | b-   | +oo  |                              *)
 (* | `lhopital_ninfty_at_left`   | b-   | -oo  |                              *)
-(* | `lhopital_Ninfty`           | a'   |      |                              *)
-(* | `lhopital_pinfty`           | a'   | +oo  |                              *)
-(* | `lhopital_ninfty`           | a'   | -oo  |                              *)
-(* | `lhopital_Ninfty_at_pinfty` | +oo  | +oo  |                              *)
+(* | `lhopital_Ninfty`           | c'   |      |                              *)
+(* | `lhopital_pinfty`           | c'   | +oo  |                              *)
+(* | `lhopital_ninfty`           | c'   | -oo  |                              *)
+(* | `lhopital_Ninfty_at_pinfty` | +oo  |      |                              *)
 (* | `lhopital_pinfty_at_pinfty` | +oo  | +oo  |                              *)
 (* | `lhopital_ninfty_at_pinfty` | +oo  | -oo  |                              *)
 (* | `lhopital_Ninfty_at_ninfty` | -oo  |      |                              *)
 (* | `lhopital_pinfty_at_ninfty` | -oo  | +oo  |                              *)
 (* | `lhopital_ninfty_at_ninfty` | -oo  | -oo  |                              *)
+(*                                                                            *)
+(*  *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -2851,7 +2855,7 @@ Hypotheses (cab : c \in `]a, b[)
   (cdg : forall x, x \in `]a, b[ `\ c -> dg x != 0).
 
 Lemma lhopital :
-  df x / dg x @[x --> c] --> l -> f x / g x @[x --> c^'] --> l.
+  df x / dg x @[x --> c^'] --> l -> f x / g x @[x --> c^'] --> l.
 Proof.
 move=> fgcl; apply/(@cvg_at_right_left_dnbhs _ R^o).
 - apply: (@lhopital_at_right R f df g dg c b l); try exact/cvg_at_right_filter.
@@ -2862,11 +2866,13 @@ move=> fgcl; apply/(@cvg_at_right_left_dnbhs _ R^o).
     by apply/orP; right; rewrite inE.
   + move=> x xac; apply: cdg; rewrite set_itv_splitU ?in_setU//=.
     by apply/orP; right; rewrite inE.
+  + by apply: cvg_dnbhs_at_right.
 - apply: (@lhopital_at_left R f df g dg a c l); try exact/cvg_at_left_filter.
   + by move: cab; rewrite in_itv/= => /andP[].
   + by move=> x xac; apply: fdf; rewrite set_itv_splitU ?in_setU// mem_setE xac.
   + by move=> x xac; apply: gdg; rewrite set_itv_splitU ?in_setU// mem_setE xac.
   + by move=> x xac; apply: cdg; rewrite set_itv_splitU ?in_setU// mem_setE xac.
+  + by apply: cvg_dnbhs_at_left.
 Qed.
 
 End lhopital.

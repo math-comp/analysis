@@ -263,6 +263,9 @@
 - in `realfun.v`:
   + lemmas `cvg_at_rightP`, `cvg_at_leftP`, `cvgr_dnbhsP`, `cvge_at_rightP`, `cvge_at_leftP`, `cvge_dnbhsP` generalized from `realType` to `archiRealFieldType`
 
+- in `realfun.v`:
+  + lemma `lhopital`
+
 ### Deprecated
 
 - in `pseudometric_normed_Zmodule.v`:
