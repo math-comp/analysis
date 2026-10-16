@@ -116,6 +116,25 @@
   + definitions `separable_set`, `separable`
   + lemmas `basisP`, `separableTE`, `second_countable_separable`,
     `bigcupT_separable`, `bigcup_separable`
+- in file `function_spaces.v`,
+  + new lemma `within_continuous_big`.
+- in file `nat_topology.v`,
+  + new lemma `near_infty_after`.
+- in file `num_topology.v`,
+  + new lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
+    `at_left_shift`, `at_right_shift`, `near_right_in_itv`, and `near_left_in_itv`.
+- in file `nat_topology.v`:
+  + lemma `near_infty_after`
+
+- in file `realfun.v`:
+  + new lemmas `lhopital_at_pinfty`, `lhopital_at_ninfty`, `lhopital_Ninfty_at_right`, `lhopital_ninfty_at_right`, `lhopital_Ninfty_at_left`, `lhopital_pinfty_at_left`, `lhopital_ninfty_at_left`, `lhopital_Ninfty`, `lhopital_pinfty`, `lhopital_ninfty`, `lhopital_Ninfty_at_pinfty`,  `lhopital_ninfty_at_pinfty`, `lhopital_Ninfty_at_ninfty`,  `lhopital_pinfty_at_ninfty`, `lhopital_ninfty_at_ninfty`.
+- in `realfun.v`:
+  + lemmas `lhopital_at_pinfty`, `lhopital_at_ninfty`,
+    `lhopital_Ninfty_at_right`, `lhopital_pinfty_at_right`, `lhopital_ninfty_at_right`,
+    `lhopital_Ninfty_at_left`, `lhopital_pinfty_at_left`, `lhopital_ninfty_at_left`,
+    `lhopital_Ninfty`, `lhopital_pinfty`, `lhopital_ninfty`,
+    `lhopital_Ninfty_at_pinfty`, `lhopital_pinfty_at_pinfty`, `lhopital_ninfty_at_pinfty`,
+    `lhopital_Ninfty_at_ninfty`, `lhopital_pinfty_at_ninfty`, `lhopital_ninfty_at_ninfty`
 
 ### Changed
 
@@ -243,6 +262,9 @@
   + lemma `cvg_nbhsP` generalized from `metricType` to `pseudoMetricType`
 - in `realfun.v`:
   + lemmas `cvg_at_rightP`, `cvg_at_leftP`, `cvgr_dnbhsP`, `cvge_at_rightP`, `cvge_at_leftP`, `cvge_dnbhsP` generalized from `realType` to `archiRealFieldType`
+
+- in `realfun.v`:
+  + lemma `lhopital`
 
 ### Deprecated
 
