@@ -10,13 +10,13 @@ From mathcomp Require Import unstable.
 From mathcomp Require Import numfun.
 
 (**md**************************************************************************)
-(* # SubDistribution                                                          *)
+(* # Subprobability mass function                                             *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*        SubDistribution T R == subdistribution for choicetype T with values *)
-(*                               in R                                         *)
-(*                 isSubDistr == interface for functions that satisfy the     *)
-(*                               property of SubDistribution.                 *)
+(*        Subpmf T R == subprobability mass function for choicetype T with    *)
+(*                               values in R                                  *)
+(*                 isSubpmf == interface for functions that satisfy the       *)
+(*                               property of Subprobability mass function.    *)
 (*                      dnull == the zero distribution (null distribution)    *)
 (*                      dunit == degenerate distribution                      *)
 (*                       dlet == monadic bind for distribution                *)
@@ -63,18 +63,18 @@ Local Notation "\`| f |" := (fun x => `|f x|) (at level 2).
 
 (* -------------------------------------------------------------------- *)
 
-HB.mixin Record isSubDistribution (R : realType) (T : choiceType) (mu : T -> R) :=
+HB.mixin Record issubpmf (R : realType) (T : choiceType) (mu : T -> R) :=
   {
     mu_ge0 :  forall x, 0 <= mu x ;
     mu_summable :  esummable [set: T] (EFin \o mu);
     mu_sum_le1  :  (esum [set: T] (EFin \o mu) <= 1)%E;
   }.
 
-HB.structure Definition SubDistribution (R : realType) (T : choiceType) :=
-  {f of @isSubDistribution R T f}.
+HB.structure Definition subpmf (R : realType) (T : choiceType) :=
+  {f of @issubpmf R T f}.
 
-Notation "R .-distr T" := (@SubDistribution.type R T)
-  (at level 0, T at level 2, format "R .-distr T ")
+Notation "R .-pmf T" := (@subpmf.type R T)
+  (at level 0, T at level 2, format "R .-pmf T ")
     : type_scope.
 
 #[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: mu_ge0] : core.
@@ -84,11 +84,11 @@ Notation "R .-distr T" := (@SubDistribution.type R T)
 Section StdDefs.
 Context {R : realType} (T : choiceType).
 
-Implicit Types (mu : R.-distr T) (A B E : pred T) (f : T -> R).
+Implicit Types (mu : R.-pmf T) (A B E : pred T) (f : T -> R).
 
 Definition dinsupp mu := fun x => mu x != 0 :> R.
 
-Lemma in_dinsupp x (mu : R.-distr T) :
+Lemma in_dinsupp x (mu : R.-pmf T) :
   (x \in dinsupp mu) = (mu x != 0).
 Proof. by []. Qed.
 
@@ -114,14 +114,14 @@ Notation "\E?_[ mu ] f"    := (has_esp mu f).
 Notation dweight mu        := (\P_[mu] predT).
 
 (* -------------------------------------------------------------------- *)
-HB.factory Record isSubDistr {R : realType} {T : choiceType} (mu : T -> R) := {
+HB.factory Record isSubpmf {R : realType} {T : choiceType} (mu : T -> R) := {
     distr_pos: (forall x, 0 <= mu x);
     distr_lee_one: (forall J, uniq J -> \sum_(j <- J) mu j <= 1)
   }.
 
 HB.builders
   Context {R : realType} {T : choiceType} (mu : T -> R)
-                         (isd : @isSubDistr R T mu).
+                         (isd : @isSubpmf R T mu).
 
 Local Lemma isd1 : forall x, 0 <= mu x.
 Proof. by case: isd. Qed.
@@ -149,7 +149,7 @@ rewrite fsumEFin // lee_fin fsbig_finite //=.
 by apply: h2.
 Qed.
 
-HB.instance Definition _ := @isSubDistribution.Build R T mu isd1 isd2 isd3.
+HB.instance Definition _ := @issubpmf.Build R T mu isd1 isd2 isd3.
 
 HB.end.
 
@@ -166,7 +166,7 @@ split=> -[ ge0_mu le1]; split=> //.
 Qed.
 
 Lemma le1_mu1
-  {R : realType} {T : choiceType} (mu : R.-distr T) x : mu x <= 1.
+  {R : realType} {T : choiceType} (mu : R.-pmf T) x : mu x <= 1.
 Proof.
 case mu => //= {}mu [[?]].
 rewrite esummableE => ??.
@@ -186,9 +186,9 @@ Lemma isd_mnull : sub_distr dnull_fun.
 Proof. by split=> // J _; rewrite big1 ?ler01. Qed.
 
 HB.instance Definition _ :=
-  @isSubDistr.Build R T dnull_fun (proj1 isd_mnull) (proj2 isd_mnull).
+  @isSubpmf.Build R T dnull_fun (proj1 isd_mnull) (proj2 isd_mnull).
 
-Definition dnull := @locked R.-distr T dnull_fun.
+Definition dnull := @locked R.-pmf T dnull_fun.
 
 Lemma dnullE x : dnull x = 0.
 Proof. by unlock dnull. Qed.
@@ -196,7 +196,7 @@ Proof. by unlock dnull. Qed.
 End DistrD.
 
 (* -------------------------------------------------------------------- *)
-Lemma lef_dnull {R : realType} {T : choiceType} (mu : R.-distr T) :
+Lemma lef_dnull {R : realType} {T : choiceType} (mu : R.-pmf T) :
   dnull <=1 mu.
 Proof. by move=> x; rewrite dnullE mu_ge0. Qed.
 
@@ -204,10 +204,10 @@ Proof. by move=> x; rewrite dnullE mu_ge0. Qed.
 Section Restr.
 Context (R : realType) (T : choiceType) (p : pred T).
 
-Definition drestr_fun (mu : R.-distr T) :=
+Definition drestr_fun (mu : R.-pmf T) :=
   fun x => if p x then mu x else 0.
 
-Lemma isd_drestr (mu : R.-distr T) : sub_distr (drestr_fun mu).
+Lemma isd_drestr (mu : R.-pmf T) : sub_distr (drestr_fun mu).
 Proof.
 split=> [x|J]; first by rewrite /drestr_fun; case: ifP.
 move=> eqJ; apply/(@le_trans _ _ (\sum_(j <- J) `|mu j|)).
@@ -221,12 +221,12 @@ move=> eqJ; apply/(@le_trans _ _ (\sum_(j <- J) `|mu j|)).
   exact: sum_esum_ge.
 Qed.
 
-HB.instance Definition _ (mu : R.-distr T) :=
-  @isSubDistr.Build R T (drestr_fun mu) (proj1 (isd_drestr mu)) (proj2 (isd_drestr mu)).
+HB.instance Definition _ (mu : R.-pmf T) :=
+  @isSubpmf.Build R T (drestr_fun mu) (proj1 (isd_drestr mu)) (proj2 (isd_drestr mu)).
 
-Definition drestr (mu : R.-distr T) := @locked R.-distr T (drestr_fun mu).
+Definition drestr (mu : R.-pmf T) := @locked R.-pmf T (drestr_fun mu).
 
-Lemma drestrE (mu : R.-distr T) x :
+Lemma drestrE (mu : R.-pmf T) x :
   drestr mu x = if p x then mu x else 0.
 Proof. by unlock drestr. Qed.
 End Restr.
@@ -235,11 +235,11 @@ End Restr.
 Section RestrTheory.
 Context {R : realType} {T : choiceType}.
 
-Lemma drestrD (mu : R.-distr T) (p : pred T) x :
+Lemma drestrD (mu : R.-pmf T) (p : pred T) x :
   mu x = drestr p mu x + drestr (predC p) mu x.
 Proof. by rewrite !drestrE !inE; case: ifPn; rewrite /= (addr0, add0r). Qed.
 
-Lemma dinsupp_restr (mu : R.-distr T) (p : pred T) x :
+Lemma dinsupp_restr (mu : R.-pmf T) (p : pred T) x :
   (x \in dinsupp (drestr p mu)) = (x \in dinsupp mu) && p x.
 Proof.
 apply/dinsuppP/idP.
@@ -252,7 +252,7 @@ End RestrTheory.
 Section DRat.
 Context {R : realType} (T : choiceType).
 
-Local Notation distr := R.-distr T.
+Local Notation distr := R.-pmf T.
 
 Implicit Types (s : seq T).
 
@@ -305,9 +305,9 @@ Lemma isd_drat s : sub_distr (drat_fun s).
 Proof. by split; [apply/ge0_drat | apply/has_sup_drat]. Qed.
 
 HB.instance Definition _ (s : seq T) :=
-  @isSubDistr.Build R T (drat_fun s) (proj1 (isd_drat s)) (proj2 (isd_drat s)).
+  @isSubpmf.Build R T (drat_fun s) (proj1 (isd_drat s)) (proj2 (isd_drat s)).
 
-Definition drat (s : seq T) := @locked R.-distr T (drat_fun s).
+Definition drat (s : seq T) := @locked R.-pmf T (drat_fun s).
 
 Lemma drat1E s x :
   drat s x = (count_mem x s)%:R / (size s)%:R.
@@ -352,9 +352,9 @@ Proof. apply/isdistr_finP; split=> [b|].
 Qed.
 
 HB.instance Definition _ (xt : R) :=
-  @isSubDistr.Build R _ (dflip_fun xt) (proj1 (isd_dflip xt)) (proj2 (isd_dflip xt)).
+  @isSubpmf.Build R _ (dflip_fun xt) (proj1 (isd_dflip xt)) (proj2 (isd_dflip xt)).
 
-Definition dflip (xt : R) := @locked R.-distr bool (dflip_fun xt).
+Definition dflip (xt : R) := @locked R.-pmf bool (dflip_fun xt).
 
 Lemma dflip1E xt : dflip xt =1 (fun b => if b then clamp xt else 1 - clamp xt).
 Proof. by unlock dflip. Qed.
@@ -363,7 +363,7 @@ End Flip.
 (* -------------------------------------------------------------------- *)
 Section Bind.
 Context {R : realType} {T U : choiceType}
-          (f : T -> R.-distr U) (mu : R.-distr T).
+          (f : T -> R.-pmf U) (mu : R.-pmf T).
 
 Definition dlet_fun := fun y : U => fine (esum [set:T] (fun x => EFin (mu x * f x y))).
 
@@ -396,9 +396,9 @@ split=> [x|J uqJ].
   by have := (@mu_summable _ _ (f i)); rewrite esummableE.
 Qed.
 
-HB.instance Definition _ :=  @isSubDistr.Build R U dlet_fun (proj1 isd_dlet) (proj2 isd_dlet).
+HB.instance Definition _ :=  @isSubpmf.Build R U dlet_fun (proj1 isd_dlet) (proj2 isd_dlet).
 
-Definition dlet := @locked R.-distr U dlet_fun.
+Definition dlet := @locked R.-pmf U dlet_fun.
 
 Lemma dletE y : dlet y = fine (esum [set:T] (fun x => EFin (mu x * f x y))).
 Proof. by unlock dlet. Qed.
@@ -406,10 +406,10 @@ End Bind.
 
 Notation "\dlet_ ( i <- d ) E" := (dlet (fun i => E) d).
 
-Definition dlift {R : realType} {T : choiceType} (f : T -> R.-distr T) :=
+Definition dlift {R : realType} {T : choiceType} (f : T -> R.-pmf T) :=
   fun d => \dlet_(x <- d) f x.
 
-Definition diter {R : realType} {T : choiceType} n (f : T -> R.-distr T) :=
+Definition diter {R : realType} {T : choiceType} n (f : T -> R.-pmf T) :=
   fun a => (iter n (dlift f) (dunit a)).
 
 (* -------------------------------------------------------------------- *)
@@ -420,7 +420,7 @@ Lemma esum_abse {R : realType} {T : choiceType}
 Proof. by move => ?; apply eq_esum => ?? ; rewrite gee0_abs // lee_tofin. Qed.
 
 Lemma summable_mu_wgtd {R : realType} {T : choiceType}
-  (f : T -> R) (mu : R.-distr T)  :
+  (f : T -> R) (mu : R.-pmf T)  :
   (forall x, 0 <= f x <= 1) -> esummable [set: T] (fun x => EFin (mu x * f x)).
 Proof.
 rewrite /esummable => h.
@@ -435,7 +435,7 @@ Qed.
 Section BindTheory.
 Variables (R : realType) (T U : choiceType).
 
-Implicit Types (f g : T -> R.-distr U) (mu nu : R.-distr T).
+Implicit Types (f g : T -> R.-pmf U) (mu nu : R.-pmf T).
 
 Lemma dlet_null f : dlet f dnull =1 dnull.
 Proof.
@@ -480,11 +480,11 @@ case /boolP: (x \in dinsupp mu) => [/eq_f ->//|].
 by move/dinsuppPn => ->; rewrite !mul0e.
 Qed.
 
-Lemma summable_dlet (f : T -> R.-distr U) (mu : R.-distr T) y :
+Lemma summable_dlet (f : T -> R.-pmf U) (mu : R.-pmf T) y :
   esummable [set: T] (fun x : T => EFin (mu x * (f x) y)).
 Proof. by apply/summable_mu_wgtd=> x; rewrite mu_ge0 le1_mu1. Qed.
 
-Lemma fin_esum (f : T -> R.-distr U) (mu : R.-distr T) y:
+Lemma fin_esum (f : T -> R.-pmf U) (mu : R.-pmf T) y:
   \esum_(x' in [set: T]) (mu x' * f x' y)%:E \is a fin_num.
 Proof.
 rewrite esum_abse.
@@ -492,7 +492,7 @@ rewrite esum_abse.
 by  have := (summable_dlet f mu y); rewrite esummableE.
 Qed.
 
-Lemma dlet_EFin (f : T -> R.-distr U) (mu : R.-distr T) y :
+Lemma dlet_EFin (f : T -> R.-pmf U) (mu : R.-pmf T) y :
   (dlet f mu y)%:E = esum [set:T] (fun x => (mu x * f x y)%:E).
 Proof. by rewrite dletE fineK// ?fin_esum. Qed.
 
@@ -522,7 +522,7 @@ move=> le_mu le_fg x.
 by apply/(le_trans (le_in_dlet le_fg _))/le_mu_dlet.
 Qed.
 
-Lemma dletC (mu : R.-distr T) (nu : R.-distr U) y :
+Lemma dletC (mu : R.-pmf T) (nu : R.-pmf U) y :
   (\dlet_(_ <- mu) nu) y = (dweight mu) * (nu y).
 Proof.
 rewrite dletE /pr //=.
@@ -545,7 +545,7 @@ rewrite eqe mulf_eq0 negb_or => /andP[nz_mu nz_f].
 by exists x; rewrite ?in_dinsupp.
 Qed.
 
-Lemma fine_esum0 (f : T -> R.-distr U) (mu : R.-distr T) x y:
+Lemma fine_esum0 (f : T -> R.-pmf U) (mu : R.-pmf T) x y:
   fine (\esum_(x in [set: T]) (mu x * f x y)%:E) = 0 ->
   ((mu x * f x y)%:E = 0).
 Proof.
@@ -576,7 +576,7 @@ have -> : \esum_(x in [set: T]) (mu x * dunit (f x) y)%:E = 0.
 by [].
 Qed.
 
-Lemma eq0_dlet (mu : R.-distr T) (F : T -> R.-distr U ) y :
+Lemma eq0_dlet (mu : R.-pmf T) (F : T -> R.-pmf U ) y :
   (\dlet_(x <- mu) F x) y = 0 -> forall x, x \in dinsupp mu -> F x y = 0.
 Proof.
 rewrite dletE => /fine_esum0 => h x.
@@ -589,9 +589,9 @@ End BindTheory.
 (* -------------------------------------------------------------------- *)
 Section DLetDLet.
   Context {R:realType} {T U V : choiceType}
-          (f1 : T -> R.-distr U) (f2 : U -> R.-distr V).
+          (f1 : T -> R.-pmf U) (f2 : U -> R.-pmf V).
 
-Lemma dlet_dlet (mu : R.-distr T) :
+Lemma dlet_dlet (mu : R.-pmf T) :
      \dlet_(x <- \dlet_(y <- mu) f1 y) f2 x
   =1 \dlet_(y <- mu) (\dlet_(x <- f1 y) f2 x).
 Proof.
@@ -613,9 +613,9 @@ End DLetDLet.
 
 (* -------------------------------------------------------------------- *)
 Section DLetAlg.
-Context {R : realType} {T U : choiceType} (mu mu1 mu2 : R.-distr T).
+Context {R : realType} {T U : choiceType} (mu mu1 mu2 : R.-pmf T).
 
-Lemma dlet_additive (f : T -> R.-distr U) z :
+Lemma dlet_additive (f : T -> R.-pmf U) z :
   (forall x, mu x = mu1 x + mu2 x) -> (\dlet_(x <- mu) f x) z =
     (\dlet_(x <- mu1) f x) z + (\dlet_(x <- mu2) f x) z.
 Proof.
@@ -643,7 +643,7 @@ Qed.
 Section dlim.
 Context {R : realType} (T : choiceType).
 
-Implicit Types (f g : nat -> R.-distr T).
+Implicit Types (f g : nat -> R.-pmf T).
 
 Import numFieldNormedType.Exports.
 
@@ -711,10 +711,10 @@ apply: (@le_trans _ _ (esum [set: T] (EFin \o f n))); last exact: mu_sum_le1.
 exact: sum_esum_ge.
 Qed.
 
-HB.instance Definition _ f := @isSubDistr.Build R T (dlim_fun f)
+HB.instance Definition _ f := @isSubpmf.Build R T (dlim_fun f)
                                 (proj1 (isd_dlim f)) (proj2 (isd_dlim f)).
 
-Definition dlim f := @locked R.-distr T (dlim_fun f).
+Definition dlim f := @locked R.-pmf T (dlim_fun f).
 
 Lemma dlimE f x : dlim f x = fine (limn_einf (fun n => (f n x)%:E)).
 Proof. by unlock dlim. Qed.
@@ -722,10 +722,10 @@ Proof. by unlock dlim. Qed.
 Lemma dlim_EFin f x : (dlim f x)%:E = limn_einf (fun n => (f n x)%:E).
 Proof. by unlock dlim; exact: dlim_fun_EFin. Qed.
 
-Definition homo (f : nat -> R.-distr T) :=
+Definition homo (f : nat -> R.-pmf T) :=
   forall n m, (n <= m)%N -> f n <=1 f m.
 
-Definition nd (f : nat -> R.-distr T) :=
+Definition nd (f : nat -> R.-pmf T) :=
   forall x, nondecreasing_seq (fun n => (f n x)%:E).
 
 Lemma dhomo_dnd f : homo f -> nd f.
@@ -758,8 +758,8 @@ Notation "\dlim_ ( n ) E" := (dlim (fun n => E)).
 Section DLimTheory.
 Variables (R : realType) (T U : choiceType).
 
-Implicit Types (f g : nat -> R.-distr T) (h : T -> R.-distr U).
-Implicit Types (mu : R.-distr T).
+Implicit Types (f g : nat -> R.-pmf T) (h : T -> R.-pmf U).
+Implicit Types (mu : R.-pmf T).
 
 Lemma dlimC mu : \dlim_(n) mu =1 mu.
 Proof.
@@ -815,7 +815,7 @@ End DLimTheory.
 Section DletDLim.
 Variables (R : realType) (T U : choiceType).
 
-Implicit Types (f : nat -> R.-distr T) (h : T -> R.-distr R).
+Implicit Types (f : nat -> R.-pmf T) (h : T -> R.-pmf R).
 
 Lemma sup_mul f (hf : nd f) (c : R) x : 0 <= c ->
   ((dlim f x) * c)%:E = ereal_sup (range (fun n => (f n x * c)%:E)).
@@ -857,10 +857,10 @@ Qed.
 End DletDLim.
 
 Section DLimDlet.
-Context (R : realType) (T U : choiceType) (f : nat -> T -> R.-distr U).
+Context (R : realType) (T U : choiceType) (f : nat -> T -> R.-pmf U).
 Context (hmono: forall x n m, (n <= m)%N -> f n x <=1 f m x).
 
-Lemma dlim_let (mu : R.-distr T) :
+Lemma dlim_let (mu : R.-pmf T) :
   \dlim_(n) \dlet_(x <- mu) (f n x) =1 \dlet_(x <- mu) \dlim_(n) (f n x).
 Proof.
 have nd1 y : nd (fun n => f n y).
@@ -891,7 +891,7 @@ Qed.
 End DLimDlet.
 
 Section DLimDLim.
-Context (R : realType) (T : choiceType) (f : nat -> nat -> R.-distr T).
+Context (R : realType) (T : choiceType) (f : nat -> nat -> R.-pmf T).
 Context (hmono1: (forall k n1 n2, (n1 <= n2)%N -> f n1 k <=1 f n2 k)).
 Context (hmono2: (forall k n1 n2, (n1 <= n2)%N -> f k n1 <=1 f k n2)).
 
@@ -966,11 +966,11 @@ End DLimDLim.
 
 Section dlet_dlim_diag.
 Context (R : realType) (T U: choiceType).
-Context (d : nat -> R.-distr T) (h : nat -> T -> R.-distr R).
+Context (d : nat -> R.-pmf T) (h : nat -> T -> R.-pmf R).
 Context (hd : homo d).
 Context (hmono: (forall k n1 n2, (n1 <= n2)%N -> h n1 k <=1 h n2 k)).
 
-Lemma dhomo_nmu_dlet (nmu : nat -> R.-distr T) :
+Lemma dhomo_nmu_dlet (nmu : nat -> R.-pmf T) :
   homo nmu -> homo (fun n => dlet (h n) (nmu n)).
 Proof.
 move=> hnmu n m hnm x.
@@ -1009,7 +1009,7 @@ End dlet_dlim_diag.
 
 (* -------------------------------------------------------------------- *)
 Section Marginals.
-Variable (R : realType) (T U : choiceType) (h : T -> U) (mu : R.-distr T).
+Variable (R : realType) (T U : choiceType) (h : T -> U) (mu : R.-pmf T).
 
 Definition dmargin := \dlet_(x <- mu) (dunit (h x)).
 
@@ -1021,7 +1021,7 @@ End Marginals.
 Section MarginalsTh.
 Variable (R: realType) (T U V : choiceType).
 
-Lemma dmargin_psumE (mu : R.-distr T) (f : T -> U) y :
+Lemma dmargin_psumE (mu : R.-pmf T) (f : T -> U) y :
   (dmargin f mu) y = fine (esum [set:T] (fun x => ((f x == y)%:R * mu x)%:E)).
 Proof.
 rewrite dmarginE dletE.
@@ -1030,19 +1030,19 @@ apply/eq_esum => x _.
 by rewrite mulrC dunit1E.
 Qed.
 
-Lemma dlet_dmargin (mu : R.-distr T) (f : T -> U) (g : U -> R.-distr V):
+Lemma dlet_dmargin (mu : R.-pmf T) (f : T -> U) (g : U -> R.-pmf V):
   \dlet_(u <- dmargin f mu) g u =1 \dlet_(t <- mu) (g (f t)).
 Proof.
 move=> x; rewrite dlet_dlet; apply: eq_in_dlet=> //.
 by move=> y _ z /=; rewrite dlet_unit.
 Qed.
 
-Lemma dmargin_dlet (mu : R.-distr T) (f : U -> V) (g : T -> R.-distr U):
+Lemma dmargin_dlet (mu : R.-pmf T) (f : U -> V) (g : T -> R.-pmf U):
   dmargin f (\dlet_(t <- mu) g t) =1 \dlet_(t <- mu) (dmargin f (g t)).
 Proof. by apply/dlet_dlet. Qed.
 
 Lemma dmargin_dunit (t : T) (f : T -> U):
-  dmargin f (dunit t) =1 dunit (f t) :> R.-distr U.
+  dmargin f (dunit t) =1 dunit (f t) :> R.-pmf U.
 Proof. by apply/dlet_unit. Qed.
 End MarginalsTh.
 
@@ -1051,15 +1051,15 @@ Notation dsnd mu := (dmargin snd mu).
 
 (* -------------------------------------------------------------------- *)
 Section DSwap.
-Context {R : realType} {A B : choiceType} (mu : R.-distr (A * B)%type).
+Context {R : realType} {A B : choiceType} (mu : R.-pmf (A * B)%type).
 
-Definition dswap : R.-distr (B * A)%type :=
+Definition dswap : R.-pmf (B * A)%type :=
   dmargin (fun xy => (xy.2, xy.1)) mu.
 End DSwap.
 
 (* -------------------------------------------------------------------- *)
 Section DSwapCoreTheory.
-Context {R : realType} {A B : choiceType} (mu : R.-distr (A * B)%type).
+Context {R : realType} {A B : choiceType} (mu : R.-pmf (A * B)%type).
 
 Lemma dswapE xy : dswap mu xy = mu (xy.2, xy.1).
 Proof.
@@ -1077,7 +1077,7 @@ End DSwapCoreTheory.
 
 (* -------------------------------------------------------------------- *)
 Section DSwapTheory.
-Context {R : realType} {A B : choiceType} (mu : R.-distr (A * B)%type).
+Context {R : realType} {A B : choiceType} (mu : R.-pmf (A * B)%type).
 
 Lemma dswapK : dswap (dswap mu) =1 mu.
 Proof. by case=> x y; rewrite !dswapE. Qed.
@@ -1106,7 +1106,7 @@ End DSwapTheory.
 Section DFst.
 Context {R : realType} {T U : choiceType}.
 
-Lemma dfstE (mu : R.-distr (T * U)%type) x :
+Lemma dfstE (mu : R.-pmf (T * U)%type) x :
   dfst mu x = fine (esum [set:U] (fun y => (mu (x, y))%:E)).
 Proof.
 rewrite dmarginE dletE; congr fine.
@@ -1124,7 +1124,7 @@ rewrite (reindex_esum [set: U] _ (fun y => (x, y))).
 by apply: eq_esum => y _ /=; rewrite dunit_id mulr1.
 Qed.
 
-Lemma summable_fst (mu : R.-distr (T * U)%type) x :
+Lemma summable_fst (mu : R.-pmf (T * U)%type) x :
   esummable [set:U] (fun y => (mu (x, y))%:E).
 Proof.
 rewrite /esummable; apply: le_lt_trans (@mu_summable _ _ mu).
@@ -1144,13 +1144,13 @@ End DFst.
 Section DSnd.
 Context {R : realType} {T U : choiceType}.
 
-Lemma dsndE (mu : R.-distr (T * U)%type) y :
+Lemma dsndE (mu : R.-pmf (T * U)%type) y :
   dsnd mu y = fine (esum [set:T] (fun x => (mu (x, y))%:E)).
 Proof.
   by rewrite -dfst_dswap dfstE; congr fine; apply/eq_esum=> x; rewrite dswapE.
 Qed.
 
-Lemma summable_snd (mu : R.-distr (T * U)%type) y :
+Lemma summable_snd (mu : R.-pmf (T * U)%type) y :
   esummable [set:T] (fun x => (mu (x, y))%:E).
 Proof.
 have := summable_fst (dswap mu) y; apply/eq_esummable.
@@ -1162,7 +1162,7 @@ End DSnd.
 Section PrCoreTheory.
 Context {R : realType} {T : choiceType}.
 
-Implicit Types (mu : R.-distr T) (A B E : pred T).
+Implicit Types (mu : R.-pmf T) (A B E : pred T).
 
 Lemma summable_pr E mu : esummable [set:T] (fun x => ((E x)%:R * mu x)%:E).
 Proof.
@@ -1308,7 +1308,7 @@ case/boolP: (x \in dinsupp mu).
 + by move/dinsuppPn => ->; rewrite !mulr0.
 Qed.
 
-Lemma pr_pred0_eq (mu : R.-distr T) (E : pred T) :
+Lemma pr_pred0_eq (mu : R.-pmf T) (E : pred T) :
   E =1 pred0 -> \P_[mu] E = 0.
 Proof. by move=> eq; rewrite -(pr_pred0 mu); apply/eq_pr. Qed.
 End PrCoreTheory.
@@ -1317,7 +1317,7 @@ End PrCoreTheory.
 Section Esp.
 Context {R : realType} {T : choiceType}.
 
-Implicit Types (mu : R.-distr T) (f : T -> \bar R).
+Implicit Types (mu : R.-pmf T) (f : T -> \bar R).
 
 Definition espe  mu f := esum [set:T] (fun x => mule (f x) ((mu x)%:E)).
 
@@ -1327,7 +1327,7 @@ End Esp.
 Section EspeCoreTheory.
 Context {R : realType} {T : choiceType}.
 
-Implicit Types (mu : R.-distr T) (A B E : pred T).
+Implicit Types (mu : R.-pmf T) (A B E : pred T).
 
 Lemma eexp_eq (f g: T -> \bar R) mu:
   (f =1 g)%E ->
@@ -1361,7 +1361,7 @@ Qed.
 Lemma eexp0 mu : espe mu (fun _ => 0) = 0.
 Proof. by rewrite eexp_cst mule0. Qed.
 
-Lemma eexp_dlet {U: choiceType} mu (nu : T -> R.-distr U) F :
+Lemma eexp_dlet {U: choiceType} mu (nu : T -> R.-pmf U) F :
 (forall x, 0%:E <= F x)%E ->
 espe (dlet nu mu) F = espe mu (fun x => espe (nu x) F).
 Proof.
@@ -1428,7 +1428,7 @@ Lemma espeEFin mu (g : T -> R) :
   espe mu (EFin \o g) = esum [set: T] (EFin \o (fun x => g x * mu x)).
 Proof. by rewrite /espe; apply: esum.eq_esum => x ? /=; rewrite EFinM. Qed.
 
-Lemma eexp_dlet_esp {U: choiceType} mu (nu : T -> R.-distr U) (g : U -> R) :
+Lemma eexp_dlet_esp {U: choiceType} mu (nu : T -> R.-pmf U) (g : U -> R) :
   (forall y, 0 <= g y) -> (forall eta, \E?_[eta] g) ->
   espe (dlet nu mu) (EFin \o g) = espe mu (EFin \o (fun x => esp (nu x) g)).
 Proof.
@@ -1447,9 +1447,9 @@ End EspeCoreTheory.
 Section PrTheory.
 Context {R : realType} {T U : choiceType} {I : eqType}.
 
-Implicit Types (mu : R.-distr T) (A B E : pred T).
+Implicit Types (mu : R.-pmf T) (A B E : pred T).
 
-Lemma prE (nu : R.-distr T) (E : pred T) :
+Lemma prE (nu : R.-pmf T) (E : pred T) :
   (\P_[nu] E)%:E = \esum_(t in [set: T]) ((E t)%:R * nu t)%:E.
 Proof.
 rewrite /pr fineK// esum_abse//.
@@ -1466,7 +1466,7 @@ move=> c0 a0; rewrite -esumZ.
 - by apply: eq_esum => i _; rewrite EFinM.
 Qed.
 
-Lemma pr_dlet E f (mu : R.-distr U) :
+Lemma pr_dlet E f (mu : R.-pmf U) :
   \P_[dlet f mu] E = \E_[mu] (fun x => \P_[f x] E).
 Proof.
 rewrite /pr /esp.
@@ -1482,7 +1482,7 @@ rewrite EFinM prE muleC -EFin_esumZ //.
 by apply: eq_esum => t _; rewrite mulrCA.
 Qed.
 
-Lemma pr_dmargin E f (mu : R.-distr U) :
+Lemma pr_dmargin E f (mu : R.-pmf U) :
   \P_[dmargin f mu] E = \P_[mu] [pred x | f x \in E].
 Proof.
 by rewrite /dmargin pr_dlet pr_exp; apply/eq_exp=> x _; rewrite pr_dunit.
@@ -1607,7 +1607,7 @@ rewrite -natrD; congr (_ %:R).
 by case: (A x); case: (B x).
 Qed.
 
-Lemma pr_or_indep (A B : pred T) (mu : R.-distr T) :
+Lemma pr_or_indep (A B : pred T) (mu : R.-pmf T) :
   (forall x, x \in A -> x \notin B) ->
     \P_[mu] [predU A & B] = \P_[mu] A + \P_[mu] B.
 Proof.
@@ -1700,7 +1700,7 @@ move=> x mux; move/pr_eq0: zPB' => /(_ x) h; rewrite !inE.
 by apply/negP=> /andP[_ /h] /dinsuppP.
 Qed.
 
-Lemma prc_pred1 (mu : R.-distr T) x A :
+Lemma prc_pred1 (mu : R.-pmf T) x A :
   prc mu (pred1 x) A = (A x)%:R * mu x / \P_[mu] A.
 Proof.
 rewrite /prc; congr (_ / _); rewrite /pr.
@@ -1797,19 +1797,19 @@ move=> ge0M bd; apply/(@le_trans _ _ (\E_[mu] (fun _ => M))).
 by rewrite exp_cst ler_piMl // le1_pr.
 Qed.
 
-Lemma ge0_esp {V : choiceType} (eta : R.-distr V) (g : V -> R) :
+Lemma ge0_esp {V : choiceType} (eta : R.-pmf V) (g : V -> R) :
   (forall y, 0 <= g y) -> 0 <= \E_[eta] g.
 Proof.
 move=> g0; rewrite /esp; apply: fine_ge0; apply: esum_ge0 => x ?.
 by rewrite lee_fin mulr_ge0//; exact: g0.
 Qed.
 
-Lemma exp_dlet_ge0 (mu : R.-distr T) (nu : T -> R.-distr U) (g : U -> R) :
+Lemma exp_dlet_ge0 (mu : R.-pmf T) (nu : T -> R.-pmf U) (g : U -> R) :
   (forall y, 0 <= g y) -> (forall eta, \E?_[eta] g) ->
   \E_[dlet nu mu] g = \E_[mu] (fun x => \E_[nu x] g).
 Proof. by move=> g0 sg; rewrite espE (eexp_dlet_esp mu nu g0 sg) -espE. Qed.
 
-Lemma has_esp_le {V:choiceType} (mu : R.-distr V) (k h : V -> R) :
+Lemma has_esp_le {V:choiceType} (mu : R.-pmf V) (k h : V -> R) :
   (forall x, `|k x| <= `|h x|) -> \E?_[mu] h -> \E?_[mu] k.
 Proof.
 move=> kh; rewrite /has_esp => fh.
@@ -1820,7 +1820,7 @@ apply: le_esum.
 by move => ??; rewrite lee_fin !normrM ler_wpM2r.
 Qed.
 
-Lemma hcomp (mu : R.-distr T) (nu : T -> R.-distr U) (g : U -> R) :
+Lemma hcomp (mu : R.-pmf T) (nu : T -> R.-pmf U) (g : U -> R) :
   (forall y, 0 <= g y) -> (forall eta, \E?_[eta] g) -> \E?_[mu] (fun x => \E_[nu x] g).
 Proof.
 move=> g0 sg.
@@ -1833,7 +1833,7 @@ rewrite -espeEFin -(eexp_dlet_esp mu nu g0 sg) espeEFin.
 exact: (esummable_esum_fin_num (sg (dlet nu mu))).
 Qed.
 
-Lemma expB {V: choiceType} (f g : V -> R) (eta : R.-distr V) :
+Lemma expB {V: choiceType} (f g : V -> R) (eta : R.-pmf V) :
   \E?_[eta] f -> \E?_[eta] g -> \E_[eta] (f \- g) = \E_[eta] f - \E_[eta] g.
 Proof.
 move=> sf sg.
@@ -1846,7 +1846,7 @@ rewrite {1}(eexp_eq (g:=fun x => ((f x)%:E - (g x)%:E))%E).
 exact : eexpB.
 Qed.
 
-Lemma exp_dlet mu (nu : T -> R.-distr U ) F :
+Lemma exp_dlet mu (nu : T -> R.-pmf U ) F :
   (forall eta, \E?_[eta] F) ->
     \E_[dlet nu mu] F = \E_[mu] (fun x => \E_[nu x] F).
 Proof.
@@ -1872,7 +1872,7 @@ Section mono_esum.
 Context
   {R : realType}
   {T : choiceType}
-  {f : nat -> R.-distr T}.
+  {f : nat -> R.-pmf T}.
 
 Hypothesis ndf : nd f.
 
@@ -1947,7 +1947,7 @@ Qed.
 End mono_esum.
 
 (* -------------------------------------------------------------------- *)
-Lemma distr_eqP {R : realType} {T : choiceType} (f1 f2 : R.-distr T):
+Lemma distr_eqP {R : realType} {T : choiceType} (f1 f2 : R.-pmf T):
   f1 =1 f2 <-> f1 = f2.
 Proof.
 split=> [|->] //.
