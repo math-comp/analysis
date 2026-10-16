@@ -26,42 +26,7 @@ Import HBNNSimple.
 Import MeasurableR.
 
 (* -------------------------------------------------------------------- *)
-(* TODO: PR.  This generalizes `esum_bigcupT` (esum.v) *)
-Lemma esum_bigcup_set {R : realType} (T1 T2 : choiceType) (K : set T1)
-    (J : T1 -> set T2) (a : T2 -> \bar R) :
-    trivIset setT J -> (forall x, (0 <= a x)%E) ->
-  (\esum_(i in \bigcup_(k in K) J k) a i =
-   \esum_(k in K) \esum_(j in J k) a j)%E.
-Proof.
-move=> tJ a0; rewrite esum_esum//; apply: reindex_esum => //; split.
-- by move=> [/= i j] [Ki Jij]; exists i.
-- move=> [/= i1 j1] [/= i2 j2] /set_mem/= [Ki1 Jij1] /set_mem/= [Ki2 Jij2] /= j12.
-  have iE : i1 = i2.
-    by apply: (tJ i1 i2) => //; exists j1; split=> //; rewrite j12.
-  by rewrite iE j12.
-- by move=> j [i Ki Jij]/=; exists (i, j).
-Qed.
-
-(* -------------------------------------------------------------------- *)
-Definition discrete_measurable_space (T : choiceType) : Type := T.
-
-HB.instance Definition _ (T : choiceType) :=
-  Choice.on (discrete_measurable_space T).
-
-HB.instance Definition _ (T : choiceType) := @isMeasurable.Build
-  default_measure_display
-  (discrete_measurable_space T) discrete_measurable discrete_measurable0
-  discrete_measurableC discrete_measurableU.
-
-Lemma esum_setT_discrete {R : realType} (T : choiceType) (f : T -> \bar R) :
-  (\esum_(x in [set: discrete_measurable_space T]) f x
-     = \esum_(x in [set: T]) f x)%E.
-Proof.
-by apply: (@reindex_esum R T (discrete_measurable_space T)
-          [set: T] [set: discrete_measurable_space T] id f); split.
-Qed.
-
-(* -------------------------------------------------------------------- *)
+(* PR 2063 *)
 Section Counting.
 Context d (T : measurableType d) (R : realType).
 Hypothesis msingl : forall i : T, measurable [set i].
@@ -103,7 +68,7 @@ transitivity (\sum_(c \in range h)
   by apply: (eq_esum _ (fun=> (h x)%:E)) => x0 ->.
 + rewrite -esum_fset//.
   + by move=> ? _; apply: esum_ge0 => ? _; rewrite lee_fin.
-  rewrite -esum_bigcup_set.
+  rewrite -esum_bigcup.
   + exact: trivIset_preimage1.
   + by move=> ?; rewrite lee_fin.
   + suff -> : \bigcup_(c in range h) h @^-1` [set c] = [set: T] by [].
@@ -178,8 +143,27 @@ Qed.
 End Counting.
 
 (* -------------------------------------------------------------------- *)
-Section SubDistribution.
-Context (R : realType) (T : choiceType) (mu: R.-distr T).
+Definition discrete_measurable_space (T : choiceType) : Type := T.
+
+HB.instance Definition _ (T : choiceType) :=
+  Choice.on (discrete_measurable_space T).
+
+HB.instance Definition _ (T : choiceType) := @isMeasurable.Build
+  default_measure_display
+  (discrete_measurable_space T) discrete_measurable discrete_measurable0
+  discrete_measurableC discrete_measurableU.
+
+Lemma esum_setT_discrete {R : realType} (T : choiceType) (f : T -> \bar R) :
+  (\esum_(x in [set: discrete_measurable_space T]) f x
+     = \esum_(x in [set: T]) f x)%E.
+Proof.
+by apply: (@reindex_esum R T (discrete_measurable_space T)
+          [set: T] [set: discrete_measurable_space T] id f); split.
+Qed.
+
+(* -------------------------------------------------------------------- *)
+Section SubProbability_measure_subpmf.
+Context (R : realType) (T : choiceType) (mu: R.-pmf T).
 
 Definition P (S : set (discrete_measurable_space T)) :=
     \esum_(x in S) (EFin \o mu) x.
@@ -195,8 +179,9 @@ Proof.
 move=> F _ tF _.
 have -> : P (\bigcup_n F n) = (\sum_(i <oo) P (F i))%E.
   rewrite nneseries_esumT; first by move=> n; exact: P_ge0.
-  apply: esum_bigcup_set => //.
-  by move=> x; rewrite lee_fin.
+  apply: esum_bigcup => //=.
+  + by apply: (sub_trivIset (@subsetT _ _) tF).
+  + by move=> x; rewrite lee_fin.
 apply: cvg_toP => //.
 apply: is_cvg_nneseries => n _ _; rewrite /P.
 by apply: esum_ge0 => x _; rewrite lee_fin.
@@ -211,97 +196,13 @@ Proof. by rewrite /P esum_setT_discrete; exact: mu_sum_le1. Qed.
 HB.instance Definition _ :=
   @Measure_isSubProbability.Build _ _ R P P_setT.
 
-End SubDistribution.
+End SubProbability_measure_subpmf.
 
 (* -------------------------------------------------------------------- *)
-(* TODO: PR. *)
-Section integral_density.
-Context d {T : measurableType d} {R : realType}.
-Context (m1 m2 : {measure set T -> \bar R}) (h : T -> R).
+Section maxe.
+Context (R : realType) (T : choiceType) (mu : R.-pmf T).
 
-Hypothesis h_mesurable : measurable_fun [set: T] h.
-Hypothesis h_pos : forall x, (0 <= h x)%R.
-Hypothesis H : forall A, measurable A -> m2 A = \int[m1]_(x in A) (h x)%:E.
-
-Lemma integral_indicM (A : set T) : measurable A ->
-  \int[m1]_x ((\1_A x)%:E * (h x)%:E) = m2 A.
-Proof.
-move=> mA; rewrite H// [RHS]integral_mkcond; apply: eq_integral => x _.
-rewrite patchE indicE; case: ifP => _; first by rewrite mul1e.
-by rewrite mul0e.
-Qed.
-
-Lemma integral_termE (r : R) (A : set T) : measurable A -> (0 <= r)%R ->
-  \int[m1]_x (r%:E * ((\1_A x)%:E * (h x)%:E)) = r%:E * m2 A.
-Proof.
-move=> mA r0; rewrite ge0_integralZl//=.
-- apply: emeasurable_funM => //; by apply /measurable_EFinP.
-- move=> x _; apply: mule_ge0; rewrite lee_fin//.
-- by rewrite integral_indicM.
-Qed.
-
-Lemma sintegral_density (g : {nnsfun T >-> R}) :
-  sintegral m2 g = \int[m1]_x ((g x)%:E * (h x)%:E).
-Proof.
-transitivity (\sum_(r \in range g)
-    \int[m1]_x (r%:E * ((\1_(g @^-1` [set r]) x)%:E * (h x)%:E))).
-+ rewrite sintegralE; apply: eq_fsbigr => r /set_mem[x0 _ <-].
-  by rewrite integral_termE//.
-transitivity (\int[m1]_x (\sum_(r \in range g)
-    (r%:E * ((\1_(g @^-1` [set r]) x)%:E * (h x)%:E)))).
-+ rewrite ge0_integral_fsum//=.
-+ move=> r; apply: measurable_funeM.
-  by apply: emeasurable_funM => //;apply/measurable_EFinP.
-  + move => r x ?.
-    have [r0|r0] := leP 0%R r.
-    + apply: mule_ge0; first by rewrite lee_fin.
-      by apply: mule_ge0; rewrite lee_fin//.
-    + by rewrite preimage_nnfun0 // indic0/= mul0e mule0.
-apply: eq_integral => x _.
-transitivity ((\sum_(r \in range g) (r * (\1_(g @^-1` [set r]) x * h x)))%:E).
-  by rewrite -fsumEFin.
-rewrite -EFinM; congr (_%:E).
-rewrite [in RHS](fimfunE g) mulr_fsuml.
-by apply: eq_fsbigr => r _; rewrite mulrA.
-Qed.
-
-Lemma integral_density (f : T -> \bar R) :
-    measurable_fun [set: T] f -> (forall x, 0 <= f x) ->
-  \int[m2]_x f x = \int[m1]_x (f x * (h x)%:E).
-Proof.
-move=> mf f0.
-pose g := nnsfun_approx measurableT mf.
-pose gE := fun n => EFin \o g n.
-have mgE n : measurable_fun [set: T] (EFin \o g n) by exact/measurable_EFinP.
-have gE_ge0 n x : 0 <= gE n x by rewrite lee_fin.
-have nd_gE x : {homo gE ^~ x : n p / (n <= p)%O >-> n <= p}.
-  by move=> *; exact/lefP/nd_nnsfun_approx.
-transitivity (limn (fun n => \int[m2]_x gE n x)).
-  rewrite -monotone_convergence//; apply: eq_integral => t _.
-  by apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
-transitivity (limn (fun n => \int[m1]_x (gE n x * (h x)%:E))).
-  apply: congr_lim; apply/funext => n.
-  by rewrite integralT_nnsfun sintegral_density.
-have mgEh n : measurable_fun [set: T] (fun x => gE n x * (h x)%:E).
-  apply: emeasurable_funM;  by apply/measurable_EFinP.
-have gEh_ge0 n x : 0 <= gE n x * (h x)%:E.
-  by apply: mule_ge0; rewrite lee_fin//.
-have nd_gEh x : {homo (fun n => gE n x * (h x)%:E) : n p / (n <= p)%O >-> n <= p}.
-  move=> p q pq; apply: lee_wpmul2r; first by rewrite lee_fin.
-  exact: nd_gE.
-rewrite -monotone_convergence//.
-apply: eq_integral => x _.
-apply: cvg_lim => //; apply: cvgeZr => //.
-exact: cvg_nnsfun_approx.
-Qed.
-
-End integral_density.
-
-(* -------------------------------------------------------------------- *)
-Section maxe_distr.
-Context (R : realType) (T : choiceType) (mu : R.-distr T).
-
-Lemma maxe_distrM (a : \bar R) x :
+Lemma maxe_pmfM (a : \bar R) x :
   (maxe (a * (mu x)%:E) 0 = maxe a 0 * (mu x)%:E)%E.
 Proof.
 rewrite [in LHS]muleC [in RHS]muleC maxe_pMr => //=.
@@ -309,26 +210,26 @@ rewrite [in LHS]muleC [in RHS]muleC maxe_pMr => //=.
 - by rewrite mule0.
 Qed.
 
-Lemma maxeN_distrM (a : \bar R) x :
+Lemma maxeN_pmfM (a : \bar R) x :
   (maxe (- (a * (mu x)%:E)) 0 = maxe (- a) 0 * (mu x)%:E)%E.
-Proof. by rewrite -mulNe maxe_distrM. Qed.
+Proof. by rewrite -mulNe maxe_pmfM. Qed.
 
-End maxe_distr.
+End maxe.
 
 (* -------------------------------------------------------------------- *)
 Section Expectation.
-Context (R : realType) (T : choiceType) (mu : R.-distr T).
+Context (R : realType) (T : choiceType) (mu : R.-pmf T).
 
 Lemma integral_espe (f : T -> \bar R) : (forall x, 0 <= f x)%E ->
   \int[P mu]_x f x = espe mu f.
 Proof.
-move=> f0.
-rewrite (@integral_density _ (discrete_measurable_space T) R
-          (@counting (discrete_measurable_space T) R) (P mu) mu)//=.
-+ move=> A _; rewrite /P integral_counting_esum_set => //=.
-  by move=> x; rewrite lee_fin.
-rewrite /espe -esum_setT_discrete integral_counting_esum => //=.
-by move=> x; apply: mule_ge0; [exact: f0|rewrite lee_fin].
+move=> f0; rewrite /espe -esum_setT_discrete -integral_counting_esum => //=.
++ by move=> x; apply: mule_ge0; [exact: f0|rewrite lee_fin].
+rewrite - (@integral_measure_of_density _ (discrete_measurable_space T) R
+             (@counting (discrete_measurable_space T) R)  mu) //=.
+move => H; apply: eq_measure_integral => A mA _ /=.
+rewrite /measure_of_density /P integral_counting_esum_set //=.
+by move=> x; exact: mu_ge0.
 Qed.
 
 Lemma espeE (f : T ->  R) :  ('E_(P mu)[f] = espe mu (EFin \o f)).
@@ -336,16 +237,16 @@ Proof.
 rewrite expectation_def integralE /espe esumE; congr (_ - _).
 - transitivity (espe mu ((EFin \o f)^\+)).
     by rewrite integral_espe// => x; exact: funepos_ge0.
-  by rewrite /espe; apply: eq_esum => x _; rewrite !funeposE maxe_distrM.
+  by rewrite /espe; apply: eq_esum => x _; rewrite !funeposE maxe_pmfM.
 - transitivity (espe mu ((EFin \o f)^\-)).
     by rewrite integral_espe// => x; exact: funeneg_ge0.
-  by rewrite /espe; apply: eq_esum => x _; rewrite !funenegE maxeN_distrM.
+  by rewrite /espe; apply: eq_esum => x _; rewrite !funenegE maxeN_pmfM.
 Qed.
 
 End Expectation.
 
 (* -------------------------------------------------------------------- *)
-Section pmf_subdistribution.
+Section pmf_subpmf.
 Context d (T : measurableType d) (R : realType) (Pr : probability T R).
 Variable X : {RV Pr >-> R}.
 
@@ -371,9 +272,9 @@ apply: probability_le1; apply: fin_bigcup_measurable.
 Qed.
 
 HB.instance Definition _ :=
-  @isSubDistr.Build R R (pmf X) (@pmf_ge0 _ _ _ Pr X) pmf_uniq_le1.
+  @isSubpmf.Build R R (pmf X) (@pmf_ge0 _ _ _ Pr X) pmf_uniq_le1.
 
-End pmf_subdistribution.
+End pmf_subpmf.
 
 (* -------------------------------------------------------------------- *)
 Section pr_pmf.
@@ -481,9 +382,10 @@ have step1 : espe pmfX f = \int[@counting R R]_r (f r * (pmfX r)%:E).
   rewrite /espe -integral_counting_esum//; exact: measurable_set1.
 have step2 : \int[distribution Pr X]_r f r
            = \int[@counting R R]_r (f r * (pmfX r)%:E).
-  apply: (@integral_density _ R R (@counting R R) (distribution Pr X) pmfX) => //=.
-  - exact: pmf_measurable.
-  - exact: distribution_integral_counting.
+rewrite -(@integral_measure_of_density _ R R (@counting R R) pmfX) //=.
++ move => H. apply: eq_measure_integral =>  A mA _ /=.
+  exact: distribution_integral_counting.
++ exact: pmf_measurable.
 have step3 : \int[distribution Pr X]_r f r = \int[Pr]_w f (X w).
   by rewrite /distribution ge0_integral_pushforward.
 by rewrite step1 -step2 step3.
@@ -494,12 +396,12 @@ Proof.
 have mE : measurable_fun [set: R] (EFin : R -> \bar R) by apply/measurable_EFinP.
 rewrite /espe esumE expectation_def integralE; congr (_ - _).
 - transitivity (espe pmfX (EFin^\+)).
-    by rewrite /espe; apply: eq_esum => r _; rewrite !funeposE maxe_distrM.
+    by rewrite /espe; apply: eq_esum => r _; rewrite !funeposE maxe_pmfM.
   rewrite ge0_espe_pmf => //=.
   + exact: measurable_funepos.
   + by apply: eq_integral => w _; rewrite !funeposE.
 - transitivity (espe pmfX (EFin^\-)).
-    by rewrite /espe; apply: eq_esum => r _; rewrite !funenegE maxeN_distrM.
+    by rewrite /espe; apply: eq_esum => r _; rewrite !funenegE maxeN_pmfM.
   rewrite ge0_espe_pmf => //=.
   + exact: measurable_funeneg.
   + by apply: eq_integral => w _; rewrite !funenegE.
