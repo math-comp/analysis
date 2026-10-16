@@ -164,3 +164,11 @@ theories/showcase/pnt.v
 
 analysis_stdlib/Rstruct_topology.v
 analysis_stdlib/showcase/uniform_bigO.v
+analysis_stdlib/lang_syntax_util.v
+analysis_stdlib/lang_syntax_toy.v
+analysis_stdlib/lang_syntax.v
+analysis_stdlib/lang_syntax_examples.v
+analysis_stdlib/lang_syntax_table_game.v
+
+theories/prob_lang.v
+theories/prob_lang_wip.v
