@@ -9,6 +9,21 @@ license: "CECILL-C"
 
 depends: [ "rocq-mathcomp-analysis-stdlib" { = version} ]
 
+build: [make "-C" "analysis_stdlib" "-j%{jobs}%"]
+install: [make "-C" "analysis_stdlib" "install"]
+depends: [
+  "coq-mathcomp-analysis" { = version}
+  "coq-mathcomp-reals-stdlib"
+  "coq-interval" {>= "4.11.2"}
+]
+
+tags: [
+  "category:Mathematics/Real Numbers"
+  "keyword:real numbers"
+  "keyword:reals"
+  "logpath:mathcomp.reals_stdlib"
+]
+
 authors: [
   "Reynald Affeldt"
   "Alessandro Bruni"
