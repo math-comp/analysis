@@ -21,8 +21,9 @@ From mathcomp Require Import lebesgue_integral_dominated_convergence.
 (* `Rintegral mu D f`                                                         *)
 (* : Definition for `fine (\int[mu]_(x in D) f x)`                            *)
 (*                                                                            *)
-(* `induced_measure mf f0`                                                    *)
+(* `measure_of_density mf f0`                                                 *)
 (* : measure induced by `f : T -> R`                                          *)
+(* : `f` is called the density of the induced measure                         *)
 (* : `mf` is a proof that `f` is measurable and `f0`, a proof that it is      *)
 (* : non-negative                                                             *)
 (*                                                                            *)
@@ -194,11 +195,11 @@ Qed.
 
 End Rintegral.
 
-Section induced_charge.
+Section semi_sigma_additive_measure_of_density.
 Context d (T : measurableType d) {R : realType} (mu : {measure set T -> \bar R}).
 Local Open Scope ereal_scope.
 
-Lemma semi_sigma_additive_nng_induced (f : T -> \bar R) :
+Lemma semi_sigma_additive_measure_of_density (f : T -> \bar R) :
   measurable_fun setT f -> (forall x, 0 <= f x) ->
   semi_sigma_additive (fun A => \int[mu]_(t in A) f t).
 Proof.
@@ -207,47 +208,47 @@ move=> mf f0 /= F mF tF mUF; rewrite ge0_integral_bigcup//=.
 by apply: is_cvg_ereal_nneg_natsum_cond => // n _ _; exact: integral_ge0.
 Qed.
 
-End induced_charge.
+End semi_sigma_additive_measure_of_density.
+#[deprecated(since="mathcomp-analysis 1.19.0", use=semi_sigma_additive_measure_of_density)]
+Notation semi_sigma_additive_nng_induced := semi_sigma_additive_measure_of_density (only parsing).
 
-Section induced_measure_def.
+Section measure_of_density_def.
 Import MeasurableR.
 Context {d} {T : measurableType d} {R : realType}
   (mu : {measure set T -> \bar R}).
 
-Definition induced_measure (f : T -> R)
-    (mf : measurable_fun [set: T] f)
+Definition measure_of_density (f : T -> R) (mf : measurable_fun [set: T] f)
     (f0 : forall x, 0 <= f x) :=
   fun A => (\int[mu]_(t in A) (f t)%:E)%E.
 
-End induced_measure_def.
+End measure_of_density_def.
 
 (* NB: this does not rely on the Lebesgue measure, just on the Borel sigma-algebra *)
-Section induced_measure.
+Section measure_of_density.
 Import MeasurableR.
 Context {d} {T : measurableType d} {R : realType}
   (mu : {measure set T -> \bar R}) (f : T -> R).
 
 Hypotheses (mf : measurable_fun [set: T] f) (f0 : forall x, (0 <= f x)%R).
 
-Local Notation m' := (induced_measure mu mf f0).
+Local Notation m' := (measure_of_density mu mf f0).
 
-Let m'0 : m' set0 = 0.
-Proof. exact: integral_set0. Qed.
+Let m'0 : m' set0 = 0. Proof. exact: integral_set0. Qed.
 
 Let m'_ge0 A : (0 <= m' A)%E.
 Proof. by apply: integral_ge0 => t At; rewrite lee_fin. Qed.
 
 Let m'_semi_sigma_additive : semi_sigma_additive m'.
 Proof.
-by apply: semi_sigma_additive_nng_induced => //; exact/measurable_EFinP.
+by apply: semi_sigma_additive_measure_of_density => //; exact/measurable_EFinP.
 Qed.
 
 HB.instance Definition _ := isMeasure.Build d T R m'
   m'0 m'_ge0 m'_semi_sigma_additive.
 
-End induced_measure.
+End measure_of_density.
 
-Section integral_induced_measure.
+Section integral_measure_of_density.
 Import MeasurableR.
 Local Open Scope ereal_scope.
 Context {d} {T : measurableType d} {R : realType}
@@ -256,9 +257,9 @@ Context {d} {T : measurableType d} {R : realType}
 Hypothesis mh : measurable_fun [set: T] h.
 Hypothesis h0 : forall x, (0 <= h x)%R.
 
-Let mu' : {measure set _ -> \bar _} := induced_measure mu mh h0.
+Let mu' : {measure set _ -> \bar _} := measure_of_density mu mh h0.
 
-Lemma integral_induced_measure_indic (A : set T) : measurable A ->
+#[local] Lemma integral_measure_of_density_indic (A : set T) : measurable A ->
   \int[mu]_x ((\1_A x)%:E * (h x)%:E) = mu' A.
 Proof.
 move=> mA; rewrite [RHS]integral_mkcond; apply: eq_integral => x _.
@@ -266,7 +267,7 @@ rewrite patchE indicE; case: ifP => _; first by rewrite mul1e.
 by rewrite mul0e.
 Qed.
 
-Lemma integral_induced_measureMindic (r : R) (A : set T) : measurable A ->
+#[local] Lemma integral_measure_of_densityMindic (r : R) (A : set T) : measurable A ->
   (0 <= r)%R ->
   \int[mu]_x (r%:E * (\1_A x)%:E * (h x)%:E) = r%:E * mu' A.
 Proof.
@@ -275,18 +276,18 @@ under eq_integral do rewrite -muleA.
 rewrite ge0_integralZl//=.
 - apply: emeasurable_funM => //; by apply /measurable_EFinP.
 - by move=> x _; apply: mule_ge0; rewrite ?lee_fin.
-- by rewrite integral_induced_measure_indic.
+- by rewrite integral_measure_of_density_indic.
 Qed.
 
 Import HBNNSimple.
 
-Lemma sintegral_induced_measure (g : {nnsfun T >-> R}) :
+#[local] Lemma sintegral_measure_of_density (g : {nnsfun T >-> R}) :
   sintegral mu' g = \int[mu]_x ((g x)%:E * (h x)%:E).
 Proof.
 transitivity (\sum_(r \in range g)
     \int[mu]_x (r%:E * (\1_(g @^-1` [set r]) x)%:E * (h x)%:E)).
   rewrite sintegralE; apply: eq_fsbigr => r /set_mem[x0 _ <-].
-  by rewrite integral_induced_measureMindic.
+  by rewrite integral_measure_of_densityMindic.
 transitivity (\int[mu]_x (\sum_(r \in range g)
     ((r * (\1_(g @^-1` [set r]) x))%:E * (h x)%:E))).
   rewrite ge0_integral_fsum//=.
@@ -302,7 +303,7 @@ rewrite -ge0_mule_fsuml; first by move=> _ [t _ <-]; rewrite lee_fin mulr_ge0.
 by rewrite fsumEFin// [in RHS](fimfunE g).
 Qed.
 
-Lemma integral_induced_measure (f : T -> \bar R) :
+Lemma integral_measure_of_density (f : T -> \bar R) :
     measurable_fun [set: T] f -> (forall x, 0 <= f x) ->
   \int[mu']_x f x = \int[mu]_x (f x * (h x)%:E).
 Proof.
@@ -318,7 +319,7 @@ transitivity (limn (fun n => \int[mu']_x gE n x)).
   by apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
 transitivity (limn (fun n => \int[mu]_x (gE n x * (h x)%:E))).
   apply: congr_lim; apply/funext => n.
-  by rewrite integralT_nnsfun sintegral_induced_measure.
+  by rewrite integralT_nnsfun sintegral_measure_of_density.
 have mgEh n : measurable_fun [set: T] (fun x => gE n x * (h x)%:E).
   by apply: emeasurable_funM => //; exact/measurable_EFinP.
 have gEh_ge0 n x : 0 <= gE n x * (h x)%:E by rewrite mule_ge0// lee_fin.
@@ -331,7 +332,7 @@ apply: cvg_lim => //; apply: cvgeZr => //.
 exact: cvg_nnsfun_approx.
 Qed.
 
-End integral_induced_measure.
+End integral_measure_of_density.
 
 Section Rintegral_lebesgue_measure.
 Context {R : realType}.
