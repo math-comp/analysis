@@ -113,7 +113,7 @@ Qed.
 
 Let cuni_within : {within `[0%R, 1%R], continuous uni}.
 Proof.
-apply/continuous_within_itvP => //; split.
+apply/continuous_within_itvccP => //; split.
 - move=> x x01.
   apply: (@near_cst_continuous R R 1%R).
   near=> z.
@@ -232,18 +232,18 @@ Lemma continuous_withinN {R : realType} (f : R -> R) a b : (a < b)%R ->
   {within `[a, b], continuous f}.
 Proof.
 move=> ab cf.
-- apply/continuous_within_itvP (* TODO: us [/\ ...] *) => //.
+- apply/continuous_within_itvccP (* TODO: us [/\ ...] *) => //.
 - split; rewrite -ltrN2 in ab.
   + move=> x xab.
-    move/continuous_within_itvP : cf => /(_ ab) [cf _ _].
+    move/continuous_within_itvccP : cf => /(_ ab) [cf _ _].
     rewrite (_ : f = (f \o -%R) \o -%R).
       by apply/funext => y; rewrite /= opprK.
     apply: continuous_comp; first exact: opp_continuous.
     by apply: cf; rewrite -oppr_itvoo opprK.
-  + move/continuous_within_itvP : cf => /(_ ab) [_ _ cf].
+  + move/continuous_within_itvccP : cf => /(_ ab) [_ _ cf].
     apply/cvg_at_rightNP.
     by rewrite /= opprK in cf.
-  + move/continuous_within_itvP : cf => /(_ ab) [_ cf _].
+  + move/continuous_within_itvccP : cf => /(_ ab) [_ cf _].
     apply/cvg_at_leftNP.
     by rewrite /= opprK in cf.
 Qed.
