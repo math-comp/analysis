@@ -989,7 +989,7 @@ HB.instance Definition _ (f : cumulative R R) :=
 End completed_lebesgue_stieltjes_measure.
 Arguments completed_lebesgue_stieltjes_measure {R}.
 
-Section probability_measure_of_lebesgue_stieltjes_mesure.
+Section probability_measure_of_lebesgue_stieltjes_measure.
 Context {R : realType} (f : cumulativeBounded (0:R) (1:R)).
 Local Open Scope measure_display_scope.
 
@@ -1019,4 +1019,4 @@ Unshelve. all: end_near. Qed.
 HB.instance Definition _ := @Measure_isProbability.Build _ _ _
   (lebesgue_stieltjes_measure f) lebesgue_stieltjes_setT.
 
-End probability_measure_of_lebesgue_stieltjes_mesure.
+End probability_measure_of_lebesgue_stieltjes_measure.

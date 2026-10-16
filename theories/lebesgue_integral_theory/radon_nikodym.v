@@ -22,14 +22,14 @@ From mathcomp Require Import lebesgue_integral_definition lebesgue_integrable
 (*   Stieltjes measure in Coq. Computer Software 41(2) 2024                   *)
 (*                                                                            *)
 (* ## Theory                                                                  *)
-(* ```                                                                        *)
-(*       induced_charge intf == charge induced by a function f : T -> \bar R  *)
-(*                              R has type realType; T is a measurableType.   *)
-(*                              intf is a proof that f is integrable over     *)
-(*                              [set: T]                                      *)
-(*              'd nu '/d mu == Radon-Nikodym derivative of nu w.r.t. mu      *)
-(*                              (the scope is charge_scope)                   *)
-(* ```                                                                        *)
+(*                                                                            *)
+(* `charge_of_density intf`                                                   *)
+(* : charge induced by a function `f : T -> \bar R`                           *)
+(* : `R` has type `realType`; `T` is a `measurableType`.                      *)
+(* : `intf` is a proof that f is integrable over [set: T]                     *)
+(*                                                                            *)
+(* `'d nu '/d mu`                                                             *)
+(* : Radon-Nikodym derivative of `nu` w.r.t. `mu` (the scope is charge_scope) *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -38,7 +38,6 @@ Reserved Notation "'d nu '/d mu" (mu at level 0,
 
 Declare Scope charge_scope.
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -50,31 +49,22 @@ Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
 Local Open Scope ereal_scope.
 
-Definition induced_charge d (T : measurableType d) {R : realType}
+Definition charge_of_density d (T : measurableType d) {R : realType}
     (mu : {measure set T -> \bar R}) (f : T -> \bar R)
     (intf : mu.-integrable [set: T] f) :=
   fun A => (\int[mu]_(t in A) f t)%E.
 
-#[deprecated(since="mathcomp-analysis 1.15.0", note="renamed to `induced_charge`")]
-Notation induced := induced_charge (only parsing).
+#[deprecated(since="mathcomp-analysis 1.19.0", use=charge_of_density)]
+Notation induced_charge := charge_of_density (only parsing).
 
-Section induced_charge.
-Context d (T : measurableType d) {R : realType} (mu : {measure set T -> \bar R}).
+Section charge_of_density.
+Context d (T : measurableType d) {R : realType}
+  (mu : {measure set T -> \bar R}) (f : T -> \bar R).
 Local Open Scope ereal_scope.
 
-Lemma semi_sigma_additive_nng_induced (f : T -> \bar R) :
-  measurable_fun setT f -> (forall x, 0 <= f x) ->
-  semi_sigma_additive (fun A => \int[mu]_(t in A) f t).
-Proof.
-move=> mf f0 /= F mF tF mUF; rewrite ge0_integral_bigcup//=.
-  exact: measurable_funTS.
-by apply: is_cvg_ereal_nneg_natsum_cond => // n _ _; exact: integral_ge0.
-Qed.
-
-Variable f : T -> \bar R.
 Hypothesis intf : mu.-integrable setT f.
 
-Local Notation nu := (induced_charge intf).
+Local Notation nu := (charge_of_density intf).
 
 Let nu0 : nu set0 = 0. Proof. by rewrite /nu integral_set0. Qed.
 
@@ -96,30 +86,30 @@ rewrite (_ : SF = fun n =>
 rewrite /nu integralE; apply: cvgeD.
 - rewrite fin_num_adde_defr// integrable_fin_num//=.
   by apply: integrable_funepos => //=; exact: integrableS intf.
-- apply/semi_sigma_additive_nng_induced => //.
+- apply/semi_sigma_additive_measure_of_density => //.
   by apply: measurable_funepos; exact: (measurable_int mu).
-- apply/cvgeN/semi_sigma_additive_nng_induced => //=.
+- apply/cvgeN/semi_sigma_additive_measure_of_density => //=.
   by apply: measurable_funeneg; exact: (measurable_int mu).
 Qed.
 
 HB.instance Definition _ := isCharge.Build _ _ _ nu nu0 finnu snu.
 
-End induced_charge.
+End charge_of_density.
 
-Section dominates_induced.
-Context d (T : measurableType d) {R : realType} (mu : {measure set T -> \bar R}).
+Section dominates_charge_of_density.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (f : T -> \bar R).
 Local Open Scope ereal_scope.
 
-Variable f : T -> \bar R.
 Hypothesis intf : mu.-integrable setT f.
 
 Let intnf : mu.-integrable [set: T] (abse \o f).
 Proof. exact: integrable_abse. Qed.
 
-Lemma dominates_induced : induced_charge intnf `<< mu.
+Lemma dominates_charge_of_density : charge_of_density intnf `<< mu.
 Proof.
 apply/null_content_dominatesP => /= A mA muA.
-rewrite /induced_charge; apply/eqP; rewrite -abse_eq0 eq_le abse_ge0 andbT.
+apply/eqP; rewrite -abse_eq0 eq_le abse_ge0 andbT.
 rewrite (le_trans (le_abse_integral _ _ _))//=.
   by case/integrableP : intnf => /= + _; exact: measurable_funTS.
 rewrite le_eqVlt; apply/orP; left; apply/eqP.
@@ -128,12 +118,14 @@ apply: null_set_integral => //=.
 by apply: measurable_funTS; apply: measurable_int intnf.
 Qed.
 
-End dominates_induced.
+End dominates_charge_of_density.
+#[deprecated(since="mathcomp-analysis 1.19.0", use=dominates_charge_of_density)]
+Notation dominates_induced := dominates_charge_of_density (only parsing).
 
 Section integral_normr_continuous.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) {R : realType} (mu : {measure set T -> \bar R})
-  (f : T -> R).
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (f : T -> R).
 Hypothesis intf : mu.-integrable setT (EFin \o f).
 
 Let intnf : mu.-integrable setT (abse \o EFin \o f).
@@ -145,8 +137,9 @@ Lemma integral_normr_continuous (e : R) : (0 < e)%R ->
   exists d : R, (0 < d)%R /\
   forall A, measurable A -> mu A < d%:E -> (\int[mu]_(x in A) `|f x| < e)%R.
 Proof.
-move=> e0; have [P [N pn]] := Hahn_decomposition (induced_charge intnf).
-have [r [r0 re]] := charge_variation_continuous pn (dominates_induced intf) e0.
+move=> e0; have [P [N pn]] := Hahn_decomposition (charge_of_density intnf).
+have [r [r0 re]] :=
+  charge_variation_continuous pn (dominates_charge_of_density intf) e0.
 exists r; split => //= A mA Ad.
 have {re} := re _ mA Ad.
 rewrite -lte_fin; apply: le_lt_trans.
@@ -170,8 +163,8 @@ End integral_normr_continuous.
    for an overview. *)
 Module approxRN.
 Section approxRN.
-Context d (T : measurableType d) (R : realType).
-Variables mu nu : {measure set T -> \bar R}.
+Context d (T : measurableType d) (R : realType)
+ (mu nu : {measure set T -> \bar R}).
 
 Definition approxRN := [set g : T -> \bar R | [/\
   forall x, 0 <= g x, mu.-integrable [set: T] g &
@@ -199,9 +192,8 @@ End approxRN.
 
 Module approxRN_seq.
 Section approxRN_seq.
-Context d (T : measurableType d) (R : realType).
-Variable mu : {measure set T -> \bar R}.
-Variable nu : {finite_measure set T -> \bar R}.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (nu : {finite_measure set T -> \bar R}).
 
 Import approxRN.
 
@@ -360,8 +352,8 @@ End approxRN_seq.
 
 Module lim_max_approxRN_seq.
 Section lim_max_approxRN_seq.
-Context d (T : measurableType d) (R : realType).
-Variables mu nu : {finite_measure set T -> \bar R}.
+Context {d} {T : measurableType d} {R : realType}
+  (mu nu : {finite_measure set T -> \bar R}).
 
 Import approxRN.
 
@@ -597,8 +589,8 @@ End lim_max_approxRN_seq.
 End lim_max_approxRN_seq.
 
 Section radon_nikodym_finite.
-Context d (T : measurableType d) (R : realType).
-Variables mu nu : {finite_measure set T -> \bar R}.
+Context {d} {T : measurableType d} {R : realType}
+  (mu nu : {finite_measure set T -> \bar R}).
 
 Import approxRN.
 
@@ -608,8 +600,8 @@ Let M := sup_int_approxRN mu nu.
 Import lim_max_approxRN_seq.
 
 Let f := fRN mu nu.
-Let mf := measurable_fun_fRN.
-Let f_ge0 := fRN_ge0.
+Let mf := measurable_fun_fRN mu nu.
+Let f_ge0 := fRN_ge0 mu nu.
 
 Lemma radon_nikodym_finite : nu `<< mu -> exists f : T -> \bar R,
   [/\ forall x, f x >= 0, mu.-integrable [set: T] f &
@@ -629,10 +621,10 @@ have muAP_gt0 : 0 < mu AP.
   move/null_content_dominatesP in nu_mu.
   apply/eqP/(contra_not (nu_mu _ mAP))/eqP; rewrite gt_eqF//.
   rewrite (@lt_le_trans _ _ (sigma AP))//.
-    rewrite (@lt_le_trans _ _ (sigma A))//; last first.
-      rewrite (charge_partition _ _ mP mN)// geeDl//.
-      by apply: negN => //; exact: measurableI.
-    by rewrite sube_gt0// (proj2_sig (epsRN_ex mA abs)).
+    rewrite (@lt_le_trans _ _ (sigma A))//.
+      by rewrite sube_gt0// (proj2_sig (epsRN_ex mA abs)).
+    rewrite (charge_partition _ _ mP mN)// geeDl//.
+    by apply: negN => //; exact: measurableI.
   rewrite /sigma/= /sigmaRN lee_subel_addl ?fin_num_measure//.
   by rewrite lee_paddl// integral_ge0// => x _; rewrite adde_ge0//; exact: f_ge0.
 pose h x := if x \in AP then f x + (epsRN mA abs)%:num%:E else f x.
@@ -676,11 +668,9 @@ have int_h_M : \int[mu]_x h x > M.
   under [X in _ < _ + X]eq_integral.
     by move=> x; rewrite inE /= => xE0p; rewrite memNset//; over.
   rewrite ge0_integralD//.
-    - by move=> x _; exact: f_ge0.
     - by apply: measurable_funTS; exact: mf.
   rewrite integral_cst // addeAC -ge0_integral_setU//.
     by rewrite setUv//; exact: mf.
-    by move=> x _; exact: f_ge0.
   rewrite setUv int_fRNE -lte_subel_addl.
     rewrite ge0_fin_numE ?sup_int_approxRN_lty.
       exact: sup_int_approxRN_ge0.
@@ -700,9 +690,9 @@ Qed.
 End radon_nikodym_finite.
 
 Section radon_nikodym_sigma_finite.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {sigma_finite_measure set T -> \bar R})
-          (nu : {finite_measure set T -> \bar R}).
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {sigma_finite_measure set T -> \bar R})
+  (nu : {finite_measure set T -> \bar R}).
 
 Lemma radon_nikodym_sigma_finite : nu `<< mu ->
   exists f : T -> \bar R, [/\ forall x, f x >= 0, forall x, f x \is a fin_num,
@@ -816,9 +806,9 @@ End radon_nikodym_sigma_finite.
 
 Module Radon_Nikodym_SigmaFinite.
 Section radon_nikodym_sigma_finite_def.
-Context d (T : measurableType d) (R : realType).
-Variables (nu : {finite_measure set T -> \bar R})
-          (mu : {sigma_finite_measure set T -> \bar R}).
+Context {d} {T : measurableType d} {R : realType}
+  (nu : {finite_measure set T -> \bar R})
+  (mu : {sigma_finite_measure set T -> \bar R}).
 
 Definition f : T -> \bar R :=
   match pselect (nu `<< mu) with
@@ -932,10 +922,10 @@ Qed.
 End integrableM.
 
 Section chain_rule.
-Context d (T : measurableType d) (R : realType).
-Variables (nu : {finite_measure set T -> \bar R})
-          (la : {sigma_finite_measure set T -> \bar R})
-          (mu : {finite_measure set T -> \bar R}).
+Context {d} {T : measurableType d} {R : realType}
+  (nu : {finite_measure set T -> \bar R})
+  (la : {sigma_finite_measure set T -> \bar R})
+  (mu : {finite_measure set T -> \bar R}).
 
 Local Notation "'d nu '/d mu" := (f nu mu).
 
@@ -960,9 +950,9 @@ End chain_rule.
 End Radon_Nikodym_SigmaFinite.
 
 Section radon_nikodym.
-Context d (T : measurableType d) (R : realType).
-Variables (nu : {charge set T -> \bar R})
-          (mu : {sigma_finite_measure set T -> \bar R}).
+Context {d} {T : measurableType d} {R : realType}
+  (nu : {charge set T -> \bar R})
+  (mu : {sigma_finite_measure set T -> \bar R}).
 
 Local Lemma Radon_Nikodym0 : nu `<< mu ->
   exists f : T -> \bar R, [/\ (forall x, f x \is a fin_num),
@@ -1019,9 +1009,9 @@ Local Open Scope charge_scope.
   solve [apply: measurable_int; exact: Radon_Nikodym_integrable] : core.
 
 Section Radon_Nikodym_charge_of_finite_measure.
-Context d (T : measurableType d) (R : realType).
-Variables (nu : {finite_measure set T -> \bar R})
-          (mu : {sigma_finite_measure set T -> \bar R}).
+Context {d} {T : measurableType d} {R : realType}
+  (nu : {finite_measure set T -> \bar R})
+  (mu : {sigma_finite_measure set T -> \bar R}).
 Hypothesis numu : nu `<< mu.
 Implicit Types f : T -> \bar R.
 

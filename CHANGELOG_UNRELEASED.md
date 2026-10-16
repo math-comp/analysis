@@ -135,6 +135,11 @@
     `lhopital_Ninfty`, `lhopital_pinfty`, `lhopital_ninfty`,
     `lhopital_Ninfty_at_pinfty`, `lhopital_pinfty_at_pinfty`, `lhopital_ninfty_at_pinfty`,
     `lhopital_Ninfty_at_ninfty`, `lhopital_pinfty_at_ninfty`, `lhopital_ninfty_at_ninfty`
+- in `lebesgue_Rintegral.v`:
+  + definition `measure_of_density`
+  + lemmas `integral_measure_of_density_indic`,
+    `integral_measure_of_densityMindic`, `sintegral_measure_of_density`,
+    `integral_measure_of_density`
 
 ### Changed
 
@@ -206,6 +211,9 @@
   + lemmas `cvg_at_right_filter`,
     `cvg_at_left_filter`, `cvg_at_right_within`, `cvg_at_left_within`
 
+- moved to `lebesgue_Rintegral.v` from `radon_nikodym.v` and renamed:
+  + `semi_sigma_additive_nng_induced` -> `semi_sigma_additive_measure_of_density`
+
 ### Renamed
 
 - in `sequences.v`:
@@ -221,6 +229,9 @@
 
 - in `pseudometric_normed_Zmodule.v`:
   + `continuous_within_itvP` -> `continuous_within_itvccP`
+- in `radon_nikodym.v`:
+  + `induced_charge` -> `charge_of_density`
+  + `dominates_induced` -> `dominates_charge_of_density`
 
 ### Generalized
 
@@ -285,6 +296,9 @@
 
 - in `pseudometric_normred_Zmodule.v`:
   + lemma `pseudoMetricNormedZModType_hausdorff` (deprecated since 1.10.0)
+
+- in `radon_nikodym.v`:
+  + notation `induced` (deprecated since 1.15.0)
 
 ### Infrastructure
 

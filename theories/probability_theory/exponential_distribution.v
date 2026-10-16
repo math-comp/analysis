@@ -10,14 +10,14 @@ From mathcomp Require Import lebesgue_measure lebesgue_integral ftc.
 (**md**************************************************************************)
 (* # Exponential distribution                                                 *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*    exponential_pdf r == pdf of the exponential distribution with rate r    *)
-(*   exponential_prob r == exponential probability measure                    *)
-(* ```                                                                        *)
+(* `exponential_pdf r`                                                        *)
+(* : pdf of the exponential distribution with rate r                          *)
+(*                                                                            *)
+(* `exponential_prob r`                                                       *)
+(* : exponential probability measure                                          *)
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

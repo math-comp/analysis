@@ -32,7 +32,6 @@ From mathcomp Require Import lebesgue_integral ftc gauss_integral.
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -213,13 +212,16 @@ Section normal_prob_def.
 Import MeasurableR.
 Context {R : realType}.
 
-Definition normal_prob (m : R) (s : R) : set _ -> \bar R :=
-  fun V => (\int[lebesgue_measure]_(x in V) (normal_pdf m s x)%:E)%E.
+Definition normal_prob (m : R) (s : R) :=
+  measure_of_density lebesgue_measure (measurable_normal_pdf m s)
+    (normal_pdf_ge0 m s).
+
+HB.instance Definition _ m s := Measure.on (normal_prob m s).
 
 End normal_prob_def.
 
 Section normal_probability.
-Variables (R : realType) (m sigma : R).
+Context {R : realType} (m sigma : R).
 Local Open Scope ring_scope.
 Notation mu := lebesgue_measure.
 
@@ -305,39 +307,21 @@ apply/abse_integralP => //=; last by rewrite integral_normal_pdf abse1 ltry.
 by apply/measurable_EFinP; exact: measurable_normal_pdf.
 Qed.
 
-Local Notation normal_pdf := (normal_pdf m sigma).
-Local Notation normal_prob := (normal_prob m sigma).
-
-Let normal0 : normal_prob set0 = 0%E.
-Proof. by rewrite /normal_prob integral_set0. Qed.
-
-Let normal_ge0 A : (0 <= normal_prob A)%E.
-Proof.
-rewrite /normal_prob integral_ge0//= => x _.
-by rewrite lee_fin normal_pdf_ge0 ?ltW.
-Qed.
-
-Let normal_sigma_additive : semi_sigma_additive normal_prob.
-Proof.
-move=> /= A mA tA mUA.
-rewrite /normal_prob/= integral_bigcup//=.
-  by apply: (integrableS _ _ (subsetT _)) => //; exact: integrable_normal_pdf.
-apply: is_cvg_ereal_nneg_natsum_cond => n _ _.
-by apply: integral_ge0 => /= x ?; rewrite lee_fin normal_pdf_ge0 ?ltW.
-Qed.
-
-HB.instance Definition _ := isMeasure.Build _ _ _
-  normal_prob normal0 normal_ge0 normal_sigma_additive.
+#[local] Notation normal_pdf := (normal_pdf m sigma).
+#[local] Notation normal_prob := (normal_prob m sigma).
 
 Let normal_setT : normal_prob [set: _] = 1%E.
-Proof. by rewrite /normal_prob integral_normal_pdf. Qed.
+Proof.
+by rewrite /normal_prob/= /measure_of_density/= integral_normal_pdf.
+Qed.
 
 HB.instance Definition _ :=
   @Measure_isProbability.Build _ _ R normal_prob normal_setT.
 
 Lemma normal_prob_dominates : normal_prob `<< mu.
 Proof.
-apply/null_content_dominatesP=> A mA muA0; rewrite /normal_prob /normal_pdf.
+apply/null_content_dominatesP=> A mA muA0.
+rewrite /normal_prob /normal_pdf /measure_of_density.
 have [s0|s0] := eqVneq sigma 0.
   apply: null_set_integral => //=; apply: measurable_funTS => /=.
   exact/measurable_EFinP/measurable_indic.
@@ -389,9 +373,8 @@ Section normal_prob_continuous.
       So the integral of `g` on ]-oo, +oo[ is the integral of `f` on ]-oo, +oo[
       added by the integral of `normal_pdf a s x` on ]a - e, a + e[
  *)
-Context {R : realType}.
+Context {R : realType} (s : R).
 Notation mu := (@lebesgue_measure R).
-Variable s : R.
 Hypothesis s0 : s != 0.
 Implicit Types a e x : R.
 
@@ -631,7 +614,8 @@ Lemma measurable_normal_prob (s : R) U : measurable U ->
   measurable_fun setT (fun x => normal_prob x s U).
 Proof.
 have [->/=|s0 mU] := eqVneq s 0%R.
-  by rewrite /normal_prob /normal_pdf eqxx => _; exact: measurable_cst.
+  rewrite /normal_prob /normal_pdf /measure_of_density eqxx => _.
+  exact: measurable_cst.
 under [X in _ _ X]eq_fun.
   move=> /= x.
   rewrite -(@fineK _ (_ x _ _)).
