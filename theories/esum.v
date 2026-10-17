@@ -577,21 +577,30 @@ move=> [x Ax]; apply/eqP; rewrite eq_le leey/=.
 by apply: esum_ge1 Ax => i _; exact: leey.
 Qed.
 
-Lemma infinite_esum_cst {R : realType} {T : choiceType} (c : \bar R) (A : set T) :
-  (0 < c)%E -> infinite_set A -> \esum_(_ in A) c = +oo%E.
+Lemma infinite_esum_cst {R : realType} {T : choiceType} (c : \bar R) (A : set T)
+    (f : T -> \bar R) :
+  (0 < c)%E -> (forall x, A x -> c <= f x)%E -> infinite_set A ->
+  \esum_(x in A) f x = +oo%E.
 Proof.
-move=> c0 infA; apply/eqyP => r r0.
-have [->|] := eqVneq c +oo%E.
+move=> c0 cf infA; apply/eqyP => r r0.
+have [cy|] := eqVneq c +oo%E.
+  rewrite (@le_trans _ _ (\esum_(_ in A) +oo))//; last first.
+    by apply: le_esum => x Ax; rewrite -cy cf.
   by rewrite nonempty_esumy ?leey//; exact: infinite_setN0.
-move: c c0 => [c| |]//; rewrite lte_fin => c0 _.
+move: c c0 cf => [c| |]//; rewrite lte_fin => c0 cf _.
 have [B BA Brc] := infinite_set_fset (Num.truncn (r / c)).+1 infA.
-apply: esum_ge; first by move=> i _; rewrite lee_fin ltW.
+apply: esum_ge.
+  by move=> i Ai; rewrite (le_trans _ (cf _ Ai))// lee_fin ltW.
 exists [set` B]; first by split=> //; apply/subsetP => x; rewrite inE => /BA.
-rewrite fsbig_finite//= set_fsetK sumEFin big_const_seq count_predT.
+rewrite fsbig_finite//= set_fsetK.
+rewrite (@le_trans _ _ (\sum_(x <- B) c%:E))//; last first.
+  by rewrite !big_seq; apply: lee_sum => x Bx; rewrite cf//; exact: BA.
+rewrite sumEFin big_const_seq count_predT.
 rewrite iter_addr addr0 -mulr_natr lee_fin -ler_pdivrMl//.
-rewrite (@le_trans _ _ ((Num.truncn (r / c)).+1)%:R) ?ler_nat//.
+rewrite (@le_trans _ _ (Num.truncn (r / c)).+1%:R) ?ler_nat//.
 by rewrite mulrC ltW// truncnS_gt.
 Qed.
+Arguments infinite_esum_cst {R T} c.
 
 Section esumZ.
 Context {R : realType} {T : choiceType} (A : set T) (f : T -> \bar R).

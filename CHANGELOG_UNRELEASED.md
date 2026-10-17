@@ -93,11 +93,6 @@
   + lemma `nonempty_esumy`
   + lemma `infinite_esum_cst`
 
-- new file `counting_lebesgue.v`:
-  + lemmas `counting_esum_cst`, `sintegral_counting_esum`,
-    `integral_counting_esum_ge0`, `integral_counting_esum`,
-    `integral_counting_esum_set`
-
 - in `random_variable.v`:
   + lemma `not_range_pmf0`
   + lemma `dRV_esum_pmf_distribution`
@@ -151,6 +146,10 @@
   + lemmas `integral_measure_of_density_indic`,
     `integral_measure_of_densityMindic`, `sintegral_measure_of_density`,
     `integral_measure_of_density`
+
+- new file `counting_lebesgue.v`:
+  + lemmas `cstMcounting_esum`, `sintegral_counting_esum`,
+    `integral_countingT_esum`, `integral_counting_esum`
 
 ### Changed
 
