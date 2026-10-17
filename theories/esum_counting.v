@@ -76,66 +76,44 @@ transitivity (\sum_(c \in range h)
     by exists (h y); [exists y|].
 Qed.
 
-Lemma measurable_fin_set (A : set T) :
-  finite_set A -> measurable A.
-Proof.
-move=> finA; rewrite -[A]bigcup_id.
-by apply: fin_bigcup_measurable => // i _; exact: msingl.
-Qed.
-
-Lemma integral_set1 f i :
-  (\int[@counting T R]_(x in [set i]) f x = f i)%E.
-Proof.
-transitivity (\int[@counting T R]_(x in [set i]) cst (f i) x)%E.
-+ by apply: eq_integral => x /set_mem/= ->.
-rewrite (integral_cst _ (msingl i)) -[X in _ = X](mule1 (f i)).
-congr (f i * _)%E => /=.
-rewrite /counting (asboolT (finite_set1 i)).
-by rewrite fset_set1 cardfs1.
-Qed.
-
-Lemma integral_sum f :
-  measurable_fun [set: T] f ->
-  forall A : set T, finite_set A ->
-  (forall x, (0 <= f x)%E) ->
-  (\int[@counting T R]_(x in A) f x = \sum_(x \in A) f x)%E.
-Proof.
-move=> mf A finA f0.
-rewrite fsbig_finite//=.
-rewrite (eq_bigr (fun i => (\int[@counting T R]_(x in [set i]) f x)%E)).
-+ by move => ??;rewrite integral_set1.
-rewrite -ge0_integral_bigsetU //=.
-- exact: fset_uniq.
-- by move=> i j _ _ [x [-> ->]].
-- exact: measurable_funTS.
-- by rewrite (@bigsetU_fset_set _ _ _ _ finA) bigcup_id.
-Qed.
-
-Lemma integral_counting_esum (f : T -> \bar R) :
+Local Lemma integral_counting_esum_ge0 (f : T -> \bar R) :
   measurable_fun [set: T] f ->
   (forall x, (0 <= f x)%E) ->
   (\int[@counting T R]_x f x = \esum_(x in [set: T]) f x)%E.
 Proof.
-move=> mf f0 ; apply/eqP; rewrite eq_le; apply/andP; split.
-- rewrite ge0_integralTE //=.
-  apply: ge_ereal_sup => /= _ [h /= hf] <-.
-  rewrite sintegral_counting_esum.
-  apply: le_esum => x _; exact: hf.
-- rewrite ge0_esum //; apply: ge_ereal_sup => /= _ [A [finA _] <-].
-  rewrite -integral_sum//.
-  apply: ge0_subset_integral => //.
-  exact : (measurable_fin_set finA).
+move=> mf f0 //=.
+pose g := nnsfun_approx measurableT mf.
+have g_ge0 x n : (0 <= (g n x)%:E)%E by rewrite lee_fin.
+have g_nd x : nondecreasing_seq (fun n => (g n x)%:E)%E.
++ by move=> m n mn; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
+have gE x : (f x = ereal_sup (range (fun n => (g n x)%:E)))%E.
++ rewrite -(cvg_lim _ (ereal_nondecreasing_cvgn (g_nd x)))//.
+  by apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
+under eq_esum do rewrite gE.
+rewrite (exchange_esum_ereal_sup g_ge0 g_nd).
+rewrite (@nd_ge0_integral_lim _ _ _ _ _ g)//=.
++ by move=> x; exact: cvg_nnsfun_approx.
+apply/cvg_lim => //=.
+under eq_cvg do rewrite /= sintegral_counting_esum.
+by apply: ereal_nondecreasing_cvgn => m n mn; apply: le_esum => x _; exact: g_nd.
+Qed.
+
+Lemma integral_counting_esum (f : T -> \bar R) :
+  measurable_fun [set: T] f ->
+  (\int[@counting T R]_x f x = \esum_(x in [set: T]) f x)%E.
+Proof.
+ move=> mf; rewrite integralE esumE.
+ by rewrite (integral_counting_esum_ge0 (measurable_funepos mf))//
+      (integral_counting_esum_ge0 (measurable_funeneg mf))//.
 Qed.
 
 Lemma integral_counting_esum_set (A : set T) (f : T -> \bar R) :
   measurable A ->
   measurable_fun [set: T] f ->
-  (forall x, (0 <= f x)%E) ->
   (\int[@counting T R]_(x in A) f x = \esum_(x in A) f x)%E.
 Proof.
-move=> mA mf f0; rewrite integral_mkcond integral_counting_esum.
+move=> mA mf; rewrite integral_mkcond integral_counting_esum.
 - by apply/(measurable_restrict _ mA measurableT); rewrite setTI; exact: measurable_funTS.
-- by move=> x; rewrite patchE; case: ifP.
 - rewrite [RHS]esum_mkcond; apply: eq_esum => x _.
   by rewrite patchE.
 Qed.
@@ -224,12 +202,10 @@ Lemma integral_espe (f : T -> \bar R) : (forall x, 0 <= f x)%E ->
   \int[P mu]_x f x = espe mu f.
 Proof.
 move=> f0; rewrite /espe -esum_setT_discrete -integral_counting_esum => //=.
-+ by move=> x; apply: mule_ge0; [exact: f0|rewrite lee_fin].
 rewrite - (@integral_measure_of_density _ (discrete_measurable_space T) R
              (@counting (discrete_measurable_space T) R)  mu) //=.
 move => H; apply: eq_measure_integral => A mA _ /=.
-rewrite /measure_of_density /P integral_counting_esum_set //=.
-by move=> x; exact: mu_ge0.
+by rewrite /measure_of_density /P integral_counting_esum_set.
 Qed.
 
 Lemma espeE (f : T ->  R) :  ('E_(P mu)[f] = espe mu (EFin \o f)).
@@ -365,7 +341,6 @@ Lemma distribution_integral_counting (A : set R) : measurable A ->
 Proof.
 move=> mA; rewrite integral_counting_esum_set => //=.
 - by apply/measurable_EFinP; exact: pmf_measurable.
-- by move=> r; rewrite lee_fin pmf_ge0.
 - by rewrite esum_pmf_set_dRV.
 Qed.
 
