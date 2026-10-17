@@ -3,7 +3,10 @@ From mathcomp Require Import boot order algebra interval_inference.
 From mathcomp Require Import boolp classical_sets fsbigop functions.
 From mathcomp Require Import reals topology separation_axioms.
 From mathcomp Require Import ereal sequences numfun measure measurable_realfun.
-From mathcomp Require Import lebesgue_measure lebesgue_integral.
+From mathcomp Require Import lebesgue_measure simple_functions
+  measurable_fun_approximation lebesgue_integral_definition
+  lebesgue_integral_nonneg lebesgue_integrable
+  lebesgue_integral_monotone_convergence lebesgue_integral_fubini.
 
 (**md**************************************************************************)
 (* # The Giry monad                                                           *)
@@ -32,7 +35,6 @@ From mathcomp Require Import lebesgue_measure lebesgue_integral.
 
 Reserved Notation "m >>= f" (at level 49).
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

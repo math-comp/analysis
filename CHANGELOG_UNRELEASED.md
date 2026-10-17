@@ -86,6 +86,12 @@
   + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
 
 - new file `edist.v`
+- in `classical_sets.v`
+  + lemma `bigcup_idset1`
+
+- in `esum.v`:
+  + lemma `nonempty_esumy`
+  + lemma `infinite_esum_cst`
 
 - in `random_variable.v`:
   + lemma `not_range_pmf0`
@@ -140,6 +146,10 @@
   + lemmas `integral_measure_of_density_indic`,
     `integral_measure_of_densityMindic`, `sintegral_measure_of_density`,
     `integral_measure_of_density`
+
+- new file `counting_lebesgue.v`:
+  + lemmas `cstMcounting_esum`, `sintegral_counting_esum`,
+    `integral_countingT_esum`, `integral_counting_esum`
 
 ### Changed
 
