@@ -7,7 +7,7 @@ From mathcomp Require Import simple_functions lebesgue_integral_definition
 From mathcomp Require Import numfun measurable_realfun.
 
 (**md**************************************************************************)
-(* # integral w.r.t. counting measure as an infinite sum                      *)
+(* # Integral w.r.t. counting measure as an infinite sum                      *)
 (*                                                                            *)
 (* The goal of this file is to show that                                      *)
 (* $\int_A f \, d(\mathrm{counting}) = \sum_{x\in A} f(x)$.                   *)

@@ -8,7 +8,7 @@ From mathcomp Require Import ereal topology normedtype sequences.
 From mathcomp Require Import exp numfun lebesgue_measure lebesgue_integral.
 From mathcomp Require Import esum measure exp numfun lebesgue_measure.
 From mathcomp Require Import measurable_realfun lebesgue_integral kernel.
-From mathcomp Require Import hoelder probability.
+From mathcomp Require Import hoelder random_variable.
 
 (**md**************************************************************************)
 (* # Independence                                                             *)

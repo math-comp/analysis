@@ -7,3 +7,4 @@ From mathcomp Require Export normal_distribution.
 From mathcomp Require Export exponential_distribution.
 From mathcomp Require Export poisson_distribution.
 From mathcomp Require Export beta_distribution.
+From mathcomp Require Export independence.
