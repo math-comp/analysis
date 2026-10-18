@@ -2847,14 +2847,14 @@ Lemma mine_pMl z x y : z \is a fin_num -> 0 <= z ->
   mine x y * z = mine (x * z) (y * z).
 Proof. by move=> zfin z0; rewrite muleC mine_pMr// !(muleC z). Qed.
 
-Lemma bigmaxe_fin_num (s : seq R) r : r \in s ->
-  \big[maxe/-oo%E]_(i <- s) i%:E \is a fin_num.
+Lemma bigmaxe_fin_num def (s : seq (\bar R)) : s != [::] ->
+  {in s, forall x, def <= x /\ x \is a fin_num} ->
+  \big[maxe/def]_(i <- s) i \is a fin_num.
 Proof.
-move=> rs; have {rs} : s != [::].
-  by rewrite -size_eq0 -lt0n -has_predT; apply/hasP; exists r.
-elim: s => [//|a l]; have [-> _ _|_ /(_ isT) ih _] := eqVneq l [::].
-  by rewrite big_seq1.
-by rewrite big_cons {1}/maxe;  case: (_ < _)%E.
+elim: s => // h [_ _ /(_ h)|h' t ih _ /forall_cons[[defh hfin] h'tfin]].
+  rewrite mem_seq1 => /(_ (eqxx _))[/max_idPl defh hfin].
+  by rewrite big_seq1_id defh.
+by rewrite big_cons -fine_max// ih.
 Qed.
 
 Lemma lee_pemull x y : 0 <= y -> 1 <= x -> y <= x * y.
