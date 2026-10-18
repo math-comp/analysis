@@ -6,8 +6,8 @@ From mathcomp Require Import archimedean finmap interval_inference.
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
 From mathcomp Require Import reals topology ereal normedtype sequences esum.
-From mathcomp Require Import measure numfun measurable_realfun lebesgue_measure.
-From mathcomp Require Import lebesgue_integral kernel.
+From mathcomp Require Import numfun measure real_measure lebesgue_integral
+  kernel.
 
 (**md**************************************************************************)
 (* # Bernoulli distribution                                                   *)

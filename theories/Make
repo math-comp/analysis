@@ -86,6 +86,7 @@ measure_theory/measure.v
 real_measure/lebesgue_stieltjes_measure.v
 real_measure/lebesgue_measure.v
 real_measure/measurable_realfun.v
+real_measure/real_measure.v
 
 borel_hierarchy.v
 
