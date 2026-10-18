@@ -148,7 +148,7 @@
   + new lemmas `bounded_range`, `bounded_rangeP`, `bounded_range_exP`, 
     `bounded_range_setU`, `bounded_range_set0`, `bounded_range_set1`, 
     `bounded_rangeW`, `bounded_rangeD`, `bounded_range_comp`, 
-    `bounded_range_shift`, `bounded_range_itv_tweak`, and `eq_bounded_range`.
+    `bounded_range_shift`, `bounded_range_itvbb`, `eq_bounded_range`, `continuous_compact_bounded`.
 
 ### Changed
 
@@ -222,6 +222,9 @@
 
 - moved to `lebesgue_Rintegral.v` from `radon_nikodym.v` and renamed:
   + `semi_sigma_additive_nng_induced` -> `semi_sigma_additive_measure_of_density`
+
+- moved from `normed_module.v` to `pseudometric_normed_Zmodule.v` and generalized :
+  + lemma `compact_bounded` (from `normedModType` over `realType` to `metricNormedZmodType` over `realFieldType`)
 
 ### Renamed
 

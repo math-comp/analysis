@@ -2103,25 +2103,6 @@ Unshelve. all: by end_near. Qed.
 
 End cvg_seq_bounded.
 
-Lemma compact_bounded (K : realType) (V : normedModType K) (A : set V) :
-  compact A -> bounded_set A.
-Proof.
-rewrite compact_cover => Aco.
-have covA : A `<=` \bigcup_(n : int) [set p | `|p| < n%:~R].
-  by move=> p _; exists (truncn `|p|).+1; rewrite //= truncnS_gt.
-have /Aco [] := covA.
-  move=> n _; rewrite openE => p; rewrite /= -subr_gt0 => ltpn.
-  apply/nbhs_ballP; exists (n%:~R - `|p|) => // q.
-  rewrite -ball_normE /= ltrBrDr distrC; apply: le_lt_trans.
-  by rewrite -{1}(subrK p q) ler_normD.
-move=> D _ DcovA.
-exists (\big[maxr/0]_(i : D) (fsval i)%:~R).
-rewrite bigmax_real//; split=> // x ltmaxx p /DcovA [n Dn /lt_trans /(_ _)/ltW].
-apply; apply: le_lt_trans ltmaxx.
-have : n \in enum_fset D by [].
-by rewrite enum_fsetE => /mapP[/= i iD ->]; exact/le_bigmax.
-Qed.
-
 Lemma compact_has_sup (R : realType) (A : set R) :
   A !=set0 -> compact A -> has_sup A.
 Proof.

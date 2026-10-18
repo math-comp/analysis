@@ -1620,10 +1620,34 @@ Unshelve. all: by end_near. Qed.
 
 End bounded_near.
 
+Lemma compact_bounded {K : realFieldType} {V : metricNormedZmodType K}
+  (A : set V) : 
+  compact A -> bounded_set A.
+Proof.
+rewrite compact_cover => cA.
+have : A `<=` \bigcup_(x in A) ball x 1.
+  by move=> x Ax; exists x => //; apply: ballxx.
+have : forall x, A x -> open (ball x 1).
+  by move=> ? _; exact: ball_open.
+move=> /cA /[apply] -[I _ A_cov_I].
+exists (1 + \big[Order.Def.max/0]_(i : I) `|fsval i|).
+split.
+  by apply: realD => //; apply: bigmax_real.
+move=> M /= Mgt x /A_cov_I [i /= Ii].
+rewrite -ball_normE/= distrC => dxi.
+rewrite -(subrK i x).
+apply: ltW; apply: le_lt_trans; first exact: ler_normD.
+apply: (lt_trans (y := 1 + `|i|)); first by rewrite ltrD2r.
+apply: le_lt_trans Mgt; rewrite lerD2l.
+have : i \in enum_fset I by [].
+rewrite enum_fsetE => /mapP[/= i' Ii' ->]; exact: le_bigmax.
+Qed.
+
+
 Section bounded_range.
 Implicit Types (T : Type) (K : realFieldType).
 
-Lemma bounded_range T K (V : pseudoMetricNormedZmodType K) (f : T -> V) (A : set T) : 
+Lemma bounded_range T K (V : metricNormedZmodType K) (f : T -> V) (A : set T) : 
   [bounded f x | x in A] <-> bounded_set (f @` A).
 Proof.
 split; rewrite /bounded_set /bounded_near.
@@ -1636,7 +1660,8 @@ split; rewrite /bounded_set /bounded_near.
 Unshelve. all: by end_near.
 Qed.
 
-Lemma bounded_rangeP T K (V : pseudoMetricNormedZmodType K) (f : T -> V) (A : set T) (M : K) :
+Lemma bounded_rangeP T K (V : metricNormedZmodType K) 
+  (f : T -> V) (A : set T) (M : K) :
   (forall x, A x -> `|f x| <= M) -> [bounded f x | x in A].
 Proof.
 rewrite /bounded_near => M_ub.
@@ -1647,7 +1672,8 @@ by apply: nbhs_pinfty_ge.
 Unshelve. all: by end_near.
 Qed.
 
-Lemma bounded_range_exP T K (V : pseudoMetricNormedZmodType K) (f : T -> V) (A : set T) :
+Lemma bounded_range_exP T K (V : metricNormedZmodType K) 
+  (f : T -> V) (A : set T) :
   [bounded f x | x in A] <-> (exists2 M : K, M > 0 & forall x, A x -> `|f x| <= M).
 Proof.
 rewrite /bounded_near; split; first by move/pinfty_ex_gt0.
@@ -1660,7 +1686,8 @@ by apply: gtr0_real.
 Unshelve. all: by end_near.
 Qed.  
 
-Lemma bounded_range_setU T K (V : pseudoMetricNormedZmodType K) (f : T -> V) (A B : set T) :
+Lemma bounded_range_setU T K (V : metricNormedZmodType K) 
+  (f : T -> V) (A B : set T) :
   [bounded f x | x in A] -> [bounded f x | x in B] -> [bounded f x | x in A `|` B]%classic.
 Proof.
 move=> /bounded_range_exP[MA MA_gt0 MA_ub] /bounded_range_exP[MB MB_gt0 MB_ub].
@@ -1671,17 +1698,17 @@ apply: (bounded_rangeP (M := MA + MB)) => x [Ax|Bx].
   by rewrite lerDr ltW.
 Qed. 
 
-Lemma bounded_range_set0 T K (V : pseudoMetricNormedZmodType K) (f : T -> V) : [bounded f x | x in set0].
+Lemma bounded_range_set0 T K (V : metricNormedZmodType K) (f : T -> V) : [bounded f x | x in set0].
 Proof.
 by near=> M => /=.
 Unshelve. all: by end_near. Qed.
 
-Lemma bounded_range_set1 T K (V : pseudoMetricNormedZmodType K) (f : T -> V) (x0 : T) : [bounded f x | x in [set x0]].
+Lemma bounded_range_set1 T K (V : metricNormedZmodType K) (f : T -> V) (x0 : T) : [bounded f x | x in [set x0]].
 Proof. by apply: bounded_rangeP => ? ->. Qed.
 
 Hint Resolve bounded_range_set1 bounded_range_set0 : core.
 
-Lemma bounded_rangeW T K (V : pseudoMetricNormedZmodType K) (f : T -> V) (A B : set T) :
+Lemma bounded_rangeW T K (V : metricNormedZmodType K) (f : T -> V) (A B : set T) :
   A `<=` B -> [bounded f x | x in B] -> [bounded f x | x in A].
 Proof.
 move=> A_sub_B /bounded_range_exP[M M_gt0 M_ub].
@@ -1689,7 +1716,8 @@ apply: bounded_rangeP => x /A_sub_B.
 exact: M_ub.
 Qed.
 
-Lemma bounded_rangeD T K (V : pseudoMetricNormedZmodType K) (f g : T -> V) (A : set T) : 
+Lemma bounded_rangeD T K (V : metricNormedZmodType K) 
+  (f g : T -> V) (A : set T) : 
   [bounded f x | x in A] -> [bounded g x | x in A] -> [bounded f x + g x | x in A].
 Proof.
 move=> /bounded_range_exP[Mf Mf_gt0 Mf_ub] /bounded_range_exP[Mg Mg_gt0 Mg_ub].
@@ -1701,7 +1729,8 @@ apply: lerD.
 - by apply: Mg_ub.
 Qed.
 
-Lemma bounded_range_comp (T U : Type) K (V : pseudoMetricNormedZmodType K) (f : T -> U) (g : U -> V) (E : set T) (F : set U) :
+Lemma bounded_range_comp (T U : Type) K (V : metricNormedZmodType K) 
+  (f : T -> U) (g : U -> V) (E : set T) (F : set U) :
   f @` E `<=` F ->
   [bounded g y | y in F] -> [bounded g (f x) | x in E].
 Proof.
@@ -1711,7 +1740,8 @@ apply: Mg_ub.
 by apply: rng_sub; exists x.
 Qed.
 
-Lemma bounded_range_shift (T : numDomainType) K (V : pseudoMetricNormedZmodType K) (f : T -> V) (x y a : T) (b1 b2 : bool) :
+Lemma bounded_range_shift (T : numDomainType) K (V : metricNormedZmodType K) 
+  (f : T -> V) (x y a : T) (b1 b2 : bool) :
   [bounded f z | z in [set` Interval (BSide b1 (x - a)) (BSide b2 (y - a))]] ->
   [bounded f (z - a) | z in [set` Interval (BSide b1 x) (BSide b2 y)]].
 Proof.
@@ -1720,7 +1750,8 @@ rewrite /= !in_itv.
 by case: b1 b2 => [|] [|] /=; rewrite ?ltrD2r ?lerD2r.
 Qed.
 
-Lemma bounded_range_itv_tweak d (T : orderType d) K (V : pseudoMetricNormedZmodType K) (f : T -> V) (a b : T) (b1 b2 b1' b2' : bool) :
+Lemma bounded_range_itvbb d (T : orderType d) K (V : metricNormedZmodType K) 
+  (f : T -> V) (a b : T) (b1 b2 b1' b2' : bool) :
   [bounded f x | x in [set` Interval (BSide b1 a) (BSide b2 b)]] -> [bounded f x | x in [set` Interval (BSide b1' a) (BSide b2' b)]].
 Proof.
 case: (leP a b) => [a_le_b|b_lt_a _]; last first.
@@ -1732,7 +1763,8 @@ rewrite -(setUitv_set2 b1 b2)//.
 by apply/bounded_range_setU; last by apply/bounded_range_setU.
 Qed.
 
-Lemma eq_bounded_range T K (V : pseudoMetricNormedZmodType K) (f g : T -> V) (A : set T) :
+Lemma eq_bounded_range T K (V : metricNormedZmodType K) 
+  (f g : T -> V) (A : set T) :
   {in A, f =1 g} -> [bounded f x | x in A] = [bounded g x | x in A].
 Proof.
 move=> eqfg.
@@ -1741,6 +1773,14 @@ apply: eq_near => M.
 apply/propeqP; apply: eq_forall => x.
 apply: eq_forall => Ax /=.
 by rewrite eqfg ?inE.
+Qed.
+
+Lemma continuous_compact_bounded (T : topologicalType) K 
+  (V : metricNormedZmodType K) (A : set T) (f : T -> V) :
+  compact A -> {within A, continuous f} -> [bounded f x | x in A].
+Proof.
+move=> cA cf; apply/bounded_range; apply: compact_bounded.
+by apply: continuous_compact.
 Qed.
 
 End bounded_range.
