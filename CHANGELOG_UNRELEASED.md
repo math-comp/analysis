@@ -117,6 +117,9 @@
 
 - in `realfun.v`:
   + lemma `derivable_oy_RcontinuousN`
+
+- in file `derive.v`,
+  + new lemmas `right_derivative_limit`, `left_derivative_limit`, `derivative_limit`.
   
 - in `topology_structure.v`:
   + definitions `separable_set`, `separable`
