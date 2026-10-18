@@ -3,10 +3,9 @@ From HB Require Import structures.
 From mathcomp Require Import boot order ssralg ssrnum ssrint interval.
 From mathcomp Require Import interval_inference finmap.
 From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
-From mathcomp Require Import reals real_interval topology ereal tvs.
+From mathcomp Require Import reals real_interval topology ereal.
 From mathcomp Require Import normedtype sequences esum measure.
-From mathcomp Require Import lebesgue_measure numfun realfun simple_functions.
-From mathcomp Require Import measurable_realfun.
+From mathcomp Require Import real_measure numfun realfun simple_functions.
 
 (**md**************************************************************************)
 (* # Definition of the Lebesgue integral                                      *)

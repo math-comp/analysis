@@ -1,13 +1,12 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order finmap ssralg ssrnum ssrint interval.
-From mathcomp Require Import archimedean.
+From mathcomp Require Import interval_inference archimedean.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import boolp classical_sets functions fsbigop cardinality.
-From mathcomp Require Import reals ereal interval_inference topology numfun.
-From mathcomp Require Import normedtype sequences esum real_interval measure.
-From mathcomp Require Import realfun.
+From mathcomp Require Import boolp classical_sets fsbigop cardinality.
+From mathcomp Require Import reals ereal topology normedtype sequences esum
+  measure realfun.
 
 (**md**************************************************************************)
 (* # Lebesgue Stieltjes Measure                                               *)
@@ -86,7 +85,6 @@ From mathcomp Require Import realfun.
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

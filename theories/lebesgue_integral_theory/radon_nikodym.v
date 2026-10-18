@@ -5,8 +5,7 @@ From mathcomp Require Import interval_inference finmap fingroup perm rat.
 From mathcomp Require Import boolp classical_sets cardinality functions fsbigop
   set_interval reals.
 From mathcomp Require Import topology ereal numfun normedtype derive sequences.
-From mathcomp Require Import esum measure realfun measurable_realfun.
-From mathcomp Require Import lebesgue_measure.
+From mathcomp Require Import esum measure realfun real_measure.
 From mathcomp Require Import lebesgue_integral_definition lebesgue_integrable
   lebesgue_integral_nonneg lebesgue_Rintegral
   lebesgue_integral_monotone_convergence measurable_fun_approximation
