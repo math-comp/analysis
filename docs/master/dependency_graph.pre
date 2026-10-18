@@ -1855,6 +1855,7 @@ subgraph cluster_LebesgueIntegral {
         fillcolor=10
     ]
 }
+  "theories/lebesgue_integral_theory/counting_lebesgue" -> "theories/lebesgue_integral_theory/lebesgue_integral";
   "theories/lebesgue_integral_theory/lebesgue_Rintegral" -> "theories/lebesgue_integral_theory/lebesgue_integral";
   "theories/lebesgue_integral_theory/lebesgue_integrable" -> "theories/lebesgue_integral_theory/lebesgue_integral";
   "theories/lebesgue_integral_theory/lebesgue_integral_definition" -> "theories/lebesgue_integral_theory/lebesgue_integral";
@@ -1914,7 +1915,13 @@ subgraph cluster_LebesgueIntegral {
   "classical/functions" -> "theories/lebesgue_integral_theory/giry";
   "reals/reals" -> "theories/lebesgue_integral_theory/giry";
   "theories/ereal" -> "theories/lebesgue_integral_theory/giry";
-  "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/lebesgue_integral_theory/giry";
+  "theories/lebesgue_integral_theory/lebesgue_integrable" -> "theories/lebesgue_integral_theory/giry";
+  "theories/lebesgue_integral_theory/lebesgue_integral_definition" -> "theories/lebesgue_integral_theory/giry";
+  "theories/lebesgue_integral_theory/lebesgue_integral_fubini" -> "theories/lebesgue_integral_theory/giry";
+  "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence" -> "theories/lebesgue_integral_theory/giry";
+  "theories/lebesgue_integral_theory/lebesgue_integral_nonneg" -> "theories/lebesgue_integral_theory/giry";
+  "theories/lebesgue_integral_theory/measurable_fun_approximation" -> "theories/lebesgue_integral_theory/giry";
+  "theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/giry";
   "theories/lebesgue_measure" -> "theories/lebesgue_integral_theory/giry";
   "theories/measurable_realfun" -> "theories/lebesgue_integral_theory/giry";
   "theories/measure_theory/measure" -> "theories/lebesgue_integral_theory/giry";
@@ -1922,6 +1929,30 @@ subgraph cluster_LebesgueIntegral {
   "theories/sequences" -> "theories/lebesgue_integral_theory/giry";
   "theories/topology_theory/separation_axioms" -> "theories/lebesgue_integral_theory/giry";
   "theories/topology_theory/topology" -> "theories/lebesgue_integral_theory/giry";
+
+subgraph cluster_LebesgueIntegral {
+    "theories/lebesgue_integral_theory/counting_lebesgue"[
+        label="counting_lebesgue",
+        URL="mathcomp.analysis.lebesgue_integral_theory.counting_lebesgue.html",
+        fillcolor=10
+    ]
+}
+  "classical/boolp" -> "theories/lebesgue_integral_theory/counting_lebesgue";
+  "classical/cardinality" -> "theories/lebesgue_integral_theory/counting_lebesgue";
+  "classical/classical_sets" -> "theories/lebesgue_integral_theory/counting_lebesgue";
+  "classical/fsbigop" -> "theories/lebesgue_integral_theory/counting_lebesgue";
+  "reals/reals" -> "theories/lebesgue_integral_theory/counting_lebesgue";
+  "theories/ereal" -> "theories/lebesgue_integral_theory/counting_lebesgue";
+  "theories/esum" -> "theories/lebesgue_integral_theory/counting_lebesgue";
+  "theories/lebesgue_integral_theory/lebesgue_integral_definition" -> "theories/lebesgue_integral_theory/counting_lebesgue";
+  "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence" -> "theories/lebesgue_integral_theory/counting_lebesgue";
+  "theories/lebesgue_integral_theory/measurable_fun_approximation" -> "theories/lebesgue_integral_theory/counting_lebesgue";
+  "theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/counting_lebesgue";
+  "theories/measurable_realfun" -> "theories/lebesgue_integral_theory/counting_lebesgue";
+  "theories/measure_theory/measure" -> "theories/lebesgue_integral_theory/counting_lebesgue";
+  "theories/numfun" -> "theories/lebesgue_integral_theory/counting_lebesgue";
+  "theories/sequences" -> "theories/lebesgue_integral_theory/counting_lebesgue";
+  "theories/topology_theory/topology" -> "theories/lebesgue_integral_theory/counting_lebesgue";
 
 subgraph cluster_Analysis {
     "theories/ftc"[
@@ -2201,38 +2232,39 @@ subgraph cluster_Probability {
   "theories/probability_theory/beta_distribution" -> "theories/probability_theory/probability";
   "theories/probability_theory/binomial_distribution" -> "theories/probability_theory/probability";
   "theories/probability_theory/exponential_distribution" -> "theories/probability_theory/probability";
+  "theories/probability_theory/independence" -> "theories/probability_theory/probability";
   "theories/probability_theory/normal_distribution" -> "theories/probability_theory/probability";
   "theories/probability_theory/poisson_distribution" -> "theories/probability_theory/probability";
   "theories/probability_theory/random_variable" -> "theories/probability_theory/probability";
   "theories/probability_theory/uniform_distribution" -> "theories/probability_theory/probability";
 
-subgraph cluster_Analysis {
-    "theories/independence"[
+subgraph cluster_Probability {
+    "theories/probability_theory/independence"[
         label="independence",
-        URL="mathcomp.analysis.independence.html",
-        fillcolor=5
+        URL="mathcomp.analysis.probability_theory.independence.html",
+        fillcolor=12
     ]
 }
-  "classical/boolp" -> "theories/independence";
-  "classical/cardinality" -> "theories/independence";
-  "classical/classical_sets" -> "theories/independence";
-  "classical/fsbigop" -> "theories/independence";
-  "classical/functions" -> "theories/independence";
-  "reals/reals" -> "theories/independence";
-  "theories/ereal" -> "theories/independence";
-  "theories/esum" -> "theories/independence";
-  "theories/exp" -> "theories/independence";
-  "theories/hoelder" -> "theories/independence";
-  "theories/kernel" -> "theories/independence";
-  "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/independence";
-  "theories/lebesgue_measure" -> "theories/independence";
-  "theories/measurable_realfun" -> "theories/independence";
-  "theories/measure_theory/measure" -> "theories/independence";
-  "theories/normedtype_theory/normedtype" -> "theories/independence";
-  "theories/numfun" -> "theories/independence";
-  "theories/probability_theory/probability" -> "theories/independence";
-  "theories/sequences" -> "theories/independence";
-  "theories/topology_theory/topology" -> "theories/independence";
+  "classical/boolp" -> "theories/probability_theory/independence";
+  "classical/cardinality" -> "theories/probability_theory/independence";
+  "classical/classical_sets" -> "theories/probability_theory/independence";
+  "classical/fsbigop" -> "theories/probability_theory/independence";
+  "classical/functions" -> "theories/probability_theory/independence";
+  "reals/reals" -> "theories/probability_theory/independence";
+  "theories/ereal" -> "theories/probability_theory/independence";
+  "theories/esum" -> "theories/probability_theory/independence";
+  "theories/exp" -> "theories/probability_theory/independence";
+  "theories/hoelder" -> "theories/probability_theory/independence";
+  "theories/kernel" -> "theories/probability_theory/independence";
+  "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/independence";
+  "theories/lebesgue_measure" -> "theories/probability_theory/independence";
+  "theories/measurable_realfun" -> "theories/probability_theory/independence";
+  "theories/measure_theory/measure" -> "theories/probability_theory/independence";
+  "theories/normedtype_theory/normedtype" -> "theories/probability_theory/independence";
+  "theories/numfun" -> "theories/probability_theory/independence";
+  "theories/probability_theory/random_variable" -> "theories/probability_theory/independence";
+  "theories/sequences" -> "theories/probability_theory/independence";
+  "theories/topology_theory/topology" -> "theories/probability_theory/independence";
 
 subgraph cluster_Analysis {
     "theories/convex"[

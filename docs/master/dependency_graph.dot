@@ -161,9 +161,6 @@ digraph dependencies {
 		"theories/gauss_integral"	[URL="mathcomp.analysis.gauss_integral.html",
 			fillcolor=5,
 			label=gauss_integral];
-		"theories/independence"	[URL="mathcomp.analysis.independence.html",
-			fillcolor=5,
-			label=independence];
 		"theories/charge"	[URL="mathcomp.analysis.charge.html",
 			fillcolor=5,
 			label=charge];
@@ -323,6 +320,9 @@ digraph dependencies {
 		"theories/lebesgue_integral_theory/lebesgue_integral_differentiation"	[URL="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.html",
 			fillcolor=10,
 			label=lebesgue_integral_differentiation];
+		"theories/lebesgue_integral_theory/counting_lebesgue"	[URL="mathcomp.analysis.lebesgue_integral_theory.counting_lebesgue.html",
+			fillcolor=10,
+			label=counting_lebesgue];
 		"theories/lebesgue_integral_theory/radon_nikodym"	[URL="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html",
 			fillcolor=10,
 			label=radon_nikodym];
@@ -425,6 +425,9 @@ digraph dependencies {
 		"theories/probability_theory/probability"	[URL="mathcomp.analysis.probability_theory.probability.html",
 			fillcolor=12,
 			label=probability];
+		"theories/probability_theory/independence"	[URL="mathcomp.analysis.probability_theory.independence.html",
+			fillcolor=12,
+			label=independence];
 	}
 	"classical/all_classical" -> "reals/prodnormedzmodule";
 	"classical/all_classical" -> "theories/topology_theory/topology_structure";
@@ -552,7 +555,6 @@ digraph dependencies {
 	"theories/ftc" -> "theories/probability_theory/exponential_distribution";
 	"theories/ftc" -> "theories/probability_theory/beta_distribution";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/ftc";
-	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/lebesgue_integral_theory/giry";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/hoelder";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/kernel";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/uniform_distribution";
@@ -578,6 +580,7 @@ digraph dependencies {
 	"theories/lebesgue_integral_theory/lebesgue_integral_definition" -> "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence";
 	"theories/lebesgue_integral_theory/measurable_fun_approximation" -> "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence";
 	"theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence" -> "theories/lebesgue_integral_theory/lebesgue_integral_nonneg";
+	"theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence" -> "theories/lebesgue_integral_theory/counting_lebesgue";
 	"theories/lebesgue_integral_theory/lebesgue_integral_nonneg" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
 	"theories/lebesgue_integral_theory/lebesgue_integrable" -> "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence";
 	"theories/lebesgue_integral_theory/lebesgue_integrable" -> "theories/lebesgue_integral_theory/lebesgue_integral_fubini";
@@ -587,13 +590,16 @@ digraph dependencies {
 	"theories/lebesgue_integral_theory/lebesgue_Rintegral" -> "theories/lebesgue_integral_theory/lebesgue_integral_differentiation";
 	"theories/lebesgue_integral_theory/lebesgue_Rintegral" -> "theories/lebesgue_integral_theory/radon_nikodym";
 	"theories/lebesgue_integral_theory/lebesgue_integral_fubini" -> "theories/lebesgue_integral_theory/lebesgue_integral";
+	"theories/lebesgue_integral_theory/lebesgue_integral_fubini" -> "theories/lebesgue_integral_theory/giry";
 	"theories/lebesgue_integral_theory/lebesgue_integral_differentiation" -> "theories/lebesgue_integral_theory/lebesgue_integral";
+	"theories/lebesgue_integral_theory/counting_lebesgue" -> "theories/lebesgue_integral_theory/lebesgue_integral";
 	"theories/lebesgue_integral_theory/radon_nikodym" -> "theories/lebesgue_integral_theory/lebesgue_integral";
 	"theories/hoelder" -> "theories/probability_theory/random_variable";
-	"theories/probability_theory/random_variable" -> "theories/probability_theory/probability";
+	"theories/probability_theory/random_variable" -> "theories/probability_theory/independence";
 	"theories/probability_theory/bernoulli_distribution" -> "theories/probability_theory/binomial_distribution";
 	"theories/probability_theory/bernoulli_distribution" -> "theories/probability_theory/beta_distribution";
 	"theories/kernel" -> "theories/probability_theory/bernoulli_distribution";
+	"theories/kernel" -> "theories/probability_theory/independence";
 	"theories/probability_theory/binomial_distribution" -> "theories/probability_theory/probability";
 	"theories/probability_theory/uniform_distribution" -> "theories/probability_theory/beta_distribution";
 	"theories/probability_theory/normal_distribution" -> "theories/probability_theory/probability";
@@ -601,8 +607,8 @@ digraph dependencies {
 	"theories/probability_theory/exponential_distribution" -> "theories/probability_theory/probability";
 	"theories/probability_theory/poisson_distribution" -> "theories/probability_theory/probability";
 	"theories/probability_theory/beta_distribution" -> "theories/probability_theory/probability";
-	"theories/probability_theory/probability" -> "theories/independence";
 	"theories/probability_theory/probability" -> "theories/all_analysis";
+	"theories/probability_theory/independence" -> "theories/probability_theory/probability";
 	"theories/pi_irrational" -> "theories/all_analysis";
 	"analysis_stdlib/Rstruct_topology" -> "analysis_stdlib/showcase/uniform_bigO";
 }
