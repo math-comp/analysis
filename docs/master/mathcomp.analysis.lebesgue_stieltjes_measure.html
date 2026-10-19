@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.lebesgue_stieltjes_measure</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis e3b8a4f 2026.10.18-20:33" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis e3b8a4f 2026.10.19-22:31" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -1404,14 +1404,14 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> completed_lebesgue_stieltjes_measure</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="completed_lebesgue_stieltjes_measure.R" class="id"><div name="completed_lebesgue_stieltjes_measure.R" class="id anchor tooltip">R<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/e3b8a4f315e3b884d42cff64e6c3ce24b736f02e/theories/lebesgue_stieltjes_measure.v#L972' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="completed_lebesgue_stieltjes_measure" class="id"><div name="completed_lebesgue_stieltjes_measure" class="id anchor tooltip">completed_lebesgue_stieltjes_measure<span class='tooltip-area'><p>ocitv : forall [R : realType], set (set R)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="completed_lebesgue_stieltjes_measure" class="id"><div name="completed_lebesgue_stieltjes_measure" class="id anchor tooltip">completed_lebesgue_stieltjes_measure<span class='tooltip-area'><p>ocitv_type : realType -> Type
 
-ocitv is not universe polymorphic
-Arguments ocitv [R] _
-ocitv is transparent
-Expands to: Constant mathcomp.analysis.lebesgue_stieltjes_measure.ocitv
+ocitv_type is not universe polymorphic
+Arguments ocitv_type R
+ocitv_type is transparent
+Expands to: Constant mathcomp.analysis.lebesgue_stieltjes_measure.ocitv_type
 Declared in
-library mathcomp.analysis.lebesgue_stieltjes_measure, line 168, characters 11-16
+library mathcomp.analysis.lebesgue_stieltjes_measure, line 166, characters 11-21
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/e3b8a4f315e3b884d42cff64e6c3ce24b736f02e/theories/lebesgue_stieltjes_measure.v#L974' target='_blank'>Source code</a></span></div></span>&nbsp;(<span id="f:258" class="id"><div name="f:258" class="id anchor tooltip">f<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/e3b8a4f315e3b884d42cff64e6c3ce24b736f02e/theories/lebesgue_stieltjes_measure.v#L974' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#cumulative">cumulative</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#completed_lebesgue_stieltjes_measure.R">R</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#completed_lebesgue_stieltjes_measure.R">R</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id">@</span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_extension.html#completed_measure_extension">completed_measure_extension</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> _</span>&nbsp;(<span class="id link"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#wlength">wlength</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html#f:258">f</a></span>).<br/>
 <br/>

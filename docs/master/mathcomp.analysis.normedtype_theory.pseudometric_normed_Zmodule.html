@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis e3b8a4f 2026.10.18-20:33" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis e3b8a4f 2026.10.19-22:31" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -342,24 +342,17 @@ To be used in `normed_module.v`.
 <span class="vernacular">Section</span><span class="id"> Shift</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Shift.R" class="id"><div name="Shift.R" class="id anchor tooltip">R<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/e3b8a4f315e3b884d42cff64e6c3ce24b736f02e/theories/normedtype_theory/pseudometric_normed_Zmodule.v#L92' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.nmodule.html#Algebra.Zmodule.Exports.zmodType">zmodType</a></span><span class="id">}</span><span class="id"> {</span><span id="Shift.T" class="id"><div name="Shift.T" class="id anchor tooltip">T<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/e3b8a4f315e3b884d42cff64e6c3ce24b736f02e/theories/normedtype_theory/pseudometric_normed_Zmodule.v#L92' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> Type}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="shift" class="id"><div name="shift" class="id anchor tooltip">shift<span class='tooltip-area'><p>Builders_63.entourage :
-forall [E : Type],
-isFiltered.axioms_ E E ->
-Algebra.hasOpp.axioms_ E ->
-Algebra.hasZero.axioms_ E ->
-Algebra.hasAdd.axioms_ E ->
-hasChoice.axioms_ E -> Equality.mixin_of E -> set_system (E * E)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="shift" class="id"><div name="shift" class="id anchor tooltip">shift<span class='tooltip-area'><p>lcfun_key :
+forall {K : numDomainType} {E : NbhsLmodule.type K} 
+  {F : NbhsZmodule.type} {s : K -> F -> F},
+pred_key (T:=E -> F) lcfun
 
-Builders_63.entourage is not universe polymorphic
-Arguments Builders_63.entourage [E]%_type_scope local_mixin_filter_isFiltered
-  local_mixin_Algebra_hasOpp local_mixin_Algebra_hasZero
-  local_mixin_Algebra_hasAdd local_mixin_choice_hasChoice
-  local_mixin_eqtype_hasDecEq _
-Builders_63.entourage is transparent
-Expands to: Constant
-            mathcomp.analysis.normedtype_theory.tvs.Builders_63.entourage
+lcfun_key is not universe polymorphic
+Arguments lcfun_key {K E F} {s}%_function_scope
+lcfun_key is opaque
+Expands to: Constant mathcomp.analysis.normedtype_theory.tvs.lcfun_key
 Declared in
-library mathcomp.analysis.normedtype_theory.tvs, line 313, characters 11-20
+library mathcomp.analysis.normedtype_theory.tvs, line 571, characters 11-20
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/e3b8a4f315e3b884d42cff64e6c3ce24b736f02e/theories/normedtype_theory/pseudometric_normed_Zmodule.v#L94' target='_blank'>Source code</a></span></div></span>&nbsp;(<span id="x:3" class="id"><div name="x:3" class="id anchor tooltip">x<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/e3b8a4f315e3b884d42cff64e6c3ce24b736f02e/theories/normedtype_theory/pseudometric_normed_Zmodule.v#L94' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="y:4" class="id"><div name="y:4" class="id anchor tooltip">y<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/e3b8a4f315e3b884d42cff64e6c3ce24b736f02e/theories/normedtype_theory/pseudometric_normed_Zmodule.v#L94' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#Shift.R">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#y:4">y</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id link"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#x:3">x</a></span>.<br/>
 <span class="vernacular">Notation</span><span class="id"> </span><span id="center" class="id"><div name="center" class="id anchor tooltip">center<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/e3b8a4f315e3b884d42cff64e6c3ce24b736f02e/theories/normedtype_theory/pseudometric_normed_Zmodule.v#L95' target='_blank'>Source code</a></span></div></span><span class="id"> c</span><span class="id"> :=</span>&nbsp;(<span class="id link"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#shift">shift</a></span>&nbsp;(<span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x">-</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x"> </a></span><span class="id">c</span>)).<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html#shift">shift</a></span><span class="id"> x</span><span class="id"> /</span><span class="id"> y</span>.<br/>
@@ -2049,28 +2042,7 @@ Qed.</div></details>
 <span class="vernacular">End</span><span class="id"> realFieldType</span>.<br/>
 <br/>
 <span class="vernacular">Module</span><span class="vernacular"> Export</span><span class="id"> </span><span id="NbhsNorm" class="id"><div name="NbhsNorm" class="id anchor tooltip">NbhsNorm<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/e3b8a4f315e3b884d42cff64e6c3ce24b736f02e/theories/normedtype_theory/pseudometric_normed_Zmodule.v#L1416' target='_blank'>Source code</a></span></div></span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="NbhsNorm.nbhs_simpl" class="id"><div name="NbhsNorm.nbhs_simpl" class="id anchor tooltip">nbhs_simpl<span class='tooltip-area'><p>lcfun :
-forall {K : numDomainType} {E : NbhsLmodule.type K} {F : NbhsZmodule.type},
-(K -> F -> F) -> {pred E -> F}
-
-lcfun is not universe polymorphic
-Arguments lcfun {K E F} {s}%_function_scope _
-lcfun is transparent
-Expands to: Constant mathcomp.analysis.normedtype_theory.tvs.lcfun
-Declared in
-library mathcomp.analysis.normedtype_theory.tvs, line 568, characters 11-16
-lcfun_key :
-forall {K : numDomainType} {E : NbhsLmodule.type K} 
-  {F : NbhsZmodule.type} {s : K -> F -> F},
-pred_key (T:=E -> F) lcfun
-
-lcfun_key is not universe polymorphic
-Arguments lcfun_key {K E F} {s}%_function_scope
-lcfun_key is opaque
-Expands to: Constant mathcomp.analysis.normedtype_theory.tvs.lcfun_key
-Declared in
-library mathcomp.analysis.normedtype_theory.tvs, line 571, characters 11-20
-lcfun_keyed :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="NbhsNorm.nbhs_simpl" class="id"><div name="NbhsNorm.nbhs_simpl" class="id anchor tooltip">nbhs_simpl<span class='tooltip-area'><p>lcfun_keyed :
 forall {K : numDomainType} {E : NbhsLmodule.type K} 
   {F : NbhsZmodule.type} {s : K -> F -> F},
 keyed_pred lcfun_key

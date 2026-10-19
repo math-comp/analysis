@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.measure_theory.measure_function</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis e3b8a4f 2026.10.18-20:33" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis e3b8a4f 2026.10.19-22:31" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -2382,6 +2382,17 @@ Expands to: Constant
             mathcomp.analysis.measure_theory.measure_function.sigma_additive
 Declared in
 library mathcomp.analysis.measure_theory.measure_function, line 167, characters 11-25
+subadditive :
+forall [d : measure_display] [R : numFieldType] [T : semiRingOfSetsType d],
+(set T -> \bar R) -> Prop
+
+subadditive is not universe polymorphic
+Arguments subadditive [d]%_measure_display_scope [R T] mu%_function_scope
+subadditive is transparent
+Expands to: Constant
+            mathcomp.analysis.measure_theory.measure_function.subadditive
+Declared in
+library mathcomp.analysis.measure_theory.measure_function, line 171, characters 11-22
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/e3b8a4f315e3b884d42cff64e6c3ce24b736f02e/theories/measure_theory/measure_function.v#L1815' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="T:1014" class="id"><div name="T:1014" class="id anchor tooltip">T<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/e3b8a4f315e3b884d42cff64e6c3ce24b736f02e/theories/measure_theory/measure_function.v#L1815' target='_blank'>Source code</a></span></div></span>&nbsp;(<span id="F:1015" class="id"><div name="F:1015" class="id anchor tooltip">F<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/e3b8a4f315e3b884d42cff64e6c3ce24b736f02e/theories/measure_theory/measure_function.v#L1815' target='_blank'>Source code</a></span></div></span><span class="id"> :</span>&nbsp;(<span class="id link"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#T:1014">T</a></span>)<span class="id link"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#0f075d0e59a6e8ec7e140f5f44f5e4cc">\bigcap_</a></span><span id="n:1016" class="id"><div name="n:1016" class="id anchor tooltip">n<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/e3b8a4f315e3b884d42cff64e6c3ce24b736f02e/theories/measure_theory/measure_function.v#L1815' target='_blank'>Source code</a></span></div></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#0f075d0e59a6e8ec7e140f5f44f5e4cc"> </a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#8bbd6e33a4e481aeddc2eed9688403b6">\bigcup_</a></span>(<span id="j:1020" class="id"><span id="j:1019" class="id"><span id="j:1018" class="id"><span id="j:1017" class="id"><div name="j:1020" class="id anchor tooltip">j<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/e3b8a4f315e3b884d42cff64e6c3ce24b736f02e/theories/measure_theory/measure_function.v#L1815' target='_blank'>Source code</a></span></div></span></span></span></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#8bbd6e33a4e481aeddc2eed9688403b6"> &gt;=</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#8bbd6e33a4e481aeddc2eed9688403b6"> </a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#n:1016">n</a></span>)<span class="id link"><a href="mathcomp.classical.classical_sets.html#8bbd6e33a4e481aeddc2eed9688403b6"> </a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#F:1015">F</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#j:1020">j</a></span>.<br/>
 <br/>
 <span class="vernacular">Section</span><span class="id"> borel_cantelli_realFieldType</span>.<br/>
