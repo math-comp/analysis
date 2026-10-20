@@ -1667,7 +1667,7 @@ Proof. by move=> A0 cA cf; exact: compact_EVT_min. Qed.
 Lemma cvg_at_rightE (R : numFieldType) (V : normedModType R) (f : R -> V) x :
   cvg (f @ x^') -> lim (f @ x^') = lim (f @ at_right x).
 Proof.
-move=> cvfx; apply/esym/(@cvg_lim _ _ _ (at_right _)) => //.
+move=> cvfx; apply/esym/norm_cvg_lim.
 move=> A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
 by exists e%:num => //= y xe_y /gt_eqF/negbT/xe_A; exact.
 Qed.
@@ -1676,7 +1676,7 @@ Arguments cvg_at_rightE {R V} f x.
 Lemma cvg_at_leftE (R : numFieldType) (V : normedModType R) (f : R -> V) x :
   cvg (f @ x^') -> lim (f @ x^') = lim (f @ at_left x).
 Proof.
-move=> cvfx; apply/esym/(@cvg_lim _ _ _ (at_left _)) => //.
+move=> cvfx; apply/esym/norm_cvg_lim.
 move=> A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
 by exists e%:num => //= y xe_y /lt_eqF/negbT/xe_A; exact.
 Qed.
