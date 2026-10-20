@@ -491,9 +491,6 @@ Qed.
 
 End hahn_banach_extension_ctvs.
 
-Check scalerI.
-Check scaler_injl.
-
 (* TBA : to classical *)
 Lemma scaler_eq0 (R : numFieldType) (V: lmodType R) (a : V) t :  a != 0 -> (t *: a = 0 -> t = 0).
 Proof.
