@@ -4,10 +4,10 @@ From mathcomp Require Import boot order ssralg ssrnum ssrint interval.
 From mathcomp Require Import archimedean finmap interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
+From mathcomp Require Import boolp classical_sets fsbigop.
 From mathcomp Require Import reals topology ereal normedtype sequences esum.
-From mathcomp Require Import measure measurable_realfun lebesgue_measure.
-From mathcomp Require Import lebesgue_integral bernoulli_distribution.
+From mathcomp Require Import measure real_measure lebesgue_integral.
+From mathcomp Require Import bernoulli_distribution.
 
 (**md**************************************************************************)
 (* # Binomial distribution                                                    *)
@@ -23,7 +23,6 @@ From mathcomp Require Import lebesgue_integral bernoulli_distribution.
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

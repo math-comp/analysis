@@ -215,6 +215,8 @@
   + lemmas `cstMcounting_esum`, `sintegral_counting_esum`,
     `integral_countingT_esum`, `integral_counting_esum`
 
+- new directory and file `real_measure/real_measure.v`
+
 ### Changed
 
 - in `esum.v`:
@@ -289,6 +291,9 @@
   + `semi_sigma_additive_nng_induced` -> `semi_sigma_additive_measure_of_density`
 - in `tvs.v`:
   + mixin `Uniform_isConvexTvs` (now uses `absolutely_convex_set` and `nbhs_basis 0`)
+
+- moved to `real_measure`:
+  + files `lebesgue_stieltjes_measure.v`, `lebesgue_measure.v`, `measurable_realfun.v`
 
 ### Renamed
 

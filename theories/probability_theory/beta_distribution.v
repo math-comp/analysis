@@ -4,11 +4,11 @@ From mathcomp Require Import boot order ssralg poly ssrnum ssrint.
 From mathcomp Require Import archimedean finmap interval interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
+From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import reals topology ereal normedtype sequences derive.
-From mathcomp Require Import measure exp numfun realfun measurable_realfun.
-From mathcomp Require Import lebesgue_measure lebesgue_integral ftc.
-From mathcomp Require Import uniform_distribution bernoulli_distribution.
+From mathcomp Require Import measure exp numfun realfun real_measure.
+From mathcomp Require Import lebesgue_integral ftc uniform_distribution.
+From mathcomp Require Import bernoulli_distribution.
 
 (**md**************************************************************************)
 (* # Beta distribution                                                        *)

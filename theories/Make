@@ -83,9 +83,11 @@ measure_theory/measurable_function.v
 measure_theory/signed_measure.v
 measure_theory/measure.v
 
-measurable_realfun.v
-lebesgue_stieltjes_measure.v
-lebesgue_measure.v
+real_measure/lebesgue_stieltjes_measure.v
+real_measure/lebesgue_measure.v
+real_measure/measurable_realfun.v
+real_measure/real_measure.v
+
 borel_hierarchy.v
 
 lebesgue_integral_theory/simple_functions.v

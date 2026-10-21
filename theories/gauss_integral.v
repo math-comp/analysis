@@ -1,20 +1,18 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import boot order ssralg ssrnum ssrint interval_inference
+From mathcomp Require Import boot order ssralg ssrnum interval_inference
   interval finmap.
-From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
-From mathcomp Require Import reals ereal.
-From mathcomp Require Import topology tvs normedtype sequences real_interval.
-From mathcomp Require Import esum measure measurable_realfun numfun realfun.
-From mathcomp Require Import exp trigo lebesgue_measure lebesgue_integral.
-From mathcomp Require Import derive ftc.
+From mathcomp Require Import boolp classical_sets functions cardinality.
+From mathcomp Require Import reals.
+From mathcomp Require Import topology ereal normedtype sequences derive.
+From mathcomp Require Import esum measure numfun realfun real_measure.
+From mathcomp Require Import exp trigo lebesgue_integral ftc.
 
 (**md**************************************************************************)
 (* # Gauss integral                                                           *)
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
