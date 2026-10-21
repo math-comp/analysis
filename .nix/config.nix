@@ -57,7 +57,6 @@ in {
       coq.override.version = "9.1";
       mathcomp.override.version = "2.6.0";
       mathcomp-finmap.override.version = "2.2.4";
-      ssprove.job = false;  # not yet available for 9.1
     };
   };
 
