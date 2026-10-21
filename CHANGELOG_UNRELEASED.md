@@ -119,8 +119,8 @@
   + lemma `openB`
   + lemma `nbhsE0`
   + lemma `openZ`
-  + lemma `scalerx_continuous`
-  + lemma `scalexr_continuous`
+  + lemma `continuousZl`
+  + lemma `continuousZr`
   + definition `nbhsbasis_convextvs`
   + definition `open_nbhsbasis_convextvs`
   + definition `open_absconvex_opennbhsbasis`

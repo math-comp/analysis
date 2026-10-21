@@ -282,8 +282,8 @@ Proof.
 have [ab|ba _ |-> _] := ltgtP a b; last 2 first.
   by rewrite set_itv_ge ?bnd_simp -?ltNge//; exact: continuous_subspace0.
   by rewrite set_itv1; exact: continuous_subspace1.
-move/continuous_within_itvP; rewrite ltrN2 => /(_ ab)[cf fb fa].
-apply/(continuous_within_itvP _ ab); split.
+move/continuous_within_itvccP; rewrite ltrN2 => /(_ ab)[cf fb fa].
+apply/(continuous_within_itvccP _ ab); split.
 - move=> t tab.
   apply: (@cvg_comp _ _ _ -%R f); first exact: oppr_continuous.
   by apply: cf; rewrite oppr_itvoo !opprK.
