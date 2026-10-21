@@ -51,16 +51,6 @@ in {
   ## When generating GitHub Action CI, one workflow file
   ## will be created per bundle
 
-  bundles."9.0" = {
-    rocqPackages = common-bundle // {
-      rocq-core.override.version = "9.0";
-      coq.override.version = "9.0";
-      mathcomp.override.version = "2.6.0";
-      mathcomp-finmap.override.version = "2.2.4";
-      ssprove.job = false;  # not yet available for MC 2.6
-    };
-  };
-
   bundles."9.1" = {
     rocqPackages = common-bundle // {
       rocq-core.override.version = "9.1";
