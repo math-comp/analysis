@@ -235,7 +235,7 @@ by split=> [z/= <-|z/= ->]; rewrite [x * _]mulrC (mulfK, divfK).
 Qed.
 
 Section simple_bounded.
-Context d (T : sigmaRingType d) (R : realType).
+Context {d} {T : sigmaRingType d} {R : realType}.
 
 Import HBSimple.
 
@@ -246,9 +246,10 @@ exists (fine (\big[maxe/-oo%E]_(i <- r) `|i|%:E)).
 split; rewrite ?num_real// => x mx z _; apply/ltW/(le_lt_trans _ mx).
 have ? : f z \in r by have := imageT f z; rewrite fr.
 rewrite -[leLHS]/(fine `|f z|%:E) fine_le//.
-  (* TODO: generalize the statement of bigmaxe_fin_num *)
-  have := @bigmaxe_fin_num _ (map normr r) `|f z|.
-  by rewrite big_map => ->//; apply/mapP; exists (f z).
+  rewrite -(big_map (EFin \o normr) xpredT idfun)/= bigmaxe_fin_num//.
+    rewrite -size_eq0 -lt0n -has_predT; apply/hasP.
+    by exists `|f z|%:E => //=; apply/mapP; exists (f z).
+  by move=> /= y /mapP[s sr/= ->]; rewrite leNye.
 exact: (bigmax_sup_seq _ _ _ _ _ _ _ (lexx _)).
 Qed.
 

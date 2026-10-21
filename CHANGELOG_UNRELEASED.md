@@ -360,6 +360,8 @@
 
 - in `separation_axioms.v`:
   + lemma `cvg_lim`
+- in `constructive_ereal.v`:
+  + lemma `bigmaxe_fin_num`
 
 ### Deprecated
 
