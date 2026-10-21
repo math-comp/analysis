@@ -917,6 +917,7 @@ subgraph cluster_Normedtype {
   "theories/convex" -> "theories/normedtype_theory/tvs";
   "theories/normedtype_theory/num_normedtype" -> "theories/normedtype_theory/tvs";
   "theories/normedtype_theory/pseudometric_normed_Zmodule" -> "theories/normedtype_theory/tvs";
+  "theories/topology_theory/initial_topology" -> "theories/normedtype_theory/tvs";
   "theories/topology_theory/topology" -> "theories/normedtype_theory/tvs";
 
 subgraph cluster_Normedtype {
