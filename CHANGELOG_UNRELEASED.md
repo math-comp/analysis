@@ -215,6 +215,9 @@
   + lemmas `cstMcounting_esum`, `sintegral_counting_esum`,
     `integral_countingT_esum`, `integral_counting_esum`
 
+- in `ftc.v`:
+  + lemmas `parameterized_integralN`, `parameterized_integralN_continuous`
+
 ### Changed
 
 - in `esum.v`:
