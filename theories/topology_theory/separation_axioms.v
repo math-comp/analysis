@@ -390,12 +390,12 @@ Qed.
 
 Hypothesis sep : hausdorff_space T.
 
-Lemma lim_id x : lim (nbhs x) = x.
-Proof. by apply/esym/cvg_eq/cvg_ex => //; exists x. Qed.
-
-Lemma cvg_lim {U : Type} {F} {FF : ProperFilter F} (f : U -> T) (l : T) :
-  f @ F --> l -> lim (f @ F) = l.
+Lemma cvg_lim {F} {FF : ProperFilter F} (l : T) :
+  F --> l -> lim F = l.
 Proof. by move=> /[dup] /cvgP /cvg_unique; apply. Qed.
+
+Lemma lim_id x : lim (nbhs x) = x.
+Proof. exact: cvg_lim. Qed.
 
 Lemma lim_near_cst {U} {F} {FF : ProperFilter F} (l : T) (f : U -> T) :
    (\forall x \near F, f x = l) -> lim (f @ F) = l.

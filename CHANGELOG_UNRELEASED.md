@@ -287,6 +287,9 @@
 - in `realfun.v`:
   + lemma `lhopital`
 
+- in `separation_axioms.v`:
+  + lemma `cvg_lim`
+
 ### Deprecated
 
 - in `pseudometric_normed_Zmodule.v`:
