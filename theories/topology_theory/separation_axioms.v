@@ -395,7 +395,7 @@ Lemma cvg_lim {F} {FF : ProperFilter F} (l : T) :
 Proof. by move=> /[dup] /cvgP /cvg_unique; apply. Qed.
 
 Lemma lim_id x : lim (nbhs x) = x.
-Proof. by apply: cvg_lim. Qed.
+Proof. exact: cvg_lim. Qed.
 
 Lemma lim_near_cst {U} {F} {FF : ProperFilter F} (l : T) (f : U -> T) :
    (\forall x \near F, f x = l) -> lim (f @ F) = l.
