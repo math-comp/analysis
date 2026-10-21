@@ -49,6 +49,7 @@
   + lemma `initial_unif_continuous_comp`
   + lemma `initial_unif_continuous_comp_fst`
   + lemma `initial_unif_continuous_comp_snd`
+  + lemma `initial_nbhs_preimage`
 
 - in `product_topology.v`:
   + lemma `entourage_prod_exS`
@@ -81,6 +82,69 @@
   + definitions `clamp`, `clamp_gele`
   + lemmas `clamp_gemin`, `clamp_lemax`, `minmax_clamp`,
     `clamp_id`, `clamp_min`, `clamp_max`
+  + lemma `seminorm_normrB`
+
+- in `topology_structure.v`:
+  + lemma `id_continuous`
+  + definition `nbhs_basis`
+  + definition `openU_from`
+
+- in `normed_module.v`:
+  + lemma `ball_convex_set` (was a `Let`)
+
+- in `classical_sets.v`:
+  + notation ``... `+ ...``
+  + lemmas `addsetS`, `add0set`, `addsetI`, `addsetA`
+
+- in `convex.v`:
+  + lemmas `lt_conv`, `le_conv`
+  + lemma `convD`
+
+- in `pseudmetric_normed_Zmodule.v`:
+  + lemma `continuous_shift`
+  + lemma `nbhs_add1set`
+
+- in `tvs.v`:
+  + definition `balanced_set`
+  + definition `absolutely_convex_set`
+  + lemma `absolutely_convex0`
+  + definition `absorbing_set`
+  + lemma `absolutely_convex_setX`
+  + definition `init_subconvextvs`
+  + factory `NbhsBasisAt0_isConvexTvs`
+  + definition `filter_from_basis0`
+  + factory `NbhsSubbasisAt0_isConvexTvs`
+  + definition `finI_fromsubbasis0`
+  + lemma `openD`
+  + lemma `openB`
+  + lemma `nbhsE0`
+  + lemma `openZ`
+  + lemma `continuousZl`
+  + lemma `continuousZr`
+  + definition `nbhsbasis_convextvs`
+  + definition `open_nbhsbasis_convextvs`
+  + definition `open_absconvex_opennbhsbasis`
+  + definition `basis_opennbhsbasis`
+  + lemma `basis_neqset0`
+  + lemma `absorbing_opennbhsbasis`
+  + definition `gauge_fun`
+  + definition `seminorm_on`
+  + definition `seminorm_subbasis`
+  + lemmas `nonempty_subbasis`, `mem0_seminorm_subbasis`, `split_seminorm_subbasis`,
+    `expand_seminorm_subbasis`
+  + lemmas `convex_seminorm_subbasis`, `balanced_seminorm_subbasis`,
+    `absolutely_convex_seminorm_subbasis`, `absorbing_seminorm`, `continuous_at0_seminorm`,
+    `continuous_seminorm`
+  + definitions `gauge_fun_basis`, `seminorm_of`
+  + theorem `seminorm_convextvs`
+  + lemma `continuous_seminorm_of`
+  + lemma `linear_continuous_seminorm`
+  + lemma `linear_seminorm_continuous`
+  + proposition `lcfun_seminorm`
+
+- in `hahn_banach_theorem.v`
+  + theorem `hahn_banach_extension_subctvs`
+  + theorem `hahn_banach_extension_initialsubctvs`
 
 - in `sequences.v`,
   + lemmas `is_cvg_series_shiftn`, `near_series_squeeze_is_cvgn`
@@ -223,6 +287,8 @@
 
 - moved to `lebesgue_Rintegral.v` from `radon_nikodym.v` and renamed:
   + `semi_sigma_additive_nng_induced` -> `semi_sigma_additive_measure_of_density`
+- in `tvs.v`:
+  + mixin `Uniform_isConvexTvs` (now uses `absolutely_convex_set` and `nbhs_basis 0`)
 
 ### Renamed
 
@@ -236,6 +302,11 @@
 
 - in `normed_module.v`:
   + `PseudoMetricNormedZmod_ConvexTvs_isNormedModule` -> `MetricNormedZmod_ConvexTvs_isNormedModule`
+
+- in `tvs.v`:
+  + lemma `nbhsT_subproof` -> `nbhsD_subproof`
+  + lemma `nbhsT` -> `nbhsD0`
+  + lemma `nbhsB` -> `nbhsD`
 
 - in `pseudometric_normed_Zmodule.v`:
   + `continuous_within_itvP` -> `continuous_within_itvccP`

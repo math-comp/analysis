@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import boot order algebra all_classical.
+From mathcomp Require Import boot order algebra all_classical finmap.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import interval_inference reals topology_structure.
@@ -99,6 +99,12 @@ move=> A /= [_ [[B Bop <-] Bfs sBfA]].
 have /cvfFfs [C FC fCeB] : nbhs (f s) B by rewrite nbhsE; exists B.
 rewrite nbhs_filterE; apply: filterS FC.
 by apply: subset_trans sBfA; rewrite -fCeB; apply: preimage_image.
+Qed.
+
+Lemma initial_nbhs_preimage (w : W) A : nbhs (f w) A -> nbhs w (f @^-1` A).
+Proof.
+rewrite nbhsE /= => -[B [oB Bfx]] BA.
+by exists (f @^-1` B); split => //= ; [exists B|move=> z /= /BA].
 Qed.
 
 End Initial_Topology.

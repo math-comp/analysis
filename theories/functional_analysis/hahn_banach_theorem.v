@@ -14,11 +14,21 @@ From mathcomp Require Import reals convex topology normedtype.
 (* convex function, can be extended to a linear map on V bounded by the same  *)
 (* convex function.                                                           *)
 (* Theorem `hahn_banach_extension_normed` specifies this to the extension of  *)
-(* a linear continuous function on a subspace to the whole normed module.     *)
+(* a linear continuous function defined on a subnormedmodule to the whole     *)
+(* normed module.                                                             *)
+(* Theorem `hahn_banach_extension_subctvs` allows to extend a linear function *)
+(* defined on a subconvextvs to a convextvs.                                  *)
+(* Theorem `hahn_banach_extension_initialsubctvs` allows to extend a linear   *)
+(* function defined on a sublmodule to a convextvs.                           *)
 (*                                                                            *)
+(* | Extension theorem                    | subcodomain      | codomain      |*)
+(* |--------------------------------------|------------------|---------------|*)
+(* | hahn_banach_extension                | subLmodType      | lmodType      |*)
+(* | hahn_banach_extension_normed         | subNormedmodType | normedModType |*)
+(* | hahn_banach_extension_subcvts        | subconvextvsType | convexTvsType |*)
+(* | hahn_banach_extension_initialsubctvs | subLmodType      | convexTvsType |*)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -31,7 +41,6 @@ Local Open Scope ring_scope.
 Local Open Scope convex_scope.
 Local Open Scope real_scope.
 
-(* TODO : use a lightweight factory to make every subLmodType a subnormedmodtype *)
 
 (**md module with definitions on linear relations, thought of as graph of
   functions *)
@@ -67,8 +76,8 @@ End LinearGraphInternal.
 Module HahnBanachZornInternal.
 Section hahnbanachzorn.
 Import LinearGraphInternal.
-Context (R : realType) (V : lmodType R) (F : pred V).
-Variables (F' : subLmodType F) (phi : {linear F' -> R}) (p : V -> R).
+Context (R : realType) (V : lmodType R) (F : pred V)
+  (F' : subLmodType F) (phi : {linear F' -> R}) (p : V -> R).
 
 Implicit Types f g : graph V.
 
@@ -357,3 +366,94 @@ by exists g'.
 Qed.
 
 End hahn_banach_normed.
+
+Section hahn_banach_extension_ctvs.
+Context {R : realType} {V : convexTvsType R} (F : pred V).
+(**md Contrary to the normed case, the extension theorem is not true for any
+  subtopology on `F`, but only for the finest one. *)
+
+Import Norm.
+
+(** A first version specifying the seminorm bounding the function *)
+(**md [Jarchow 7.1.2]
+Let $V$ be a real vector space, $F$ a subspace of $V$, and $p \in V^{\#}$
+(the set of all sublinear functionals on $V$) and $p$ is a seminorm,
+if $f \in F^*$ satisfies $|f| \leq p|_F$, then a $g\in V^*$ exists
+such that $g|_F = f$. *)
+Theorem hahn_banach_extension_subctvs (F' : subConvexTvsType F)
+  (f : {linear F' -> R}) :
+  (exists2 p : SemiNorm.type V,
+    seminorm_of p & forall z : F', f z <= p (val z)) ->
+  exists g : {linear_continuous V -> R}, forall x : F', g (val x) = f x.
+Proof.
+move=> [p ps fp].
+have convp : @convex_function _ _ [set: V] p.
+  rewrite /convex_function /conv => l v1 v2 _ _ /=.
+  rewrite [in leRHS]/conv /= (le_trans (ler_normD _ _))//.
+  rewrite !normZ (@ger0_norm _ l%:num)// (@ger0_norm _ l%:num.~)//.
+  exact: onem_ge0.
+have [g majgp F_eqgf] := @hahn_banach_extension R V _ F' f p convp fp.
+have ling : linear (g : V -> R) by exact: linearP.
+have contg : continuous (g : V -> R).
+  by apply/lcfun_seminorm; exists p => //; exact: continuous_seminorm_of.
+pose lcg := isLinearContinuous.Build _ _ _ _ g ling contg.
+pose g' : {linear_continuous V -> R | *%R} := HB.pack (g : V -> R) lcg.
+by exists g'.
+Qed.
+
+(**md A second version where `F` is a subspace of `V`, meaning endowed with
+  the initial topology w.r.t. to `val`. *)
+(**md [Jarchow, 7.2.1] Let $F$ be a subspace of the lcs $V$. Then every
+  continuous linear form $f:F\to \mathbb{K}$ extends to a continuous
+  linear form $g:V\to \mathbb{K}$. *)
+Theorem hahn_banach_extension_initialsubctvs (F' : subLmodType F)
+ (f : {linear_continuous (init_subconvextvs F') -> R^o}) :
+  exists g : {linear_continuous V -> R}, forall x : F', g (val x) = f x.
+Proof.
+have [[openBasisV BasisV] _] := has_open_nbhs_basis V.
+have [p' ps' fp'] : exists2 p : SemiNorm.type V,
+    seminorm_of p & forall z : F', f z <= p (val z).
+  have : continuous (f : init_subconvextvs F' -> R^o) by exact: continuous_fun.
+  move=> /linear_continuous_seminorm[p [cp ps] /= fp].
+  have [/= nF [onF pF]] := cp.
+  have [/(_ nF onF) + _] := basis_opennbhsbasis (init_subconvextvs F').
+  move=> [oF [[/= oV] ooV oVF] oF0 oFn].
+  have /BasisV [/= bV obV boV] : nbhs 0 oV.
+    rewrite nbhsE; exists oV => //; split => //.
+    apply: (@image_preimage_subset _ _ (val : F'-> V)).
+    by rewrite oVF; exists 0; rewrite ?linear0.
+  exists (gauge_fun_basis obV); first by exists bV, obV.
+  move=> z.
+  set pVz := (leRHS).
+  apply: le_trans; first exact: fp.
+  rewrite pF; apply: inf_le.
+  - move=> x /= [r [r0]] /set_mem[v bVv rvalz] <-.
+    exists (- r); split => //; exists r; split => //.
+    rewrite inE; exists (r^-1 *: z).
+      apply: oFn; rewrite -oVF /=; apply: boV.
+      by rewrite linearZ/= -rvalz scalerA mulVf ?scale1r ?gt_eqF.
+    by rewrite scalerA divff ?scale1r ?gt_eqF.
+  - have [/= s s0 szbV]:= absorbing_opennbhsbasis obV (val z).
+    exists s^-1; split; rewrite ?invr_gt0// inE /=.
+    exists (s *: val z); first exact/set_mem.
+    by rewrite scalerA mulVf ?scale1r// gt_eqF.
+  - split; last by exists 0 => r [? _]; rewrite ltW.
+    have [/= s s0 sznF]:= absorbing_opennbhsbasis onF z.
+    exists s^-1; split; rewrite ?invr_gt0// inE /=.
+    exists (s *: z); first exact/set_mem.
+    by rewrite scalerA mulVf ?scale1r// gt_eqF.
+(* apply the previous thm but typing or... *)
+have convp : @convex_function _ _ [set: V] p'.
+  rewrite /convex_function /conv => l v1 v2 _ _ /=.
+  rewrite [in leRHS]/conv /= (le_trans (ler_normD _ _))//.
+  by rewrite !normZ (@ger0_norm _ l%:num)// (@ger0_norm _ l%:num.~)// onem_ge0.
+have [g majgp F_eqgf] := @hahn_banach_extension R V _ F' f p' convp fp'.
+have ling : linear (g : V -> R) by exact: linearP.
+have contg : continuous (g : V -> R).
+  by apply/lcfun_seminorm; exists p' => //; exact: continuous_seminorm_of.
+pose lcg := isLinearContinuous.Build _ _ _ _ g ling contg.
+pose g' : {linear_continuous V -> R | *%R} := HB.pack (g : V -> R) lcg.
+by exists g'.
+Qed.
+
+End hahn_banach_extension_ctvs.

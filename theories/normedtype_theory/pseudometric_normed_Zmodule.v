@@ -136,7 +136,7 @@ HB.structure Definition TopologicalNmodule :=
   {M of PreTopologicalNmodule M & PreTopologicalNmodule_isTopologicalNmodule M}.
 
 Section TopologicalNmodule_theory.
-Context {E : topologicalType} {F : topologicalNmodType} (U : set_system E).
+Context {E : Type} {F : topologicalNmodType} (U : set_system E).
 
 Lemma cvg_sum (I : Type) (r : seq I) (P : pred I)
     (Ff : I -> E -> F) (Fa : I -> F) :
@@ -144,9 +144,21 @@ Lemma cvg_sum (I : Type) (r : seq I) (P : pred I)
   \sum_(i <- r | P i) Ff i x @[x --> U] --> \sum_(i <- r| P i) Fa i.
 Proof. by move=> FF Ffa; apply: cvg_big => //; exact: add_continuous. Qed.
 
+Lemma continuous_shift (x y : F) : {for x, continuous (+%R^~ y)}.
+Proof.
+have -> : +%R^~ y = (fun z => z.1 + z.2) \o (fun z => (z, y)) by exact: funext.
+apply: continuous_comp (@add_continuous _ (x, y)).
+by apply: cvg_pair => //=; exact: cvg_cst.
+Qed.
+
+End TopologicalNmodule_theory.
+
+Section TopologicalNmodule_theory.
+Context {E : topologicalType} {F : topologicalNmodType}.
+
 Lemma sum_continuous (I : Type) (r : seq I) (P : pred I) (f : I -> E -> F) :
-  (forall i : I, P i -> continuous (f i)) ->
-  continuous (fun x1 : E => \sum_(i <- r | P i) f i x1).
+    (forall i, P i -> continuous (f i)) ->
+  continuous (fun x => \sum_(i <- r | P i) f i x).
 Proof. by move=> FC0; apply: continuous_big => //; exact: add_continuous. Qed.
 
 End TopologicalNmodule_theory.
@@ -233,6 +245,21 @@ Qed.
 
 Lemma nbhsB (U : set M) (z x : M) : nbhs z U -> nbhs (x + z) (+%R x @` U).
 Proof. exact/nbhsB_subproof/add_continuous. Qed.
+
+Lemma nbhs_add1set x (A : set M) : nbhs 0 A <-> nbhs x ([set x] `+ A).
+Proof.
+split=> [|nx].
+  rewrite -(subrr x) => /continuous_shift.
+  suff -> : [set x] `+  A = +%R^~ (- x) @^-1` A by [].
+  apply: funext => z /=; apply: propext; split => [|Azx].
+    by move=> [? -> [y By] <-]; rewrite addrAC subrr add0r.
+  by exists x => //; exists (z - x) => //; rewrite addrCA subrr addr0.
+suff -> : A = +%R^~ x @^-1` ([set x] `+  A).
+  by apply: continuous_shift; rewrite add0r.
+apply: funext => z /=; apply: propext; split=> [Az|[_ -> [y By]]].
+  by exists x => //; exists z => //; rewrite addrC.
+by rewrite addrC => /addIr <-.
+Qed.
 
 End TopologicalZmoduleTheory.
 
