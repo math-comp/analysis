@@ -38,13 +38,13 @@ move=> /= M s /= /(nbhs_ballP (M i j)) [e e0 es].
 by apply/nbhs_ballP; exists e => //= N [_ MN]; exact/es/MN.
 Qed.
 
-#[local] Lemma rV_compact_nondegenerate (T : ptopologicalType) n
+#[local] Lemma rV_compact_nondegenerate d (T : ptopologicalType d) n
     (A : 'I_n.+1 -> set T) :
   (forall i, compact (A i)) ->
   compact [ set v : 'rV[T]_n.+1 | forall i, A i (v ord0 i)].
 Proof.
 move=> Aico.
-have : @compact (prod_topology _) [set f | forall i, A i (f i)].
+have : @compact _ (prod_topology _) [set f | forall i, A i (f i)].
   by apply: tychonoff.
 move=> Aco F FF FA.
 set G := [set [set f : 'I_n.+1 -> T | B (\row_j f j)] | B in F].
@@ -53,7 +53,7 @@ have row_simpl (v : 'rV[T]_n.+1) : \row_j (v ord0 j) = v.
 have row_simpl' (f : 'I_n.+1 -> T) : (\row_j f j) ord0 = f.
   by rewrite funeqE=> ?; rewrite mxE.
 have [f [Af clGf]] : [set f | forall i, A i (f i)] `&`
-  @cluster (prod_topology _) G !=set0.
+  @cluster _ (prod_topology _) G !=set0.
   suff GF : ProperFilter G.
     apply: Aco; exists [set v : 'rV[T]_n.+1 | forall i, A i (v ord0 i)] => //.
     by rewrite predeqE => f; split => Af i; [have := Af i|]; rewrite row_simpl'.
@@ -96,7 +96,7 @@ have GC : G [set g | C (\row_j g j)] by exists C.
 by have [g []] := clGf _ _ GC f_D; exists (\row_j (g j : T)).
 Qed.
 
-Lemma rV_compact (T : ptopologicalType) n (A : 'I_n -> set T) :
+Lemma rV_compact d (T : ptopologicalType d) n (A : 'I_n -> set T) :
   (forall i, compact (A i)) ->
   compact [ set v : 'rV[T]_n | forall i, A i (v ord0 i)].
 Proof.
@@ -216,7 +216,7 @@ Context {K : numFieldType} {m n : nat}.
 Local Lemma ball_gt0 (x y : 'M[K]_(m, n)) e : ball x e y -> 0 < e.
 Proof. by case. Qed.
 
-Lemma mx_norm_ball : @ball _ 'M[K]_(m, n) = ball_ (fun x => `| x |).
+Lemma mx_norm_ball : @ball _ _ 'M[K]_(m, n) = ball_ (fun x => `| x |).
 Proof.
 rewrite /normr /ball_ predeq3E => x e y/= /[!mx_normE]; split=> [[]|xey].
 - move=> /[dup] => /ltW/nonnegP[{}e] e_gt0 xey.
@@ -230,14 +230,14 @@ rewrite /normr /ball_ predeq3E => x e y/= /[!mx_normE]; split=> [[]|xey].
 Qed.
 
 HB.instance Definition _ :=
-  NormedZmod_PseudoMetric_eq.Build K 'M[K]_(m, n) mx_norm_ball.
+  NormedZmod_PseudoMetric_eq.Build _ K 'M[K]_(m, n) mx_norm_ball.
 
-HB.instance Definition _ := isPseudoMetricNormedZmodule.Build _ 'M[K]_(m, n).
+HB.instance Definition _ := isPseudoMetricNormedZmodule.Build _ _ 'M[K]_(m, n).
 
 End matrix_pseudoMetricNormedZmod.
 
 Section within_continuous_coord.
-Context {T : topologicalType} {R : realFieldType} {n : nat}.
+Context {d} {T : topologicalType d} {R : realFieldType} {n : nat}.
 Import numFieldNormedType.Exports.
 
 Lemma within_continuous_coord A (f : T -> 'rV[R]_n) :
@@ -264,7 +264,7 @@ Proof.
 move=> [M [Mreal normAltM]] Acl.
 have Mnco : compact
     [set v : 'rV[R]_n | forall i, v ord0 i \in `[(- (M + 1)), (M + 1)]].
-  apply: (@rV_compact _  _ (fun=> `[(- (M + 1)), (M + 1)]%classic)).
+  apply: (@rV_compact _ _ _ (fun=> `[(- (M + 1)), (M + 1)]%classic)).
   by move=> _; apply: segment_compact.
 apply: subclosed_compact Acl Mnco _ => v /normAltM normvleM i.
 suff : `|v ord0 i : R| <= M + 1 by rewrite ler_norml.
@@ -293,20 +293,20 @@ Section matrix_UniformNZmodule.
 Context {K : numFieldType} {m n : nat}.
 
 HB.instance Definition _ := PreUniformNmodule_isUniformNmodule.Build
-  'M[K]_(m, n) (@PseudoMetricNormedZmodule_add_unif_continuous _ _).
+  _ 'M[K]_(m, n) (@PseudoMetricNormedZmodule_add_unif_continuous _ _ _).
 
 HB.instance Definition _ := UniformNmodule_isUniformZmodule.Build
-  'M[K]_(m, n) (@PseudoMetricNormedZmodule_opp_unif_continuous _ _).
+  _ 'M[K]_(m, n) (@PseudoMetricNormedZmodule_opp_unif_continuous _ _ _).
 
 End matrix_UniformNZmodule.
 
 HB.instance Definition _ (K : numFieldType) m n :=
-  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build K 'M[K]_(m, n)
+  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build _ K 'M[K]_(m, n)
     (@mx_normZ K m n).
 
 End matrix_NormedModule.
 
-Lemma continuous_mx {V : topologicalType} {R : realFieldType} {m n : nat}
+Lemma continuous_mx {d} {V : topologicalType d} {R : realFieldType} {m n : nat}
     (f : V -> 'M[R]_(m, n)) :
   (forall i j, continuous (fun x => f x i j)) <->
   continuous (fun x : V => \matrix_(i < m, j < n) f x i j).
@@ -317,9 +317,9 @@ split => [cf x|cf i j v].
   rewrite !mxE/=.
   move: i j; near: t.
   apply: filter_forall => /= i; apply: filter_forall => /= j.
-  have /(@cvgrPdist_le _ R^o)/(_ _ e0) := cf i j x.
+  have /(@cvgrPdist_le _ _ R^o)/(_ _ e0) := cf i j x.
   exact: filterS.
-- apply/(@cvgrPdist_le _ R^o) => /= e e0.
+- apply/(@cvgrPdist_le _ _ R^o) => /= e e0.
   have /cvgrPdist_le/(_ _ e0) := cf v.
   apply: filterS => w.
   apply: le_trans.

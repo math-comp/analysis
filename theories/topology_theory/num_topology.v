@@ -27,8 +27,8 @@ Unset Printing Implicit Defensive.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-HB.instance Definition _ (R : numDomainType) := hasNbhs.Build R^o
-  (nbhs_ball_ (ball_ (fun x => `|x|))).
+HB.instance Definition _ (R : numDomainType) := hasNbhs.Build 
+  default_fdisp R^o (nbhs_ball_ (ball_ (fun x => `|x|))).
 
 Module TopologicalNumDomainType.
 Section TopologicalNumDomainType.
@@ -74,16 +74,17 @@ End TopologicalNumDomainType.
 
 End TopologicalNumDomainType.
 
-HB.instance Definition _ (R : numDomainType) := Nbhs_isNbhsTopological.Build R^o
+HB.instance Definition _ (R : numDomainType) := Nbhs_isNbhsTopological.Build 
+  _ R^o
   (@TopologicalNumDomainType.nbhs_filter R)
   (@TopologicalNumDomainType.nbhs_singleton R)
   (@TopologicalNumDomainType.nbhs_nbhs R).
 
-HB.instance Definition _ (R : numFieldType) := Nbhs_isPseudoMetric.Build R R^o
+HB.instance Definition _ (R : numFieldType) := Nbhs_isPseudoMetric.Build _ R R^o
   nbhs_ball_normE ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
 
 HB.instance Definition _ (R : numFieldType) :=
-  Uniform_isPseudoMetric.Build R R^o
+  Uniform_isPseudoMetric.Build _ R R^o
     ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
 
 Lemma real_order_nbhsE (R : realFieldType) (x : R^o) : nbhs x =
@@ -139,11 +140,11 @@ HB.instance Definition _ (R : numFieldType) := PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ (R : realFieldType) :=
-  Order_isNbhs.Build _ R (@real_order_nbhsE R).
+  Order_isNbhs.Build _ _ R (@real_order_nbhsE R).
 
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ (R : realType) :=
-  Order_isNbhs.Build _ R (@real_order_nbhsE R).
+  Order_isNbhs.Build _ _ R (@real_order_nbhsE R).
 
 Module Exports. HB.reexport. End Exports.
 
@@ -157,8 +158,8 @@ rewrite predeqE => A; split=> //= -[] e e_gt0 xeA; exists e => //= y /=.
 by rewrite -opprD normrN => ?; rewrite -[y]opprK; apply: xeA; rewrite /= opprK.
 Qed.
 
-Lemma cvg_compNP {T : topologicalType} {R : numFieldType} (f : R -> T) (a : R)
-    (l : T) :
+Lemma cvg_compNP {d} {T : topologicalType d} {R : numFieldType} 
+  (f : R -> T) (a : R) (l : T) :
   (f \o -%R) x @[x --> a] --> l <-> f x @[x --> (- a)] --> l.
 Proof. by rewrite nbhsN. Qed.
 
@@ -236,13 +237,14 @@ apply; last by rewrite gtrBl.
 by rewrite /= opprB addrC subrK ger0_norm// gtr_pMr// invf_lt1// ltr1n.
 Qed.
 
-Lemma cvg_dnbhs_at_right (T : topologicalType) (f : R -> T) (p : R) (l : T) :
+Lemma cvg_dnbhs_at_right d (T : topologicalType d) 
+  (f : R -> T) (p : R) (l : T) :
   f x @[x --> p^'] --> l -> f x @[x --> p^'+] --> l.
 Proof.
 by apply: cvg_trans; apply: cvg_app; apply: within_subset=> r ?; rewrite gt_eqF.
 Qed.
 
-Lemma cvg_dnbhs_at_left (T : topologicalType) (f : R -> T) (p : R) (l : T) :
+Lemma cvg_dnbhs_at_left d (T : topologicalType d) (f : R -> T) (p : R) (l : T) :
   f x @[x --> p^'] --> l -> f x @[x --> p^'-] --> l.
 Proof.
 by apply: cvg_trans; apply: cvg_app; apply: within_subset=> r ?; rewrite lt_eqF.
@@ -340,7 +342,7 @@ Lemma at_right_shift (T : Type) x a (f : R -> T) :
   (f @ (x + a)^'+) = (f (y + a) @[y --> x^'+]).
 Proof. by rewrite at_rightD. Qed.
 
-Context {V : topologicalType} (f : R -> V) (x : R).
+Context {d} {V : topologicalType d} (f : R -> V) (x : R).
 
 Lemma cvg_at_right_filter (l : V) :
   f z @[z --> x] --> l -> f z @[z --> x^'+] --> l.
@@ -375,7 +377,7 @@ Notation "x ^'+" := (at_right x) : classical_set_scope.
 #[global] Hint Extern 0 (Filter (nbhs _^'-)) =>
   (apply: at_left_proper_filter) : typeclass_instances.
 
-Lemma cvg_at_right_left_dnbhs (R : realFieldType) (T : topologicalType)
+Lemma cvg_at_right_left_dnbhs d (R : realFieldType) (T : topologicalType d)
     (f : R -> T) (p : R) (l : T) :
   f x @[x --> p^'+] --> l -> f x @[x --> p^'-] --> l -> f x @[x --> p^'] --> l.
 Proof.
@@ -385,7 +387,7 @@ apply: filter_app lf; apply: filter_app rf.
 by near=> t => xlt xgt /lt_total/orP[|].
 Unshelve. all: by end_near. Qed.
 
-Lemma left_right_continuousP {R : realFieldType} {T : topologicalType}
+Lemma left_right_continuousP {d} {R : realFieldType} {T : topologicalType d}
     (f : R -> T) x :
   f @ x^'- --> f x /\ f @ x^'+ --> f x <-> f @ x --> f x.
 Proof.
@@ -447,7 +449,7 @@ have : inf X <= inf X - f%:num by exact: ge_inf.
 by apply/negP; rewrite -ltNge; rewrite ltrBlDr ltrDl.
 Qed.
 
-Lemma in_continuous_mksetP {T : realFieldType} {U : nbhsType}
+Lemma in_continuous_mksetP {d} {T : realFieldType} {U : nbhsType d}
     (i : interval T) (f : T -> U) :
   {in i, continuous f} <-> {in [set` i], continuous f}.
 Proof.
@@ -555,7 +557,7 @@ Lemma lt_le_nbhsr {R : realFieldType} (t x : R) :
   t < x -> \forall y \near nbhs x, t <= y.
 Proof. by move/lt_nbhsr; apply: filterS => y /ltW. Qed.
 
-Lemma not_nearP {T : topologicalType} (p : T) (P : set T) :
+Lemma not_nearP {d} {T : topologicalType d} (p : T) (P : set T) :
   ~ (\forall x \near p, P x) <->
   forall V : set T, nbhs p V -> exists2 x, V x & ~ P x.
 Proof.
@@ -564,7 +566,7 @@ split.
 - by move=> /(_ P) /[apply] => -[].
 Unshelve. all: by end_near. Qed.
 
-Lemma not_nearPball {R : numDomainType} {M : pseudoMetricType R}
+Lemma not_nearPball {d} {R : numDomainType} {M : pseudoMetricType d R}
     (p : M) (P : set M) :
   ~ (\forall x \near p, P x) <->
   forall (e : {posnum R}), exists2 x, ball p e%:num x & ~ P x.
@@ -648,7 +650,7 @@ Import unstable.EndlessDense.
 Section theory.
 Local Open Scope order_scope.
 Local Open Scope classical_set_scope.
-Context {d} {T : orderTopologicalType d}.
+Context {td od} {T : orderTopologicalType td od}.
 Implicit Types (x y : T) (i : interval T).
 
 Lemma open_itv_open_ends i : is_endless T -> is_dense T -> neitv i ->

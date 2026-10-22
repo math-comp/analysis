@@ -94,38 +94,39 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Reserved Notation "R .-ocitv" (at level 1, format "R .-ocitv").
+Reserved Notation "R .-ocitv" (at level 5, format "R .-ocitv").
 Reserved Notation "R .-ocitv.-measurable"
- (at level 2, format "R .-ocitv.-measurable").
-Reserved Notation "R .-open" (at level 1, format "R .-open").
+ (at level 6, format "R .-ocitv.-measurable").
+Reserved Notation "R .-open" (at level 5, format "R .-open").
 Reserved Notation "R .-open.-measurable"
- (at level 2, format "R .-open.-measurable").
+ (at level 6, format "R .-open.-measurable").
 
 Notation right_continuous f :=
   (forall x, f%function @ at_right x --> f%function x).
 
-Lemma right_continuousW (R : numFieldType) {d} (U : orderNbhsType d)
+Lemma right_continuousW (R : numFieldType) {td od} (U : orderNbhsType td od)
   (f : R -> U) : continuous f -> right_continuous f.
 Proof. by move=> cf x; apply: cvg_within_filter; exact/cf. Qed.
 
-HB.mixin Record isCumulative (R : numFieldType) {d} (U : orderNbhsType d)
-  (f : R -> U) := {
+HB.mixin Record isCumulative (R : numFieldType) {td od} 
+  (U : orderNbhsType td od) (f : R -> U) := {
   cumulative_is_nondecreasing : nondecreasing f ;
   cumulative_is_right_continuous : right_continuous f }.
 
 #[short(type=cumulative)]
 HB.structure Definition Cumulative
-  (R : numFieldType) {d} (U : orderNbhsType d) := { f of isCumulative R d U f }.
+  (R : numFieldType) {td od} (U : orderNbhsType td od) := 
+    { f of isCumulative R td od U f }.
 
-Arguments cumulative_is_nondecreasing {R d U} _.
-Arguments cumulative_is_right_continuous {R d U} _.
+Arguments cumulative_is_nondecreasing {R td od U} _.
+Arguments cumulative_is_right_continuous {R td od U} _.
 
 Lemma nondecreasing_right_continuousP (R : realFieldType) (a : R) (e : R)
     (f : cumulative R R) :
   e > 0 -> exists d : {posnum R}, f (a + d%:num) <= f a + e.
 Proof.
 move=> e0; move: (cumulative_is_right_continuous f).
-move=> /(_ a) /(@cvgr_dist_lt _ R^o) /(_ _ e0)[] _ /posnumP[d] => h.
+move=> /(_ a) /(@cvgr_dist_lt _ _ R^o) /(_ _ e0)[] _ /posnumP[d] => h.
 exists (PosNum [gt0 of (d%:num / 2)]) => //=.
 move: h => /(_ (a + d%:num / 2)) /=.
 rewrite opprD addNKr normrN ger0_norm// ltr_pdivrMr// ltr_pMr// 2!ltrDl.
@@ -144,7 +145,7 @@ Proof. by []. Qed.
 Let id_rc : right_continuous (@idfun R).
 Proof. by apply/right_continuousW => x; exact: cvg_id. Qed.
 
-HB.instance Definition _ := isCumulative.Build R _ R idfun id_nd id_rc.
+HB.instance Definition _ := isCumulative.Build R _ _ R idfun id_nd id_rc.
 End id_is_cumulative.
 
 HB.mixin Record isCumulativeBounded (R : numFieldType) (l r : R) (f : R -> R) := {
@@ -470,7 +471,8 @@ Definition open_type : Type := R.
 
 HB.instance Definition _ := Pointed.on open_type.
 
-Let measurable : set_system R := @measurable _ (g_sigma_algebraType (@open R)).
+Let measurable : set_system R := 
+  @measurable _ (g_sigma_algebraType (@open _ R)).
 
 Let measurable0 : measurable set0. Proof. exact: measurable0. Qed.
 
@@ -482,12 +484,12 @@ Let measurable_bigcup (F : (set R)^nat) : (forall i, measurable (F i)) ->
 Proof. move=> mF; exact: bigcupT_measurable. Qed.
 
 HB.instance Definition _ :=
-  @isMeasurable.Build (sigma_display (@open R))
+  @isMeasurable.Build (sigma_display (@open _ R))
     open_type measurable measurable0 measurableC measurable_bigcup.
 
 End open.
 
-Notation "R .-open" := (sigma_display (@open R)) : measure_display_scope.
+Notation "R .-open" := (sigma_display (@open _ R)) : measure_display_scope.
 Notation "R .-open.-measurable" := (measurable : set_system (@open_type R)) :
   classical_set_scope.
 
@@ -495,7 +497,7 @@ Module MeasurableRopen.
 Section measurableRopen.
 Context {R : realType}.
 
-Definition measurableTypeR := g_sigma_algebraType (@open R).
+Definition measurableTypeR := g_sigma_algebraType (@open _ R).
 
 Definition lebesgue_display : measure_display := R.-open.
 
@@ -868,7 +870,7 @@ apply: (@le_trans _ _ (\sum_(i <- X) (wlength f `](b i).1, (b i).2]%classic) +
   rewrite addeC -big_split/=; apply: lee_sum => k _.
   by rewrite !(EFinB, wlength_itv_bnd)// addeA subeK.
 rewrite -big_split/= nneseries_esum//; first by move=> k _; rewrite adde_ge0.
-rewrite esum_ge//=; first by move=> n _; rewrite adde_ge0.
+rewrite esum_ge//=; first by [move=> n _; rewrite adde_ge0].
 exists [set` X] => //; rewrite fsbig_finite//= set_fsetK.
 rewrite big_seq [in X in (_ <= X)%E]big_seq; apply: lee_sum => k kX.
 by rewrite AE leeD2l// lee_fin lerBlDl natrX De.
@@ -905,7 +907,7 @@ HB.instance Definition _ (f : cumulative R R) :=
     (ocitv_sigmaT_finite_lebesgue_stieltjes_measure f).
 
 Definition lebesgue_stieltjes_measure (f : cumulative R R) :
-  set (g_sigma_algebraType (@open R)) -> \bar R :=
+  set (g_sigma_algebraType (@open _ R)) -> \bar R :=
   measure_extension (wlength f).
 
 Let lsm0 (f : cumulative R R) : lebesgue_stieltjes_measure f set0 = 0.

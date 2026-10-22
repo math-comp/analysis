@@ -591,7 +591,7 @@ have GacFa : G x @[x --> a^'+] --> (- c + F a)%R.
     apply/cvgrPdist_le => /= e e0; near=> t.
     rewrite opprB GFc; first by rewrite in_itv/=; apply/andP.
     by rewrite addNr normr0 ltW.
-  have := @cvgD _ _ _ Fap _ _ _ _ GFac Fa.
+  have := @cvgD _ _ _ _ Fap _ _ _ _ GFac Fa.
   rewrite (_ : (G \- F) + F = G)%R//.
   by apply/funext => x/=; rewrite subrK.
 have GbcFb : G x @[x --> b^'-] --> (- c + F b)%R.
@@ -600,7 +600,7 @@ have GbcFb : G x @[x --> b^'-] --> (- c + F b)%R.
     apply/cvgrPdist_le => /= e e0; near=> t.
     rewrite opprB GFc; first by rewrite in_itv/=; apply/andP.
     by rewrite addNr normr0 ltW.
-  have := @cvgD _ _ _ Fbn _ _ _ _ GFbc Fb.
+  have := @cvgD _ _ _ _ Fbn _ _ _ _ GFbc Fb.
   rewrite (_ : G \- F + F = G)%R //.
   by apply/funext => x/=; rewrite subrK.
 have contF : {within `[a, b], continuous F}.
@@ -1372,7 +1372,7 @@ have DPGFE : {in `]a, b[, (- (PG \o F))%R^`() =1 ((G \o F) * (- f))%R}.
     apply: diff_derivable; apply: differentiable_comp; apply/derivable1_diffP.
       by case: Fab => + _ _; exact.
     by case: PGFbFa => + _ _; apply; exact: decreasing_image_oo.
-  have /(@derive_val _ _ _ _ _ -%R) := @is_deriveNid _ _ (PG (F x)) 1%R.
+  have /(@derive_val _ _ _ _ _ _ _ -%R) := @is_deriveNid _ _ _ (PG (F x)) 1%R.
   rewrite fctE -derive1E => ->; rewrite mulN1r mulrN; congr -%R.
   rewrite derive1_comp.
   - by case: Fab => + _ _; exact.
@@ -1393,7 +1393,7 @@ rewrite oppeD//= -(continuous_FTC2 ab _ _ DPGFE).
     * have : -%R F^`() @ x --> (- f x)%R.
         by rewrite -fE//; apply: cvgN; exact: cF'.
       apply: cvg_trans; apply: near_eq_cvg.
-      apply: (@open_in_nearW _ _ `]a, b[) ; last by rewrite inE.
+      apply: (@open_in_nearW _ _ _ `]a, b[) ; last by rewrite inE.
         exact: interval_open.
       by move=> z; rewrite inE/= => zab; rewrite fctE fE.
   + apply: cvgM.
@@ -1743,7 +1743,7 @@ rewrite (@decreasing_ge0_integration_by_substitutiony (- F)%R).
   rewrite derive1E deriveN -?derive1E//.
   apply: dF.
   near: z.
-  apply: (@open_in_nearW _ _ `]a, +oo[).
+  apply: (@open_in_nearW _ _ _ `]a, +oo[).
   + exact: interval_open.
   + by move=> ?; rewrite inE.
   + by rewrite inE.
@@ -1845,7 +1845,7 @@ rewrite (@increasing_ge0_integration_by_substitutiony (\- (F \o -%R))%R).
     rewrite [X in (_ * X)%R]derive1E.
     rewrite deriveN; first exact: derivable_id.
     by rewrite derive_id mulrN1 opprK.
-  move/(@cvg_compNP _ _ (F^`()) x (F^`() (- x))) : NxF.
+  move/(@cvg_compNP _ _ _ (F^`()) x (F^`() (- x))) : NxF.
   apply: cvg_trans.
   apply: near_eq_cvg; rewrite near_simpl; near=> z.
   rewrite derive1N.

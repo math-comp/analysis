@@ -17,9 +17,10 @@ Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-HB.instance Definition _ := hasNbhs.Build bool principal_filter.
-HB.instance Definition _ := Discrete_ofNbhs.Build bool erefl.
-HB.instance Definition _ := DiscreteUniform_ofNbhs.Build bool.
+HB.instance Definition _ := 
+  hasNbhs.Build default_fdisp bool principal_filter.
+HB.instance Definition _ := Discrete_ofNbhs.Build _ bool erefl.
+HB.instance Definition _ := DiscreteUniform_ofNbhs.Build _ bool.
 
 Lemma bool_compact : compact [set: bool].
 Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
@@ -38,7 +39,7 @@ move=> Ut; exists `]-oo, true[; first split => //.
 by move=> r /=; rewrite in_itv /=; case: r.
 Qed.
 
-HB.instance Definition _ := Order_isNbhs.Build _ bool bool_nbhs_itv.
+HB.instance Definition _ := Order_isNbhs.Build _ _ bool bool_nbhs_itv.
 
 HB.instance Definition _ {R : numDomainType} :=
-  @DiscretePseudoMetric_ofUniform.Build R bool.
+  @DiscretePseudoMetric_ofUniform.Build _ R bool.
