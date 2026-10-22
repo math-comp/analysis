@@ -709,7 +709,7 @@ End Norm.
 Export Norm.Exports.
 
 Definition with_basis {K : fieldType} {E : vectType K} {B : (dim E).-tuple E}
-  of basis_of fullv B : Type := E.
+  & basis_of fullv B : Type := E.
 
 HB.instance Definition _ {K : fieldType} {E : vectType K} {B : (dim E).-tuple E}
     (basisB : basis_of fullv B) :=
