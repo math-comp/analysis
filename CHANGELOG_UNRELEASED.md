@@ -215,6 +215,20 @@
   + lemmas `cstMcounting_esum`, `sintegral_counting_esum`,
     `integral_countingT_esum`, `integral_counting_esum`
 
+- new file `negligible_seq.v`:
+  + definition `negligible_seq`
+  + lemmas `negligible_seq_cvgP`, `negligible_seq_submod_closed`,
+    `le_negligible_seq`, `negligible_seq_eqoP`, `negligible_seqXnM`,
+    `negligible_seqV`, `negligible_seq_exprnN`
+
+- new file `negligible_seq_harmonic.v`:
+  + definitions `harmonic_coord`, `harmonic_dist`, `extend_infty`,
+    `lipschitz_at_infty`, `harmonic_lipschitz`
+  + lemmas `harmonic_distxx`, `harmonic_dist_infty`, `lipschitz_at_inftyP`,
+    `lipschitz_at_infty_le`, `negligible_seq_lipschitz_at_inftyP`,
+    `harmonic_dist_ge_inv`, `harmonic_lipschitzW`,
+    `lipschitz_at_inftyS_harmonic`, `negligible_seq_harmonic_lipschitzP`
+
 ### Changed
 
 - in `esum.v`:
