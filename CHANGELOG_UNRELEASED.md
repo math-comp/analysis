@@ -218,6 +218,8 @@
 - in `subspace_topology.v`:
   + definition `subdiagonal`
   + lemmas `ent_subdiagonal`, `heine_cantor_subspace`
+- file `unstable.v`:
+  + definition `with_basis`
 
 ### Changed
 
