@@ -56,7 +56,7 @@ Local Open Scope ring_scope.
 Local Open Scope quotient_scope.
 
 Section wedge.
-Context {I : choiceType} (X : I -> topologicalType) (p0 : forall i, X i).
+Context {I : choiceType} d (X : I -> topologicalType d) (p0 : forall i, X i).
 Implicit Types i : I.
 
 Let wedge_rel' (a b : {i & X i}) :=
@@ -91,7 +91,7 @@ Lemma wedge_lift_continuous i : continuous (@wedge_lift i).
 Proof. by move=> ?; apply: continuous_comp => //; exact: pi_continuous. Qed.
 
 HB.instance Definition _ i :=
-  @isContinuous.Build _ _ (@wedge_lift i) (@wedge_lift_continuous i).
+  @isContinuous.Build _ _ _ _ (@wedge_lift i) (@wedge_lift_continuous i).
 
 Lemma wedge_lift_nbhs i (x : X i) :
   closed [set p0 i] -> x != p0 _ -> @wedge_lift i @ x = nbhs (@wedge_lift _ x).
@@ -139,7 +139,7 @@ Lemma wedge_point_nbhs i0 :
 Proof.
 rewrite eqEsubset; split => //= U /=; rewrite ?nbhs_simpl.
   case=> V [/= oV Vp] VU j _; apply: wedge_lift_continuous.
-  apply: (filterS VU); first exact: (@nbhs_filter wedge).
+  apply: (filterS VU); first exact: (@nbhs_filter _ wedge).
   apply: open_nbhs_nbhs; split => //.
   by rewrite (wedge_liftE (p0 i0)).
 move=> Uj; have V_ : forall i, {V : set (X i) |
@@ -205,7 +205,8 @@ Qed.
 Definition wedge_fun {Z : Type} (f : forall i, X i -> Z) : wedge -> Z :=
   sigT_fun f \o repr.
 
-Lemma wedge_fun_continuous {Z : topologicalType} (f : forall i, X i -> Z) :
+Lemma wedge_fun_continuous {d'} {Z : topologicalType d'} 
+    (f : forall i, X i -> Z) :
   (forall i, continuous (f i)) -> (forall i j, f i (p0 i) = f j (p0 j)) ->
   continuous (wedge_fun f).
 Proof.
@@ -266,11 +267,13 @@ apply: wedge_fun_continuous; last exact: wedge_prod_pointE.
 exact: dfwith_continuous.
 Qed.
 
+Import ExplicitNbhsDisplays.
+
 Lemma wedge_prod_open (x : wedge) (A : set wedge) :
   finite_set [set: I] ->
   (forall i, closed [set p0 i]) ->
   nbhs x A ->
-  @nbhs _ (subspace (range wedge_prod)) (wedge_prod x) (wedge_prod @` A).
+  (range wedge_prod).-sub.-nbhs (wedge_prod x) (wedge_prod @` A).
 Proof.
 move=> fsetI clI; case: wedge_nbhs_specP => [//|i0 bcA|i z zNp0 /= wNz].
   pose B_ i : set (subspace (range wedge_prod)) :=
@@ -295,7 +298,8 @@ rewrite [x in nbhs x _]/wedge_prod /= wedge_lift_funE.
 have : wedge_prod @` (A `&` (@wedge_lift i @` (~`[set p0 i])))
     `<=`  wedge_prod @` A.
   by move=> ? [] ? [] + /= [w] wpi => /[swap] <- Aw <-; exists (wedge_lift w).
-move/filterS; apply; apply/nbhs_subspace_ex.
+move/filterS; apply; first exact: (@nbhs_filter _ (subspace _)).
+apply/nbhs_subspace_ex.
   exists (wedge_lift z) => //.
   by rewrite /wedge_prod wedge_lift_funE //; exact: wedge_prod_pointE.
 exists (proj i @^-1` (@wedge_lift i @^-1`
@@ -337,7 +341,8 @@ move=> /wedge_prod_continuous nV; have := clxy _ _ nU nV.
 by case => z [/= ? ?]; exists (wedge_prod z).
 Qed.
 
-Lemma wedge_fun_joint_continuous (T R : topologicalType)
+Lemma wedge_fun_joint_continuous d' d'' 
+  (T : topologicalType d') (R : topologicalType d'')
   (k : forall (x : I), T -> X x -> R):
   finite_set [set: I] ->
   (forall x, closed [set p0 x]) ->
@@ -378,7 +383,7 @@ Unshelve. all: by end_near. Qed.
 End wedge.
 
 Section pwedge.
-Context {I : pointedType} (X : I -> ptopologicalType).
+Context {I : pointedType} {d} (X : I -> ptopologicalType d).
 
 Definition pwedge := wedge (fun i => @point (X i)).
 
@@ -391,12 +396,12 @@ HB.instance Definition _ := isPointed.Build pwedge pwedge_point.
 End pwedge.
 
 Section bpwedge.
-Context (X Y : bpTopologicalType).
+Context d (X Y : bpTopologicalType d).
 
 Definition bpwedge_shared_pt b :=
   if b return (if b then X else Y) then @one X else @zero Y.
-Local Notation bpwedge := (@wedge bool _ bpwedge_shared_pt).
-Local Notation bpwedge_lift := (@wedge_lift bool _ bpwedge_shared_pt).
+Local Notation bpwedge := (@wedge bool _ _ bpwedge_shared_pt).
+Local Notation bpwedge_lift := (@wedge_lift bool _ _ bpwedge_shared_pt).
 
 Local Lemma wedge_neq : @bpwedge_lift true zero != @bpwedge_lift false one.
 Proof.
@@ -410,5 +415,5 @@ HB.instance Definition _ := @isBiPointed.Build
   bpwedge (@bpwedge_lift true zero) (@bpwedge_lift false one) wedge_neq.
 End bpwedge.
 
-Notation bpwedge X Y := (@wedge bool _ (bpwedge_shared_pt X Y)).
-Notation bpwedge_lift X Y := (@wedge_lift bool _ (bpwedge_shared_pt X Y)).
+Notation bpwedge X Y := (@wedge bool _ _ (bpwedge_shared_pt X Y)).
+Notation bpwedge_lift X Y := (@wedge_lift bool _ _ (bpwedge_shared_pt X Y)).

@@ -28,8 +28,8 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 #[short(type="completeNormedModType")]
-HB.structure Definition CompleteNormedModule (K : numFieldType) :=
-  {T of NormedModule K T & Complete T}.
+HB.structure Definition CompleteNormedModule d (K : numFieldType) :=
+  {T of NormedModule d K T & Complete d T}.
 
 Lemma R_complete (R : realType) (F : set_system R) :
   ProperFilter F -> cauchy F -> cvg F.
@@ -61,7 +61,7 @@ rewrite /ball_/= ltr_distl ltrBlDr.
 by move=> /andP [/ltW /(le_trans _) le_xeps _ /le_xeps].
 Unshelve. all: by end_near. Qed.
 
-HB.instance Definition _ (R : realType) := Uniform_isComplete.Build R^o
+HB.instance Definition _ (R : realType) := Uniform_isComplete.Build _ R^o
   (@R_complete R). (* TODO: delete *)
 
 HB.instance Definition _ (R : realType) := Complete.copy R R^o.

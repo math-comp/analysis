@@ -31,7 +31,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section pseudoMetricDist.
-Context {R : realType} {X : pseudoMetricType R}.
+Context {d} {R : realType} {X : pseudoMetricType d R}.
 Implicit Types r : R.
 
 Definition edist (xy : X * X) : \bar R :=
@@ -143,9 +143,9 @@ move=> [x y]; have [pE U /= Upinf|] := eqVneq (edist (x, y)) +oo%E.
 rewrite -ltey -ge0_fin_numE// => efin.
 rewrite /continuous_at -[edist (x, y)]fineK//; apply: cvg_EFin.
   by have := edist_fin_open efin; apply: filter_app; near=> w.
-apply/(@metricType_numDomainType.cvgrPdist_le _ R^o) => _/posnumP[eps]/=.
+apply/(@metricType_numDomainType.cvgrPdist_le _ _ R^o) => _/posnumP[eps]/=.
 suff: \forall t \near (nbhs x, nbhs y),
-   @mdist _ R^o (fine (edist (x, y))) (fine (edist t)) <= eps%:num.
+   @mdist _ _ R^o (fine (edist (x, y))) (fine (edist t)) <= eps%:num.
   by [].
 rewrite -near2_pair; near=> a b => /=.
 have abxy : (edist (a, b) <= edist (x, a) + edist (x, y) + edist (y, b))%E.
@@ -206,7 +206,7 @@ Hint Extern 0 (is_true (0%R <= edist _)%E) => solve [apply: edist_ge0] : core.
 Hint Extern 0 (is_true (edist _ != -oo%E)) => solve [apply: edist_neqNy] : core.
 
 Section edist_inf.
-Context {R : realType} {T : pseudoMetricType R} (A : set T).
+Context  {d} {R : realType} {T : pseudoMetricType d R} (A : set T).
 
 Definition edist_inf z := ereal_inf [set edist (z, a) | a in A].
 
@@ -230,7 +230,7 @@ apply/lee_addgt0Pr => _/posnumP[eps].
 have [//|? [a Aa <-] yaeps] := @lb_ereal_inf_adherent R _ eps%:num _ fyn.
 apply: le_trans.
   by apply: (@ereal_inf_lbound _ _ (edist (x, a))); exists a.
-apply: le_trans; first exact: (@edist_triangle _ _ _ y).
+apply: le_trans; first exact: (@edist_triangle _ _ _ _ y).
 by rewrite -addeA leeD2lE // ltW.
 Qed.
 
@@ -248,7 +248,7 @@ have [] := eqVneq (edist_inf z) +oo%E.
   apply/ereal_inf_pinfty => r [a Aa] war; apply/zAp; exists a => //.
   have /gee0P[|[r' r'pos war']] := edist_ge0 (w, a).
     by rewrite war => ->; apply: zAp; exists a.
-  have := @edist_triangle _ _ z w a; rewrite war'; apply: contra_leP => _.
+  have := @edist_triangle _ _ _ z w a; rewrite war'; apply: contra_leP => _.
   rewrite (@le_lt_trans _ _ (1 + r'%:E)%E) ?leeD2r ?edist_fin//.
   by rewrite -EFinD [edist (z, a)]zAp ?ltey //; exists a.
 rewrite -ltey -ge0_fin_numE ?edist_inf_ge0 // => fz_fin.
@@ -260,12 +260,13 @@ have fwfin : \forall w \near z, edist_inf w \is a fin_num.
   rewrite -ge0_fin_numE ?adde_ge0 ?edist_inf_ge0 //.
   rewrite fin_numD fz_fin andbT; apply/edist_finP; exists 1 => //.
   exact/ball_sym.
-split => //; apply/(@metricType_numDomainType.cvgrPdist_le _ R^o) => _/posnumP[eps].
+split => //.
+apply/(@metricType_numDomainType.cvgrPdist_le _ _ R^o) => _/posnumP[eps].
 have : nbhs z (ball z eps%:num) by exact: nbhsx_ballx.
 apply: filter_app; near_simpl; move: fwfin; apply: filter_app.
 near=> t => tfin /= /[dup] ?.
 have ztfin : edist (z, t) \is a fin_num by apply/edist_finP; exists eps%:num.
-move=> /(@edist_fin _ _ _ (z, t)) - /(_ trivial).
+move=> /(@edist_fin _ _ _ _ (z, t)) - /(_ trivial).
 rewrite -[edist (z, t)]fineK ?lee_fin //; apply: le_trans.
 rewrite ler_norml; apply/andP; split.
   rewrite lerBrDr addrC lerBlDr addrC -fineD //.
