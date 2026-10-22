@@ -4,6 +4,16 @@ From mathcomp Require Import all_ssreflect ssralg vector ring_quotient.
 From mathcomp Require Import sesquilinear.
 From mathcomp Require Import finmap boolp functions classical_sets.
 
+(**md**************************************************************************)
+(* # Tensor product of vector spaces                                          *)
+(*                                                                            *)
+(* `free_lmod T`                                                              *)
+(* : the vector space whose basis is `T`                                      *)
+(*                                                                            *)
+(*                                                                            *)
+(*                                                                            *)
+(******************************************************************************)
+
 Import GRing.Theory.
 
 Set Implicit Arguments.
@@ -134,11 +144,11 @@ Elpi lock Definition free_lmod_eval (x : free_lmod) : U :=
 Lemma free_lmod_eval_linear : linear free_lmod_eval.
 Proof.
 move=> a x y; rewrite [free_lmod_eval]unlock scaler_sumr.
-rewrite (big_fset_incl _ (fsubsetUr (finsupp x `|` finsupp y)%fset _))/=; last first.
+rewrite (big_fset_incl _ (fsubsetUr (finsupp x `|` finsupp y)%fset _))/=.
   by move=> i _; rewrite mem_finsupp negbK => /eqP ->; rewrite scale0r.
-apply: esym; rewrite (big_fset_incl _ (fsubsetUr (finsupp (a *: x + y)%R `|` (finsupp y))%fset _))/=; last first.
+apply: esym; rewrite (big_fset_incl _ (fsubsetUr (finsupp (a *: x + y)%R `|` (finsupp y))%fset _))/=.
   by move=> i _; rewrite mem_finsupp negbK => /eqP ->; rewrite scale0r scaler0.
-rewrite [X in _ + X](big_fset_incl _ (fsubsetUr (finsupp (a *: x + y)%R `|` (finsupp x))%fset _))/=; last first.
+rewrite [X in _ + X](big_fset_incl _ (fsubsetUr (finsupp (a *: x + y)%R `|` (finsupp x))%fset _))/=.
   by move=> i _; rewrite mem_finsupp negbK => /eqP ->; rewrite scale0r.
 rewrite fsetUAC -big_split/= -fsetUA fsetUC.
 by apply: eq_bigr => i _; rewrite free_lmodDE/= scalerDl free_lmodZE scalerA.
@@ -204,14 +214,14 @@ Definition free_lmod_map_comp {X Y Z} (f : X -> Y) (g : Y -> Z) :
 Proof.
 move=> u /=; rewrite /free_lmod_map/=.
 rewrite ![@free_lmod_eval _ _ _ _]unlock.
-rewrite (@big_fset_incl _ _ _ _ _ [fset f x | x in finsupp u])/=; first last.
-- move=> _ /imfsetP[] x/= xu ->; rewrite mem_finsupp negbK => /eqP ->.
-  exact: scale0r.
+rewrite (@big_fset_incl _ _ _ _ _ [fset f x | x in finsupp u])/=.
 - apply/fsubsetP => y; rewrite mem_finsupp => /eqP; apply: contra_notT => yf.
   rewrite free_lmod_sumE big_seq; apply: big1 => x xu.
   rewrite free_lmodZE/= free_lmod_unitE.
   case: eqP => yE; last by rewrite mulr0.
   by elim: (negP yf); apply/imfsetP; exists x.
+- move=> _ /imfsetP[] x/= xu ->; rewrite mem_finsupp negbK => /eqP ->.
+  exact: scale0r.
 rewrite (partition_big_imfset _ f)/=; apply: eq_bigr => y _.
 rewrite big_mkcond/= free_lmod_sumE scaler_suml; apply: eq_bigr => x _.
 rewrite free_lmodZE free_lmod_unitE.
@@ -416,11 +426,11 @@ have: repr (x *: t1 + t2) = x *: repr t1 + repr t2 %[mod tensor].
 move=> /eq_free_lmod_eval ->.
 rewrite [free_lmod_eval _]unlock.
 set A := finsupp _; set B := finsupp _; set C := finsupp _.
-rewrite (big_fset_incl _ (fsubsetUl _ (B `|` C)%fset))/=; last first.
+rewrite (big_fset_incl _ (fsubsetUl _ (B `|` C)%fset))/=.
   by move=> uv _ /fsfun_dflt->; rewrite scale0r.
-rewrite [in RHS](big_fset_incl _ (fsubsetUl _ (A `|` C)%fset))/=; last first.
+rewrite [in RHS](big_fset_incl _ (fsubsetUl _ (A `|` C)%fset))/=.
   by move=> uv _ /fsfun_dflt->; rewrite scale0r.
-rewrite [in X in _ = _ + X](big_fset_incl _ (fsubsetUr (A `|` B)%fset _))/=; last first.
+rewrite [in X in _ = _ + X](big_fset_incl _ (fsubsetUr (A `|` B)%fset _))/=.
   by move=> uv _ /fsfun_dflt->; rewrite scale0r.
 rewrite [in RHS]fsetUCA !fsetUA.
 rewrite scaler_sumr -big_split/=; apply/eq_bigr => -[u v] _ /=.
