@@ -20,8 +20,9 @@ Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-HB.instance Definition _ := hasNbhs.Build nat principal_filter.
-HB.instance Definition _ := Discrete_ofNbhs.Build nat erefl.
+HB.instance Definition _ := 
+  hasNbhs.Build default_fdisp nat principal_filter.
+HB.instance Definition _ := Discrete_ofNbhs.Build _ nat erefl.
 
 Local Lemma nat_nbhs_itv (n : nat) :
   nbhs n = filter_from
@@ -39,10 +40,10 @@ move=> r /=; rewrite in_itv /= => nr2; suff: r = n.+1 by move=> ->.
 exact/esym/le_anti.
 Qed.
 
-HB.instance Definition _ := Order_isNbhs.Build _ nat nat_nbhs_itv.
-HB.instance Definition _ := DiscreteUniform_ofNbhs.Build nat.
+HB.instance Definition _ := Order_isNbhs.Build _ _ nat nat_nbhs_itv.
+HB.instance Definition _ := DiscreteUniform_ofNbhs.Build _ nat.
 HB.instance Definition _ {R : numDomainType} :=
-  @DiscretePseudoMetric_ofUniform.Build R nat.
+  @DiscretePseudoMetric_ofUniform.Build _ R nat.
 
 Lemma nbhs_infty_gt N : \forall n \near \oo, (N < n)%N.
 Proof. by exists N.+1. Qed.

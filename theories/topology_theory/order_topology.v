@@ -30,23 +30,23 @@ Unset Printing Implicit Defensive.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-HB.structure Definition POrderedNbhs d :=
-  { T of Nbhs T & Order.isPOrder d T }.
+HB.structure Definition POrderedNbhs td od :=
+  { T of Nbhs td T & Order.isPOrder od T }.
 
-HB.structure Definition POrderedTopological d :=
-  { T of Topological T & Order.isPOrder d T }.
+HB.structure Definition POrderedTopological td od :=
+  { T of Topological td T & Order.isPOrder od T }.
 
-HB.structure Definition POrderedUniform d :=
-  {T of Uniform T & Order.isPOrder d T}.
+HB.structure Definition POrderedUniform td od :=
+  {T of Uniform td T & Order.isPOrder od T}.
 
-HB.structure Definition POrderedPseudoMetric d (R : numDomainType) :=
-  {T of PseudoMetric R T & Order.isPOrder d T}.
+HB.structure Definition POrderedPseudoMetric td od (R : numDomainType) :=
+  {T of PseudoMetric td R T & Order.isPOrder od T}.
 
-HB.structure Definition POrderedPointedTopological d :=
-  {T of PointedTopological T & Order.isPOrder d T}.
+HB.structure Definition POrderedPointedTopological td od :=
+  {T of PointedTopological td T & Order.isPOrder od T}.
 
 (** TODO: generalize this to a preOrder once that's available *)
-HB.mixin Record Order_isNbhs d (T : Type) & Nbhs T & Order.Total d T := {
+HB.mixin Record Order_isNbhs td od (T : Type) & Nbhs td T & Order.Total od T := {
   (** Note that just the intervals `]a, b[ doesn't work when the order has a
       top or bottom element, so we also need the rays `]-oo, b[ and ]a, +oo[ *)
   itv_nbhsE : forall x : T, nbhs x = filter_from
@@ -55,42 +55,42 @@ HB.mixin Record Order_isNbhs d (T : Type) & Nbhs T & Order.Total d T := {
 }.
 
 #[short(type="orderNbhsType")]
-HB.structure Definition OrderNbhs d :=
-  { T of Nbhs T & Order.Total d T & Order_isNbhs d T }.
+HB.structure Definition OrderNbhs td od :=
+  { T of Nbhs td T & Order.Total od T & Order_isNbhs td od T }.
 
 #[short(type="orderTopologicalType")]
-HB.structure Definition OrderTopological d :=
-  { T of Topological T & Order.Total d T & Order_isNbhs d T }.
+HB.structure Definition OrderTopological td od :=
+  { T of Topological td T & Order.Total od T & Order_isNbhs td od T }.
 
 #[short(type="orderUniformType")]
-HB.structure Definition OrderUniform d :=
-  {T of Uniform T & OrderTopological d  T}.
+HB.structure Definition OrderUniform td od :=
+  {T of Uniform td T & OrderTopological td od T}.
 
 #[short(type="orderPseudoMetricType")]
-HB.structure Definition OrderPseudoMetric d (R : numDomainType) :=
-  {T of PseudoMetric R T & OrderTopological d T}.
+HB.structure Definition OrderPseudoMetric td od (R : numDomainType) :=
+  {T of PseudoMetric td R T & OrderTopological td od T}.
 
 Section order_topologies.
 Local Open Scope order_scope.
 Local Open Scope classical_set_scope.
-Context {d} {T : orderTopologicalType d}.
+Context {td od} {T : orderTopologicalType td od}.
 Implicit Types x y : T.
 
-Lemma rray_open x : @open T `]x, +oo[.
+Lemma rray_open x : @open _ T `]x, +oo[.
 Proof.
 rewrite openE /interior => z xoz; rewrite itv_nbhsE.
 by exists `]x, +oo[%O => //; split => //; left.
 Qed.
 Hint Resolve rray_open : core.
 
-Lemma lray_open x : @open T `]-oo, x[.
+Lemma lray_open x : @open _ T `]-oo, x[.
 Proof.
 rewrite openE /interior => z xoz; rewrite itv_nbhsE.
 by exists (`]-oo, x[)%O => //; split => //; left.
 Qed.
 Hint Resolve lray_open : core.
 
-Lemma itv_open x y : @open T `]x, y[.
+Lemma itv_open x y : @open _ T `]x, y[.
 Proof. by rewrite set_itv_splitI /=; apply: openI. Qed.
 Hint Resolve itv_open : core.
 
@@ -100,15 +100,15 @@ case: i; rewrite /itv_open_ends => [[[]t1|[]]] [[]t2|[]]// ?.
 by rewrite set_itvE; exact: openT.
 Qed.
 
-Lemma rray_closed x : @closed T `[x, +oo[.
+Lemma rray_closed x : @closed _ T `[x, +oo[.
 Proof. by rewrite -setCitvl closedC. Qed.
 Hint Resolve rray_closed : core.
 
-Lemma lray_closed x : @closed T `]-oo, x].
+Lemma lray_closed x : @closed _ T `]-oo, x].
 Proof. by rewrite -setCitvr closedC. Qed.
 Hint Resolve lray_closed : core.
 
-Lemma itv_closed x y : @closed T `[x, y].
+Lemma itv_closed x y : @closed _ T `[x, y].
 Proof. by rewrite set_itv_splitI; apply: closedI => /=. Qed.
 Hint Resolve itv_closed : core.
 
@@ -197,17 +197,20 @@ Hint Resolve itv_closed : core.
 
 Definition order_topology (T : Type) : Type := T.
 
+Fact order_fdisp (od : Order.disp_t) : fdisp_t.
+Proof. by []. Qed.
+
 Section induced_order_topology.
 
-Context {d} {T : orderType d}.
+Context {od} {T : orderType od}.
 
 Local Notation oT := (order_topology T).
 
 HB.instance Definition _ := isPointed.Build (interval T) (`]-oo,+oo[).
 
 HB.instance Definition _ := Order.Total.on oT.
-HB.instance Definition _ := @isSubBaseTopological.Build oT
-  (interval T) (itv_is_open_unbounded) (fun i => [set` i]).
+HB.instance Definition _ := @isSubBaseTopological.Build 
+  (order_fdisp od) oT (interval T) (itv_is_open_unbounded) (fun i => [set` i]).
 
 Lemma order_nbhs_itv (x : oT) : nbhs x = filter_from
     (fun i => itv_open_ends i /\ x \in i)
@@ -245,10 +248,13 @@ exists j; first split.
   by move=> ? ? ? ? <- <-; rewrite itv_setI.
 Qed.
 
-HB.instance Definition _ := Order_isNbhs.Build _ oT order_nbhs_itv.
+HB.instance Definition _ := Order_isNbhs.Build _ _ oT order_nbhs_itv.
 End induced_order_topology.
 
-Lemma min_continuous {d} {T : orderTopologicalType d} :
+Notation "od .-order" := (order_fdisp od) (format "od .-order") : fdisp_scope.
+Notation "'order'" := (order_fdisp (Order.Disp _ _)) : fdisp_scope.
+
+Lemma min_continuous {td od} {T : orderTopologicalType td od} :
   continuous (fun xy : T * T => Order.min xy.1 xy.2).
 Proof.
 case=> x y; have [<- U /=|]:= eqVneq x y.
@@ -279,15 +285,16 @@ rewrite min_l// leNgt; apply: contra_notN (xNy b) => ba.
 by rewrite xb (lt_trans ba).
 Qed.
 
-Lemma min_fun_continuous {d} {X : topologicalType} {T : orderTopologicalType d}
-    (f g : X -> T) :
+Lemma min_fun_continuous {td od} 
+  {X : topologicalType td} {T : orderTopologicalType td od}
+  (f g : X -> T) :
   continuous f -> continuous g -> continuous (f \min g).
 Proof.
 move=> fc gc z; apply: continuous2_cvg; [|exact: fc|exact: gc].
 by apply min_continuous.
 Qed.
 
-Lemma max_continuous {d} {T : orderTopologicalType d} :
+Lemma max_continuous {td od} {T : orderTopologicalType td od} :
   continuous (fun xy : T * T => Order.max xy.1 xy.2).
 Proof.
 case=> x y; have [<- U|] := eqVneq x y.
@@ -318,8 +325,9 @@ rewrite max_r// leNgt; apply: contra_notN (xNy b) => ba.
 by rewrite xb (lt_trans ba).
 Qed.
 
-Lemma max_fun_continuous {d} {X : topologicalType} {T : orderTopologicalType d}
-    (f g : X -> T):
+Lemma max_fun_continuous {td od} 
+  {X : topologicalType td} {T : orderTopologicalType td od}
+  (f g : X -> T) :
   continuous f -> continuous g -> continuous (f \max g).
 Proof.
 move=> fc gc z; apply: continuous2_cvg; [|exact: fc|exact: gc].

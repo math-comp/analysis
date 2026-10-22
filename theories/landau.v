@@ -299,7 +299,8 @@ Lemma showo : (gen_tag = tt) * (the_tag = tt) * (a_tag = tt). Proof. by []. Qed.
 
 (* Tentative to handle small o and big O notations *)
 Section Domination.
-Context {K : numDomainType} {T : Type} {V W : normedModType K}.
+Context {d d'} {K : numDomainType} {T : Type} 
+  {V : normedModType d K} {W : normedModType d' K}.
 
 Let littleo_def (F : set_system T) (f : T -> V) (g : T -> W) :=
   forall eps, 0 < eps -> \forall x \near F, `|f x| <= eps * `|g x|.
@@ -470,7 +471,8 @@ Proof. by apply/eqoP. Qed.
 End Domination.
 
 Section Domination_numFieldType.
-Context {K : numFieldType} {T : Type} {V W : normedModType K}.
+Context {d d'} {K : numFieldType} {T : Type} 
+  {V : normedModType d K} {W : normedModType d' K}.
 
 Let bigO_def (F : set_system T) (f : T -> V) (g : T -> W) :=
   \forall k \near +oo, \forall x \near F, `|f x| <= k * `|g x|.
@@ -703,18 +705,19 @@ Canonical the_littleo_bigO (tag : unit) (F : filter_on T)
 
 End Domination_numFieldType.
 
-Notation "{o_ F f }" := (@littleo_type _ _ _ _ F f).
-Notation "{O_ F f }" := (@bigO_type _ _ _ _ F f).
+Notation "{o_ F f }" := (@littleo_type _ _ _ _ _ _ F f).
+Notation "{O_ F f }" := (@bigO_type _ _ _ _ _ _ F f).
 
 Notation "[littleo 'of' f 'for' fT ]" :=
-  (@littleo_clone _ _ _ _ _ _ f fT _ idfun).
-Notation "[littleo 'of' f ]" := (@littleo_clone _ _ _ _ _ _ f _ _ idfun).
+  (@littleo_clone _ _ _ _ _ _ _ _ f fT _ idfun).
+Notation "[littleo 'of' f ]" := (@littleo_clone _ _ _ _ _ _ _ _ f _ _ idfun).
 
-Notation "[bigO 'of' f 'for' fT ]" := (@bigO_clone _ _ _ _ _ _ f fT _ idfun).
-Notation "[bigO 'of' f ]" := (@bigO_clone _ _ _ _ _ _ f _ _ idfun).
+Notation "[bigO 'of' f 'for' fT ]" := 
+  (@bigO_clone _ _ _ _ _ _ _ _ f fT _ idfun).
+Notation "[bigO 'of' f ]" := (@bigO_clone _ _ _ _ _ _ _ _ f _ _ idfun).
 
-Arguments the_littleo {_ _ _ _} _ _ _ _ _ : simpl never.
-Arguments the_bigO {_ _ _ _} _ _ _ _ _ : simpl never.
+Arguments the_littleo {_ _ _ _ _ _} _ _ _ _ _ : simpl never.
+Arguments the_bigO {_ _ _ _ _ _} _ _ _ _ _ : simpl never.
 Local Notation PhantomF x := (Phantom _ (nbhs x)).
 
 Notation mklittleo tag x := (the_littleo tag _ (PhantomF x)).
@@ -823,10 +826,11 @@ Notation "fx '==O_(' x \near F ')' hx" :=
 #[global] Hint Resolve bigO_class : core.
 #[global] Hint Resolve littleo_eqO : core.
 
-Arguments bigO {_ _ _ _}.
+Arguments bigO {_ _ _ _ _ _}.
 
 Section Domination_numFieldType.
-Context {K : numFieldType} {T : Type} {V W : normedModType K}.
+Context {d d'} {K : numFieldType} {T : Type} 
+  {V : normedModType d K} {W : normedModType d' K}.
 
 (* duplicate from Section Domination *)
 Let littleo_def (F : set_system T) (f : T -> V) (g : T -> W) :=
@@ -841,9 +845,9 @@ by move=> _/posnumP[eps]; near do [
 Unshelve. all: by end_near. Qed.
 
 Canonical add_littleo (F : filter_on T) e (df dg : {o_F e}) :=
-  @Littleo _ _ _ _ _ _ (_ + _) (asboolT (add_littleo_subproof df dg)).
+  @Littleo _ _ _ _ _ _ _ _ (_ + _) (asboolT (add_littleo_subproof df dg)).
 Canonical addfun_littleo (F : filter_on T) e (df dg : {o_F e}) :=
-  @Littleo _ _ _ _ _ _ (_ \+ _) (asboolT (add_littleo_subproof df dg)).
+  @Littleo _ _ _ _ _ _ _ _ (_ \+ _) (asboolT (add_littleo_subproof df dg)).
 
 Lemma addo (F : filter_on T) (f g: T -> V) (e : _ -> W) :
   [o_F e of f] + [o_F e of g] =o_F e.
@@ -880,7 +884,8 @@ Proof. by move: x; rewrite -/(_ *: _ =1 _) {1}scaleo. Qed.
 End Domination_numFieldType.
 
 (* NB: see also scaleox *)
-Lemma scaleolx (K : numFieldType) (V W : normedModType K) {T : Type}
+Lemma scaleolx d d' (K : numFieldType) 
+  (V : normedModType d K) (W : normedModType d' K) {T : Type}
   (F : filter_on T) (a : W) (k : T -> K^o) (e : T -> V) (x : T) :
   ([o_F e of k] x) *: a = [o_F e of (fun y => [o_F e of k] y *: a)] x.
 Proof.
@@ -895,7 +900,8 @@ by rewrite lt_def normr_eq0 a0 normr_ge0.
 Unshelve. all: by end_near. Qed.
 
 Section Limit.
-Context {K : numFieldType} {T : Type} {V W X : normedModType K}.
+Context {d d' d''} {K : numFieldType} {T : Type} 
+  {V : normedModType d K} {W : normedModType d' K} {X : normedModType d'' K}.
 
 Lemma eqolimP (F : filter_on T) (f : T -> V) (l : V) :
   f @ F --> l <-> f = cst l +o_F (cst (1 : K^o)).
@@ -979,12 +985,13 @@ Lemma littleo_littleo (F : filter_on T) (f : T -> V) (g : T -> W) (h : T -> X) :
 Proof. by move=> ->; apply: eqoE; rewrite (littleo_bigO_eqo g). Qed.
 
 End Limit.
-Arguments littleo_bigO_eqo {K T V W X F}.
-Arguments bigO_littleo_eqo {K T V W X F}.
+Arguments littleo_bigO_eqo {d d' d'' K T V W X F}.
+Arguments bigO_littleo_eqo {d d' d'' K T V W X F}.
 
 Section Limit_realFieldType.
-Context {K : realFieldType} (*TODO: generalize to numFieldType?*)
-  {T : Type} {V W X : normedModType K}.
+Context {d d' d''} {K : realFieldType} (*TODO: generalize to numFieldType?*)
+  {T : Type} {V : normedModType d K} {W : normedModType d' K} 
+  {X : normedModType d'' K}.
 
 Lemma bigO_bigO_eqO {F : filter_on T} (g : T -> W) (f : T -> V) (h : T -> X) :
   f =O_F g -> ([O_F f of h] : _ -> _) =O_F g.
@@ -997,13 +1004,14 @@ Unshelve. all: by end_near. Qed.
 Arguments bigO_bigO_eqO {F}.
 
 End Limit_realFieldType.
-Arguments littleo_bigO_eqo {K T V W X F}.
-Arguments bigO_littleo_eqo {K T V W X F}.
-Arguments bigO_bigO_eqO {K T V W X F}.
+Arguments littleo_bigO_eqo {d d' d'' K T V W X F}.
+Arguments bigO_littleo_eqo {d d' d'' K T V W X F}.
+Arguments bigO_bigO_eqO {d d' d'' K T V W X F}.
 
 Section littleo_bigO_transitivity.
 
-Context {K : numFieldType} {T : Type} {V W Z : normedModType K}.
+Context {d d' d''} {K : numFieldType} {T : Type} 
+  {V : normedModType d K} {W : normedModType d' K} {Z : normedModType d'' K}.
 
 Lemma eqaddo_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
   f = g + [o_ F e of fg] -> g = h + [o_F e of gh] -> f = h +o_F e.
@@ -1012,7 +1020,8 @@ Proof. by move=> -> ->; rewrite -addrA addo. Qed.
 End littleo_bigO_transitivity.
 
 Section littleo_bigO_transitivity.
-Context {K : numFieldType} {T : Type} {V W Z : normedModType K}.
+Context {d d' d''} {K : numFieldType} {T : Type} 
+  {V : normedModType d K} {W : normedModType d' K} {Z : normedModType d'' K}.
 
 Lemma eqaddO_trans (F : filter_on T) (f g h : T -> V) fg gh (e : T -> W):
   f = g + [O_ F e of fg] -> g = h + [O_F e of gh] -> f = h +O_F e.
@@ -1040,8 +1049,9 @@ Proof. by move=> -> ->; rewrite (littleo_bigO_eqo h). Qed.
 End littleo_bigO_transitivity.
 
 Section littleo_bigO_transitivity_realFieldType.
-Context {K : realFieldType} (*TODO: generalize to numFieldType?*) {T : Type}
-  {V W Z : normedModType K}.
+Context {d d' d''} {K : realFieldType} (*TODO: generalize to numFieldType?*) 
+  {T : Type} {V : normedModType d K} {W : normedModType d' K} 
+  {Z : normedModType d'' K}.
 
 Lemma eqO_trans (F : filter_on T) (f : T -> V) f' (g : T -> W) g' (h : T -> Z) :
   f = [O_F g of f'] -> g = [O_F h of g'] -> f =O_F h.
@@ -1099,8 +1109,8 @@ Unshelve. all: by end_near. Qed.
 End rule_of_products_numClosedFieldType.
 
 Section Linear3.
-Context (R : realFieldType) (U : normedModType R) (V : normedModType R)
-        (s : GRing.Scale.law R V).
+Context d d' (R : realFieldType) 
+  (U : normedModType d R) (V : normedModType d' R) (s : GRing.Scale.law R V).
 Hypothesis (normm_s : forall k x, `|s k x| = `|k| * `|x|).
 
 (* Split in multiple bits *)
@@ -1125,7 +1135,7 @@ suff flip : \forall k \near +oo, forall x, `|f x| <= k * `|x|.
   near: y; apply/nbhs_normP.
   eexists; last by move=> ?; rewrite /= sub0r normrN; apply.
   by rewrite /= mulr_gt0 // invr_gt0; near: k; exists 0.
-have /nbhs_normP [_/posnumP[d]] := Of1.
+have /nbhs_normP [_/posnumP[r]] := Of1.
 rewrite /cst [X in _ * X]normr1 mulr1 => fk; near=> k => y.
 case: (ler0P `|y|) => [|y0].
   by rewrite normr_le0 => /eqP->; rewrite linear0 !normr0 mulr0.
@@ -1141,14 +1151,14 @@ Unshelve. all: by end_near. Qed.
 
 End Linear3.
 
-Arguments linear_for_continuous {R U V s normm_s} f _.
+Arguments linear_for_continuous {d d' R U V s normm_s} f _.
 
-Lemma linear_continuous (R : realFieldType) (U : normedModType R)
-  (V : normedModType R) (f : {linear U -> V}) :
+Lemma linear_continuous d d' (R : realFieldType) (U : normedModType d R)
+  (V : normedModType d' R) (f : {linear U -> V}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof. by apply: linear_for_continuous => ? ?; rewrite normrZ. Qed.
 
-Lemma linear_for_mul_continuous (R : realFieldType) (U : normedModType R)
+Lemma linear_for_mul_continuous d (R : realFieldType) (U : normedModType d R)
   (f : {linear U -> R^o | @GRing.mul R^o}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof. by apply: linear_for_continuous => ? ?; rewrite normrZ. Qed.
@@ -1158,7 +1168,8 @@ Notation "f '~~_' F g" := (f == g +o_ F g).
 
 Section asymptotic_equivalence.
 
-Context {K : realFieldType} {T : Type} {V W : normedModType K}.
+Context {d d'} {K : realFieldType} {T : Type} 
+  {V : normedModType d K} {W : normedModType d' K}.
 Implicit Types F : filter_on T.
 
 Lemma equivOLR F (f g : T -> V) : f ~_F g -> f =O_F g.
@@ -1167,7 +1178,7 @@ Proof. by move=> ->; apply: eqOE; rewrite {1}[g](idO F) addrC addfO. Qed.
 Lemma equiv_refl F (f : T -> V) : f ~_F f.
 Proof. by apply/eqaddoP; rewrite subrr. Qed.
 
-Lemma equivoRL (W' : normedModType K) F (f g : T -> V) (h : T -> W') :
+Lemma equivoRL d'' (W' : normedModType d'' K) F (f g : T -> V) (h : T -> W') :
   f ~_F g -> [o_F g of h] =o_F f.
 Proof.
 move=> ->; apply/eqoP; move=> _/posnumP[eps]; near=> x.
@@ -1185,14 +1196,14 @@ move=> fg; have /(canLR (addrK _))<- := fg.
 by apply:eqaddoE; rewrite oppo (equivoRL _ fg).
 Qed.
 
-Lemma equivoLR (W' : normedModType K) F (f g : T -> V) (h : T -> W') :
+Lemma equivoLR d'' (W' : normedModType d'' K) F (f g : T -> V) (h : T -> W') :
   f ~_F g -> [o_F f of h] =o_F g.
 Proof. by move/equiv_sym/equivoRL. Qed.
 
 Lemma equivORL F (f g : T -> V) : f ~_F g -> g =O_F f.
 Proof. by move/equiv_sym/equivOLR. Qed.
 
-Lemma eqoaddo (W' : normedModType K) F (f g : T -> V) (h : T -> W') :
+Lemma eqoaddo d'' (W' : normedModType d'' K) F (f g : T -> V) (h : T -> W') :
   [o_F f + [o_F f of g] of h] =o_F f.
 Proof. by apply: equivoLR. Qed.
 
@@ -1210,8 +1221,9 @@ End asymptotic_equivalence.
 
 Section big_omega.
 
-Context {K : realFieldType} {T : Type} {V : normedModType K}.
-Implicit Types W : normedModType K.
+Context {d : fdisp_t} {K : realFieldType} {T : Type} 
+  {V : normedModType d K}.
+Implicit Types W : normedModType d K.
 
 Let bigOmega_def W (F : set_system T) (f : T -> V) (g : T -> W) :=
   exists2 k, k > 0 & \forall x \near F, `|f x| >= k * `|g x|.
@@ -1310,8 +1322,8 @@ Proof. rewrite !eqOmegaE !eqOmegaO => fg gh; exact: (eqO_trans gh fg). Qed.
 
 End big_omega.
 
-Notation "{Omega_ F f }" := (@bigOmega_type _ _ _ _ F f).
-Notation "[bigOmega 'of' f ]" := (@bigOmega_clone _ _ _ _ _ _ f _ _ idfun).
+Notation "{Omega_ F f }" := (@bigOmega_type _ _ _ _ _ F f).
+Notation "[bigOmega 'of' f ]" := (@bigOmega_clone _ _ _ _ _ _ _ f _ _ idfun).
 Notation mkbigOmega tag x := (the_bigOmega tag (PhantomF x)).
 Notation "[Omega_ x e 'of' f ]" := (mkbigOmega gen_tag x f e).
 Notation "[Omega '_' x e 'of' f ]" := (the_bigOmega _ _ (PhantomF x) f e).
@@ -1349,8 +1361,8 @@ End big_omega_in_R.
 
 Section big_theta.
 
-Context {K : realFieldType} {T : Type} {V : normedModType K}.
-Implicit Types W : normedModType K.
+Context {d} {K : realFieldType} {T : Type} {V : normedModType d K}.
+Implicit Types W : normedModType d K.
 
 Let bigTheta_def W (F : set_system T) (f : T -> V) (g : T -> W) :=
   exists2 k, (k.1 > 0) && (k.2 > 0) &
@@ -1467,8 +1479,8 @@ Qed.
 
 End big_theta.
 
-Notation "{Theta_ F g }" := (@bigTheta_type _ F g).
-Notation "[bigTheta 'of' f ]" := (@bigTheta_clone _ _ _ _ _ _ f _ _ idfun).
+Notation "{Theta_ F g }" := (@bigTheta_type _ _ F g).
+Notation "[bigTheta 'of' f ]" := (@bigTheta_clone _ _ _ _ _ _ _ f _ _ idfun).
 Notation mkbigTheta tag x := (the_bigTheta tag (PhantomF x)).
 Notation "[Theta_ x e 'of' f ]" := (mkbigTheta gen_tag x f e).
 Notation "[Theta '_' x e 'of' f ]" := (the_bigTheta _ _ (PhantomF x) f e).

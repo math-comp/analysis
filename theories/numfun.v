@@ -1170,7 +1170,7 @@ Lemma cvg_indic {R : realFieldType} (x : R^o) k :
   x \in (ball 0 k : set R^o) ->
   \1_(ball 0 k : set R^o) y @[y --> x] --> (\1_(ball 0 k) x : R).
 Proof.
-move=> xB; apply/(@cvgrPdist_le _ R^o) => /= e e0; near=> t.
+move=> xB; apply/(@cvgrPdist_le _ _ R^o) => /= e e0; near=> t.
 rewrite !indicE xB/= mem_set//=; last by rewrite subrr normr0// ltW.
 near: t.
 rewrite inE /ball /= sub0r normrN in xB.
@@ -1262,9 +1262,9 @@ HB.builders Context T R f & @FiniteDecomp T R f.
 HB.end.
 
 Section Tietze.
-Context {X : topologicalType} {R : realType}.
+Context {d} {X : topologicalType d} {R : realType}.
 
-Hypothesis normalX : normal_space X.
+Hypothesis normalX : normal_space d X.
 
 Lemma urysohn_ext_itv A B x y :
   closed A -> closed B -> A `&` B = set0 -> x < y ->
@@ -1272,12 +1272,13 @@ Lemma urysohn_ext_itv A B x y :
     f @` A `<=` [set x], f @` B `<=` [set y] & range f `<=` `[x, y]].
 Proof.
 move=> cA cB A0 xy; move/normal_separatorP : normalX => urysohn_ext.
-have /(@uniform_separatorP _ R)[f [cf f01 f0 f1]] := urysohn_ext R _ _ cA cB A0.
+have /(@uniform_separatorP _ _ R)[f [cf f01 f0 f1]] 
+  := urysohn_ext R _ _ cA cB A0.
 pose g : X -> R := line_path x y \o f; exists g; split; rewrite /g /=.
   move=> t; apply: continuous_comp; first exact: cf.
-  apply: (@continuousD R R^o).
+  apply: (@continuousD _ _ R R^o).
     apply: continuousM; last exact: cst_continuous.
-    by apply: (@continuousB _ R^o) => //; exact: cst_continuous.
+    by apply: (@continuousB _ _ _ R^o) => //; exact: cst_continuous.
   by apply: continuousM => //; exact: cst_continuous.
 - by rewrite -image_comp => z /= [? /f0 -> <-]; rewrite line_path0.
 - by rewrite -image_comp => z /= [? /f1 -> <-]; rewrite line_path1.
@@ -1389,18 +1390,18 @@ have cvgh : {uniform, h_ @ \oo --> lim (h_ @ \oo)}.
 exists (lim (h_ @ \oo)); split.
 - move=> t /set_mem At; have /pointwise_cvgP/(_ t)/(cvg_lim (@Rhausdorff _)) :=
     [elaborate pointwise_uniform_cvg _ cvgh].
-  rewrite -fmap_comp /comp /h_ => <-; apply/esym/(@cvg_lim _ (@Rhausdorff R)).
-  apply: (@cvg_zero _ R^o); apply: norm_cvg0; under eq_fun => n.
+  rewrite -fmap_comp /comp /h_ => <-; apply/esym/(@cvg_lim _ _ (@Rhausdorff R)).
+  apply: (@cvg_zero _ _ R^o); apply: norm_cvg0; under eq_fun => n.
     rewrite distrC /series /cst /= -mulN1r fct_sumE mulr_sumr.
     under [fun _ : nat => _]eq_fun => ? do rewrite mulN1r -fgE opprB.
     rewrite telescope_sumr //= subrKC.
     over.
   apply/norm_cvg0P/cvgr0Pnorm_lt => eps epos.
-  have /(_ _ epos)  := @cvgr0_norm_lt R _ _ _ eventually_filter (_ : nat -> R^o)
-    (cvg_geometric M%:num twothirds1).
+  have /(_ _ epos) := @cvgr0_norm_lt _ R _ _ _ 
+      eventually_filter (_ : nat -> R^o) (cvg_geometric M%:num twothirds1).
   apply: filter_app; near_simpl; apply: nearW => n /le_lt_trans; apply.
   by rewrite (le_trans ((f_geo n).2 _ _)) // ler_norm.
-- apply: (@uniform_limit_continuous X _ (h_ @ \oo) (lim (h_ @ \oo))) =>//.
+- apply: (@uniform_limit_continuous _ _ X _ (h_ @ \oo) (lim (h_ @ \oo))) => //.
   near_simpl; apply: nearW; elim.
     by rewrite /h_ /series /= big_geq// => ?; exact: cst_continuous.
   move=> n; rewrite /h_ /series /= big_nat_recr /= // => IH t.

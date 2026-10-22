@@ -168,7 +168,7 @@ by apply/seteqP; split=> [?|?]; rewrite /ball/= sub0r normrN in_itv/= ltr_norml.
 Qed.
 
 Section nbhs_pseudoMetricType.
-Context {R : numDomainType} {T : pseudoMetricType R}.
+Context {d} {R : numDomainType} {T : pseudoMetricType d R}.
 
 Lemma ex_ball_sig (x : T) (P : set T) :
   ~ (forall eps : {posnum R}, ~ (ball x eps%:num `<=` ~` P)) ->
@@ -599,7 +599,7 @@ Proof. by move=> fy; under eq_fun do rewrite mulrC; exact: lt0_cvgMly. Qed.
 
 End lt0_cvg.
 
-Lemma cvgNy_compNP {T : topologicalType} {R : numFieldType} (f : R -> T)
+Lemma cvgNy_compNP {d} {T : topologicalType d} {R : numFieldType} (f : R -> T)
     (l : set_system T) :
   f x @[x --> -oo] --> l <-> (f \o -%R) x @[x --> +oo] --> l.
 Proof.
@@ -607,7 +607,7 @@ have f_opp : f =1 (fun x => (f \o -%R) (- x)) by move=> x; rewrite /comp opprK.
 by rewrite (eq_cvg -oo _ f_opp) [in X in X <-> _]fmap_comp ninftyN.
 Qed.
 
-Lemma cvgy_compNP {T : topologicalType} {R : numFieldType} (f : R -> T)
+Lemma cvgy_compNP {d} {T : topologicalType d} {R : numFieldType} (f : R -> T)
     (l : set_system T) :
   f x @[x --> +oo] --> l <-> (f \o -%R) x @[x --> -oo] --> l.
 Proof.
@@ -1010,7 +1010,7 @@ Definition interior_itv :=
 End interval_realType.
 
 Section continuous_within_itvP.
-Context {R : realFieldType} {K : numDomainType} {U : pseudoMetricType K}.
+Context {d} {R : realFieldType} {K : numDomainType} {U : pseudoMetricType d K}.
 Implicit Type f : R -> U.
 
 Let near_at_left (a : itv_bound R) b f eps : (a < BLeft b)%O -> 0 < eps ->
@@ -1193,8 +1193,8 @@ End continuous_within_itvP.
 #[deprecated(since="analysis 1.19.0", note="Use continuous_within_itvccP instead.")]
 Notation continuous_within_itvP := continuous_within_itvccP (only parsing).
 
-Lemma within_continuous_continuous {R : realFieldType} {K : numDomainType}
-    {U : pseudoMetricType K} a b (ba bb : bool) (f : R -> U) x : (a <= b)%R ->
+Lemma within_continuous_continuous {d} {R : realFieldType} {K : numDomainType}
+    {U : pseudoMetricType d K} a b (ba bb : bool) (f : R -> U) x : (a <= b)%R ->
   {within [set` Interval (BSide ba a) (BSide bb b)], continuous f} ->
   x \in `]a, b[%R -> {for x, continuous f}.
 Proof.

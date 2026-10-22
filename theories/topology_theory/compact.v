@@ -34,6 +34,10 @@ From mathcomp Require Import uniform_structure pseudometric_structure.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
+Reserved Notation "d .-cluster" (at level 5, format "d .-cluster").
+Reserved Notation "d .-compact" (at level 5, format "d .-compact").
+Reserved Notation "d .-precompact" (at level 5, format "d .-precompact").
+
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -49,7 +53,7 @@ Class infer (P : Prop) := Infer : P.
 Lemma inferP (P : Prop) : P -> infer P. Proof. by []. Qed.
 
 Section Compact.
-Context {T : topologicalType}.
+Context {d} {T : topologicalType d}.
 
 Definition cluster (F : set_system T) := [set p : T | F `#` nbhs p].
 
@@ -142,7 +146,7 @@ Qed.
 End Compact.
 
 Section near_covering.
-Context {X : topologicalType}.
+Context {d} {X : topologicalType d}.
 
 Definition near_covering (K : set X) :=
   forall (I : Type) (F : set_system I) (P : I -> X -> Prop),
@@ -213,7 +217,7 @@ Unshelve. all: by end_near. Qed.
 
 End near_covering.
 
-Lemma ultra_cvg_clusterE (T : topologicalType) (F : set_system T) :
+Lemma ultra_cvg_clusterE d (T : topologicalType d) (F : set_system T) :
   UltraFilter F -> cluster F = [set p | F --> p].
 Proof.
 move=> FU; rewrite predeqE => p; split.
@@ -221,7 +225,7 @@ move=> FU; rewrite predeqE => p; split.
 by move=> cvFp; rewrite cluster_cvgE; exists F; [apply: ultra_proper|split].
 Qed.
 
-Lemma compact_ultra (T : topologicalType) :
+Lemma compact_ultra d (T : topologicalType d) :
   compact = [set A | forall F : set_system T,
   UltraFilter F -> F A -> A `&` [set p | F --> p] !=set0].
 Proof.
@@ -234,9 +238,9 @@ by move=> /(cvg_cluster sFG); exists p.
 Qed.
 
 Section Precompact.
-Context {X : topologicalType}.
+Context {d} {X : topologicalType d}.
 
-Lemma compactU : setU_closed (@compact X).
+Lemma compactU : setU_closed (@compact d X).
 Proof.
 move=> A B; rewrite compact_ultra => cptA cptB F UF FAB; rewrite setIUl.
 have [/cptA[x AFx]|] := in_ultra_setVsetC A UF; first by exists x; left.
@@ -279,7 +283,8 @@ move=> clA; rewrite propeqE; split=> [[B AsubB [ + _ ]]|].
 by rewrite {1}(_ : A = closure A) ?precompactE// -closure_id.
 Qed.
 
-Definition locally_compact (A : set X) := [locally precompact A].
+Definition locally_compact (A : set X) := 
+  [locally precompact A].
 
 End Precompact.
 
@@ -288,7 +293,7 @@ Definition finite_subset_cover (I : choiceType) (D : set I)
   exists2 D' : {fset I}, {subset D' <= D} & A `<=` cover [set` D'] F.
 
 Section Covers.
-Variable T : topologicalType.
+Context d (T : topologicalType d).
 
 Definition cover_compact (A : set T) :=
   forall (I : choiceType) (D : set I) (f : I -> set T),
@@ -324,7 +329,7 @@ Definition closed_fam_of (A : set T) I (D : set I) (f : I -> set T) :=
 End Covers.
 
 Section PCovers.
-Context {T : ptopologicalType}.
+Context {d} {T : ptopologicalType d}.
 
 Lemma compact_In0 :
   compact = [set A | forall (I : choiceType) (D : set I) (f : I -> set T),
@@ -347,7 +352,7 @@ exists p; split=> [|B C FB p_C]; first by have /AclFIp [] := FA.
 by have /AclFIp [_] := FB; move=> /(_ _ p_C).
 Qed.
 
-Lemma compact_cover : compact = @cover_compact T.
+Lemma compact_cover : compact = @cover_compact d T.
 Proof.
 rewrite compact_In0 cover_compactE predeqE => A.
 split=> [Aco I D f [g gop feAg] fcov|Aco I D f [g gcl feAg]].
@@ -394,7 +399,7 @@ Qed.
 
 End PCovers.
 
-Lemma finite_compact {X : topologicalType} (A : set X) :
+Lemma finite_compact {d} {X : topologicalType d} (A : set X) :
   finite_set A -> compact A.
 Proof.
 case/finite_setP=> n; elim: n A => [A|n ih A /eq_cardSP[x Ax /ih ?]].
@@ -402,8 +407,8 @@ case/finite_setP=> n; elim: n A => [A|n ih A /eq_cardSP[x Ax /ih ?]].
 by rewrite -(setD1K Ax); apply: compactU => //; exact: compact_set1.
 Qed.
 
-Lemma clopen_countable {T : ptopologicalType}:
-  compact [set: T] -> @second_countable T -> countable (@clopen T).
+Lemma clopen_countable {d} {T : ptopologicalType d}:
+  compact [set: T] -> @second_countable d T -> countable (@clopen d T).
 Proof.
 move=> cmpT [B /fset_subset_countable cntB] [obase Bbase].
 apply/(card_le_trans _ cntB)/pcard_surjP.
@@ -431,7 +436,8 @@ move=> /DsubC /= [y /= yfs hyz]; exists (h' y) => //.
 by rewrite set_imfset /=; exists y.
 Qed.
 
-Lemma compact_cauchy_cvg {T : puniformType} (U : set T) (F : set_system T) :
+Lemma compact_cauchy_cvg {d} {T : puniformType d} 
+  (U : set T) (F : set_system T) :
   ProperFilter F -> cauchy F -> F U -> compact U -> cvg F.
 Proof.
 move=> PF cf FU /(_ F PF FU) [x [_ clFx]]; apply: (cvgP x).
@@ -443,8 +449,8 @@ move=> /(clFx _ (xsection (split_ent E) x) FD1)[z [Dz /xsectionP Exz]].
 by near=> t; apply/(entourage_split z entE Exz)/D1D2E; split => //; near: t.
 Unshelve. all: by end_near. Qed.
 
-Lemma compact_second_countable {R : realType} {T : pseudoPMetricType R} :
-  compact [set: T] -> @second_countable T.
+Lemma compact_second_countable {d} {R : realType} {T : pseudoPMetricType d R} :
+  compact [set: T] -> @second_countable d T.
 Proof.
 have npos n : (0:R) < n.+1%:R^-1 by [].
 pose f n (z : T): set T := (ball z (PosNum (npos n))%:num)°.
@@ -464,16 +470,30 @@ pose B := \bigcup_n (f n) @` [set` h'' n]; exists B;[|split].
     by have [_ /(_ x) [// | w ? ?]] := projT2 (h' N); exists w.
   exists (f N w); first split => //; first (by exists N).
   apply: (subset_trans _ ballsubV) => z bz.
-  rewrite [_%:num]splitr; apply: (@ball_triangle _ _ w).
+  rewrite [_%:num]splitr; apply: (@ball_triangle _ _ _ w).
     by apply: (le_ball (ltW deleps)); apply/ball_sym; apply: interior_subset.
   by apply: (le_ball (ltW deleps)); apply: interior_subset.
 Qed.
 
-Lemma clopen_surj {R : realType} {T : pseudoPMetricType R} :
-  compact [set: T] -> $|{surjfun [set: nat] >-> @clopen T}|.
+Lemma clopen_surj {d} {R : realType} {T : pseudoPMetricType d R} :
+  compact [set: T] -> $|{surjfun [set: nat] >-> @clopen d T}|.
 Proof.
 move=> cmptT.
-suff : @clopen T = set0 \/ $|{surjfun [set: nat] >-> @clopen T}|.
+suff : @clopen _ T = set0 \/ $|{surjfun [set: nat] >-> @clopen _ T}|.
   by case => //; rewrite eqEsubset => -[/(_ _ clopenT)].
 exact/pfcard_geP/clopen_countable/compact_second_countable.
 Qed.
+
+Module ExplicitNbhsDisplays.
+Export pseudometric_structure.ExplicitNbhsDisplays.
+
+Notation "d .-cluster" := (@cluster d _).
+Notation "'cluster'" := (@cluster default_fdisp _) (only printing).
+
+Notation "d .-compact" := (@compact d _).
+Notation "'compact'" := (@compact default_fdisp _) (only printing).
+
+Notation "d .-precompact" := (@precompact d _).
+Notation "'precompact'" := (@precompact default_fdisp _) (only printing).
+
+End ExplicitNbhsDisplays.

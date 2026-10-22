@@ -761,7 +761,7 @@ have nudelta n : nu E <= g_ (v n).
   apply/ereal_sup_le => x/= [A' [mA' A'D ?]].
   exists A' => //; split => //.
   by apply: (subset_trans A'D); apply: setDS; rewrite Ubig.
-apply: (@closed_cvg _ _ _ _ _ (fun v => nu E <= v) _ _ _ g_cvg_0) => //.
+apply: (@closed_cvg _ _ _ _ _ _ (fun v => nu E <= v) _ _ _ g_cvg_0) => //.
   exact: closed_ereal_le_ereal.
 exact: nearW.
 Unshelve. all: by end_near. Qed.

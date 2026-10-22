@@ -577,7 +577,7 @@ have /cvg_ex[/= l hl] : cvg ((fun n =>
     \sum_(0 <= i < n) \int[mu]_(y in H i) (fRN y + epsRN%:num%:E)) @ \oo).
   apply: is_cvg_ereal_nneg_natsum => n _.
   by apply: integral_ge0 => x _; rewrite adde_ge0 ?fRN_ge0.
-by rewrite (@cvg_lim _ _ _ _ l).
+by rewrite (@cvg_lim _ _ _ _ _ l).
 Qed.
 
 HB.instance Definition _ := @isCharge.Build _ _ _ sigmaRN

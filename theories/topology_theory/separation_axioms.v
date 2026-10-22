@@ -51,6 +51,13 @@ From mathcomp Require Import topology_structure compact subspace_topology
 (* ```                                                                        *)
 (******************************************************************************)
 
+Reserved Notation "d .-close" (at level 5, format "d .-close").
+Reserved Notation "d .-totally_disconnected" 
+  (at level 5, format "d .-totally_disconnected").
+Reserved Notation "d .-zero_dimensional" 
+  (at level 5, format "d .-zero_dimensional").
+Reserved Notation "d .-perfect_set" (at level 5, format "d .-perfect_set").
+
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -61,7 +68,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section set_nbhs.
-Context {T : topologicalType} (A : set T).
+Context {d} {T : topologicalType d} (A : set T).
 
 Definition set_nbhs := \bigcap_(x in A) nbhs x.
 
@@ -95,7 +102,7 @@ Qed.
 End set_nbhs.
 
 Section point_separation_axioms.
-Context {T : topologicalType}.
+Context {d} {T : topologicalType d}.
 
 Definition kolmogorov_space := forall x y, x != y ->
   exists A : set T, (A \in nbhs x /\ y \in ~` A) \/ (A \in nbhs y /\ x \in ~` A).
@@ -194,11 +201,11 @@ Qed.
 
 End point_separation_axioms.
 
-Arguments hausdorff_space : clear implicits.
-Arguments accessible_space : clear implicits.
-Arguments kolmogorov_space : clear implicits.
+Arguments hausdorff_space {d} T.
+Arguments accessible_space {d} T.
+Arguments kolmogorov_space {d} T.
 
-Lemma limit_point_closed {T : topologicalType} (A : set T) :
+Lemma limit_point_closed {d} {T : topologicalType d} (A : set T) :
   accessible_space T -> closed (limit_point A).
 Proof.
 move=> accT; rewrite -openC openE/= => a.
@@ -221,22 +228,23 @@ apply: (@subset_trans _ ([set a] `&` [set~ a])).
   by rewrite setIA; exact: setSI.
 by rewrite setICr.
 Qed.
-Arguments limit_point_closed {T} A.
+Arguments limit_point_closed {d T} A.
 
-Lemma subspace_hausdorff {T : topologicalType} (A : set T) :
+Lemma subspace_hausdorff {d} {T : topologicalType d} (A : set T) :
   hausdorff_space T -> hausdorff_space (subspace A).
 Proof.
 rewrite ?open_hausdorff => + x y xNy => /(_ x y xNy).
 move=> [[P Q]] /= [Px Qx] /= [/open_subspaceW oP /open_subspaceW oQ].
-by move=> ?; exists (P, Q); split => //=; [exact: oP | exact: oQ].
+by move=> ?; exists (P, Q); split.
 Qed.
 
-Lemma discrete_hausdorff {T : discreteTopologicalType} : hausdorff_space T.
+Lemma discrete_hausdorff {d} {T : discreteTopologicalType d} : 
+  hausdorff_space T.
 Proof.
 by move=> p q /(_ _ _ (discrete_set1 p) (discrete_set1 q)) [] // x [] -> ->.
 Qed.
 
-Lemma order_hausdorff {d} {T : orderTopologicalType d} : hausdorff_space T.
+Lemma order_hausdorff {td od} {T : orderTopologicalType td od} : hausdorff_space T.
 Proof.
 rewrite open_hausdorff=> p q; wlog : p q / (p < q)%O.
   have /orP[] := le_total p q; rewrite le_eqVlt => /predU1P[->|].
@@ -258,7 +266,7 @@ move=> npzq; exists (`]-oo, q[, `]p, +oo[)%classic; split => //=.
 Qed.
 
 Section ball_hausdorff.
-Variables (R : numDomainType) (T : pseudoMetricType R).
+Context d (R : numDomainType) (T : pseudoMetricType d R).
 
 Lemma ball_hausdorff : hausdorff_space T =
   forall (a b : T), a != b ->
@@ -282,7 +290,7 @@ Import numFieldTopology.Exports.
 Lemma Rhausdorff (R : realFieldType) : hausdorff_space R.
 Proof. exact: order_hausdorff. Qed.
 
-Lemma one_point_compactification_hausdorff {X : topologicalType} :
+Lemma one_point_compactification_hausdorff {d} {X : topologicalType d} :
    locally_compact [set: X] ->
    hausdorff_space X ->
    hausdorff_space (one_point_compactification X).
@@ -305,7 +313,7 @@ move=> lcpt hsdfX [x|] [y|] //=.
 Qed.
 
 Section hausdorff_topologicalType.
-Variable T : topologicalType.
+Context d (T : topologicalType d).
 Implicit Types x y : T.
 
 Local Open Scope classical_set_scope.
@@ -375,7 +383,7 @@ Proof. by move=> ffun fx fy; rewrite -closeE //; exact: cvgi_close. Qed.
 End hausdorff_topologicalType.
 
 Section hausdorff_ptopologicalType.
-Variable T : ptopologicalType.
+Context d (T : ptopologicalType d).
 Implicit Types x y : T.
 
 Lemma close_cvg (F1 F2 : set_system T) {FF2 : ProperFilter F2} :
@@ -383,7 +391,7 @@ Lemma close_cvg (F1 F2 : set_system T) {FF2 : ProperFilter F2} :
 Proof.
 move=> F12 F21.
 have [/(cvg_trans F21) F2l|dvgF1] := pselect (cvg F1).
-  by apply: (@cvg_close _ F2) => //; apply: cvgP F2l.
+  by apply: (@cvg_close _ _ F2) => //; apply: cvgP F2l.
 have [/(cvg_trans F12)/cvgP//|dvgF2] := pselect (cvg F2).
 rewrite dvgP // dvgP //; exact/close_refl.
 Qed.
@@ -413,10 +421,11 @@ Qed.
 
 End hausdorff_ptopologicalType.
 #[global] Hint Resolve close_refl : core.
-Arguments close_cvg {T} F1 F2 {FF2} _.
+Arguments close_cvg {d T} F1 F2 {FF2} _.
 
 Section close_uniform.
-Implicit Types (U : uniformType).
+Context {d : fdisp_t}.
+Implicit Types (U : uniformType d).
 
 Lemma entourage_close {U} (x y : U) :
   close x y = forall A, entourage A -> A (x, y).
@@ -447,23 +456,23 @@ apply/xsectionP; apply: (entourage_split x) => //.
 by have := cxy _ (entourage_inv (entourage_split_ent entA)).
 Qed.
 
-Lemma cvg_closeP {U : puniformType} (F : set_system U) (l : U) :
+Lemma cvg_closeP {U : puniformType d} (F : set_system U) (l : U) :
     ProperFilter F ->
   F --> l <-> ([cvg F in U] /\ close (lim F) l).
 Proof.
 move=> FF; split=> [Fl|[cvF]Cl].
-  by have /cvgP := Fl; split=> //; apply: (@cvg_close _ F).
+  by have /cvgP := Fl; split=> //; apply: (@cvg_close _ _ F).
 by apply: cvg_trans (close_cvgxx Cl).
 Qed.
 
-Lemma ball_close {R : numFieldType} {M : pseudoMetricType R} (x y : M) :
+Lemma ball_close {R : numFieldType} {M : pseudoMetricType d R} (x y : M) :
   close x y = forall eps : {posnum R}, ball x eps%:num y.
 Proof.
 rewrite propeqE; split => [cxy eps|cxy].
   have := [elaborate cxy _ (open_nbhs_ball _ (eps%:num/2)%:pos)].
   rewrite closureEonbhs/= meetsC meets_globallyr.
   move/(_ _ (open_nbhs_ball _ (eps%:num/2)%:pos)) => [z [zx zy]].
-  by apply: (@ball_splitl _ _ z); apply: interior_subset.
+  by apply: (@ball_splitl _ _ _ z); apply: interior_subset.
 rewrite closeEnbhs => B A /nbhs_ballP[_/posnumP[e2 e2B]]
   /nbhs_ballP[_/posnumP[e1 e1A]].
 by exists y; split; [apply/e2B|apply/e1A; exact: ballxx].
@@ -471,7 +480,7 @@ Qed.
 End close_uniform.
 
 Section set_separations.
-Context {T : topologicalType}.
+Context {d} {T : topologicalType d}.
 
 Definition normal_space :=
   forall A : set T, closed A ->
@@ -483,7 +492,7 @@ Definition regular_space :=
 Lemma compact_regular (x : T) V : hausdorff_space T -> compact V ->
   nbhs x V -> {for x, regular_space}.
 Proof.
-move=> sep cptv Vx; apply: (@compact_cluster_set1 T x _ V) => //.
+move=> sep cptv Vx; apply: (@compact_cluster_set1 _ T x _ V) => //.
 - apply: filter_from_proper => //; first last.
     by move=> ? /nbhs_singleton/subset_closure ?; exists x.
   apply: filter_from_filter; first by exists setT; exact: filterT.
@@ -528,7 +537,7 @@ have cvP (x : T) : A x -> \forall x' \near x & i \near F, (~` i) x'.
       move=> nBZ; apply: filterS; first exact: subset_closure.
       apply: open_nbhs_nbhs; split; first exact/closed_openC/closed_closure.
       exact/(subsetC _ nBZ)/(subset_trans cDC).
-    by have := @closed_closure _ (~` closure D); rewrite closure_id => <-.
+    by have := @closed_closure _ _ (~` closure D); rewrite closure_id => <-.
   near=> y U => /=; have Dy : D° y by exact: (near nD _).
   have UclD : U `<=` closure (~` closure D).
     exact: (near (small_set_sub snBD) U).
@@ -556,7 +565,7 @@ Arguments normal_space : clear implicits.
 Arguments regular_space : clear implicits.
 
 Local Open Scope relation_scope.
-Lemma uniform_regular {T : uniformType} : @regular_space T.
+Lemma uniform_regular {d} {T : uniformType d} : @regular_space _ T.
 Proof.
 move=> x R /=; rewrite -{1}nbhs_entourageE => -[E entE ER].
 pose E' := split_ent E; have eE' : entourage E' by exact: entourage_split_ent.
@@ -574,7 +583,8 @@ Local Close Scope relation_scope.
 #[global] Hint Resolve uniform_regular : core.
 
 Section totally_disconnected.
-Implicit Types T : topologicalType.
+Context {d : fdisp_t}.
+Implicit Types (T : topologicalType d).
 
 Definition totally_disconnected {T} (A : set T) :=
   forall x, A x -> connected_component A x = [set x].
@@ -582,7 +592,8 @@ Definition totally_disconnected {T} (A : set T) :=
 Definition zero_dimensional T :=
   (forall x y, x != y -> exists U : set T, [/\ clopen U, U x & ~ U y]).
 
-Lemma discrete_zero_dimension {T : discreteTopologicalType} : zero_dimensional T.
+Lemma discrete_zero_dimension {T : discreteTopologicalType d} :
+  zero_dimensional T.
 Proof.
 move=> x y xny; exists [set x]; split => //; last exact/nesym/eqP.
 by split; [exact: discrete_open | exact: discrete_closed].
@@ -624,7 +635,7 @@ move=> /(_ _ _ setC (powerset_filter_from_filter PF))[].
 by move=> D [DF _ [C DC]]/(_ _ DC)/subsetC2/filterS; apply; exact: DF.
 Qed.
 
-Lemma zero_dimensional_ray {d} {T : orderTopologicalType d} (x y : T) :
+Lemma zero_dimensional_ray {od} {T : orderTopologicalType d od} (x y : T) :
   (x < y)%O -> zero_dimensional T ->
   exists U, [/\ clopen U, U y , ~ U x & forall l r, U r -> ~ U l -> l < r]%O.
 Proof.
@@ -668,9 +679,9 @@ End totally_disconnected.
 Module countable_uniform.
 Section countable_uniform.
 Local Open Scope relation_scope.
-Context {R : realType} {T : uniformType}.
+Context {d} {R : realType} {T : uniformType d}.
 
-Hypothesis cnt_unif : @countable_uniformity T.
+Hypothesis cnt_unif : @countable_uniformity _ T.
 
 Let f_ := projT1 (cid2 (iffLR countable_uniformityP cnt_unif)).
 
@@ -955,12 +966,12 @@ Qed.
 Definition type : Type := let _ := countableBase in let _ := entF in T.
 
 #[export] HB.instance Definition _ := Uniform.on type.
-#[export] HB.instance Definition _ := Uniform_isPseudoMetric.Build R type
+#[export] HB.instance Definition _ := Uniform_isPseudoMetric.Build d R type
   step_ball_center step_ball_sym step_ball_triangle step_ball_entourage.
 #[export] HB.instance Definition _ {q : Pointed T} :=
   Pointed.copy type (Pointed.Pack q).
 
-Lemma countable_uniform_bounded (x y : T) : @ball _ type x 2 y.
+Lemma countable_uniform_bounded (x y : T) : @ball _ _ type x 2 y.
 Proof.
 rewrite /ball; exists O%N; rewrite /n_step_ball; split; rewrite // /distN.
 rewrite (_ : Num.truncn _ = 0)//.
@@ -976,11 +987,12 @@ Export countable_uniform.Exports.
 Notation countable_uniform := countable_uniform.type.
 
 Definition sup_pseudometric (R : realType) (T : Type) (Ii : Type)
-  (Tc : Ii -> PseudoMetric R T) (Icnt : countable [set: Ii]) : Type := T.
+  (d : Ii -> fdisp_t) (Tc : forall i, PseudoMetric (d i) R T) 
+  (Icnt : countable [set: Ii]) : Type := T.
 
 Section sup_pseudometric.
 Variable (R : realType) (T : choiceType) (Ii : Type).
-Variable (Tc : Ii -> PseudoMetric R T).
+Variable (d : Ii -> fdisp_t) (Tc : forall i, PseudoMetric (d i) R T).
 
 Hypothesis Icnt : countable [set: Ii].
 
@@ -988,10 +1000,10 @@ Local Notation S := (sup_pseudometric Tc Icnt).
 
 Let TS := fun i => PseudoMetric.Pack (Tc i).
 
-Let countable_uniformityT := @countable_sup_ent T Ii Tc Icnt
-  (fun i => @countable_uniformity_metric _ (TS i)).
+Let countable_uniformityT := @countable_sup_ent T Ii d Tc Icnt
+  (fun i => @countable_uniformity_metric _ _ (TS i)).
 
-HB.instance Definition _ : PseudoMetric R S :=
+HB.instance Definition _ : PseudoMetric (supremum_fdisp d) R S :=
   PseudoMetric.on (countable_uniform countable_uniformityT).
 
 End sup_pseudometric.
@@ -1000,11 +1012,11 @@ Module gauge.
 Section gauge.
 Local Open Scope relation_scope.
 
-Let split_sym {T : uniformType} (W : set (T * T)) :=
+Let split_sym {d} {T : uniformType d} (W : set (T * T)) :=
   (split_ent W) `&` (split_ent W)^-1.
 
 Section entourage_gauge.
-Context {T : uniformType} (E : set (T * T)) (entE : entourage E).
+Context {d} {T : uniformType d} (E : set (T * T)) (entE : entourage E).
 
 Definition gauge :=
   filter_from [set: nat] (fun n => iter n split_sym (E `&` E^-1)).
@@ -1056,7 +1068,8 @@ Let gauged : Type := T.
 
 HB.instance Definition _ := Choice.on gauged.
 HB.instance Definition _ :=
-  @isUniform.Build gauged gauge gauge_filter gauge_refl gauge_inv gauge_split.
+  @isUniform.Build default_fdisp 
+  gauged gauge gauge_filter gauge_refl gauge_inv gauge_split.
 
 Lemma gauge_countable_uniformity : countable_uniformity gauged.
 Proof.
@@ -1073,14 +1086,14 @@ Module Exports. HB.reexport. End Exports.
 End gauge.
 Export gauge.Exports.
 
-Lemma uniform_pseudometric_sup {R : realType} {T : puniformType} :
-    @entourage T = @sup_ent T {E : set (T * T) | @entourage T E}
-  (fun E => Uniform.class (@gauge.type T (projT1 E) (projT2 E))).
+Lemma uniform_pseudometric_sup {d} {R : realType} {T : puniformType d} :
+    @entourage _ T = @sup_ent T {E : set (T * T) | @entourage _ T E}
+  _ (fun E => Uniform.class (@gauge.type _ T (projT1 E) (projT2 E))).
 Proof.
 rewrite eqEsubset; split => [E entE|E].
   exists E => //=.
   pose pe : {classic {E0 : set (T * T) | _}} * _ := (exist _ E entE, E).
-  have entPE : `[< @entourage (gauge.type entE) E >].
+  have entPE : `[< @entourage _ (gauge.type entE) E >].
     by apply/asboolP; exists 0%N => // ? [].
   exists (fset1 (exist _ pe entPE)) => //=; first by move=> ?; rewrite in_setE.
   by rewrite set_fset1 bigcap_set1.
@@ -1090,8 +1103,8 @@ exact: gauge.iter_split_ent.
 Qed.
 
 Section perfect_sets.
-
-Implicit Types (T : topologicalType).
+Context {d : fdisp_t}.
+Implicit Types (T : topologicalType d).
 
 Definition perfect_set {T} (A : set T) := closed A /\ limit_point A = A.
 
@@ -1136,7 +1149,8 @@ Qed.
 End perfect_sets.
 
 Section sigT_separations.
-Context {I : choiceType} {X : I -> topologicalType}.
+Context {I : choiceType} {d : I -> fdisp_t}.
+Context {X : forall i, topologicalType (d i)}.
 
 Lemma sigT_hausdorff :
   (forall i, hausdorff_space (X i)) -> hausdorff_space {i & X i}.
@@ -1153,3 +1167,22 @@ by rewrite -(existT_inj2 lr).
 Qed.
 
 End sigT_separations.
+
+Module ExplicitNbhsDisplays.
+Export subspace_topology.ExplicitNbhsDisplays.
+
+Notation "d .-close" := (@close d _).
+Notation "'close'" := (@close default_fdisp _) (only printing).
+
+Notation "d .-totally_disconnected" := (@totally_disconnected d _).
+Notation "'totally_disconnected'" := 
+  (@totally_disconnected default_fdisp _) (only printing).
+
+Notation "d .-zero_dimensional" := (@zero_dimensional d _).
+Notation "'zero_dimensional'" := 
+  (@zero_dimensional default_fdisp _) (only printing).
+
+Notation "d .-perfect_set" := (@perfect_set d _).
+Notation "'perfect_set'" := (@perfect_set default_fdisp _) (only printing).
+
+End ExplicitNbhsDisplays.

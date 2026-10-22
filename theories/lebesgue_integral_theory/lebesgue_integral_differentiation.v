@@ -1124,7 +1124,8 @@ Lemma lebesgue_density (A : set R) : measurable A ->
   {ae mu, forall x, mu (A `&` ball x r) * (mu (ball x r))^-1
                       @[r --> 0^'+] --> (\1_A x)%:E}.
 Proof.
-move=> mA; have := lebesgue_differentiation (locally_integrable_indic openT mA).
+move=> mA. 
+have := lebesgue_differentiation (locally_integrable_indic (@openT _ _) mA).
 apply: filter_app.
 apply: aeW => /= x Ax.
 apply: (sube_cvg0 _ _).1 => //.
