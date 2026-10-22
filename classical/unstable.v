@@ -39,6 +39,13 @@ From mathcomp Require Import vector archimedean interval matrix.
 (*                           K is a numDomainType.                            *)
 (*                           L is a lmodType K.                               *)
 (*                           The HB class is Norm.                            *)
+(* ```                                                                        *)
+(*                                                                            *)
+(* `with_basis basisB`                                                        *)
+(* : where `basisB` is a proof of `basis_of fullv B`                          *)
+(* : with `B : (dim E).-tuple E` (`E : vectType K` and `K` a `fieldType`)     *)
+(*                                                                            *)
+(* ```                                                                        *)
 (*    Module MaxNngComLaw == contains on instance of Monoid.isComLaw on       *)
 (*                           (@maxr {nonneg _}) to be used with caution       *)
 (* ```                                                                        *)
@@ -700,6 +707,42 @@ End Theory.
 Module Import Exports. HB.reexport. End Exports.
 End Norm.
 Export Norm.Exports.
+
+Definition with_basis {K : fieldType} {E : vectType K} {B : (dim E).-tuple E}
+  of basis_of fullv B : Type := E.
+
+HB.instance Definition _ {K : fieldType} {E : vectType K} {B : (dim E).-tuple E}
+    (basisB : basis_of fullv B) :=
+  GRing.Lmodule.on (with_basis basisB).
+
+Section with_basis_has_fin_dim.
+Context {K : fieldType} {E : vectType K} {B : (dim E).-tuple E}
+  (basisB : basis_of fullv B).
+
+Let with_basis_semivector : semivector_axiom_def (dim E) (with_basis basisB).
+Proof.
+simple refine (Build_semivector_axiom_def _ _).
+- by move=> v; exact: (\row_i (coord B i v)).
+- split.
+  + by move=> k a; apply/rowP => i; rewrite !mxE linearZ.
+  + by move=> a b; apply/rowP => i; rewrite !mxE linearD.
+exists (fun v : 'rV_(dim E) => \sum_(i < dim E) (v ord0 i) *: B`_i).
+- move=> v; have : v \in fullv by exact: memvf.
+  rewrite -(span_basis basisB) => /coord_span vE.
+  by rewrite [RHS]vE; apply: eq_bigr => /= i _; rewrite !mxE.
+- by move=> v; apply/rowP=> i; rewrite !mxE coord_sum_free ?(basis_free basisB).
+Qed.
+
+HB.instance Definition _ := @LSemiModule_hasFinDim.Build _
+  (with_basis basisB) (dim E) with_basis_semivector.
+
+End with_basis_has_fin_dim.
+
+
+
+
+
+
 
 From mathcomp Require Import interval_inference.
 (* NB: This module adds an instance of `Monoid.Law.sort` on `Order.max`

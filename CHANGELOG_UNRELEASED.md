@@ -215,6 +215,9 @@
   + lemmas `cstMcounting_esum`, `sintegral_counting_esum`,
     `integral_countingT_esum`, `integral_counting_esum`
 
+- file `unstable.v`:
+  + definition `with_basis`
+
 ### Changed
 
 - in `esum.v`:
