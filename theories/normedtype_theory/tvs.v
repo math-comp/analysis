@@ -1641,21 +1641,21 @@ Qed.
 
 
 Lemma hausdorff_seminorm_on :
-hausdorff_space (seminorm_on H) <-> (forall x : E, x != 0 -> exists2 p, P p & 0 < p x).
+hausdorff_space (seminorm_on P0) <-> (forall x : E, x != 0 -> exists2 p, P p & 0 < p x).
 Proof.
 split.
-  move/hausdorff_convextvs => P0 x; contra => HP.
+  move/hausdorff_convextvs => H0 x; contra => HP.
   have : forall p, P p -> p x = 0.
     move=> p /HP /negP nlt0.
     have:= (@norm_ge0 _ _ p x).
       rewrite le0r; case; move/orP => []; first by move/eqP.
       by move/nlt0 => //.
-  move => {HP} HP; apply: P0 => /= c [? [?]] [/= I IB] <- <- xic.
+  move => {HP} HP; apply: H0 => /= c [? [?]] [/= I IB] <- <- xic.
   exists 0; split => //; apply: xic => /=; exists x => //; exists (-x); rewrite ?subrr //.
   move=> i /= /IB /set_mem /= [p] /HP px0 [e e0] -> /=.
   rewrite Theory.normN px0.
   by apply: ballxx.
-move=> P0; apply/hausdorff_convextvs => x /=; contra => /P0 [p Pp px0].
+move=> H0; apply/hausdorff_convextvs => x /=; contra => /H0 [p Pp px0].
 exists (p @^-1` ball (p x) (p x)); last first.
   by move=> /= ? ->; rewrite norm0 /ball /= subr0 ger0_norm ?norm_ge0 // ltxx.
 exists ([set x] `+ p @^-1` ball (0 : R) (p x)); last first.

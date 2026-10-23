@@ -1,4 +1,4 @@
-From HB Require Import structures.
+From HB Require Import structures. 
 From mathcomp Require Import boot order algebra interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
@@ -516,7 +516,7 @@ split; last first.
   pose P := (@seminorm_of R V).
   pose P0 := (@seminorm_ofneq0 R V).
   suff : hausdorff_space (seminorm_on P0).
-    have [contVs _ ] := (seminorm_convextvs V).
+    have [contVs _ ] := (@seminorm_convextvs _ V).
     by move=> + x y cs; apply => a b /contVs nsa /contVs nsb; apply: cs => //.
   apply/hausdorff_seminorm_on=> x /H [l].
   have [l0|l0|] := ltrgtP (l x) (0 : R) => //.
