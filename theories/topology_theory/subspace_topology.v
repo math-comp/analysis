@@ -1,6 +1,8 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra all_classical.
+#[warning="-warn-library-file-internal-analysis"]
+From mathcomp Require Import unstable.
 From mathcomp Require Import topology_structure uniform_structure compact.
 From mathcomp Require Import pseudometric_structure connected initial_topology.
 From mathcomp Require Import product_topology.
@@ -28,12 +30,15 @@ From mathcomp Require Import product_topology.
 (*                             set B with domain subspace A                   *)
 (*                             The HB structure is ContinuousFun.             *)
 (* ```                                                                        *)
+(*                                                                            *)
+(* `subdiagonal X`                                                            *)
+(* : `:= [set z | (A z.1 /\ A z.2) \/ z.1 = z.2]`                             *)
+(*                                                                            *)
 (******************************************************************************)
 
 Reserved Notation "{ 'within' A , 'continuous' f }"
   (format "{ 'within'  A ,  'continuous'  f }").
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -731,3 +736,92 @@ apply: withinU_continuous => //.
 Qed.
 
 End continuous_patch.
+
+Definition subdiagonal {X : uniformType} (A : set X) :
+    set (subspace A * subspace A) :=
+  [set z | (A z.1 /\ A z.2) \/ z.1 = z.2].
+Arguments subdiagonal {X} _.
+
+Lemma ent_subdiagonal {X : uniformType} (A : set X) :
+  @entourage (subspace A) (subdiagonal A).
+Proof.
+rewrite -[entourage (subdiagonal A)]/(subspace_ent A (subdiagonal A)).
+rewrite /subspace_ent /filter_from /=.
+exists setT; first exact: entourageT.
+move=> z /= [z12|[A1 [A2 _]]].
+- by rewrite /subdiagonal/= z12; right.
+- by rewrite /subdiagonal/=; left.
+Qed.
+
+Section HeineCantorUniform.
+Context {X Y : uniformType}.
+
+Let unif_cont_at (A : set X) (f : X -> Y) (E : set (Y * Y))
+    (i : subspace A * subspace A) (x : subspace A) : Prop :=
+  i.1 = x -> (map_pair f @^-1` E) i.
+
+Let unif_cont_atP (A : set X) (f : X -> Y) (E : set (Y * Y)) :
+  {within A, continuous f} -> entourage E ->
+  forall a : subspace A,
+  \forall i \near a & z \near entourage, unif_cont_at f E z i.
+Proof.
+move=> cf entE.
+pose E' := split_ent E.
+pose W : set (Y * Y) := E' `&` E'^-1%relation.
+have entW : @entourage Y W by apply: entourage_invI; exact: entourage_split_ent.
+move=> a.
+have /nbhsP [/= C entC Csub] :=
+  cf a (xsection W (f a)) (nbhs_entourage (f a) entW).
+pose D := split_ent C.
+have entD : entourage D by exact: entourage_split_ent.
+have near_Da : \forall x \near a, D (a, x).
+  move: entD => /(nbhs_entourage a).
+  rewrite -filter_from_entourageE => -[/= F entF FDa].
+  near do apply/set_mem/FDa/xsectionP.
+  by apply: cvg_entourage; [exact: cvg_id|exact: entF].
+near=> x z => /=.
+have Dax : D (a, x) by near: x; exact: near_Da.
+have Dz : D z by near: z; exact: entD.
+move=> /= z1x.
+have {Dax}Daz1 : D (a, z.1) by rewrite z1x.
+have {Dz}Caz2 : C (a, z.2).
+  apply: (entourage_split x entC); rewrite -/D.
+    by rewrite -z1x; exact: Daz1.
+  by rewrite -z1x -surjective_pairing; exact: Dz.
+have Caz1 : C (a, z.1) by exact: (split_ent_subset entC).
+have Waz1 : W (f a, f z.1).
+  suff : (f @^-1` xsection W (f a)) z.1 by rewrite /= => /xsectionP.
+  by apply: Csub => //; exact/xsectionP.
+have Waz2 : W (f a, f z.2).
+  suff : (f @^-1` xsection W (f a)) z.2 by rewrite /= => /xsectionP.
+  by apply: Csub => //; exact/xsectionP.
+move: Waz1 Waz2 => [_ E'az1] [E'az2 _].
+exact: (entourage_split (f a) entE).
+Unshelve. all: end_near. Qed.
+
+Lemma heine_cantor_subspace (A : set X) (f : X -> Y) :
+  compact A -> {within A, continuous f} ->
+  @unif_continuous (subspace A) Y f.
+Proof.
+move=> cA cf E entE.
+rewrite -[nbhs _ E]/(subspace_ent A
+  [set xy : subspace A * subspace A | E (f xy.1, f xy.2)]).
+have compactA_subspace : @compact (subspace A) A.
+  rewrite -[A](@setTI (subspace A)).
+  have [_] := @compact_subspaceIP X A setT.
+  by rewrite setTI; exact.
+have A_unif_cont_at : \forall V \near entourage, A `<=` @unif_cont_at A f E V.
+  have := (@compact_near_coveringP (subspace A) A).1 compactA_subspace.
+  move/(_ _ entourage (@unif_cont_at A f E)).
+  by apply=> a Aa; exact/unif_cont_atP.
+pose W : set (subspace A * subspace A) := [set z | A `<=` unif_cont_at f E z].
+have entW : entourage W by [].
+apply: (@filterS _ _ _ (W `&` subdiagonal A)); last first.
+  by apply: filterI => //; exact: ent_subdiagonal.
+move=> [x y] /= [Wxy] [[/= Ax Ay]|/= xy].
+- exact: Wxy _ Ax _.
+- rewrite xy.
+  exact: entourage_refl.
+Qed.
+
+End HeineCantorUniform.
