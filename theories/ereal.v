@@ -1622,15 +1622,16 @@ Qed.
 Section nbhs_ereal.
 Context {R : numFieldType} (P : \bar R -> Prop).
 
-Lemma nbhs_EFin (x : R) : (\forall y \near x%:E, P y) <-> \near x, P x%:E.
-Proof. done. Qed.
+Lemma nbhs_EFin (x : R) :
+  (\forall y \near x%:E, P y) <-> \forall x0 \near x, P x0%:E.
+Proof. by []. Qed.
 
 End nbhs_ereal.
 
 Section cvg_fin.
 Context {R : numFieldType} {F : set_system \bar R} {FF : Filter F}.
 
-Lemma fcvg_is_fine a : F --> a%:E -> \near F, F \is a fin_num.
+Lemma fcvg_is_fine a : F --> a%:E -> \forall x \near F, x \is a fin_num.
 Proof. by apply; apply/nbhs_EFin; near=> x. Unshelve. all: by end_near. Qed.
 
 End cvg_fin.
@@ -1653,7 +1654,8 @@ Section limit.
 Context {R : numFieldType} {I : Type} {F : set_system I} {FF : Filter F}
   (f : I -> \bar R).
 
-Lemma cvg_EFin a : (\near F, f F \is a fin_num) -> fine \o f @ F --> a ->
+Lemma cvg_EFin a :
+    (\forall x \near F, f x \is a fin_num) -> fine \o f @ F --> a ->
   f @ F --> a%:E.
 Proof.
 move=> Ffin Fa P/= /nbhs_EFin /Fa; rewrite !near_simpl.
@@ -1663,11 +1665,12 @@ Qed.
 Lemma fine_cvg a : f @ F --> a%:E -> fine \o f @ F --> a.
 Proof. exact: fine_fcvg. Qed.
 
-Lemma cvg_is_fine a : f @ F --> a%:E -> \near F, f F \is a fin_num.
+Lemma cvg_is_fine a : f @ F --> a%:E -> \forall x \near F, f x \is a fin_num.
 Proof. exact: fcvg_is_fine. Qed.
 
 Lemma fine_cvgP a :
-   f @ F --> a%:E <-> (\near F, f F \is a fin_num) /\ fine \o f @ F --> a.
+   f @ F --> a%:E <->
+   (\forall x \near F, f x \is a fin_num) /\ fine \o f @ F --> a.
 Proof.
 by split;[split;[exact: (@cvg_is_fine a)|exact: fine_cvg]|case; apply: cvg_EFin].
 Qed.

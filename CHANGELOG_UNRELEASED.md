@@ -386,6 +386,11 @@
 - in `radon_nikodym.v`:
   + notation `induced` (deprecated since 1.15.0)
 
+- in `filter.v`:
+  + notation `\near x, P x`
+  + notation `\near x & y, P x y`
+  + lemma `near_nbhs`
+
 ### Infrastructure
 
 ### Misc

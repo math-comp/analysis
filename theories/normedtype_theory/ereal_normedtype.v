@@ -29,7 +29,6 @@ From mathcomp Require Import topology ereal num_normedtype.
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -432,24 +431,26 @@ End ereal_is_hausdorff.
 Hint Extern 0 (hausdorff_space _) => solve[apply: ereal_hausdorff] : core.
 
 Section ProperFilterERealType.
-Context {T : Type} {a : set_system T} {Fa : ProperFilter a} {R : realFieldType}.
+Context {T : Type} {F : set_system T} {FF : ProperFilter F} {R : realFieldType}.
 Local Open Scope ereal_scope.
 Implicit Types f g h : T -> \bar R.
 
-Lemma cvge_to_ge f b c : f @ a --> c -> (\near a, b <= f a) -> b <= c.
+Lemma cvge_to_ge f b c : f @ F --> c -> (\forall a \near F, b <= f a) -> b <= c.
 Proof.
 by move=> /[swap]/(closed_cvg _ (@closed_ereal_le_ereal _ b)) /[apply].
 Qed.
 
-Lemma cvge_to_le f b c : f @ a --> c -> (\near a, f a <= b) -> c <= b.
+Lemma cvge_to_le f b c : f @ F --> c -> (\forall a \near F, f a <= b) -> c <= b.
 Proof.
 by move=> /[swap]/(closed_cvg _ (@closed_ereal_ge_ereal _ b))/[apply].
 Qed.
 
-Lemma lime_ge x f : cvg (f @ a) -> (\near a, x <= f a) -> x <= lim (f @ a).
+Lemma lime_ge x f :
+  cvg (f @ F) -> (\forall a \near F, x <= f a) -> x <= lim (f @ F).
 Proof. exact: cvge_to_ge. Qed.
 
-Lemma lime_le x f : cvg (f @ a) -> (\near a, x >= f a) -> x >= lim (f @ a).
+Lemma lime_le x f :
+  cvg (f @ F) -> (\forall a \near F, x >= f a) -> x >= lim (f @ F).
 Proof. exact: cvge_to_le. Qed.
 
 End ProperFilterERealType.

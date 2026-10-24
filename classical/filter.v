@@ -147,12 +147,10 @@ From mathcomp Require Import boolp classical_sets functions wochoice
 (*                                     Prefer this notation when the          *)
 (*                                     statement forall x, P x does not stand *)
 (*                                     alone.                                 *)
-(*                     \near x, P x := \forall y \near x, P y.                *)
 (*                  {near F & G, P} == same as {near H, P}, where H is the    *)
 (*                                     product of the filters F and G         *)
 (*   \forall x \near F & y \near G, P x y := {near F & G, forall x y, P x y}  *)
 (*     \forall x & y \near F, P x y == same as before, with G = F             *)
-(*               \near x & y, P x y := \forall z \near x & t \near y, P x y   *)
 (*                     x \is_near F == x belongs to a set P : in_filter F     *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -196,9 +194,6 @@ Reserved Notation "{ 'near' x , P }" (at level 0, format "{ 'near'  x ,  P }").
 Reserved Notation "'\forall' x '\near' x_0 , P"
   (at level 200, x name, P at level 200,
    format "'\forall'  x  '\near'  x_0 ,  P").
-Reserved Notation "'\near' x , P"
-  (at level 200, x at level 99, P at level 200,
-   format "'\near'  x ,  P", only parsing).
 Reserved Notation "{ 'near' x & y , P }"
   (at level 0, format "{ 'near'  x  &  y ,  P }").
 Reserved Notation "'\forall' x '\near' x_0 & y '\near' y_0 , P"
@@ -207,9 +202,6 @@ Reserved Notation "'\forall' x '\near' x_0 & y '\near' y_0 , P"
 Reserved Notation "'\forall' x & y '\near' z , P"
   (at level 200, x name, y name, P at level 200,
    format "'\forall'  x  &  y  '\near'  z ,  P").
-Reserved Notation "'\near' x & y , P"
-  (at level 200, x, y at level 99, P at level 200,
-   format "'\near'  x  &  y ,  P", only parsing).
 (*Reserved Notation "[ 'filter' 'of' x ]" (format "[ 'filter'  'of'  x ]").*)
 Reserved Notation "F `=>` G" (at level 70, format "F  `=>`  G").
 Reserved Notation "F --> G" (at level 70, format "F  -->  G").
@@ -289,14 +281,12 @@ End Near.
 
 Notation "{ 'near' x , P }" := (@prop_near1 _ _ x _ (inPhantom P)) : type_scope.
 Notation "'\forall' x '\near' x_0 , P" := {near x_0, forall x, P} : type_scope.
-Notation "'\near' x , P" := (\forall x \near x, P) : type_scope.
 Notation "{ 'near' x & y , P }" :=
   (@prop_near2 _ _ _ _ x y _ (inPhantom P)) : type_scope.
 Notation "'\forall' x '\near' x_0 & y '\near' y_0 , P" :=
   {near x_0 & y_0, forall x y, P} : type_scope.
 Notation "'\forall' x & y '\near' z , P" :=
   {near z & z, forall x y, P} : type_scope.
-Notation "'\near' x & y , P" := (\forall x \near x & y \near y, P) : type_scope.
 Arguments prop_near1 : simpl never.
 Arguments prop_near2 : simpl never.
 
@@ -401,11 +391,7 @@ Arguments cvgP {T F} l.
 Arguments dvgP {T F}.
 
 Lemma nbhs_nearE {U} {T : filteredType U} (x : T) (P : set U) :
-  nbhs x P = \near x, P x.
-Proof. by []. Qed.
-
-Lemma near_nbhs {U} {T : filteredType U} (x : T) (P : set U) :
-  (\forall x \near nbhs x, P x) = \near x, P x.
+  nbhs x P = \forall x0 \near x, P x0.
 Proof. by []. Qed.
 
 Lemma near2_curry {U V} (F : set_system U) (G : set_system V) (P : U -> set V) :
@@ -424,7 +410,7 @@ Lemma filter_of_nearI (X : Type) (fX : filteredType X)
 Proof. by []. Qed.
 
 Module Export NearNbhs.
-Definition near_simpl := (@near_nbhs, @nbhs_nearE, filter_of_nearI).
+Definition near_simpl := (filter_of_nearI).
 Ltac near_simpl := rewrite ?near_simpl.
 End NearNbhs.
 
@@ -525,7 +511,7 @@ Lemma filter_nbhsT {T : Type} (F : set_system T) :
 Proof. by move=> FF; apply: filterT. Qed.
 #[global] Hint Resolve filter_nbhsT : core.
 
-Lemma nearT {T : Type} (F : set_system T) : Filter F -> \near F, True.
+Lemma nearT {T : Type} (F : set_system T) : Filter F -> \forall _ \near F, True.
 Proof. by move=> FF; apply: filterT. Qed.
 #[global] Hint Resolve nearT : core.
 
@@ -693,10 +679,9 @@ Lemma in_filter_from {I T : Type} (D : set I) (B : I -> set T) (i : I) :
 Proof. by exists i. Qed.
 
 Lemma in_nearW {T : Type} (F : set_system T) (P : T -> Prop) (S : set T) :
-  Filter F -> F S -> {in S, forall x, P x} -> \near F, P F.
+  Filter F -> F S -> {in S, forall x, P x} -> \forall x \near F, P x.
 Proof.
-move=> FF FS SP; rewrite -nbhs_nearE.
-by apply: (@filterS _ F _ S) => // x /mem_set /SP.
+by move=> FF FS SP; apply: (@filterS _ F _ S) => // x /mem_set /SP.
 Qed.
 
 Lemma near_andP {T : Type} F (b1 b2 : T -> Prop) : Filter F ->
@@ -809,7 +794,7 @@ by move=> i; rewrite inE/= => _; apply: (fIF i).
 Qed.
 
 Lemma filter_imply [T : Type] [P : Prop] [f : set T] [F : set_system T] :
-  Filter F -> (P -> \near F, f F) -> \near F, P -> f F.
+  Filter F -> (P -> \forall x \near F, f x) -> \forall x \near F, P -> f x.
 Proof.
 move=> ? PF; near do move=> /asboolP.
 by case: asboolP=> [/PF|_]; by [apply: filterS|apply: nearW].
@@ -990,7 +975,7 @@ HB.structure Definition SubNbhs (V : nbhsType) (S : pred V) :=
 
 Lemma near_fun (T T' : nbhsType) (f : T -> T') (x : T) (P : T' -> Prop) :
     {for x, continuous f} ->
-  (\forall y \near f x, P y) -> (\near x, P (f x)).
+  (\forall y \near f x, P y) -> (\forall x0 \near x, P (f x0)).
 Proof. exact. Qed.
 Arguments near_fun {T T'} f x.
 
@@ -1223,7 +1208,7 @@ split.
 - move=> fFAG; split.
   + exact/(cvg_trans fFAG)/cvg_within.
   + by apply/fFAG; exact: withinT.
-- move=> [+ fA] B => /[apply]; rewrite 2!nbhs_nearE !near_map.
+- move=> [+ fA] B => /[apply]; rewrite nbhs_simpl.
   by apply: filterS2 fA => t ?; exact.
 Unshelve. all: by end_near. Qed.
 

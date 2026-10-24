@@ -241,7 +241,8 @@ rewrite -filter_from_ballE.
 by rewrite -ball_mdistE.
 Qed.
 
-Lemma nbhs_mdistP x (P : V -> Prop) : (\near x, P x) <-> nbhs_mdist x P.
+Lemma nbhs_mdistP x (P : V -> Prop) :
+  (\forall x0 \near x, P x0) <-> nbhs_mdist x P.
 Proof. by rewrite nbhs_nbhs_mdist. Qed.
 
 Lemma filter_from_mdist_nbhs (y : V) :
@@ -288,7 +289,7 @@ Lemma nbhsr0P (P : set V) x :
   (\forall y \near x, P y) <->
   (\forall e \near 0^'+, forall y, mdist x y <= e -> P y).
 Proof.
-rewrite (*nbhs0P*)/= near_withinE !near_simpl.
+rewrite near_withinE.
 split.
   move => /nbhs_mdistP[/= _/posnumP[e] /(_ _) Px].
   apply/(@nbhs_mdistP R R^o).
@@ -414,7 +415,7 @@ Proof.
 by move=> /cvgr_gt + ? z0 => /(_ _ z0); apply: filterS => ?; apply/ltW.
 Qed.
 
-Lemma squeeze_cvgr f g h : (\near F, f F <= g F <= h F) ->
+Lemma squeeze_cvgr f g h : (\forall x \near F, f x <= g x <= h x) ->
   forall l : R, f @ F --> l -> h @ F --> l -> g @ F --> l.
 Proof.
 move=> fgh l lfa lga.

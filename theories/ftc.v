@@ -1743,7 +1743,7 @@ rewrite (@decreasing_ge0_integration_by_substitutiony (- F)%R).
   apply: cvg_trans; apply: near_eq_cvg; rewrite near_simpl/=; near=> z.
   rewrite derive1E deriveN -?derive1E//.
   apply: dF.
-  near: z; rewrite near_nbhs.
+  near: z.
   apply: (@open_in_nearW _ _ `]a, +oo[).
   + exact: interval_open.
   + by move=> ?; rewrite inE.
@@ -1785,9 +1785,7 @@ have mF' : measurable_fun `]a, +oo[ (- F)%R^`().
   apply: near_eq_cvg => /=; rewrite near_simpl; near=> z.
   rewrite !derive1E deriveN ?opprK//.
   apply: dF.
-  near: z.
-  rewrite near_nbhs.
-  exact: near_in_itvoy.
+  by near: z; exact: near_in_itvoy.
 rewrite -!integral_itvob_itvcb.
 - apply/measurable_EFinP; apply: measurable_funM; last exact: measurableT_comp.
   apply: (measurable_comp (measurable_itv `]-oo, (- F a)%R[)).
