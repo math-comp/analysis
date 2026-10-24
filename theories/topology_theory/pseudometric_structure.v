@@ -312,7 +312,7 @@ Lemma cvg_withinP {T : topologicalType} {R : archiRealFieldType}
 Proof.
 split=> [fpl u [Au up]|ful].
   move=> V Vnb.
-  have := fpl _ Vnb; rewrite {1 2 4}/nbhs/= /within/= near_nbhs => Unb.
+  have := fpl _ Vnb; rewrite {1 2 4}/nbhs/= /within/= => Unb.
   have [N _ {}up] := up _ Unb.
   by exists N => // n /= Nn; exact: up.
 apply: contrapT => fpl; move: ful; apply/existsNP.
@@ -326,7 +326,7 @@ have [V Vnb hV] : exists2 V : set T, nbhs l V & forall d : {posnum R},
   rewrite nbhs_nearE near_map near_withinE; near=> t => At.
   have /not_and3P[//|bp|/contrapT //] := h t.
   exfalso; apply: bp.
-  by rewrite ball_symE; near: t; rewrite !near_nbhs; apply: near_ball.
+  by rewrite ball_symE; near: t; apply: near_ball.
 have invn n : 0 < n.+1%:R^-1 :> R by rewrite invr_gt0.
 exists (fun n => sval (cid (hV (PosNum (invn n))))).
 - split => [k|]; first by rewrite /sval/=; case: cid => x [].

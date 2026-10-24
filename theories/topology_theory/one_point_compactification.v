@@ -15,8 +15,6 @@ From mathcomp Require Import pseudometric_structure compact initial_topology.
 (*                                      as an alias of `option X`             *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
-
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
@@ -70,7 +68,7 @@ Lemma one_point_compactification_compact : compact [set: opc].
 Proof.
 apply/compact_near_coveringP => ? F /= P FF FT.
 have [[U i] [[W [cptW cW] /= WU nFi UiP]]] := FT None I.
-have P'F x : W x -> \near x & F, P F (Some x).
+have P'F x : W x -> \forall x0 \near x & x1 \near F, P x1 (Some x0).
   move=> Wx; suff: \forall y \near Some @ x & f \near id @ F, P f y.
     by rewrite near_map2.
   exact: FT (Some x) I.

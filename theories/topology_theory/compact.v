@@ -34,7 +34,6 @@ From mathcomp Require Import uniform_structure pseudometric_structure.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -148,7 +147,7 @@ Definition near_covering (K : set X) :=
   forall (I : Type) (F : set_system I) (P : I -> X -> Prop),
   Filter F ->
   (forall x, K x -> \forall x' \near x & i \near F, P i x') ->
-  \near F, K `<=` P F.
+  \forall i \near F, K `<=` P i.
 
 Let near_covering_compact : near_covering `<=` compact.
 Proof.
@@ -199,7 +198,7 @@ Definition near_covering_within (K : set X) :=
   forall (I : Type) (F : set_system I) (P : I -> X -> Prop),
   Filter F ->
   (forall x, K x -> \forall x' \near x & i \near F, K x' -> P i x') ->
-  \near F, K `<=` P F.
+  \forall i \near F, K `<=` P i.
 
 Lemma near_covering_withinP (K : set X) :
   near_covering_within K <-> near_covering K.

@@ -20,7 +20,6 @@ Reserved Notation "x ^'-" (at level 3, left associativity, format "x ^'-").
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -174,7 +173,7 @@ by rewrite /= opprK -normrN opprD.
 Qed.
 
 Lemma nearN {R : numFieldType} (x : R) (P : R -> Prop) :
-  (\forall y \near - x, P y) <-> \near x, P (- x).
+  (\forall y \near - x, P y) <-> \forall x0 \near x, P (- x0).
 Proof. by rewrite -[X in X <-> _]near_simpl nbhsN. Qed.
 
 Lemma nbhsNimage {R : numFieldType} (x : R) :
@@ -381,7 +380,7 @@ Lemma cvg_at_right_left_dnbhs (R : realFieldType) (T : topologicalType)
   f x @[x --> p^'+] --> l -> f x @[x --> p^'-] --> l -> f x @[x --> p^'] --> l.
 Proof.
 move=> + + U Uz => /(_ U Uz) + /(_ U Uz); near_simpl.
-rewrite !near_withinE !near_nbhs => lf rf.
+rewrite !near_withinE => lf rf.
 apply: filter_app lf; apply: filter_app rf.
 by near=> t => xlt xgt /lt_total/orP[|].
 Unshelve. all: by end_near. Qed.
