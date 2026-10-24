@@ -44,6 +44,8 @@ From mathcomp Require Import topology_structure.
 (* ```                                                                        *)
 (******************************************************************************)
 
+Reserved Notation "d .-entourage" (at level 5, format "d .-entourage").
+
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -61,7 +63,7 @@ Proof. by []. Qed.
 
 Local Open Scope relation_scope.
 
-HB.mixin Record Nbhs_isUniform_mixin M & Nbhs M := {
+HB.mixin Record Nbhs_isUniform_mixin d M & Nbhs d M := {
   entourage : set_system (M * M);
   entourage_filter : Filter entourage;
   entourage_diagonal_subproof :
@@ -73,14 +75,20 @@ HB.mixin Record Nbhs_isUniform_mixin M & Nbhs M := {
 }.
 
 #[short(type="uniformType")]
-HB.structure Definition Uniform :=
-  {T of Topological T & Nbhs_isUniform_mixin T}.
+HB.structure Definition Uniform d :=
+  {T of Topological d T & Nbhs_isUniform_mixin d T}.
 
 #[short(type="puniformType")]
-HB.structure Definition PointedUniform :=
-  {T of PointedTopological T & Nbhs_isUniform_mixin T}.
+HB.structure Definition PointedUniform d :=
+  {T of PointedTopological d T & Nbhs_isUniform_mixin d T}.
 
-HB.factory Record Nbhs_isUniform M & Nbhs M := {
+HB.instance Definition _ (d d' : fdisp_t) (T : uniformType d) :=
+  Nbhs_isUniform_mixin.Build d' (with_fdisp d' T)
+    entourage_filter entourage_diagonal_subproof entourage_inv_subproof 
+    entourage_split_ex_subproof nbhsE_subproof.
+HB.saturate with_fdisp.
+
+HB.factory Record Nbhs_isUniform d M & Nbhs d M := {
   entourage : set_system (M * M);
   entourage_filter : Filter entourage;
   entourage_diagonal : forall A, entourage A -> diagonal `<=` A;
@@ -92,7 +100,7 @@ HB.factory Record Nbhs_isUniform M & Nbhs M := {
 
 Local Close Scope relation_scope.
 
-HB.builders Context M & Nbhs_isUniform M.
+HB.builders Context d M & Nbhs_isUniform d M.
 
 Let nbhs_filter (p : M) : ProperFilter (nbhs p).
 Proof.
@@ -118,17 +126,17 @@ exists C => // q Cpq; rewrite nbhs_E; exists C => // r Cqr.
 by apply/sBpA/mem_set/sC2B; exists q; exact/set_mem.
 Qed.
 
-HB.instance Definition _ := Nbhs_isNbhsTopological.Build M
+HB.instance Definition _ := Nbhs_isNbhsTopological.Build d M
   nbhs_filter nbhs_singleton nbhs_nbhs.
 
-HB.instance Definition _ := Nbhs_isUniform_mixin.Build M
+HB.instance Definition _ := Nbhs_isUniform_mixin.Build d M
   entourage_filter entourage_diagonal entourage_inv entourage_split_ex nbhsE.
 
 HB.end.
 
 Local Open Scope relation_scope.
 
-HB.factory Record isUniform M & Choice M := {
+HB.factory Record isUniform (d : fdisp_t) M & Choice M := {
   entourage : set_system (M * M);
   entourage_filter : Filter entourage;
   entourage_diagonal : forall A, entourage A -> diagonal `<=` A;
@@ -139,24 +147,24 @@ HB.factory Record isUniform M & Choice M := {
 
 Local Close Scope relation_scope.
 
-HB.builders Context M & isUniform M.
+HB.builders Context d M & isUniform d M.
 
-HB.instance Definition _ := @hasNbhs.Build M (nbhs_ entourage).
+HB.instance Definition _ := @hasNbhs.Build d M (nbhs_ entourage).
 
-HB.instance Definition _ := @Nbhs_isUniform.Build M entourage
+HB.instance Definition _ := @Nbhs_isUniform.Build d M entourage
   entourage_filter entourage_diagonal entourage_inv entourage_split_ex erefl.
 
 HB.end.
 
-Lemma nbhs_entourageE {M : uniformType} : nbhs_ (@entourage M) = nbhs.
+Lemma nbhs_entourageE {d} {M : uniformType d} : nbhs_ (@entourage d M) = nbhs.
 Proof. by rewrite -Nbhs_isUniform_mixin.nbhsE_subproof. Qed.
 
 Lemma entourage_sym {X Y : Type} E (x : X) (y : Y) :
   E (x, y) <-> (E ^-1)%relation (y, x).
 Proof. by []. Qed.
 
-Lemma filter_from_entourageE {M : uniformType} x :
-  filter_from (@entourage M) (fun A => xsection A x) = nbhs x.
+Lemma filter_from_entourageE {d} {M : uniformType d} x :
+  filter_from (@entourage d M) (fun A => xsection A x) = nbhs x.
 Proof. by rewrite -nbhs_entourageE. Qed.
 
 Module Export NbhsEntourage.
@@ -164,7 +172,8 @@ Definition nbhs_simpl :=
   (nbhs_simpl,@filter_from_entourageE,@nbhs_entourageE).
 End NbhsEntourage.
 
-Lemma nbhsP {M : uniformType} (x : M) P : nbhs x P <-> nbhs_ entourage x P.
+Lemma nbhsP {d} {M : uniformType d} (x : M) P : 
+  nbhs x P <-> nbhs_ entourage x P.
 Proof. by rewrite nbhs_simpl. Qed.
 
 Lemma filter_inv {T : Type} (F : set_system (T * T)) :
@@ -180,12 +189,12 @@ Qed.
 
 Section uniformType1.
 Local Open Scope relation_scope.
-Context {M : uniformType}.
+Context {d} {M : uniformType d}.
 
 Lemma entourage_refl (A : set (M * M)) x : entourage A -> A (x, x).
 Proof. by move=> entA; exact: entourage_diagonal_subproof entA _ _. Qed.
 
-Global Instance entourage_filter' : Filter (@entourage M).
+Global Instance entourage_filter' : Filter (@entourage d M).
 Proof.
 exact: entourage_filter.
 Qed.
@@ -249,8 +258,11 @@ Qed.
 
 End uniformType1.
 
-Global Instance entourage_pfilter {M : puniformType} :
-  ProperFilter (@entourage M).
+Notation "d .-split_ent" := (@split_ent d _) (format "d .-split_ent").
+Notation "'split_ent'" := (@split_ent default_fdisp _) (only printing).
+
+Global Instance entourage_pfilter {d} {M : puniformType d} :
+  ProperFilter (@entourage d M).
 Proof.
 apply Build_ProperFilter_ex; last exact: entourage_filter.
 by move=> A entA; exists (point, point); apply: entourage_refl.
@@ -262,11 +274,11 @@ Hint Extern 0 (entourage (split_ent _)) => exact: entourage_split_ent : core.
 Hint Extern 0 (entourage (get _)) => exact: entourage_split_ent : core.
 #[global]
 Hint Extern 0 (entourage (_^-1)%relation) => exact: entourage_inv : core.
-Arguments entourage_split {M} z {x y A}.
+Arguments entourage_split {d M} z {x y A}.
 #[global]
 Hint Extern 0 (nbhs _ (xsection _ _)) => exact: nbhs_entourage : core.
 
-Lemma ent_closure {M : uniformType} (x : M) E : entourage E ->
+Lemma ent_closure {d} {M : uniformType d} (x : M) E : entourage E ->
   closure (xsection (split_ent E) x) `<=` xsection E x.
 Proof.
 pose E' := (split_ent E) `&` (split_ent E)^-1%relation.
@@ -276,7 +288,8 @@ move=> y; rewrite xsectionI => -[/xsectionP xy [_ /xsectionP yz]].
 by apply/xsectionP; move: xy yz; exact: entourage_split.
 Qed.
 
-Lemma continuous_withinNx {U V : uniformType} (f : U -> V) x :
+Lemma continuous_withinNx {d d'} {U : uniformType d} {V : uniformType d'} 
+  (f : U -> V) x :
   {for x, continuous f} <-> f @ x^' --> f x.
 Proof.
 split=> - cfx P /= fxP.
@@ -286,8 +299,8 @@ rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
 Unshelve. all: by end_near. Qed.
 
-Lemma continuous_injective_withinNx
-  (T U : topologicalType) (f : T -> U) (x : T) :
+Lemma continuous_injective_withinNx d d'
+  (T : topologicalType d) (U : topologicalType d') (f : T -> U) (x : T) :
   {for x, continuous f} ->
   (forall y, f y = f x -> y = x) -> f @ x^' --> (f x)^'.
 Proof.
@@ -299,19 +312,19 @@ by apply/seteqP; split=> y/=;
 Qed.
 
 (* This property is primarily useful for metrizability on uniform spaces *)
-Definition countable_uniformity (T : uniformType) :=
+Definition countable_uniformity d (T : uniformType d) :=
   exists R : set_system (T * T), [/\
     countable R,
     R `<=` entourage &
     forall P, entourage P -> exists2 Q, R Q & Q `<=` P].
 
-Lemma countable_uniformityP {T : uniformType} :
+Lemma countable_uniformityP {d} {T : uniformType d} :
   countable_uniformity T <-> exists2 f : nat -> set (T * T),
     (forall A, entourage A -> exists N, f N `<=` A) &
     (forall n, entourage (f n)).
 Proof.
 split=> [[M []]|[f fsubE entf]].
-  move=> /pfcard_geP[-> _ /(_ _ (@entourageT _))[]//|/unsquash f eM Msub].
+  move=> /pfcard_geP[-> _ /(_ _ (@entourageT _ _))[]//|/unsquash f eM Msub].
   exists f; last by move=> n; apply: eM; exact: funS.
   by move=> ? /Msub [Q + ?] => /(@surj _ _ _ _ f)[n _ fQ]; exists n; rewrite fQ.
 exists (range f); split; first exact: card_image_le.
@@ -319,17 +332,19 @@ exists (range f); split; first exact: card_image_le.
 by move=> E /fsubE [n fnA]; exists (f n) => //; exists n.
 Qed.
 
-Lemma open_nbhs_entourage (U : uniformType) (x : U) (A : set (U * U)) :
+Lemma open_nbhs_entourage d (U : uniformType d) (x : U) (A : set (U * U)) :
   entourage A -> open_nbhs x (xsection A x)°.
 Proof.
 move=> entA; split; first exact: open_interior.
 by apply: nbhs_singleton; apply: nbhs_interior; exact: nbhs_entourage.
 Qed.
 
-Definition unif_continuous (U V : uniformType) (f : U -> V) :=
+Definition unif_continuous d d' (U : uniformType d) (V : uniformType d') 
+  (f : U -> V) :=
   (map_pair f) @ entourage --> entourage.
 
-Lemma unif_continuous_continuous (U V : uniformType) (f : U -> V) :
+Lemma unif_continuous_continuous d d' 
+  (U : uniformType d) (V : uniformType d') (f : U -> V) :
   unif_continuous f -> continuous f.
 Proof.
 rewrite /unif_continuous /cvg_to !nbhs_simpl => ucf.
@@ -341,19 +356,22 @@ rewrite -image_sub => v [] u' /= Yfuu' <-.
 exact: YX.
 Qed.
 
-Lemma unif_continuous_comp {U V W : uniformType} (f : U -> V) (g : V -> W) :
+Lemma unif_continuous_comp d d' d'' 
+  {U : uniformType d} {V : uniformType d'} {W : uniformType d''} 
+  (f : U -> V) (g : V -> W) :
   unif_continuous f -> unif_continuous g -> unif_continuous (g \o f).
 Proof. by move=> cf cg A /cg /cf; exact. Qed.
 
-Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
+Definition entourage_set d (U : uniformType d) (A : set ((set U) * (set U))) :=
   exists2 B, entourage B & forall PQ, A PQ -> forall p q,
     PQ.1 p -> PQ.2 q -> B (p,q).
 
 (** Complete uniform spaces *)
 
-Definition cauchy {T : uniformType} (F : set_system T) := (F, F) --> entourage.
+Definition cauchy {d} {T : uniformType d} (F : set_system T) := 
+  (F, F) --> entourage.
 
-Lemma cvg_cauchy {T : puniformType} (F : set_system T) : Filter F ->
+Lemma cvg_cauchy {d} {T : puniformType d} (F : set_system T) : Filter F ->
   [cvg F in T] -> cauchy F.
 Proof.
 move=> FF cvF A entA; have /entourage_split_ex [B entB sB2A] := entA.
@@ -364,22 +382,33 @@ move=> ab [/= /xsectionP Balima /xsectionP Blimb]; apply: sB2A.
 by exists (lim F).
 Qed.
 
-HB.mixin Record Uniform_isComplete T & PointedUniform T := {
+HB.mixin Record Uniform_isComplete d T & PointedUniform d T := {
   cauchy_cvg :
     forall (F : set_system T), ProperFilter F -> cauchy F -> cvg F
 }.
 
 #[short(type="completeType")]
-HB.structure Definition Complete :=
-  {T of Uniform T & Uniform_isComplete T & isPointed T}.
+HB.structure Definition Complete d :=
+  {T of Uniform d T & Uniform_isComplete d T & isPointed T}.
+
+HB.instance Definition _ d d' (T : completeType d) :=
+  Uniform_isComplete.Build d' (with_fdisp d' T) cauchy_cvg.
 
 Section completeType1.
 
-Context {T : completeType}.
+Context {d} {T : completeType d}.
 
 Lemma cauchy_cvgP (F : set_system T) (FF : ProperFilter F) : cauchy F <-> cvg F.
 Proof. by split=> [/cauchy_cvg|/cvg_cauchy]. Qed.
 
 End completeType1.
-Arguments cauchy_cvg {T} F {FF} _ : rename.
-Arguments cauchy_cvgP {T} F {FF}.
+Arguments cauchy_cvg {d T} F {FF} _ : rename.
+Arguments cauchy_cvgP {d T} F {FF}.
+
+Module ExplicitNbhsDisplays.
+Export topology_structure.ExplicitNbhsDisplays.
+
+Notation "d .-entourage" := (@entourage d _).
+Notation "'entourage'" := (@entourage default_fdisp _) (only printing).
+
+End ExplicitNbhsDisplays.

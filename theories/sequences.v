@@ -345,8 +345,7 @@ Section sequences_patched.
 (* TODO: generalizations to numDomainType *)
 
 Section NatShift.
-
-Variables (N : nat) (V : ptopologicalType).
+Context d (N : nat) (V : ptopologicalType d).
 Implicit Types (f : nat -> V) (u : V ^nat)  (l : set_system V).
 
 Lemma cvg_restrict f u_ l :
@@ -383,7 +382,7 @@ Unshelve. all: by end_near. Qed.
 
 End NatShift.
 
-Variables (V : ptopologicalType).
+Context d (V : ptopologicalType d).
 
 Lemma cvg_shiftS u_ (l : set_system V) :
   ([sequence u_ n.+1]_n @ \oo --> l) = (u_ @ \oo --> l).
@@ -557,7 +556,7 @@ Lemma eq_sum_telescope (V : zmodType) (u_ : V ^nat) n :
 Proof. by rewrite telescopeK/= addrC addrNK. Qed.
 
 Section series_patched.
-Context (N : nat) {K : numFieldType} {V : normedModType K}.
+Context d (N : nat) {K : numFieldType} {V : normedModType d K}.
 Implicit Types (f : nat -> V) (u : V ^nat) (l : set_system V).
 
 Lemma is_cvg_series_restrict u_ :
@@ -796,7 +795,7 @@ suff abel : forall n,
     rewrite funeqE => n; rewrite big_add1 /= /= big_distrr /=.
     by apply eq_bigr => i _; rewrite mulrCA mulrA.
   have {}a_o : [sequence n.+1%:R * telescope u_ n]_n @ \oo --> 0.
-    apply: (@eqolim0 _ _ _ eventually_filterType).
+    apply: (@eqolim0 _ _ _ _ eventually_filterType).
     rewrite a_o.
     set h := 'o_\oo (@harmonic R).
     apply/eqoP => _/posnumP[e] /=.
@@ -849,7 +848,8 @@ End cesaro_converse.
 
 Section series_convergence.
 
-Lemma cvg_series_cvg_0 (K : numFieldType) (V : normedModType K) (u_ : V ^nat) :
+Lemma cvg_series_cvg_0 d (K : numFieldType) (V : normedModType d K) 
+  (u_ : V ^nat) :
   cvgn (series u_) -> u_ @ \oo --> 0.
 Proof.
 move=> cvg_series.
@@ -960,11 +960,11 @@ Lemma is_cvg_geometric_series (R : archiRealFieldType) (a z : R) : `|z| < 1 ->
   cvgn (series (geometric a z)).
 Proof. by move=> /cvg_geometric_series/cvgP; apply. Qed.
 
-Definition normed_series_of (K : numDomainType) (V : normedModType K)
+Definition normed_series_of d (K : numDomainType) (V : normedModType d K)
     (u_ : V ^nat) & phantom V^nat (series u_) : K ^nat :=
   [series `|u_ n|]_n.
-Notation "[ 'normed' s_ ]" := (@normed_series_of _ _ _ (Phantom _ s_)) : ring_scope.
-Arguments normed_series_of {K V} u_ _ n /.
+Notation "[ 'normed' s_ ]" := (@normed_series_of _ _ _ _ (Phantom _ s_)) : ring_scope.
+Arguments normed_series_of {d K V} u_ _ n /.
 
 Lemma ger0_normed {K : numFieldType} (u_ : K ^nat) :
   (forall n, 0 <= u_ n) -> [normed series u_] = series u_.
@@ -972,7 +972,8 @@ Proof.
 by move=> u_gt0; rewrite funeqE => n /=; apply: eq_bigr => k; rewrite ger0_norm.
 Qed.
 
-Lemma cauchy_seriesP {R : numFieldType} (V : normedModType R) (u_ : V ^nat) :
+Lemma cauchy_seriesP {d} {R : numFieldType} (V : normedModType d R) 
+  (u_ : V ^nat) :
   cauchy (series u_ @ \oo) <->
   forall e : R, e > 0 ->
     \forall n \near (\oo, \oo), `|\sum_(n.1 <= k < n.2) u_ k| < e.
@@ -1018,7 +1019,8 @@ move: cvg_v => /(is_cvg_series_shiftn N); apply: series_squeeze_is_cvgn => /= n.
   by apply; exact: leq_addl.
 Unshelve. all: by end_near. Qed.
 
-Lemma normed_cvg {R : realType} (V : completeNormedModType R) (u_ : V ^nat) :
+Lemma normed_cvg {d} {R : realType} (V : completeNormedModType d R) 
+  (u_ : V ^nat) :
   cvgn [normed series u_] -> cvgn (series u_).
 Proof.
 move=> /cauchy_cvgP/cauchy_seriesP u_ncvg.
@@ -1027,7 +1029,8 @@ apply: filterS => n /=; rewrite ger0_norm ?sumr_ge0//.
 by apply: le_lt_trans; apply: ler_norm_sum.
 Qed.
 
-Lemma lim_series_norm {R : realType} (V : completeNormedModType R) (f : V ^nat) :
+Lemma lim_series_norm {d} {R : realType} (V : completeNormedModType d R) 
+  (f : V ^nat) :
     cvgn [normed series f] ->
   `|limn (series f)| <= limn [normed series f].
 Proof.
@@ -1055,7 +1058,7 @@ move=> k0 kfK; have [K0|K0] := lerP K 0.
   near: x; exists (k / 2); first by rewrite /mkset divr_gt0.
   move=> t /=; rewrite distrC subr0 => tk2 t0.
   by rewrite normr_gt0 t0 (lt_trans tk2) // -[in ltLHS](add0r k) midf_lt.
-- apply/(@eqolim0 _ _ R 0^')/eqoP => _/posnumP[e]; near=> x.
+- apply/(@eqolim0 _ _ _ R 0^')/eqoP => _/posnumP[e]; near=> x.
   rewrite (le_trans (kfK _ _)) //=.
   + near: x; exists (k / 2); first by rewrite /mkset divr_gt0.
     move=> t /=; rewrite distrC subr0 => tk2 t0.
@@ -1077,7 +1080,7 @@ have Cng : cvgn [normed series (g h)].
   apply: series_squeeze_is_cvgn (Hg _ hLk) _ => [//|?|].
     exact: le_trans (Hg _ hLk _).
   by under eq_fun do rewrite mulrC.
-apply: (le_trans (@lim_series_norm _ R^o _ Cng)).
+apply: (le_trans (@lim_series_norm _ _ R^o _ Cng)).
 rewrite -[_ * _](lim_seriesZ _ Cf) (lim_series_le Cng Ckf) // => n.
 by rewrite [leRHS]mulrC; exact: Hg.
 Qed.
@@ -1163,7 +1166,7 @@ Lemma is_cvg_series_exp_coeff_pos : cvgn (series (exp x)).
 Proof.
 rewrite /series; near \oo => N; have xN : x < N%:R.
   by near: N; exists (truncn x).+1 => // m/= xm; rewrite -truncn_lt_nat// ltW.
-rewrite -(@is_cvg_series_restrict N.+1).
+rewrite -(@is_cvg_series_restrict _ N.+1).
 by apply: (nondecreasing_is_cvgn (incr_S1 N)); eexists; exact: S1_sup.
 Unshelve. all: by end_near. Qed.
 
@@ -2715,7 +2718,7 @@ Lemma geometric_le_lim {R : realType} (n : nat) (a x : R) :
   0 <= a -> 0 < x -> `|x| < 1 -> series (geometric a x) n <= a * (1 - x)^-1.
 Proof.
 move=> a0 x0 x1.
-have /(@cvg_unique _ (@Rhausdorff R)) := @cvg_geometric_series _ a _ x1.
+have /(@cvg_unique _ _ (@Rhausdorff R)) := @cvg_geometric_series _ a _ x1.
 move/(_ _ (@is_cvg_geometric_series _ a _ x1)) => ->.
 apply: nondecreasing_cvgn_le; last exact: is_cvg_geometric_series.
 by apply: nondecreasing_series => ? _ /=; rewrite pmulr_lge0 // exprn_gt0.
@@ -3056,7 +3059,7 @@ apply: infinite_setIl => //.
 by apply: sub_finite_set (Dfin x) => y /=; case: leP.
 Qed.
 
-Lemma finite_range_cvg_subsequence {T : ptopologicalType} (x_ : T ^nat) :
+Lemma finite_range_cvg_subsequence {d} {T : ptopologicalType d} (x_ : T ^nat) :
   finite_set (range x_) ->
   exists2 f : nat -> nat, increasing_seq f & cvgn (x_ \o f).
 Proof.
@@ -3085,7 +3088,7 @@ Qed.
 
 Section banach_contraction.
 
-Context {R : realType} {X : completeNormedModType R} (U : set X).
+Context {d} {R : realType} {X : completeNormedModType d R} (U : set X).
 Variables (f : {fun U >-> U}).
 
 Section contractions.
@@ -3135,12 +3138,12 @@ suff : ball 0 (C^-1 * e%:num) (q%:num ^+ minn n.1 n.2).
   by rewrite /ball /= sub0r normrN ger0_norm.
 near: n; rewrite nbhs_simpl.
 pose g := fun w : nat * nat => q%:num ^+ minn w.1 w.2.
-have := @fcvg_ball _ _ (g @ filter_prod \oo \oo) _ 0 _ (C^-1 * e%:num).
+have := @fcvg_ball _ _ _ (g @ filter_prod \oo \oo) _ 0 _ (C^-1 * e%:num).
 move: (@cvg_geometric _ 1 q%:num); rewrite ger0_norm // => /(_ q1) geo.
 near_simpl; apply; last by rewrite mulr_gt0 // invr_gt0.
 apply/cvg_ballP => _/posnumP[delta]; near_simpl.
 have [N _ Q] : \forall N \near \oo, ball 0 delta%:num (geometric 1 q%:num N).
-  exact: (@fcvg_ball R R _ _ 0 geo).
+  exact: (@fcvg_ball _ R R _ _ 0 geo).
 exists ([set n | N <= n], [set n | N <= n])%N; first by split; exists N.
 move=> [n m] [Nn Nm]; rewrite /ball /= sub0r normrN ger0_norm /g //.
 apply: le_lt_trans; last by apply: (Q N) => /=.
@@ -3183,7 +3186,7 @@ Section Baire.
 Variable K : realType.
 
 (* TODO: generalize to complete metric spaces  *)
-Theorem Baire (U : completeNormedModType K) (F : (set U)^nat) :
+Theorem Baire d (U : completeNormedModType d K) (F : (set U)^nat) :
   (forall i, open (F i) /\ dense (F i)) -> dense (\bigcap_i (F i)).
 Proof.
 move=> odF D Dy OpenD.
@@ -3200,7 +3203,7 @@ have Ar : forall na : nat * (U * {posnum K}), exists b : U * {posnum K},
   move=> [n [an rn]].
   have [ openFn denseFn] := odF n.+1.
   have [an1 B0Fn2an1] : exists x, ((closed_ball an rn%:num)° `&` F n.+1) x.
-    have [//|? ?] := @open_nbhs_closed_ball _ _ an rn%:num.
+    have [//|? ?] := @open_nbhs_closed_ball _ _ _ an rn%:num.
     by apply: denseFn => //; exists an.
   have openIB0Fn1 : open ((closed_ball an rn%:num)° `&` F n.+1).
     by apply/openI => //; exact/open_interior.
@@ -3247,7 +3250,7 @@ have : cvg (a @ \oo).
   by rewrite  -?ltr_pdivrMr ?mulfV ?ltr1n.
 rewrite cvg_ex //= => -[l Hl]; exists l; split.
 - have Hinter : (closed_ball a0 r0%:num) l.
-    apply: (@closed_cvg _ _ \oo eventually_filter a) => //.
+    apply: (@closed_cvg _ _ _ \oo eventually_filter a) => //.
     + exact: closed_ball_closed.
     + apply: nearW; move=> m; have /(_ (a m)) := @Suite_ball 0%N _ (leq0n m).
       by apply; exact: closed_ballxx.
@@ -3255,8 +3258,9 @@ rewrite cvg_ex //= => -[l Hl]; exists l; split.
   by move: Ball_a0; rewrite closed_ballE //= subsetI; apply: proj1.
 - move=> i _.
   have : closed_ball (a i) (r i)%:num l.
-    rewrite -(@cvg_shiftn i _ a _) /= in Hl.
-    apply: (@closed_cvg _ _ \oo eventually_filter (fun n => a (n + i)%N)) => //=.
+    rewrite -(@cvg_shiftn _ i _ a _) /= in Hl.
+    apply: (@closed_cvg _ _ _ \oo eventually_filter (fun n => a (n + i)%N))
+      => //=.
     + exact: closed_ball_closed.
     + by apply: nearW; move=> n; exact/(Suite_ball _ _ (leq_addl n i))/closed_ballxx.
   move: i => [|n].
@@ -3268,12 +3272,12 @@ Unshelve. all: by end_near. Qed.
 End Baire.
 
 (* TODO: generalize once PR#1107 is integrated *)
-Definition bounded_fun_norm (K : realType) (V : normedModType K)
-    (W : normedModType K) (f : V -> W) :=
+Definition bounded_fun_norm d d' (K : realType) (V : normedModType d K)
+    (W : normedModType d' K) (f : V -> W) :=
   forall r, exists M, forall x, `|x| <= r -> `|f x| <= M.
 
-Lemma bounded_landau (K : realType) (V : normedModType K)
-    (W : normedModType K) (f : {linear V -> W}) :
+Lemma bounded_landau d d' (K : realType) (V : normedModType d K)
+    (W : normedModType d' K) (f : {linear V -> W}) :
   bounded_fun_norm f <-> ((f : V -> W) =O_ (0 : V) cst (1:K)).
 Proof.
 rewrite eqOP; split => [|Bf].
@@ -3301,14 +3305,17 @@ Definition pointwise_bounded (K : realType) (V : normedModType K) (W : normedMod
 Definition uniform_bounded (K : realType) (V : normedModType K) (W : normedModType K)
  (F : set (V -> W)) := bounded_top F {uniform V -> W}.  *)
 
-Definition pointwise_bounded (K : realType) (V : normedModType K) (W : normedModType K)
-  (F : set (V -> W)) := forall x, exists M, forall f, F f -> `|f x| <= M.
+Definition pointwise_bounded d d' (K : realType) (V : normedModType d K) 
+  (W : normedModType d' K) (F : set (V -> W)) := 
+  forall x, exists M, forall f, F f -> `|f x| <= M.
 
-Definition uniform_bounded (K : realType) (V : normedModType K) (W : normedModType K)
-  (F : set (V -> W)) := forall r, exists M, forall f, F f -> forall x, `|x| <= r -> `|f x| <= M.
+Definition uniform_bounded d d' (K : realType) (V : normedModType d K) 
+  (W : normedModType d' K) (F : set (V -> W)) := 
+  forall r, exists M, forall f, F f -> forall x, `|x| <= r -> `|f x| <= M.
 
 Section banach_steinhaus.
-Variables (K : realType) (V : completeNormedModType K) (W : normedModType K).
+Context d d' (K : realType) 
+  (V : completeNormedModType d K) (W : normedModType d' K).
 
 Let pack_linear (f : V -> W) (lf : linear f) : {linear V -> W}
  := HB.pack f (GRing.isLinear.Build _ _ _ _ _ lf).
@@ -3323,11 +3330,11 @@ move=> Propf BoundedF.
 set O := fun n => \bigcup_(f in F) (normr \o f)@^-1` [set y | y > n%:R].
 have O_open : forall n, open ( O n ).
   move=> n; apply: bigcup_open => i Fi.
-  apply: (@open_comp _ _ (normr \o i) [set y | y > n%:R]); last first.
+  apply: (@open_comp _ _ _ _ (normr \o i) [set y | y > n%:R]); last first.
     exact: open_gt.
   move=> x Hx; apply: continuous_comp; last exact: norm_continuous.
   have Li : linear i := proj2 (Propf _ Fi).
-  apply: (@linear_continuous K V W (pack_linear Li)) => /=.
+  apply: (@linear_continuous _ _ K V W (pack_linear Li)) => /=.
   exact/(proj1 (bounded_landau (pack_linear Li)))/(proj1 (Propf _ Fi)).
 set O_inf := \bigcap_i (O i).
 have O_infempty : O_inf = set0.

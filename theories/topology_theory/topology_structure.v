@@ -130,6 +130,14 @@ Reserved Notation "A °" (format "A °").
 Reserved Notation "[ 'locally' P ]" (format "[ 'locally'  P ]").
 Reserved Notation "x ^'" (format "x ^'").
 
+Reserved Notation "d .-open" (at level 5, format "d .-open").
+Reserved Notation "d .-interior" (at level 5, format "d .-interior").
+Reserved Notation "d .-open_nbhs" (at level 5, format "d .-open_nbhs").
+Reserved Notation "d .-basis" (at level 5, format "d .-basis").
+Reserved Notation "d .-closure" (at level 5, format "d .-closure").
+Reserved Notation "d .-closed" (at level 5, format "d .-closed").
+Reserved Notation "d .-clopen" (at level 5, format "d .-clopen").
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -138,7 +146,8 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 (** Topological spaces *)
-HB.mixin Record Nbhs_isTopological (T : Type) & Nbhs T := {
+HB.mixin Record Nbhs_isTopological d (T : Type) 
+& Nbhs d T := {
   open : set_system T;
   nbhs_pfilter_subproof : forall p : T, ProperFilter (nbhs p) ;
   nbhsE_subproof : forall p : T, nbhs p =
@@ -147,23 +156,27 @@ HB.mixin Record Nbhs_isTopological (T : Type) & Nbhs T := {
 }.
 
 #[short(type="topologicalType")]
-HB.structure Definition Topological :=
-  {T of Nbhs T & Nbhs_isTopological T}.
+HB.structure Definition Topological d :=
+  {T of Nbhs d T & Nbhs_isTopological d T}.
 
 #[short(type="ptopologicalType")]
-HB.structure Definition PointedTopological :=
-  {T of PointedNbhs T & Nbhs_isTopological T}.
+HB.structure Definition PointedTopological d :=
+  {T of PointedNbhs d T & Nbhs_isTopological d T}.
 
 #[short(type="bpTopologicalType")]
-HB.structure Definition BiPointedTopological :=
-  { X of BiPointed X & Topological X }.
+HB.structure Definition BiPointedTopological d :=
+  { X of BiPointed X & Topological d X }.
 
 #[short(type="subTopologicalType")]
-HB.structure Definition SubTopological (V : topologicalType)
-  (S : pred V) := {U of SubNbhs V S U & Topological U}.
+HB.structure Definition SubTopological d d' (V : topologicalType d)
+  (S : pred V) := {U of @SubNbhs d d' V S U & Topological d' U}.
+
+HB.instance Definition _ (d d' : fdisp_t) (T : topologicalType d) :=
+  @Nbhs_isTopological.Build d' (with_fdisp d' T) open nbhs_pfilter_subproof nbhsE_subproof openE_subproof.
+HB.saturate with_fdisp.
 
 Section Topological1.
-Context {T : topologicalType}.
+Context d {T : topologicalType d}.
 
 Definition open_nbhs (p : T) (A : set T) := open A /\ A p.
 
@@ -189,7 +202,7 @@ by rewrite nbhsE propeqE; split=> [[? ?]|[? [B [? ?] BA]]]; split => //;
   [exists A | exact: BA].
 Qed.
 
-Definition interior (A : set T) := (@nbhs _ T)^~ A.
+Definition interior (A : set T) := (@nbhs _ _ T)^~ A.
 
 Local Notation "A °" := (interior A).
 
@@ -216,7 +229,7 @@ Proof. by rewrite openE. Qed.
 Lemma openT : open (setT : set T).
 Proof. by rewrite openE => ??; apply: filterT. Qed.
 
-Lemma openI : setI_closed (@open T).
+Lemma openI : setI_closed (@open _ T).
 Proof.
 move=> A B; rewrite openE => Aop Bop p [Ap Bp].
 by apply: filterI; [apply: Aop|apply: Bop].
@@ -237,7 +250,7 @@ move=> HU; elim; [rewrite bigcap_mkord big_ord0; apply: openT|move=> n IH].
 by rewrite bigcap_mkord big_ord_recr -bigcap_mkord; apply: openI.
 Qed.
 
-Lemma openU : setU_closed (@open T).
+Lemma openU : setU_closed (@open _ T).
 Proof.
 by move=> A B /[!openE] AA BB p [/AA|/BB]; apply: filterS => ? ?; [left|right].
 Qed.
@@ -281,7 +294,7 @@ Qed.
 
 End Topological1.
 
-Lemma open_in_nearW {T : topologicalType} (P : T -> Prop) (S : set T) :
+Lemma open_in_nearW d {T : topologicalType d} (P : T -> Prop) (S : set T) :
   open S -> {in S, forall x, P x} -> {in S, forall x, \near x, P x}.
 Proof.
 by move=> oS SP z /set_mem Sz; apply: in_nearW SP => //=; exact: open_nbhs_nbhs.
@@ -292,20 +305,22 @@ Qed.
 #[global] Hint Extern 0 (ProperFilter (nbhs _)) =>
   solve [apply: nbhs_pfilter] : typeclass_instances.
 
-Global Instance alias_nbhs_filter {T : topologicalType} x :
-  @Filter T^o (@nbhs T^o T x).
+Global Instance alias_nbhs_filter d {T : topologicalType d} x :
+  @Filter T^o (@nbhs _ T^o T x).
 Proof. apply: @nbhs_filter T x. Qed.
 
-Global Instance alias_nbhs_pfilter {T : topologicalType} x :
-  @ProperFilter T^o (@nbhs T^o T x).
+Global Instance alias_nbhs_pfilter d {T : topologicalType d} x :
+  @ProperFilter T^o (@nbhs _ T^o T x).
 Proof. exact: @nbhs_pfilter T x. Qed.
 
 Reserved Notation "A ^°" (at level 1, format "A ^°").
-Notation "A °" := (interior A) : classical_set_scope.
+Notation "A °" := (@interior _ _ A) (only parsing) 
+  : classical_set_scope.
 #[deprecated(since="mathcomp-analysis 1.10.0", note="use the notation instead ° instead of ^°")]
 Notation "A ^°" := (A°) (only parsing).
 
-Lemma continuousP (S T : topologicalType) (f : S -> T) :
+Lemma continuousP d d' (S : topologicalType d) (T : topologicalType d')
+  (f : S -> T) :
   continuous f <-> forall A, open A -> open (f @^-1` A).
 Proof.
 split=> fcont; first by rewrite !openE => A Aop ? /Aop /fcont.
@@ -313,23 +328,24 @@ move=> s A; rewrite nbhs_simpl /= !nbhsE => - [B [Bop Bfs] sBA].
 by exists (f @^-1` B); [split=> //; apply/fcont|move=> ? /sBA].
 Qed.
 
-Lemma open_comp  {T U : topologicalType} (f : T -> U) (D : set U) :
+Lemma open_comp {d d'} {T : topologicalType d'} {U : topologicalType d} 
+  (f : T -> U) (D : set U) :
   {in f @^-1` D, continuous f} -> open D -> open (f @^-1` D).
 Proof.
 rewrite !openE => fcont Dop x /= Dfx.
 by apply: fcont; [rewrite inE|exact: Dop].
 Qed.
 
-Lemma cvg_fmap {T: topologicalType} {U : topologicalType}
+Lemma cvg_fmap d {T: topologicalType d} {U : topologicalType d}
   (F : set_system T) x (f : T -> U) :
    {for x, continuous f} -> F --> x -> f @ F --> f x.
 Proof. by move=> cf fx P /cf /fx. Qed.
 
-Lemma near_join (T : topologicalType) (x : T) (P : set T) :
+Lemma near_join d (T : topologicalType d) (x : T) (P : set T) :
   (\near x, P x) -> \near x, \near x, P x.
 Proof. exact: nbhs_interior. Qed.
 
-Lemma near_bind (T : topologicalType) (P Q : set T) (x : T) :
+Lemma near_bind d (T : topologicalType d) (P Q : set T) (x : T) :
   (\near x, (\near x, P x) -> Q x) -> (\near x, P x) -> \near x, Q x.
 Proof.
 move=> PQ xP; near=> y; apply: (near PQ y) => //;
@@ -338,8 +354,8 @@ Unshelve. all: by end_near. Qed.
 
 (* limit composition *)
 
-Lemma continuous_cvg {T : Type} {V U : topologicalType}
-  (F : set_system T) (FF : Filter F)
+Lemma continuous_cvg {T : Type} d d' {V : topologicalType d} 
+  {U : topologicalType d'} (F : set_system T) (FF : Filter F)
   (f : T -> V) (h : V -> U) (a : V) :
   {for a, continuous h} ->
   f @ F --> a -> (h \o f) @ F --> h a.
@@ -348,7 +364,8 @@ move=> h_continuous fa fb; apply: (cvg_trans _ h_continuous).
 exact: (cvg_comp _ h fa).
 Qed.
 
-Lemma continuous_is_cvg {T : Type} {V U : ptopologicalType} [F : set_system T]
+Lemma continuous_is_cvg {T : Type} d d' 
+  {V : ptopologicalType d} {U : ptopologicalType d'} [F : set_system T]
   (FF : Filter F) (f : T -> V) (h : V -> U) :
   (forall l, f x @[x --> F] --> l -> {for l, continuous h}) ->
   cvg (f x @[x --> F]) -> cvg ((h \o f) x @[x --> F]).
@@ -357,8 +374,9 @@ move=> ach /cvg_ex[l fxl]; apply/cvg_ex; exists (h l).
 by apply: continuous_cvg => //; exact: ach.
 Qed.
 
-Lemma continuous2_cvg {T : Type} {V W U : topologicalType}
-  (F : set_system T) (FF : Filter F)
+Lemma continuous2_cvg {d d' d''} {T : Type}
+  {V : topologicalType d} {W : topologicalType d'}
+  {U : topologicalType d''} (F : set_system T) (FF : Filter F)
   (f : T -> V) (g : T -> W) (h : V -> W -> U) (a : V) (b : W) :
   h z.1 z.2 @[z --> (a, b)] --> h a b ->
   f @ F --> a -> g @ F --> b -> (fun x => h (f x) (g x)) @ F --> h a b.
@@ -367,8 +385,9 @@ move=> h_continuous fa fb; apply: (cvg_trans _ h_continuous).
 exact: (cvg_comp _ (fun x => h x.1 x.2) (cvg_pair fa fb)).
 Qed.
 
-Lemma continuous_comp_cvg {T V U : topologicalType}
-  (f : T -> V) (h : V -> U) (r : T) (l : U) :
+Lemma continuous_comp_cvg {d d' d''}
+  {T : topologicalType d} {V : topologicalType d'}
+  {U : topologicalType d''} (f : T -> V) (h : V -> U) (r : T) (l : U) :
   {for f r, continuous h} ->
   (h \o f) x @[x --> r] --> l -> h x @[x --> f r] --> l.
 Proof.
@@ -379,54 +398,56 @@ have /hfrl : nbhs l Y by exact: open_nbhs_nbhs.
 by rewrite nbhsE => -[W [oW Wr]]; exact.
 Qed.
 
-Lemma cvg_near_cst (T : Type) (U : topologicalType)
+Lemma cvg_near_cst {d} (T : Type) (U : topologicalType d)
   (l : U) (f : T -> U) (F : set_system T) {FF : Filter F} :
   (\forall x \near F, f x = l) -> f @ F --> l.
 Proof.
 move=> fFl P /=; rewrite !near_simpl => Pl.
 by apply: filterS fFl => _ ->; exact: nbhs_singleton.
 Qed.
-Arguments cvg_near_cst {T U} l {f F FF}.
+Arguments cvg_near_cst {d T U} l {f F FF}.
 
-Lemma is_cvg_near_cst (T : Type) (U : ptopologicalType)
+Lemma is_cvg_near_cst {d} (T : Type) (U : ptopologicalType d)
   (l : U) (f : T -> U) (F : set_system T) {FF : Filter F} :
   (\forall x \near F, f x = l) -> cvg (f @ F).
 Proof. by move=> /cvg_near_cst/cvgP. Qed.
-Arguments is_cvg_near_cst {T U} l {f F FF}.
+Arguments is_cvg_near_cst {d T U} l {f F FF}.
 
-Lemma near_cst_continuous (T U : topologicalType)
+Lemma near_cst_continuous {d d'} 
+  (T : topologicalType d) (U : topologicalType d')
   (l : U) (f : T -> U) (x : T) :
   (\forall y \near x, f y = l) -> {for x, continuous f}.
 Proof.
 move=> eq_f_l; apply: cvg_near_cst; apply: filterS (eq_f_l) => y ->.
 by rewrite (nbhs_singleton eq_f_l).
 Qed.
-Arguments near_cst_continuous {T U} l [f x].
+Arguments near_cst_continuous {d d' T U} l [f x].
 
-Lemma cvg_cst (U : topologicalType) (x : U) (T : Type)
+Lemma cvg_cst d (U : topologicalType d) (x : U) (T : Type)
     (F : set_system T) {FF : Filter F} :
   (fun _ : T => x) @ F --> x.
 Proof. by apply: cvg_near_cst; near=> x0. Unshelve. all: by end_near. Qed.
-Arguments cvg_cst {U} x {T F FF}.
+Arguments cvg_cst {d U} x {T F FF}.
 #[global] Hint Extern 0 (_ @ _ --> _) => solve [apply: cvg_cst] : core.
 
-Lemma is_cvg_cst (U : ptopologicalType) (x : U) (T : Type)
+Lemma is_cvg_cst d (U : ptopologicalType d) (x : U) (T : Type)
   (F : set_system T) {FF : Filter F} :
   cvg ((fun _ : T => x) @ F).
 Proof. exact: cvgP (cvg_cst _). Qed.
-Arguments is_cvg_cst {U} x {T F FF}.
+Arguments is_cvg_cst {d U} x {T F FF}.
 #[global] Hint Extern 0 (cvg (_ @ _)) => solve [apply: is_cvg_cst] : core.
 #[global] Hint Extern 0 (cvgn (_ @ _)) => solve [apply: is_cvg_cst] : core.
 
-Lemma cst_continuous {T U : topologicalType} (x : U) :
+Lemma cst_continuous {d d'} 
+  {T : topologicalType d} {U : topologicalType d'} (x : U) :
   continuous (fun _ : T => x).
 Proof. by move=> t; exact: cvg_cst. Qed.
 
-Lemma id_continuous {T : topologicalType} : continuous (@id T).
+Lemma id_continuous {d} {T : topologicalType d} : continuous (@id T).
 Proof. by move=> t; exact: cvg_id. Qed.
 
 Section within_topologicalType.
-Context {T : topologicalType} (A : set T).
+Context {d} {T : topologicalType d} (A : set T).
 Implicit Types B : set T.
 
 (* Relation between  globally  and  within A (nbhs x)          *)
@@ -470,7 +491,8 @@ move=> [V FV AU]; rewrite /within /prop_near1 nbhs_simpl/=; near=> w => Aw.
 by have []// : (U `&` A) w; rewrite AU; split => //; apply: (near FV).
 Unshelve. all: by end_near. Qed.
 
-Lemma fmap_within_eq {S : topologicalType} (F : set_system T) (f g : T -> S) :
+Lemma fmap_within_eq {d'} {S : topologicalType d'} 
+  (F : set_system T) (f g : T -> S) :
   Filter F -> {in A, f =1 g} -> f @ within A F --> g @ within A F.
 Proof.
 move=> FF feq U /=; near_simpl; apply: filter_app.
@@ -480,17 +502,17 @@ Unshelve. all: by end_near. Qed.
 
 End within_topologicalType.
 
-Notation "[ 'locally' P ]" := (@locally_of _ _ _ (Phantom _ P)).
+Notation "[ 'locally' P ]" := (@locally_of _ _ _ _ (Phantom _ P)).
 
 (** Topology defined by a filter *)
 
-HB.factory Record Nbhs_isNbhsTopological T & Nbhs T := {
+HB.factory Record Nbhs_isNbhsTopological d T & Nbhs d T := {
   nbhs_filter : forall p : T, ProperFilter (nbhs p);
   nbhs_singleton : forall (p : T) (A : set T), nbhs p A -> A p;
   nbhs_nbhs : forall (p : T) (A : set T), nbhs p A -> nbhs p (nbhs^~ A);
 }.
 
-HB.builders Context T & Nbhs_isNbhsTopological T.
+HB.builders Context d T & Nbhs_isNbhsTopological d T.
 
 Definition open_of_nbhs := [set A : set T | A `<=` nbhs^~ A].
 
@@ -507,7 +529,7 @@ Qed.
 Let openE_subproof : open_of_nbhs = [set A : set T | A `<=` nbhs^~ A].
 Proof. by []. Qed.
 
-HB.instance Definition _ := Nbhs_isTopological.Build T
+HB.instance Definition _ := Nbhs_isTopological.Build d T
   nbhs_filter nbhsE_subproof openE_subproof.
 
 HB.end.
@@ -517,7 +539,7 @@ HB.end.
 Definition nbhs_of_open (T : Type) (op : set_system T) (p : T) (A : set T) :=
   exists B, [/\ op B, B p & B `<=` A].
 
-HB.factory Record isOpenTopological T & Choice T := {
+HB.factory Record isOpenTopological (d : fdisp_t) T & Choice T := {
   op : set_system T ;
   opT : op setT ;
   opI : setI_closed op ;
@@ -525,9 +547,9 @@ HB.factory Record isOpenTopological T & Choice T := {
     op (\bigcup_i f i)
 }.
 
-HB.builders Context T & isOpenTopological T.
+HB.builders Context d T & isOpenTopological d T.
 
-HB.instance Definition _ := hasNbhs.Build T (nbhs_of_open op).
+HB.instance Definition _ := hasNbhs.Build d T (nbhs_of_open op).
 
 Let nbhs_pfilter_subproof (p : T) : ProperFilter (nbhs p).
 Proof.
@@ -555,7 +577,7 @@ rewrite predeqE => p; split=> [|[B _ Bp]]; last by have [_] := projT2 B; apply.
 by move=> /Aop [B [Bop Bp sBA]]; exists (existT _ B (conj Bop sBA)).
 Qed.
 
-HB.instance Definition _ := Nbhs_isTopological.Build T
+HB.instance Definition _ := Nbhs_isTopological.Build d T
   nbhs_pfilter_subproof nbhsE_subproof openE_subproof.
 
 HB.end.
@@ -569,7 +591,7 @@ Notation open_from := openU_from (only parsing).
 
 (** Topology defined by a base of open sets *)
 
-HB.factory Record isBaseTopological T & Choice T := {
+HB.factory Record isBaseTopological (d : fdisp_t) T & Choice T := {
   I : pointedType ;
   D : set I ;
   b : I -> set T ;
@@ -578,7 +600,7 @@ HB.factory Record isBaseTopological T & Choice T := {
     exists k, [/\ D k, b k t & b k `<=` b i `&` b j]
 }.
 
-HB.builders Context T & isBaseTopological T.
+HB.builders Context d T & isBaseTopological d T.
 
 Local Notation openU_from := (openU_from D b).
 
@@ -622,19 +644,19 @@ have /getPex [_ ->] : exists Dj, fop j Dj by have [Dj] := H j; exists Dj.
 by move=> [i]; exists i => //; exists j.
 Qed.
 
-HB.instance Definition _ := isOpenTopological.Build T
+HB.instance Definition _ := isOpenTopological.Build d T
   openU_fromT openU_fromI openU_from_bigU.
 
 HB.end.
 
 
-HB.factory Record isSubBaseTopological T & Choice T := {
+HB.factory Record isSubBaseTopological (d : fdisp_t) T & Choice T := {
   I : pointedType ;
   D : set I ;
   b : I -> set T
 }.
 
-HB.builders Context T & isSubBaseTopological T.
+HB.builders Context d T & isSubBaseTopological d T.
 
 Local Notation finI_from := (open_finI_from D b).
 
@@ -657,25 +679,25 @@ by move=> [DAi|DBi];
   [have := As; rewrite -AeIbA; apply|have := Bs; rewrite -BeIbB; apply].
 Qed.
 
-HB.instance Definition _ := isBaseTopological.Build T
+HB.instance Definition _ := isBaseTopological.Build d T
   finI_from_cover finI_from_join.
 
 HB.end.
 
 (** deleted neighborhood *)
 
-Definition dnbhs {T : topologicalType} (x : T) :=
+Definition dnbhs {d} {T : topologicalType d} (x : T) :=
   within (fun y => y != x) (nbhs x).
 Notation "x ^'" := (dnbhs x) : classical_set_scope.
 
-Lemma nbhs_dnbhs_neq {T : topologicalType} (p : T) :
+Lemma nbhs_dnbhs_neq {d} {T : topologicalType d} (p : T) :
   \forall x \near nbhs p^', x != p.
 Proof. exact: withinT. Qed.
 
-Lemma nbhs_dnbhs {T : topologicalType} (x : T) : x^' `=>` nbhs x.
+Lemma nbhs_dnbhs {d} {T : topologicalType d} (x : T) : x^' `=>` nbhs x.
 Proof. exact: cvg_within. Qed.
 
-Lemma dnbhsE (T : topologicalType) (x : T) :
+Lemma dnbhsE d (T : topologicalType d) (x : T) :
   nbhs x = x^' `&` principal_filter x.
 Proof.
 rewrite predeqE => A; split=> [x_A|[+ Ax]].
@@ -684,11 +706,11 @@ rewrite /dnbhs !nbhsE => -[B [oB x_B sBA]]; exists B => //.
 by move=> y /sBA Ay; case: (eqVneq y x) => [->|//]; exact/principal_filterP.
 Qed.
 
-Global Instance dnbhs_filter {T : topologicalType} (x : T) : Filter x^'.
+Global Instance dnbhs_filter {d} {T : topologicalType d} (x : T) : Filter x^'.
 Proof. exact: within_filter. Qed.
 #[global] Typeclasses Opaque dnbhs.
 
-Canonical dnbhs_filter_on (T : topologicalType)  (x : T) :=
+Canonical dnbhs_filter_on {d} (T : topologicalType d)  (x : T) :=
   FilterType x^' (dnbhs_filter _).
 
 Lemma cvg_fmap2 (T U : Type) (f : T -> U):
@@ -699,28 +721,29 @@ Lemma cvg_within_filter {T U} {f : T -> U} (F : set_system T) {FF : (Filter F) }
   (G : set_system U) (D : set T) : (f @ F) --> G -> (f @ within D F) --> G.
 Proof. exact: cvg_trans (cvg_fmap2 (cvg_within _)). Qed.
 
-Lemma cvg_app_within {T} {U : ptopologicalType} (f : T -> U) (F : set_system T)
-  (D : set T): Filter F -> cvg (f @ F) -> cvg (f @ within D F).
+Lemma cvg_app_within {d} {T} {U : ptopologicalType d} 
+  (f : T -> U) (F : set_system T) (D : set T) : 
+  Filter F -> cvg (f @ F) -> cvg (f @ within D F).
 Proof.
 by move => FF /cvg_ex [l H]; apply/cvg_ex; exists l; exact: cvg_within_filter.
 Qed.
 
 (** meets *)
 
-Lemma meets_openr {T : topologicalType} (F : set_system T) (x : T) :
+Lemma meets_openr {d} {T : topologicalType d} (F : set_system T) (x : T) :
   F `#` nbhs x = F `#` open_nbhs x.
 Proof.
 rewrite propeqE; split; [exact/meetsSr/open_nbhs_nbhs|].
 by move=> P A B {}/P P; rewrite nbhsE => -[B' /P + sB]; apply: subsetI_neq0.
 Qed.
 
-Lemma meets_openl {T : topologicalType} (F : set_system T) (x : T) :
+Lemma meets_openl {d} {T : topologicalType d} (F : set_system T) (x : T) :
   nbhs x `#` F = open_nbhs x `#` F.
 Proof. by rewrite meetsC meets_openr meetsC. Qed.
 (** Closed sets in topological spaces *)
 
 Section Closed.
-Context {T : topologicalType}.
+Context {d} {T : topologicalType d}.
 
 Definition closure (A : set T) :=
   [set p : T | forall B, nbhs p B -> A `&` B !=set0].
@@ -865,7 +888,8 @@ End Closed.
 #[deprecated(since="mathcomp-analysis 1.15.0", note="use `closure_isolated_limit_point` instead")]
 Notation closure_limit_point := __deprecated__closure_limit_point (only parsing).
 
-Lemma preimage_closed {T U : topologicalType} (f : T -> U) (D : set U) :
+Lemma preimage_closed {d d'} {T : topologicalType d} {U : topologicalType d'}
+  (f : T -> U) (D : set U) :
   {in ~` f @^-1` D, continuous f} -> closed D -> closed (f @^-1` D).
 Proof.
 rewrite !closedE=> f_continuous D_cl x /= xDf.
@@ -877,7 +901,7 @@ Qed.
 #[deprecated(since="mathcomp-analysis 1.16.0", note="renamed to `preimage_closed`")]
 Notation closed_comp := preimage_closed (only parsing).
 
-Lemma closed_cvg {T} {V : topologicalType} {F} {FF : ProperFilter F}
+Lemma closed_cvg {d T} {V : topologicalType d} {F} {FF : ProperFilter F}
     (u_ : T -> V) (A : V -> Prop) :
     (* BUG: elim does not see this as an elimination principle if A : set V *)
     closed A -> (\forall n \near F, A (u_ n)) ->
@@ -886,9 +910,10 @@ Proof.
 move=> + FAu_ l u_Fl; apply => B /u_Fl /=; rewrite nbhs_filterE.
 by move=> /(filterI FAu_) => /filter_ex[t [Au_t u_Bt]]; exists (u_ t).
 Qed.
-Arguments closed_cvg {T V F FF u_} _ _ _ _ _.
+Arguments closed_cvg {d T V F FF u_} _ _ _ _ _.
 
-Lemma continuous_closedP (S T : topologicalType) (f : S -> T) :
+Lemma continuous_closedP d d' 
+  (S : topologicalType d) (T : topologicalType d') (f : S -> T) :
   continuous f <-> forall A, closed A -> closed (f @^-1` A).
 Proof.
 rewrite continuousP; split=> ctsf ? ?.
@@ -896,10 +921,10 @@ rewrite continuousP; split=> ctsf ? ?.
 by rewrite -closedC preimage_setC; apply: ctsf; rewrite closedC.
 Qed.
 
-Lemma closedU (T : topologicalType) : setU_closed (@closed T).
+Lemma closedU d (T : topologicalType d) : setU_closed (@closed _ T).
 Proof. by move=> E D; rewrite -?openC setCU; exact: openI. Qed.
 
-Lemma bigsetU_closed {T : topologicalType} {I : eqType} (s : seq I)
+Lemma bigsetU_closed {d} {T : topologicalType d} {I : eqType} (s : seq I)
     (F : I -> set T) : (forall x, x \in s -> closed (F x)) ->
   closed (\big[setU/set0]_(x <- s) F x).
 Proof.
@@ -909,7 +934,7 @@ Qed.
 #[deprecated(since="mathcomp-analysis 1.17.0", use=bigsetU_closed)]
 Notation closed_bigsetU := bigsetU_closed (only parsing).
 
-Lemma bigcup_closed {T : topologicalType} {I : choiceType} (A : set I)
+Lemma bigcup_closed {d} {T : topologicalType d} {I : choiceType} (A : set I)
     (F : I -> set T) :
     finite_set A -> (forall i, A i -> closed (F i)) ->
   closed (\bigcup_(i in A) F i).
@@ -921,7 +946,7 @@ Qed.
 Notation closed_bigcup := bigcup_closed (only parsing).
 
 Section closure_lemmas.
-Context {T : topologicalType}.
+Context {d} {T : topologicalType d}.
 Implicit Types E A B U : set T.
 
 Lemma closureS A B : A `<=` B -> closure A `<=` closure B.
@@ -946,7 +971,7 @@ Qed.
 End closure_lemmas.
 
 Section regular_open_closed.
-Context {T : topologicalType}.
+Context {d} {T : topologicalType d}.
 
 Definition regopen (A : set T) := (closure A)° = A.
 
@@ -955,7 +980,7 @@ Definition regclosed (A : set T) := closure (A°) = A.
 End regular_open_closed.
 
 Section closure_interior_lemmas.
-Context {T : topologicalType}.
+Context {d} {T : topologicalType d}.
 Implicit Types (A B : set T).
 
 Lemma interiorC A : (~` A)° = ~` closure A.
@@ -1074,23 +1099,25 @@ rewrite /regclosed -(setCK A) openC => cCA.
 by rewrite closureC -[in RHS]interior_closed_regopen// !(closureC, interiorC).
 Qed.
 
-Lemma interior_closure_idem : @idempotent_fun (set T) (interior \o closure).
+Lemma interior_closure_idem : 
+  @idempotent_fun (set T) (@interior _ _ \o @closure _ _).
 Proof. move=> ?; exact/interior_closed_regopen/closed_closure. Qed.
 
-Lemma closure_interior_idem : @idempotent_fun (set T) (closure \o interior).
+Lemma closure_interior_idem : 
+  @idempotent_fun (set T) (@closure _ _ \o @interior _ _).
 Proof. move=> ?; exact/closure_open_regclosed/open_interior. Qed.
 
 End closure_interior_lemmas.
 #[deprecated(since="mathcomp-analysis 1.17.0", note="renamed to `closureC`")]
 Notation closure_setC := closureC (only parsing).
 
-Arguments closureEbigcap_itvcc {T A}.
-Arguments interiorEbigcup_itvcc {T A}.
+Arguments closureEbigcap_itvcc {d T A}.
+Arguments interiorEbigcup_itvcc {d T A}.
 
-Definition dense (T : topologicalType) (S : set T) :=
+Definition dense d (T : topologicalType d) (S : set T) :=
   forall (O : set T), O !=set0 -> open O -> O `&` S !=set0.
 
-Lemma denseNE (T : topologicalType) (S : set T) : ~ dense S ->
+Lemma denseNE d (T : topologicalType d) (S : set T) : ~ dense S ->
   exists O, (exists x, open_nbhs x O) /\ (O `&` S = set0).
 Proof.
 rewrite /dense /open_nbhs.
@@ -1098,7 +1125,7 @@ move=> /existsNP[X /not_implyP[[x Xx] /not_implyP[ Ox /forallNP A]]].
 by exists X; split; [exists x | rewrite -subset0; apply/A].
 Qed.
 
-Lemma denseI (T : topologicalType) (A B : set T) :
+Lemma denseI d (T : topologicalType d) (A B : set T) :
   open A -> dense A -> dense B -> dense (A `&` B).
 Proof.
 move=> oA dA dB C C0 oC.
@@ -1107,7 +1134,7 @@ suff: (C `&` A) `&` B !=set0 by rewrite setIA.
 by apply: dB => //; exact: openI.
 Qed.
 
-Lemma dense0 {R : ptopologicalType} : ~ dense (@set0 R).
+Lemma dense0 {d} {R : ptopologicalType d} : ~ dense (@set0 R).
 Proof.
 apply/existsNP; exists setT.
 apply/not_implyP; split; first exact/set0P/setT0.
@@ -1116,7 +1143,7 @@ by rewrite setTI => -[].
 Qed.
 
 Section basis.
-Context {T : topologicalType}.
+Context {d} {T : topologicalType d}.
 
 Definition basis (B : set_system T) :=
   B `<=` open /\ forall x : T, filter_from [set U | B U /\ U x] id --> x.
@@ -1197,26 +1224,29 @@ Qed.
 End basis.
 
 Section ClopenSets.
-Implicit Type T : topologicalType.
+Implicit Types (d : fdisp_t).
 
-Definition clopen {T} (A : set T) := open A /\ closed A.
+Definition clopen {d} {T : topologicalType d} (A : set T) := open A /\ closed A.
 
-Lemma clopenI {T} : setI_closed (@clopen T).
+Lemma clopenI {d} {T : topologicalType d} : setI_closed (@clopen d T).
 Proof. by move=> ? ? [] ? ? [] ? ?; split; [exact: openI|exact: closedI]. Qed.
 
-Lemma clopenU {T} : setU_closed (@clopen T).
+Lemma clopenU {d} {T : topologicalType d} : setU_closed (@clopen d T).
 Proof. by move=> ? ? [] ? ? [] ? ?; split; [exact: openU|exact: closedU]. Qed.
 
-Lemma clopenC {T} (A B : set T) : clopen A -> clopen (~`A).
+Lemma clopenC {d} {T : topologicalType d} (A B : set T) : 
+  clopen A -> clopen (~`A).
 Proof. by case=> ? ?; split;[exact: closed_openC | exact: open_closedC ]. Qed.
 
-Lemma clopen0 {T} : @clopen T set0.
+Lemma clopen0 {d} {T : topologicalType d} : @clopen d T set0.
 Proof. by split; [exact: open0 | exact: closed0]. Qed.
 
-Lemma clopenT {T} : clopen [set: T].
+Lemma clopenT {d} {T : topologicalType d} : clopen [set: T].
 Proof. by split; [exact: openT | exact: closedT]. Qed.
 
-Lemma preimage_clopen {T U : topologicalType} (f : T -> U) (A : set U) :
+Lemma preimage_clopen 
+  {d d'} {T : topologicalType d} {U : topologicalType d'}
+  (f : T -> U) (A : set U) :
  clopen A -> continuous f -> clopen (f @^-1` A).
 Proof. by case=> ? ?; split; [ exact: open_comp | exact: preimage_closed]. Qed.
 
@@ -1224,25 +1254,29 @@ End ClopenSets.
 #[deprecated(since="mathcomp-analysis 1.16.0", note="renamed to `preimage_clopen`")]
 Notation clopen_comp := preimage_clopen (only parsing).
 
-HB.mixin Record isContinuous {X Y : nbhsType} (f : X -> Y):= {
+HB.mixin Record isContinuous {d d'} {X : nbhsType d} {Y : nbhsType d'} 
+  (f : X -> Y) := { 
   continuous_fun : continuous f
 }.
 
 #[short(type = "continuousType")]
-HB.structure Definition Continuous {X Y : nbhsType} := {
-  f of @isContinuous X Y f
+HB.structure Definition Continuous {d d'} {X : nbhsType d} {Y : nbhsType d'} := {
+  f of @isContinuous d d' X Y f
 }.
 
 #[deprecated(since="mathcomp-analysis 1.17.0",
              note="use `continuous_fun` instead")]
 Notation cts_fun := (continuous_fun) (only parsing).
 
-HB.instance Definition _ {X Y : topologicalType} :=
+HB.instance Definition _ {d d'} 
+  {X : topologicalType d} {Y : topologicalType d'} :=
   gen_eqMixin (continuousType X Y).
-HB.instance Definition _ {X Y : topologicalType} :=
+HB.instance Definition _ {d d'}
+  {X : topologicalType d} {Y : topologicalType d'} :=
   gen_choiceMixin (continuousType X Y).
 
-Lemma continuousEP {X Y : nbhsType} (f g : continuousType X Y) :
+Lemma continuousEP {d d'} {X : nbhsType d} {Y : nbhsType d'} 
+  (f g : continuousType X Y) :
   f = g <-> f =1 g.
 Proof.
 case: f g => [f [[ffun]]] [g [[gfun]]]/=; split=> [[->//]|/funext eqfg].
@@ -1252,35 +1286,66 @@ rewrite eqfg in ffun *; congr {| Continuous.sort := _; Continuous.class := {|
 exact: Prop_irrelevance.
 Qed.
 
-Definition mkcts {X Y : nbhsType} (f : X -> Y) (f_cts : continuous f) := f.
+Definition mkcts {d d'} {X : nbhsType d} {Y : nbhsType d'} 
+  (f : X -> Y) (f_cts : continuous f) := f.
 
-HB.instance Definition _ {X Y : nbhsType} (f: X -> Y) (f_cts : continuous f) :=
-  @isContinuous.Build X Y (mkcts f_cts) f_cts.
+HB.instance Definition _ {d d'} {X : nbhsType d} {Y : nbhsType d'} 
+  (f: X -> Y) (f_cts : continuous f) :=
+  @isContinuous.Build d d' X Y (mkcts f_cts) f_cts.
 
 Section continuous_comp.
-Context {X Y Z : topologicalType}
+Context {d d' d''} 
+  {X : topologicalType d} {Y : topologicalType d'} {Z : topologicalType d''}
   (f : continuousType X Y) (g : continuousType Y Z).
 
 #[local] Lemma cts_fun_comp : continuous (g \o f).
 Proof. move=> x; apply: continuous_comp; exact: continuous_fun. Qed.
 
-HB.instance Definition _ := @isContinuous.Build X Z (g \o f) cts_fun_comp.
+HB.instance Definition _ := @isContinuous.Build d d'' X Z (g \o f) cts_fun_comp.
 
 End continuous_comp.
 
 Section continuous_id.
-Context {X : topologicalType}.
+Context {d} {X : topologicalType d}.
 
-HB.instance Definition _ := @isContinuous.Build X X (@idfun X) id_continuous.
+HB.instance Definition _ := 
+  @isContinuous.Build d d X X (@idfun X) id_continuous.
 
 End continuous_id.
 
 Section continuous_const.
-Context {X Y : topologicalType} (y : Y).
+Context {d d'} {X : topologicalType d} {Y : topologicalType d'} (y : Y).
 
 #[local] Lemma cts_const : continuous (@cst X Y y).
 Proof. by move=> x; exact: cvg_cst. Qed.
 
-HB.instance Definition _ := @isContinuous.Build X Y (cst y) cts_const.
+HB.instance Definition _ := @isContinuous.Build d d' X Y (cst y) cts_const.
 
 End continuous_const.
+
+Module ExplicitNbhsDisplays.
+Export filter.ExplicitNbhsDisplays.
+
+Notation "d .-open" := (@open d _).
+Notation "'open'" := (@open default_fdisp _) (only printing).
+
+Notation "d .-interior" := (@interior d _).
+Notation "A °" := (@interior default_fdisp _ A) (only printing) 
+  : classical_set_scope.
+
+Notation "d .-open_nbhs" := (@open_nbhs d _).
+Notation "'open_nbhs'" := (@open_nbhs default_fdisp _) (only printing).
+
+Notation "d .-basis" := (@basis d _).
+Notation "'basis'" := (@basis default_fdisp _) (only printing).
+
+Notation "d .-closure" := (@closure d _).
+Notation "'closure'" := (@closure default_fdisp _) (only printing).
+
+Notation "d .-closed" := (@closed d _).
+Notation "'closed'" := (@closed default_fdisp _) (only printing).
+
+Notation "d .-clopen" := (@clopen d _).
+Notation "'clopen'" := (@clopen default_fdisp _) (only printing).
+
+End ExplicitNbhsDisplays.

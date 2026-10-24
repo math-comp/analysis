@@ -885,7 +885,7 @@ Definition ereal_nbhs (x : \bar R) : set_system (\bar R) :=
     | +oo => exists M, M \is Num.real /\ forall y, M%:E < y -> P y
     | -oo => exists M, M \is Num.real /\ forall y, y < M%:E -> P y
   end].
-HB.instance Definition _ := hasNbhs.Build (\bar R) ereal_nbhs.
+HB.instance Definition _ := hasNbhs.Build default_fdisp (\bar R) ereal_nbhs.
 End ereal_nbhs.
 
 Section ereal_nbhs_instances.
@@ -1021,7 +1021,7 @@ move: p => -[p| [M [Mreal MA]] | [M [Mreal MA]]] //=.
 - move=> /nbhs_ballP[_/posnumP[e]] ballA.
   apply/nbhs_ballP; exists (e%:num / 2)%R => //= r per.
   apply/nbhs_ballP; exists (e%:num / 2)%R => //= x rex.
-  apply/ballA/(@ball_splitl _ _ r) => //; exact/ball_sym.
+  apply/ballA/(@ball_splitl _ _ _ r) => //; exact/ball_sym.
 - exists (M + 1)%R; split; first by rewrite realD.
   move=> -[x| _ |_] //=; last by exists M.
   rewrite lte_fin => M'x /=.
@@ -1567,7 +1567,7 @@ rewrite predeq2E => x A; split.
     * by move/nbhs_oo_down_1e; apply => x ex; exact/sEA/xsectionP/reA.
 Qed.
 
-HB.instance Definition _ := Nbhs_isPseudoMetric.Build R (\bar R)
+HB.instance Definition _ := Nbhs_isPseudoMetric.Build _ R (\bar R)
   ereal_nbhsE ereal_ball_center ereal_ball_sym ereal_ball_triangle erefl.
 
 End ereal_PseudoMetric.
@@ -1641,10 +1641,10 @@ Context {R : numFieldType} {F : set_system \bar R} {FF : Filter F}.
 Lemma fine_fcvg a : F --> a%:E -> fine @ F --> a.
 Proof.
 move=> /(_ _)/= Fa.
-apply/(@metricType_numDomainType.cvgrPdist_lt _ R^o) => // _/posnumP[e].
+apply/(@metricType_numDomainType.cvgrPdist_lt _ _ R^o) => // _/posnumP[e].
 rewrite near_simpl.
 apply: Fa; apply/nbhs_EFin.
-exact: (@metricType_numDomainType.cvgr_dist_lt _ _ _ (nbhs a)).
+exact: (@metricType_numDomainType.cvgr_dist_lt _ _ _ _ (nbhs a)).
 Qed.
 
 End filter.

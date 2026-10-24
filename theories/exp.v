@@ -331,7 +331,7 @@ have F m : (n.+1 < m)%N ->
     exact: ltn_trans ni.
   by rewrite /f/= add0r mulr0n addr0 eqxx 2!mulr1n.
 rewrite [leLHS](_ : _ = limn (series (f n.+1 x))).
-  by apply/esym/(@lim_near_cst R^o) => //; near=> k; apply: F; near: k.
+  by apply/esym/(@lim_near_cst _ R^o) => //; near=> k; apply: F; near: k.
 apply: ler_lim; first by apply: is_cvg_near_cst; near=> k; apply: F; near: k.
   exact: is_cvg_series_exp_coeff.
 near=> k; apply: ler_sum => -[|[|i]] _; rewrite /f /exp_coeff/= ?add0r.
@@ -1092,7 +1092,7 @@ Lemma derivable_powR v x : {in `]0, +oo[, forall a, derivable (powR ^~ x) a v}.
 Proof.
 have [-> y _|] := eqVneq v 0; first exact/derivable0.
 move=> v0 a; rewrite in_itv/= andbT => a0.
-apply: (@near_eq_derivable _ _ _ (fun a' => expR (x * ln a'))) => //.
+apply: (@near_eq_derivable _ _ _ _ _ (fun a' => expR (x * ln a'))) => //.
   by near=> b; rewrite /powR gt_eqF//; near: b; exact: lt_nbhsr.
 apply: diff_derivable; apply: differentiable_comp; last exact/derivable1_diffP.
 apply: differentiableM => //; apply/derivable1_diffP.
@@ -1104,7 +1104,7 @@ Lemma powR_derive1 a : {in `]0, +oo[%R,
 Proof.
 move=> x; rewrite in_itv/= andbT => x0.
 rewrite derive1E.
-rewrite (@near_eq_derive _ _ _ _ (fun x => expR (a * ln x)))//.
+rewrite (@near_eq_derive _ _ _ _ _ _ (fun x => expR (a * ln x)))//.
   by near=> z; rewrite /powR gt_eqF//; near: z; exact: lt_nbhsr.
 rewrite -derive1E.
 rewrite derive1_comp//=.
