@@ -2047,7 +2047,7 @@ apply: limr_le.
   by apply: df; rewrite inE.
 have [e /= e0 Hball] := open_subball (open_interior D) Dx.
 near=> h.
-have h0 : h != 0%R by near: h; exact: nbhs_dnbhs_neq.
+have h0 : h != 0%R by near: h.
 have Dhx : D° (h + x).
   apply: (Hball (`|2 * h|%R)) => //.
   - rewrite /= sub0r normrN normr_id normrM ger0_norm// -ltr_pdivlMl//.
@@ -2407,7 +2407,7 @@ split=> [|Mvt].
     by rewrite !mxE.
   + rewrite /ball_/= sub0r normrN.
     by near: x; exact: dnbhs0_lt.
-  + near: x; exact: nbhs_dnbhs_neq.
+  + by near: x.
 - apply/cvg_ex => /=.
   exists (\matrix_(i < m, j < n) sval (cid ((cvg_ex _).1 (Mvt i j)))).
   apply/cvgrPdist_le => /= e e0.
@@ -2444,7 +2444,7 @@ rewrite (le_trans (ler_normD _ _))// (splitr e) lerD//.
   apply: (@le_trans _ _ (`|l - y^-1 *: (M (y *: v + t) - M t)|)).
     rewrite [in leRHS]/Num.Def.normr/= mx_normrE.
     by under eq_bigr do rewrite !mxE; exact: (le_bigmax _ _ (i, j)).
-  rewrite sr//=; last by near: y; exact: nbhs_dnbhs_neq.
+  rewrite sr//=; last by near: y.
   by rewrite sub0r normrN; near: y; exact: dnbhs0_lt.
 - rewrite mxE.
   apply: (@le_trans _ _ `|l - x^-1 *: (M (x *: v + t) - M t)|).
@@ -2452,7 +2452,7 @@ rewrite (le_trans (ler_normD _ _))// (splitr e) lerD//.
     under eq_bigr do rewrite !mxE.
     apply: le_trans; last exact: le_bigmax.
     by rewrite !mxE.
-  apply: dle => //=; last by near: x; exact: nbhs_dnbhs_neq.
+  apply: dle => //=; last by near: x.
   by rewrite sub0r normrN; near: x; exact: dnbhs0_lt.
 Unshelve. all: by end_near. Qed.
 
@@ -2482,7 +2482,7 @@ near=> x.
 rewrite [leLHS](_ : _ = `|l - x^-1 *: (M (x *: v + t) - M t)|).
   rewrite -[RHS]norm_trmx [in RHS]linearD/= [in RHS]linearN/=.
   by congr (`| _ - _ |); rewrite [RHS]linearZ/= [in RHS]linearB.
-apply: re => /=; last by near: x; exact: nbhs_dnbhs_neq.
+apply: re => /=; last by near: x.
 by rewrite sub0r normrN; near: x; exact: dnbhs0_lt.
 Unshelve. all: by end_near. Qed.
 
