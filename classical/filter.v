@@ -415,7 +415,6 @@ Proof. by []. Qed.
 
 Module Export NearNbhs.
 Definition near_simpl := (@near_nbhs, filter_of_nearI).
-Ltac near_simpl := rewrite ?near_simpl.
 End NearNbhs.
 
 Lemma near_swap {U V} (F : set_system U) (G : set_system V) (P : U -> set V) :

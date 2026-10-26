@@ -389,6 +389,7 @@
 - in `filter.v`:
   + notation `\near x, P x`
   + notation `\near x & y, P x y`
+  + ltac `near_simpl`
 
 ### Infrastructure
 
