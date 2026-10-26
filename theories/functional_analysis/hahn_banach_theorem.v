@@ -1,4 +1,4 @@
-From HB Require Import structures.
+From HB Require Import structures. 
 From mathcomp Require Import boot order algebra interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
@@ -367,6 +367,39 @@ Qed.
 
 End hahn_banach_normed.
 
+
+
+Section line_lmodtype.
+Variable (R : numDomainType) (V: lmodType R) (x : V).
+
+Definition linepred  : {pred V} :=   mem [set y | exists t, y = t *: x ].
+Definition line := {y | linepred y}.
+
+Lemma line_linepred (y : line) : exists t, val(y) == t *: x.
+Proof.
+by move: y => [yv] /= /asboolP [t] ->; exists t.
+Qed.
+
+
+#[local] Lemma line_submod_closed : submod_closed (linepred).
+Proof.
+split; first by rewrite inE; exists 0; rewrite scale0r.
+move=> t y z; rewrite !inE => -[ty ->] -[tz ->]; exists (t * ty + tz).
+by rewrite scalerDl scalerA.
+Qed.
+
+HB.instance Definition _ :=
+  @GRing.isSubmodClosed.Build _  _  linepred line_submod_closed.
+
+
+HB.instance Definition _ := SubChoice.on line.
+
+HB.instance Definition _ := [SubChoice_isSubLmodule of line  by <:].
+
+Check (line : lmodType R).
+Check (line : subLmodType linepred).
+End line_lmodtype.
+
 Section hahn_banach_extension_ctvs.
 Context {R : realType} {V : convexTvsType R} (F : pred V).
 (**md Contrary to the normed case, the extension theorem is not true for any
@@ -457,3 +490,75 @@ by exists g'.
 Qed.
 
 End hahn_banach_extension_ctvs.
+
+(* TBA : to classical *)
+Lemma scaler_eq0 (R : numFieldType) (V: lmodType R) (a : V) t :  a != 0 -> (t *: a = 0 -> t = 0).
+Proof.
+move=> a0 ta; apply: contrapT => /eqP t0.
+have : t^-1 *: (t *: a) = 0 by rewrite ta scaler0.
+by rewrite scalerA mulVf// scale1r; apply/eqP.
+Qed.
+
+Lemma scaleIl (R : numFieldType) (V: lmodType R) (a : V) :  a != 0 -> injective (fun t => t *: a).
+Proof.
+move=> a0 s t => /eqP; rewrite -subr_eq0 -scalerBl => /eqP /(scaler_eq0 a0) /eqP.
+by rewrite subr_eq0 => /eqP.
+Qed.
+(*END TBA *)
+
+(* 7.2.3 in Jarchow *)
+Lemma hahn_banach_extension_hausdorff (R : realType) (V : convexTvsType R) :
+(hausdorff_space V) <-> (forall x : V,  x != 0 -> exists l : {linear_continuous V -> R^o}, l(x) != 0).
+Proof.
+split; last first.
+(* proof in here is different than in the book - Jarchow mentions "a" continuous seminorm in 7.2.3 but refers to 2.7.1 which proves the results for a seminorm of the set of seminorm generating the topology - its probably lacks an argument saying that continuous seminorms are always bounded by this set of seminorms, which we haven't formalised here *)
+  move => H.
+  pose P := (@seminorm_of R V).
+  pose P0 := (@seminorm_ofneq0 R V).
+  suff : hausdorff_space (seminorm_on P0).
+    have [contVs _ ] := (@seminorm_convextvs _ V).
+    by move=> + x y cs; apply => a b /contVs nsa /contVs nsb; apply: cs => //.
+  apply/hausdorff_seminorm_on=> x /H [l].
+  have [l0|l0|] := ltrgtP (l x) (0 : R) => //.
+    have /linear_continuous_seminorm [p [sp _] /= lp] :=  (@continuous_fun _ _ (-1 *: l)).
+    exists p => //; apply: lt_le_trans; last by apply: lp.
+    by rewrite scaleN1r ltrNr oppr0.
+  have /linear_continuous_seminorm [p [sp _] /= lp] :=  (@continuous_fun _ _ l).
+  by exists p => //; apply: lt_le_trans; last by apply: lp.
+move=> haus x x0.
+pose l := fun ( y : line x) => xchoose (line_linepred y).
+have llinear: linear_for ( *:%R) l.
+  rewrite /l /= => t /= u v; apply: scaleIl; first by exact: x0.
+  rewrite scalerDl -scalerA.
+  move/eqP: (xchooseP (line_linepred u)) => <-.
+  move/eqP: (xchooseP (line_linepred v)) => <-.
+  move/eqP: (xchooseP (line_linepred (t *: u + v))) => <-.
+  by rewrite (@GRing.valD _ _ (line x)) (*why is it necessary to have the @? *) GRing.valZ.
+pose linlP := GRing.isLinear.Build _ _ _ _ l llinear.
+pose linl : {linear ((init_subconvextvs (line x))) -> R^o} := HB.pack l linlP.
+have lcont : continuous linl.
+  apply/continuous_closedkernel.
+  have -> : (linl @^-1` [set 0]) = [set 0].
+    apply/seteqP; split => u /=.
+      move/eqP: (xchooseP (line_linepred u)) => /[swap]; rewrite /l => ->.
+      by rewrite scale0r -(@GRing.val0 _ _ (line x)) => /val_inj.
+    move=> u0; move/eqP: (xchooseP (line_linepred u)).
+    rewrite u0 /= /l; move/eqP; rewrite eq_sym => /eqP.
+    by move/(scaler_eq0 x0).
+  apply: accessible_closed_set1; apply: hausdorff_accessible.
+  by apply: hausdorff_init_convextvs.
+pose contlP := isContinuous.Build _ _ _ lcont.
+pose lcl : {linear_continuous (init_subconvextvs (line x)) -> R^o} :=
+  HB.pack (l : (init_subconvextvs (line x)) -> R^o) linlP contlP.
+have := (hahn_banach_extension_initialsubctvs lcl) => -[g Pg]; exists g.
+have xlinepred : (linepred x) x by apply/asboolP; exists 1; rewrite scale1r.
+pose xline := exist (linepred x) _ xlinepred;have <- : \val xline = x by [].
+rewrite Pg.
+suff -> : lcl xline = 1 by [].
+move/eqP: (xchooseP (line_linepred xline)).
+set xline':= (X in X =_ -> _); have -> : xline' = x by []. (*weakness of line, to be understood *)
+set x':= (X in X =_ -> _); rewrite  -(scale1r x').
+move/scaleIl => H; apply/eqP; rewrite eq_sym; apply/eqP.
+by apply: H.
+Qed.
+(* TODO : more hahn banach separation theorems *)
