@@ -2,7 +2,7 @@
 From mathcomp Require Import boot order algebra.
 From mathcomp Require Import boolp classical_sets functions cardinality.
 From mathcomp Require Import reals topology normedtype sequences.
-From mathcomp Require Import measure lebesgue_measure measurable_realfun.
+From mathcomp Require Import measure real_measure.
 
 (**md**************************************************************************)
 (* # Basic facts about G-delta and F-sigma sets                               *)
@@ -15,7 +15,6 @@ From mathcomp Require Import measure lebesgue_measure measurable_realfun.
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

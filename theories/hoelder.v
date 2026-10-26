@@ -1,14 +1,13 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order ssralg ssrnum ssrint interval.
-From mathcomp Require Import interval_inference finmap.
+From mathcomp Require Import interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
-From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
+From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import convex reals real_interval ereal topology.
-From mathcomp Require Import normedtype sequences esum measure.
-From mathcomp Require Import ess_sup_inf measurable_realfun lebesgue_measure.
-From mathcomp Require Import lebesgue_integral numfun exp.
+From mathcomp Require Import normedtype sequences esum measure ess_sup_inf.
+From mathcomp Require Import numfun exp real_measure lebesgue_integral.
 
 (**md**************************************************************************)
 (* # Hoelder's Inequality                                                     *)
@@ -44,7 +43,6 @@ From mathcomp Require Import lebesgue_integral numfun exp.
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

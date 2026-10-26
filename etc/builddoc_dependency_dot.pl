@@ -10,7 +10,7 @@ my %clusters = ( #         directory => [ Cluster Name, Color, URL ]
 
     'theories/topology_theory'       => [ "Topology", 4,
                                           "analysis.topology_theory.%s" ],
-    'theories/homotopy_theory'       => [ "Topology", 4,
+    'theories/homotopy_theory'       => [ "Topology", 7,
                                           "analysis.homotopy_theory.%s" ],
 
     'theories/normedtype_theory'     => [ "Normedtype", 9,
@@ -22,6 +22,9 @@ my %clusters = ( #         directory => [ Cluster Name, Color, URL ]
 
     'theories/measure_theory'        => [ "Measure", 11,
                                           "analysis.measure_theory.%s" ],
+
+    'theories/real_measure'          => [ "RealMeasure", 11,
+                                          "analysis.real_measure.%s" ],
 
     'theories/probability_theory'    => [ "Probability", 12,
                                           "analysis.probability_theory.%s" ],

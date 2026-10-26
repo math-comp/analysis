@@ -1,10 +1,9 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import boot order algebra interval_inference.
-From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
-From mathcomp Require Import reals real_interval topology ereal normedtype.
-From mathcomp Require Import sequences esum measure measurable_realfun.
-From mathcomp Require Import numfun realfun lebesgue_measure lebesgue_integral.
-From mathcomp Require Import derive ftc trigo.
+From mathcomp Require Import boolp classical_sets functions cardinality.
+From mathcomp Require Import reals topology ereal normedtype.
+From mathcomp Require Import sequences derive numfun realfun measure.
+From mathcomp Require Import real_measure lebesgue_integral ftc trigo.
 
 (**md**************************************************************************)
 (* # Formalisation of A simple proof that pi is irrational by Ivan Niven      *)
@@ -14,7 +13,6 @@ From mathcomp Require Import derive ftc trigo.
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
