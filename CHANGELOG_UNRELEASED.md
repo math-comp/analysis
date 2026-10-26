@@ -215,6 +215,10 @@
   + lemmas `cstMcounting_esum`, `sintegral_counting_esum`,
     `integral_countingT_esum`, `integral_counting_esum`
 
+- in `subspace_topology.v`:
+  + definition `subdiagonal`
+  + lemmas `ent_subdiagonal`, `heine_cantor_subspace`
+
 ### Changed
 
 - in `esum.v`:
