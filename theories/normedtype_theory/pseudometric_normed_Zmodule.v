@@ -1068,7 +1068,7 @@ Context {R : numFieldType}.
 Lemma nbhs_right0P x (P : set R) :
   (\forall y \near x^'+, P y) <-> \forall e \near 0^'+, P (x + e).
 Proof.
-rewrite !near_withinE -[X in X <-> _]nearE [X in X <-> _](@nbhs0P R R^o)//.
+rewrite !near_withinE -[X in X <-> _]nearE !near_simpl (@nbhs0P _ R^o).
 rewrite -propeqE.
 by apply: (@eq_near _ (nbhs (0 : R))) => y; rewrite ltrDl.
 Qed.
@@ -1077,7 +1077,7 @@ Lemma nbhs_left0P x (P : set R) :
   (\forall y \near x^'-, P y) <-> \forall e \near 0^'+, P (x - e).
 Proof.
 rewrite !near_withinE -[X in X <-> _]nearE -[X in _ <-> X]nearE.
-rewrite [X in X <-> _](@nbhs0P R R^o); split=> Px.
+rewrite !near_simpl (@nbhs0P R R^o); split=> Px.
   suff: \forall x0 \near (0:R), 0 < x0 -> P (x - x0) by [].
   rewrite -oppr0 nearN; near=> e; rewrite ltrN2 opprK => e_lt0.
   by apply: (near Px) => //; rewrite gtrDl.

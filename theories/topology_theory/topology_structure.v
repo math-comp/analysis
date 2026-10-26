@@ -867,10 +867,10 @@ Notation closure_limit_point := __deprecated__closure_limit_point (only parsing)
 Lemma preimage_closed {T U : topologicalType} (f : T -> U) (D : set U) :
   {in ~` f @^-1` D, continuous f} -> closed D -> closed (f @^-1` D).
 Proof.
-rewrite !closedE=> f_continuous D_cl x /= xDf.
+rewrite !closedE => f_continuous D_cl x /= xDf.
 apply: D_cl; apply: contra_not xDf => fxD.
 have NDfx : ~ D (f x).
-  move: fxD; rewrite -nbhs_nearE nbhsE => - [A [? ?]]; exact.
+  by move: fxD; rewrite -nbhs_nearE nbhsE => - [A [? ?]]; exact.
 by apply: f_continuous fxD; rewrite inE.
 Qed.
 #[deprecated(since="mathcomp-analysis 1.16.0", note="renamed to `preimage_closed`")]

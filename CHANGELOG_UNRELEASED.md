@@ -389,7 +389,6 @@
 - in `filter.v`:
   + notation `\near x, P x`
   + notation `\near x & y, P x y`
-  + lemma `near_nbhs`
 
 ### Infrastructure
 

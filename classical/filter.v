@@ -394,6 +394,10 @@ Lemma nbhs_nearE {U} {T : filteredType U} (x : T) (P : set U) :
   nbhs x P = \forall x0 \near x, P x0.
 Proof. by []. Qed.
 
+Lemma near_nbhs {U} {T : filteredType U} (x : T) (P : set U) :
+  (\forall x0 \near nbhs x, P x0) = (\forall x0 \near x, P x0).
+Proof. by []. Qed.
+
 Lemma near2_curry {U V} (F : set_system U) (G : set_system V) (P : U -> set V) :
   {near F & G, forall x y, P x y} = {near (F, G), forall x, P x.1 x.2}.
 Proof. by []. Qed.
@@ -410,7 +414,7 @@ Lemma filter_of_nearI (X : Type) (fX : filteredType X)
 Proof. by []. Qed.
 
 Module Export NearNbhs.
-Definition near_simpl := (filter_of_nearI).
+Definition near_simpl := (@near_nbhs, filter_of_nearI).
 Ltac near_simpl := rewrite ?near_simpl.
 End NearNbhs.
 
