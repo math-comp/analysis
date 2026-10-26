@@ -672,6 +672,9 @@ Lemma nbhs_dnbhs_neq {T : topologicalType} (p : T) :
   \forall x \near nbhs p^', x != p.
 Proof. exact: withinT. Qed.
 
+#[global] Hint Extern 0 (\forall x \near nbhs _^', is_true (x != _)) =>
+  solve [apply: nbhs_dnbhs_neq] : core.
+
 Lemma nbhs_dnbhs {T : topologicalType} (x : T) : x^' `=>` nbhs x.
 Proof. exact: cvg_within. Qed.
 
