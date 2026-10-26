@@ -2036,7 +2036,6 @@ apply: (@ger0_derive1_le_cc _ _ N b) => [r|r| | | | // ]; rewrite ?in_itv/=.
 - by rewrite yb andbT.
 Unshelve. all: end_near. Qed.
 
-
 Lemma decr_derive1_le0 {R : realFieldType} (f : R -> R) (D : set R) (x : R) :
   {in D° : set R, forall x, derivable f x 1%R} ->
   {in D &, {homo f : x y /~ x < y}} ->
