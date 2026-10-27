@@ -2761,6 +2761,13 @@ Unshelve. all: by end_near. Qed.
 End derivative_limit_thm_left.
 Arguments left_derivative_limit {R f} df.
 
+(**md
+For $a \in \mathbb{R}$ and $f : \mathbb{R} \to \mathbb{R}$, if:
+1. $f$ is continuous at $a$
+2. $f$ is derivable near $a$ (but not necessarily *at* $a$)
+3. The limit of $f'(x)$ as $x \to a, x \neq a$ exists and equals $\ell \in \mathbb{R}$
+
+Then $f$ is derivable at $a$ and $f'(a) = \ell$. *)
 Section derivative_limit_thm.
 Context {R : realType} (f df : R -> R) (a l : R).
 Hypothesis cfa : continuous_at a f.
