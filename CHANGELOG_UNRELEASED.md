@@ -223,7 +223,7 @@
 - new directory and file `real_measure/real_measure.v`
 
 - in `pseudometric_normed_Zmodule.v`:
-  + lemmas `bounded_image`, `ub_bounded`, `bounded_gt0`
+  + lemmas `bounded_image`, `ub_bounded`, `bounded_ex_gt0`
     `bounded_setU`, `bounded_set0`, `bounded_set1`,
     `boundedS`, `boundedD`, `bounded_comp`,
     `bounded_center`, `bounded_itvbb`, `eq_bounded`, `continuous_compact_bounded`

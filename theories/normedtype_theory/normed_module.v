@@ -1916,7 +1916,7 @@ Implicit Types (f g : T -> R) (A : set T).
 Lemma boundedM f g A : [bounded f x | x in A] -> [bounded g x | x in A] ->
   [bounded f x * g x | x in A].
 Proof.
-move=> /bounded_gt0[Mf Mf_gt0 Mf_ub] /bounded_gt0[Mg Mg_gt0 Mg_ub].
+move=> /bounded_ex_gt0[Mf Mf_gt0 Mf_ub] /bounded_ex_gt0[Mg Mg_gt0 Mg_ub].
 by apply: (ub_bounded (Mf * Mg)) => t At; rewrite normrM ler_pM// ?Mf_ub ?Mg_ub.
 Qed.
 
@@ -1931,7 +1931,7 @@ Proof. by move=> bf; apply: boundedM => //; exact: bounded_cst. Qed.
 Lemma bounded_max f g A : [bounded f x | x in A] -> [bounded g x | x in A] ->
   [bounded Num.max (f x) (g x) | x in A].
 Proof.
-move=> /bounded_gt0[Mf Mf_gt0 Mf_ub] /bounded_gt0[Mg Mg_gt0 Mg_ub].
+move=> /bounded_ex_gt0[Mf Mf_gt0 Mf_ub] /bounded_ex_gt0[Mg Mg_gt0 Mg_ub].
 apply: (ub_bounded (Num.max Mf Mg)) => x Ax /=.
 case: (leP (f x) (g x)) => _.
 - by rewrite (le_trans (Mg_ub _ _))// le_max lexx orbT.

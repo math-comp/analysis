@@ -1685,7 +1685,7 @@ by near=> r => /= t At; rewrite (le_trans (M_ub _ At)).
 Unshelve. all: by end_near. Qed.
 Arguments ub_bounded {K} M.
 
-Lemma bounded_gt0 T (K : realFieldType) (V : metricNormedZmodType K)
+Lemma bounded_ex_gt0 T (K : realFieldType) (V : metricNormedZmodType K)
     (f : T -> V) (A : set T) :
   [bounded f x | x in A] ->
   exists2 M : K, M > 0 & forall x, A x -> `|f x| <= M.
@@ -1696,7 +1696,7 @@ Lemma bounded_setU T (K : realFieldType) (V : metricNormedZmodType K)
   [bounded f x | x in A] -> [bounded f x | x in B] ->
   [bounded f x | x in A `|` B].
 Proof.
-move=> /bounded_gt0[MA MA_gt0 MA_ub] /bounded_gt0[MB MB_gt0 MB_ub].
+move=> /bounded_ex_gt0[MA MA_gt0 MA_ub] /bounded_ex_gt0[MB MB_gt0 MB_ub].
 apply/(ub_bounded (MA + MB)) => x [Ax|Bx].
 - by rewrite (le_trans (MA_ub _ Ax))// lerDl ltW.
 - by rewrite (le_trans (MB_ub _ Bx))// lerDr ltW.
@@ -1718,7 +1718,7 @@ Lemma boundedS T (B A : set T) (K : realFieldType)
     (V : metricNormedZmodType K) (f : T -> V) : A `<=` B ->
   [bounded f x | x in B] -> [bounded f x | x in A].
 Proof.
-by move=> AB /bounded_gt0[M Mgt0 Mub]; apply: ub_bounded => x /AB; exact: Mub.
+by move=> AB /bounded_ex_gt0[M M0 Mub]; apply: ub_bounded => x /AB; exact: Mub.
 Qed.
 Arguments boundedS {T} B.
 
@@ -1727,7 +1727,7 @@ Lemma boundedD T (K : realFieldType) (V : metricNormedZmodType K)
   [bounded f x | x in A] -> [bounded g x | x in A] ->
   [bounded f x + g x | x in A].
 Proof.
-move=> /bounded_gt0[Mf Mf_gt0 Mf_ub] /bounded_gt0[Mg Mg_gt0 Mg_ub].
+move=> /bounded_ex_gt0[Mf Mf_gt0 Mf_ub] /bounded_ex_gt0[Mg Mg_gt0 Mg_ub].
 apply: ub_bounded => x Ax /=.
 by rewrite (le_trans (ler_normD _ _))//; apply: lerD; [exact:Mf_ub|exact:Mg_ub].
 Qed.
@@ -1764,7 +1764,7 @@ Lemma bounded_comp T U (K : realFieldType) (V : metricNormedZmodType K)
   f @` E `<=` F ->
   [bounded g y | y in F] -> [bounded g (f x) | x in E].
 Proof.
-move=> rng_sub /bounded_gt0[Mg Mg_gt0 Mg_ub].
+move=> rng_sub /bounded_ex_gt0[Mg Mg_gt0 Mg_ub].
 by apply/ub_bounded => x Ex; exact/(Mg_ub (f x))/rng_sub.
 Qed.
 
