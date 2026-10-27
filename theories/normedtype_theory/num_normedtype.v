@@ -1019,11 +1019,11 @@ Let near_at_left (a : itv_bound R) b f eps : (a < BLeft b)%O -> 0 < eps ->
 Proof.
 move=> ab eps_gt0 cf.
 move/continuous_withinNx/cvg_ballP/(_ _ eps_gt0) : (cf b).
-rewrite /dnbhs/= near_withinE !near_simpl /prop_near1 /nbhs/=.
+rewrite /dnbhs/= near_withinE /prop_near1 /nbhs/=.
 rewrite -nbhs_subspace_in//.
   rewrite /= in_itv/= lexx andbT.
   by move: a ab {cf} => [[a|a]/=|[|]//]; rewrite bnd_simp// => /ltW.
-rewrite /within/= near_simpl; apply: filter_app.
+rewrite /within/=; apply: filter_app.
 move: a ab {cf} => [a0 a/= /[!bnd_simp] ab|[_|//]].
 - exists (b - a); rewrite /= ?subr_gt0// => c cba + ac.
   apply=> //; rewrite ?lt_eqF// !in_itv/= (ltW ac)/= andbT; move: cba => /=.
@@ -1038,11 +1038,11 @@ Let near_at_right a (b : itv_bound R) f eps : (BRight a < b)%O -> 0 < eps ->
 Proof.
 move=> ab eps_gt0 cf.
 move/continuous_withinNx/cvg_ballP/(_ _ eps_gt0) : (cf a).
-rewrite /dnbhs/= near_withinE !near_simpl// /prop_near1 /nbhs/=.
+rewrite /dnbhs/= near_withinE /prop_near1 /nbhs/=.
 rewrite -nbhs_subspace_in//.
   rewrite /= in_itv/= lexx//=.
   by move: b ab {cf} => [[b|b]/=|[|]//]; rewrite bnd_simp// => /ltW.
-rewrite /within/= near_simpl; apply: filter_app.
+rewrite /within/=; apply: filter_app.
 move: b ab {cf} => [b0 b/= /[!bnd_simp] ab|[//|_]].
 - exists (b - a); rewrite /= ?subr_gt0// => c cba + ac.
   apply=> //; rewrite ?gt_eqF// !in_itv/= (ltW ac)/=; move: cba => /=.
@@ -1071,10 +1071,12 @@ apply/subspace_continuousP => x /=.
 rewrite in_itv/= => /andP[ax xb].
 move: ctsL ctsR.
 have : a = x /\ ba \/ a < x.
-  clear - ax. case: ba ax => /=; last by right.
+  clear - ax.
+  case: ba ax => /=; last by right.
   by case: ltgtP => //; [right|left].
 have : b = x /\ (bb = false) \/ x < b.
-  clear - xb. case: bb xb => /=; first by right.
+  clear - xb.
+  case: bb xb => /=; first by right.
   by case: ltgtP => //; [right|left].
 move=> {ax xb}.
 move=> [[<- ->]|xb] [[+ ->]|ax].

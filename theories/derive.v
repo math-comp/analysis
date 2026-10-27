@@ -891,7 +891,7 @@ rewrite ler_pM ?pmulr_rge0 //; last by rewrite num_le_max /= lexx orbT.
 rewrite -ler_pdivlMl //.
 suff : `|x| <= k%:num ^-1 * e%:num.
   by apply: le_trans; rewrite num_le_max /= lexx.
-near: x; rewrite !near_simpl; apply/nbhs_le_nbhs_norm.
+near: x; apply/nbhs_le_nbhs_norm.
 by exists (k%:num ^-1 * e%:num) => //= ? /=; rewrite /= distrC subr0 => /ltW.
 Unshelve. all: by end_near. Qed.
 
@@ -2197,7 +2197,7 @@ Qed.
 
 Lemma near_eq_derive {R : numFieldType} {V W : normedModType R}
   (f g : V -> W) (a v : V) :
-  (\near a, f a = g a) -> 'D_v f a = 'D_v g a.
+  (\forall a0 \near a, f a0 = g a0) -> 'D_v f a = 'D_v g a.
 Proof.
 have [-> _|] := eqVneq v 0; first by rewrite !derive0.
 move=> v0 fg; rewrite /derive; congr (lim _).
@@ -2207,7 +2207,7 @@ Unshelve. all: by end_near. Qed.
 
 Lemma near_eq_is_derive {R : numFieldType} {V W : normedModType R}
     (f g : V -> W) (a v : V) (df : W) :
-  (\near a, f a = g a) -> is_derive a v f df -> is_derive a v g df.
+  (\forall a0 \near a, f a0 = g a0) -> is_derive a v f df -> is_derive a v g df.
 Proof.
 move=> fg [fav <-]; rewrite (near_eq_derive _ fg).
 by apply: DeriveDef => //; exact: near_eq_derivable fav.
@@ -2222,7 +2222,7 @@ Lemma near_eq_derive1n_near n f g x:
 Proof.
 move=> fg; elim: n => [//|n IH].
 near do (rewrite 2!derive1nS !derive1E; apply: near_eq_derive).
-by rewrite near_nbhs; exact: near_join.
+exact: (@near_join _ x).
 Unshelve. all: by end_near. Qed.
 
 Lemma near_eq_derive1_near f g x : {near x, f =1 g} -> {near x, f^`() =1 g^`()}.

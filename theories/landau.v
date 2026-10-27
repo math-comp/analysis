@@ -1115,7 +1115,8 @@ Lemma linear_for_continuous (f : {linear U -> V | GRing.Scale.Law.sort s}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof.
 move=> /eqO_exP [_/posnumP[k0] Of1] x.
-apply/cvgrPdist_lt => _/posnumP[e]; rewrite !near_simpl.
+apply/cvgrPdist_lt => /= _/posnumP[e].
+suff: \forall t \near x, `|f x - f t| < e%:num by [].
 rewrite (near_shift 0) /= subr0; near=> y => /=.
 rewrite -linearB opprD addrC addrNK linearN normrN; near: y.
 suff flip : \forall k \near +oo, forall x, `|f x| <= k * `|x|.

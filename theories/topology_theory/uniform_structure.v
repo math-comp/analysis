@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra all_classical.
 #[warning="-warn-library-file-internal-analysis"]
@@ -44,7 +44,6 @@ From mathcomp Require Import topology_structure.
 (* ```                                                                        *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -281,7 +280,7 @@ Lemma continuous_withinNx {U V : uniformType} (f : U -> V) x :
 Proof.
 split=> - cfx P /= fxP.
   by rewrite !near_simpl; apply: cvg_within; apply: cfx.
-rewrite !nbhs_nearE !near_map !near_nbhs in fxP *; have /= := cfx P fxP.
+rewrite !nbhs_nearE !near_map in fxP *; have /= := cfx P fxP.
 rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
 Unshelve. all: by end_near. Qed.

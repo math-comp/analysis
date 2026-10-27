@@ -20,7 +20,6 @@ From mathcomp Require exp.
 (* The following line is for RcosE, PIE and RsinE. *)
 From mathcomp Require trigonometry_functions.
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -88,7 +87,7 @@ by rewrite continuity_pt_cvg' -filter_fromP cvg_ballP -filter_fromP.
 Qed.
 
 Lemma nbhs_pt_comp (P : R -> Prop) (f : R -> R) (x : R) :
-  nbhs (f x) P -> continuity_pt f x -> \near x, P (f x).
+  nbhs (f x) P -> continuity_pt f x -> \forall x0 \near x, P (f x0).
 Proof. by move=> Lf /continuity_pt_cvg; apply. Qed.
 
 End analysis_struct.

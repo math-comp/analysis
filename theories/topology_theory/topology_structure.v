@@ -282,7 +282,7 @@ Qed.
 End Topological1.
 
 Lemma open_in_nearW {T : topologicalType} (P : T -> Prop) (S : set T) :
-  open S -> {in S, forall x, P x} -> {in S, forall x, \near x, P x}.
+  open S -> {in S, forall x, P x} -> {in S, forall x, \forall x0 \near x, P x0}.
 Proof.
 by move=> oS SP z /set_mem Sz; apply: in_nearW SP => //=; exact: open_nbhs_nbhs.
 Qed.
@@ -313,27 +313,29 @@ move=> s A; rewrite nbhs_simpl /= !nbhsE => - [B [Bop Bfs] sBA].
 by exists (f @^-1` B); [split=> //; apply/fcont|move=> ? /sBA].
 Qed.
 
-Lemma open_comp  {T U : topologicalType} (f : T -> U) (D : set U) :
+Lemma open_comp {T U : topologicalType} (f : T -> U) (D : set U) :
   {in f @^-1` D, continuous f} -> open D -> open (f @^-1` D).
 Proof.
 rewrite !openE => fcont Dop x /= Dfx.
 by apply: fcont; [rewrite inE|exact: Dop].
 Qed.
 
-Lemma cvg_fmap {T: topologicalType} {U : topologicalType}
+Lemma cvg_fmap {T : topologicalType} {U : topologicalType}
   (F : set_system T) x (f : T -> U) :
    {for x, continuous f} -> F --> x -> f @ F --> f x.
 Proof. by move=> cf fx P /cf /fx. Qed.
 
 Lemma near_join (T : topologicalType) (x : T) (P : set T) :
-  (\near x, P x) -> \near x, \near x, P x.
+  (\forall x0 \near x, P x0) -> \forall x0 \near x, \forall x1 \near x0, P x1.
 Proof. exact: nbhs_interior. Qed.
 
 Lemma near_bind (T : topologicalType) (P Q : set T) (x : T) :
-  (\near x, (\near x, P x) -> Q x) -> (\near x, P x) -> \near x, Q x.
+  (\forall x0 \near x, (\forall x1 \near x, P x1) -> Q x0) ->
+  (\forall x0 \near x, P x0) ->
+  \forall x0 \near x, Q x0.
 Proof.
 move=> PQ xP; near=> y; apply: (near PQ y) => //;
-by apply: (near (near_join xP) y).
+exact: (near (near_join xP) y).
 Unshelve. all: by end_near. Qed.
 
 (* limit composition *)
@@ -834,10 +836,10 @@ Lemma closedT : closed setT. Proof. by []. Qed.
 Lemma closed0 : closed set0.
 Proof. by move=> ? /(_ setT) [|? []] //; apply: filterT. Qed.
 
-Lemma closedE : closed = [set A : set T | forall p, ~ (\near p, ~ A p) -> A p].
+Lemma closedE : closed = [set A : set T | forall p, ~ (\forall x \near p, ~ A x) -> A p].
 Proof.
 rewrite predeqE => A; split=> Acl p; last first.
-  by move=> clAp; apply: Acl; rewrite -nbhs_nearE => /clAp [? []].
+  by move=> clAp; apply: Acl => /clAp [? []].
 rewrite -nbhs_nearE nbhsE => /asboolP.
 rewrite asbool_neg => /forallp_asboolPn2 clAp.
 apply: Acl => B; rewrite nbhsE => - [C [oC pC]].
@@ -848,10 +850,7 @@ by exists q.
 Qed.
 
 Lemma closed_openC (D : set T) : closed D -> open (~` D).
-Proof.
-rewrite closedE openE => Dcl t nDt; apply: contrapT.
-by rewrite /interior nbhs_nearE => /Dcl.
-Qed.
+Proof. by rewrite closedE openE => Dcl t nDt; apply: contrapT => /Dcl. Qed.
 
 Lemma closedC (D : set T) : closed (~` D) = open D.
 Proof.
@@ -871,7 +870,7 @@ Notation closure_limit_point := __deprecated__closure_limit_point (only parsing)
 Lemma preimage_closed {T U : topologicalType} (f : T -> U) (D : set U) :
   {in ~` f @^-1` D, continuous f} -> closed D -> closed (f @^-1` D).
 Proof.
-rewrite !closedE=> f_continuous D_cl x /= xDf.
+rewrite !closedE => f_continuous D_cl x /= xDf.
 apply: D_cl; apply: contra_not xDf => fxD.
 have NDfx : ~ D (f x).
   by move: fxD; rewrite -nbhs_nearE nbhsE => - [A [? ?]]; exact.

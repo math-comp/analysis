@@ -594,7 +594,8 @@ which causes an inference problem in derive.v *)
 Lemma nbhs_nbhs_norm : nbhs_norm = nbhs.
 Proof. by rewrite ball_normE funeqE => x; rewrite -filter_from_ballE. Qed.
 
-Lemma nbhs_normP x (P : V -> Prop) : (\near x, P x) <-> nbhs_norm x P.
+Lemma nbhs_normP x (P : V -> Prop) :
+  (\forall x0 \near x, P x0) <-> nbhs_norm x P.
 Proof. by rewrite nbhs_nbhs_norm. Qed.
 
 Lemma nbhs_le_nbhs_norm (x : V) : @nbhs V _ x `=>` nbhs_norm x.
@@ -608,23 +609,22 @@ Lemma filter_from_norm_nbhs x :
 Proof. by rewrite -nbhs_nbhs_norm ball_normE. Qed.
 
 Lemma nbhs_normE (x : V) (P : V -> Prop) :
-  nbhs_norm x P = \near x, P x.
+  nbhs_norm x P = \forall x0 \near x, P x0.
 Proof. by rewrite nbhs_nbhs_norm near_simpl. Qed.
 
 Lemma filter_from_normE (x : V) (P : V -> Prop) :
-  @filter_from K _ [set x : K | 0 < x] (ball_norm x) P = \near x, P x.
+  @filter_from K _ [set x : K | 0 < x] (ball_norm x) P = \forall x0 \near x, P x0.
 Proof. by rewrite filter_from_norm_nbhs. Qed.
 
 Lemma near_nbhs_norm (x : V) (P : V -> Prop) :
-  (\forall x \near nbhs_norm x, P x) = \near x, P x.
+  (\forall x \near nbhs_norm x, P x) = \forall x0 \near x, P x0.
 Proof. exact: nbhs_normE. Qed.
 
-Lemma nbhs_norm_ball_norm x (e : {posnum K}) :
-  nbhs_norm x (ball_norm x e%:num).
+Lemma nbhs_norm_ball_norm x (e : {posnum K}) : nbhs_norm x (ball_norm x e%:num).
 Proof. by rewrite ball_normE; exists e%:num => /=. Qed.
 
 Lemma nbhs_ball_norm (x : V) (eps : {posnum K}) : nbhs x (ball_norm x eps%:num).
-Proof. rewrite -nbhs_nbhs_norm; apply: nbhs_norm_ball_norm. Qed.
+Proof. by rewrite -nbhs_nbhs_norm; exact: nbhs_norm_ball_norm. Qed.
 
 Lemma ball_norm_dec x y (e : K) : {ball_norm x e y} + {~ ball_norm x e y}.
 Proof. exact: pselect. Qed.
@@ -712,7 +712,7 @@ Lemma nbhs_norm_ball x (eps : {posnum K}) : nbhs_norm x (ball x eps%:num).
 Proof. by rewrite nbhs_nbhs_norm; exact: nbhsx_ballx. Qed.
 
 Lemma nbhsDl (P : set V) (x y : V) :
-  (\forall z \near (x + y), P z) <-> (\near x, P (x + y)).
+  (\forall z \near (x + y), P z) <-> (\forall x0 \near x, P (x0 + y)).
 Proof.
 split=> /nbhs_normP[_/posnumP[e]/= Px]; apply/nbhs_normP; exists e%:num => //=.
   by move=> z /= xze; apply: Px; rewrite /= [z + y]addrC addrKA.
@@ -720,14 +720,15 @@ by move=> z /= xyz; rewrite -[z](addrNK y); apply: Px; rewrite /= opprB addrA.
 Qed.
 
 Lemma nbhsDr (P : set V) x y :
-  (\forall z \near (x + y), P z) <-> (\near y, P (x + y)).
+  (\forall z \near (x + y), P z) <-> (\forall y0 \near y, P (x + y0)).
 Proof. by rewrite addrC nbhsDl -propeqE; apply: eq_near => ?; rewrite addrC. Qed.
 
-Lemma nbhs0P (P : set V) x : (\near x, P x) <-> (\forall e \near 0, P (x + e)).
+Lemma nbhs0P (P : set V) x :
+  (\forall x0 \near x, P x0) <-> (\forall e \near 0, P (x + e)).
 Proof. by rewrite -nbhsDr addr0. Qed.
 
 Lemma near_shift (y x : V) (P : set V) :
-  (\near x, P x) = (\forall z \near y, (P \o shift (x - y)) z).
+  (\forall x0 \near x, P x0) = (\forall z \near y, (P \o shift (x - y)) z).
 Proof.
 rewrite propeqE nbhs0P [X in _ <-> X]nbhs0P/= -propeqE.
 by apply: eq_near => e; rewrite [_ + _ + _]addrC subrKA.
@@ -1067,15 +1068,17 @@ Context {R : numFieldType}.
 Lemma nbhs_right0P x (P : set R) :
   (\forall y \near x^'+, P y) <-> \forall e \near 0^'+, P (x + e).
 Proof.
-rewrite !near_withinE !near_simpl.
-rewrite (@nbhs0P R R^o)// -propeqE.
+rewrite !near_withinE -[X in X <-> _]nearE !near_simpl (@nbhs0P _ R^o).
+rewrite -propeqE.
 by apply: (@eq_near _ (nbhs (0 : R))) => y; rewrite ltrDl.
 Qed.
 
 Lemma nbhs_left0P x (P : set R) :
   (\forall y \near x^'-, P y) <-> \forall e \near 0^'+, P (x - e).
 Proof.
-rewrite !near_withinE !near_simpl (@nbhs0P R R^o); split=> Px.
+rewrite !near_withinE -[X in X <-> _]nearE -[X in _ <-> X]nearE.
+rewrite !near_simpl (@nbhs0P R R^o); split=> Px.
+  suff: \forall x0 \near (0:R), 0 < x0 -> P (x - x0) by [].
   rewrite -oppr0 nearN; near=> e; rewrite ltrN2 opprK => e_lt0.
   by apply: (near Px) => //; rewrite gtrDl.
 by rewrite -oppr0 nearN; near=> e; rewrite gtrDl oppr_lt0; apply: (near Px).
@@ -1173,7 +1176,7 @@ Lemma nbhsr0P (P : set V) x :
   (\forall y \near x, P y) <->
   (\forall e \near 0^'+, forall y, `|x - y| <= e -> P y).
 Proof.
-rewrite nbhs0P/= near_withinE/= !near_simpl.
+rewrite nbhs0P/= near_withinE/=.
 split.
   move => /nbhs_norm0P[/= _/posnumP[e] /(_ _) Px].
   apply/(@nbhs_norm0P R R^o).
@@ -1432,7 +1435,8 @@ Section realFieldType.
 Context {R : realFieldType}.
 
 Lemma at_right_in_segment (x : R) (P : set R) :
-  (\forall e \near 0^'+, {in `[x - e, x + e], forall x, P x}) <-> (\near x, P x).
+  (\forall e \near 0^'+, {in `[x - e, x + e], forall x, P x}) <->
+  (\forall x0 \near x, P x0).
 Proof.
 rewrite (@nbhsr0P _ R^o) -propeqE; apply: eq_near => y /=.
 by rewrite -propeqE; apply: eq_forall => z; rewrite ler_distlC.

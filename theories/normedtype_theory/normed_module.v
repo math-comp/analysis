@@ -802,16 +802,18 @@ Section ProperFilterRealType.
 Context {T : Type} {F : set_system T} {FF : ProperFilter F} {R : realFieldType}.
 Implicit Types (f g h : T -> R) (a b : R).
 
-Lemma cvgr_to_ge f a b : f @ F --> a -> (\near F, b <= f F) -> b <= a.
+Lemma cvgr_to_ge f a b : f @ F --> a -> (\forall x \near F, b <= f x) -> b <= a.
 Proof. by move=> /[swap]/(closed_cvg _ (@closed_ge _ b))/[apply]. Qed.
 
-Lemma cvgr_to_le f a b : f @ F --> a -> (\near F, f F <= b) -> a <= b.
+Lemma cvgr_to_le f a b : f @ F --> a -> (\forall x \near F, f x <= b) -> a <= b.
 Proof. by move=> /[swap]/(closed_cvg _ (@closed_le _ b))/[apply]. Qed.
 
-Lemma limr_ge x f : cvg (f @ F) -> (\near F, x <= f F) -> x <= lim (f @ F).
+Lemma limr_ge x f : cvg (f @ F) ->
+  (\forall x0 \near F, x <= f x0) -> x <= lim (f @ F).
 Proof. exact: cvgr_to_ge. Qed.
 
-Lemma limr_le x f : cvg (f @ F) -> (\near F, x >= f F) -> x >= lim (f @ F).
+Lemma limr_le x f : cvg (f @ F) ->
+  (\forall x0 \near F, x >= f x0) -> x >= lim (f @ F).
 Proof. exact: cvgr_to_le. Qed.
 
 End ProperFilterRealType.
@@ -1269,7 +1271,7 @@ Proof. by move=> ? fa; rewrite -(cvg_lim _ fa) ?lime_le//=; apply: cvgP fa. Qed.
 
 Lemma cvg_nnesum (J : Type) (r : seq J) (f : J -> I -> \bar R)
    (l : J -> \bar R) (P : pred J) :
-  (forall j, P j -> \near F, 0 <= f j F) ->
+  (forall j, P j -> \forall i \near F, 0 <= f j i) ->
   (forall j, P j -> f j @ F --> l j) ->
   \sum_(j <- r | P j) f j i @[i --> F] --> \sum_(j <- r | P j) l j.
 Proof.
@@ -1284,7 +1286,7 @@ Qed.
 
 Lemma lim_nnesum (J : Type) (r : seq J) (f : J -> I -> \bar R)
    (l : J -> \bar R) (P : pred J) :
-  (forall j, P j -> \near F, 0 <= f j F) ->
+  (forall j, P j -> \forall i \near F, 0 <= f j i) ->
   (forall j, P j -> cvg (f j @ F)) ->
   lim (\sum_(j <- r | P j) f j i @[i --> F]) = \sum_(j <- r | P j) (lim (f j @ F)).
 Proof. by move=> ? ?; apply/cvg_lim => //; apply: cvg_nnesum. Qed.
@@ -1292,10 +1294,11 @@ Proof. by move=> ? ?; apply/cvg_lim => //; apply: cvg_nnesum. Qed.
 End ecvg_realFieldType_proper.
 
 Section cvg_0_pinfty.
-Context {R : realFieldType} {I : Type} {a : set_system I} {FF : Filter a}.
+Context {R : realFieldType} {I : Type} {F : set_system I} {FF : Filter F}.
 Implicit Types f : I -> R.
 
-Lemma gtr0_cvgV0 f : (\near a, 0 < f a) -> f\^-1 @ a --> 0 <-> f @ a --> +oo.
+Lemma gtr0_cvgV0 f : (\forall a \near F, 0 < f a) ->
+  f\^-1 @ F --> 0 <-> f @ F --> +oo.
 Proof.
 move=> f_gt0; split; last first.
   move=> /cvgryPgt cvg_f_oo; apply/cvgr0Pnorm_lt => _/posnumP[e].
@@ -1307,19 +1310,22 @@ near=> M; near=> i; suff: `|(f i)^-1| < M^-1.
 by near: i; apply: uB; rewrite ?invr_gt0.
 Unshelve. all: by end_near. Qed.
 
-Lemma cvgrVy f : (\near a, 0 < f a) -> f\^-1 @ a --> +oo <-> f @ a --> 0.
+Lemma cvgrVy f : (\forall a \near F, 0 < f a) ->
+  f\^-1 @ F --> +oo <-> f @ F --> 0.
 Proof.
 by move=> f_gt0; rewrite -gtr0_cvgV0 ?inv_funK//; near do rewrite invr_gt0.
 Unshelve. all: by end_near. Qed.
 
-Lemma ltr0_cvgV0 f : (\near a, 0 > f a) -> f\^-1 @ a --> 0 <-> f @ a --> -oo.
+Lemma ltr0_cvgV0 f : (\forall a \near F, 0 > f a) ->
+  f\^-1 @ F --> 0 <-> f @ F --> -oo.
 Proof.
 move=> fL0; rewrite -cvgNP oppr0 (_ : - f\^-1 =  (- f)\^-1).
    by apply/funeqP => i; rewrite opprfctE/= invrN.
 by rewrite gtr0_cvgV0 ?cvgNry//; near do rewrite oppr_gt0.
 Unshelve. all: by end_near. Qed.
 
-Lemma cvgrVNy f : (\near a, 0 > f a) -> f\^-1 @ a --> -oo <-> f @ a --> 0.
+Lemma cvgrVNy f : (\forall a \near F, 0 > f a) ->
+  f\^-1 @ F --> -oo <-> f @ F --> 0.
 Proof.
 by move=> f_lt0; rewrite -ltr0_cvgV0 ?inv_funK//; near do rewrite invr_lt0.
 Unshelve. all: by end_near. Qed.
@@ -1327,18 +1333,18 @@ Unshelve. all: by end_near. Qed.
 End cvg_0_pinfty.
 
 Section FilterRealType.
-Context {T : Type} {a : set_system T} {Fa : Filter a} {R : realFieldType}.
+Context {T : Type} {F : set_system T} {FF : Filter F} {R : realFieldType}.
 Implicit Types f g h : T -> R.
 
-Lemma ger_cvgy f g : (\near a, f a <= g a) ->
-  f @ a --> +oo -> g @ a --> +oo.
+Lemma ger_cvgy f g : (\forall a \near F, f a <= g a) ->
+  f @ F --> +oo -> g @ F --> +oo.
 Proof.
 move=> uv /cvgryPge ucvg; apply/cvgryPge => A.
 by near=> x do rewrite (le_trans _ (near uv x _))//.
 Unshelve. all: end_near. Qed.
 
-Lemma ler_cvgNy f g : (\near a, f a >= g a) ->
-  f @ a --> -oo -> g @ a --> -oo.
+Lemma ler_cvgNy f g : (\forall a \near F, f a >= g a) ->
+  f @ F --> -oo -> g @ F --> -oo.
 Proof.
 move=> uv /cvgrNyPle ucvg; apply/cvgrNyPle => A.
 by near=> x do rewrite (le_trans (near uv x _))//.
@@ -1347,53 +1353,54 @@ Unshelve. all: end_near. Qed.
 End FilterRealType.
 
 Section TopoProperFilterRealType.
-Context {T : topologicalType} {a : set_system T} {Fa : ProperFilter a}.
+Context {T : topologicalType} {F : set_system T} {Fa : ProperFilter F}.
 Context {R : realFieldType}.
 Implicit Types f g h : T -> R.
 
-Lemma ler_cvg_to f g (l l' : R) : f @ a --> l -> g @ a --> l' ->
-  (\near a, f a <= g a) -> l <= l'.
+Lemma ler_cvg_to f g (l l' : R) : f @ F --> l -> g @ F --> l' ->
+  (\forall a \near F, f a <= g a) -> l <= l'.
 Proof.
 move=> fl gl; under eq_near do rewrite -subr_ge0; rewrite -subr_ge0.
 by apply: cvgr_to_ge; apply: cvgB.
 Qed.
 
-Lemma ler_lim f g : cvg (f @ a) -> cvg (g @ a) ->
-  (\near a, f a <= g a) -> lim (f @ a) <= lim (g @ a).
+Lemma ler_lim f g : cvg (f @ F) -> cvg (g @ F) ->
+  (\forall a \near F, f a <= g a) -> lim (f @ F) <= lim (g @ F).
 Proof. exact: ler_cvg_to. Qed.
 
 End TopoProperFilterRealType.
 
 Section FilterERealType.
-Context {T : Type} {a : set_system T} {Fa : Filter a} {R : realFieldType}.
+Context {T : Type} {F : set_system T} {FF : Filter F} {R : realFieldType}.
 Local Open Scope ereal_scope.
 Implicit Types f g h : T -> \bar R.
 
-Lemma gee_cvgy f g : (\near a, f a <= g a) ->
-  f @ a --> +oo -> g @ a --> +oo.
+Lemma gee_cvgy f g : (\forall a \near F, f a <= g a) ->
+  f @ F --> +oo -> g @ F --> +oo.
 Proof.
 move=> uv /cvgeyPge uecvg; apply/cvgeyPge => A.
 by near=> x do rewrite (le_trans _ (near uv x _))//.
 Unshelve. all: end_near. Qed.
 
-Lemma lee_cvgNy f g : (\near a, f a >= g a) ->
-  f @ a --> -oo -> g @ a --> -oo.
+Lemma lee_cvgNy f g : (\forall a \near F, f a >= g a) ->
+  f @ F --> -oo -> g @ F --> -oo.
 Proof.
 move=> uv /cvgeNyPle uecvg; apply/cvgeNyPle => A.
 by near=> x do rewrite (le_trans (near uv x _))//.
 Unshelve. all: end_near. Qed.
 
-Lemma squeeze_fin f g h : (\near a, f a <= g a <= h a) ->
-    (\near a, f a \is a fin_num) -> (\near a, h a \is a fin_num) ->
-  (\near a, g a \is a fin_num).
+Lemma squeeze_fin f g h : (\forall a \near F, f a <= g a <= h a) ->
+    (\forall a \near F, f a \is a fin_num) ->
+    (\forall a \near F, h a \is a fin_num) ->
+  (\forall a \near F, g a \is a fin_num).
 Proof.
 apply: filterS3 => x /andP[fg gh].
 rewrite !fin_numElt => /andP[oof _] /andP[_ hoo].
 by rewrite (lt_le_trans oof) ?(le_lt_trans gh).
 Qed.
 
-Lemma squeeze_cvge f g h : (\near a, f a <= g a <= h a) ->
-  forall l : \bar R, f @ a --> l -> h @ a --> l -> g @ a --> l.
+Lemma squeeze_cvge f g h : (\forall a \near F, f a <= g a <= h a) ->
+  forall l : \bar R, f @ F --> l -> h @ F --> l -> g @ F --> l.
 Proof.
 move=> fgh [l||]; last 2 first.
 - by move=> + _; apply: gee_cvgy; apply: filterS fgh => ? /andP[].
@@ -1405,17 +1412,17 @@ by have /(_ _)/andP[//|fg gh] := near fgh x; rewrite !fine_le//=; near: x.
 Unshelve. all: end_near. Qed.
 
 End FilterERealType.
-Arguments squeeze_fin {T a Fa R} f g h.
-Arguments squeeze_cvge {T a Fa R} f g h.
+Arguments squeeze_fin {T F FF R} f g h.
+Arguments squeeze_cvge {T F FF R} f g h.
 
 Section TopoProperFilterERealType.
-Context {T : topologicalType} {a : set_system T} {Fa : ProperFilter a}.
-Context {R : realFieldType}.
+Context {T : topologicalType} {F : set_system T} {FF : ProperFilter F}
+  {R : realFieldType}.
 Local Open Scope ereal_scope.
 Implicit Types f g h : T -> \bar R.
 
-Lemma lee_cvg_to f g l l' : f @ a --> l -> g @ a --> l' ->
-  (\near a, f a <= g a) -> l <= l'.
+Lemma lee_cvg_to f g l l' : f @ F --> l -> g @ F --> l' ->
+  (\forall a \near F, f a <= g a) -> l <= l'.
 Proof.
 move=> + + fg; move: l' l.
 move=> /= [l'||] [l||]//=; rewrite ?leNye ?leey//=; first 1 last.
@@ -1427,14 +1434,14 @@ rewrite lee_fin -(cvg_lim _ fl)// -(cvg_lim _ gl)//.
 by apply: ler_lim; [apply: cvgP fl|apply: cvgP gl|near do apply: fine_le].
 Unshelve. all: end_near. Qed.
 
-Lemma lee_lim f g : cvg (f @ a) -> cvg (g @ a) ->
-  (\near a, f a <= g a) -> lim (f @ a) <= lim (g @ a).
+Lemma lee_lim f g : cvg (f @ F) -> cvg (g @ F) ->
+  (\forall a \near F, f a <= g a) -> lim (f @ F) <= lim (g @ F).
 Proof. exact: lee_cvg_to. Qed.
 
 End TopoProperFilterERealType.
 
 Section Rhull.
-Variable R : realType.
+Context {R : realType}.
 
 Definition Rhull (X : set R) : interval R := Interval
   (if `[< has_lbound X >] then BSide `[< X (inf X) >] (inf X)
