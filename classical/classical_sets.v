@@ -2525,8 +2525,8 @@ Proof.
 by move=> CY; split; [exact: smallest_sub_sub|exact: smallest_sub].
 Qed.
 
-Definition bigcap_closed {T} (C : set T -> Prop) :=
-  forall (MM : set_system T), MM `<=` C -> C (\bigcap_(A in MM) A).
+Definition bigcap_closed {T} (C : set_system T) :=
+  forall MM : set_system T, MM `<=` C -> C (\bigcap_(A in MM) A).
 
 Section bigcap_closed_smallest.
 Context {T} (C : set T -> Prop).

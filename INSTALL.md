@@ -50,7 +50,7 @@ $ opam install rocq-mathcomp-analysis
 ```
 To install a precise version, type, say
 ```
-$ opam install rocq-mathcomp-analysis.1.18.0
+$ opam install rocq-mathcomp-analysis.1.19.0
 ```
 4. Everytime you want to work in this same context, you need to type
 ```

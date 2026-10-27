@@ -66,7 +66,7 @@ Each file is documented in its header in ASCII.
 HTML rendering of the source code and inheritance diagrams for the
 mathematical structures that MathComp-Analysis adds on top of
 MathComp's ones (using [`rocqnavi`](https://github.com/affeldt-aist/rocqnavi)):
-- last version: [1.18.0](https://math-comp.github.io/analysis/htmldoc/1_18_0/index.html)
+- last version: [1.19.0](https://math-comp.github.io/analysis/htmldoc/1_19_0/index.html)
 - [master](https://math-comp.github.io/analysis/master/)
 
 Overview presentations:
