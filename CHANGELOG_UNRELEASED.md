@@ -221,14 +221,14 @@
 - file `unstable.v`:
   + definition `with_basis`
 - new directory and file `real_measure/real_measure.v`
-- in file `normed_module.v`,
-  + new lemmas `bounded_rangeM`, `bounded_rangeMl`, `bounded_rangeMr`, and 
-    `bounded_range_max`.
-- in file `pseudometric_normed_Zmodule.v`,
-  + new lemmas `bounded_range`, `bounded_rangeP`, `bounded_range_exP`, 
-    `bounded_range_setU`, `bounded_range_set0`, `bounded_range_set1`, 
-    `bounded_rangeW`, `bounded_rangeD`, `bounded_range_comp`, 
-    `bounded_range_shift`, `bounded_range_itvbb`, `eq_bounded_range`, `continuous_compact_bounded`.
+
+- in `pseudometric_normed_Zmodule.v`:
+  + lemmas `bounded_image`, `ub_bounded`, `bounded_gt0`
+    `bounded_setU`, `bounded_set0`, `bounded_set1`,
+    `boundedS`, `boundedD`, `bounded_comp`,
+    `bounded_center`, `bounded_itvbb`, `eq_bounded`, `continuous_compact_bounded`
+- in `normed_module.v`,
+  + lemmas `boundedM`, `boundedMl`, `boundedMr`, `bounded_max`
 
 ### Changed
 
@@ -308,7 +308,7 @@
 - moved to `real_measure`:
   + files `lebesgue_stieltjes_measure.v`, `lebesgue_measure.v`, `measurable_realfun.v`
 
-- moved from `normed_module.v` to `pseudometric_normed_Zmodule.v` and generalized :
+- moved from `normed_module.v` to `pseudometric_normed_Zmodule.v` and generalized:
   + lemma `compact_bounded` (from `normedModType` over `realType` to `metricNormedZmodType` over `realFieldType`)
 
 ### Renamed

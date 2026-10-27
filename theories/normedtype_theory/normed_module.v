@@ -1909,50 +1909,36 @@ Lemma bounded_locally (T : topologicalType)
   [bounded f x | x in A] -> [locally [bounded f x | x in A]].
 Proof. by move=> /sub_boundedr AB x Ax; apply: AB; apply: within_nbhsW. Qed.
 
-Section bounded_range.
-Context (T : Type) (R : realFieldType).
+Section bounded_mul.
+Context {T : Type} {R : realFieldType}.
 Implicit Types (f g : T -> R) (A : set T).
 
-Lemma bounded_rangeM f g A : 
-  [bounded f x | x in A] -> [bounded g x | x in A] -> [bounded f x * g x | x in A].
+Lemma boundedM f g A : [bounded f x | x in A] -> [bounded g x | x in A] ->
+  [bounded f x * g x | x in A].
 Proof.
-move=> /bounded_range_exP[Mf Mf_gt0 Mf_ub] /bounded_range_exP[Mg Mg_gt0 Mg_ub].
-apply: bounded_rangeP => x Ax /=.
-rewrite normrM.
-apply: ler_pM => //.
-- by apply: Mf_ub.
-- by apply: Mg_ub.
+move=> /bounded_gt0[Mf Mf_gt0 Mf_ub] /bounded_gt0[Mg Mg_gt0 Mg_ub].
+by apply: (ub_bounded (Mf * Mg)) => t At; rewrite normrM ler_pM// ?Mf_ub ?Mg_ub.
 Qed.
 
-Lemma bounded_rangeMl f A (c : R) : [bounded f x | x in A] -> [bounded c * f x | x in A].
-Proof.
-  move=> bf.
-  apply: bounded_rangeM => //.
-  by exact: bounded_cst.
-Qed.
+Lemma boundedMl f A (c : R) : [bounded f x | x in A] ->
+  [bounded c * f x | x in A].
+Proof. by move=> bf; apply: boundedM => //; exact: bounded_cst. Qed.
 
-Lemma bounded_rangeMr f A (c : R) : [bounded f x | x in A] -> [bounded f x * c | x in A].
-Proof.
-  move=> bf.
-  apply: bounded_rangeM => //.
-  by exact: bounded_cst.
-Qed.
+Lemma boundedMr f A (c : R) : [bounded f x | x in A] ->
+  [bounded f x * c | x in A].
+Proof. by move=> bf; apply: boundedM => //; exact: bounded_cst. Qed.
 
-Lemma bounded_range_max f g A :
-  [bounded f x | x in A] ->
-  [bounded g x | x in A] ->
+Lemma bounded_max f g A : [bounded f x | x in A] -> [bounded g x | x in A] ->
   [bounded Num.max (f x) (g x) | x in A].
 Proof.
-  move=> /bounded_range_exP[Mf Mf_gt0 Mf_ub] /bounded_range_exP[Mg Mg_gt0 Mg_ub].
-  apply: (bounded_rangeP (M := Num.max Mf Mg)) => x Ax /=.
-  case: (leP (f x) (g x)) => _.
-  - apply: le_trans; first by apply: Mg_ub.
-    by rewrite le_max lexx orbT.
-  - apply: le_trans; first by apply: Mf_ub.
-    by rewrite le_max lexx.
+move=> /bounded_gt0[Mf Mf_gt0 Mf_ub] /bounded_gt0[Mg Mg_gt0 Mg_ub].
+apply: (ub_bounded (Num.max Mf Mg)) => x Ax /=.
+case: (leP (f x) (g x)) => _.
+- by rewrite (le_trans (Mg_ub _ _))// le_max lexx orbT.
+- by rewrite (le_trans (Mf_ub _ _))// le_max lexx.
 Qed.
 
-End bounded_range.
+End bounded_mul.
 
 Notation "k .-lipschitz_on f" :=
   (dominated_by (self_sub id) k (self_sub f)) : type_scope.
