@@ -1651,6 +1651,136 @@ Unshelve. all: by end_near. Qed.
 
 End bounded_near.
 
+Lemma compact_bounded {K : realFieldType} {V : metricNormedZmodType K}
+    (A : set V) :
+  compact A -> bounded_set A.
+Proof.
+rewrite compact_cover => cA.
+have : A `<=` \bigcup_(x in A) ball x 1.
+  by move=> x Ax; exists x => //; exact: ballxx.
+have : forall x, A x -> open (ball x 1) by move=> ? _; exact: ball_open.
+move=> /cA /[apply] -[I _ A_cov_I].
+exists (1 + \big[Num.max/0]_(i : I) `|fsval i|); split.
+  by rewrite realD// bigmax_real.
+move=> M /= Mgt x /A_cov_I [i /= Ii].
+rewrite -ball_normE/= distrC => dxi.
+rewrite -(subrK i x) (le_trans (ler_normD _ _))//.
+rewrite (@le_trans _ _ (1 + `|i|)) ?lerD2r//; first exact: ltW.
+rewrite (le_trans _ (ltW Mgt)) ?lerD2l//.
+have : i \in enum_fset I by [].
+by rewrite enum_fsetE => /mapP[/= j Ij ->] ; exact: le_bigmax.
+Qed.
+
+Lemma bounded_image T (K : numFieldType) (V : metricNormedZmodType K)
+    (f : T -> V) (A : set T) :
+  [bounded f x | x in A] <-> bounded_set (f @` A).
+Proof.
+split; rewrite /bounded_set /bounded_near.
+- by apply: filterS => r + _/= [t At <-]; exact.
+- by apply: filterS => r /= + t At => /(_ (f t)); apply; exists t.
+Qed.
+
+Lemma ub_bounded (K : realFieldType) (M : K)
+    (V : metricNormedZmodType K) T (f : T -> V) (A : set T) :
+  (forall x, A x -> `|f x| <= M) -> [bounded f x | x in A].
+Proof.
+rewrite /bounded_near => M_ub.
+by near=> r => /= t At; rewrite (le_trans (M_ub _ At)).
+Unshelve. all: by end_near. Qed.
+Arguments ub_bounded {K} M.
+
+Lemma bounded_ex_gt0 T (K : realFieldType) (V : metricNormedZmodType K)
+    (f : T -> V) (A : set T) :
+  [bounded f x | x in A] ->
+  exists2 M : K, M > 0 & forall x, A x -> `|f x| <= M.
+Proof. by rewrite /bounded_near; move/pinfty_ex_gt0. Qed.
+
+Lemma bounded_setU T (K : realFieldType) (V : metricNormedZmodType K)
+    (f : T -> V) (A B : set T) :
+  [bounded f x | x in A] -> [bounded f x | x in B] ->
+  [bounded f x | x in A `|` B].
+Proof.
+move=> /bounded_ex_gt0[MA MA_gt0 MA_ub] /bounded_ex_gt0[MB MB_gt0 MB_ub].
+apply/(ub_bounded (MA + MB)) => x [Ax|Bx].
+- by rewrite (le_trans (MA_ub _ Ax))// lerDl ltW.
+- by rewrite (le_trans (MB_ub _ Bx))// lerDr ltW.
+Qed.
+
+Lemma bounded_set0 T (K : numFieldType) (V : metricNormedZmodType K)
+    (f : T -> V) :
+  [bounded f x | x in set0].
+Proof. by near=> M => /=. Unshelve. all: by end_near. Qed.
+
+Lemma bounded_set1 T (K : realFieldType) (V : metricNormedZmodType K)
+    (f : T -> V) (x0 : T) :
+  [bounded f x | x in [set x0]].
+Proof. by apply: ub_bounded => ? ->. Qed.
+
+Hint Resolve bounded_set0 bounded_set1 : core.
+
+Lemma boundedS T (B A : set T) (K : realFieldType)
+    (V : metricNormedZmodType K) (f : T -> V) : A `<=` B ->
+  [bounded f x | x in B] -> [bounded f x | x in A].
+Proof.
+by move=> AB /bounded_ex_gt0[M M0 Mub]; apply: ub_bounded => x /AB; exact: Mub.
+Qed.
+Arguments boundedS {T} B.
+
+Lemma boundedD T (K : realFieldType) (V : metricNormedZmodType K)
+    (f g : T -> V) (A : set T) :
+  [bounded f x | x in A] -> [bounded g x | x in A] ->
+  [bounded f x + g x | x in A].
+Proof.
+move=> /bounded_ex_gt0[Mf Mf_gt0 Mf_ub] /bounded_ex_gt0[Mg Mg_gt0 Mg_ub].
+apply: ub_bounded => x Ax /=.
+by rewrite (le_trans (ler_normD _ _))//; apply: lerD; [exact:Mf_ub|exact:Mg_ub].
+Qed.
+
+Lemma bounded_itvbb d (T : orderType d) (K : realFieldType)
+    (V : metricNormedZmodType K) (f : T -> V) (a b : T) (b1 b2 b1' b2' : bool) :
+  [bounded f x | x in [set` Interval (BSide b1 a) (BSide b2 b)]] ->
+  [bounded f x | x in [set` Interval (BSide b1' a) (BSide b2' b)]].
+Proof.
+have [a_le_b bf|b_lt_a _] := leP a b; last first.
+  by rewrite set_itv_ge// -leNgt leBSide; exact: lteifS.
+apply: (boundedS `[a, b]); first by apply: subset_itv; rewrite bnd_simp.
+rewrite -(setUitv_set2 b1 b2)//.
+by apply/bounded_setU; last exact/bounded_setU.
+Qed.
+
+Lemma eq_bounded T (K : numFieldType) (V : metricNormedZmodType K)
+  (f g : T -> V) (A : set T) :
+  {in A, f =1 g} -> [bounded f x | x in A] = [bounded g x | x in A].
+Proof.
+move=> fg; apply: eq_near => M; apply/propeqP; apply: eq_forall => x.
+by apply: eq_forall => Ax /=; rewrite fg ?inE.
+Qed.
+
+Lemma continuous_compact_bounded (T : topologicalType) (K : realFieldType)
+  (V : metricNormedZmodType K) (A : set T) (f : T -> V) :
+  compact A -> {within A, continuous f} -> [bounded f x | x in A].
+Proof.
+by move=> cA cf; exact/bounded_image/compact_bounded/continuous_compact.
+Qed.
+
+Lemma bounded_comp T U (K : realFieldType) (V : metricNormedZmodType K)
+    (f : T -> U) (g : U -> V) (E : set T) (F : set U) :
+  f @` E `<=` F ->
+  [bounded g y | y in F] -> [bounded g (f x) | x in E].
+Proof.
+move=> rng_sub /bounded_ex_gt0[Mg Mg_gt0 Mg_ub].
+by apply/ub_bounded => x Ex; exact/(Mg_ub (f x))/rng_sub.
+Qed.
+
+Lemma bounded_center (T : numDomainType) (K : realFieldType)
+    (V : metricNormedZmodType K) (f : T -> V) (x y a : T) (b1 b2 : bool) :
+  [bounded f z | z in [set` Interval (BSide b1 (x - a)) (BSide b2 (y - a))]] ->
+  [bounded f ((*z - a*) center a z) | z in [set` Interval (BSide b1 x) (BSide b2 y)]].
+Proof.
+apply: bounded_comp => ? [/= z + <-] /= => /[!in_itv].
+by case: b1 b2 => [|] [|] /=; rewrite ?ltrD2r ?lerD2r.
+Qed.
+
 Section cvg_bounded.
 Context {R : numFieldType} {V : PseudoMetricNormedZmodule.type R}.
 

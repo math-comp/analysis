@@ -1916,6 +1916,37 @@ Lemma bounded_locally (T : topologicalType)
   [bounded f x | x in A] -> [locally [bounded f x | x in A]].
 Proof. by move=> /sub_boundedr AB x Ax; apply: AB; apply: within_nbhsW. Qed.
 
+Section bounded_mul.
+Context {T : Type} {R : realFieldType}.
+Implicit Types (f g : T -> R) (A : set T).
+
+Lemma boundedM f g A : [bounded f x | x in A] -> [bounded g x | x in A] ->
+  [bounded f x * g x | x in A].
+Proof.
+move=> /bounded_ex_gt0[Mf Mf_gt0 Mf_ub] /bounded_ex_gt0[Mg Mg_gt0 Mg_ub].
+by apply: (ub_bounded (Mf * Mg)) => t At; rewrite normrM ler_pM// ?Mf_ub ?Mg_ub.
+Qed.
+
+Lemma boundedMl f A (c : R) : [bounded f x | x in A] ->
+  [bounded c * f x | x in A].
+Proof. by move=> bf; apply: boundedM => //; exact: bounded_cst. Qed.
+
+Lemma boundedMr f A (c : R) : [bounded f x | x in A] ->
+  [bounded f x * c | x in A].
+Proof. by move=> bf; apply: boundedM => //; exact: bounded_cst. Qed.
+
+Lemma bounded_max f g A : [bounded f x | x in A] -> [bounded g x | x in A] ->
+  [bounded Num.max (f x) (g x) | x in A].
+Proof.
+move=> /bounded_ex_gt0[Mf Mf_gt0 Mf_ub] /bounded_ex_gt0[Mg Mg_gt0 Mg_ub].
+apply: (ub_bounded (Num.max Mf Mg)) => x Ax /=.
+case: (leP (f x) (g x)) => _.
+- by rewrite (le_trans (Mg_ub _ _))// le_max lexx orbT.
+- by rewrite (le_trans (Mf_ub _ _))// le_max lexx.
+Qed.
+
+End bounded_mul.
+
 Notation "k .-lipschitz_on f" :=
   (dominated_by (self_sub id) k (self_sub f)) : type_scope.
 
@@ -2068,25 +2099,6 @@ by near: M; apply: filter_forall => i; apply: nbhs_pinfty_ge.
 Unshelve. all: by end_near. Qed.
 
 End cvg_seq_bounded.
-
-Lemma compact_bounded (K : realType) (V : normedModType K) (A : set V) :
-  compact A -> bounded_set A.
-Proof.
-rewrite compact_cover => Aco.
-have covA : A `<=` \bigcup_(n : int) [set p | `|p| < n%:~R].
-  by move=> p _; exists (truncn `|p|).+1; rewrite //= truncnS_gt.
-have /Aco [] := covA.
-  move=> n _; rewrite openE => p; rewrite /= -subr_gt0 => ltpn.
-  apply/nbhs_ballP; exists (n%:~R - `|p|) => // q.
-  rewrite -ball_normE /= ltrBrDr distrC; apply: le_lt_trans.
-  by rewrite -{1}(subrK p q) ler_normD.
-move=> D _ DcovA.
-exists (\big[maxr/0]_(i : D) (fsval i)%:~R).
-rewrite bigmax_real//; split=> // x ltmaxx p /DcovA [n Dn /lt_trans /(_ _)/ltW].
-apply; apply: le_lt_trans ltmaxx.
-have : n \in enum_fset D by [].
-by rewrite enum_fsetE => /mapP[/= i iD ->]; exact/le_bigmax.
-Qed.
 
 Lemma compact_has_sup (R : realType) (A : set R) :
   A !=set0 -> compact A -> has_sup A.

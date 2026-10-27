@@ -225,6 +225,14 @@
   + definition `with_basis`
 - new directory and file `real_measure/real_measure.v`
 
+- in `pseudometric_normed_Zmodule.v`:
+  + lemmas `bounded_image`, `ub_bounded`, `bounded_ex_gt0`
+    `bounded_setU`, `bounded_set0`, `bounded_set1`,
+    `boundedS`, `boundedD`, `bounded_comp`,
+    `bounded_center`, `bounded_itvbb`, `eq_bounded`, `continuous_compact_bounded`
+- in `normed_module.v`,
+  + lemmas `boundedM`, `boundedMl`, `boundedMr`, `bounded_max`
+
 ### Changed
 
 - in `esum.v`:
@@ -302,6 +310,9 @@
 
 - moved to `real_measure`:
   + files `lebesgue_stieltjes_measure.v`, `lebesgue_measure.v`, `measurable_realfun.v`
+
+- moved from `normed_module.v` to `pseudometric_normed_Zmodule.v` and generalized:
+  + lemma `compact_bounded` (from `normedModType` over `realType` to `metricNormedZmodType` over `realFieldType`)
 
 ### Renamed
 
