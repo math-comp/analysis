@@ -1,42 +1,46 @@
 my %clusters = ( #         directory => [ Cluster Name, Color, URL ]
-    classical                        => [ "Classical", 1, "" ],
-    'experimental_reals'             => [ "ExperimentalReals", 1, "" ],
-    reals                            => [ "Reals", 2,  "" ],
-    reals_stdlib                     => [ "Reals", 2,  "" ],
-    analysis_stdlib                  => [ "AnalysisStdlib", 5, "" ],
-    'analysis_stdlib/showcase'       => [ "AnalysisStdlib", 5, "" ],
-    theories                         => [ "Analysis", 5, "analysis.%s" ],
-    'theories/showcase'              => [ "Analysis", 5, "analysis.showcase.%s" ],
+    classical                        => [ "Classical", "lightgrey", "" ],
+    reals                            => [ "Reals", "lightskyblue",  "" ],
+    'experimental_reals'             => [ "ExperimentalReals", "cyan", "" ],
 
-    'theories/topology_theory'       => [ "Topology", 4,
+    theories                         => [ "Analysis", "aquamarine", "analysis.%s" ],
+    'theories/showcase'              => [ "Analysis", "aquamarine", "analysis.showcase.%s" ],
+
+    'theories/topology_theory'       => [ "Topology", "lightpink",
                                           "analysis.topology_theory.%s" ],
-    'theories/homotopy_theory'       => [ "Topology", 7,
+
+    'theories/homotopy_theory'       => [ "Topology", "lightcoral",
                                           "analysis.homotopy_theory.%s" ],
 
-    'theories/normedtype_theory'     => [ "Normedtype", 9,
+    'theories/normedtype_theory'     => [ "Normedtype", "lightgreen",
                                           "analysis.normedtype_theory.%s" ],
 
-    'theories/lebesgue_integral_theory'
-                                     => [ "LebesgueIntegral", 10,
-                                          "analysis.lebesgue_integral_theory.%s" ],
+    'theories/functional_analysis'   => [ "FunctionalAnalysis", "chartreuse",
+                                          "analysis.functional_analysis.%s"],
 
-    'theories/measure_theory'        => [ "Measure", 11,
+    'theories/measure_theory'        => [ "Measure", "orange",
                                           "analysis.measure_theory.%s" ],
 
-    'theories/real_measure'          => [ "RealMeasure", 11,
+    'theories/real_measure'          => [ "RealMeasure", "coral",
                                           "analysis.real_measure.%s" ],
 
-    'theories/probability_theory'    => [ "Probability", 12,
+    'theories/lebesgue_integral_theory'
+                                     => [ "LebesgueIntegral", "lightyellow",
+                                          "analysis.lebesgue_integral_theory.%s" ],
+
+    'theories/elementary_functions'   => [ "ElementaryFunctions", "plum",
+                                          "analysis.elementary_functions.%s"],
+
+    'theories/probability_theory'    => [ "Probability", "gold",
                                           "analysis.probability_theory.%s" ],
 
-    'theories/functional_analysis'   => [ "FunctionalAnalysis", 3,
-                                          "analysis.functional_analysis.%s"],
-    'theories/elementary_functions'   => [ "ElementaryFunctions", 6,
-                                          "analysis.elementary_functions.%s"],
+    reals_stdlib                     => [ "Reals", "lightskyblue",  "" ],
+    analysis_stdlib                  => [ "AnalysisStdlib", "lightpink", "" ],
+    'analysis_stdlib/showcase'       => [ "AnalysisStdlib", "lightpink", "" ],
 );
 
 print "digraph dependencies {\n";
-print "  node [shape = ellipse,style=filled,colorscheme = paired12];\n";
+print "  node [shape = box,style = \"filled,rounded\",colorscheme = paired12];\n";
 
 my %seen;
 for my $k (sort keys %clusters) {
