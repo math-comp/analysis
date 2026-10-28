@@ -102,7 +102,7 @@ $(DOCDIR)/dependency_graph.dot: $(DOCDIR)/dependency_graph.pre
 
 html: build $(DOCDIR)/dependency_graph.dot
 	etc/rocqnavi_generate-hierarchy-graph.sh $(DOCDIR)/hierarchy_graph.dot
-	find . -name "*.v" -or -name "*.glob" | grep -v "/\." | grep -v "_opam/" | xargs ~/git/rocqnavi/_build/install/default/bin/rocqnavi \
+	find . -name "*.v" -or -name "*.glob" | grep -v "/\." | grep -v "_opam/" | xargs rocqnavi \
 	-title "Mathcomp Analysis $(GIT_HASH) $(TIMESTAMP)" \
 	-d $(DOCDIR) -Q theories mathcomp.analysis \
 	-Q classical mathcomp.classical \
