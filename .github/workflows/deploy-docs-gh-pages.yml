@@ -17,7 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Graphviz
-        uses: ts-graphviz/setup-graphviz@v2
+        run: sudo apt-get update && sudo apt-get install -y graphviz graphviz-tools
 
       - name: Set-up OCaml
         uses: ocaml/setup-ocaml@v3
