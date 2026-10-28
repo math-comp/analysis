@@ -12,6 +12,7 @@ digraph dependencies {
   subgraph cluster_Measure { label="Measure" }
   subgraph cluster_Normedtype { label="Normedtype" }
   subgraph cluster_Probability { label="Probability" }
+  subgraph cluster_RealMeasure { label="RealMeasure" }
 
 subgraph cluster_Classical {
     "classical/all_classical"[
@@ -505,6 +506,7 @@ subgraph cluster_Topology {
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/subspace_topology";
+  "classical/unstable" -> "theories/topology_theory/subspace_topology";
   "theories/topology_theory/compact" -> "theories/topology_theory/subspace_topology";
   "theories/topology_theory/connected" -> "theories/topology_theory/subspace_topology";
   "theories/topology_theory/initial_topology" -> "theories/topology_theory/subspace_topology";
@@ -760,7 +762,7 @@ subgraph cluster_Topology {
     "theories/homotopy_theory/homotopy"[
         label="homotopy",
         URL="mathcomp.analysis.homotopy_theory.homotopy.html",
-        fillcolor=4
+        fillcolor=7
     ]
 }
   "theories/homotopy_theory/continuous_path" -> "theories/homotopy_theory/homotopy";
@@ -770,7 +772,7 @@ subgraph cluster_Topology {
     "theories/homotopy_theory/wedge_sigT"[
         label="wedge_sigT",
         URL="mathcomp.analysis.homotopy_theory.wedge_sigT.html",
-        fillcolor=4
+        fillcolor=7
     ]
 }
   "classical/boolp" -> "theories/homotopy_theory/wedge_sigT";
@@ -786,7 +788,7 @@ subgraph cluster_Topology {
     "theories/homotopy_theory/continuous_path"[
         label="continuous_path",
         URL="mathcomp.analysis.homotopy_theory.continuous_path.html",
-        fillcolor=4
+        fillcolor=7
     ]
 }
   "classical/boolp" -> "theories/homotopy_theory/continuous_path";
@@ -806,15 +808,13 @@ subgraph cluster_Analysis {
     ]
 }
   "classical/boolp" -> "theories/ess_sup_inf";
-  "classical/cardinality" -> "theories/ess_sup_inf";
   "classical/classical_sets" -> "theories/ess_sup_inf";
   "classical/functions" -> "theories/ess_sup_inf";
   "reals/reals" -> "theories/ess_sup_inf";
   "theories/ereal" -> "theories/ess_sup_inf";
-  "theories/lebesgue_measure" -> "theories/ess_sup_inf";
-  "theories/measurable_realfun" -> "theories/ess_sup_inf";
   "theories/measure_theory/measure" -> "theories/ess_sup_inf";
   "theories/normedtype_theory/normedtype" -> "theories/ess_sup_inf";
+  "theories/real_measure/real_measure" -> "theories/ess_sup_inf";
   "theories/sequences" -> "theories/ess_sup_inf";
   "theories/topology_theory/topology" -> "theories/ess_sup_inf";
 
@@ -1141,9 +1141,9 @@ subgraph cluster_ElementaryFunctions {
   "theories/ftc" -> "theories/elementary_functions/trigonometry_integral";
   "theories/landau" -> "theories/elementary_functions/trigonometry_integral";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/elementary_functions/trigonometry_integral";
-  "theories/lebesgue_measure" -> "theories/elementary_functions/trigonometry_integral";
   "theories/measure_theory/measure" -> "theories/elementary_functions/trigonometry_integral";
   "theories/normedtype_theory/normedtype" -> "theories/elementary_functions/trigonometry_integral";
+  "theories/real_measure/lebesgue_measure" -> "theories/elementary_functions/trigonometry_integral";
   "theories/realfun" -> "theories/elementary_functions/trigonometry_integral";
   "theories/sequences" -> "theories/elementary_functions/trigonometry_integral";
   "theories/topology_theory/topology" -> "theories/elementary_functions/trigonometry_integral";
@@ -1412,84 +1412,83 @@ subgraph cluster_Measure {
   "theories/measure_theory/probability_measure" -> "theories/measure_theory/measure";
   "theories/measure_theory/signed_measure" -> "theories/measure_theory/measure";
 
-subgraph cluster_Analysis {
-    "theories/measurable_realfun"[
-        label="measurable_realfun",
-        URL="mathcomp.analysis.measurable_realfun.html",
-        fillcolor=5
-    ]
-}
-  "classical/boolp" -> "theories/measurable_realfun";
-  "classical/cardinality" -> "theories/measurable_realfun";
-  "classical/classical_sets" -> "theories/measurable_realfun";
-  "classical/fsbigop" -> "theories/measurable_realfun";
-  "classical/functions" -> "theories/measurable_realfun";
-  "classical/unstable" -> "theories/measurable_realfun";
-  "reals/real_interval" -> "theories/measurable_realfun";
-  "reals/reals" -> "theories/measurable_realfun";
-  "theories/ereal" -> "theories/measurable_realfun";
-  "theories/esum" -> "theories/measurable_realfun";
-  "theories/exp" -> "theories/measurable_realfun";
-  "theories/lebesgue_stieltjes_measure" -> "theories/measurable_realfun";
-  "theories/measure_theory/measure" -> "theories/measurable_realfun";
-  "theories/normedtype_theory/normedtype" -> "theories/measurable_realfun";
-  "theories/normedtype_theory/tvs" -> "theories/measurable_realfun";
-  "theories/numfun" -> "theories/measurable_realfun";
-  "theories/realfun" -> "theories/measurable_realfun";
-  "theories/sequences" -> "theories/measurable_realfun";
-  "theories/topology_theory/topology" -> "theories/measurable_realfun";
-
-subgraph cluster_Analysis {
-    "theories/lebesgue_stieltjes_measure"[
+subgraph cluster_RealMeasure {
+    "theories/real_measure/lebesgue_stieltjes_measure"[
         label="lebesgue_stieltjes_measure",
-        URL="mathcomp.analysis.lebesgue_stieltjes_measure.html",
-        fillcolor=5
+        URL="mathcomp.analysis.real_measure.lebesgue_stieltjes_measure.html",
+        fillcolor=11
     ]
 }
-  "classical/boolp" -> "theories/lebesgue_stieltjes_measure";
-  "classical/cardinality" -> "theories/lebesgue_stieltjes_measure";
-  "classical/classical_sets" -> "theories/lebesgue_stieltjes_measure";
-  "classical/fsbigop" -> "theories/lebesgue_stieltjes_measure";
-  "classical/functions" -> "theories/lebesgue_stieltjes_measure";
-  "classical/unstable" -> "theories/lebesgue_stieltjes_measure";
-  "reals/real_interval" -> "theories/lebesgue_stieltjes_measure";
-  "reals/reals" -> "theories/lebesgue_stieltjes_measure";
-  "theories/ereal" -> "theories/lebesgue_stieltjes_measure";
-  "theories/esum" -> "theories/lebesgue_stieltjes_measure";
-  "theories/measure_theory/measure" -> "theories/lebesgue_stieltjes_measure";
-  "theories/normedtype_theory/normedtype" -> "theories/lebesgue_stieltjes_measure";
-  "theories/numfun" -> "theories/lebesgue_stieltjes_measure";
-  "theories/realfun" -> "theories/lebesgue_stieltjes_measure";
-  "theories/sequences" -> "theories/lebesgue_stieltjes_measure";
-  "theories/topology_theory/topology" -> "theories/lebesgue_stieltjes_measure";
+  "classical/boolp" -> "theories/real_measure/lebesgue_stieltjes_measure";
+  "classical/cardinality" -> "theories/real_measure/lebesgue_stieltjes_measure";
+  "classical/classical_sets" -> "theories/real_measure/lebesgue_stieltjes_measure";
+  "classical/fsbigop" -> "theories/real_measure/lebesgue_stieltjes_measure";
+  "classical/unstable" -> "theories/real_measure/lebesgue_stieltjes_measure";
+  "reals/reals" -> "theories/real_measure/lebesgue_stieltjes_measure";
+  "theories/ereal" -> "theories/real_measure/lebesgue_stieltjes_measure";
+  "theories/esum" -> "theories/real_measure/lebesgue_stieltjes_measure";
+  "theories/measure_theory/measure" -> "theories/real_measure/lebesgue_stieltjes_measure";
+  "theories/normedtype_theory/normedtype" -> "theories/real_measure/lebesgue_stieltjes_measure";
+  "theories/realfun" -> "theories/real_measure/lebesgue_stieltjes_measure";
+  "theories/sequences" -> "theories/real_measure/lebesgue_stieltjes_measure";
+  "theories/topology_theory/topology" -> "theories/real_measure/lebesgue_stieltjes_measure";
 
-subgraph cluster_Analysis {
-    "theories/lebesgue_measure"[
+subgraph cluster_RealMeasure {
+    "theories/real_measure/lebesgue_measure"[
         label="lebesgue_measure",
-        URL="mathcomp.analysis.lebesgue_measure.html",
-        fillcolor=5
+        URL="mathcomp.analysis.real_measure.lebesgue_measure.html",
+        fillcolor=11
     ]
 }
-  "classical/boolp" -> "theories/lebesgue_measure";
-  "classical/cardinality" -> "theories/lebesgue_measure";
-  "classical/classical_sets" -> "theories/lebesgue_measure";
-  "classical/fsbigop" -> "theories/lebesgue_measure";
-  "classical/functions" -> "theories/lebesgue_measure";
-  "classical/unstable" -> "theories/lebesgue_measure";
-  "reals/real_interval" -> "theories/lebesgue_measure";
-  "reals/reals" -> "theories/lebesgue_measure";
-  "theories/ereal" -> "theories/lebesgue_measure";
-  "theories/esum" -> "theories/lebesgue_measure";
-  "theories/exp" -> "theories/lebesgue_measure";
-  "theories/lebesgue_stieltjes_measure" -> "theories/lebesgue_measure";
-  "theories/measurable_realfun" -> "theories/lebesgue_measure";
-  "theories/measure_theory/measure" -> "theories/lebesgue_measure";
-  "theories/normedtype_theory/normedtype" -> "theories/lebesgue_measure";
-  "theories/normedtype_theory/tvs" -> "theories/lebesgue_measure";
-  "theories/numfun" -> "theories/lebesgue_measure";
-  "theories/realfun" -> "theories/lebesgue_measure";
-  "theories/sequences" -> "theories/lebesgue_measure";
-  "theories/topology_theory/topology" -> "theories/lebesgue_measure";
+  "classical/boolp" -> "theories/real_measure/lebesgue_measure";
+  "classical/cardinality" -> "theories/real_measure/lebesgue_measure";
+  "classical/classical_sets" -> "theories/real_measure/lebesgue_measure";
+  "classical/fsbigop" -> "theories/real_measure/lebesgue_measure";
+  "classical/functions" -> "theories/real_measure/lebesgue_measure";
+  "classical/unstable" -> "theories/real_measure/lebesgue_measure";
+  "reals/reals" -> "theories/real_measure/lebesgue_measure";
+  "theories/ereal" -> "theories/real_measure/lebesgue_measure";
+  "theories/esum" -> "theories/real_measure/lebesgue_measure";
+  "theories/measure_theory/measure" -> "theories/real_measure/lebesgue_measure";
+  "theories/normedtype_theory/normedtype" -> "theories/real_measure/lebesgue_measure";
+  "theories/numfun" -> "theories/real_measure/lebesgue_measure";
+  "theories/real_measure/lebesgue_stieltjes_measure" -> "theories/real_measure/lebesgue_measure";
+  "theories/real_measure/measurable_realfun" -> "theories/real_measure/lebesgue_measure";
+  "theories/sequences" -> "theories/real_measure/lebesgue_measure";
+  "theories/topology_theory/topology" -> "theories/real_measure/lebesgue_measure";
+
+subgraph cluster_RealMeasure {
+    "theories/real_measure/measurable_realfun"[
+        label="measurable_realfun",
+        URL="mathcomp.analysis.real_measure.measurable_realfun.html",
+        fillcolor=11
+    ]
+}
+  "classical/boolp" -> "theories/real_measure/measurable_realfun";
+  "classical/classical_sets" -> "theories/real_measure/measurable_realfun";
+  "classical/functions" -> "theories/real_measure/measurable_realfun";
+  "classical/unstable" -> "theories/real_measure/measurable_realfun";
+  "reals/reals" -> "theories/real_measure/measurable_realfun";
+  "theories/ereal" -> "theories/real_measure/measurable_realfun";
+  "theories/exp" -> "theories/real_measure/measurable_realfun";
+  "theories/measure_theory/measure" -> "theories/real_measure/measurable_realfun";
+  "theories/normedtype_theory/normedtype" -> "theories/real_measure/measurable_realfun";
+  "theories/numfun" -> "theories/real_measure/measurable_realfun";
+  "theories/real_measure/lebesgue_stieltjes_measure" -> "theories/real_measure/measurable_realfun";
+  "theories/realfun" -> "theories/real_measure/measurable_realfun";
+  "theories/sequences" -> "theories/real_measure/measurable_realfun";
+  "theories/topology_theory/topology" -> "theories/real_measure/measurable_realfun";
+
+subgraph cluster_RealMeasure {
+    "theories/real_measure/real_measure"[
+        label="real_measure",
+        URL="mathcomp.analysis.real_measure.real_measure.html",
+        fillcolor=11
+    ]
+}
+  "theories/real_measure/lebesgue_measure" -> "theories/real_measure/real_measure";
+  "theories/real_measure/lebesgue_stieltjes_measure" -> "theories/real_measure/real_measure";
+  "theories/real_measure/measurable_realfun" -> "theories/real_measure/real_measure";
 
 subgraph cluster_Analysis {
     "theories/borel_hierarchy"[
@@ -1503,10 +1502,9 @@ subgraph cluster_Analysis {
   "classical/classical_sets" -> "theories/borel_hierarchy";
   "classical/functions" -> "theories/borel_hierarchy";
   "reals/reals" -> "theories/borel_hierarchy";
-  "theories/lebesgue_measure" -> "theories/borel_hierarchy";
-  "theories/measurable_realfun" -> "theories/borel_hierarchy";
   "theories/measure_theory/measure" -> "theories/borel_hierarchy";
   "theories/normedtype_theory/normedtype" -> "theories/borel_hierarchy";
+  "theories/real_measure/real_measure" -> "theories/borel_hierarchy";
   "theories/sequences" -> "theories/borel_hierarchy";
   "theories/topology_theory/topology" -> "theories/borel_hierarchy";
 
@@ -1526,12 +1524,10 @@ subgraph cluster_LebesgueIntegral {
   "reals/reals" -> "theories/lebesgue_integral_theory/simple_functions";
   "theories/ereal" -> "theories/lebesgue_integral_theory/simple_functions";
   "theories/esum" -> "theories/lebesgue_integral_theory/simple_functions";
-  "theories/lebesgue_measure" -> "theories/lebesgue_integral_theory/simple_functions";
-  "theories/measurable_realfun" -> "theories/lebesgue_integral_theory/simple_functions";
   "theories/measure_theory/measure" -> "theories/lebesgue_integral_theory/simple_functions";
   "theories/normedtype_theory/normedtype" -> "theories/lebesgue_integral_theory/simple_functions";
-  "theories/normedtype_theory/tvs" -> "theories/lebesgue_integral_theory/simple_functions";
   "theories/numfun" -> "theories/lebesgue_integral_theory/simple_functions";
+  "theories/real_measure/real_measure" -> "theories/lebesgue_integral_theory/simple_functions";
   "theories/realfun" -> "theories/lebesgue_integral_theory/simple_functions";
   "theories/sequences" -> "theories/lebesgue_integral_theory/simple_functions";
   "theories/topology_theory/topology" -> "theories/lebesgue_integral_theory/simple_functions";
@@ -1553,12 +1549,10 @@ subgraph cluster_LebesgueIntegral {
   "theories/ereal" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
   "theories/esum" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
   "theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
-  "theories/lebesgue_measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
-  "theories/measurable_realfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
   "theories/measure_theory/measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
   "theories/normedtype_theory/normedtype" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
-  "theories/normedtype_theory/tvs" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
   "theories/numfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
+  "theories/real_measure/real_measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
   "theories/realfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
   "theories/sequences" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
   "theories/topology_theory/topology" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
@@ -1582,12 +1576,10 @@ subgraph cluster_LebesgueIntegral {
   "theories/esum" -> "theories/lebesgue_integral_theory/measurable_fun_approximation";
   "theories/exp" -> "theories/lebesgue_integral_theory/measurable_fun_approximation";
   "theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/measurable_fun_approximation";
-  "theories/lebesgue_measure" -> "theories/lebesgue_integral_theory/measurable_fun_approximation";
-  "theories/measurable_realfun" -> "theories/lebesgue_integral_theory/measurable_fun_approximation";
   "theories/measure_theory/measure" -> "theories/lebesgue_integral_theory/measurable_fun_approximation";
   "theories/normedtype_theory/normedtype" -> "theories/lebesgue_integral_theory/measurable_fun_approximation";
-  "theories/normedtype_theory/tvs" -> "theories/lebesgue_integral_theory/measurable_fun_approximation";
   "theories/numfun" -> "theories/lebesgue_integral_theory/measurable_fun_approximation";
+  "theories/real_measure/real_measure" -> "theories/lebesgue_integral_theory/measurable_fun_approximation";
   "theories/realfun" -> "theories/lebesgue_integral_theory/measurable_fun_approximation";
   "theories/sequences" -> "theories/lebesgue_integral_theory/measurable_fun_approximation";
   "theories/topology_theory/topology" -> "theories/lebesgue_integral_theory/measurable_fun_approximation";
@@ -1612,12 +1604,10 @@ subgraph cluster_LebesgueIntegral {
   "theories/lebesgue_integral_theory/lebesgue_integral_definition" -> "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence";
   "theories/lebesgue_integral_theory/measurable_fun_approximation" -> "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence";
   "theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence";
-  "theories/lebesgue_measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence";
-  "theories/measurable_realfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence";
   "theories/measure_theory/measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence";
   "theories/normedtype_theory/normedtype" -> "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence";
-  "theories/normedtype_theory/tvs" -> "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence";
   "theories/numfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence";
+  "theories/real_measure/real_measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence";
   "theories/realfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence";
   "theories/sequences" -> "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence";
   "theories/topology_theory/topology" -> "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence";
@@ -1643,12 +1633,10 @@ subgraph cluster_LebesgueIntegral {
   "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence" -> "theories/lebesgue_integral_theory/lebesgue_integral_nonneg";
   "theories/lebesgue_integral_theory/measurable_fun_approximation" -> "theories/lebesgue_integral_theory/lebesgue_integral_nonneg";
   "theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/lebesgue_integral_nonneg";
-  "theories/lebesgue_measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_nonneg";
-  "theories/measurable_realfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_nonneg";
   "theories/measure_theory/measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_nonneg";
   "theories/normedtype_theory/normedtype" -> "theories/lebesgue_integral_theory/lebesgue_integral_nonneg";
-  "theories/normedtype_theory/tvs" -> "theories/lebesgue_integral_theory/lebesgue_integral_nonneg";
   "theories/numfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_nonneg";
+  "theories/real_measure/real_measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_nonneg";
   "theories/realfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_nonneg";
   "theories/sequences" -> "theories/lebesgue_integral_theory/lebesgue_integral_nonneg";
   "theories/topology_theory/topology" -> "theories/lebesgue_integral_theory/lebesgue_integral_nonneg";
@@ -1675,12 +1663,10 @@ subgraph cluster_LebesgueIntegral {
   "theories/lebesgue_integral_theory/lebesgue_integral_nonneg" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
   "theories/lebesgue_integral_theory/measurable_fun_approximation" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
   "theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
-  "theories/lebesgue_measure" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
-  "theories/measurable_realfun" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
   "theories/measure_theory/measure" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
   "theories/normedtype_theory/normedtype" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
-  "theories/normedtype_theory/tvs" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
   "theories/numfun" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
+  "theories/real_measure/real_measure" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
   "theories/realfun" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
   "theories/sequences" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
   "theories/topology_theory/topology" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
@@ -1707,12 +1693,10 @@ subgraph cluster_LebesgueIntegral {
   "theories/lebesgue_integral_theory/lebesgue_integral_nonneg" -> "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence";
   "theories/lebesgue_integral_theory/measurable_fun_approximation" -> "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence";
   "theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence";
-  "theories/lebesgue_measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence";
-  "theories/measurable_realfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence";
   "theories/measure_theory/measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence";
   "theories/normedtype_theory/normedtype" -> "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence";
-  "theories/normedtype_theory/tvs" -> "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence";
   "theories/numfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence";
+  "theories/real_measure/real_measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence";
   "theories/realfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence";
   "theories/sequences" -> "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence";
   "theories/topology_theory/topology" -> "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence";
@@ -1740,12 +1724,12 @@ subgraph cluster_LebesgueIntegral {
   "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence" -> "theories/lebesgue_integral_theory/lebesgue_integral_under";
   "theories/lebesgue_integral_theory/lebesgue_integral_nonneg" -> "theories/lebesgue_integral_theory/lebesgue_integral_under";
   "theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/lebesgue_integral_under";
-  "theories/lebesgue_measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_under";
-  "theories/measurable_realfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_under";
   "theories/measure_theory/measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_under";
   "theories/normedtype_theory/normedtype" -> "theories/lebesgue_integral_theory/lebesgue_integral_under";
   "theories/normedtype_theory/tvs" -> "theories/lebesgue_integral_theory/lebesgue_integral_under";
   "theories/numfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_under";
+  "theories/real_measure/lebesgue_measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_under";
+  "theories/real_measure/measurable_realfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_under";
   "theories/realfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_under";
   "theories/sequences" -> "theories/lebesgue_integral_theory/lebesgue_integral_under";
   "theories/topology_theory/topology" -> "theories/lebesgue_integral_theory/lebesgue_integral_under";
@@ -1773,12 +1757,10 @@ subgraph cluster_LebesgueIntegral {
   "theories/lebesgue_integral_theory/lebesgue_integral_nonneg" -> "theories/lebesgue_integral_theory/lebesgue_Rintegral";
   "theories/lebesgue_integral_theory/measurable_fun_approximation" -> "theories/lebesgue_integral_theory/lebesgue_Rintegral";
   "theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/lebesgue_Rintegral";
-  "theories/lebesgue_measure" -> "theories/lebesgue_integral_theory/lebesgue_Rintegral";
-  "theories/measurable_realfun" -> "theories/lebesgue_integral_theory/lebesgue_Rintegral";
   "theories/measure_theory/measure" -> "theories/lebesgue_integral_theory/lebesgue_Rintegral";
   "theories/normedtype_theory/normedtype" -> "theories/lebesgue_integral_theory/lebesgue_Rintegral";
-  "theories/normedtype_theory/tvs" -> "theories/lebesgue_integral_theory/lebesgue_Rintegral";
   "theories/numfun" -> "theories/lebesgue_integral_theory/lebesgue_Rintegral";
+  "theories/real_measure/real_measure" -> "theories/lebesgue_integral_theory/lebesgue_Rintegral";
   "theories/realfun" -> "theories/lebesgue_integral_theory/lebesgue_Rintegral";
   "theories/sequences" -> "theories/lebesgue_integral_theory/lebesgue_Rintegral";
   "theories/topology_theory/topology" -> "theories/lebesgue_integral_theory/lebesgue_Rintegral";
@@ -1805,12 +1787,10 @@ subgraph cluster_LebesgueIntegral {
   "theories/lebesgue_integral_theory/lebesgue_integral_nonneg" -> "theories/lebesgue_integral_theory/lebesgue_integral_fubini";
   "theories/lebesgue_integral_theory/measurable_fun_approximation" -> "theories/lebesgue_integral_theory/lebesgue_integral_fubini";
   "theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/lebesgue_integral_fubini";
-  "theories/lebesgue_measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_fubini";
-  "theories/measurable_realfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_fubini";
   "theories/measure_theory/measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_fubini";
   "theories/normedtype_theory/normedtype" -> "theories/lebesgue_integral_theory/lebesgue_integral_fubini";
-  "theories/normedtype_theory/tvs" -> "theories/lebesgue_integral_theory/lebesgue_integral_fubini";
   "theories/numfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_fubini";
+  "theories/real_measure/real_measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_fubini";
   "theories/realfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_fubini";
   "theories/sequences" -> "theories/lebesgue_integral_theory/lebesgue_integral_fubini";
   "theories/topology_theory/topology" -> "theories/lebesgue_integral_theory/lebesgue_integral_fubini";
@@ -1839,12 +1819,10 @@ subgraph cluster_LebesgueIntegral {
   "theories/lebesgue_integral_theory/lebesgue_integral_nonneg" -> "theories/lebesgue_integral_theory/lebesgue_integral_differentiation";
   "theories/lebesgue_integral_theory/measurable_fun_approximation" -> "theories/lebesgue_integral_theory/lebesgue_integral_differentiation";
   "theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/lebesgue_integral_differentiation";
-  "theories/lebesgue_measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_differentiation";
-  "theories/measurable_realfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_differentiation";
   "theories/measure_theory/measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_differentiation";
   "theories/normedtype_theory/normedtype" -> "theories/lebesgue_integral_theory/lebesgue_integral_differentiation";
-  "theories/normedtype_theory/tvs" -> "theories/lebesgue_integral_theory/lebesgue_integral_differentiation";
   "theories/numfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_differentiation";
+  "theories/real_measure/real_measure" -> "theories/lebesgue_integral_theory/lebesgue_integral_differentiation";
   "theories/realfun" -> "theories/lebesgue_integral_theory/lebesgue_integral_differentiation";
   "theories/sequences" -> "theories/lebesgue_integral_theory/lebesgue_integral_differentiation";
   "theories/topology_theory/topology" -> "theories/lebesgue_integral_theory/lebesgue_integral_differentiation";
@@ -1894,11 +1872,10 @@ subgraph cluster_LebesgueIntegral {
   "theories/lebesgue_integral_theory/lebesgue_integral_nonneg" -> "theories/lebesgue_integral_theory/radon_nikodym";
   "theories/lebesgue_integral_theory/measurable_fun_approximation" -> "theories/lebesgue_integral_theory/radon_nikodym";
   "theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/radon_nikodym";
-  "theories/lebesgue_measure" -> "theories/lebesgue_integral_theory/radon_nikodym";
-  "theories/measurable_realfun" -> "theories/lebesgue_integral_theory/radon_nikodym";
   "theories/measure_theory/measure" -> "theories/lebesgue_integral_theory/radon_nikodym";
   "theories/normedtype_theory/normedtype" -> "theories/lebesgue_integral_theory/radon_nikodym";
   "theories/numfun" -> "theories/lebesgue_integral_theory/radon_nikodym";
+  "theories/real_measure/real_measure" -> "theories/lebesgue_integral_theory/radon_nikodym";
   "theories/realfun" -> "theories/lebesgue_integral_theory/radon_nikodym";
   "theories/sequences" -> "theories/lebesgue_integral_theory/radon_nikodym";
   "theories/topology_theory/topology" -> "theories/lebesgue_integral_theory/radon_nikodym";
@@ -1923,10 +1900,10 @@ subgraph cluster_LebesgueIntegral {
   "theories/lebesgue_integral_theory/lebesgue_integral_nonneg" -> "theories/lebesgue_integral_theory/giry";
   "theories/lebesgue_integral_theory/measurable_fun_approximation" -> "theories/lebesgue_integral_theory/giry";
   "theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/giry";
-  "theories/lebesgue_measure" -> "theories/lebesgue_integral_theory/giry";
-  "theories/measurable_realfun" -> "theories/lebesgue_integral_theory/giry";
   "theories/measure_theory/measure" -> "theories/lebesgue_integral_theory/giry";
   "theories/numfun" -> "theories/lebesgue_integral_theory/giry";
+  "theories/real_measure/lebesgue_measure" -> "theories/lebesgue_integral_theory/giry";
+  "theories/real_measure/measurable_realfun" -> "theories/lebesgue_integral_theory/giry";
   "theories/sequences" -> "theories/lebesgue_integral_theory/giry";
   "theories/topology_theory/separation_axioms" -> "theories/lebesgue_integral_theory/giry";
   "theories/topology_theory/topology" -> "theories/lebesgue_integral_theory/giry";
@@ -1949,9 +1926,9 @@ subgraph cluster_LebesgueIntegral {
   "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence" -> "theories/lebesgue_integral_theory/counting_lebesgue";
   "theories/lebesgue_integral_theory/measurable_fun_approximation" -> "theories/lebesgue_integral_theory/counting_lebesgue";
   "theories/lebesgue_integral_theory/simple_functions" -> "theories/lebesgue_integral_theory/counting_lebesgue";
-  "theories/measurable_realfun" -> "theories/lebesgue_integral_theory/counting_lebesgue";
   "theories/measure_theory/measure" -> "theories/lebesgue_integral_theory/counting_lebesgue";
   "theories/numfun" -> "theories/lebesgue_integral_theory/counting_lebesgue";
+  "theories/real_measure/measurable_realfun" -> "theories/lebesgue_integral_theory/counting_lebesgue";
   "theories/sequences" -> "theories/lebesgue_integral_theory/counting_lebesgue";
   "theories/topology_theory/topology" -> "theories/lebesgue_integral_theory/counting_lebesgue";
 
@@ -1974,12 +1951,10 @@ subgraph cluster_Analysis {
   "theories/ereal" -> "theories/ftc";
   "theories/esum" -> "theories/ftc";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/ftc";
-  "theories/lebesgue_measure" -> "theories/ftc";
-  "theories/measurable_realfun" -> "theories/ftc";
   "theories/measure_theory/measure" -> "theories/ftc";
   "theories/normedtype_theory/normedtype" -> "theories/ftc";
-  "theories/normedtype_theory/tvs" -> "theories/ftc";
   "theories/numfun" -> "theories/ftc";
+  "theories/real_measure/real_measure" -> "theories/ftc";
   "theories/realfun" -> "theories/ftc";
   "theories/sequences" -> "theories/ftc";
   "theories/topology_theory/topology" -> "theories/ftc";
@@ -1992,9 +1967,7 @@ subgraph cluster_Analysis {
     ]
 }
   "classical/boolp" -> "theories/hoelder";
-  "classical/cardinality" -> "theories/hoelder";
   "classical/classical_sets" -> "theories/hoelder";
-  "classical/fsbigop" -> "theories/hoelder";
   "classical/functions" -> "theories/hoelder";
   "classical/unstable" -> "theories/hoelder";
   "reals/real_interval" -> "theories/hoelder";
@@ -2005,11 +1978,10 @@ subgraph cluster_Analysis {
   "theories/esum" -> "theories/hoelder";
   "theories/exp" -> "theories/hoelder";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/hoelder";
-  "theories/lebesgue_measure" -> "theories/hoelder";
-  "theories/measurable_realfun" -> "theories/hoelder";
   "theories/measure_theory/measure" -> "theories/hoelder";
   "theories/normedtype_theory/normedtype" -> "theories/hoelder";
   "theories/numfun" -> "theories/hoelder";
+  "theories/real_measure/real_measure" -> "theories/hoelder";
   "theories/sequences" -> "theories/hoelder";
   "theories/topology_theory/topology" -> "theories/hoelder";
 
@@ -2032,11 +2004,11 @@ subgraph cluster_Probability {
   "theories/exp" -> "theories/probability_theory/random_variable";
   "theories/hoelder" -> "theories/probability_theory/random_variable";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/random_variable";
-  "theories/lebesgue_measure" -> "theories/probability_theory/random_variable";
-  "theories/measurable_realfun" -> "theories/probability_theory/random_variable";
   "theories/measure_theory/measure" -> "theories/probability_theory/random_variable";
   "theories/normedtype_theory/normedtype" -> "theories/probability_theory/random_variable";
   "theories/numfun" -> "theories/probability_theory/random_variable";
+  "theories/real_measure/lebesgue_measure" -> "theories/probability_theory/random_variable";
+  "theories/real_measure/measurable_realfun" -> "theories/probability_theory/random_variable";
   "theories/realfun" -> "theories/probability_theory/random_variable";
   "theories/sequences" -> "theories/probability_theory/random_variable";
   "theories/topology_theory/topology" -> "theories/probability_theory/random_variable";
@@ -2059,11 +2031,10 @@ subgraph cluster_Probability {
   "theories/esum" -> "theories/probability_theory/bernoulli_distribution";
   "theories/kernel" -> "theories/probability_theory/bernoulli_distribution";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/bernoulli_distribution";
-  "theories/lebesgue_measure" -> "theories/probability_theory/bernoulli_distribution";
-  "theories/measurable_realfun" -> "theories/probability_theory/bernoulli_distribution";
   "theories/measure_theory/measure" -> "theories/probability_theory/bernoulli_distribution";
   "theories/normedtype_theory/normedtype" -> "theories/probability_theory/bernoulli_distribution";
   "theories/numfun" -> "theories/probability_theory/bernoulli_distribution";
+  "theories/real_measure/real_measure" -> "theories/probability_theory/bernoulli_distribution";
   "theories/sequences" -> "theories/probability_theory/bernoulli_distribution";
   "theories/topology_theory/topology" -> "theories/probability_theory/bernoulli_distribution";
 
@@ -2075,20 +2046,17 @@ subgraph cluster_Probability {
     ]
 }
   "classical/boolp" -> "theories/probability_theory/binomial_distribution";
-  "classical/cardinality" -> "theories/probability_theory/binomial_distribution";
   "classical/classical_sets" -> "theories/probability_theory/binomial_distribution";
   "classical/fsbigop" -> "theories/probability_theory/binomial_distribution";
-  "classical/functions" -> "theories/probability_theory/binomial_distribution";
   "classical/unstable" -> "theories/probability_theory/binomial_distribution";
   "reals/reals" -> "theories/probability_theory/binomial_distribution";
   "theories/ereal" -> "theories/probability_theory/binomial_distribution";
   "theories/esum" -> "theories/probability_theory/binomial_distribution";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/binomial_distribution";
-  "theories/lebesgue_measure" -> "theories/probability_theory/binomial_distribution";
-  "theories/measurable_realfun" -> "theories/probability_theory/binomial_distribution";
   "theories/measure_theory/measure" -> "theories/probability_theory/binomial_distribution";
   "theories/normedtype_theory/normedtype" -> "theories/probability_theory/binomial_distribution";
   "theories/probability_theory/bernoulli_distribution" -> "theories/probability_theory/binomial_distribution";
+  "theories/real_measure/real_measure" -> "theories/probability_theory/binomial_distribution";
   "theories/sequences" -> "theories/probability_theory/binomial_distribution";
   "theories/topology_theory/topology" -> "theories/probability_theory/binomial_distribution";
 
@@ -2100,18 +2068,16 @@ subgraph cluster_Probability {
     ]
 }
   "classical/boolp" -> "theories/probability_theory/uniform_distribution";
-  "classical/cardinality" -> "theories/probability_theory/uniform_distribution";
   "classical/classical_sets" -> "theories/probability_theory/uniform_distribution";
   "classical/fsbigop" -> "theories/probability_theory/uniform_distribution";
   "classical/functions" -> "theories/probability_theory/uniform_distribution";
   "reals/reals" -> "theories/probability_theory/uniform_distribution";
   "theories/ereal" -> "theories/probability_theory/uniform_distribution";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/uniform_distribution";
-  "theories/lebesgue_measure" -> "theories/probability_theory/uniform_distribution";
-  "theories/measurable_realfun" -> "theories/probability_theory/uniform_distribution";
   "theories/measure_theory/measure" -> "theories/probability_theory/uniform_distribution";
   "theories/normedtype_theory/normedtype" -> "theories/probability_theory/uniform_distribution";
   "theories/numfun" -> "theories/probability_theory/uniform_distribution";
+  "theories/real_measure/real_measure" -> "theories/probability_theory/uniform_distribution";
   "theories/sequences" -> "theories/probability_theory/uniform_distribution";
   "theories/topology_theory/topology" -> "theories/probability_theory/uniform_distribution";
 
@@ -2123,7 +2089,6 @@ subgraph cluster_Probability {
     ]
 }
   "classical/boolp" -> "theories/probability_theory/normal_distribution";
-  "classical/cardinality" -> "theories/probability_theory/normal_distribution";
   "classical/classical_sets" -> "theories/probability_theory/normal_distribution";
   "classical/fsbigop" -> "theories/probability_theory/normal_distribution";
   "classical/functions" -> "theories/probability_theory/normal_distribution";
@@ -2135,11 +2100,10 @@ subgraph cluster_Probability {
   "theories/ftc" -> "theories/probability_theory/normal_distribution";
   "theories/gauss_integral" -> "theories/probability_theory/normal_distribution";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/normal_distribution";
-  "theories/lebesgue_measure" -> "theories/probability_theory/normal_distribution";
-  "theories/measurable_realfun" -> "theories/probability_theory/normal_distribution";
   "theories/measure_theory/measure" -> "theories/probability_theory/normal_distribution";
   "theories/normedtype_theory/normedtype" -> "theories/probability_theory/normal_distribution";
   "theories/numfun" -> "theories/probability_theory/normal_distribution";
+  "theories/real_measure/real_measure" -> "theories/probability_theory/normal_distribution";
   "theories/realfun" -> "theories/probability_theory/normal_distribution";
   "theories/sequences" -> "theories/probability_theory/normal_distribution";
   "theories/topology_theory/topology" -> "theories/probability_theory/normal_distribution";
@@ -2152,9 +2116,7 @@ subgraph cluster_Probability {
     ]
 }
   "classical/boolp" -> "theories/probability_theory/exponential_distribution";
-  "classical/cardinality" -> "theories/probability_theory/exponential_distribution";
   "classical/classical_sets" -> "theories/probability_theory/exponential_distribution";
-  "classical/fsbigop" -> "theories/probability_theory/exponential_distribution";
   "classical/functions" -> "theories/probability_theory/exponential_distribution";
   "reals/reals" -> "theories/probability_theory/exponential_distribution";
   "theories/derive" -> "theories/probability_theory/exponential_distribution";
@@ -2162,12 +2124,10 @@ subgraph cluster_Probability {
   "theories/exp" -> "theories/probability_theory/exponential_distribution";
   "theories/ftc" -> "theories/probability_theory/exponential_distribution";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/exponential_distribution";
-  "theories/lebesgue_measure" -> "theories/probability_theory/exponential_distribution";
-  "theories/measurable_realfun" -> "theories/probability_theory/exponential_distribution";
   "theories/measure_theory/measure" -> "theories/probability_theory/exponential_distribution";
   "theories/normedtype_theory/normedtype" -> "theories/probability_theory/exponential_distribution";
   "theories/numfun" -> "theories/probability_theory/exponential_distribution";
-  "theories/realfun" -> "theories/probability_theory/exponential_distribution";
+  "theories/real_measure/real_measure" -> "theories/probability_theory/exponential_distribution";
   "theories/sequences" -> "theories/probability_theory/exponential_distribution";
   "theories/topology_theory/topology" -> "theories/probability_theory/exponential_distribution";
 
@@ -2185,10 +2145,9 @@ subgraph cluster_Probability {
   "theories/esum" -> "theories/probability_theory/poisson_distribution";
   "theories/exp" -> "theories/probability_theory/poisson_distribution";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/poisson_distribution";
-  "theories/lebesgue_measure" -> "theories/probability_theory/poisson_distribution";
-  "theories/measurable_realfun" -> "theories/probability_theory/poisson_distribution";
   "theories/measure_theory/measure" -> "theories/probability_theory/poisson_distribution";
   "theories/normedtype_theory/normedtype" -> "theories/probability_theory/poisson_distribution";
+  "theories/real_measure/real_measure" -> "theories/probability_theory/poisson_distribution";
   "theories/sequences" -> "theories/probability_theory/poisson_distribution";
   "theories/topology_theory/topology" -> "theories/probability_theory/poisson_distribution";
 
@@ -2200,9 +2159,7 @@ subgraph cluster_Probability {
     ]
 }
   "classical/boolp" -> "theories/probability_theory/beta_distribution";
-  "classical/cardinality" -> "theories/probability_theory/beta_distribution";
   "classical/classical_sets" -> "theories/probability_theory/beta_distribution";
-  "classical/fsbigop" -> "theories/probability_theory/beta_distribution";
   "classical/functions" -> "theories/probability_theory/beta_distribution";
   "classical/unstable" -> "theories/probability_theory/beta_distribution";
   "reals/reals" -> "theories/probability_theory/beta_distribution";
@@ -2211,13 +2168,12 @@ subgraph cluster_Probability {
   "theories/exp" -> "theories/probability_theory/beta_distribution";
   "theories/ftc" -> "theories/probability_theory/beta_distribution";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/beta_distribution";
-  "theories/lebesgue_measure" -> "theories/probability_theory/beta_distribution";
-  "theories/measurable_realfun" -> "theories/probability_theory/beta_distribution";
   "theories/measure_theory/measure" -> "theories/probability_theory/beta_distribution";
   "theories/normedtype_theory/normedtype" -> "theories/probability_theory/beta_distribution";
   "theories/numfun" -> "theories/probability_theory/beta_distribution";
   "theories/probability_theory/bernoulli_distribution" -> "theories/probability_theory/beta_distribution";
   "theories/probability_theory/uniform_distribution" -> "theories/probability_theory/beta_distribution";
+  "theories/real_measure/real_measure" -> "theories/probability_theory/beta_distribution";
   "theories/realfun" -> "theories/probability_theory/beta_distribution";
   "theories/sequences" -> "theories/probability_theory/beta_distribution";
   "theories/topology_theory/topology" -> "theories/probability_theory/beta_distribution";
@@ -2258,12 +2214,12 @@ subgraph cluster_Probability {
   "theories/hoelder" -> "theories/probability_theory/independence";
   "theories/kernel" -> "theories/probability_theory/independence";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/independence";
-  "theories/lebesgue_measure" -> "theories/probability_theory/independence";
-  "theories/measurable_realfun" -> "theories/probability_theory/independence";
   "theories/measure_theory/measure" -> "theories/probability_theory/independence";
   "theories/normedtype_theory/normedtype" -> "theories/probability_theory/independence";
   "theories/numfun" -> "theories/probability_theory/independence";
   "theories/probability_theory/random_variable" -> "theories/probability_theory/independence";
+  "theories/real_measure/lebesgue_measure" -> "theories/probability_theory/independence";
+  "theories/real_measure/measurable_realfun" -> "theories/probability_theory/independence";
   "theories/sequences" -> "theories/probability_theory/independence";
   "theories/topology_theory/topology" -> "theories/probability_theory/independence";
 
@@ -2300,11 +2256,11 @@ subgraph cluster_Analysis {
   "theories/ereal" -> "theories/charge";
   "theories/esum" -> "theories/charge";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/charge";
-  "theories/lebesgue_measure" -> "theories/charge";
-  "theories/measurable_realfun" -> "theories/charge";
   "theories/measure_theory/measure" -> "theories/charge";
   "theories/normedtype_theory/normedtype" -> "theories/charge";
   "theories/numfun" -> "theories/charge";
+  "theories/real_measure/lebesgue_measure" -> "theories/charge";
+  "theories/real_measure/measurable_realfun" -> "theories/charge";
   "theories/realfun" -> "theories/charge";
   "theories/sequences" -> "theories/charge";
   "theories/topology_theory/topology" -> "theories/charge";
@@ -2325,11 +2281,10 @@ subgraph cluster_Analysis {
   "theories/ereal" -> "theories/kernel";
   "theories/esum" -> "theories/kernel";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/kernel";
-  "theories/lebesgue_measure" -> "theories/kernel";
-  "theories/measurable_realfun" -> "theories/kernel";
   "theories/measure_theory/measure" -> "theories/kernel";
   "theories/normedtype_theory/normedtype" -> "theories/kernel";
   "theories/numfun" -> "theories/kernel";
+  "theories/real_measure/real_measure" -> "theories/kernel";
   "theories/sequences" -> "theories/kernel";
   "theories/topology_theory/topology" -> "theories/kernel";
 
@@ -2343,21 +2298,17 @@ subgraph cluster_Analysis {
   "classical/boolp" -> "theories/pi_irrational";
   "classical/cardinality" -> "theories/pi_irrational";
   "classical/classical_sets" -> "theories/pi_irrational";
-  "classical/fsbigop" -> "theories/pi_irrational";
   "classical/functions" -> "theories/pi_irrational";
-  "reals/real_interval" -> "theories/pi_irrational";
   "reals/reals" -> "theories/pi_irrational";
   "theories/derive" -> "theories/pi_irrational";
   "theories/elementary_functions/trigo" -> "theories/pi_irrational";
   "theories/ereal" -> "theories/pi_irrational";
-  "theories/esum" -> "theories/pi_irrational";
   "theories/ftc" -> "theories/pi_irrational";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/pi_irrational";
-  "theories/lebesgue_measure" -> "theories/pi_irrational";
-  "theories/measurable_realfun" -> "theories/pi_irrational";
   "theories/measure_theory/measure" -> "theories/pi_irrational";
   "theories/normedtype_theory/normedtype" -> "theories/pi_irrational";
   "theories/numfun" -> "theories/pi_irrational";
+  "theories/real_measure/real_measure" -> "theories/pi_irrational";
   "theories/realfun" -> "theories/pi_irrational";
   "theories/sequences" -> "theories/pi_irrational";
   "theories/topology_theory/topology" -> "theories/pi_irrational";
@@ -2372,9 +2323,7 @@ subgraph cluster_Analysis {
   "classical/boolp" -> "theories/gauss_integral";
   "classical/cardinality" -> "theories/gauss_integral";
   "classical/classical_sets" -> "theories/gauss_integral";
-  "classical/fsbigop" -> "theories/gauss_integral";
   "classical/functions" -> "theories/gauss_integral";
-  "reals/real_interval" -> "theories/gauss_integral";
   "reals/reals" -> "theories/gauss_integral";
   "theories/derive" -> "theories/gauss_integral";
   "theories/elementary_functions/trigo" -> "theories/gauss_integral";
@@ -2383,12 +2332,10 @@ subgraph cluster_Analysis {
   "theories/exp" -> "theories/gauss_integral";
   "theories/ftc" -> "theories/gauss_integral";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/gauss_integral";
-  "theories/lebesgue_measure" -> "theories/gauss_integral";
-  "theories/measurable_realfun" -> "theories/gauss_integral";
   "theories/measure_theory/measure" -> "theories/gauss_integral";
   "theories/normedtype_theory/normedtype" -> "theories/gauss_integral";
-  "theories/normedtype_theory/tvs" -> "theories/gauss_integral";
   "theories/numfun" -> "theories/gauss_integral";
+  "theories/real_measure/real_measure" -> "theories/gauss_integral";
   "theories/realfun" -> "theories/gauss_integral";
   "theories/sequences" -> "theories/gauss_integral";
   "theories/topology_theory/topology" -> "theories/gauss_integral";
@@ -2413,13 +2360,13 @@ subgraph cluster_Analysis {
   "theories/kernel" -> "theories/all_analysis";
   "theories/landau" -> "theories/all_analysis";
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/all_analysis";
-  "theories/lebesgue_measure" -> "theories/all_analysis";
-  "theories/lebesgue_stieltjes_measure" -> "theories/all_analysis";
   "theories/measure_theory/measure" -> "theories/all_analysis";
   "theories/normedtype_theory/normedtype" -> "theories/all_analysis";
   "theories/numfun" -> "theories/all_analysis";
   "theories/pi_irrational" -> "theories/all_analysis";
   "theories/probability_theory/probability" -> "theories/all_analysis";
+  "theories/real_measure/lebesgue_measure" -> "theories/all_analysis";
+  "theories/real_measure/lebesgue_stieltjes_measure" -> "theories/all_analysis";
   "theories/realfun" -> "theories/all_analysis";
   "theories/sequences" -> "theories/all_analysis";
   "theories/topology_theory/topology" -> "theories/all_analysis";

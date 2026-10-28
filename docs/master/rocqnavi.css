@@ -155,10 +155,7 @@ div.ssrdoc {
     border-left: solid lightgray 2px;
     font-family: serif;
     transition: linear 0.5s;
-}
-div.ssrdoc:hover {
     background-color: #f2f1f1;
-    transition: linear 0.5s;
 }
 
 .warning {

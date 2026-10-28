@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.all_analysis</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 478d735 2026.10.23-21:33" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 9b7419b 2026.10.28-22:30" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -118,6 +118,15 @@
           </ul>
           </details>
           </li>
+<li><details id="mathcomp.analysis.real_measure"><summary>real_measure</summary>
+          <ul>
+          <li><a href="mathcomp.analysis.real_measure.lebesgue_measure.html">lebesgue_measure</a></li>
+<li><a href="mathcomp.analysis.real_measure.lebesgue_stieltjes_measure.html">lebesgue_stieltjes_measure</a></li>
+<li><a href="mathcomp.analysis.real_measure.measurable_realfun.html">measurable_realfun</a></li>
+<li><a href="mathcomp.analysis.real_measure.real_measure.html">real_measure</a></li>
+          </ul>
+          </details>
+          </li>
 <li><details id="mathcomp.analysis.showcase"><summary>showcase</summary>
           <ul>
           <li><a href="mathcomp.analysis.showcase.pnt.html">pnt</a></li>
@@ -170,9 +179,6 @@
 <li><a href="mathcomp.analysis.hoelder.html">hoelder</a></li>
 <li><a href="mathcomp.analysis.kernel.html">kernel</a></li>
 <li><a href="mathcomp.analysis.landau.html">landau</a></li>
-<li><a href="mathcomp.analysis.lebesgue_measure.html">lebesgue_measure</a></li>
-<li><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html">lebesgue_stieltjes_measure</a></li>
-<li><a href="mathcomp.analysis.measurable_realfun.html">measurable_realfun</a></li>
 <li><a href="mathcomp.analysis.numfun.html">numfun</a></li>
 <li><a href="mathcomp.analysis.pi_irrational.html">pi_irrational</a></li>
 <li><a href="mathcomp.analysis.realfun.html">realfun</a></li>
@@ -260,7 +266,7 @@
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.exp.html">exp</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.elementary_functions.trigo.html">trigo</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.esum.html">esum</a></span>.<br/>
-<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_measure.html">lebesgue_measure</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.real_measure.lebesgue_measure.html">lebesgue_measure</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.derive.html">derive</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure.html">measure</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.numfun.html">numfun</a></span>.<br/>
@@ -268,7 +274,7 @@
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.ftc.html">ftc</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.hoelder.html">hoelder</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.probability_theory.probability.html">probability</a></span>.<br/>
-<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_stieltjes_measure.html">lebesgue_stieltjes_measure</a></span>.<br/>
+<span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.real_measure.lebesgue_stieltjes_measure.html">lebesgue_stieltjes_measure</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.convex.html">convex</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.kernel.html">kernel</a></span>.<br/>
 <span class="vernacular">From</span><span class="id"> mathcomp</span><span class="vernacular"> Require</span><span class="vernacular"> Export</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.pi_irrational.html">pi_irrational</a></span>.<br/>
@@ -282,7 +288,7 @@
 
   <div class="sidebar-right">
     <p>
-      <a href="https://github.com/math-comp/analysis/tree/478d735e8fc16da3ac5f65d199b6ea940253917c/./theories/all_analysis.v">Source</a>
+      <a href="https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/./theories/all_analysis.v">Source</a>
 
       <details id="uses-right-pane">
         <summary>Uses</summary>
