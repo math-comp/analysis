@@ -33,55 +33,61 @@ Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-HB.mixin Record Discrete_ofNbhs T & Nbhs T := {
-  nbhs_principalE : (@nbhs T _) = principal_filter;
+HB.mixin Record Discrete_ofNbhs d T & Nbhs d T := {
+  nbhs_principalE : (@nbhs _ T _) = principal_filter;
 }.
 
 #[short(type="discreteNbhsType")]
-HB.structure Definition DiscreteNbhs := {T of Nbhs T & Discrete_ofNbhs T}.
+HB.structure Definition DiscreteNbhs d := {T of Nbhs d T & Discrete_ofNbhs d T}.
+
+HB.instance Definition _ d d' (T : discreteNbhsType d) :=
+  Discrete_ofNbhs.Build d' (with_fdisp d' T) nbhs_principalE.
 
 Definition discrete_ent {T} : set_system (T * T) :=
   globally (range (fun x => (x, x))).
 
 (** Note: having the discrete topology does not guarantee the discrete
     uniformity. Likewise for the discrete metric. Consider [set 1/n | n in R] *)
-HB.mixin Record Discrete_ofUniform T & Uniform T := {
-  uniform_discrete : @entourage T = discrete_ent
+HB.mixin Record Discrete_ofUniform d T & Uniform d T := {
+  uniform_discrete : @entourage _ T = discrete_ent
 }.
 
 Definition discrete_ball {R : numDomainType} {T} (x : T) (eps : R) y : Prop :=
   x = y.
 
-HB.mixin Record Discrete_ofPseudometric {R : numDomainType} T &
-    PseudoMetric R T := {
-  metric_discrete : @ball R T = @discrete_ball R T
+HB.mixin Record Discrete_ofPseudometric d {R : numDomainType} T &
+    PseudoMetric d R T := {
+  metric_discrete : @ball _ R T = @discrete_ball R T
 }.
 
 #[short(type="discreteTopologicalType")]
-HB.structure Definition DiscreteTopology :=
-  { T of DiscreteNbhs T & Topological T}.
+HB.structure Definition DiscreteTopology d :=
+  { T of DiscreteNbhs d T & Topological d T}.
 
 #[short(type="discreteOrderTopologicalType")]
-HB.structure Definition DiscreteOrderTopology d :=
-  { T of Discrete_ofNbhs T & OrderTopological d T}.
+HB.structure Definition DiscreteOrderTopology td od :=
+  { T of Discrete_ofNbhs td T & OrderTopological td od T}.
 
 #[short(type="pdiscreteTopologicalType")]
-HB.structure Definition PointedDiscreteTopology :=
-  { T of DiscreteTopology T & Pointed T}.
+HB.structure Definition PointedDiscreteTopology d :=
+  { T of DiscreteTopology d T & Pointed T}.
 
 #[short(type="pdiscreteOrderTopologicalType")]
-HB.structure Definition PointedDiscreteOrderTopology d :=
-  { T of Discrete_ofNbhs T & OrderTopological d T & Pointed T}.
+HB.structure Definition PointedDiscreteOrderTopology td od :=
+  { T of Discrete_ofNbhs td T & OrderTopological td od T & Pointed T}.
 
 #[short(type="discreteUniformType")]
-HB.structure Definition DiscreteUniform :=
-  { T of Discrete_ofUniform T & Uniform T & Discrete_ofNbhs T}.
+HB.structure Definition DiscreteUniform d :=
+  { T of Discrete_ofUniform d T & Uniform d T & Discrete_ofNbhs d T}.
 
 #[short(type="discretePseudoMetricType")]
-HB.structure Definition DiscretePseudoMetric {R : numDomainType} :=
-  { T of Discrete_ofPseudometric R T & PseudoMetric R T & DiscreteUniform T}.
+HB.structure Definition DiscretePseudoMetric {R : numDomainType} d :=
+  { T of Discrete_ofPseudometric d R T & PseudoMetric d R T 
+    & DiscreteUniform d T }.
 
-HB.builders Context T & Discrete_ofNbhs T.
+HB.saturate with_fdisp.
+
+HB.builders Context d T & Discrete_ofNbhs d T.
 
 Local Lemma principal_nbhs_filter (p : T) : ProperFilter (nbhs p).
 Proof. rewrite nbhs_principalE; exact: principal_filter_proper. Qed.
@@ -93,37 +99,38 @@ Local Lemma principal_nbhs_nbhs (p : T) (A : set T) :
   nbhs p A -> nbhs p (nbhs^~ A).
 Proof. by move=> ?; rewrite {1}nbhs_principalE; apply/principal_filterP. Qed.
 
-HB.instance Definition _ := @Nbhs_isNbhsTopological.Build T
+HB.instance Definition _ := @Nbhs_isNbhsTopological.Build d T
   principal_nbhs_filter principal_nbhs_singleton principal_nbhs_nbhs.
 
 HB.end.
 
-HB.factory Record DiscreteUniform_ofNbhs T & Discrete_ofNbhs T & Nbhs T := {}.
-HB.builders Context T & DiscreteUniform_ofNbhs T.
+HB.factory Record DiscreteUniform_ofNbhs d T 
+  & Discrete_ofNbhs d T & Nbhs d T := {}.
+HB.builders Context d T & DiscreteUniform_ofNbhs d T.
 
 Local Open Scope relation_scope.
 
-Local Notation d := (@discrete_ent T).
+Local Notation dE := (@discrete_ent T).
 
-Local Lemma discrete_entourage_filter : Filter d.
+Local Lemma discrete_entourage_filter : Filter dE.
 Proof. exact: globally_filter. Qed.
 
-Local Lemma discrete_entourage_diagonal : forall A, d A -> diagonal `<=` A.
+Local Lemma discrete_entourage_diagonal : forall A, dE A -> diagonal `<=` A.
 Proof.
 by move=> ? + x x12; apply; exists x.1; rewrite // {2}x12 -surjective_pairing.
 Qed.
 
-Local Lemma discrete_entourage_inv : forall A, d A -> d A^-1.
+Local Lemma discrete_entourage_inv : forall A, dE A -> dE A^-1.
 Proof. by move=> ? dA x [i _ <-]; apply: dA; exists i. Qed.
 
 Local Lemma discrete_entourage_split_ex :
-    forall A, d A -> exists2 B, d B & B \; B `<=` A.
+    forall A, dE A -> exists2 B, dE B & B \; B `<=` A.
 Proof.
 move=> ? dA; exists (range (fun x => (x, x))) => //.
 by rewrite set_compose_diag => x [i _ <-]; apply: dA; exists i.
 Qed.
 
-Local Lemma discrete_entourage_nbhsE : (@nbhs T _) = nbhs_ d.
+Local Lemma discrete_entourage_nbhsE : (@nbhs _ T _) = nbhs_ dE.
 Proof.
 rewrite funeqE => x; rewrite nbhs_principalE eqEsubset; split => U.
   move/principal_filterP => ?; exists diagonal; first by move=> ? [w _ <-].
@@ -132,7 +139,7 @@ case => w entW wU; apply/principal_filterP; apply: wU; apply/mem_set.
 exact: entW.
 Qed.
 
-HB.instance Definition _ := @Nbhs_isUniform.Build T
+HB.instance Definition _ := @Nbhs_isUniform.Build d T
   discrete_ent
   discrete_entourage_filter
   discrete_entourage_diagonal
@@ -140,14 +147,14 @@ HB.instance Definition _ := @Nbhs_isUniform.Build T
   discrete_entourage_split_ex
   discrete_entourage_nbhsE.
 
-HB.instance Definition _ := @Discrete_ofUniform.Build T erefl.
+HB.instance Definition _ := @Discrete_ofUniform.Build d T erefl.
 
 HB.end.
 
-HB.factory Record DiscretePseudoMetric_ofUniform (R : numDomainType) T &
-  DiscreteUniform T := {}.
+HB.factory Record DiscretePseudoMetric_ofUniform d (R : numDomainType) T &
+  DiscreteUniform d T := {}.
 
-HB.builders Context R T & DiscretePseudoMetric_ofUniform R T.
+HB.builders Context d R T & DiscretePseudoMetric_ofUniform d R T.
 
 Local Lemma discrete_ball_center x (eps : R) : 0 < eps ->
   @discrete_ball R T x eps x.
@@ -169,36 +176,38 @@ by rewrite {2}z12 -surjective_pairing.
 Qed.
 
 HB.instance Definition _ :=
-  @Uniform_isPseudoMetric.Build R T (@discrete_ball R T)
+  @Uniform_isPseudoMetric.Build d R T (@discrete_ball R T)
     discrete_ball_center discrete_ball_sym discrete_ball_triangle
     discrete_entourageE.
 
-Local Lemma discrete_ballE : @ball R T = @discrete_ball R T.
+Local Lemma discrete_ballE : @ball _ R T = @discrete_ball R T.
 Proof. by rewrite funeq2E => ? ?. Qed.
 
-HB.instance Definition _ := @Discrete_ofPseudometric.Build R T discrete_ballE.
+HB.instance Definition _ := @Discrete_ofPseudometric.Build d R T discrete_ballE.
 
 HB.end.
 
 Definition discrete_topology (T : Type) : Type := T.
+Fact discrete_fdisp : fdisp_t.
+Proof. by []. Qed.
 
 HB.instance Definition _ (T : choiceType) :=
   Choice.copy (discrete_topology T) T.
 HB.instance Definition _ (T : pointedType) :=
   Pointed.on (discrete_topology T).
 HB.instance Definition _ (T : choiceType) :=
-  hasNbhs.Build (discrete_topology T) principal_filter.
+  hasNbhs.Build discrete_fdisp (discrete_topology T) principal_filter.
 HB.instance Definition _ (T : choiceType) :=
-  Discrete_ofNbhs.Build (discrete_topology T) erefl.
+  Discrete_ofNbhs.Build _ (discrete_topology T) erefl.
 HB.saturate discrete_topology.
 HB.instance Definition _ (T : choiceType) :=
-  DiscreteUniform_ofNbhs.Build (discrete_topology T).
+  DiscreteUniform_ofNbhs.Build _ (discrete_topology T).
 HB.instance Definition _ {R : numDomainType} (T : choiceType) :=
-  @DiscretePseudoMetric_ofUniform.Build R (discrete_topology T).
+  @DiscretePseudoMetric_ofUniform.Build _ R (discrete_topology T).
 
 Section discrete_topology.
 
-Context {X : discreteTopologicalType}.
+Context {d} {X : discreteTopologicalType d}.
 
 Lemma discrete_open (A : set X) : open A.
 Proof.

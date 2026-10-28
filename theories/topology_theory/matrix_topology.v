@@ -28,7 +28,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section matrix_Topology.
-Variables (m n : nat) (T : topologicalType).
+Variables (d : fdisp_t) (m n : nat) (T : topologicalType d).
 
 Implicit Types M : 'M[T]_(m, n).
 
@@ -52,14 +52,15 @@ move=> [P M_P sPA]; exists (fun i j => (P i j)°).
 by move=> ? ?; exists P.
 Qed.
 
-HB.instance Definition _ := Nbhs_isNbhsTopological.Build 'M[T]_(m, n)
+HB.instance Definition _ := Nbhs_isNbhsTopological.Build 
+  _ 'M[T]_(m, n)
   mx_nbhs_filter mx_nbhs_singleton mx_nbhs_nbhs.
 
 End matrix_Topology.
 
 Section matrix_Uniform.
 Local Open Scope relation_scope.
-Variables (m n : nat) (T : uniformType).
+Variables (d : fdisp_t) (m n : nat) (T : uniformType d).
 
 Implicit Types A : set ('M[T]_(m, n) * 'M[T]_(m, n)).
 
@@ -119,12 +120,13 @@ move=> [B [C entC sCB] sBA]; exists (fun i j => xsection (C i j) (M i j)).
 by move=> N CMN; apply/sBA; apply/xsectionP/sCB => ? ?; exact/xsectionP/CMN.
 Qed.
 
-HB.instance Definition _ := Nbhs_isUniform.Build 'M[T]_(m, n)
+HB.instance Definition _ := Nbhs_isUniform.Build 
+  _ 'M[T]_(m, n)
   mx_ent_filter mx_ent_refl mx_ent_inv mx_ent_split mx_ent_nbhsE.
 
 End matrix_Uniform.
 
-Lemma cvg_mx_entourageP (T : puniformType) m n (F : set_system 'M[T]_(m,n))
+Lemma cvg_mx_entourageP d (T : puniformType d) m n (F : set_system 'M[T]_(m,n))
   (FF : Filter F) (M : 'M[T]_(m,n)) :
   F --> M <->
   forall A, entourage A -> \forall N \near F,
@@ -145,8 +147,9 @@ by apply: filter_bigI => ??; apply: entP.
 Unshelve. all: by end_near. Qed.
 
 Section matrix_PointedTopology.
-Variables (m n : nat).
-HB.instance Definition _ (T : ptopologicalType) := Filtered.on 'M[T]_(m, n).
+Variables (d : fdisp_t) (m n : nat).
+HB.instance Definition _ (T : ptopologicalType d) := 
+  Filtered.on 'M[T]_(m, n).
 (*HB.instance Definition _ (T : ptopologicalType) := Pointed.on 'M[T]_(m, n).*)
 (* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 (*HB.instance Definition _ (T : ptopologicalType) :=
@@ -157,13 +160,13 @@ HB.instance Definition _ (T : ptopologicalType) := Filtered.on 'M[T]_(m, n).
 (* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 (*HB.instance Definition _ (T : uniformType) := Uniform.on 'M[T]_(m, n).*)
 (* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
-HB.instance Definition _ (T : puniformType) := Pointed.on 'M[T]_(m, n).
+HB.instance Definition _ (T : puniformType d) := Pointed.on 'M[T]_(m, n).
 (*HB.instance Definition _ (T : puniformType) := PointedUniform.on 'M[T]_(m, n).*)
 (* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 End matrix_PointedTopology.
 
 Section matrix_Complete.
-Variables (T : completeType) (m n : nat).
+Variables (d : fdisp_t) (T : completeType d) (m n : nat).
 
 Lemma mx_complete (F : set_system 'M[T]_(m, n)) :
   ProperFilter F -> cauchy F -> cvg F.
@@ -183,13 +186,13 @@ move: (i) (j); near: M'; near: M; apply: nearP_dep; apply: Fc.
 by exists (fun _ _ => (split_ent A)^-1%relation) => ?? //; apply: entourage_inv.
 Unshelve. all: by end_near. Qed.
 
-HB.instance Definition _ := Uniform_isComplete.Build 'M[T]_(m, n) mx_complete.
+HB.instance Definition _ := Uniform_isComplete.Build _ 'M[T]_(m, n) mx_complete.
 
 End matrix_Complete.
 
 (**md Matrices: *)
 Section matrix_PseudoMetric.
-Variables (m n : nat) (R : numDomainType) (T : pseudoMetricType R).
+Context d (m n : nat) (R : numDomainType) (T : pseudoMetricType d R).
 Implicit Types (x y : 'M[T]_(m, n)) (e : R).
 
 Definition mx_ball x e y := 0 < e /\ forall i j, ball (x i j) e (y i j).
@@ -225,9 +228,11 @@ apply: le_trans (@bigmin_le _ {posnum R} _ _ i _) _.
 exact: bigmin_le.
 Qed.
 
-HB.instance Definition _ := Uniform_isPseudoMetric.Build R 'M[T]_(m, n)
+HB.instance Definition _ := Uniform_isPseudoMetric.Build 
+  _ R 'M[T]_(m, n)
   mx_ball_center mx_ball_sym mx_ball_triangle mx_entourage.
 End matrix_PseudoMetric.
 
-HB.instance Definition _ (R : numFieldType) (T : completePseudoMetricType R)
-  (m n : nat) := Uniform_isComplete.Build 'M[T]_(m, n) cauchy_cvg.
+HB.instance Definition _ d (R : numFieldType) 
+  (T : completePseudoMetricType d R)  (m n : nat) := 
+  Uniform_isComplete.Build _ 'M[T]_(m, n) cauchy_cvg.

@@ -51,6 +51,8 @@ From mathcomp Require Import uniform_structure.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
+Reserved Notation "d .-ball" (at level 5, format "d .-ball").
+
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -71,7 +73,8 @@ Lemma entourage_E {R : numDomainType} {T T'} (ball : T -> R -> set T') :
   @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
 Proof. by []. Qed.
 
-HB.mixin Record Uniform_isPseudoMetric (R : numDomainType) M & Uniform M := {
+HB.mixin Record Uniform_isPseudoMetric d (R : numDomainType) M 
+  & Uniform d M := {
   ball : M -> R -> M -> Prop ;
   ball_center_subproof : forall x (e : R), 0 < e -> ball x e x ;
   ball_sym_subproof : forall x y (e : R), ball x e y -> ball y e x ;
@@ -81,15 +84,21 @@ HB.mixin Record Uniform_isPseudoMetric (R : numDomainType) M & Uniform M := {
 }.
 
 #[short(type="pseudoMetricType")]
-HB.structure Definition PseudoMetric (R : numDomainType) :=
-  {T of Uniform T & Uniform_isPseudoMetric R T}.
+HB.structure Definition PseudoMetric d (R : numDomainType) :=
+  {T of Uniform d T & Uniform_isPseudoMetric d R T}.
 
 #[short(type="pseudoPMetricType")]
-HB.structure Definition PseudoPointedMetric (R : numDomainType) :=
-  {T of Pointed T & Uniform T & Uniform_isPseudoMetric R T}.
+HB.structure Definition PseudoPointedMetric d (R : numDomainType) :=
+  {T of Pointed T & Uniform d T & Uniform_isPseudoMetric d R T}.
+
+HB.instance Definition _ (d d' : fdisp_t) R (T : pseudoMetricType d R) :=
+  Uniform_isPseudoMetric.Build d' R (with_fdisp d' T) 
+    ball_center_subproof ball_sym_subproof ball_triangle_subproof 
+    entourageE_subproof.
+HB.saturate with_fdisp.
 
 (* was uniformityOfBallMixin *)
-HB.factory Record Nbhs_isPseudoMetric (R : numFieldType) M & Nbhs M := {
+HB.factory Record Nbhs_isPseudoMetric d (R : numFieldType) M & Nbhs d M := {
   ent : set_system (M * M);
   nbhsE : nbhs = nbhs_ ent;
   ball : M -> R -> M -> Prop ;
@@ -100,7 +109,7 @@ HB.factory Record Nbhs_isPseudoMetric (R : numFieldType) M & Nbhs M := {
   entourageE : ent = entourage_ ball
 }.
 
-HB.builders Context R M & Nbhs_isPseudoMetric R M.
+HB.builders Context d R M & Nbhs_isPseudoMetric d R M.
 Local Open Scope relation_scope.
 
 Let ball_le x : {homo ball x : e1 e2 / e1 <= e2 >-> e1 `<=` e2}.
@@ -142,25 +151,25 @@ move=> xy [z xzhe zyhe]; apply: sbeA.
 by rewrite [e%:num]splitr; exact: ball_triangle zyhe.
 Qed.
 
-HB.instance Definition _ := Nbhs_isUniform.Build M
+HB.instance Definition _ := Nbhs_isUniform.Build d M
   entourage_filter_subproof ball_sym_subproof ball_triangle_subproof
   entourageE_subproof nbhsE.
 
-HB.instance Definition _ := Uniform_isPseudoMetric.Build R M
+HB.instance Definition _ := Uniform_isPseudoMetric.Build d R M
   ball_center ball_sym ball_triangle entourageE.
 
 HB.end.
 
-Lemma entourage_ballE {R : numDomainType} {M : pseudoMetricType R} :
-  entourage_ (@ball R M) = entourage.
+Lemma entourage_ballE d {R : numDomainType} {M : pseudoMetricType d R} :
+  entourage_ (@ball d R M) = entourage.
 Proof. by rewrite entourageE_subproof. Qed.
 
-Lemma entourage_from_ballE {R : numDomainType} {M : pseudoMetricType R} :
+Lemma entourage_from_ballE d {R : numDomainType} {M : pseudoMetricType d R} :
   @filter_from R _ [set x : R | 0 < x]
-    (fun e => [set xy | @ball R M xy.1 e xy.2]) = entourage.
+    (fun e => [set xy | @ball d R M xy.1 e xy.2]) = entourage.
 Proof. by rewrite -entourage_ballE. Qed.
 
-Lemma entourage_ball {R : numDomainType} (M : pseudoMetricType R)
+Lemma entourage_ball d {R : numDomainType} (M : pseudoMetricType d R)
   (e : {posnum R}) : entourage [set xy : M * M | ball xy.1 e%:num xy.2].
 Proof. by rewrite -entourage_ballE; exists e%:num => /=. Qed.
 #[global] Hint Resolve entourage_ball : core.
@@ -168,11 +177,14 @@ Proof. by rewrite -entourage_ballE; exists e%:num => /=. Qed.
 Definition nbhs_ball_ {R : numDomainType} {T T'} (ball : T -> R -> set T')
   (x : T) := @filter_from R _ [set e | e > 0] (ball x).
 
-Definition nbhs_ball {R : numDomainType} {M : pseudoMetricType R} :=
-  nbhs_ball_ (@ball R M).
+Definition nbhs_ball d {R : numDomainType} {M : pseudoMetricType d R} :=
+  nbhs_ball_ (@ball d R M).
 
-Lemma nbhs_ballE {R : numDomainType} {M : pseudoMetricType R} :
-  @nbhs_ball R M = nbhs.
+Notation "d .-nbhs_ball" := (@nbhs_ball d _ _) (format "d .-nbhs_ball").
+Notation "'nbhs_ball'" := (@nbhs_ball default_fdisp _ _) (only printing).
+
+Lemma nbhs_ballE d {R : numDomainType} {M : pseudoMetricType d R} :
+  @nbhs_ball d R M = nbhs.
 Proof.
 rewrite predeq2E => x P; rewrite -nbhs_entourageE; split.
   move=> [_/posnumP[e] sbxeP]; exists [set xy | ball xy.1 e%:num xy.2] => //.
@@ -181,25 +193,25 @@ rewrite -entourage_ballE; move=> [A [e egt0 sbeA] sAP].
 by exists e => // ? ?; exact/sAP/xsectionP/sbeA.
 Qed.
 
-Lemma filter_from_ballE {R : numDomainType} {M : pseudoMetricType R} x :
-  @filter_from R _ [set x : R | 0 < x] (@ball R M x) = nbhs x.
+Lemma filter_from_ballE d {R : numDomainType} {M : pseudoMetricType d R} x :
+  @filter_from R _ [set x : R | 0 < x] (@ball d R M x) = nbhs x.
 Proof. by rewrite -nbhs_ballE. Qed.
 
 Module Export NbhsBall.
 Definition nbhs_simpl := (nbhs_simpl,@filter_from_ballE,@nbhs_ballE).
 End NbhsBall.
 
-Lemma nbhs_ballP {R : numDomainType} {M : pseudoMetricType R} (x : M) P :
+Lemma nbhs_ballP d {R : numDomainType} {M : pseudoMetricType d R} (x : M) P :
   nbhs x P <-> nbhs_ball x P.
 Proof. by rewrite nbhs_simpl. Qed.
 
-Lemma ball_center {R : numDomainType} (M : pseudoMetricType R) (x : M)
+Lemma ball_center d {R : numDomainType} (M : pseudoMetricType d R) (x : M)
   (e : {posnum R}) : ball x e%:num x.
 Proof. exact: ball_center_subproof. Qed.
 #[global] Hint Extern 0 (ball _ _ _) => solve[apply: ball_center] : core.
 
 Section pseudoMetricType_numDomainType.
-Context {R : numDomainType} {M : pseudoMetricType R}.
+Context {d} {R : numDomainType} {M : pseudoMetricType d R}.
 Implicit Types x y z : M.
 
 Lemma ballxx x (e : R) : 0 < e -> ball x e x.
@@ -276,18 +288,18 @@ End pseudoMetricType_numDomainType.
 
 #[global] Hint Resolve nbhsx_ballx : core.
 
-Global Instance entourage_proper_filter {R : numDomainType}
-  {M : pseudoPMetricType R} : ProperFilter (@entourage M).
+Global Instance entourage_proper_filter d {R : numDomainType}
+  {M : pseudoPMetricType d R} : ProperFilter (@entourage d M).
 Proof.
 apply: Build_ProperFilter_ex; rewrite -entourage_ballE => A [_/posnumP[e] sbeA].
 by exists (point, point); apply: sbeA; apply: ballxx.
 Qed.
 
-Arguments nbhsx_ballx {R M} x eps.
-Arguments near_ball {R M} y eps.
+Arguments nbhsx_ballx {d R M} x eps.
+Arguments near_ball {d R M} y eps.
 
 Section pseudoMetricType_numFieldType.
-Context {R : numFieldType} {M : pseudoMetricType R}.
+Context {d} {R : numFieldType} {M : pseudoMetricType d R}.
 Implicit Types x y z p : M.
 
 Lemma ball_split z x y (e : R) :
@@ -304,8 +316,8 @@ Proof. by move=> bxz /ball_sym /(ball_split bxz). Qed.
 
 End pseudoMetricType_numFieldType.
 
-Lemma cvg_withinP {T : topologicalType} {R : archiRealFieldType}
-  {M : pseudoMetricType R} (f : M -> T) (p : M) (l : T) (A : set M) :
+Lemma cvg_withinP {d} {T : topologicalType d} {R : archiRealFieldType}
+  {M : pseudoMetricType d R} (f : M -> T) (p : M) (l : T) (A : set M) :
   f @ within A (nbhs p) --> l <->
   (forall u : M^nat, (forall n, A (u n)) /\ u @ \oo --> p ->
     f (u n) @[n --> \oo] --> l).
@@ -319,10 +331,10 @@ apply: contrapT => fpl; move: ful; apply/existsNP.
 suff: exists2 u : M^nat,
     (forall k, A (u k)) /\ u @ \oo --> p & ~ f (u n) @[n --> \oo] --> l.
   by move=> [x_] h; exists x_; exact/not_implyP.
-have [V Vnb hV] : exists2 V : set T, nbhs l V & forall d : {posnum R},
-    exists xn : M, [/\ A xn, ball xn d%:num p & ~ V (f xn)].
+have [V Vnb hV] : exists2 V : set T, nbhs l V & forall e : {posnum R},
+    exists xn : M, [/\ A xn, ball xn e%:num p & ~ V (f xn)].
   apply: contrapT; apply: contra_not fpl => /forallPNP h.
-  move=> V Vnb; have /existsNP[d] := h V Vnb; move/forallNP => {}h.
+  move=> V Vnb; have /existsNP[e] := h V Vnb; move/forallNP => {}h.
   rewrite nbhs_nearE near_map near_withinE; near=> t => At.
   have /not_and3P[//|bp|/contrapT //] := h t.
   exfalso; apply: bp.
@@ -340,8 +352,8 @@ exists (fun n => sval (cid (hV (PosNum (invn n))))).
   by rewrite /sval/=; case: cid => // x [Ax xpN].
 Unshelve. all: by end_near. Qed.
 
-Lemma cvg_nbhsP {T : topologicalType} {R : archiRealFieldType}
-  {M : pseudoMetricType R} (f : M -> T) (p : M) (l : T) :
+Lemma cvg_nbhsP {d} {T : topologicalType d} {R : archiRealFieldType}
+  {M : pseudoMetricType d R} (f : M -> T) (p : M) (l : T) :
   f @ p --> l <->
   (forall u : M^nat, u @ \oo --> p -> f (u n) @[n --> \oo] --> l).
 Proof.
@@ -353,7 +365,8 @@ Qed.
 Section entourages.
 Context {R : numDomainType}.
 
-Lemma unif_continuousP (U V : pseudoMetricType R) (f : U -> V) :
+Lemma unif_continuousP {d d'} 
+  (U : pseudoMetricType d R) (V : pseudoMetricType d' R) (f : U -> V) :
   unif_continuous f <->
   forall e, e > 0 -> exists2 d, d > 0 &
     forall x, ball x.1 d x.2 -> ball (f x.1) e (f x.2).
@@ -365,7 +378,7 @@ Qed.
 
 End entourages.
 
-Lemma countable_uniformity_metric {R : realType} {T : pseudoMetricType R} :
+Lemma countable_uniformity_metric d {R : realType} {T : pseudoMetricType d R} :
   countable_uniformity T.
 Proof.
 apply/countable_uniformityP.
@@ -445,18 +458,19 @@ End pseudoMetric_of_normedDomain.
 HB.instance Definition _ (R : zmodType) := Pointed.on R^o.
 
 #[short(type="completePseudoMetricType")]
-HB.structure Definition CompletePseudoMetric R :=
-  {T of Complete T & PseudoPointedMetric R T}.
+HB.structure Definition CompletePseudoMetric d R :=
+  {T of Complete d T & PseudoPointedMetric d R T}.
+HB.saturate with_fdisp.
 
-Definition cauchy_ex {R : numDomainType} {T : pseudoMetricType R}
+Definition cauchy_ex d {R : numDomainType} {T : pseudoMetricType d R}
     (F : set_system T) :=
   forall eps : R, 0 < eps -> exists x, F (ball x eps).
 
-Definition cauchy_ball {R : numDomainType} {T : pseudoMetricType R}
+Definition cauchy_ball d {R : numDomainType} {T : pseudoMetricType d R}
     (F : set_system T) :=
   forall e, e > 0 -> \forall x & y \near F, ball x e y.
 
-Lemma cauchy_ballP (R : numDomainType) (T  : pseudoMetricType R)
+Lemma cauchy_ballP d (R : numDomainType) (T  : pseudoMetricType d R)
     (F : set_system T) (FF : Filter F) :
   cauchy_ball F <-> cauchy F.
 Proof.
@@ -465,19 +479,19 @@ split=> cauchyF; last first.
 move=> U; rewrite -entourage_ballE => - [_/posnumP[eps] xyepsU].
 by near do apply: xyepsU; apply: cauchyF.
 Unshelve. all: by end_near. Qed.
-Arguments cauchy_ballP {R T} F {FF}.
+Arguments cauchy_ballP {d R T} F {FF}.
 
-Lemma cauchy_exP (R : numFieldType) (T : pseudoMetricType R)
+Lemma cauchy_exP d (R : numFieldType) (T : pseudoMetricType d R)
     (F : set_system T) (FF : Filter F) :
   cauchy_ex F -> cauchy F.
 Proof.
 move=> Fc A; rewrite !nbhs_simpl /= -entourage_ballE => -[_/posnumP[e] sdeA].
 have /Fc [z /= Fze] := [gt0 of e%:num / 2]; near=> x y; apply: sdeA => /=.
-by apply: (@ball_splitr _ _ z); [near: x|near: y].
+by apply: (@ball_splitr _ _ _ z); [near: x|near: y].
 Unshelve. all: by end_near. Qed.
-Arguments cauchy_exP {R T} F {FF}.
+Arguments cauchy_exP {d R T} F {FF}.
 
-Lemma cauchyP (R : numFieldType) (T : pseudoMetricType R)
+Lemma cauchyP d (R : numFieldType) (T : pseudoMetricType d R)
     (F : set_system T) (PF : ProperFilter F) :
   cauchy F <-> cauchy_ex F.
 Proof.
@@ -485,16 +499,16 @@ split=> [Fcauchy _/posnumP[e] |/cauchy_exP//].
 near F => x; exists x; near: x; apply: (@nearP_dep _ _ F F).
 exact/Fcauchy/entourage_ball.
 Unshelve. all: by end_near. Qed.
-Arguments cauchyP {R T} F {PF}.
+Arguments cauchyP {d R T} F {PF}.
 
 Definition closed_ball_ {R : numDomainType} {V : zmodType} (norm : V -> R)
   (x : V) (e : R) := [set y | norm (x - y) <= e].
 
-Definition closed_ball {R : numDomainType} {V : pseudoMetricType R}
+Definition closed_ball d {R : numDomainType} {V : pseudoMetricType d R}
   (x : V) (e : R) := closure (ball x e).
 
 Section closed_ball_lemmas.
-Context {R : numDomainType} {V : pseudoMetricType R}.
+Context {d} {R : numDomainType} {V : pseudoMetricType d R}.
 Implicit Types (x : V) (r : R).
 
 Lemma closure_ballE x r : closure (ball x r) = closed_ball x r.
@@ -517,10 +531,19 @@ End closed_ball_lemmas.
 #[deprecated(since="mathcomp-analysis 1.14.0", note="renamed to `closure_ballE`")]
 Notation closure_ball := closure_ballE (only parsing).
 
-Lemma subset_closure_half {R : numFieldType} {V : pseudoMetricType R} (x : V)
-  (r : R) : 0 < r -> closed_ball x (r / 2) `<=` ball x r.
+Lemma subset_closure_half d {R : numFieldType} {V : pseudoMetricType d R} 
+  (x : V) (r : R) : 
+  0 < r -> closed_ball x (r / 2) `<=` ball x r.
 Proof.
 move:r => _/posnumP[r] z /(_ (ball z ((r%:num/2)%:pos)%:num)) [].
   exact: nbhsx_ballx.
 by move=> y [+/ball_sym]; rewrite [t in ball x t z]splitr; apply: ball_triangle.
 Qed.
+
+Module ExplicitNbhsDisplays.
+Export uniform_structure.ExplicitNbhsDisplays.
+
+Notation "d .-ball" := (@ball d _ _).
+Notation "'ball'" := (@ball default_fdisp _ _) (only printing).
+
+End ExplicitNbhsDisplays.

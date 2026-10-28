@@ -111,7 +111,7 @@ Lemma cvg_addrl_Ny (M : R) : M + r @[r --> -oo] --> -oo.
 Proof. by under eq_fun do rewrite addrC; exact: cvg_addrr_Ny. Qed.
 
 (* NB: see cvg_centern in sequences.v *)
-Lemma cvg_centerr (M : R) (T : topologicalType) (f : R -> T) (l : T) :
+Lemma cvg_centerr d (M : R) (T : topologicalType d) (f : R -> T) (l : T) :
   (f (n - M) @[n --> +oo] --> l) = (f r @[r --> +oo] --> l).
 Proof.
 rewrite propeqE; split; last by apply: cvg_comp; exact: cvg_addrr.
@@ -122,7 +122,7 @@ by under [X in X @ _ --> l]funext => n do rewrite addrK.
 Qed.
 
 (* NB: see cvg_shiftn in sequence.v *)
-Lemma cvg_shiftr (M : R) (T : topologicalType) (f : R -> T) (l : T) :
+Lemma cvg_shiftr d (M : R) (T : topologicalType d) (f : R -> T) (l : T) :
   (f (n + M) @[n --> +oo]--> l) = (f r @[r --> +oo] --> l).
 Proof.
 rewrite propeqE; split; last by apply: cvg_comp; exact: cvg_addrr.
@@ -1023,7 +1023,7 @@ Qed.
 End lime_sup_inf.
 
 Section derivable_oo_LRcontinuous.
-Context {R : numFieldType} {V : normedModType R}.
+Context {d} {R : numFieldType} {V : normedModType d R}.
 
 Definition derivable_oo_LRcontinuous (f : R -> V) (x y : R) :=
   [/\ {in `]x, y[, forall x, derivable f x 1},
@@ -1097,7 +1097,7 @@ Notation derivable_oy_continuous_within_itvcy := derivable_oy_Rcontinuous_within
 Notation derivable_Noy_continuous_within_itvNyc := derivable_Noy_Lcontinuous_within_itvNyc (only parsing).
 
 Section derivable_oo_continuousW.
-Context {R : realFieldType} {V : normedModType R}.
+Context {td} {R : realFieldType} {V : normedModType td R}.
 
 Lemma derivable_oo_continuousW (a b c d : R) (f : R -> V) :
   c < d ->
@@ -1493,7 +1493,8 @@ move=> aLb fC fK x y xfbfa yfbfa; rewrite -lerN2.
 apply: (@segment_can_le (- b) (- a) (f \o -%R) (- g));
     rewrite /= ?lerN2 ?opprK //.
   pose fun_neg : subspace `[-b,-a] -> subspace `[a,b] := itvN_oppr a b.
-  move=> z; apply: (@continuous_comp _ _ _ [fun of fun_neg]); last exact: fC.
+  move=> z.
+  apply: (@continuous_comp _ _ _ _ _ _ [fun of fun_neg]); last exact: fC.
   exact/subspaceT_continuous/continuous_subspaceT/oppr_continuous.
 by move=> z zab; rewrite -[- g]/(@GRing.opp _ \o g)/= fK ?opprK// oppr_itvcc.
 Qed.
@@ -2592,8 +2593,8 @@ have [r] := MVT ab gdg cg; rewrite in_itv/= => /andP[ar rb] dgg.
 pose h (x : R) := f x - ((f b - f a) / (g b - g a)) * g x.
 have hder x : x \in `]a, b[%R -> derivable h x 1.
   move=> xab; apply: derivableB => /=.
-    exact: (@ex_derive _ _ _ _ _ _ _ (fdf xab)).
-  by apply: derivableM => //; exact: (@ex_derive _ _ _ _ _ _ _ (gdg xab)).
+    exact: (@ex_derive _ _ _ _ _ _ _ _ _ (fdf xab)).
+  by apply: derivableM => //; exact: (@ex_derive _ _ _ _ _ _ _ _ _ (gdg xab)).
 have ch : {within `[a, b], continuous h}.
   rewrite continuous_subspace_in => x xab.
   by apply: cvgB; [exact: cf|apply: cvgM => //; exact: cg].
@@ -2604,8 +2605,8 @@ pose dh (x : R) := df x - (f b - f a) / (g b - g a) * dg x.
 have his_der y : y \in `]a, b[%R -> is_derive x 1 h (dh x).
   by move=> yab; apply: is_deriveB; [exact: fdf|apply: is_deriveZ; exact: gdg].
 exists x => //.
-have := @derive_val _ R _ _ _ _ _ (his_der _ xab).
-have -> := @derive_val _ R _ _ _ _ _ derh.
+have := @derive_val _ _ _ R _ _ _ _ _ (his_der _ xab).
+have -> := @derive_val _ _ _ R _ _ _ _ _ derh.
 by move=> /eqP; rewrite eq_sym subr_eq add0r => /eqP ->; rewrite mulfK // dg0.
 Qed.
 
@@ -2656,7 +2657,7 @@ Let g0 x := if x == a then 0 else g x.
 
 Let g0dg z y : y <= b -> z \in `]a, y[ -> is_derive z 1 g0 (dg z).
 Proof.
-move=> yb zay; apply: (@near_eq_is_derive _ _ _ g) => //; last first.
+move=> yb zay; apply: (@near_eq_is_derive _ _ _ _ _ g) => //; last first.
   by apply: gdg; move: z zay; apply: subset_itvSoo; rewrite bnd_simp.
 near=> u do rewrite /g0 gt_eqF//.
 by move: zay; rewrite in_itv/= => /andP[+ _]; exact: lt_nbhsr.
@@ -3008,13 +3009,13 @@ near a^'+ => y; near=> x.
 have := @cauchy_MVT R f df g dg x y.
 have /[swap] /[apply] : x < y by [].
 have /[swap] /[apply] : {within `[x, y], continuous f}.
-  apply: (@continuous_subspaceW _ _ _ `]a, b[).
+  apply: (@continuous_subspaceW _ _ _ _ _ `]a, b[).
     by apply: subset_itv; rewrite bnd_simp.
   rewrite continuous_open_subspace// => /= z /set_mem/= z_ab.
   apply: differentiable_continuous; apply/derivable1_diffP.
   by apply: ex_derive; apply in_ab.
 have /[swap] /[apply] : {within `[x, y], continuous g}.
-  apply: (@continuous_subspaceW _ _ _ `]a, b[).
+  apply: (@continuous_subspaceW _ _ _ _ _ `]a, b[).
     by apply: subset_itv; rewrite bnd_simp.
   rewrite continuous_open_subspace// => /= z /set_mem/= z_ab.
   apply: differentiable_continuous; apply/derivable1_diffP.

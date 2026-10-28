@@ -715,7 +715,7 @@ Let lusin_simple (f : {sfun R >-> rT}) (eps : rT) : (0 < eps)%R ->
 Proof.
 move: eps=> _/posnumP[eps]; have [N /card_fset_set rfN] := fimfunP f.
 pose Af x : set R := A `&` f @^-1` [set x].
-have mAf x : (@open R).-sigma.-measurable (Af x).
+have mAf x : (@open _ R).-sigma.-measurable (Af x).
    exact: measurableI.
 have finAf x : mu (Af x) < +oo.
   rewrite (le_lt_trans _ finA)// le_measure// ?inE//.
@@ -753,8 +753,7 @@ exists (\bigcup_(i in range f) dK i); split.
   + by move=> ? ? [? ?][? ?]; split; [exact: closedU|exact: withinU_continuous].
   + move=> i _; split; first by apply: compact_closed; have [] := dkP i.
     apply: (continuous_subspaceW (dKsub i)).
-    apply: (@subspace_eq_continuous _ _ _ (cst i)).
-      by rewrite /from_subspace => ? /set_mem ->.
+    apply: (@subspace_eq_continuous _ _ _ _ _ (cst i)) => [? /set_mem -> //|].
     exact: cst_continuous.
 Qed.
 
@@ -794,8 +793,9 @@ move=> D [/= mD Deps KDf]; exists (K `\` D); split => //.
     by move=> k /=; apply: measurableD => //; apply: mgK.
   apply: (@le_trans _ _(\sum_(k <oo) (e2n k)%:E)); last exact: epsilon_trick0.
   by apply: lee_nneseries => // k _; apply: ltW; have [] := gKP k.
-apply: (@uniform_limit_continuous_subspace _ _ _ (g_ @ \oo)) => //.
-near_simpl; apply: nearW => // n; apply: (@continuous_subspaceW _ _ _ (gK n)).
+apply: (@uniform_limit_continuous_subspace _ _ _ _ _ (g_ @ \oo)) => //.
+near_simpl; apply: nearW => // n
+    ; apply: (@continuous_subspaceW _ _ _ _ _ (gK n)).
   by move=> z [+ _]; apply.
 by have [] := projT2 (cid (gK' n)).
 Qed.

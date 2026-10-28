@@ -40,7 +40,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section limf_esup_einf.
-Context {T : choiceType} {X : filteredType T} {R : realFieldType}.
+Context {d} {T : choiceType} {X : filteredType d T} {R : realFieldType}.
 Implicit Types (f : X -> \bar R) (F : set_system X).
 Local Open Scope ereal_scope.
 
@@ -69,7 +69,7 @@ Proof. by rewrite /limf_einf; under eq_fun do rewrite oppeK. Qed.
 End limf_esup_einf.
 
 Section limf_esup_einf_realType.
-Variables (T : choiceType) (X : filteredType T) (R : realType).
+Context d (T : choiceType) (X : filteredType d T) (R : realType).
 Implicit Types (f : X -> \bar R) (F : set_system X).
 Local Open Scope ereal_scope.
 
@@ -84,7 +84,7 @@ Qed.
 End limf_esup_einf_realType.
 
 Section lower_semicontinuous.
-Context {X : topologicalType} {R : numFieldType}.
+Context {d} {X : topologicalType d} {R : numFieldType}.
 Implicit Types f : X -> \bar R.
 Local Open Scope ereal_scope.
 
@@ -507,6 +507,7 @@ apply/seteqP; split=> A.
   + by rewrite set_itvE/= subTset => _ ->; exact: filter_nbhsT.
 Qed.
 
-HB.instance Definition _ := Order_isNbhs.Build _ (\bar R) ereal_order_nbhsE.
+HB.instance Definition _ := 
+  Order_isNbhs.Build default_fdisp _ (\bar R) ereal_order_nbhsE.
 
 End ereal_OrderNbhs.
