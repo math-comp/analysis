@@ -48,7 +48,8 @@ End Gdelta_Fsigma.
 
 Import MeasurableR.
 
-Lemma Gdelta_measurable {R : realType} (S : set R) : Gdelta S -> measurable S.
+Lemma Gdelta_measurable {R : realType} (S : set R) : 
+  Gdelta S -> lebesgue_measurable S.
 Proof.
 move=> [] B oB ->; apply: bigcapT_measurable => i.
 exact: open_measurable.

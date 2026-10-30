@@ -286,6 +286,7 @@ Hint Extern 0 (measurable (_ @^-1` [set _])) =>
 Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 #[global]
 Hint Extern 0 (measurable [set` _] ) => exact: measurable_itv : core.
+
 End MeasurableRocitv.
 
 Module RGenOInfty.
@@ -531,6 +532,8 @@ Hint Extern 0 (measurable (_ @^-1` [set _])) =>
 Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 #[global]
 Hint Extern 0 (measurable [set` _] ) => exact: measurable_itv : core.
+
+Notation lebesgue_measurable := (@measurable lebesgue_display _).
 
 Lemma measurable_funP1 {d} {aT : measurableType d} {rT : realType}
    (f : {mfun aT >-> rT}) D (y : rT) :
