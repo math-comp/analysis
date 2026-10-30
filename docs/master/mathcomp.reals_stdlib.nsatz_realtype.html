@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.reals_stdlib.nsatz_realtype</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 9b7419b 2026.10.29-22:59" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 9b7419b 2026.10.30-22:35" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -287,27 +287,7 @@ Reference:
 <div class="proofscript">
 <span class="id"> by</span><span class="id"> constructor</span><span class="id"> =&gt;</span><span class="id"> [x</span><span class="id"> //|x</span><span class="id"> y</span><span class="id"> //|x</span><span class="id"> y</span><span class="id"> z</span><span class="id"> -&gt;]</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType0" class="id"><div name="Nsatz_realType0" class="id anchor tooltip">Nsatz_realType0<span class='tooltip-area'><p>sin_coeff' : forall {R : realType}, R -> nat -> R
-
-sin_coeff' is not universe polymorphic
-Arguments sin_coeff' {R} x%_ring_scope n%_nat_scope
-sin_coeff' is transparent
-Expands to: Constant
-            mathcomp.analysis.elementary_functions.trigonometry_functions.sin_coeff'
-Declared in
-library mathcomp.analysis.elementary_functions.trigonometry_functions, line 170, characters 11-21
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L29' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span>&nbsp;(<span class="id">0</span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType1" class="id"><div name="Nsatz_realType1" class="id anchor tooltip">Nsatz_realType1<span class='tooltip-area'><p>cos_coeff' : forall {R : realType}, R -> nat -> R
-
-cos_coeff' is not universe polymorphic
-Arguments cos_coeff' {R} x%_ring_scope n%_nat_scope
-cos_coeff' is transparent
-Expands to: Constant
-            mathcomp.analysis.elementary_functions.trigonometry_functions.cos_coeff'
-Declared in
-library mathcomp.analysis.elementary_functions.trigonometry_functions, line 250, characters 11-21
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L30' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span>&nbsp;(<span class="id">1</span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>).<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_add" class="id"><div name="Nsatz_realType_add" class="id anchor tooltip">Nsatz_realType_add<span class='tooltip-area'><p>sin_inum : forall {R : realType}, R -> {itv R & `[(-1)%Z, 1%Z]%R}
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType0" class="id"><div name="Nsatz_realType0" class="id anchor tooltip">Nsatz_realType0<span class='tooltip-area'><p>sin_inum : forall {R : realType}, R -> {itv R & `[(-1)%Z, 1%Z]%R}
 
 sin_inum is not universe polymorphic
 Arguments sin_inum {R} x%_ring_scope
@@ -316,8 +296,8 @@ Expands to: Constant
             mathcomp.analysis.elementary_functions.trigonometry_functions.sin_inum
 Declared in
 library mathcomp.analysis.elementary_functions.trigonometry_functions, line 494, characters 10-18
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L31' target='_blank'>Source code</a></span></div></span>&nbsp;(<span id="x:3" class="id"><div name="x:3" class="id anchor tooltip">x<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L31' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="y:4" class="id"><div name="y:4" class="id anchor tooltip">y<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L31' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span>&nbsp;(<span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:3">x</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:4">y</a></span>)<span class="id">%R</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_mul" class="id"><div name="Nsatz_realType_mul" class="id anchor tooltip">Nsatz_realType_mul<span class='tooltip-area'><p>cos_inum : forall {R : realType}, R -> {itv R & `[(-1)%Z, 1%Z]%R}
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L29' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span>&nbsp;(<span class="id">0</span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>).<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType1" class="id"><div name="Nsatz_realType1" class="id anchor tooltip">Nsatz_realType1<span class='tooltip-area'><p>cos_inum : forall {R : realType}, R -> {itv R & `[(-1)%Z, 1%Z]%R}
 
 cos_inum is not universe polymorphic
 Arguments cos_inum {R} x%_ring_scope
@@ -326,8 +306,8 @@ Expands to: Constant
             mathcomp.analysis.elementary_functions.trigonometry_functions.cos_inum
 Declared in
 library mathcomp.analysis.elementary_functions.trigonometry_functions, line 500, characters 10-18
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L32' target='_blank'>Source code</a></span></div></span>&nbsp;(<span id="x:5" class="id"><div name="x:5" class="id anchor tooltip">x<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L32' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="y:6" class="id"><div name="y:6" class="id anchor tooltip">y<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L32' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span>&nbsp;(<span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:5">x</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:6">y</a></span>)<span class="id">%R</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_sub" class="id"><div name="Nsatz_realType_sub" class="id anchor tooltip">Nsatz_realType_sub<span class='tooltip-area'><p>Abbreviation pi := pi.body
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L30' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span>&nbsp;(<span class="id">1</span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#6411ed08724033ae48d2865f0380d533">%:R</a></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>).<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_add" class="id"><div name="Nsatz_realType_add" class="id anchor tooltip">Nsatz_realType_add<span class='tooltip-area'><p>Abbreviation pi := pi.body
 Expands to: Abbreviation mathcomp.boot.generic_quotient.pi
 Declared in library mathcomp.boot.generic_quotient, line 158, characters 0-35
 
@@ -337,8 +317,8 @@ pi.body is not universe polymorphic
 Arguments pi.body [T]%_type_scope qT%_type_scope _
 Expands to: Constant mathcomp.boot.generic_quotient.pi.body
 Declared in library mathcomp.boot.generic_quotient, line 158, characters 0-35
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L33' target='_blank'>Source code</a></span></div></span>&nbsp;(<span id="x:7" class="id"><div name="x:7" class="id anchor tooltip">x<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L33' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="y:8" class="id"><div name="y:8" class="id anchor tooltip">y<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L33' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span>&nbsp;(<span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:7">x</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:x_'-'_x"> -</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:x_'-'_x"> </a></span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:8">y</a></span>)<span class="id">%R</span>.<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_opp" class="id"><div name="Nsatz_realType_opp" class="id anchor tooltip">Nsatz_realType_opp<span class='tooltip-area'><p>tan : forall {R : realType}, R -> R
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L31' target='_blank'>Source code</a></span></div></span>&nbsp;(<span id="x:3" class="id"><div name="x:3" class="id anchor tooltip">x<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L31' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="y:4" class="id"><div name="y:4" class="id anchor tooltip">y<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L31' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span>&nbsp;(<span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:3">x</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> </a></span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:4">y</a></span>)<span class="id">%R</span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_mul" class="id"><div name="Nsatz_realType_mul" class="id anchor tooltip">Nsatz_realType_mul<span class='tooltip-area'><p>tan : forall {R : realType}, R -> R
 
 tan is not universe polymorphic
 Arguments tan {R} x%_ring_scope
@@ -347,6 +327,34 @@ Expands to: Constant
             mathcomp.analysis.elementary_functions.trigonometry_functions.tan
 Declared in
 library mathcomp.analysis.elementary_functions.trigonometry_functions, line 803, characters 11-14
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L32' target='_blank'>Source code</a></span></div></span>&nbsp;(<span id="x:5" class="id"><div name="x:5" class="id anchor tooltip">x<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L32' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="y:6" class="id"><div name="y:6" class="id anchor tooltip">y<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L32' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span>&nbsp;(<span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:5">x</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#2d0cfb150261028f4ebd2ba355623dcc"> *</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#2d0cfb150261028f4ebd2ba355623dcc"> </a></span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:6">y</a></span>)<span class="id">%R</span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_sub" class="id"><div name="Nsatz_realType_sub" class="id anchor tooltip">Nsatz_realType_sub<span class='tooltip-area'><p>acos_unlock_subterm :
+unlockable
+  (fun (R : realType) (x : R) =>
+   [get x0 : _ | [set y | (0 <= y <= trigonometry_functions.pi)%R /\
+                          cos y = x]%classic
+                   x0])
+
+acos_unlock_subterm is not universe polymorphic
+acos_unlock_subterm is transparent
+Expands to: Constant
+            mathcomp.analysis.elementary_functions.trigonometry_functions.acos_unlock_subterm
+Declared in
+library mathcomp.analysis.elementary_functions.trigonometry_functions, line 893, characters 0-96
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L33' target='_blank'>Source code</a></span></div></span>&nbsp;(<span id="x:7" class="id"><div name="x:7" class="id anchor tooltip">x<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L33' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="y:8" class="id"><div name="y:8" class="id anchor tooltip">y<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L33' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span>&nbsp;(<span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:7">x</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:x_'-'_x"> -</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:x_'-'_x"> </a></span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#y:8">y</a></span>)<span class="id">%R</span>.<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Nsatz_realType_opp" class="id"><div name="Nsatz_realType_opp" class="id anchor tooltip">Nsatz_realType_opp<span class='tooltip-area'><p>acos_unlock_subterm :
+unlockable
+  (fun (R : realType) (x : R) =>
+   [get x0 : _ | [set y | (0 <= y <= trigonometry_functions.pi)%R /\
+                          cos y = x]%classic
+                   x0])
+
+acos_unlock_subterm is not universe polymorphic
+acos_unlock_subterm is transparent
+Expands to: Constant
+            mathcomp.analysis.elementary_functions.trigonometry_functions.acos_unlock_subterm
+Declared in
+library mathcomp.analysis.elementary_functions.trigonometry_functions, line 893, characters 0-96
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L34' target='_blank'>Source code</a></span></div></span>&nbsp;(<span id="x:9" class="id"><div name="x:9" class="id anchor tooltip">x<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/reals_stdlib/nsatz_realtype.v#L34' target='_blank'>Source code</a></span></div></span>&nbsp;&nbsp;<span class="id">:</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#Nsatz_realType.T">T</a></span>)<span class="id"> :=</span>&nbsp;(<span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x">-</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x"> </a></span><span class="id link"><a href="mathcomp.reals_stdlib.nsatz_realtype.html#x:9">x</a></span>)<span class="id">%R</span>.<br/>
 <br/>
 <span class="id">#[global]</span><br/>

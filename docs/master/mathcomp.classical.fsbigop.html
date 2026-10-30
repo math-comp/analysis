@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.classical.fsbigop</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 9b7419b 2026.10.29-22:59" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 9b7419b 2026.10.30-22:35" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -299,19 +299,20 @@
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
 <span class="id"> exact:</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#tt">tt</a></span>. Qed.</div></details>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="finite_support" class="id"><div name="finite_support" class="id anchor tooltip">finite_support<span class='tooltip-area'><p>acos_unlock_subterm :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="finite_support" class="id"><div name="finite_support" class="id anchor tooltip">finite_support<span class='tooltip-area'><p>asin_unlock_subterm :
 unlockable
   (fun (R : realType) (x : R) =>
-   [get x0 : _ | [set y | (0 <= y <= trigonometry_functions.pi)%R /\
-                          cos y = x]%classic
+   [get x0 : _ | [set y | (- (trigonometry_functions.pi / 2) <= y <=
+                           trigonometry_functions.pi / 2)%R /\
+                          sin y = x]%classic
                    x0])
 
-acos_unlock_subterm is not universe polymorphic
-acos_unlock_subterm is transparent
+asin_unlock_subterm is not universe polymorphic
+asin_unlock_subterm is transparent
 Expands to: Constant
-            mathcomp.analysis.elementary_functions.trigonometry_functions.acos_unlock_subterm
+            mathcomp.analysis.elementary_functions.trigonometry_functions.asin_unlock_subterm
 Declared in
-library mathcomp.analysis.elementary_functions.trigonometry_functions, line 893, characters 0-96
+library mathcomp.analysis.elementary_functions.trigonometry_functions, line 1019, characters 0-108
 </p><hr/>Used by
 <ul><li>mathcomp.analysis.ereal</li></ul><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/classical/fsbigop.v#L41' target='_blank'>Source code</a></span></div></span><span class="id"> {</span><span id="I:5" class="id"><div name="I:5" class="id anchor tooltip">I<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/classical/fsbigop.v#L41' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.choice.html#Choice.Exports.choiceType">choiceType</a></span><span class="id">}</span><span class="id"> {</span><span id="T:6" class="id"><div name="T:6" class="id anchor tooltip">T<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/classical/fsbigop.v#L41' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> Type}</span>&nbsp;(<span id="idx:7" class="id"><div name="idx:7" class="id anchor tooltip">idx<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/classical/fsbigop.v#L41' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.fsbigop.html#T:6">T</a></span>)&nbsp;(<span id="D:8" class="id"><div name="D:8" class="id anchor tooltip">D<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/classical/fsbigop.v#L41' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.fsbigop.html#I:5">I</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span id="F:9" class="id"><div name="F:9" class="id anchor tooltip">F<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/classical/fsbigop.v#L42' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.fsbigop.html#I:5">I</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id link"><a href="mathcomp.classical.fsbigop.html#T:6">T</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#seq">seq</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.fsbigop.html#I:5">I</a></span><span class="id"> :=</span><br/>

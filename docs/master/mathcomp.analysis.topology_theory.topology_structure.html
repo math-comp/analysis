@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.topology_theory.topology_structure</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 9b7419b 2026.10.29-22:59" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 9b7419b 2026.10.30-22:35" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -1183,15 +1183,6 @@ Expands to: Constant
             mathcomp.analysis.topology_theory.topology_structure.nbhs_filter_on
 Declared in
 library mathcomp.analysis.topology_theory.topology_structure, line 176, characters 10-24
-interior : forall {T : topologicalType}, set T -> T -> Prop
-
-interior is not universe polymorphic
-Arguments interior {T} A%_classical_set_scope x
-interior is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.topology_structure.interior
-Declared in
-library mathcomp.analysis.topology_theory.topology_structure, line 192, characters 11-19
 </p><hr/>Used by
 <ul><li>mathcomp.analysis.derive</li></ul><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L696' target='_blank'>Source code</a></span></div></span>&nbsp;(<span id="T:316" class="id"><div name="T:316" class="id anchor tooltip">T<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L696' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#topologicalType">topologicalType</a></span>)&nbsp;&nbsp;(<span id="x:317" class="id"><div name="x:317" class="id anchor tooltip">x<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L696' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#T:316">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id link"><a href="mathcomp.classical.filter.html#FilterType">FilterType</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#x:317">x</a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#f8c5a58f3e97f5207acd97345df460ee">^'</a></span>&nbsp;(<span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#dnbhs_filter">dnbhs_filter</a></span><span class="id"> _</span>).<br/>
@@ -1244,17 +1235,15 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="vernacular"> Closed</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="Closed.T" class="id"><div name="Closed.T" class="id anchor tooltip">T<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L728' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="closure" class="id"><div name="closure" class="id anchor tooltip">closure<span class='tooltip-area'><p>locally_of :
-forall {T : topologicalType} [A : set T] [P : set_system T -> Prop],
-phantom Prop (P (globally A)) -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="closure" class="id"><div name="closure" class="id anchor tooltip">closure<span class='tooltip-area'><p>interior : forall {T : topologicalType}, set T -> T -> Prop
 
-locally_of is not universe polymorphic
-Arguments locally_of {T} [A]%_classical_set_scope [P]%_function_scope _
-locally_of is transparent
+interior is not universe polymorphic
+Arguments interior {T} A%_classical_set_scope x
+interior is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.topology_structure.locally_of
+            mathcomp.analysis.topology_theory.topology_structure.interior
 Declared in
-library mathcomp.analysis.topology_theory.topology_structure, line 443, characters 11-21
+library mathcomp.analysis.topology_theory.topology_structure, line 192, characters 11-19
 </p><hr/>Used by
 <ul><li>mathcomp.analysis.real_measure.lebesgue_measure</li><li>mathcomp.analysis.topology_theory.num_topology</li><li>mathcomp.analysis.topology_theory.pseudometric_structure</li><li>mathcomp.analysis.topology_theory.uniform_structure</li><li>mathcomp.analysis.topology_theory.function_spaces</li><li>mathcomp.analysis.topology_theory.connected</li><li>mathcomp.analysis.topology_theory.separation_axioms</li><li>mathcomp.analysis.topology_theory.compact</li><li>mathcomp.analysis.topology_theory.subspace_topology</li><li>mathcomp.analysis.topology_theory.order_topology</li><li>mathcomp.analysis.cantor</li><li>mathcomp.analysis.normedtype_theory.urysohn</li><li>mathcomp.analysis.normedtype_theory.vitali_lemma</li><li>mathcomp.analysis.normedtype_theory.normed_module</li><li>mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule</li></ul><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L730' target='_blank'>Source code</a></span></div></span>&nbsp;(<span id="A:342" class="id"><div name="A:342" class="id anchor tooltip">A<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L730' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Closed.T">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id link"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">[set</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span id="p:343" class="id"><div name="p:343" class="id anchor tooltip">p<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L731' target='_blank'>Source code</a></span></div></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> :</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Closed.T">T</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> |</a></span><span class="gallina-kwd link"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="gallina-kwd">forall</span><span class="id"> </span><span id="B:344" class="id"><div name="B:344" class="id anchor tooltip">B<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L731' target='_blank'>Source code</a></span></div></span><span class="id">,</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#p:343">p</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#B:344">B</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#A:342">A</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#B:344">B</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#f10328901eec42a91736ddd004ac4166"> !=set0</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">]</a></span>.<br/>
@@ -1295,20 +1284,17 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="id"> by</span><span class="id"> move=&gt;</span><span class="id"> p</span><span class="id"> clABp;</span><span class="id"> split=&gt;</span><span class="id"> ?</span><span class="id"> /clABp</span><span class="id"> [q</span><span class="id"> [[]]];</span><span class="id"> exists</span><span class="id"> q</span>. Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="limit_point" class="id"><div name="limit_point" class="id anchor tooltip">limit_point<span class='tooltip-area'><p>Builders_1.open_of_nbhs :
-forall [T : Type],
-hasChoice.axioms_ T ->
-Equality.mixin_of T -> isFiltered.axioms_ T T -> set (set T)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="limit_point" class="id"><div name="limit_point" class="id anchor tooltip">limit_point<span class='tooltip-area'><p>locally_of :
+forall {T : topologicalType} [A : set T] [P : set_system T -> Prop],
+phantom Prop (P (globally A)) -> Prop
 
-Builders_1.open_of_nbhs is not universe polymorphic
-Arguments Builders_1.open_of_nbhs [T]%_type_scope
-  local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
-  local_mixin_filter_isFiltered _
-Builders_1.open_of_nbhs is transparent
+locally_of is not universe polymorphic
+Arguments locally_of {T} [A]%_classical_set_scope [P]%_function_scope _
+locally_of is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.topology_structure.Builders_1.open_of_nbhs
+            mathcomp.analysis.topology_theory.topology_structure.locally_of
 Declared in
-library mathcomp.analysis.topology_theory.topology_structure, line 497, characters 11-23
+library mathcomp.analysis.topology_theory.topology_structure, line 443, characters 11-21
 </p><hr/>Used by
 <ul><li>mathcomp.analysis.topology_theory.separation_axioms</li><li>mathcomp.analysis.sequences</li><li>mathcomp.analysis.normedtype_theory.normed_module</li></ul><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L750' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="E:353" class="id"><div name="E:353" class="id anchor tooltip">E<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L750' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">[set</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span id="t:354" class="id"><div name="t:354" class="id anchor tooltip">t<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L750' target='_blank'>Source code</a></span></div></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> :</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Closed.T">T</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b"> |</a></span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span><span class="id"> </span><span id="U:355" class="id"><div name="U:355" class="id anchor tooltip">U<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L751' target='_blank'>Source code</a></span></div></span><span class="id">,</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#t:354">t</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#U:355">U</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">exists</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span id="y:356" class="id"><div name="y:356" class="id anchor tooltip">y<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L751' target='_blank'>Source code</a></span></div></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54">,</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#a883bdd010993579f99d60b3775bcf54"> </a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">[/\</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#y:356">y</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#c385a484ee9d1b4e0615924561a9b75e"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#t:354">t</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">,</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#E:353">E</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#y:356">y</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> &amp;</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#U:355">U</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#y:356">y</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#d7e433f5d2fe56f5b712860a9ff2a681">]</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#b4e6034ee20673e7601398ff7b1b7d1b">]</a></span>.<br/>
@@ -1348,15 +1334,20 @@ Qed.</div></details>
 <span class="id">by</span><span class="id"> rewrite</span><span class="id"> -</span>(<span class="id link"><a href="mathcomp.classical.boolp.html#propext">propext</a></span>&nbsp;(<span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#rwP">rwP</a></span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#eqP">eqP</a></span>)).<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="isolated" class="id"><div name="isolated" class="id anchor tooltip">isolated<span class='tooltip-area'><p>nbhs_of_open : forall [T : Type], set_system T -> T -> set T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="isolated" class="id"><div name="isolated" class="id anchor tooltip">isolated<span class='tooltip-area'><p>Builders_1.open_of_nbhs :
+forall [T : Type],
+hasChoice.axioms_ T ->
+Equality.mixin_of T -> isFiltered.axioms_ T T -> set (set T)
 
-nbhs_of_open is not universe polymorphic
-Arguments nbhs_of_open [T]%_type_scope op p A%_classical_set_scope
-nbhs_of_open is transparent
+Builders_1.open_of_nbhs is not universe polymorphic
+Arguments Builders_1.open_of_nbhs [T]%_type_scope
+  local_mixin_choice_hasChoice local_mixin_eqtype_hasDecEq
+  local_mixin_filter_isFiltered _
+Builders_1.open_of_nbhs is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.topology_structure.nbhs_of_open
+            mathcomp.analysis.topology_theory.topology_structure.Builders_1.open_of_nbhs
 Declared in
-library mathcomp.analysis.topology_theory.topology_structure, line 519, characters 11-23
+library mathcomp.analysis.topology_theory.topology_structure, line 497, characters 11-23
 </p><hr/>Used by
 <ul><li>mathcomp.analysis.topology_theory.separation_axioms</li><li>mathcomp.analysis.normedtype_theory.normed_module</li></ul><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L777' target='_blank'>Source code</a></span></div></span>&nbsp;(<span id="A:366" class="id"><div name="A:366" class="id anchor tooltip">A<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L777' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Closed.T">T</a></span>)&nbsp;(<span id="x:367" class="id"><div name="x:367" class="id anchor tooltip">x<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L777' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Closed.T">T</a></span>)<span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#x:367">x</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> \in</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#b09457274bcb94927e289b8a9e9cd3f7"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#A:366">A</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">exists2</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span id="V:369" class="id"><span id="V:368" class="id"><div name="V:369" class="id anchor tooltip">V<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L778' target='_blank'>Source code</a></span></div></span></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">,</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id link"><a href="mathcomp.classical.filter.html#nbhs">nbhs</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#x:367">x</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#V:368">V</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> &amp;</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#V:369">V</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> `&amp;`</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#c7636f45aa1745dbf533da3d408cece1"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#A:366">A</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">[set</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#x:367">x</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#29c78c22490f2dae838b1b504eb858a2">]</a></span>.<br/>
@@ -1408,16 +1399,15 @@ Qed.</div></details>
 <span class="id">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure_isolated_limit_point">closure_isolated_limit_point</a></span><span class="id"> =&gt;</span><span class="id"> x</span><span class="id"> [/</span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#isolatedS">isolatedS</a></span><span class="id">|];</span><span class="id"> [left|right]</span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="closed" class="id"><div name="closed" class="id anchor tooltip">closed<span class='tooltip-area'><p>openU_from : forall [T I : Type], set I -> (I -> set T) -> set (set T)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="closed" class="id"><div name="closed" class="id anchor tooltip">closed<span class='tooltip-area'><p>nbhs_of_open : forall [T : Type], set_system T -> T -> set T -> Prop
 
-openU_from is not universe polymorphic
-Arguments openU_from [T I]%_type_scope D%_classical_set_scope
-  b%_function_scope _
-openU_from is transparent
+nbhs_of_open is not universe polymorphic
+Arguments nbhs_of_open [T]%_type_scope op p A%_classical_set_scope
+nbhs_of_open is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.topology_structure.openU_from
+            mathcomp.analysis.topology_theory.topology_structure.nbhs_of_open
 Declared in
-library mathcomp.analysis.topology_theory.topology_structure, line 565, characters 11-21
+library mathcomp.analysis.topology_theory.topology_structure, line 519, characters 11-23
 </p><hr/>Used by
 <ul><li>mathcomp.analysis.real_measure.measurable_realfun</li><li>mathcomp.analysis.real_measure.lebesgue_measure</li><li>mathcomp.analysis.topology_theory.num_topology</li><li>mathcomp.analysis.topology_theory.pseudometric_structure</li><li>mathcomp.analysis.topology_theory.function_spaces</li><li>mathcomp.analysis.topology_theory.discrete_topology</li><li>mathcomp.analysis.topology_theory.connected</li><li>mathcomp.analysis.topology_theory.one_point_compactification</li><li>mathcomp.analysis.topology_theory.separation_axioms</li><li>mathcomp.analysis.topology_theory.compact</li><li>mathcomp.analysis.topology_theory.subspace_topology</li><li>mathcomp.analysis.topology_theory.edist</li><li>mathcomp.analysis.topology_theory.order_topology</li><li>mathcomp.analysis.numfun</li><li>mathcomp.analysis.borel_hierarchy</li><li>mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation</li><li>mathcomp.analysis.sequences</li><li>mathcomp.analysis.cantor</li><li>mathcomp.analysis.normedtype_theory.urysohn</li><li>mathcomp.analysis.normedtype_theory.ereal_normedtype</li><li>mathcomp.analysis.normedtype_theory.normed_module</li><li>mathcomp.analysis.normedtype_theory.matrix_normedtype</li><li>mathcomp.analysis.normedtype_theory.num_normedtype</li><li>mathcomp.analysis.homotopy_theory.wedge_sigT</li></ul><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L816' target='_blank'>Source code</a></span></div></span>&nbsp;(<span id="D:374" class="id"><div name="D:374" class="id anchor tooltip">D<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L816' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Closed.T">T</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#D:374">D</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> `&lt;=`</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#e19db46c1d4073266228fb7781521a56"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#D:374">D</a></span>.<br/>
 <br/>
@@ -1594,7 +1584,17 @@ Qed.</div></details>
 <span class="id"> by</span><span class="id"> move=&gt;</span><span class="id"> ?</span><span class="id"> ?</span><span class="id"> CAx</span><span class="id"> ?;</span><span class="id"> move/CAx;</span><span class="id"> exact/</span><span class="id link"><a href="mathcomp.classical.classical_sets.html#subsetI_neq0">subsetI_neq0</a></span>. Qed.</div></details>
 <br/>
 <span class="id">#[deprecated</span>(<span class="id">since=</span><span class="quoted id">&quot;mathcomp-analysis 1.16.0&quot;</span><span class="id">,</span><span class="id"> note=</span><span class="quoted id">&quot;Use `closureS` instead.&quot;</span>)<span class="id">]</span><br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="closure_subset" class="id"><div name="closure_subset" class="id anchor tooltip">closure_subset<span class='tooltip-area'><p>dnbhs : forall {T : topologicalType}, T -> set_system T
+<span class="vernacular">Definition</span><span class="id"> </span><span id="closure_subset" class="id"><div name="closure_subset" class="id anchor tooltip">closure_subset<span class='tooltip-area'><p>openU_from : forall [T I : Type], set I -> (I -> set T) -> set (set T)
+
+openU_from is not universe polymorphic
+Arguments openU_from [T I]%_type_scope D%_classical_set_scope
+  b%_function_scope _
+openU_from is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.topology_structure.openU_from
+Declared in
+library mathcomp.analysis.topology_theory.topology_structure, line 565, characters 11-21
+dnbhs : forall {T : topologicalType}, T -> set_system T
 
 dnbhs is not universe polymorphic
 Arguments dnbhs {T} x _
@@ -1603,15 +1603,6 @@ Expands to: Constant
             mathcomp.analysis.topology_theory.topology_structure.dnbhs
 Declared in
 library mathcomp.analysis.topology_theory.topology_structure, line 669, characters 11-16
-dnbhs_filter_on : forall [T : topologicalType], T -> filter_on T
-
-dnbhs_filter_on is not universe polymorphic
-Arguments dnbhs_filter_on [T] x
-dnbhs_filter_on is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.topology_structure.dnbhs_filter_on
-Declared in
-library mathcomp.analysis.topology_theory.topology_structure, line 696, characters 10-25
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L933' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closureS">closureS</a></span>.<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="closureE" class="id"><div name="closureE" class="id anchor tooltip">closureE<span class='tooltip-area'>Used by
@@ -1637,20 +1628,20 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> regular_open_closed</span>.<br/>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="regular_open_closed.T" class="id"><div name="regular_open_closed.T" class="id anchor tooltip">T<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L951' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#topologicalType">topologicalType</a></span><span class="id">}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="regopen" class="id"><div name="regopen" class="id anchor tooltip">regopen<span class='tooltip-area'><p>Abbreviation closure e a := (closure_mem e (mem a))
-Expands to: Abbreviation mathcomp.boot.fingraph.closure
-Declared in library mathcomp.boot.fingraph, line 230, characters 0-48
+<span class="vernacular">Definition</span><span class="id"> </span><span id="regopen" class="id"><div name="regopen" class="id anchor tooltip">regopen<span class='tooltip-area'><p>dnbhs_filter_on : forall [T : topologicalType], T -> filter_on T
+
+dnbhs_filter_on is not universe polymorphic
+Arguments dnbhs_filter_on [T] x
+dnbhs_filter_on is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.topology_structure.dnbhs_filter_on
+Declared in
+library mathcomp.analysis.topology_theory.topology_structure, line 696, characters 10-25
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L953' target='_blank'>Source code</a></span></div></span>&nbsp;(<span id="A:425" class="id"><div name="A:425" class="id anchor tooltip">A<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L953' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#regular_open_closed.T">T</a></span>)<span class="id"> :=</span>&nbsp;(<span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#A:425">A</a></span>)<span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#434c05938751a2f4f94a984a7d98da62">°</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#A:425">A</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="regclosed" class="id"><div name="regclosed" class="id anchor tooltip">regclosed<span class='tooltip-area'><p>limit_point : forall {T : topologicalType}, (T -> Prop) -> set T
-
-limit_point is not universe polymorphic
-Arguments limit_point {T} E%_function_scope _
-limit_point is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.topology_structure.limit_point
-Declared in
-library mathcomp.analysis.topology_theory.topology_structure, line 750, characters 11-22
+<span class="vernacular">Definition</span><span class="id"> </span><span id="regclosed" class="id"><div name="regclosed" class="id anchor tooltip">regclosed<span class='tooltip-area'><p>Abbreviation closure e a := (closure_mem e (mem a))
+Expands to: Abbreviation mathcomp.boot.fingraph.closure
+Declared in library mathcomp.boot.fingraph, line 230, characters 0-48
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L955' target='_blank'>Source code</a></span></div></span>&nbsp;(<span id="A:426" class="id"><div name="A:426" class="id anchor tooltip">A<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L955' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#regular_open_closed.T">T</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closure">closure</a></span>&nbsp;(<span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#A:426">A</a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#434c05938751a2f4f94a984a7d98da62">°</a></span>)<span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#A:426">A</a></span>.<br/>
 <br/>
 <span class="vernacular">End</span><span class="id"> regular_open_closed</span>.<br/>
@@ -1847,7 +1838,16 @@ Qed.</div></details>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closureEbigcap_itvcc">closureEbigcap_itvcc</a></span><span class="id"> {T</span><span class="id"> A}</span>.<br/>
 <span class="vernacular">Arguments</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#interiorEbigcup_itvcc">interiorEbigcup_itvcc</a></span><span class="id"> {T</span><span class="id"> A}</span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="dense" class="id"><div name="dense" class="id anchor tooltip">dense<span class='tooltip-area'><p>isolated : forall {T : topologicalType}, set T -> T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="dense" class="id"><div name="dense" class="id anchor tooltip">dense<span class='tooltip-area'><p>limit_point : forall {T : topologicalType}, (T -> Prop) -> set T
+
+limit_point is not universe polymorphic
+Arguments limit_point {T} E%_function_scope _
+limit_point is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.topology_structure.limit_point
+Declared in
+library mathcomp.analysis.topology_theory.topology_structure, line 750, characters 11-22
+isolated : forall {T : topologicalType}, set T -> T -> Prop
 
 isolated is not universe polymorphic
 Arguments isolated {T} A%_classical_set_scope x
@@ -1965,7 +1965,9 @@ Expands to: Constant
             mathcomp.analysis.topology_theory.topology_structure.dense
 Declared in
 library mathcomp.analysis.topology_theory.topology_structure, line 1092, characters 11-16
-basis : forall {T : topologicalType}, set_system T -> Prop
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1138' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#separable_set">separable_set</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#setT">setT</a></span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="second_countable" class="id"><div name="second_countable" class="id anchor tooltip">second_countable<span class='tooltip-area'><p>basis : forall {T : topologicalType}, set_system T -> Prop
 
 basis is not universe polymorphic
 Arguments basis {T} B
@@ -1974,17 +1976,6 @@ Expands to: Constant
             mathcomp.analysis.topology_theory.topology_structure.basis
 Declared in
 library mathcomp.analysis.topology_theory.topology_structure, line 1123, characters 11-16
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1138' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#separable_set">separable_set</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#setT">setT</a></span>.<br/>
-<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="second_countable" class="id"><div name="second_countable" class="id anchor tooltip">second_countable<span class='tooltip-area'><p>nbhs_basis : forall {T : topologicalType}, T -> set (set T) -> Prop
-
-nbhs_basis is not universe polymorphic
-Arguments nbhs_basis {T} x B%_classical_set_scope
-nbhs_basis is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.topology_structure.nbhs_basis
-Declared in
-library mathcomp.analysis.topology_theory.topology_structure, line 1126, characters 11-21
 </p><hr/>Used by
 <ul><li>mathcomp.analysis.topology_theory.compact</li></ul><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1140' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">exists2</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span id="B:477" class="id"><span id="B:476" class="id"><div name="B:477" class="id anchor tooltip">B<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1140' target='_blank'>Source code</a></span></div></span></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac">,</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id link"><a href="mathcomp.classical.cardinality.html#countable">countable</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#B:476">B</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> &amp;</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#3df228c109f14f0423b4fccc967ee1ac"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#basis">basis</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#B:477">B</a></span>.<br/>
 <br/>
@@ -2060,33 +2051,15 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> ClopenSets</span>.<br/>
 <span class="vernacular">Implicit</span><span class="gallina-kwd"> Type</span><span class="id"> T</span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#topologicalType">topologicalType</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="clopen" class="id"><div name="clopen" class="id anchor tooltip">clopen<span class='tooltip-area'><p>separable_set : forall {T : topologicalType}, set T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="clopen" class="id"><div name="clopen" class="id anchor tooltip">clopen<span class='tooltip-area'><p>nbhs_basis : forall {T : topologicalType}, T -> set (set T) -> Prop
 
-separable_set is not universe polymorphic
-Arguments separable_set {T} A%_classical_set_scope
-separable_set is transparent
+nbhs_basis is not universe polymorphic
+Arguments nbhs_basis {T} x B%_classical_set_scope
+nbhs_basis is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.topology_structure.separable_set
+            mathcomp.analysis.topology_theory.topology_structure.nbhs_basis
 Declared in
-library mathcomp.analysis.topology_theory.topology_structure, line 1129, characters 11-24
-separable : topologicalType -> Prop
-
-separable is not universe polymorphic
-Arguments separable {T}
-separable is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.topology_structure.separable
-Declared in
-library mathcomp.analysis.topology_theory.topology_structure, line 1138, characters 11-20
-second_countable : topologicalType -> Prop
-
-second_countable is not universe polymorphic
-Arguments second_countable {T}
-second_countable is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.topology_structure.second_countable
-Declared in
-library mathcomp.analysis.topology_theory.topology_structure, line 1140, characters 11-27
+library mathcomp.analysis.topology_theory.topology_structure, line 1126, characters 11-21
 </p><hr/>Used by
 <ul><li>mathcomp.analysis.topology_theory.connected</li><li>mathcomp.analysis.topology_theory.separation_axioms</li><li>mathcomp.analysis.topology_theory.compact</li><li>mathcomp.analysis.topology_theory.subspace_topology</li><li>mathcomp.analysis.topology_theory.order_topology</li><li>mathcomp.analysis.cantor</li></ul><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1204' target='_blank'>Source code</a></span></div></span><span class="id"> {</span><span id="T:494" class="id"><div name="T:494" class="id anchor tooltip">T<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1204' target='_blank'>Source code</a></span></div></span><span class="id">}</span>&nbsp;(<span id="A:495" class="id"><div name="A:495" class="id anchor tooltip">A<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1204' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#T:494">T</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#open">open</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#A:495">A</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#A:495">A</a></span>.<br/>
 <br/>
@@ -2186,15 +2159,33 @@ library mathcomp.analysis.topology_theory.topology_structure, line 1140, charact
 <span class="id">exact:</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.boolp.html#Prop_irrelevance">Prop_irrelevance</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="mkcts" class="id"><div name="mkcts" class="id anchor tooltip">mkcts<span class='tooltip-area'><p>clopen : forall {T : topologicalType}, set T -> Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="mkcts" class="id"><div name="mkcts" class="id anchor tooltip">mkcts<span class='tooltip-area'><p>separable_set : forall {T : topologicalType}, set T -> Prop
 
-clopen is not universe polymorphic
-Arguments clopen {T} A%_classical_set_scope
-clopen is transparent
+separable_set is not universe polymorphic
+Arguments separable_set {T} A%_classical_set_scope
+separable_set is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.topology_structure.clopen
+            mathcomp.analysis.topology_theory.topology_structure.separable_set
 Declared in
-library mathcomp.analysis.topology_theory.topology_structure, line 1204, characters 11-17
+library mathcomp.analysis.topology_theory.topology_structure, line 1129, characters 11-24
+separable : topologicalType -> Prop
+
+separable is not universe polymorphic
+Arguments separable {T}
+separable is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.topology_structure.separable
+Declared in
+library mathcomp.analysis.topology_theory.topology_structure, line 1138, characters 11-20
+second_countable : topologicalType -> Prop
+
+second_countable is not universe polymorphic
+Arguments second_countable {T}
+second_countable is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.topology_structure.second_countable
+Declared in
+library mathcomp.analysis.topology_theory.topology_structure, line 1140, characters 11-27
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1257' target='_blank'>Source code</a></span></div></span><span class="id"> {</span><span id="X:526" class="id"><div name="X:526" class="id anchor tooltip">X<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1257' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="Y:527" class="id"><div name="Y:527" class="id anchor tooltip">Y<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1257' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.filter.html#Nbhs.Exports.nbhsType">nbhsType</a></span><span class="id">}</span>&nbsp;(<span id="f:528" class="id"><div name="f:528" class="id anchor tooltip">f<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1257' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#X:526">X</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Y:527">Y</a></span>)&nbsp;(<span id="f_cts:529" class="id"><div name="f_cts:529" class="id anchor tooltip">f_cts<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1257' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#f:528">f</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#f:528">f</a></span>.<br/>
 <br/>
 <span id="topology_structure_mkcts__canonical__topology_structure_Continuous" class="id"><span id="HB_unnamed_factory_35" class="id"><span id="hb_instance_34.f_cts" class="id"><span id="hb_instance_34.f" class="id"><span id="hb_instance_34.Y" class="id"><span id="hb_instance_34.X" class="id"><div name="topology_structure_mkcts__canonical__topology_structure_Continuous" class="hierarchy-builder anchor tooltip">HB<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1259' target='_blank'>Source code</a></span></div></span></span></span></span></span></span>.<span id="topology_structure_mkcts__canonical__topology_structure_Continuous" class="id"><span id="HB_unnamed_factory_35" class="id"><span id="hb_instance_34.f_cts" class="id"><span id="hb_instance_34.f" class="id"><span id="hb_instance_34.Y" class="id"><span id="hb_instance_34.X" class="id"><div name="topology_structure_mkcts__canonical__topology_structure_Continuous" class="id anchor tooltip">instance<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1259' target='_blank'>Source code</a></span></div></span></span></span></span></span></span><span id="topology_structure_mkcts__canonical__topology_structure_Continuous" class="id"><span id="HB_unnamed_factory_35" class="id"><span id="hb_instance_34.f_cts" class="id"><span id="hb_instance_34.f" class="id"><span id="hb_instance_34.Y" class="id"><span id="hb_instance_34.X" class="id"><div name="topology_structure_mkcts__canonical__topology_structure_Continuous" class="vernacular anchor tooltip"> Definition<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1259' target='_blank'>Source code</a></span></div></span></span></span></span></span></span><span id="topology_structure_mkcts__canonical__topology_structure_Continuous" class="id"><span id="HB_unnamed_factory_35" class="id"><span id="hb_instance_34.f_cts" class="id"><span id="hb_instance_34.f" class="id"><span id="hb_instance_34.Y" class="id"><span id="hb_instance_34.X" class="id"><div name="topology_structure_mkcts__canonical__topology_structure_Continuous" class="id anchor tooltip"> _<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1259' target='_blank'>Source code</a></span></div></span></span></span></span></span></span><span id="topology_structure_mkcts__canonical__topology_structure_Continuous" class="id"><span id="HB_unnamed_factory_35" class="id"><span id="hb_instance_34.f_cts" class="id"><span id="hb_instance_34.f" class="id"><span id="hb_instance_34.Y" class="id"><span id="hb_instance_34.X" class="id"><div name="topology_structure_mkcts__canonical__topology_structure_Continuous" class="id anchor tooltip"> {X<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1259' target='_blank'>Source code</a></span></div></span></span></span></span></span></span><span id="topology_structure_mkcts__canonical__topology_structure_Continuous" class="id"><span id="HB_unnamed_factory_35" class="id"><span id="hb_instance_34.f_cts" class="id"><span id="hb_instance_34.f" class="id"><span id="hb_instance_34.Y" class="id"><span id="hb_instance_34.X" class="id"><div name="topology_structure_mkcts__canonical__topology_structure_Continuous" class="id anchor tooltip"> Y<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1259' target='_blank'>Source code</a></span></div></span></span></span></span></span></span><span id="topology_structure_mkcts__canonical__topology_structure_Continuous" class="id"><span id="HB_unnamed_factory_35" class="id"><span id="hb_instance_34.f_cts" class="id"><span id="hb_instance_34.f" class="id"><span id="hb_instance_34.Y" class="id"><span id="hb_instance_34.X" class="id"><div name="topology_structure_mkcts__canonical__topology_structure_Continuous" class="id anchor tooltip"> :<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1259' target='_blank'>Source code</a></span></div></span></span></span></span></span></span><span id="topology_structure_mkcts__canonical__topology_structure_Continuous" class="id"><span id="HB_unnamed_factory_35" class="id"><span id="hb_instance_34.f_cts" class="id"><span id="hb_instance_34.f" class="id"><span id="hb_instance_34.Y" class="id"><span id="hb_instance_34.X" class="id"><div name="topology_structure_mkcts__canonical__topology_structure_Continuous" class="id anchor tooltip"> nbhsType}<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/topology_theory/topology_structure.v#L1259' target='_blank'>Source code</a></span></div></span></span></span></span></span></span>&nbsp;(<span class="id">f:</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#X:530">X</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#Y:531">Y</a></span>)&nbsp;(<span class="id">f_cts</span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.filter.html#continuous">continuous</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#f:532">f</a></span>)<span class="id"> :=</span><br/>

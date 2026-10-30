@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 9b7419b 2026.10.29-22:59" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 9b7419b 2026.10.30-22:35" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -693,18 +693,6 @@ Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.integer_approx
 Declared in
 library mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation, line 103, characters 11-25
-approx :
-forall {d : measure_display} {T : measurableType d} {R : realType},
-set T -> (T -> \bar R) -> (T -> R) ^nat
-
-approx is not universe polymorphic
-Arguments approx {d}%_measure_display_scope {T R} 
-  D%_classical_set_scope f%_function_scope _ _
-approx is transparent
-Expands to: Constant
-            mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.approx
-Declared in
-library mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation, line 108, characters 11-17
 </p><hr/>Used by
 <ul><li>mathcomp.analysis.probability_theory.uniform_distribution</li><li>mathcomp.analysis.probability_theory.independence</li><li>mathcomp.analysis.kernel</li><li>mathcomp.analysis.lebesgue_integral_theory.giry</li><li>mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_dominated_convergence</li><li>mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_monotone_convergence</li><li>mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg</li><li>mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini</li><li>mathcomp.analysis.lebesgue_integral_theory.radon_nikodym</li><li>mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral</li><li>mathcomp.analysis.lebesgue_integral_theory.counting_lebesgue</li></ul><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/measurable_fun_approximation.v#L347' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502">{nnsfun</a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> </a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.html#approximation.T">T</a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> &gt;-&gt;</a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502"> </a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.html#approximation.R">R</a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#62b1f9be67dbf6239bec964ff9de3502">}</a></span><span class="id link"><a href="mathcomp.analysis.sequences.html#0bbe80633d78a4f277dbfba268ab7c04">^nat</a></span><span class="id"> :=</span><span class="gallina-kwd"> fun</span><span class="id"> </span><span id="n:86" class="id"><div name="n:86" class="id anchor tooltip">n<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/measurable_fun_approximation.v#L347' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect_rw.html#locked">locked</a></span>&nbsp;(<span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#add_nnsfun">add_nnsfun</a></span><br/>
 &nbsp;&nbsp;(<span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html#sum_nnsfun">sum_nnsfun</a></span><br/>

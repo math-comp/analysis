@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Module mathcomp.analysis.lebesgue_integral_theory.radon_nikodym</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 9b7419b 2026.10.29-22:59" />
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 9b7419b 2026.10.30-22:35" />
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -681,20 +681,18 @@ Qed.</div></details>
 <span class="vernacular">Let</span><span class="id"> </span><span id="lim_max_approxRN_seq.lim_max_approxRN_seq.g" class="id"><div name="lim_max_approxRN_seq.lim_max_approxRN_seq.g" class="id anchor tooltip">g<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/radon_nikodym.v#L364' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#approxRN_seq.approxRN_seq">approxRN_seq</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#lim_max_approxRN_seq.lim_max_approxRN_seq.mu">mu</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#lim_max_approxRN_seq.lim_max_approxRN_seq.nu">nu</a></span>.<br/>
 <span class="vernacular">Let</span><span class="id"> </span><span id="lim_max_approxRN_seq.lim_max_approxRN_seq.F" class="id"><div name="lim_max_approxRN_seq.lim_max_approxRN_seq.F" class="id anchor tooltip">F<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/radon_nikodym.v#L365' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#approxRN_seq.max_approxRN_seq">max_approxRN_seq</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#lim_max_approxRN_seq.lim_max_approxRN_seq.mu">mu</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#lim_max_approxRN_seq.lim_max_approxRN_seq.nu">nu</a></span>.<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="lim_max_approxRN_seq.fRN" class="id"><div name="lim_max_approxRN_seq.fRN" class="id anchor tooltip">fRN<span class='tooltip-area'><p>charge_of_density :
-forall [d : measure_display] [T : measurableType d] 
-  {R : realType} [mu : {measure set T -> \bar R}%R] 
-  [f : T -> \bar R],
-mu.-integrable [set: T] f -> set T -> GRing.BaseAddMagma.sort \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="lim_max_approxRN_seq.fRN" class="id"><div name="lim_max_approxRN_seq.fRN" class="id anchor tooltip">fRN<span class='tooltip-area'><p>approxRN.approxRN :
+forall [d : measure_display] [T : measurableType d] [R : realType],
+{measure set T -> \bar R}%R ->
+{measure set T -> \bar R}%R -> set (T -> \bar R)
 
-charge_of_density is not universe polymorphic
-Arguments charge_of_density [d]%_measure_display_scope 
-  [T] {R} [mu] [f]%_function_scope intf A%_classical_set_scope
-charge_of_density is transparent
+approxRN.approxRN is not universe polymorphic
+Arguments approxRN.approxRN [d]%_measure_display_scope [T R] mu nu _
+approxRN.approxRN is transparent
 Expands to: Constant
-            mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.charge_of_density
+            mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.approxRN.approxRN
 Declared in
-library mathcomp.analysis.lebesgue_integral_theory.radon_nikodym, line 51, characters 11-28
+library mathcomp.analysis.lebesgue_integral_theory.radon_nikodym, line 168, characters 11-19
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/radon_nikodym.v#L367' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="gallina-kwd"> fun</span><span class="id"> </span><span id="x:144" class="id"><div name="x:144" class="id anchor tooltip">x<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/radon_nikodym.v#L367' target='_blank'>Source code</a></span></div></span><span class="id"> =&gt;</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.filter.html#lim">lim</a></span>&nbsp;(<span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#lim_max_approxRN_seq.lim_max_approxRN_seq.F">F</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> ^~</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#3dce462f8124648b906d1e347a73bb9f"> </a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#x:144">x</a></span><span class="id link"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> @</a></span><span class="id link"><a href="mathcomp.classical.filter.html#cd15f258bbfe5f8dd5d2f871f9f5a736"> </a></span><span class="id link"><a href="mathcomp.classical.filter.html#228a5fbd8d7ef28f21231bccff88d0b0">\oo</a></span>).<br/>
 <br/>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="lim_max_approxRN_seq.measurable_fun_fRN" class="id"><div name="lim_max_approxRN_seq.measurable_fun_fRN" class="id anchor tooltip">measurable_fun_fRN<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/radon_nikodym.v#L369' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.measure_theory.measurable_function.html#measurable_fun">measurable_fun</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98"> </a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#lim_max_approxRN_seq.lim_max_approxRN_seq.T">T</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#lim_max_approxRN_seq.fRN">fRN</a></span>.<br/>
@@ -876,21 +874,7 @@ Qed.</div></details>
 <span class="id">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#fine_lt">fine_lt</a></span><span class="id">//</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#fin_num_measure">fin_num_measure</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="lim_max_approxRN_seq.epsRN" class="id"><div name="lim_max_approxRN_seq.epsRN" class="id anchor tooltip">epsRN<span class='tooltip-area'><p>approxRN.approxRN :
-forall [d : measure_display] [T : measurableType d] [R : realType],
-{measure set T -> \bar R}%R ->
-{measure set T -> \bar R}%R -> set (T -> \bar R)
-
-approxRN.approxRN is not universe polymorphic
-Arguments approxRN.approxRN [d]%_measure_display_scope [T R] mu nu _
-approxRN.approxRN is transparent
-Expands to: Constant
-            mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.approxRN.approxRN
-Declared in
-library mathcomp.analysis.lebesgue_integral_theory.radon_nikodym, line 168, characters 11-19
-</p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/radon_nikodym.v#L528' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#sval">sval</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#lim_max_approxRN_seq.epsRN_ex">epsRN_ex</a></span>.<br/>
-<br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="lim_max_approxRN_seq.sigmaRN" class="id"><div name="lim_max_approxRN_seq.sigmaRN" class="id anchor tooltip">sigmaRN<span class='tooltip-area'><p>approxRN.int_approxRN :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="lim_max_approxRN_seq.epsRN" class="id"><div name="lim_max_approxRN_seq.epsRN" class="id anchor tooltip">epsRN<span class='tooltip-area'><p>approxRN.int_approxRN :
 forall [d : measure_display] [T : measurableType d] [R : realType],
 {measure set T -> \bar R}%R ->
 {measure set T -> \bar R}%R -> set (GRing.BaseAddMagma.sort \bar R)
@@ -902,6 +886,21 @@ Expands to: Constant
             mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.approxRN.int_approxRN
 Declared in
 library mathcomp.analysis.lebesgue_integral_theory.radon_nikodym, line 178, characters 11-23
+</p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/radon_nikodym.v#L528' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#sval">sval</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#lim_max_approxRN_seq.epsRN_ex">epsRN_ex</a></span>.<br/>
+<br/>
+<span class="vernacular">Definition</span><span class="id"> </span><span id="lim_max_approxRN_seq.sigmaRN" class="id"><div name="lim_max_approxRN_seq.sigmaRN" class="id anchor tooltip">sigmaRN<span class='tooltip-area'><p>approxRN.sup_int_approxRN :
+forall [d : measure_display] [T : measurableType d] [R : realType],
+{measure set T -> \bar R}%R ->
+{measure set T -> \bar R}%R ->
+constructive_ereal_extended__canonical__Order_POrder
+
+approxRN.sup_int_approxRN is not universe polymorphic
+Arguments approxRN.sup_int_approxRN [d]%_measure_display_scope [T R] mu nu
+approxRN.sup_int_approxRN is transparent
+Expands to: Constant
+            mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.approxRN.sup_int_approxRN
+Declared in
+library mathcomp.analysis.lebesgue_integral_theory.radon_nikodym, line 180, characters 11-27
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/radon_nikodym.v#L530' target='_blank'>Source code</a></span></div></span><span class="id"> </span><span id="B:225" class="id"><div name="B:225" class="id anchor tooltip">B<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/radon_nikodym.v#L530' target='_blank'>Source code</a></span></div></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#lim_max_approxRN_seq.lim_max_approxRN_seq.nu">nu</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#B:225">B</a></span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'-'_x"> -</a></span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#::ereal_scope:x_'-'_x"> </a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">\int[</a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#lim_max_approxRN_seq.lim_max_approxRN_seq.mu">mu</a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3">]_</a></span>(<span id="x:226" class="id"><div name="x:226" class="id anchor tooltip">x<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/radon_nikodym.v#L530' target='_blank'>Source code</a></span></div></span><span class="gallina-kwd link"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> in</a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html#871f2882c0e95b3d1e1d20f0a4fbdef3"> </a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#B:225">B</a></span>)&nbsp;(<span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#lim_max_approxRN_seq.fRN">fRN</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#x:226">x</a></span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#d4965da372b2485934ec33867ee5fbe7"> +</a></span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#d4965da372b2485934ec33867ee5fbe7"> </a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#lim_max_approxRN_seq.epsRN">epsRN</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.interval_inference.html#1c0324eabc1cbd2d8f3ac221154b0692">%:num</a></span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#bc34d0712444fb7fddc80987d6cdcb61">%:E</a></span>).<br/>
 <br/>
 <span class="vernacular">Let</span><span class="id"> </span><span id="lim_max_approxRN_seq.lim_max_approxRN_seq.ab_absurdo.sigmaRN0" class="id"><div name="lim_max_approxRN_seq.lim_max_approxRN_seq.ab_absurdo.sigmaRN0" class="id anchor tooltip">sigmaRN0<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/radon_nikodym.v#L532' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#lim_max_approxRN_seq.sigmaRN">sigmaRN</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#set0">set0</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> </a></span><span class="id">0</span>.<br/>
@@ -1196,19 +1195,19 @@ Qed.</div></details>
 &nbsp;&nbsp;(<span id="Radon_Nikodym_SigmaFinite.radon_nikodym_sigma_finite_def.nu" class="id"><div name="Radon_Nikodym_SigmaFinite.radon_nikodym_sigma_finite_def.nu" class="id anchor tooltip">nu<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/radon_nikodym.v#L809' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#bf11977399f31556eaaab82c176def03">{finite_measure</a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#bf11977399f31556eaaab82c176def03"> set</a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#bf11977399f31556eaaab82c176def03"> </a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#T:337">T</a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#bf11977399f31556eaaab82c176def03"> -&gt;</a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#bf11977399f31556eaaab82c176def03"> \bar</a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#bf11977399f31556eaaab82c176def03"> </a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#R:338">R</a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#bf11977399f31556eaaab82c176def03">}</a></span>)<br/>
 &nbsp;&nbsp;(<span id="Radon_Nikodym_SigmaFinite.radon_nikodym_sigma_finite_def.mu" class="id"><div name="Radon_Nikodym_SigmaFinite.radon_nikodym_sigma_finite_def.mu" class="id anchor tooltip">mu<span class='tooltip-area'><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/radon_nikodym.v#L810' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#4b24647a3d36cd9e5f99a1b70534858d">{sigma_finite_measure</a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#4b24647a3d36cd9e5f99a1b70534858d"> set</a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#4b24647a3d36cd9e5f99a1b70534858d"> </a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#T:337">T</a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#4b24647a3d36cd9e5f99a1b70534858d"> -&gt;</a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#4b24647a3d36cd9e5f99a1b70534858d"> \bar</a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#4b24647a3d36cd9e5f99a1b70534858d"> </a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#R:338">R</a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_function.html#4b24647a3d36cd9e5f99a1b70534858d">}</a></span>).<br/>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Radon_Nikodym_SigmaFinite.f" class="id"><div name="Radon_Nikodym_SigmaFinite.f" class="id anchor tooltip">f<span class='tooltip-area'><p>approxRN_seq.max_approxRN_seq :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Radon_Nikodym_SigmaFinite.f" class="id"><div name="Radon_Nikodym_SigmaFinite.f" class="id anchor tooltip">f<span class='tooltip-area'><p>approxRN_seq.is_max_approxRN :
 forall {d : measure_display} {T : measurableType d} {R : realType},
 {measure set T -> \bar R}%R ->
-{finite_measure set T -> \bar R}%R -> nat -> T -> \bar R
+{finite_measure set T -> \bar R}%R -> nat -> nat -> set T
 
-approxRN_seq.max_approxRN_seq is not universe polymorphic
-Arguments approxRN_seq.max_approxRN_seq {d}%_measure_display_scope 
-  {T R} mu nu n%_nat_scope x
-approxRN_seq.max_approxRN_seq is transparent
+approxRN_seq.is_max_approxRN is not universe polymorphic
+Arguments approxRN_seq.is_max_approxRN {d}%_measure_display_scope 
+  {T R} mu nu (m j)%_nat_scope _
+approxRN_seq.is_max_approxRN is transparent
 Expands to: Constant
-            mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.approxRN_seq.max_approxRN_seq
+            mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.approxRN_seq.is_max_approxRN
 Declared in
-library mathcomp.analysis.lebesgue_integral_theory.radon_nikodym, line 249, characters 11-27
+library mathcomp.analysis.lebesgue_integral_theory.radon_nikodym, line 292, characters 11-26
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/radon_nikodym.v#L812' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#Radon_Nikodym_SigmaFinite.radon_nikodym_sigma_finite_def.T">T</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#Radon_Nikodym_SigmaFinite.radon_nikodym_sigma_finite_def.R">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">match</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.boolp.html#pselect">pselect</a></span>&nbsp;(<span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#Radon_Nikodym_SigmaFinite.radon_nikodym_sigma_finite_def.nu">nu</a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#2d7ffffaaa230b2304e22e4907064098"> `&lt;&lt;</a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#2d7ffffaaa230b2304e22e4907064098"> </a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#Radon_Nikodym_SigmaFinite.radon_nikodym_sigma_finite_def.mu">mu</a></span>)<span class="gallina-kwd"> with</span><br/>
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#left">left</a></span><span class="id"> nu_mu</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#sval">sval</a></span>&nbsp;(<span class="id link"><a href="mathcomp.classical.boolp.html#cid">cid</a></span>&nbsp;(<span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#radon_nikodym_sigma_finite">radon_nikodym_sigma_finite</a></span><span class="id"> nu_mu</span>))<br/>
@@ -1390,21 +1389,22 @@ Qed.</div></details>
 <span class="id">by</span><span class="id"> rewrite</span><span class="id"> -fpE</span><span class="id"> ?</span><span class="id link"><a href="mathcomp.classical.classical_sets.html#inE">inE</a></span><span class="id">//</span><span class="id"> -fnE</span><span class="id"> ?</span><span class="id link"><a href="mathcomp.classical.classical_sets.html#inE">inE</a></span><span class="id">//=</span><span class="id"> /</span><span class="id link"><a href="mathcomp.analysis.measure_theory.signed_measure.html#cadd">cadd</a></span><span class="id">/=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.measure_theory.signed_measure.html#cscaleN1">cscaleN1</a></span>.<br/>
 Qed.</div></details>
 <br/>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Radon_Nikodym" class="id"><div name="Radon_Nikodym" class="id anchor tooltip">Radon_Nikodym<span class='tooltip-area'><p>lim_max_approxRN_seq.epsRN :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Radon_Nikodym" class="id"><div name="Radon_Nikodym" class="id anchor tooltip">Radon_Nikodym<span class='tooltip-area'><p>lim_max_approxRN_seq.sigmaRN :
 forall {d : measure_display} {T : measurableType d} 
   {R : realType} [mu nu : {finite_measure set T -> \bar R}%R] 
   [A : set T],
 d.-measurable%classic A ->
-(\int[mu]_(x in A) lim_max_approxRN_seq.fRN mu nu x < nu A)%E -> {posnum R}%R
+(\int[mu]_(x in A) lim_max_approxRN_seq.fRN mu nu x < nu A)%E ->
+set T -> GRing.BaseAddMagma.sort \bar R
 
-lim_max_approxRN_seq.epsRN is not universe polymorphic
-Arguments lim_max_approxRN_seq.epsRN {d}%_measure_display_scope 
-  {T R} [mu nu] [A]%_classical_set_scope mA h
-lim_max_approxRN_seq.epsRN is transparent
+lim_max_approxRN_seq.sigmaRN is not universe polymorphic
+Arguments lim_max_approxRN_seq.sigmaRN {d}%_measure_display_scope 
+  {T R} [mu nu] [A]%_classical_set_scope mA h B%_classical_set_scope
+lim_max_approxRN_seq.sigmaRN is transparent
 Expands to: Constant
-            mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.lim_max_approxRN_seq.epsRN
+            mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.lim_max_approxRN_seq.sigmaRN
 Declared in
-library mathcomp.analysis.lebesgue_integral_theory.radon_nikodym, line 528, characters 11-16
+library mathcomp.analysis.lebesgue_integral_theory.radon_nikodym, line 530, characters 11-18
 </p><hr/><a href='https://github.com/math-comp/analysis/tree/9b7419b7c955ba6a114dcfe4c42c7d5ad9684c65/theories/lebesgue_integral_theory/radon_nikodym.v#L973' target='_blank'>Source code</a></span></div></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#radon_nikodym.T">T</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> </a></span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3">\bar</a></span><span class="id link"><a href="mathcomp.reals.constructive_ereal.html#4c9ddfb63ff52527d9adecfde4a667c3"> </a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#radon_nikodym.R">R</a></span><span class="id"> :=</span><br/>
 &nbsp;&nbsp;<span class="gallina-kwd">match</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.boolp.html#pselect">pselect</a></span>&nbsp;(<span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#radon_nikodym.nu">nu</a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#2d7ffffaaa230b2304e22e4907064098"> `&lt;&lt;</a></span><span class="id link"><a href="mathcomp.analysis.measure_theory.measure_negligible.html#2d7ffffaaa230b2304e22e4907064098"> </a></span><span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#radon_nikodym.mu">mu</a></span>)<span class="gallina-kwd"> with</span><br/>
 &nbsp;&nbsp;<span class="id">|</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#left">left</a></span><span class="id"> nu_mu</span><span class="id"> =&gt;</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#sval">sval</a></span>&nbsp;(<span class="id link"><a href="mathcomp.classical.boolp.html#cid">cid</a></span>&nbsp;(<span class="id link"><a href="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html#Radon_Nikodym0">Radon_Nikodym0</a></span><span class="id"> nu_mu</span>))<br/>
