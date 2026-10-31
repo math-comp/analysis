@@ -4,7 +4,7 @@ From mathcomp Require Import boolp classical_sets functions filter.
 From mathcomp Require Import constructive_ereal reals discrete.
 From mathcomp Require Import esum ereal.
 From mathcomp Require Import cardinality fsbigop topology normedtype sequences.
-From mathcomp Require Import measure lebesgue_measure measurable_realfun lebesgue_integral random_variable.
+From mathcomp Require Import measure lebesgue_measure measurable_realfun lebesgue_integral hoelder random_variable.
 From mathcomp Require Import unstable.
 
 (* Should be removed *)
@@ -28,6 +28,18 @@ From mathcomp Require Import numfun.
 (* ```                                                                        *)
 (******************************************************************************)
 
+Reserved Notation "R .-pmf  T" (at level 1, T at level 2, format "R .-pmf  T ").
+Reserved Notation "\P_[ mu ] E" (at level 2, format "\P_[ mu ]  E").
+Reserved Notation "\P_[ mu , A ] E" (at level 2, format "\P_[ mu ,  A ]  E").
+Reserved Notation "\E_[ mu ] f" (at level 2, format "\E_[ mu ]  f").
+Reserved Notation "\E_[ mu , A ] f" (at level 2, format "\E_[ mu ,  A ]  f").
+Reserved Notation "\dlet_ ( i <- d ) E"
+  (at level 36, E at level 36, i, d at level 50,
+     format "'[' \dlet_ ( i  <-  d ) '/  '  E ']'").
+Reserved Notation "\dlim_ ( n ) E"
+  (at level 36, E at level 36, n at level 50,
+     format "'[' \dlim_ ( n ) '/  '  E ']'").
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -36,6 +48,12 @@ Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
+
+Notation "f '<=1' g" := (forall x, f x <= g x)
+  (at level 70, no associativity).
+Notation "f '<=2' g" := (forall x y, f x y <= g x y)
+  (at level 70, no associativity).
+Local Notation "\`| f |" := (fun x => `|f x|) (at level 2).
 
 Definition discrete_measurable_space (T : choiceType) : Type := T.
 
@@ -55,33 +73,6 @@ by apply: (@reindex_esum R T (discrete_measurable_space T)
           [set: T] [set: discrete_measurable_space T] id f); split.
 Qed.
 
-(* -------------------------------------------------------------------- *)
-Notation "f '<=1' g" := (forall x, f x <= g x)
-  (at level 70, no associativity).
-
-Notation "f '<=2' g" := (forall x y, f x y <= g x y)
-  (at level 70, no associativity).
-
-(* -------------------------------------------------------------------- *)
-Local Notation simpm := Monoid.simpm.
-
-(* -------------------------------------------------------------------- *)
-Reserved Notation "\dlet_ ( i <- d ) E"
-  (at level 36, E at level 36, i, d at level 50,
-     format "'[' \dlet_ ( i  <-  d ) '/  '  E ']'").
-
-Reserved Notation "\dlim_ ( n ) E"
-  (at level 36, E at level 36, n at level 50,
-     format "'[' \dlim_ ( n ) '/  '  E ']'").
-
-Reserved Notation "\P_[ mu ] E" (at level 2, format "\P_[ mu ]  E").
-Reserved Notation "\P_[ mu , A ] E" (at level 2, format "\P_[ mu ,  A ]  E").
-Reserved Notation "\E?_[ mu ] f" (at level 2, format "\E?_[ mu ]  f").
-Reserved Notation "\E_[ mu ] f" (at level 2, format "\E_[ mu ]  f").
-Reserved Notation "\E_[ mu , A ] f" (at level 2, format "\E_[ mu ,  A ]  f").
-
-Local Notation "\`| f |" := (fun x => `|f x|) (at level 2).
-
 HB.mixin Record isSubPmf {R : realType} {T : choiceType} (mu : T -> R) := {
   subpmf_ge0 : forall x, 0 <= mu x ;
   subpmf_summable : esummable [set: T] (EFin \o mu);
@@ -96,9 +87,7 @@ Arguments subpmf_sum_le1 {R T} _.
 #[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: subpmf_ge0] : core.
 #[global] Hint Resolve subpmf_summable : core.
 
-
-Notation "R .-pmf T" := (@SubPmf.type R T)
-  (at level 1, T at level 2, format "R .-pmf T ") : type_scope.
+Notation "R .-pmf  T" := (@SubPmf.type R T) : type_scope.
 
 Section SubProbability_measure_subpmf.
 Context {R : realType} {T : choiceType} (mu : R.-pmf T).
@@ -135,6 +124,62 @@ HB.instance Definition _ :=
   @Measure_isSubProbability.Build _ _ R measure_of_pmf P_setT.
 
 End SubProbability_measure_subpmf.
+
+Section expectation_measure_of_pmf.
+Context {R : realType} {T : choiceType}.
+Implicit Types (mu : R.-pmf T).
+
+Local Open Scope ereal_scope.
+
+Lemma integral_measure_of_pmf mu (f : T -> \bar R) : (forall x, 0 <= f x) ->
+  \int[measure_of_pmf mu]_x f x = \esum_(x in [set: T]) (f x * (mu x)%:E).
+Proof.
+move=> f0; rewrite -esum_setT_discrete -integral_counting_esum//=.
+rewrite -(@integral_measure_of_density _ (discrete_measurable_space T) R
+  (@counting (discrete_measurable_space T) R) mu)//=.
+move => H; apply: eq_measure_integral => A mA _ /=.
+by rewrite /measure_of_density /measure_of_pmf integral_counting_esum.
+Qed.
+
+Lemma integrable_esummable_new mu (A : T -> \bar R) :
+  esummable [set: T] (fun x : T => A x * (mu x)%:E)%E <->
+  (measure_of_pmf mu).-integrable [set: discrete_measurable_space T] A.
+Proof.
+rewrite esummableE.
+under eq_esum do rewrite abseM abse_EFin (@ger0_norm _ (mu _))//.
+rewrite ge0_fin_numE//.
+  by rewrite esum_ge0// => x _; rewrite mule_ge0 ?lee_fin ?abse_ge0.
+split=> [Amu|/integrableP[_]].
+  apply/integrableP; split => //.
+  by rewrite integral_measure_of_pmf// => x; rewrite abse_ge0.
+by rewrite integral_measure_of_pmf// => x; rewrite abse_ge0.
+Qed.
+
+Lemma expectation_pmf mu (f : T -> \bar R) :
+  'E_(measure_of_pmf mu)[f] = \esum_(x in [set:T]) (f x * (mu x)%:E).
+Proof.
+rewrite expectation_def integralE esumE; congr (_ - _).
+- rewrite integral_measure_of_pmf//.
+  apply: eq_esum => x _.
+  by rewrite !funeposE maxe_pMl ?mul0e// lee_fin.
+- rewrite integral_measure_of_pmf//.
+  apply: eq_esum => x _.
+  by rewrite !funenegE maxe_pMl ?mul0e ?mulNe// lee_fin.
+Qed.
+
+Lemma expectation_pmfEFin mu (g : T -> R) :
+  'E_(measure_of_pmf mu) [EFin \o g] = esum [set: T] (EFin \o (fun x => g x * mu x))%R.
+Proof. by rewrite expectation_pmf. Qed.
+
+Lemma expectation_pmf0 mu : 'E_(measure_of_pmf mu) [cst 0] = 0.
+Proof. by rewrite unlock integral0. Qed.
+
+(* NB: not used *)
+Lemma expection_pmfZ mu F c : (forall x, 0%:E <= F x)%E ->
+  'E_(measure_of_pmf mu)[fun x => c * F x] = c * 'E_(measure_of_pmf mu) [F].
+Proof. by move=> /= F0; rewrite unlock ge0_integralZl. Qed.
+
+End expectation_measure_of_pmf.
 
 HB.factory Record uniq_isSubPmf {R : realType} {T : choiceType} (mu : T -> R) := {
   subpmf_ge0 : forall x : T, 0 <= mu x ;
@@ -193,8 +238,6 @@ Qed.
 HB.instance Definition _ :=
   @uniq_isSubPmf.Build R R (pmf X) (@pmf_ge0 _ _ _ P X) pmf_uniq_le1.
 
-Check (pmf X : R.-pmf R).
-
 End pmf_subpmf.
 
 Lemma subpmf_le1 {R : realType} {T : choiceType} (mu : R.-pmf T) x : mu x <= 1.
@@ -220,19 +263,27 @@ Proof. by rewrite -topredE /dinsupp /= negbK; apply/eqP. Qed.
 
 Definition pr mu E := fine (\esum_(x in [set: T]) ((E x)%:R * mu x)%:E).
 Definition prc mu E A := pr mu [predI E & A] / pr mu A.
-Definition expectation_pmf mu f := fine (\esum_(x in [set: T]) (f x * mu x)%:E).
+Definition pmf_expectation mu f := fine (\esum_(x in [set: T]) (f x * mu x)%:E).
 Definition espc mu f A := fine (\esum_(x in [set: T]) (f x * prc mu (pred1 x) A)%:E).
 
-Definition has_expectation_pmf mu f := esummable [set: T] (EFin \o (f \* mu)).
+Definition pmf_esummable mu f := esummable [set: T] (EFin \o (f \* mu)).
+
 End StdDefs.
 
 Notation "\P_[ mu ] E"     := (pr mu E).
 Notation "\P_[ mu , A ] E" := (prc mu E A).
-Notation "\E_[ mu ] f"     := (expectation_pmf mu f).
+Notation "\E_[ mu ] f"     := (pmf_expectation mu f).
 Notation "\E_[ mu , A ] f" := (espc mu f A).
-Notation "\E?_[ mu ] f"    := (has_expectation_pmf mu f).
 Notation dweight mu        := (\P_[mu] predT).
 
+(* NB: not used *)
+(*Section Esp.
+Context {R : realType} {T : choiceType}.
+Implicit Types (mu : R.-pmf T) (f : T -> \bar R).
+
+Definition epmf_expectation mu f := \esum_(x in [set:T]) (f x * (mu x)%:E)%E.
+
+End Esp.*)
 
 Definition sub_distr {R : realType} {T : choiceType} (mu : T -> R) :=
   (forall x, 0 <= mu x) /\ (forall J, uniq J -> \sum_(j <- J) mu j <= 1).
@@ -245,7 +296,6 @@ split=> -[ ge0_mu le1]; split=> //.
 + move=> J uqJ; rewrite big_uniq 1?(le_trans _ le1) //=.
   by rewrite [X in _<=X](bigID (mem J)) /= lerDl sumr_ge0.
 Qed.
-
 
 (* -------------------------------------------------------------------- *)
 Section DistrD.
@@ -377,7 +427,7 @@ Implicit Types (s : seq T).
 Definition drat_fun (s : seq T) : T -> R :=
   fun x : T => (count (pred1 x) s)%:R / (size s)%:R.
 
-Lemma ge0_drat s : forall x, 0 <= drat_fun s x.
+Lemma drat_ge0 s : forall x, 0 <= drat_fun s x.
 Proof. by move=> x; rewrite mulr_ge0 ?invr_ge0 // ler0n. Qed.
 
 Lemma has_sup_drat s J : uniq J -> \sum_(i <- J) drat_fun s i <= 1.
@@ -415,12 +465,12 @@ rewrite ge0_esum.
 rewrite ge_ereal_sup//= => _ [X [finX _]] <-.
 rewrite fsumEFin // lee_fin fsbig_finite //=.
 rewrite (eq_bigr (drat_fun s)).
-+ move => ??; rewrite ger0_norm ?ge0_drat //.
++ move => ??; rewrite ger0_norm ?drat_ge0 //.
 by apply/has_sup_drat.
 Qed.
 
 Lemma isd_drat s : sub_distr (drat_fun s).
-Proof. by split; [apply/ge0_drat | apply/has_sup_drat]. Qed.
+Proof. by split; [exact/drat_ge0|exact/has_sup_drat]. Qed.
 
 HB.instance Definition _ (s : seq T) :=
   @uniq_isSubPmf.Build R T (drat_fun s) (proj1 (isd_drat s)) (proj2 (isd_drat s)).
@@ -435,22 +485,18 @@ Definition dunit x := drat [:: x].
 Definition duni  s := drat (undup s).
 
 Lemma dunit1E x y : (dunit x) y = (x == y)%:R.
-Proof. by rewrite /dunit drat1E /= !(simpm, invr1). Qed.
+Proof. by rewrite /dunit drat1E /= addn0 divr1. Qed.
 
 Lemma dunit_id x : (dunit x) x = 1.
-Proof. by rewrite /dunit drat1E /= !(simpm, invr1) eq_refl. Qed.
+Proof. by rewrite /dunit drat1E /= addn0 divr1 eqxx. Qed.
 
 Lemma dunit_diff x y: x <> y -> (dunit x) y = 0.
-Proof.
-  rewrite /dunit drat1E /= !(simpm, invr1).
-  by case_eq (x == y) => //= /eqP.
-Qed.
+Proof. by rewrite /dunit drat1E /= addn0 divr1 => /eqP /negPf ->. Qed.
 
 Lemma duni1E s x : (duni s) x = (x \in s)%:R / (size (undup s))%:R.
 Proof. by rewrite /duni drat1E count_uniq_mem ?(mem_undup, undup_uniq). Qed.
 
-Lemma in_dunit t t' :
-  t' \in dinsupp (dunit t) -> t' = t :> T.
+Lemma in_dunit t t' : t' \in dinsupp (dunit t) -> t' = t :> T.
 Proof. by rewrite in_dinsupp /= dunit1E  pnatr_eq0 eqb0 negbK => /eqP. Qed.
 End DRat.
 
@@ -464,7 +510,8 @@ Definition dflip_fun (xt : R) :=
   fun b => if b then clamp xt else 1 - clamp xt.
 
 Lemma isd_dflip xt : sub_distr (dflip_fun xt).
-Proof. apply/isdistr_finP; split=> [b|].
+Proof.
+apply/isdistr_finP; split=> [b|].
 + by case: b; rewrite ?subr_ge0 clamp_gele.
 + by rewrite /index_enum !unlock /= addr0 addrC subrK.
 Qed.
@@ -480,8 +527,7 @@ End Flip.
 
 (* -------------------------------------------------------------------- *)
 Section Bind.
-Context {R : realType} {T U : choiceType}
-          (f : T -> R.-pmf U) (mu : R.-pmf T).
+Context {R : realType} {T U : choiceType} (f : T -> R.-pmf U) (mu : R.-pmf T).
 
 Definition dlet_fun := fun y : U => fine (esum [set:T] (fun x => EFin (mu x * f x y))).
 
@@ -530,11 +576,10 @@ Definition dlift {R : realType} {T : choiceType} (f : T -> R.-pmf T) :=
 Definition diter {R : realType} {T : choiceType} n (f : T -> R.-pmf T) :=
   fun a => (iter n (dlift f) (dunit a)).
 
-(* -------------------------------------------------------------------- *)
-Lemma esum_abse {R : realType} {T : choiceType}
-  (f : T -> R) :
-  (forall i, 0%R <= f i) ->
-    (\esum_(x in [set: T]) (f x)%:E = \esum_(x in [set: T]) `|(f x)%:E|)%E.
+(* TODO: move (generic lemma) *)
+Lemma esum_abse {R : realType} {T : choiceType} (f : T -> R) :
+  (forall i, 0 <= f i)%R ->
+  (\esum_(x in [set: T]) (f x)%:E = \esum_(x in [set: T]) `|(f x)%:E|)%E.
 Proof. by move => ?; apply eq_esum => ?? ; rewrite gee0_abs // lee_tofin. Qed.
 
 Lemma summable_mu_wgtd {R : realType} {T : choiceType}
@@ -599,7 +644,7 @@ by move/dinsuppPn => ->; rewrite !mul0e.
 Qed.
 
 Lemma summable_dlet (f : T -> R.-pmf U) (mu : R.-pmf T) y :
-  esummable [set: T] (fun x : T => EFin (mu x * (f x) y)).
+  esummable [set: T] (fun x : T => (mu x * (f x) y)%:E).
 Proof. by apply/summable_mu_wgtd=> x; rewrite subpmf_ge0 subpmf_le1. Qed.
 
 Lemma fin_esum (f : T -> R.-pmf U) (mu : R.-pmf T) y:
@@ -706,8 +751,8 @@ End BindTheory.
 
 (* -------------------------------------------------------------------- *)
 Section DLetDLet.
-  Context {R:realType} {T U V : choiceType}
-          (f1 : T -> R.-pmf U) (f2 : U -> R.-pmf V).
+Context {R : realType} {T U V : choiceType}
+  (f1 : T -> R.-pmf U) (f2 : U -> R.-pmf V).
 
 Lemma dlet_dlet (mu : R.-pmf T) :
      \dlet_(x <- \dlet_(y <- mu) f1 y) f2 x
@@ -768,14 +813,14 @@ Import numFieldNormedType.Exports.
 Definition dlim_fun f : T -> R :=
   fun x => fine (limn_einf (fun n : nat => (f n x)%:E)).
 
-Lemma ge0_liminf f x : (0 <= limn_einf (fun n => (f n x)%:E))%E.
+Lemma liminf_ge0 f x : (0 <= limn_einf (fun n => (f n x)%:E))%E.
 Proof.
 rewrite limn_einf_lim; apply: lime_ge; first exact: is_cvg_einfs.
 apply: nearW => n; apply: le_ereal_inf_tmp => _ [m _] <-.
 by rewrite lee_fin.
 Qed.
 
-Lemma le1_liminf f x : (limn_einf (fun n => (f n x)%:E) <= 1%:E)%E.
+Lemma liminf_le1 f x : (limn_einf (fun n => (f n x)%:E) <= 1%:E)%E.
 Proof.
 rewrite limn_einf_lim; apply: lime_le; first exact: is_cvg_einfs.
 apply: nearW => n; apply: (@le_trans _ _ (f n x)%:E); first exact: ge_einfs.
@@ -784,9 +829,9 @@ Qed.
 
 Lemma fin_liminf f x : limn_einf (fun n => (f n x)%:E) \is a fin_num.
 Proof.
-have h0 : (0 <= limn_einf (fun n => (f n x)%:E))%E by exact: ge0_liminf.
+have h0 : (0 <= limn_einf (fun n => (f n x)%:E))%E by exact: liminf_ge0.
 rewrite ge0_fin_numE//.
-by apply: le_lt_trans; [apply: le1_liminf | apply: ltry].
+by apply: le_lt_trans; [exact: liminf_le1 |exact: ltry].
 Qed.
 
 Lemma dlim_fun_EFin f x : (dlim_fun f x)%:E = limn_einf (fun n => (f n x)%:E).
@@ -812,11 +857,11 @@ Qed.
 Lemma isd_dlim f : sub_distr (dlim_fun f).
 Proof.
 split=> [x|J uqJ].
-  by rewrite /dlim_fun; apply: fine_ge0; exact: ge0_liminf.
-have ndE : forall j : T, nondecreasing_seq (einfs (fun n => (f n j)%:E)).
-  by move=> j; exact: nondecreasing_einfs.
-have finE : forall j : T, limn (einfs (fun n => (f n j)%:E)) \is a fin_num.
-  by move=> j; rewrite -limn_einf_lim fin_liminf.
+  by rewrite /dlim_fun; apply: fine_ge0; exact: liminf_ge0.
+have ndE (j : T) : nondecreasing_seq (einfs (fun n => (f n j)%:E)).
+  exact: nondecreasing_einfs.
+have finE (j : T) : limn (einfs (fun n => (f n j)%:E)) \is a fin_num.
+  by rewrite -limn_einf_lim fin_liminf.
 rewrite -lee_fin -sumEFin.
 under eq_bigr => j _ do rewrite dlim_fun_EFin limn_einf_lim.
 rewrite (sumlim ndE finE); apply: lime_le.
@@ -890,11 +935,11 @@ Proof. by move=> x; rewrite !dlimE (limn_einf_shiftS (fun n => (f n x)%:E)). Qed
 Lemma dlim_lift f p : \dlim_(n) f (n + p)%N =1 dlim f.
 Proof. by move=> x; rewrite !dlimE (limn_einf_shift_new (fun n => (f n x)%:E) p). Qed.
 
-Lemma ge0_dlim f x : 0 <= dlim f x.
+Lemma dlim_ge0 f x : 0 <= dlim f x.
 Proof. by []. Qed.
 
-Lemma le1_dlim f : forall x, dlim f x <= 1.
-Proof. by move=> x; rewrite -lee_fin dlim_EFin; exact: le1_liminf. Qed.
+Lemma dlim_le1 f : forall x, dlim f x <= 1.
+Proof. by move=> x; rewrite -lee_fin dlim_EFin; exact: liminf_le1. Qed.
 
 Lemma le_dlim f g :
   (forall n, f n <=1 g n) -> dlim f <=1 dlim g.
@@ -915,8 +960,8 @@ Qed.
 
 Lemma leub_dlim f mu : (forall n, f n <=1 mu) -> dlim f <=1 mu.
 Proof.
-  move => le x; rewrite -(dlimC mu x).
-  by apply : le_dlim => n y.
+move => le x; rewrite -(dlimC mu x).
+by apply : le_dlim => n y.
 Qed.
 
 Lemma dlim_ub f k : homo f -> f k <=1 dlim f.
@@ -931,9 +976,9 @@ Qed.
 End DLimTheory.
 
 Section DletDLim.
-Variables (R : realType) (T U : choiceType).
+Context {R : realType} {T U : choiceType}.
 
-Implicit Types (f : nat -> R.-pmf T) (h : T -> R.-pmf R).
+Implicit Types (f : (R.-pmf T)^nat) (h : T -> R.-pmf R).
 
 Lemma sup_mul f (hf : nd f) (c : R) x : 0 <= c ->
   ((dlim f x) * c)%:E = ereal_sup (range (fun n => (f n x * c)%:E)).
@@ -1083,8 +1128,8 @@ Qed.
 End DLimDLim.
 
 Section dlet_dlim_diag.
-Context (R : realType) (T U: choiceType).
-Context (d : nat -> R.-pmf T) (h : nat -> T -> R.-pmf R).
+Context {R : realType} {T U : choiceType}.
+Context (d : (R.-pmf T)^nat) (h : nat -> T -> R.-pmf R).
 Context (hd : homo d).
 Context (hmono: (forall k n1 n2, (n1 <= n2)%N -> h n1 k <=1 h n2 k)).
 
@@ -1137,7 +1182,7 @@ End Marginals.
 
 (* -------------------------------------------------------------------- *)
 Section MarginalsTh.
-Variable (R: realType) (T U V : choiceType).
+Context {R : realType} {T U V : choiceType}.
 
 Lemma dmargin_psumE (mu : R.-pmf T) (f : T -> U) y :
   (dmargin f mu) y = fine (esum [set:T] (fun x => ((f x == y)%:R * mu x)%:E)).
@@ -1276,7 +1321,125 @@ by move=> x /=; rewrite dswapE.
 Qed.
 End DSnd.
 
-(* -------------------------------------------------------------------- *)
+Section pmf_esummable_lemmas.
+Context {R : realType} {T : choiceType}.
+Implicit Types (mu : R.-pmf T).
+
+Lemma pmf_esummable_cst mu c : pmf_esummable mu (cst c).
+Proof.
+have : esummable setT (fun x => c%:E * (mu x)%:E)%E.
+  by apply: esummableZl => //; exact: subpmf_summable.
+by apply/eq_esummable => x /= _; rewrite EFinM.
+Qed.
+
+Lemma pmf_esummableZ mu c F : pmf_esummable mu F -> pmf_esummable mu (c \*o F).
+Proof.
+move=> heF; rewrite /pmf_esummable.
+have := esummableZl (f := EFin \o (fun x => F x * mu x)) (c := c%:E) erefl heF.
+apply/eq_esummable => x /=.
+by rewrite -EFinM mulrA.
+Qed.
+
+Lemma bounded_pmf_esummable mu F :
+  (exists M, forall x, `|F x| <= M) -> pmf_esummable mu F.
+Proof.
+case=> M leM; rewrite /pmf_esummable /esummable.
+rewrite (eq_esum _ _ (fun x=> `|(F x)%:E * (mu x)%:E|)%E).
+  move=> x _; rewrite -EFinM //=.
+apply: esummableMl; last exact: subpmf_summable.
+exists M%:E => [x ?|]; last by [].
+by rewrite /= lee_fin; exact: leM x.
+Qed.
+
+Lemma esummable_pmf mu F : esummable [set: T] (EFin \o F) -> pmf_esummable mu F.
+Proof.
+move=> smF; rewrite /pmf_esummable /esummable.
+rewrite (eq_esum _ _ (fun x=> `|(F x)%:E * (mu x)%:E|)%E).
+  by move=> x _; rewrite -EFinM.
+apply: esummableMr; last exact: smF.
+exists 1%:E => [x ?|]; last by [].
+by rewrite /= lee_fin ger0_norm// subpmf_le1.
+Qed.
+
+End pmf_esummable_lemmas.
+
+(* TODO: move (generic lemma) *)
+Lemma fineMK {R : realDomainType} (a b : \bar R):
+  (0 <= b)%E -> a \is a fin_num ->
+  fine (a * b) = fine a * fine b.
+Proof.
+move => hp.
+move /(elimT (EFin_fin_numP a)) => [r] ->.
+case h: b => //=; last first. by move : hp; rewrite h.
+have [hc|hc|->] := comparable_ltgtP (comparableT r 0).
++ rewrite lt0_muley => //=.
+  by rewrite mulr0.
++ rewrite  gt0_muley => //=.
+  by rewrite mulr0.
+by rewrite mul0e //= mulr0.
+Qed.
+
+Section pmf_expectation_lemmas.
+Context {R : realType} {T : choiceType}.
+Implicit Types (mu : R.-pmf T).
+
+Lemma pmf_expectationZ mu f c : (forall x, 0 <= f x) ->
+  \E_[mu] (fun x => c * (f x)) = c * (\E_[mu] f).
+Proof.
+move => h1; rewrite /pmf_expectation.
+under eq_esum => x do rewrite /= -mulrA EFinM.
+have hpos :  forall x : T, (0%R <= (f x * mu x)%:E)%E.
++ by move=> x; rewrite lee_fin; apply: mulr_ge0; [exact: h1|].
+rewrite esumZ //=.
+have hsum : (0 <= \esum_(i in [set: T]) (f i * mu i)%:E)%E.
++ by apply esum_ge0 => ??.
+by rewrite fineMK.
+Qed.
+
+Lemma pmf_expectation_cst mu r : \E_[mu] (fun=> r) = \P_[mu] predT * r.
+Proof.
+have := pmf_expectationZ mu (f := fun=> 1%R) r.
+rewrite mulr1 => -> //=.
+by rewrite mulrC; congr (_ * _).
+Qed.
+
+Lemma pmf_expectation0 mu : \E_[mu] (fun=> 0) = 0.
+Proof. by rewrite pmf_expectation_cst mulr0. Qed.
+
+Lemma eq_pmf_expectation mu (f1 f2 : T -> R):
+   {in dinsupp mu, f1 =1 f2} -> \E_[mu] f1 = \E_[mu] f2.
+Proof.
+move=> eq_f; rewrite /pmf_expectation; congr fine.
+apply/eq_esum => x /=.
+case/boolP: (x \in dinsupp mu).
++ by move/eq_f => ->.
++ by move/dinsuppPn => ->; rewrite !mulr0.
+Qed.
+
+Lemma pmf_expectationE mu (g : T -> R) :
+  \E_[mu] g = fine ('E_(measure_of_pmf mu) [EFin \o g]).
+Proof. by rewrite expectation_pmf. Qed.
+
+Lemma pmf_expectationB mu (f g : T -> R) :
+  pmf_esummable mu f -> pmf_esummable mu g ->
+  \E_[mu] (f \- g) = \E_[mu] f - \E_[mu] g.
+Proof.
+move=> sf sg.
+rewrite !pmf_expectationE.
+rewrite expectationB//; [exact/Lfun1_integrable/integrable_esummable_new..|].
+by rewrite fineB// expectation_pmfEFin esummable_esum_fin_num.
+Qed.
+
+Lemma pmf_expectation_ge0 mu (g : T -> R) :
+  (forall y, 0 <= g y) -> 0 <= \E_[mu] g.
+Proof.
+move=> g0.
+rewrite /pmf_expectation fine_ge0// esum_ge0// => x _.
+by rewrite lee_fin mulr_ge0.
+Qed.
+
+End pmf_expectation_lemmas.
+
 Section PrCoreTheory.
 Context {R : realType} {T : choiceType}.
 
@@ -1302,14 +1465,26 @@ move=> y _ /=; rewrite [y == x]eq_sym.
 by case: ifP => xy; rewrite ?xy /= ?mul1r ?mul0r.
 Qed.
 
-(* -------------------------------------------------------------------- *)
 Lemma pr_exp mu (Q : pred T) : \P_[mu] Q = \E_[mu] (fun m => (Q m)%:R).
 Proof. by []. Qed.
 
 Lemma pr_predT mu : \P_[mu] predT = fine (esum [set: T] (EFin \o mu)).
 Proof.
-rewrite /pr /expectation_pmf; congr fine.
+rewrite /pr /pmf_expectation; congr fine.
 by apply/eq_esum=> x; rewrite mul1r.
+Qed.
+
+Lemma expectation_pmf_cst mu r : ('E_(measure_of_pmf mu) [cst r] = (\P_[mu] predT)%:E * r)%E.
+Proof.
+rewrite expectation_pmf.
+rewrite esumZ.
+  by move=> ?; rewrite lee_fin.
+rewrite muleC; congr (_ * _)%E.
+rewrite pr_predT.
+rewrite fineK//=.
+rewrite esum_abse//=.
+have := @subpmf_summable _ _ mu.
+by rewrite esummableE.
 Qed.
 
 Lemma pr_dunit E x : \P_[dunit x] E = (E x)%:R :> R.
@@ -1323,70 +1498,14 @@ Qed.
 
 Lemma exp_dunit (f : T -> R) (x : T) : \E_[dunit x] f = f x.
 Proof.
-rewrite /expectation_pmf.
+rewrite /pmf_expectation.
 rewrite (eq_esum _ _ (fun y : T => if x == y then (f y)%:E else 0)%E).
 + move => x0 /=; rewrite dunit1E.
   by case (x == x0) => //=; rewrite ?mulr1  ?mulr0.
 by rewrite esum_if_eq_op_set1.
 Qed.
 
-Lemma fineMK (a b : \bar R):
-  (0 <= b)%E -> a \is a fin_num ->
-  fine (a * b) = fine a * fine b.
-Proof.
-move => hp.
-move /(elimT (EFin_fin_numP a)) => [r] ->.
-case h: b => //=; last first. by move : hp; rewrite h.
-have [hc|hc|->] := comparable_ltgtP (comparableT r 0).
-+ rewrite lt0_muley => //=.
-  by rewrite mulr0.
-+ rewrite  gt0_muley => //=.
-  by rewrite mulr0.
-by rewrite mul0e //= mulr0.
-Qed.
-
-Lemma expZ mu f c : (forall x, 0 <= f x) -> \E_[mu] (fun x => c * (f x)) = c * (\E_[mu] f).
-Proof.
-move => h1; rewrite /expectation_pmf.
-under eq_esum => x do rewrite /= -mulrA EFinM.
-have hpos :  forall x : T, (0%R <= (f x * mu x)%:E)%E.
-+ by move=> x; rewrite lee_fin; apply: mulr_ge0; [exact: h1|].
-rewrite esumZ //=.
-have hsum : (0 <= \esum_(i in [set: T]) (f i * mu i)%:E)%E.
-+ by apply esum_ge0 => ??.
-by rewrite fineMK.
-Qed.
-
-Lemma exp_cst mu r : \E_[mu] (fun _ => r) = \P_[mu] predT * r.
-Proof.
-have := (expZ mu (f:= fun _ => 1%R) r).
-rewrite mulr1 => -> //=.
-by rewrite mulrC;  congr (_ * _).
-Qed.
-
-Lemma exp0 mu : \E_[mu] (fun _ => 0) = 0.
-Proof. by rewrite exp_cst mulr0. Qed.
-
-Lemma has_expectation_cst mu c : \E?_[mu] (cst c).
-Proof.
-have : esummable setT (fun x => c%:E * (mu x)%:E)%E.
-  by apply: esummableZl => //; exact: subpmf_summable.
-by apply/eq_esummable => x /= _; rewrite EFinM.
-Qed.
-
-Lemma has_exp0 mu : \E?_[mu] (cst 0). Proof. exact: has_expectation_cst. Qed.
-
-Lemma has_exp1 mu : \E?_[mu] (cst 1). Proof. exact: has_expectation_cst. Qed.
-
-Lemma has_expZ mu c F : \E?_[mu] F -> \E?_[mu] (c \*o F).
-Proof.
-move=> heF; rewrite /has_expectation_pmf.
-have := esummableZl (f := EFin \o (fun x => F x * mu x)) (c := c%:E) erefl heF.
-apply/eq_esummable => x /=.
-by rewrite -EFinM mulrA.
-Qed.
-
-Lemma ge0_pr A mu : 0 <= \P_[mu] A.
+Lemma pr_ge0 A mu : 0 <= \P_[mu] A.
 Proof.
 rewrite /pr.
 case h: (esum _ _) => //=.
@@ -1395,11 +1514,10 @@ apply/esum_ge0 .
 by move => ? _ ; rewrite lee_fin mulr_ge0.
 Qed.
 
-Lemma ge0_prc A B mu : 0 <= \P_[mu, B] A.
-Proof. by rewrite /prc mulr_ge0 ?invr_ge0 // ge0_pr. Qed.
+Lemma prc_ge0 A B mu : 0 <= \P_[mu, B] A.
+Proof. by rewrite /prc mulr_ge0 ?invr_ge0 // pr_ge0. Qed.
 
-Lemma eq_in_pr A B mu :
-  {in dinsupp mu, A =i B} -> \P_[mu] A = \P_[mu] B.
+Lemma eq_in_pr A B mu : {in dinsupp mu, A =i B} -> \P_[mu] A = \P_[mu] B.
 Proof.
 move=> eq_AB; rewrite /pr; congr fine.
 apply/eq_esum => x _ /=.
@@ -1411,58 +1529,11 @@ Qed.
 Lemma eq_pr A B mu : A =i B -> \P_[mu] A = \P_[mu] B.
 Proof. by move=> eq_AB; apply/eq_in_pr=> x _; apply/eq_AB. Qed.
 
-Lemma eq_exp mu (f1 f2 : T -> R):
-   {in dinsupp mu, f1 =1 f2} -> \E_[mu] f1 = \E_[mu] f2.
-Proof.
-move=> eq_f; rewrite /expectation_pmf; congr fine.
-apply/eq_esum => x /=.
-case/boolP: (x \in dinsupp mu).
-+ by move/eq_f => ->.
-+ by move/dinsuppPn => ->; rewrite !mulr0.
-Qed.
-
 Lemma pr_pred0_eq (mu : R.-pmf T) (E : pred T) :
   E =1 pred0 -> \P_[mu] E = 0.
 Proof. by move=> eq; rewrite -(pr_pred0 mu); apply/eq_pr. Qed.
+
 End PrCoreTheory.
-
-(* -------------------------------------------------------------------- *)
-Section Esp.
-Context {R : realType} {T : choiceType}.
-Implicit Types (mu : R.-pmf T) (f : T -> \bar R).
-
-Definition eexpectation_pmf mu f := \esum_(x in [set:T]) (f x * (mu x)%:E)%E.
-
-End Esp.
-
-Section Expectation.
-Context {R : realType} {T : choiceType} (mu : R.-pmf T).
-
-Local Open Scope ereal_scope.
-
-Lemma integral_measure_of_pmf (f : T -> \bar R) : (forall x, 0 <= f x)%E ->
-  \int[measure_of_pmf mu]_x f x = \esum_(x in [set: T]) (f x * (mu x)%:E)%E.
-Proof.
-move=> f0; rewrite -esum_setT_discrete -integral_counting_esum//=.
-rewrite -(@integral_measure_of_density _ (discrete_measurable_space T) R
-  (@counting (discrete_measurable_space T) R) mu)//=.
-move => H; apply: eq_measure_integral => A mA _ /=.
-by rewrite /measure_of_density /measure_of_pmf integral_counting_esum.
-Qed.
-
-Lemma eexpectationE (f : T -> \bar R) :
-  'E_(measure_of_pmf mu)[f] = \esum_(x in [set:T]) ((f x) * (mu x)%:E)%E.
-Proof.
-rewrite expectation_def integralE esumE; congr (_ - _).
-- rewrite integral_measure_of_pmf//.
-  apply: eq_esum => x _.
-  by rewrite !funeposE maxe_pMl ?mul0e// lee_fin.
-- rewrite integral_measure_of_pmf//.
-  apply: eq_esum => x _.
-  by rewrite !funenegE maxe_pMl ?mul0e ?mulNe// lee_fin.
-Qed.
-
-End Expectation.
 
 Section EspeCoreTheory.
 Context {R : realType} {T : choiceType}.
@@ -1470,127 +1541,62 @@ Implicit Types (mu : R.-pmf T) (A B E : pred T).
 
 Local Open Scope ereal_scope.
 
-Lemma eexp_eq (f g: T -> \bar R) mu : f =1 g ->
- 'E_(measure_of_pmf mu) [f] = 'E_(measure_of_pmf mu) [g].
-Proof.
-move=> fg.
-rewrite unlock.
-by apply: eq_integral => //.
-Qed.
-
 Lemma eexp_dunit (f : T -> \bar R) (x : T) : 'E_(measure_of_pmf (dunit x)) [f] = f x.
 Proof.
-rewrite eexpectationE.
-rewrite /eexpectation_pmf.
+rewrite expectation_pmf.
+(*rewrite /epmf_expectation.*)
 rewrite (eq_esum _ _ (fun y : T => if x == y then f y else 0%R)%E).
 + move => x0. rewrite dunit1E.
   by case (x == x0) => //=; rewrite ?mule1 ?mule0.
 by rewrite esum_if_eq_op_set1.
 Qed.
 
-Lemma eexp_cst mu r : ('E_(measure_of_pmf mu) [(cst r)] = (\P_[mu] predT)%:E * r)%E.
-Proof.
-rewrite pr_predT.
-rewrite eexpectationE.
-rewrite  /eexpectation_pmf //.
-rewrite esumZ.
-- move => ?; rewrite lee_fin //.
-rewrite muleC;  congr ( _ * _)%E.
-rewrite fineK //= esum_abse => //=.
-by have := @subpmf_summable _ _ mu; rewrite esummableE.
-Qed.
-
-Lemma eexp0 mu : 'E_(measure_of_pmf mu) [(cst 0)] = 0.
-Proof. by rewrite eexp_cst mule0. Qed.
-
 Lemma eexp_dlet {U: choiceType} mu (nu : T -> R.-pmf U) F :
-(forall x, 0%:E <= F x)%E ->
-  'E_(measure_of_pmf (dlet nu mu)) [F] = 'E_(measure_of_pmf mu) [fun x => 'E_(measure_of_pmf (nu x)) [F] ].
+  (forall x, 0 <= F x)%E ->
+  'E_(measure_of_pmf (dlet nu mu)) [F] =
+  'E_(measure_of_pmf mu) [fun x => 'E_(measure_of_pmf (nu x)) [F]].
 Proof.
 move => HF.
-rewrite 2!eexpectationE.
-under [in RHS]eq_esum do (rewrite eexpectationE).
-have pos : (forall (i : T) (j : U), (0%R <= F j * ((mu i)%:E * (nu i j)%:E))%E).
-- move => i j; rewrite mule_ge0 //.
-  by rewrite mule_ge0 // lee_tofin.
-rewrite /eexpectation_pmf {1}(eq_esum _ _
-    (fun x : U => (F x * esum [set:T] (fun y : T => (mu y * nu y x)%:E)))%E).
-- move => x ?; rewrite /= dletE.
+rewrite 2!expectation_pmf.
+under [in RHS]eq_esum do rewrite expectation_pmf.
+have pos (i : T) (j : U) : (0 <= F j * ((mu i)%:E * (nu i j)%:E))%E.
+  by rewrite !mule_ge0// lee_fin.
+rewrite {1}(eq_esum _ _ (fun x : U => (F x * esum [set:T] (fun y : T => (mu y * nu y x)%:E)))).
+  move => x ?; rewrite /= dletE.
   congr ( _ * _)%E.
-  rewrite fineK //= esum_abse => //=.
-  - by move => i; rewrite mulr_ge0.
-  - have : esummable [set: T] (fun x0 : T => ((mu x0 * nu x0 x)%:E))%E.
-    +  apply/(le_esummable (g := EFin \o mu)) => //=.
-       by move => x0; rewrite !lee_fin //=  mulr_ge0 //= ler_piMr //= subpmf_le1.
-    by rewrite esummableE.
+  rewrite fineK//= esum_abse//=.
+    by move => i; rewrite mulr_ge0.
+  have : esummable [set: T] (fun x0 : T => (mu x0 * nu x0 x)%:E)%E.
+    apply/(le_esummable (g := EFin \o mu)) => //=.
+    by move => x0; rewrite !lee_fin //=  mulr_ge0 //= ler_piMr //= subpmf_le1.
+  by rewrite esummableE.
 symmetry.
-rewrite {1}(eq_esum _ _
-    (fun x : T => (esum [set:U] (fun x0 : U => F x0 * ((mu x)%:E * (nu x x0)%:E))%E))).
-- move => x ?; rewrite muleC.
-  rewrite -esumZ.
-  - by move => x1; rewrite mule_ge0// lee_fin.
-  rewrite {1}(eq_esum _ _
-           (fun x0 : U => F x0 * ((mu x)%:E * (nu x x0)%:E))%E) // ?esum_sum' //.
-  - by move => ??; rewrite muleCA.
-rewrite exchange_esum //.
+rewrite {1}(eq_esum _ _ (fun x => esum [set:U] (fun x0 : U => F x0 * ((mu x)%:E * (nu x x0)%:E))%E)).
+  move => x _; rewrite muleC -esumZ.
+    by move => x1; rewrite mule_ge0// lee_fin.
+  rewrite {1}(eq_esum _ _ (fun x0 : U => F x0 * ((mu x)%:E * (nu x x0)%:E))%E)//.
+  by move=> ? ?; rewrite muleCA.
+rewrite exchange_esum//.
 apply: eq_esum => u _.
-rewrite esumZ //.
-  by move => ?; rewrite  mule_ge0 // lee_tofin.
+rewrite esumZ//.
+by move => ?; rewrite mule_ge0// lee_fin.
 Qed.
 
 Local Open Scope ereal_scope.
 
-Lemma eexpZ mu F c :
-  (forall x, 0%:E <= F x)%E ->
-  'E_(measure_of_pmf mu)[fun x => c * F x] = c * 'E_(measure_of_pmf mu) [F].
-Proof.
-move => h.
-rewrite !eexpectationE.
-rewrite -esumZ.
-+ by move => x; rewrite mule_ge0 // lee_tofin.
-by apply/eq_esum => x ?; rewrite muleA.
-Qed.
-
-Lemma eexpB mu (A B : T -> \bar R) :
-  (forall x, A x \is a fin_num) ->
-  esummable [set: T] (fun x => (A x * (mu x)%:E)%E) ->
-  esummable [set: T] (fun x => (B x * (mu x)%:E)%E) ->
-  'E_(measure_of_pmf mu) [(A \- B)%E] = ('E_(measure_of_pmf mu)[A] - 'E_(measure_of_pmf mu) [B])%E.
-Proof.
-move=> fA sA sB.
-rewrite !eexpectationE.
-rewrite (esum.eq_esum _ _ (fun x => (A x * (mu x)%:E - B x * (mu x)%:E)%E)).
-  by move => x ? /=; rewrite muleBl//; apply: fin_num_adde_defr; exact: fA.
-exact: (esummable_esumB sA sB).
-Qed.
-
-Lemma espE mu (g : T -> R) :
-  \E_[mu] g = fine ('E_(measure_of_pmf mu) [EFin \o g]).
-Proof.
-rewrite eexpectationE.
-by rewrite /expectation_pmf /eexpectation_pmf; congr (fine _); apply: esum.eq_esum => x ? /=; rewrite EFinM.
-Qed.
-
-Lemma espeEFin mu (g : T -> R) :
-  'E_(measure_of_pmf mu) [EFin \o g] = esum [set: T] (EFin \o (fun x => g x * mu x))%R.
-Proof.
-rewrite eexpectationE.
- by rewrite /eexpectation_pmf; apply: esum.eq_esum => x ? /=; rewrite EFinM. Qed.
-
 Lemma eexp_dlet_esp {U: choiceType} mu (nu : T -> R.-pmf U) (g : U -> R) :
-  (forall y, 0 <= g y)%R -> (forall eta, \E?_[eta] g) ->
+  (forall y, 0 <= g y)%R -> (forall eta, pmf_esummable eta g) ->
   'E_(measure_of_pmf (dlet nu mu)) [EFin \o g] =
   'E_(measure_of_pmf mu) [EFin \o (fun x => \E_[nu x] g)].
 Proof.
-move=> ? sg.
-rewrite (eexp_dlet mu nu ).
-+ by move=> x; rewrite /= lee_fin.
-rewrite  /=.
-rewrite !eexpectationE.
-apply: eq_esum => ?? //=.
-rewrite eexpectationE.
+move=> g0 sg.
+rewrite (eexp_dlet mu nu)/=.
+  by move=> x; rewrite /= lee_fin.
+rewrite !expectation_pmf.
+apply: eq_esum => t _ //=.
+rewrite expectation_pmf.
 congr (_ * _)%E.
-rewrite /expectation_pmf fineK//.
+rewrite /pmf_expectation fineK//.
 exact: (esummable_esum_fin_num (sg (nu _))).
 Qed.
 
@@ -1613,20 +1619,20 @@ rewrite -dRV_esum_pmf_distribution// integral_counting_esum//=.
 by apply/measurable_EFinP; exact: pmf_measurable.
 Qed.
 
-Lemma ge0_espe_pmf (f : R -> \bar R) :
-    measurable_fun [set: R] f -> (forall r, 0 <= f r) ->
-  'E_(measure_of_pmf pmfX) [f] = \int[P]_w f (X w).
+Lemma ge0_expectation_pmf (f : R -> \bar R) :
+  measurable_fun [set: R] f -> (forall r, 0 <= f r) ->
+ 'E_(measure_of_pmf pmfX) [f] = \int[P]_w f (X w).
 Proof.
 move=> mf f0.
 (*rewrite unlock/=.
 rewrite -ge0_integral_distribution//.*)
-rewrite eexpectationE.
+rewrite expectation_pmf.
 have mfh : measurable_fun [set: R] (fun r => f r * (pmfX r)%:E).
   by apply: emeasurable_funM => //; apply/measurable_EFinP; exact: pmf_measurable.
 have fh0 r : 0 <= f r * (pmfX r)%:E.
   by apply: mule_ge0; [exact: f0|rewrite lee_fin pmf_ge0].
 rewrite [LHS](_ : _  = \int[@counting R R]_r (f r * (pmfX r)%:E)).
-  by rewrite /eexpectation_pmf -integral_counting_esum//; exact: measurable_set1.
+  by rewrite (*/epmf_expectation*) -integral_counting_esum//; exact: measurable_set1.
 have <- : \int[distribution P X]_r f r =
           \int[@counting R R]_r (f r * (pmfX r)%:E).
   rewrite -(integral_measure_of_density _ (pmf_measurable X))//=.
@@ -1635,24 +1641,23 @@ have <- : \int[distribution P X]_r f r =
 by rewrite /distribution ge0_integral_pushforward.
 Qed.
 
-Lemma espe_pmf_dRV : 'E_(measure_of_pmf pmfX) [EFin] = 'E_P[EFin \o X].
+Lemma expectation_pmf_dRV : 'E_(measure_of_pmf pmfX) [EFin] = 'E_P[EFin \o X].
 Proof.
-rewrite eexpectationE.
-rewrite /eexpectation_pmf esumE expectation_def integralE; congr (_ - _).
+rewrite expectation_pmf.
+rewrite (*/epmf_expectation*) esumE expectation_def integralE; congr (_ - _).
 - transitivity ('E_(measure_of_pmf pmfX) [(@EFin R)^\+%E]).
-    rewrite eexpectationE.
+    rewrite expectation_pmf.
     by apply: eq_esum => r _; rewrite !funeposE maxe_pMl ?lee_fin// mul0e.
-  rewrite ge0_espe_pmf => //=; first exact: measurable_funepos.
+  rewrite ge0_expectation_pmf => //=; first exact: measurable_funepos.
   by apply: eq_integral => w _; rewrite !funeposE.
 - transitivity ('E_(measure_of_pmf pmfX) [(@EFin R)^\-%E]).
-  rewrite eexpectationE.
+  rewrite expectation_pmf.
     by apply: eq_esum => r _; rewrite !funenegE maxe_pMl ?lee_fin// mul0e mulNe.
-  rewrite ge0_espe_pmf//=; first exact: measurable_funeneg.
+  rewrite ge0_expectation_pmf//=; first exact: measurable_funeneg.
   by apply: eq_integral => w _; rewrite !funenegE.
 Qed.
 
 End espe_pmf.
-
 
 (* -------------------------------------------------------------------- *)
 Section PrTheory.
@@ -1680,7 +1685,7 @@ Qed.
 Lemma pr_dlet E f (mu : R.-pmf U) :
   \P_[dlet f mu] E = \E_[mu] (fun x => \P_[f x] E).
 Proof.
-rewrite /pr /expectation_pmf.
+rewrite /pr /pmf_expectation.
 congr (fine _).
 rewrite {1}(eq_esum _ _ (fun t => \esum_(x in [set: U]) ((E t)%:R * (mu x * f x t))%:E)%E).
 + by move => t _; rewrite EFinM dlet_EFin EFin_esumZ // => ?; rewrite mulr_ge0.
@@ -1696,7 +1701,7 @@ Qed.
 Lemma pr_dmargin E f (mu : R.-pmf U) :
   \P_[dmargin f mu] E = \P_[mu] [pred x | f x \in E].
 Proof.
-by rewrite /dmargin pr_dlet pr_exp; apply/eq_exp=> x _; rewrite pr_dunit.
+by rewrite /dmargin pr_dlet pr_exp; apply/eq_pmf_expectation=> x _; rewrite pr_dunit.
 Qed.
 
 Lemma eq0_pr A mu :
@@ -1734,10 +1739,10 @@ rewrite ge0_fin_numE; last first.
 by apply: esum_ge0 => x _; rewrite lee_fin.
 Qed.
 
-Lemma le_exp mu f1 f2: \E?_[mu] f1 -> \E?_[mu] f2 ->
+Lemma le_exp mu f1 f2 : pmf_esummable mu f1 -> pmf_esummable mu f2 ->
   f1 <=1 f2 -> \E_[mu] f1 <= \E_[mu] f2.
 Proof.
-move=> sm1 sm2 le_f; rewrite /expectation_pmf; apply: fine_le.
+move=> sm1 sm2 le_f; rewrite /pmf_expectation; apply: fine_le.
 - exact: (esummable_esum_fin_num sm1).
 - exact: (esummable_esum_fin_num sm2).
 - apply: le_esum.
@@ -1769,9 +1774,9 @@ case/boolP: (x \in dinsupp nu) => [/h {}h|]; last first.
 by case/boolP: (A x) => [/h|]; rewrite ?(mul0r, mul1r).
 Qed.
 
-Lemma le1_prc A B mu : \P_[mu, B] A <= 1.
+Lemma prc_le1 A B mu : \P_[mu, B] A <= 1.
 Proof.
-move: (ge0_pr B mu); rewrite /prc le_eqVlt.
+move: (pr_ge0 B mu); rewrite /prc le_eqVlt.
 case/orP=> [/eqP<-|]; first by rewrite invr0 mulr0 ler01.
 move/ler_pdivrMr=> ->; rewrite mul1r.
 by apply: le_in_pr => x _ /andP[].
@@ -1793,7 +1798,7 @@ rewrite (eq_esum _ _ (fun x => ((\P_[mu] A)^-1 * ((A x)%:R * mu x))%:E)).
  by move=> x _; rewrite /prc hpr1; congr (_ %:E); rewrite mulrC.
 rewrite (EFin_esumZ _ a0); last first. rewrite -prE -EFinM mulVf //.
 + by rewrite gt_eqF.
- by rewrite invr_ge0; exact: ge0_pr.
+by rewrite invr_ge0// pr_ge0.
 Qed.
 
 Lemma pr_eq0 mu E : \P_[mu] E = 0 -> forall x, x \in E -> mu x = 0.
@@ -1884,13 +1889,11 @@ Lemma pr_and A B mu : \P_[mu] [predI A & B] =
   \P_[mu] A + \P_[mu] B - \P_[mu] [predU A & B].
 Proof. by rewrite pr_or subKr. Qed.
 
-Lemma ler_pr_or A B mu :
-  \P_[mu] [predU A & B] <= \P_[mu] A + \P_[mu] B.
-Proof. by rewrite pr_or lerBlDr lerDl ge0_pr. Qed.
+Lemma ler_pr_or A B mu : \P_[mu] [predU A & B] <= \P_[mu] A + \P_[mu] B.
+Proof. by rewrite pr_or lerBlDr lerDl pr_ge0. Qed.
 
-Lemma ler_pr_and A B mu :
-  \P_[mu] [predI A & B] <= \P_[mu] A + \P_[mu] B.
-Proof. by rewrite pr_and lerBlDr lerDl ge0_pr. Qed.
+Lemma ler_pr_and A B mu : \P_[mu] [predI A & B] <= \P_[mu] A + \P_[mu] B.
+Proof. by rewrite pr_and lerBlDr lerDl pr_ge0. Qed.
 
 Lemma pr_predC E mu: \P_[mu](predC E) = \P_[mu] predT - \P_[mu] E.
 Proof.
@@ -1922,7 +1925,7 @@ by rewrite esum_if_eq_op_set1.
 Qed.
 
 Lemma summable_pr_f f mu (P : pred T):
-  \E?_[mu] f ->
+  pmf_esummable mu f ->
   esummable [set: T] (EFin \o (fun x => (P x)%:R * (f x * mu x))).
 Proof.
 move=> sm; rewrite /esummable //= .
@@ -1934,14 +1937,14 @@ by rewrite gee0_abs ?lee_fin ?ler0n// lern1 leq_b1.
 Qed.
 
 Lemma sum_fin_num_mu_f f mu (P : pred T):
-    \E?_[mu] f ->
+    pmf_esummable mu f ->
     esum [set:T] (EFin \o (fun x => (P x)%:R * (f x * mu x))) \is a fin_num.
 Proof.
   move=> ?; apply: esummable_esum_fin_num;  exact: summable_pr_f.
 Qed.
 
 Lemma pr_esp_sum mu f (P : pred T):
-  \E?_[mu] f ->
+  pmf_esummable mu f ->
   \P_[mu] P * \E_[mu, P] f =
   fine (esum [set: T] (EFin \o (fun x => (P x)%:R * (f x * mu x)))).
 Proof.
@@ -1963,37 +1966,16 @@ rewrite (esummable_esumZ _ (summable_pr_f P sm));
 by rewrite fineM ?abse_fin_num ?sum_fin_num_mu_f// mulVKf.
 Qed.
 
-Lemma exp_split A f mu : \E?_[mu] f -> \E_[mu] f =
+Lemma exp_split A f mu : pmf_esummable mu f -> \E_[mu] f =
     \P_[mu]        A  * \E_[mu,       A] f
   + \P_[mu] (predC A) * \E_[mu, predC A] f.
 Proof.
 move=> sm.
-rewrite (pr_esp_sum A) // (pr_esp_sum (predC A)) // /expectation_pmf -fineD ?sum_fin_num_mu_f//.
+rewrite (pr_esp_sum A) // (pr_esp_sum (predC A)) // /pmf_expectation -fineD ?sum_fin_num_mu_f//.
 congr fine; rewrite -(esummable_esumD (summable_pr_f A sm) (summable_pr_f (predC A) sm)).
 apply: esum.eq_esum => x ? /=; rewrite -EFinD; congr (_ %:E).
 rewrite -mulrDl -[LHS]mul1r; congr (_ * _).
 by rewrite -natrD; case: (A x).
-Qed.
-
-Lemma bounded_has_exp mu F :
-  (exists M, forall x, `|F x| <= M) -> \E?_[mu] F.
-Proof.
-case=> M leM; rewrite /has_expectation_pmf /esummable.
-rewrite (eq_esum _ _ (fun x=> `|(F x)%:E * (mu x)%:E|)%E).
-  move=> x _; rewrite -EFinM //=.
-apply: esummableMl; last exact: subpmf_summable.
-exists M%:E => [x ?|]; last by [].
-by rewrite /= lee_fin; exact: leM x.
-Qed.
-
-Lemma summable_has_exp mu F : esummable [set: T] (EFin \o F) -> \E?_[mu] F.
-Proof.
-move=> smF; rewrite /has_expectation_pmf /esummable.
-rewrite (eq_esum _ _ (fun x=> `|(F x)%:E * (mu x)%:E|)%E).
-  move=> x _; rewrite -EFinM //=.
-apply: esummableMr; last exact: smF.
-exists 1%:E => [x ?|]; last by [].
-by rewrite /= lee_fin ger0_norm// subpmf_le1.
 Qed.
 
 Lemma exp_le_bd mu F (M : R) :
@@ -2001,28 +1983,26 @@ Lemma exp_le_bd mu F (M : R) :
 Proof.
 move=> ge0M bd; apply/(@le_trans _ _ (\E_[mu] (fun _ => M))).
 + apply/le_exp.
-  + by apply/bounded_has_exp; exists M.
-  + exact/has_expectation_cst.
+  + by apply/bounded_pmf_esummable; exists M.
+  + exact/pmf_esummable_cst.
   + by move=> x; apply/(le_trans _ (bd x))/ler_norm.
-by rewrite exp_cst ler_piMl // le1_pr.
-Qed.
-
-Lemma ge0_expectation {V : choiceType} (eta : R.-pmf V) (g : V -> R) :
-  (forall y, 0 <= g y) -> 0 <= \E_[eta] g.
-Proof.
-move=> g0; rewrite /expectation_pmf; apply: fine_ge0; apply: esum_ge0 => x ?.
-by rewrite lee_fin mulr_ge0//; exact: g0.
+by rewrite pmf_expectation_cst ler_piMl // le1_pr.
 Qed.
 
 Lemma exp_dlet_ge0 (mu : R.-pmf T) (nu : T -> R.-pmf U) (g : U -> R) :
-  (forall y, 0 <= g y) -> (forall eta, \E?_[eta] g) ->
+  (forall y, 0 <= g y) -> (forall eta, pmf_esummable eta g) ->
   \E_[dlet nu mu] g = \E_[mu] (fun x => \E_[nu x] g).
-Proof. by move=> g0 sg; rewrite espE (eexp_dlet_esp mu nu g0 sg) -espE. Qed.
-
-Lemma has_expectation_le {V:choiceType} (mu : R.-pmf V) (k h : V -> R) :
-  (forall x, `|k x| <= `|h x|) -> \E?_[mu] h -> \E?_[mu] k.
 Proof.
-move=> kh; rewrite /has_expectation_pmf => fh.
+move=> g0 sg.
+rewrite [LHS]pmf_expectationE.
+rewrite eexp_dlet_esp//.
+by rewrite -pmf_expectationE.
+Qed.
+
+Lemma pmf_esummable_le {V : choiceType} (mu : R.-pmf V) (k h : V -> R) :
+  (forall x, `|k x| <= `|h x|) -> pmf_esummable mu h -> pmf_esummable mu k.
+Proof.
+move=> kh; rewrite /pmf_esummable => fh.
 rewrite esummableE ge0_fin_numE.
 + apply: esum_ge0 => i _; exact: abse_ge0.
 apply: (le_lt_trans _ fh).
@@ -2031,48 +2011,33 @@ by move => ??; rewrite lee_fin !normrM ler_wpM2r.
 Qed.
 
 Lemma hcomp (mu : R.-pmf T) (nu : T -> R.-pmf U) (g : U -> R) :
-  (forall y, 0 <= g y) -> (forall eta, \E?_[eta] g) -> \E?_[mu] (fun x => \E_[nu x] g).
+  (forall y, 0 <= g y) -> (forall eta, pmf_esummable eta g) -> pmf_esummable mu (fun x => \E_[nu x] g).
 Proof.
 move=> g0 sg.
-have hge0 : forall x, 0 <= \E_[nu x] g * mu x.
-  by move=> x; apply: mulr_ge0; [exact: ge0_expectation |].
-rewrite /has_expectation_pmf esummableE.
+have hge0 x : 0 <= \E_[nu x] g * mu x by rewrite mulr_ge0// pmf_expectation_ge0.
+rewrite /pmf_esummable esummableE.
 rewrite (esum.eq_esum _ _ (EFin \o (fun x => \E_[nu x] g * mu x))).
 + move=> x _ /=; rewrite ger0_norm //.
-rewrite -espeEFin -(eexp_dlet_esp mu nu g0 sg) espeEFin.
+rewrite -expectation_pmfEFin -(eexp_dlet_esp mu nu g0 sg) expectation_pmfEFin.
 exact: (esummable_esum_fin_num (sg (dlet nu mu))).
 Qed.
 
-Lemma expB {V: choiceType} (f g : V -> R) (eta : R.-pmf V) :
-  \E?_[eta] f -> \E?_[eta] g -> \E_[eta] (f \- g) = \E_[eta] f - \E_[eta] g.
-Proof.
-move=> sf sg.
-rewrite !espE -fineB //.
-+ by rewrite espeEFin; exact: (esummable_esum_fin_num sf).
-+ by rewrite espeEFin; exact: (esummable_esum_fin_num sg).
-congr (fine _).
-transitivity ('E_(measure_of_pmf eta)[((EFin \o f) \- (EFin \o g))%E])%E => //.
-rewrite {1}(@eexp_eq _ _ _ (fun x => (f x)%:E - (g x)%:E)%E).
-+ move => ?. rewrite -EFinB //.
-exact : eexpB.
-Qed.
-
 Lemma exp_dlet mu (nu : T -> R.-pmf U ) F :
-  (forall eta, \E?_[eta] F) ->
+  (forall eta, pmf_esummable eta F) ->
     \E_[dlet nu mu] F = \E_[mu] (fun x => \E_[nu x] F).
 Proof.
 move=> sF.
-have spF : forall eta, \E?_[eta] F^\+.
-+ by move=> eta //=; apply: (has_expectation_le (le_funrpos F) (sF eta)).
-have snF : forall eta, \E?_[eta] F^\-.
-+ by move=> eta; apply: (has_expectation_le (le_funrneg F) (sF eta)).
+have spF : forall eta, pmf_esummable eta F^\+.
++ by move=> eta //=; apply: (pmf_esummable_le (le_funrpos F) (sF eta)).
+have snF : forall eta, pmf_esummable eta F^\-.
++ by move=> eta; apply: (pmf_esummable_le (le_funrneg F) (sF eta)).
 transitivity (\E_[mu] (fun x => \E_[nu x] F^\+)
             - \E_[mu] (fun x => \E_[nu x] F^\-)).
 rewrite -(exp_dlet_ge0 mu nu _ spF) // -(exp_dlet_ge0 mu nu _ snF) //.
-rewrite -(expB (spF _) (snF _)); congr (\E_[dlet nu mu] _); exact/esym/funrposBneg.
-rewrite -(expB (hcomp mu nu _ spF) (hcomp mu nu _ snF)) //.
-apply: eq_exp => x _ /=.
-rewrite -(expB (spF _) (snF _)).
+rewrite -(pmf_expectationB (spF _) (snF _)); congr (\E_[dlet nu mu] _); exact/esym/funrposBneg.
+rewrite -(pmf_expectationB (hcomp mu nu _ spF) (hcomp mu nu _ snF)) //.
+apply: eq_pmf_expectation => x _ /=.
+rewrite -(pmf_expectationB (spF _) (snF _)).
 congr (\E_[nu x] _); exact : funrposBneg.
 Qed.
 
@@ -2080,18 +2045,14 @@ End PrTheory.
 
 (* -------------------------------------------------------------------- *)
 Section mono_esum.
-Context
-  {R : realType}
-  {T : choiceType}
-  {f : nat -> R.-pmf T}.
+Context {R : realType} {T : choiceType} {f : (R.-pmf T)^nat}.
 
 Hypothesis ndf : nd f.
 
 Lemma mono_esum_Efn (E: T -> \bar R):
   (forall m, 0 <= E m)%E ->
   forall m n, (m <= n)%N ->
-         (esum [set:T] (fun x => E x * (f m x)%:E) <=
-            esum [set:T] (fun x => E x * (f n x)%:E))%E.
+  (\esum_(x in [set:T]) (E x * (f m x)%:E) <= \esum_(x in [set:T]) (E x * (f n x)%:E))%E.
 Proof.
 move=> hE m n le_mn.
 apply /esum.le_esum.
@@ -2165,5 +2126,5 @@ split=> [|->] //.
 case: f1 => f1 [[]ge0_1 s1 le1_1].
 case: f2 => f2 [[]ge0_2 s2 le1_2].
 move => /funext /= h.
-subst;f_equal; f_equal; f_equal => //=.
+by subst;f_equal; f_equal; f_equal.
 Qed.
