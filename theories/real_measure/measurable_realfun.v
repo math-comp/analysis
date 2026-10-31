@@ -87,6 +87,9 @@ Qed.
 
 End ps_infty.
 
+Fact emeasure_display (d : measure_display) : measure_display.
+Proof. by []. Qed.
+
 Section salgebra_ereal.
 Context {R : realType} (G : set_system R).
 Let measurableR : set_system R := G.-sigma.-measurable.
@@ -136,9 +139,9 @@ rewrite predeqE => i /=; split=> [[r [n _ fn1r <-{i}]]|[n _ [r fn1r <-{i}]]];
  by [exists n => //; exists r | exists r => //; exists n].
 Qed.
 
-Definition ereal_isMeasurable : isMeasurable default_measure_display (\bar R) :=
-  isMeasurable.Build _ _
-    emeasurable0 emeasurableC bigcupT_emeasurable.
+Definition ereal_isMeasurable 
+  : isMeasurable (emeasure_display G.-sigma) (\bar R) 
+  := isMeasurable.Build _ _ emeasurable0 emeasurableC bigcupT_emeasurable.
 
 End salgebra_ereal.
 
@@ -200,16 +203,19 @@ This was producing a warning but the alternative was failing with Coq 8.12 with
   # Please report at http://coq.inria.fr/bugs/.
 *)
 
+Local Notation lebesgue_emeasurable := 
+  (@measurable (emeasure_display R.-ocitv.-measurable.-sigma) _).
+
 Import MeasurableR.
 
 Lemma measurable_image_EFin (A : set R) :
-  measurable A -> measurable (EFin @` A).
+  lebesgue_measurable A -> lebesgue_emeasurable (EFin @` A).
 Proof.
 move=> mA; exists A; first by rewrite RGenOpenSets.measurableE.
 by exists set0; [constructor|rewrite setU0].
 Qed.
 
-Lemma emeasurable_set1 (x : \bar R) : measurable [set x].
+Lemma emeasurable_set1 (x : \bar R) : lebesgue_emeasurable [set x].
 Proof.
 case: x => [r| |].
 - by rewrite -image_set1; apply: measurable_image_EFin.
@@ -221,7 +227,7 @@ Qed.
 #[local] Hint Resolve emeasurable_set1 : core.
 
 Let emeasurable_itv_bndy b (y : \bar R) :
-  measurable [set` Interval (BSide b y) +oo%O].
+  lebesgue_emeasurable [set` Interval (BSide b y) +oo%O].
 Proof.
 move: y => [y| |].
 - exists [set` Interval (BSide b y) +oo%O]; first by [].
@@ -232,11 +238,11 @@ move: y => [y| |].
 Qed.
 
 Let emeasurable_itv_Nybnd b (y : \bar R) :
-  measurable [set` Interval -oo%O (BSide b y)].
+  lebesgue_emeasurable [set` Interval -oo%O (BSide b y)].
 Proof. by rewrite -setCitvr; exact/measurableC/emeasurable_itv_bndy. Qed.
 
 Lemma emeasurable_itv (i : interval (\bar R)) :
-  measurable ([set` i]%classic : set \bar R).
+  lebesgue_emeasurable ([set` i]%classic : set \bar R).
 Proof.
 rewrite -[X in measurable X]setCK; apply: measurableC.
 rewrite set_interval.setCitv /=; apply: measurableU => [|].
@@ -244,8 +250,8 @@ rewrite set_interval.setCitv /=; apply: measurableU => [|].
 - by move: i => [i1 [b2 i2|[|]]] /=; rewrite ?set_interval.set_itvE.
 Qed.
 
-Lemma measurable_image_fine (X : set \bar R) : measurable X ->
-  measurable [set fine x | x in X `\` [set -oo; +oo]%E].
+Lemma measurable_image_fine (X : set \bar R) : lebesgue_emeasurable X ->
+  lebesgue_measurable [set fine x | x in X `\` [set -oo; +oo]%E].
 Proof.
 case => Y mY [X' [ | <-{X} | <-{X} | <-{X} ]].
 - rewrite setU0 => <-{X}.
@@ -265,7 +271,7 @@ case => Y mY [X' [ | <-{X} | <-{X} | <-{X} ]].
   by move=> Yr; exists r%:E => //; split => [|[]//]; left; exists r.
 Qed.
 
-Lemma measurable_ball (x : R) e : measurable (ball x e).
+Lemma measurable_ball (x : R) e : lebesgue_measurable (ball x e).
 Proof. by rewrite ball_itv -?RGenOpenSets.measurableE//. Qed.
 
 Lemma measurable_closed_ball (x : R) r : measurable (closed_ball x r).
@@ -277,12 +283,16 @@ End salgebra_R_ssets.
 #[global]
 Hint Extern 0 (measurable [set _]) => solve [apply: emeasurable_set1] : core.
 
+Local Notation lebesgue_emeasurable := 
+  (@measurable (emeasure_display _.-ocitv.-measurable.-sigma) _).
+
 Import MeasurableR.
 
-Lemma fine_measurable (R : realType) (D : set (\bar R)) : measurable D ->
-  measurable_fun D fine.
+Lemma fine_measurable (R : realType) (D : set (\bar R)) : 
+  lebesgue_emeasurable D -> measurable_fun D fine.
 Proof.
-move=> mD _ /= B mB; rewrite [X in measurable X](_ : _ `&` _ = if 0%R \in B then
+move=> mD _ /= B mB. 
+rewrite [X in lebesgue_emeasurable X](_ : _ `&` _ = if 0%R \in B then
     D `&` ((EFin @` B) `|` [set -oo; +oo]%E) else D `&` EFin @` B).
   apply/seteqP; split=> [[r [Dr Br]|[Doo B0]|[Doo B0]]|[r| |]].
   - by case: ifPn => _; split => //; left; exists r.
@@ -556,7 +566,7 @@ Proof. by move/is_intervalP => ->; rewrite -?RGenOpenSets.measurableE//. Qed.
 Section coutinuous_measurable.
 Context {R : realType}.
 
-Lemma open_measurable (A : set R) : open A -> measurable A.
+Lemma open_measurable (A : set R) : open A -> lebesgue_measurable A.
 Proof.
 move=>/open_bigcup_rat ->; rewrite bigcup_mkcond; apply: bigcupT_measurable_rat.
 move=> q; case: ifPn => // qfab; apply: is_interval_measurable => //.
@@ -564,22 +574,22 @@ exact: is_interval_bigcup_ointsub.
 Qed.
 
 Lemma open_measurable_subspace (D : set R) (U : set (subspace D)) :
-  measurable D -> open U -> measurable (D `&` U).
+  lebesgue_measurable D -> open U -> lebesgue_measurable (D `&` U).
 Proof.
 move=> mD /open_subspaceP [V oV VD]; rewrite setIC -VD.
 by apply: measurableI => //; exact: open_measurable.
 Qed.
 
-Lemma closed_measurable (A : set R) : closed A -> measurable A.
+Lemma closed_measurable (A : set R) : closed A -> lebesgue_measurable A.
 Proof. by move/closed_openC/open_measurable/measurableC; rewrite setCK. Qed.
 
-Lemma compact_measurable (A : set R) : compact A -> measurable A.
+Lemma compact_measurable (A : set R) : compact A -> lebesgue_measurable A.
 Proof.
 by move/compact_closed => /(_ (@Rhausdorff R)); exact: closed_measurable.
 Qed.
 
 Lemma subspace_continuous_measurable_fun (D : set R) (f : subspace D -> R) :
-  measurable D -> continuous f -> measurable_fun D f.
+  lebesgue_measurable D -> continuous f -> measurable_fun D f.
 Proof.
 move=> mD /continuousP cf.
 rewrite /measurable_fun -?RGenOpenSets.measurableE.
