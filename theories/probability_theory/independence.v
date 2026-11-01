@@ -564,7 +564,7 @@ Lemma independent_Lfun1_expectation_product_measure_lty (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y ->
   (X : _ -> _) \in Lfun P 1 -> (Y : _ -> _) \in Lfun P 1 ->
   'E_((P \x P) : probability (T * T)%type R)
-     [(fun x => `|X x.1 * Y x.2|)%R] < +oo.
+     [(fun x => `|X x.1 * Y x.2|%:E)] < +oo.
 Proof.
 move=> indeXY iX iY.
 rewrite unlock [ltLHS](_ : _ =
@@ -610,19 +610,20 @@ Import MeasurableR.
   (forall y y', y \in range f -> y' \in range g ->
     P (f @^-1` [set y] `&` g @^-1` [set y']) =
     P (f @^-1` [set y]) * P (g @^-1` [set y'])) ->
-  'E_P [f \* g] = 'E_P [f] * 'E_P [g].
+  'E_P [EFin \o (f \* g)%R] = 'E_P [EFin \o f] * 'E_P [EFin \o g].
 Proof.
 move=> fg; transitivity
-    ('E_P [(fun x => (\sum_(y \in range f) y * \1_(f @^-1` [set y]) x)%R)
-        \* (fun x => (\sum_(y \in range g) y * \1_(g @^-1` [set y]) x)%R)]).
+    ('E_P [EFin \o ((fun x => (\sum_(y \in range f) y * \1_(f @^-1` [set y]) x)%R)
+        \* (fun x => (\sum_(y \in range g) y * \1_(g @^-1` [set y]) x)%R))%R]).
   by congr ('E_P [_]); apply/funext => t/=; rewrite (fimfunE f) (fimfunE g).
-transitivity ('E_P [(fun x => (\sum_(y \in range f) \sum_(y' \in range g) y * y'
-                    * \1_(f @^-1` [set y] `&` g @^-1` [set y']) x)%R)]).
+transitivity ('E_P [EFin \o ((fun x => (\sum_(y \in range f) \sum_(y' \in range g) y * y'
+                    * \1_(f @^-1` [set y] `&` g @^-1` [set y']) x)%R))]).
   congr ('E_P [_]); apply/funext => t/=.
-  rewrite mulr_fsuml; apply: eq_fsbigr => y yf; rewrite mulr_fsumr.
+  rewrite mulr_fsuml; congr EFin.
+  apply: eq_fsbigr => y yf; rewrite mulr_fsumr.
   by apply: eq_fsbigr => y' y'g; rewrite indicI mulrCA !mulrA (mulrC y').
 rewrite unlock.
-under eq_integral do rewrite -fsumEFin//.
+under eq_integral do rewrite /= -fsumEFin//.
 transitivity (\sum_(y \in range f) (\sum_(y' \in range g)
   ((y * y')%:E * \int[P]_w (\1_(f @^-1` [set y] `&` g @^-1` [set y']) w)%:E))).
   rewrite ge0_integral_fsum//=.
@@ -646,9 +647,9 @@ transitivity (\sum_(y \in range f) (\sum_(y' \in range g)
   ((y * y')%:E * ((\int[P]_w (\1_(f @^-1` [set y]) w)%:E) *
                   \int[P]_w (\1_(g @^-1` [set y']) w)%:E)))).
   apply: eq_fsbigr => y fy; apply: eq_fsbigr => y' gy'; congr *%E.
-  transitivity ('E_P[\1_(f @^-1` [set y] `&` g @^-1` [set y'])]).
+  transitivity ('E_P[EFin \o \1_(f @^-1` [set y] `&` g @^-1` [set y'])]).
     by rewrite unlock.
-  transitivity ('E_P[\1_(f @^-1` [set y])] * 'E_P[\1_(g @^-1` [set y'])]);
+  transitivity ('E_P[EFin \o \1_(f @^-1` [set y])] * 'E_P[EFin \o \1_(g @^-1` [set y'])]);
     last by rewrite unlock.
   rewrite expectation_indic//; first exact: measurableI.
   by rewrite !expectation_indic//; exact: fg.
@@ -683,16 +684,16 @@ Qed.
 
 Lemma ge0_independent_expectationM (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y ->
-  'E_P[X] *? 'E_P[Y] ->
+  'E_P[EFin \o X] *? 'E_P[EFin \o Y] ->
   (forall t, 0 <= X t)%R -> (forall t, 0 <= Y t)%R ->
-  'E_P [X * Y] = 'E_P [X] * 'E_P [Y].
+  'E_P [EFin \o (X * Y)%R] = 'E_P [EFin \o X] * 'E_P [EFin \o Y].
 Proof.
 move=> indeXY defXY X0 Y0.
 have mX : measurable_fun setT (EFin \o X) by exact/measurable_EFinP.
 have mY : measurable_fun setT (EFin \o Y) by exact/measurable_EFinP.
 pose X_ := nnsfun_approx measurableT mX.
 pose Y_ := nnsfun_approx measurableT mY.
-have EXY : 'E_P[X_ n \* Y_ n] @[n --> \oo] --> 'E_P [X * Y].
+have EXY : 'E_P[EFin \o (X_ n \* Y_ n)%R] @[n --> \oo] --> 'E_P [EFin \o (X * Y)%R].
   rewrite unlock; have -> : \int[P]_w ((X * Y) w)%:E =
       \int[P]_x limn (fun n => (EFin \o (X_ n \* Y_ n)%R) x).
     apply: eq_integral => t _; apply/esym/cvg_lim => //=.
@@ -704,7 +705,7 @@ have EXY : 'E_P[X_ n \* Y_ n] @[n --> \oo] --> 'E_P [X * Y].
   - by move=> n t _; rewrite lee_fin.
   - move=> t _ m n mn.
     by rewrite lee_fin/= ler_pM//; exact/lefP/nd_nnsfun_approx.
-have EX : 'E_P[X_ n] @[n --> \oo] --> 'E_P [X].
+have EX : 'E_P[EFin \o X_ n] @[n --> \oo] --> 'E_P [EFin \o X].
   rewrite unlock.
   have -> : \int[P]_w (X w)%:E = \int[P]_x limn (fun n => (EFin \o X_ n) x).
     by apply: eq_integral => t _; apply/esym/cvg_lim => //=;
@@ -713,7 +714,7 @@ have EX : 'E_P[X_ n] @[n --> \oo] --> 'E_P [X].
   - by move=> n; exact/measurable_EFinP.
   - by move=> n t _; rewrite lee_fin.
   - by move=> t _ m n mn; rewrite lee_fin/=; exact/lefP/nd_nnsfun_approx.
-have EY : 'E_P[Y_ n] @[n --> \oo] --> 'E_P [Y].
+have EY : 'E_P[EFin \o Y_ n] @[n --> \oo] --> 'E_P [EFin \o Y].
   rewrite unlock.
   have -> : \int[P]_w (Y w)%:E = \int[P]_x limn (fun n => (EFin \o Y_ n) x).
     by apply: eq_integral => t _; apply/esym/cvg_lim => //=;
@@ -722,9 +723,9 @@ have EY : 'E_P[Y_ n] @[n --> \oo] --> 'E_P [Y].
   - by move=> n; exact/measurable_EFinP.
   - by move=> n t _; rewrite lee_fin.
   - by move=> t _ m n mn; rewrite lee_fin/=; exact/lefP/nd_nnsfun_approx.
-have {EX EY}EXY' : 'E_P[X_ n] * 'E_P[Y_ n] @[n --> \oo] --> 'E_P[X] * 'E_P[Y].
+have {EX EY}EXY' : 'E_P[EFin \o X_ n] * 'E_P[EFin \o Y_ n] @[n --> \oo] --> 'E_P[EFin \o X] * 'E_P[EFin \o Y].
   apply: cvgeM => //.
-suff : forall n, 'E_P[X_ n \* Y_ n] = 'E_P[X_ n] * 'E_P[Y_ n].
+suff : forall n, 'E_P[EFin \o (X_ n \* Y_ n)%R] = 'E_P[EFin \o X_ n] * 'E_P[EFin \o Y_ n].
   by move=> suf; apply: (cvg_unique _ EXY) => //=; under eq_fun do rewrite suf.
 move=> n; apply: expectationM_nnsfun => x y xX_ yY_.
 suff : P (\big[setI/setT]_(j <- [fset false; true]%fset)
@@ -784,10 +785,10 @@ Import MeasurableR.
 Lemma independent_Lfun1_expectationM_lty (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y ->
   (X : _ -> _) \in Lfun P 1 -> (Y : _ -> _) \in Lfun P 1 ->
-  `|'E_P [X * Y]| < +oo.
+  `|'E_P [EFin \o (X * Y)%R]| < +oo.
 Proof.
 move=> indeXY iX iY.
-apply: (@le_lt_trans _ _ 'E_P[(@normr _ _ \o X) * (@normr _ _ \o Y)]).
+apply: (@le_lt_trans _ _ 'E_P[EFin \o ((@normr _ _ \o X) * (@normr _ _ \o Y))%R]).
   rewrite unlock/= (le_trans (le_abse_integral _ _ _))//.
     apply/measurable_EFinP/measurable_funM.
       by move/Lfun1_integrable : iX => /measurable_int/measurable_EFinP.
@@ -828,10 +829,10 @@ Qed.
 Lemma independent_expectationM (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y ->
   (X : _ -> _) \in Lfun P 1 -> (Y : _ -> _) \in Lfun P 1 ->
-  'E_P [X * Y] = 'E_P [X] * 'E_P [Y].
+  'E_P [EFin \o (X * Y)%R] = 'E_P [EFin \o X] * 'E_P [EFin \o Y].
 Proof.
 move=> XY iX iY.
-transitivity ('E_P[(X^\+ - X^\-) * (Y^\+ - Y^\-)]).
+transitivity ('E_P[EFin \o ((X^\+ - X^\-) * (Y^\+ - Y^\-))%R]).
   by congr ('E_P[_]); apply/funext => /= t; rewrite !funrposBneg.
 have ? : X^\-%R \in Lfun P 1.
   apply/Lfun1_integrable; rewrite -funerneg; apply/integrable_funeneg => //.
@@ -856,8 +857,8 @@ have ? : (X^\+ \* Y^\-)%R \in Lfun P 1.
   by apply: independent_Lfun1M => //=; exact: independent_RVs2_funrposneg.
 have ? : (X^\- \* Y^\-)%R \in Lfun P 1.
   by apply: independent_Lfun1M => //=; exact: independent_RVs2_funrnegneg.
-transitivity ('E_P[X^\+ * Y^\+] - 'E_P[X^\- * Y^\+]
-              - 'E_P[X^\+ * Y^\-] + 'E_P[X^\- * Y^\-]).
+transitivity ('E_P[EFin \o (X^\+ * Y^\+)%R] - 'E_P[EFin \o (X^\- * Y^\+)%R]
+              - 'E_P[EFin \o (X^\+ * Y^\-)%R] + 'E_P[EFin \o (X^\- * Y^\-)%R]).
   rewrite mulrDr !mulrDl -!expectationB//=; first by rewrite rpredB.
   rewrite -expectationD//=; first by rewrite !rpredB.
   congr ('E_P[_]); apply/funext => t/=.
@@ -874,7 +875,7 @@ rewrite [in LHS]ge0_independent_expectationM//=.
 rewrite [in LHS]ge0_independent_expectationM//=.
   exact: independent_RVs2_funrnegneg.
   by rewrite mule_def_fin// expectation_fin_num.
-transitivity ('E_P[X^\+ - X^\-] * 'E_P[Y^\+ - Y^\-]); last first.
+transitivity ('E_P[EFin \o (X^\+ - X^\-)%R] * 'E_P[EFin \o (Y^\+ - Y^\-)%R]); last first.
   by rewrite !funrposBneg.
 rewrite -addeA -addeACA -muleBr.
   by rewrite expectation_fin_num.
