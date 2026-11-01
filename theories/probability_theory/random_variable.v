@@ -30,8 +30,8 @@ From mathcomp Require Import lebesgue_measure lebesgue_integral hoelder.
 (* :  Declared as an instance of probability measure.                         *)
 (*                                                                            *)
 (* [`'E_P[X]`](#69ec4e730a589c79df0349357bb8311f)                             *)
-(* : expectation of the real function `X` where `P` is a sub-probability      *)
-(* : measure                                                                  *)
+(* : expectation of the extended real-valued function `X` where `P` is a      *)
+(* : sub-probability measure                                                  *)
 (*                                                                            *)
 (* [`covariance X Y`](#covariance)                                            *)
 (* :  covariance between real random variable `X` and `Y`                     *)
@@ -1122,10 +1122,9 @@ have h (Y : {RV P >-> R}) :
     - by move=> r _; exact: sqr_ge0.
     - by move=> x y; rewrite !nnegrE => x0 y0; rewrite ler_sqr.
   apply: expectation_le.
-    - apply: measurableT_comp => //.
-      apply: measurableT_comp => //.
-      by apply: measurableT_comp => //.
-  - by apply: measurableT_comp => //.
+  - apply: measurableT_comp => //; apply: measurableT_comp => //.
+    exact: measurableT_comp.
+  - exact: measurableT_comp.
   - by move=> x /=; exact: sqr_ge0.
   - by move=> x /=; exact: sqr_ge0.
   - by apply/aeW => t /=; rewrite real_normK// num_real.
@@ -1140,7 +1139,8 @@ Lemma cantelli (X : {RV P >-> R}) (lambda : R) :
 Proof.
 move=> /[dup] X2.
 move=> /(Lfun_subset12 (fin_num_measure P _ measurableT)) X1 lambda_gt0.
-have finEK : (fine 'E_P[EFin \o X])%:E = 'E_P[EFin \o X] by rewrite fineK ?expectation_fin_num.
+have finEK : (fine 'E_P[EFin \o X])%:E = 'E_P[EFin \o X].
+  by rewrite fineK ?expectation_fin_num.
 have finVK : (fine 'V_P[X])%:E = 'V_P[X] by rewrite fineK ?variance_fin_num.
 pose Y := (X \- cst (fine 'E_P[EFin \o X]))%R.
 have Y2 : (Y : T -> R) \in Lfun P 2%:E.
@@ -1148,10 +1148,8 @@ have Y2 : (Y : T -> R) \in Lfun P 2%:E.
 have EY : 'E_P[EFin \o Y] = 0.
   rewrite expectationB ?Lfun_cst//=.
   rewrite (_ : _ \o cst _ = cst 'E_P[EFin \o X])//.
-    apply/funext => x/=.
-    by rewrite finEK //.
-  rewrite expectation_cst.
-  by rewrite subee// expectation_fin_num.
+    by apply/funext => x/=; rewrite finEK.
+  by rewrite expectation_cst subee// expectation_fin_num.
 have VY : 'V_P[Y] = 'V_P[X] by rewrite varianceB_cst_r.
 have le (u : R) : (0 <= u)%R ->
     P [set x | lambda%:E <= (X x)%:E - 'E_P[EFin \o X]]
@@ -1164,9 +1162,7 @@ have le (u : R) : (0 <= u)%R ->
     rewrite -varianceE/=.
       by rewrite rpredD ?lee1n//= => _; rewrite Lfun_cst.
     rewrite -expe2 expectationD/= ?Lfun_cst//; first by rewrite rpredB ?Lfun_cst.
-    rewrite EY// add0e.
-    rewrite (_ : _ \o _ = cst u%:E)//.
-    rewrite expectation_cst -EFinM.
+    rewrite EY// add0e (_ : _ \o _ = cst u%:E)// expectation_cst -EFinM.
     by rewrite (varianceD_cst_r _ Y2) EFinD fineK ?variance_fin_num.
   have le : [set x | lambda%:E <= (X x)%:E - 'E_P[EFin \o X]]
       `<=` [set x | ((lambda + u)^2)%:E <= ((Y x + u)^+2)%:E].

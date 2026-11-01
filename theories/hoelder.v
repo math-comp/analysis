@@ -25,7 +25,7 @@ From mathcomp Require Import numfun exp real_measure lebesgue_integral.
 (*                                                                            *)
 (* ```                                                                        *)
 (*    finite_norm mu p f := the L-norm of extended real-valued function f is  *)
-(*                          finite    *)
+(*                          finite                                            *)
 (*                          The parameter p is an extended real.              *)
 (*        LfunType mu p1 == type of measurable functions f with a finite      *)
 (*                          L-norm                                            *)
