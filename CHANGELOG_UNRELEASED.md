@@ -5,9 +5,9 @@
 ### Added
 
 - in `exp.v`:
-  + lemmas `cvgy_expR`, `cvgNy_expR`, `lny`, `Nlt1_powR_cvg0`, 
-    `expMexpR_cvgr0`, `powRMexpR_cvgr0`, `expMpowR_cvgr0`,
-    `expMexpr_cvgn0`
+  + lemmas `cvgy_expR`, `cvgNy_expR`, `lny`, `ge0_lt1_powR_cvg0`, 
+    `pownMexpR_cvgr0`, `powRMexpR_cvgr0`, `pownMpowR_cvgr0`,
+    `pownMexpr_cvgn0`
   + instance `is_derive1_powRl`
 
 ### Changed
