@@ -584,17 +584,13 @@ rewrite fubini_tonelli1//=.
 rewrite /fubini_F/=.
 rewrite [ltLHS](_ : _ = (\int[distribution P X]_x `|x|%:E) *
                         \int[distribution P Y]_y `|y|%:E).
-  rewrite -ge0_integralZr//=.
-    exact/measurable_EFinP.
-    exact: integral_ge0.
+  rewrite -ge0_integralZr//=; first exact/measurable_EFinP.
   apply: eq_integral => x _.
-  rewrite -ge0_integralZl//=.
-    exact/measurable_EFinP.
+  rewrite -ge0_integralZl//=; first exact/measurable_EFinP.
   by under eq_integral do rewrite normrM.
 rewrite ge0_integral_distribution//=; first exact/measurable_EFinP.
 rewrite ge0_integral_distribution//=; first exact/measurable_EFinP.
-rewrite lte_mul_pinfty//.
-- exact: integral_ge0.
+rewrite lte_mul_pinfty ?integral_ge0//.
 - apply: integrable_fin_num => //=.
   by move/Lfun1_integrable : iX => /integrable_abse.
 - apply: integrable_lty => //.

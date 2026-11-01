@@ -494,11 +494,10 @@ Proof.
 move=> mU; rewrite /beta_pdf.
 under eq_integral do rewrite EFinM/=.
 rewrite ge0_integralZr//=.
-- apply/measurable_funTS/measurableT_comp => //.
-  by apply/measurable_restrict => //=; rewrite setTI; exact: measurable_XMonemX.
 - move=> x Ux; rewrite patchE; case: ifPn => //; rewrite inE/= => x01.
   by rewrite lee_fin XMonemX_ge0.
-- by rewrite lee_fin invr_ge0// beta_fun_ge0.
+- apply/measurable_funTS/measurableT_comp => //.
+  by apply/measurable_restrict => //=; rewrite setTI; exact: measurable_XMonemX.
 - by rewrite /beta_prob/= /mscale/= muleC.
 Qed.
 

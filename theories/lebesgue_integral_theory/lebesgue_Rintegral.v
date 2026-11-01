@@ -268,14 +268,13 @@ by rewrite mul0e.
 Qed.
 
 #[local] Lemma integral_measure_of_densityMindic (r : R) (A : set T) : measurable A ->
-  (0 <= r)%R ->
   \int[mu]_x (r%:E * (\1_A x)%:E * (h x)%:E) = r%:E * mu' A.
 Proof.
-move=> mA r0.
+move=> mA.
 under eq_integral do rewrite -muleA.
 rewrite ge0_integralZl//=.
-- apply: emeasurable_funM => //; by apply /measurable_EFinP.
 - by move=> x _; apply: mule_ge0; rewrite ?lee_fin.
+- apply: emeasurable_funM => //; by apply /measurable_EFinP.
 - by rewrite integral_measure_of_density_indic.
 Qed.
 

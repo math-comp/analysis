@@ -110,26 +110,26 @@ rewrite integral_mkcond integral0_eq// => x _.
 by rewrite /restrict; case: ifPn => //; rewrite in_set0.
 Qed.
 
-Section ge0_integralZl_EFin.
+Section ge0_integralZ.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
-Variables f1 f2 : T -> \bar R.
-Hypothesis f10 : forall x, D x -> 0 <= f1 x.
-Hypothesis mf1 : measurable_fun D f1.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D)
+  (f : T -> \bar R).
+Hypothesis f0 : forall x, D x -> 0 <= f x.
+Hypothesis mf : measurable_fun D f.
 
 Import HBNNSimple.
 
-Lemma ge0_integralZl_EFin k : (0 <= k)%R ->
-  \int[mu]_(x in D) (k%:E * f1 x) = k%:E * \int[mu]_(x in D) f1 x.
+Let ge0_integralZl_EFin_subproof k : (0 <= k)%R ->
+  \int[mu]_(x in D) (k%:E * f x) = k%:E * \int[mu]_(x in D) f x.
 Proof.
 rewrite integral_mkcond erestrict_scale [in RHS]integral_mkcond => k0.
-set h1 := f1 \_ D.
-have h10 x : 0 <= h1 x by apply: erestrict_ge0.
-have mh1 : measurable_fun setT h1 by exact/(measurable_restrictT _ _).1.
-pose g := nnsfun_approx measurableT mh1.
+set h := f \_ D.
+have h0 x : 0 <= h x by apply: erestrict_ge0.
+have mh : measurable_fun setT h by exact/(measurable_restrictT _ _).1.
+pose g := nnsfun_approx measurableT mh.
 pose kg := fun n => scale_nnsfun (g n) k0.
-rewrite (@nd_ge0_integral_lim _ _ _ mu (fun x => k%:E * h1 x) kg).
+rewrite (@nd_ge0_integral_lim _ _ _ mu (fun x => k%:E * h x) kg).
 - by move=> t; rewrite mule_ge0.
 - by move=> x m n mn; rewrite /kg ler_pM//; exact/lefP/nd_nnsfun_approx.
 - move=> x.
@@ -140,17 +140,64 @@ rewrite (_ : (fun _ => _) = (fun n => k%:E * sintegral mu (g n))).
   by under eq_fun do rewrite (sintegralrM mu k (g _)).
 rewrite limeMl //.
   by apply: is_cvg_sintegral => // x m n mn; exact/lefP/nd_nnsfun_approx.
-by rewrite -(nd_ge0_integral_lim mu h10)// => [x m n mn|x];
+by rewrite -(nd_ge0_integral_lim mu h0)// => [x m n mn|x];
   [exact/lefP/nd_nnsfun_approx|exact: cvg_nnsfun_approx].
 Qed.
 
-End ge0_integralZl_EFin.
+#[deprecated(since="mathcomp-analysis 1.20.0", note="consider using `ge0_integralZl`")]
+Lemma ge0_integralZl_EFin k :
+  \int[mu]_(x in D) (k%:E * f x) = k%:E * \int[mu]_(x in D) f x.
+Proof.
+have [k0|k0] := leP 0%R k; first exact: ge0_integralZl_EFin_subproof.
+rewrite integralE [X in X - _](_ : _ = 0).
+  rewrite (eq_integral (cst 0)) ?integral0// => x Dx.
+  by rewrite (le0_funeposM _ (ltW k0)) (@ge0_funenegE _ _ D)//= mule0.
+rewrite (eq_integral (fun x => (- k)%:E * f x)).
+  move=> x Dx.
+  by rewrite (le0_funenegM _ (ltW k0)) (@ge0_funeposE _ _ D).
+rewrite ge0_integralZl_EFin_subproof ?oppr_ge0 ?ltW//.
+by rewrite sub0e EFinN mulNe oppeK.
+Qed.
+
+Let ge0_integralZly :
+  \int[mu]_(x in D) (+oo * f x) = +oo * \int[mu]_(x in D) f x.
+Proof.
+rewrite (eq_integral (fun x => limn (fun n => n%:R%:E * f x))).
+  by move=> x /[!inE] Dx; apply/esym/cvg_lim => //; exact/ ge0_cvgeMly/f0.
+rewrite monotone_convergence//.
+- by move=> n; exact: emeasurable_funM.
+- by move=> n x Dx; rewrite mule_ge0 ?f0.
+- by move=> x Dx n m nm; rewrite lee_wpmul2r ?f0// lee_fin ler_nat.
+- #[warning="-deprecated"]under eq_fun do rewrite ge0_integralZl_EFin//.
+  by apply/cvg_lim => //; exact/ge0_cvgeMly/integral_ge0.
+Qed.
+
+Lemma ge0_integralZl k : \int[mu]_(x in D) (k * f x) = k * \int[mu]_(x in D) f x.
+Proof.
+#[warning="-deprecated"]move: k => [r| |]; [exact: ge0_integralZl_EFin|exact: ge0_integralZly|].
+rewrite integralE [X in X - _](_ : _ = 0).
+  rewrite (eq_integral (cst 0)) ?integral0// => x /set_mem Dx.
+  by rewrite funeposE/=; apply/max_idPr; rewrite mule_le0_ge0// f0.
+rewrite (eq_integral (fun x => +oo * f x)).
+  move=> x /set_mem Dx; rewrite funenegE/= -mulNe/= max_l//.
+  by rewrite mule_ge0 ?f0.
+by rewrite ge0_integralZly// sub0e -mulNe.
+Qed.
+
+Lemma ge0_integralZr k :
+  \int[mu]_(x in D) f x * k = (\int[mu]_(x in D) f x) * k.
+Proof.
+under eq_integral do rewrite muleC.
+by rewrite ge0_integralZl// muleC.
+Qed.
+
+End ge0_integralZ.
 
 Section ge0_linearityD.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
-Variable mu : {measure set T -> \bar R}.
-Variables (D : set T) (mD : measurable D) (f1 f2 : T -> \bar R).
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D)
+  (f1 f2 : T -> \bar R).
 Hypothesis f10 : forall x, D x -> 0 <= f1 x.
 Hypothesis mf1 : measurable_fun D f1.
 Hypothesis f20 : forall x, D x -> 0 <= f2 x.
@@ -195,9 +242,9 @@ End ge0_linearityD.
 
 Section ge0_integral_sum.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
-Variables (I : Type) (f : I -> (T -> \bar R)).
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D)
+  {I : Type} (f : I -> (T -> \bar R)).
 Hypothesis mf : forall n, measurable_fun D (f n).
 Hypothesis f0 : forall n x, D x -> 0 <= f n x.
 
@@ -218,9 +265,9 @@ End ge0_integral_sum.
 
 Section ge0_integral_fsum.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
-Variables (I : choiceType) (f : I -> (T -> \bar R)).
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D)
+  {I : choiceType} (f : I -> (T -> \bar R)).
 Hypothesis mf : forall n, measurable_fun D (f n).
 Hypothesis f0 : forall n x, D x -> 0 <= f n x.
 
@@ -236,9 +283,9 @@ End ge0_integral_fsum.
 
 Section integral_nneseries.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
-Variable f : (T -> \bar R)^nat.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D)
+  (f : (T -> \bar R)^nat).
 Hypothesis mf : forall n, measurable_fun D (f n).
 Hypothesis f0 : forall n x, D x -> 0 <= f n x.
 
@@ -254,76 +301,6 @@ Qed.
 
 End integral_nneseries.
 
-(**md Generalization of `ge0_integralZl_EFin` to a constant potentially $+\infty$
-   using the monotone convergence theorem: *)
-Section ge0_integralZ.
-Local Open Scope ereal_scope.
-Context d {T : measurableType d} {R : realType}.
-Variable mu : {measure set T -> \bar R}.
-Variables (D : set T) (mD : measurable D) (f : T -> \bar R).
-Hypothesis mf : measurable_fun D f.
-Implicit Type k : \bar R.
-
-Lemma ge0_integralZl k : (forall x, D x -> 0 <= f x) ->
-  0 <= k -> \int[mu]_(x in D) (k * f x) = k * \int[mu]_(x in D) (f x).
-Proof.
-move=> f0; move: k => [k|_|//]; first exact: ge0_integralZl_EFin.
-pose g : (T -> \bar R)^nat := fun n x => n%:R%:E * f x.
-have mg n : measurable_fun D (g n) by apply: measurable_funeM.
-have g0 n x : D x -> 0 <= g n x.
-  by move=> Dx; apply: mule_ge0; [rewrite lee_fin|exact:f0].
-have nd_g x : D x -> nondecreasing_seq (g ^~ x).
-  by move=> Dx m n mn; rewrite lee_wpmul2r ?f0// lee_fin ler_nat.
-pose h := fun x => limn (g^~ x).
-transitivity (\int[mu]_(x in D) limn (g^~ x)).
-  apply: eq_integral => x Dx; apply/esym/cvg_lim => //.
-  have [fx0|fx0|fx0] := ltgtP 0 (f x).
-  - rewrite gt0_mulye//; apply/cvgeyPgey; near=> M.
-    have M0 : (0 <= M)%R by [].
-    rewrite /g; case: (f x) fx0 => [r r0|_|//]; last first.
-      by exists 1%N => // m /= m0; rewrite mulry gtr0_sg// ?ltr0n// mul1e leey.
-    near=> n; rewrite lee_fin -ler_pdivrMr//.
-    near: n; exists (truncn (M / r)).+1 => // m /= Mrm.
-    by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
-  - rewrite lt0_mulye//; apply/cvgeNyPleNy; near=> M;
-    have M0 : (M <= 0)%R by [].
-    rewrite /g; case: (f x) fx0 => [r r0|//|_]; last first.
-      by exists 1%N => // m /= m0; rewrite mulrNy gtr0_sg// ?ltr0n// mul1e leNye.
-    near=> n; rewrite lee_fin -ler_ndivrMr//.
-    near: n; exists (truncn (M / r)).+1 => // m /= Mrm.
-    by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
-  - rewrite -fx0 mule0 /g -fx0.
-    rewrite [X in X @ _](_ : _ = cst 0)//.
-    by under eq_fun do rewrite mule0.
-rewrite (monotone_convergence mu mD mg g0 nd_g).
-under eq_fun do rewrite /g ge0_integralZl_EFin//.
-have : 0 <= \int[mu]_(x in D) f x by exact: integral_ge0.
-rewrite le_eqVlt => /predU1P[<-|if_gt0].
-  by rewrite mule0; under eq_fun do rewrite mule0; rewrite lim_cst.
-rewrite gt0_mulye//; apply/cvg_lim => //; apply/cvgeyPgey; near=> M.
-have M0 : (0 <= M)%R by [].
-near=> n; have [ifoo|] := ltP (\int[mu]_(x in D) f x) +oo; last first.
-  rewrite leye_eq => /eqP ->; rewrite mulry muleC gt0_mulye ?leey//.
-  by near: n; exists 1%N => // n /= n0; rewrite gtr0_sg// ?lte_fin// ltr0n.
-rewrite -(@fineK _ (\int[mu]_(x in D) f x)).
-  by rewrite fin_numElt ifoo (le_lt_trans _ if_gt0).
-rewrite -lee_pdivrMr//.
-  by move: if_gt0 ifoo; case: (\int[mu]_(x in D) f x).
-near: n.
-exists (truncn (M * (fine (\int[mu]_(x in D) f x))^-1)).+1 => //.
-move=> n /=; rewrite -(@ler_nat R) -lee_fin; apply: le_trans.
-by rewrite lee_fin ltW// truncnS_gt.
-Unshelve. all: by end_near. Qed.
-
-Lemma ge0_integralZr k : (forall x, D x -> 0 <= f x) ->
-  0 <= k -> \int[mu]_(x in D) f x * k = (\int[mu]_(x in D) f x) * k.
-Proof.
-move=> f0 k0; under eq_integral do rewrite muleC.
-by rewrite ge0_integralZl// muleC.
-Qed.
-
-End ge0_integralZ.
-
 Section integralZl_indic.
 Local Open Scope ereal_scope.
 Context {d} {T : measurableType d} {R : realType}
@@ -338,7 +315,7 @@ move=> fk0 mfk; have [k0|k0] := ltP k 0%R.
   rewrite integral0_eq//; first by move=> x _; rewrite fk0// indic0 mulr0.
   by rewrite integral0_eq ?mule0// => x _; rewrite fk0// indic0.
 under eq_integral do rewrite EFinM.
-rewrite ge0_integralZl//; exact/measurable_EFinP.
+by rewrite ge0_integralZl//; exact/measurable_EFinP.
 Qed.
 
 Import HBNNSimple.
@@ -377,8 +354,8 @@ rewrite [LHS]ge0_integral_fsum//.
   - by move=> r; exact/measurable_EFinP/measurableT_comp.
   - by move=> n x _; rewrite EFinM nnfun_muleindic_ge0.
 rewrite -[RHS]ge0_integralZl//.
-  - by apply: measurableT_comp => //; exact: measurable_funTS.
   - by move=> x _; rewrite lee_fin.
+  - by apply: measurableT_comp => //; exact: measurable_funTS.
 under [RHS]eq_integral.
   move=> x xD; rewrite fimfunE -fsumEFin// ge0_mule_fsumr.
     by move=> r; rewrite EFinM nnfun_muleindic_ge0.
@@ -387,8 +364,8 @@ rewrite [RHS]ge0_integral_fsum//.
   - by move=> r; apply/measurable_EFinP; do 2 apply/measurableT_comp => //.
   - by move=> n x _; rewrite EFinM mule_ge0// nnfun_muleindic_ge0.
 apply: eq_fsbigr => r _; rewrite ge0_integralZl//.
-- exact/measurable_EFinP/measurableT_comp.
 - by move=> t _; rewrite nnfun_muleindic_ge0.
+- exact/measurable_EFinP/measurableT_comp.
 - by rewrite !integralZl_indic_nnsfun//= integral_mscale_indic// muleCA.
 Qed.
 
@@ -456,9 +433,9 @@ End integralN.
 
 Section integral_cst.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType)
-        (mu : {measure set T -> \bar R}).
-Variables (f : T -> \bar R) (D : set T) (mD : measurable D).
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (f : T -> \bar R) (D : set T)
+  (mD : measurable D).
 
 Lemma sintegral_EFin_cst (x : {nonneg R}) :
   sintegral mu (cst x%:num \_ D) = x%:num%:E * mu D.
@@ -730,8 +707,8 @@ End integral_measure_add_nnsfun.
 
 Section integral_mfun_measure_sum.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
-Variable m_ : {measure set T -> \bar R}^nat.
+Context {d} {T : measurableType d} {R : realType}
+  (m_ : {measure set T -> \bar R}^nat).
 
 Import HBNNSimple.
 
@@ -827,8 +804,8 @@ End integral_measure_series.
 
 Section ge0_integral_measure_series.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
-Variable m_ : {measure set T -> \bar R}^nat.
+Context {d} {T : measurableType d} {R : realType}
+  (m_ : {measure set T -> \bar R}^nat).
 Let m := mseries m_ O.
 
 Import HBNNSimple.
@@ -1091,8 +1068,8 @@ End integral_patch.
 Section ge0_cvgn_integral.
 Local Open Scope ereal_scope.
 Import MeasurableR.
-Context {R : realType} (mu : {measure set (@measurableTypeR R) -> \bar R}).
-Variable f : R -> R.
+Context {R : realType} (mu : {measure set (@measurableTypeR R) -> \bar R})
+ (f : R -> R).
 Hypothesis f0 : (forall x, 0 <= f x)%R.
 
 
@@ -1200,7 +1177,7 @@ move=> mD mf; rewrite fin_num_abs; case H : LHS; apply/esym.
 Qed.
 
 Section ae_measurable_fun.
-Context d (T : measurableType d) (R : realType)
+Context {d} {T : measurableType d} {R : realType}
         (mu : {measure set T -> \bar R}).
 Hypothesis cmu : measure_is_complete mu.
 Variables (D : set T) (f g : T -> \bar R).
@@ -1232,7 +1209,7 @@ End ae_measurable_fun.
 
 Section ge0_integral_counting.
 Local Open Scope ereal_scope.
-Variable R : realType.
+Context {R : realType}.
 
 Lemma counting_dirac (A : set nat) :
   counting A = \sum_(n <oo) \d_ n A :> \bar R.
@@ -1433,9 +1410,9 @@ Arguments ae_eq_integral {d T R mu D} g.
 
 Section ae_ge0_le_integral.
 Local Open Scope ereal_scope.
-Context d {T : measurableType d} {R : realType}.
-Variable mu : {measure set T -> \bar R}.
-Variables (D : set T) (mD : measurable D) (f1 f2 : T -> \bar R).
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R})
+  (D : set T) (mD : measurable D) (f1 f2 : T -> \bar R).
 Hypothesis f10 : forall x, D x -> 0 <= f1 x.
 Hypothesis mf1 : measurable_fun D f1.
 Hypothesis f20 : forall x, D x -> 0 <= f2 x.
@@ -1493,8 +1470,8 @@ Qed.
 Local Close Scope ereal_scope.
 
 Section integral_bounded.
-Context d {T : measurableType d} {R : realType}.
-Variable mu : {measure set T -> \bar R}.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}).
 Local Open Scope ereal_scope.
 
 Lemma integral_le_bound (D : set T) (f : T -> \bar R) (M : \bar R) :
@@ -1669,8 +1646,8 @@ Qed.
 End ge0_nondecreasing_set_cvg_integral.
 
 Section le0_nondecreasing_set_cvg_integral.
-Context {d : measure_display} {T : measurableType d} {R : realType}.
-Variables (F : (set T)^nat) (f : T -> \bar R) (mu : measure T R).
+Context {d : measure_display} {T : measurableType d} {R : realType}
+  (F : (set T)^nat) (f : T -> \bar R) (mu : measure T R).
 Local Open Scope ereal_scope.
 Hypotheses (nndF : nondecreasing_seq F) (mF : forall i, measurable (F i)).
 Hypothesis mf : forall i, measurable_fun (F i) f.

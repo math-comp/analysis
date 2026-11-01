@@ -69,7 +69,7 @@ Proof. by rewrite /limf_einf; under eq_fun do rewrite oppeK. Qed.
 End limf_esup_einf.
 
 Section limf_esup_einf_realType.
-Variables (T : choiceType) (X : filteredType T) (R : realType).
+Context {T : choiceType} {X : filteredType T} {R : realType}.
 Implicit Types (f : X -> \bar R) (F : set_system X).
 Local Open Scope ereal_scope.
 
@@ -270,11 +270,25 @@ Proof. by rewrite cvgeNyPlt. Qed.
 
 End ecvg_infty_realField.
 
-Section open_closed_sets_ereal.
-Variable R : realFieldType (* TODO: generalize to numFieldType? *).
 Local Open Scope ereal_scope.
-Implicit Types x y : \bar R.
-Implicit Types r : R.
+Lemma ge0_cvgeMly (R : realType) (a : \bar R) : 0 <= a ->
+  (n%:R%:E * a) @[n --> \oo] --> +oo * a.
+Proof.
+rewrite le_eqVlt => /predU1P[<-|a_gt0].
+  by rewrite mule0; under eq_fun do rewrite mule0; exact: cvg_cst.
+rewrite gt0_mulye//; apply/cvgeyPge => A.
+move: a a_gt0 => [r /[!(@lte_fin R)] r0|_ |//].
+- near=> n; rewrite -EFinM lee_fin -ler_pdivrMr//.
+  by near: n; exact: nbhs_infty_ger.
+- near=> n; rewrite gt0_muley ?leey// lte_fin ltr0n//.
+  by near: n; exact: nbhs_infty_gt.
+Unshelve. all: by end_near. Qed.
+Local Close Scope ereal_scope.
+
+Section open_closed_sets_ereal.
+Context {R : realFieldType} (* TODO: generalize to numFieldType? *).
+Local Open Scope ereal_scope.
+Implicit Types (x y : \bar R) (r : R).
 
 Lemma open_ereal_lt y : open [set r : R | r%:E < y].
 Proof.
@@ -360,7 +374,7 @@ Qed.
 End open_closed_sets_ereal.
 
 Section ereal_is_hausdorff.
-Variable R : realFieldType.
+Context {R : realFieldType}.
 Implicit Types r : R.
 
 Lemma nbhs_image_EFin r (X : set R) :
@@ -456,7 +470,7 @@ Proof. exact: cvge_to_le. Qed.
 End ProperFilterERealType.
 
 Lemma cvgenyP {R : realType} {T} {F : set_system T} {FF : Filter F} (f : T -> nat) :
-   (((f n)%:R : R)%:E @[n --> F] --> +oo%E) <-> (f @ F --> \oo).
+  (((f n)%:R : R)%:E @[n --> F] --> +oo%E) <-> (f @ F --> \oo).
 Proof. by rewrite cvgeryP cvgrnyP. Qed.
 
 Section nbhs_ereal.
@@ -479,7 +493,7 @@ Qed.
 End nbhs_ereal.
 
 Section ereal_OrderNbhs.
-Variable R : realFieldType.
+Context {R : realFieldType}.
 
 Let ereal_order_nbhsE (x : \bar R) :
   nbhs x = filter_from (fun i => itv_open_ends i /\ x \in i)

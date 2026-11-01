@@ -251,10 +251,10 @@ Proof.
 move=> s0; rewrite /normal_peak invrK.
 rewrite -mulrnAr -[in RHS]mulr_natr sqrtrM ?(sqrtrM 2) ?sqr_ge0 ?pi_ge0// !EFinM.
 rewrite muleCA ge0_integralZr//=.
+- by move=> x _; rewrite lee_fin mulr_ge0//= ?gauss_fun_ge0// F'E/= invr_ge0.
 - rewrite F'E; apply/measurable_EFinP/measurable_funM => //.
   apply/measurableT_comp => //; first exact: measurable_gauss_fun.
   by apply: measurable_funM => //; exact: measurable_funD.
-- by move=> x _; rewrite lee_fin mulr_ge0//= ?gauss_fun_ge0// F'E/= invr_ge0.
 congr *%E; last by rewrite -(mulr_natr (_ ^+ 2)) sqrtrM ?sqr_ge0.
 rewrite -increasing_ge0_integration_by_substitutionT//.
 - move=> x y xy; rewrite /F ltr_pM2r ?ltr_leB ?gt_eqF//.
@@ -720,13 +720,12 @@ Lemma normal_probD2 (y m1 m2 s1 s2 : R) : s1 != 0%R -> s2 != 0%R ->
   \int[mu]_z (normal_fun (m1 + z) s1 y * normal_fun m2 s2 z)%:E.
 Proof.
 move=> s10 s20; rewrite -ge0_integralZl//=.
+- by move=> z _; rewrite lee_fin mulr_ge0// expR_ge0.
 - apply/measurable_EFinP => //=; apply: measurable_funM => //=.
   + rewrite /normal_fun. (* TODO: lemma? *)
     under eq_fun do rewrite -(sqrrN (y - _)) opprB (addrC m1) -addrA -opprB.
     exact: measurable_normal_fun.
   + exact: measurable_normal_fun.
-- by move=> z _; rewrite lee_fin mulr_ge0// expR_ge0.
-- by rewrite lee_fin mulr_ge0// ?normal_peak_ge0.
 apply: eq_integral => /= z _.
 by rewrite 2?normal_pdfE// /normal_pdf0 mulrACA.
 Qed.
@@ -806,9 +805,8 @@ transitivity (((Num.sqrt S1 * Num.sqrt S2 * pi *+ 2)^-1)%:E
   rewrite lt0r_neq0// invr_gt0 sqrtr_gt0 pmulrn_lgt0// mulr_gt0// ?pi_gt0//.
   by rewrite exprn_even_gt0//= lt0r_neq0// sqrtr_gt0.
 rewrite ge0_integralZl//=.
-- by apply/measurable_EFinP; exact: measurable_normal_pdf.
 - by move=> x _; rewrite lee_fin; exact: normal_pdf_ge0.
-- by rewrite lee_fin invr_ge0; exact: normal_peak_ge0.
+- by apply/measurable_EFinP; exact: measurable_normal_pdf.
 rewrite integral_normal_pdf mule1 -EFinM; congr EFin.
 rewrite -invfM; congr GRing.inv.
 rewrite -sqrtrM ?sqr_ge0// /normal_peak sqr_sqrtr; first by rewrite ltW.
@@ -942,10 +940,9 @@ have step U : measurable U ->
   rewrite integral_normal_prob ?integrable_normal_pdf_likelihood//=.
   under eq_integral => t _ do
     rewrite -EFinM (normal_pdf_conjugate m0 x t s0_neq0 s_neq0) EFinM.
-  rewrite -/K ge0_integralZl_EFin //=.
+  rewrite -/K ge0_integralZl//=.
   - by move=> t _; rewrite lee_fin; exact: normal_pdf_ge0.
   - by apply/measurable_EFinP/measurable_funTS; exact: measurable_normal_pdf.
-  - exact: ltW.
 rewrite (step _ mV) (step _ measurableT) probability_setT mule1.
 by rewrite muleAC divee // mul1e.
 Qed.

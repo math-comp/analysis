@@ -894,10 +894,9 @@ under [RHS]eq_integral do rewrite EFinM.
 rewrite integralZl_indic_nnsfun => //.
 under eq_integral do rewrite EFinM -muleA.
 rewrite ge0_integralZl//.
+- by move=> t Et; rewrite mule_ge0 ?lee_fin ?f_ge0.
 - apply: emeasurable_funM; first exact/measurable_EFinP.
   exact/measurable_funTS/(measurable_int _ (f_integrable _)).
-- by move=> t Et; rewrite mule_ge0 ?lee_fin ?f_ge0.
-- by move: rhn; rewrite inE => -[t _ <-]; rewrite lee_fin.
 under eq_integral do rewrite muleC.
 rewrite (eq_integral (g \_ (h n @^-1` [set r]))).
   by move=> x xE; rewrite epatch_indic.

@@ -139,7 +139,6 @@ Let integral_uniform_indic E : measurable E ->
 Proof.
 move=> mE; rewrite integral_indic//= /uniform_prob setIT -ge0_integralZl//=.
 - exact/measurable_EFinP/measurable_indic.
-- by rewrite lee_fin invr_ge0// ltW// subr_gt0.
 rewrite [LHS]integral_mkcond/= [RHS]integral_mkcond/=.
 apply: eq_integral => x _; rewrite !patchE; case: ifPn => xE.
   case: ifPn.
@@ -161,9 +160,8 @@ rewrite [LHS]ge0_integral_fsum//.
 - by move=> r; exact/measurable_EFinP/measurableT_comp.
 - by move=> n x _; rewrite EFinM nnfun_muleindic_ge0.
 rewrite -[RHS]ge0_integralZl//.
-- exact/measurable_EFinP/measurable_funTS.
 - by move=> x _; rewrite lee_fin.
-- by rewrite lee_fin invr_ge0// ltW// subr_gt0.
+- exact/measurable_EFinP/measurable_funTS.
 under [RHS]eq_integral.
   move=> x xD; rewrite fimfunE -fsumEFin// ge0_mule_fsumr.
     by move=> r; rewrite EFinM nnfun_muleindic_ge0.
@@ -173,9 +171,8 @@ rewrite [RHS]ge0_integral_fsum//.
 - move=> n x _; rewrite EFinM mule_ge0//; last by rewrite nnfun_muleindic_ge0.
   by rewrite lee_fin invr_ge0// ltW// subr_gt0.
 apply: eq_fsbigr => r _; rewrite ge0_integralZl//.
-- exact/measurable_EFinP/measurableT_comp.
 - by move=> t _; rewrite nnfun_muleindic_ge0.
-- by rewrite lee_fin invr_ge0// ltW// subr_gt0.
+- exact/measurable_EFinP/measurableT_comp.
 - by rewrite !integralZl_indic_nnsfun//= integral_uniform_indic// muleCA.
 Qed.
 

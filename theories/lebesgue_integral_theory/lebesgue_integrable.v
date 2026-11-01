@@ -32,10 +32,10 @@ From mathcomp Require Import lebesgue_integral_nonneg.
 
 Reserved Notation "mu .-integrable" (at level 2, format "mu .-integrable").
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
+
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Import numFieldNormedType.Exports.
 
@@ -522,9 +522,9 @@ End integrable_ae.
 
 Section integralZl.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
-Variable (f : T -> \bar R).
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D)
+  (f : T -> \bar R).
 Hypothesis intf : mu.-integrable D f.
 
 Let mesf : measurable_fun D f. Proof. exact: measurable_int intf. Qed.
@@ -534,13 +534,13 @@ Lemma integralZl r :
 Proof.
 have /orP[r0|r0] := le_total r 0%R.
 - rewrite [in LHS]integralE// le0_funeposM// le0_funenegM//.
-  rewrite (ge0_integralZl_EFin _ _ _ (measurable_funeneg _)) ?oppr_ge0//.
-  rewrite (ge0_integralZl_EFin _ _ _ (measurable_funepos _)) ?oppr_ge0//.
-  rewrite !EFinN addeC !mulNe oppeK -muleBr ?integrable_add_def//.
-  by rewrite [in RHS]integralE.
+  rewrite (ge0_integralZl _ _ _ (measurable_funeneg _))//.
+  rewrite (ge0_integralZl _ _ _ (measurable_funepos _))//.
+  rewrite !mulNe oppeK addeC -muleBr ?integrable_add_def//.
+  by rewrite -integralE.
 - rewrite [in LHS]integralE// ge0_funeposM// ge0_funenegM//=.
-  rewrite (ge0_integralZl_EFin _ _ _ (measurable_funepos _) r0)//.
-  rewrite (ge0_integralZl_EFin _ _ _ (measurable_funeneg _) r0)//.
+  rewrite (ge0_integralZl _ _ _ (measurable_funepos _))//.
+  rewrite (ge0_integralZl _ _ _ (measurable_funeneg _))//.
   by rewrite -muleBr 1?[in RHS]integralE// integrable_add_def.
 Qed.
 
@@ -552,9 +552,9 @@ End integralZl.
 
 Section integralD_EFin.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
-Variables f1 f2 : T -> R.
+Context {d} {T : measurableType d} {R : realType}
+  (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D)
+  (f1 f2 : T -> R).
 Let g1 := EFin \o f1.
 Let g2 := EFin \o f2.
 Hypothesis if1 : mu.-integrable D g1.

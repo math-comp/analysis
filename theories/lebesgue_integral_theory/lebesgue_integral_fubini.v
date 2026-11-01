@@ -36,7 +36,6 @@ From mathcomp Require Import lebesgue_integral_nonneg lebesgue_integrable.
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -306,7 +305,7 @@ move=> mA1 mA2 /=; rewrite /product_measure1 /=.
 rewrite (eq_integral (fun x => (\1_A1 x)%:E * m2 A2)).
   by move=> x _; rewrite indicE; have [xA1|xA1] /= := boolP (x \in A1);
     [rewrite in_xsectionX// mul1e|rewrite mul0e notin_xsectionX].
-rewrite ge0_integralZr ?integral_indic ?setIT//; exact: measurableT_comp.
+by rewrite ge0_integralZr ?integral_indic ?setIT//; exact: measurableT_comp.
 Qed.
 
 End product_measure1E.
@@ -461,7 +460,7 @@ Proof.
 have mA1A2 : measurable (A1 `*` A2) by apply: measurableX.
 transitivity (\int[m2]_y (m1 \o ysection (A1 `*` A2)) y) => //.
 rewrite (_ : _ \o _ = fun y => m1 A1 * (\1_A2 y)%:E); last first.
-  rewrite ge0_integralZl ?integral_indic ?setIT//; exact: measurableT_comp.
+  by rewrite ge0_integralZl ?integral_indic ?setIT//; exact: measurableT_comp.
 rewrite funeqE => y; rewrite indicE.
 have [yA2|yA2] := boolP (y \in A2); first by rewrite mule1 /= in_ysectionX.
 by rewrite mule0 /= notin_ysectionX.
@@ -588,9 +587,8 @@ rewrite ge0_integral_fsum //.
 - by move=> r y _; rewrite EFinM nnfun_muleindic_ge0.
 apply: eq_fsbigr => i; rewrite inE => -[/= t _ <-{i}].
 under eq_fun do rewrite EFinM.
-rewrite ge0_integralZl//; [|by rewrite lee_fin|].
-- exact/measurable_EFinP/measurableT_comp.
-- by rewrite -/((m2 \o xsection _) x) -indic_fubini_tonelli_FE.
+rewrite ge0_integralZl//; first exact/measurable_EFinP/measurableT_comp.
+by rewrite -/((m2 \o xsection _) x) -indic_fubini_tonelli_FE.
 Qed.
 
 Lemma sfun_measurable_fun_fubini_tonelli_F : measurable_fun [set: T1] F.
@@ -610,9 +608,8 @@ rewrite ge0_integral_fsum //.
 - by move=> r x _; rewrite EFinM nnfun_muleindic_ge0.
 apply: eq_fsbigr => i; rewrite inE => -[/= t _ <-{i}].
 under eq_fun do rewrite EFinM.
-rewrite ge0_integralZl//; [|by rewrite lee_fin|].
-- exact/measurable_EFinP/measurableT_comp.
-- by rewrite -/((m1 \o ysection _) y) -indic_fubini_tonelli_GE.
+rewrite ge0_integralZl//; first exact/measurable_EFinP/measurableT_comp.
+by rewrite -/((m1 \o ysection _) y) -indic_fubini_tonelli_GE.
 Qed.
 
 Lemma sfun_measurable_fun_fubini_tonelli_G : measurable_fun setT G.
@@ -634,16 +631,14 @@ under [LHS]eq_integral
 transitivity (\sum_(k \in range f)
   \int[m1]_x (k%:E * fubini_F m2 (EFin \o \1_(f @^-1` [set k])) x)).
   apply: eq_fsbigr => i; rewrite inE => -[z _ <-{i}].
-  rewrite ge0_integralZl//.
-  - exact/measurable_EFinP.
-  - by rewrite lee_fin.
-  rewrite indic_fubini_tonelli1// -ge0_integralZl//; last by rewrite lee_fin.
-  - exact: indic_measurable_fun_fubini_tonelli_F.
-  - by move=> /= x _; exact: indic_fubini_tonelli_F_ge0.
+  rewrite ge0_integralZl//=; first exact/measurable_EFinP.
+  rewrite indic_fubini_tonelli1// -ge0_integralZl//.
+    by move=> /= x _; exact: indic_fubini_tonelli_F_ge0.
+  exact: indic_measurable_fun_fubini_tonelli_F.
 rewrite -ge0_integral_fsum; [by []| | |by []|]; first 2 last.
 - apply: eq_integral => x _; rewrite sfun_fubini_tonelli_FE.
   by under eq_fsbigr do rewrite indic_fubini_tonelli_FE//.
-- by move=> r; apply/measurable_funeM/indic_measurable_fun_fubini_tonelli_F.
+- by move=> r; exact/measurable_funeM/indic_measurable_fun_fubini_tonelli_F.
 move=> r x _; rewrite /fubini_F.
 have [r0|r0] := leP 0%R r.
   by rewrite mule_ge0//; exact: indic_fubini_tonelli_F_ge0.
@@ -660,12 +655,10 @@ under [LHS]eq_integral
 transitivity (\sum_(k \in range f)
   \int[m2]_x (k%:E * (fubini_G m1 (EFin \o \1_(f @^-1` [set k])) x))).
   apply: eq_fsbigr => i; rewrite inE => -[z _ <-{i}].
-  rewrite ge0_integralZl//.
-  - exact/measurable_EFinP.
-  - by rewrite lee_fin.
-  rewrite indic_fubini_tonelli2// -ge0_integralZl//; last by rewrite lee_fin.
-  - exact: indic_measurable_fun_fubini_tonelli_G.
-  - by move=> /= x _; exact: indic_fubini_tonelli_G_ge0.
+  rewrite ge0_integralZl//=; first exact/measurable_EFinP.
+  rewrite indic_fubini_tonelli2// -ge0_integralZl//.
+    by move=> /= x _; exact: indic_fubini_tonelli_G_ge0.
+  exact: indic_measurable_fun_fubini_tonelli_G.
 rewrite -ge0_integral_fsum; [by []| | |by []|]; first 2 last.
 - apply: eq_integral => x _; rewrite sfun_fubini_tonelli_GE.
   by under eq_fsbigr do rewrite indic_fubini_tonelli_GE//.
