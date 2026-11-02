@@ -13,8 +13,6 @@ From mathcomp Require Import discrete_topology.
 (* Natural numbers `nat` are endowed with the structure of topology.          *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
-
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope classical_set_scope.
