@@ -705,6 +705,11 @@ case=> J ->; exists J.
 by under [in RHS]eq_bigr do rewrite normr_id.
 Qed.
 
+Lemma esum_psum_abs S :
+  summable \`| S | ->
+ (PosSum.psum (fun y => S y))%:E = \esum_(y in [set: T]) `|S y|%:E.
+Proof. by move => ?; rewrite -psum_abs -esum_psum. Qed.
+
 Lemma eq_psum_abs S1 S2 : \`|S1| =1 \`|S2| -> PosSum.psum S1 = PosSum.psum S2.
 Proof.
 by move=> eqS; rewrite -[LHS]psum_abs -[RHS]psum_abs; apply/eq_psum.
@@ -1088,8 +1093,42 @@ Qed.
 
 End PSumInterchange.
 
-#[deprecated(since="1.17.0", note="use `interchange_psum` instead")]
-Notation __admitted__interchange_psum := interchange_psum (only parsing).
+(* -------------------------------------------------------------------- *)
+Section PSumInterchangeEsum.
+Context {R : realType} {T U : choiceType} (S: T -> U -> R).
+Hypothesis H1 : (forall x, summable (S x)).
+Hypothesis H2 : summable (PosSum.psum \o S).
+
+Lemma esum_psum_abs2:
+  (PosSum.psum (fun x => PosSum.psum (fun y => S x y)))%:E =
+  \esum_(x in [set: T]) \esum_(y in [set: U]) `|S x y|%:E.
+Proof.
+rewrite -esum_psum//; first by move=> x; exact: ge0_psum.
+by apply: eq_esum => x _; rewrite esum_psum_abs // summable_abs.
+Qed.
+
+Lemma interchange_psum_alt :
+  PosSum.psum (PosSum.psum \o S) =
+  PosSum.psum (fun y => PosSum.psum (S ^~ y)).
+Proof.
+apply: EFin_inj; rewrite esum_psum_abs2 exchange_esum.
++ by move => ? ?; rewrite lee_fin.
+have summable_y y : summable (fun x : T => `|S x y|).
++ apply: (le_summable (g := fun x => PosSum.psum (fun y' => S x y'))) => //  x.
+  by apply/andP; split; [exact: normr_ge0 | exact: ger1_psum y (H1 x)].
+under eq_esum => y _ do rewrite -esum_psum_abs //.
+rewrite -esum_psum//.
++ by move=> y; exact: ge0_psum.
+apply /esum_summableP; rewrite /esum.summable.
+apply: (@le_lt_trans _ _ (\esum_(y in [set: U]) (PosSum.psum (fun x => S x y))%:E)).
++ by apply  le_esum=> y _; rewrite /comp/= ger0_norm// ge0_psum.
+under eq_esum => y _ do rewrite esum_psum_abs//.
+rewrite exchange_esum.
+ + by move => ? ?; rewrite lee_fin.
+ + by rewrite  -esum_psum_abs2 ltey.
+Qed.
+
+End PSumInterchangeEsum.
 
 (* -------------------------------------------------------------------- *)
 Section SumTheory.
