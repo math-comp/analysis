@@ -4,7 +4,7 @@ From mathcomp Require Import boot order algebra interval_inference finmap.
 From mathcomp Require Import boolp classical_sets functions wochoice.
 From mathcomp Require Import cardinality fsbigop set_interval filter reals.
 From mathcomp Require Import topology_structure uniform_structure
-  pseudometric_structure.
+  pseudometric_structure supremum_topology.
 
 (**md**************************************************************************)
 (* # Metrizability for uniform spaces                                         *)
@@ -12,6 +12,12 @@ From mathcomp Require Import topology_structure uniform_structure
 (* ```                                                                        *)
 (*  countable_uniform.type == endows a pseudoMetric on a uniform type whose   *)
 (*                            entourage has a countable basis                 *)
+(*        sup_pseudometric == the pseudometric induced for the supremum       *)
+(*                            of countably many pseudoMetrics                 *)
+(*                 gauge E == for an entourage E, gauge E is a filter which   *)
+(*                            includes `iter n split_ent E`.                  *)
+(*                            Critically, `gauge E` forms a uniform space     *)
+(*                            with a countable uniformity.                    *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -337,3 +343,117 @@ End countable_uniform.
 Export countable_uniform.Exports.
 
 Notation countable_uniform := countable_uniform.type.
+
+Definition sup_pseudometric (R : realType) (T : Type) (Ii : Type)
+  (Tc : Ii -> PseudoMetric R T) (Icnt : countable [set: Ii]) : Type := T.
+
+Section sup_pseudometric.
+Variable (R : realType) (T : choiceType) (Ii : Type).
+Variable (Tc : Ii -> PseudoMetric R T).
+
+Hypothesis Icnt : countable [set: Ii].
+
+Local Notation S := (sup_pseudometric Tc Icnt).
+
+Let TS := fun i => PseudoMetric.Pack (Tc i).
+
+Let countable_uniformityT := @countable_sup_ent T Ii Tc Icnt
+  (fun i => @countable_uniformity_metric _ (TS i)).
+
+HB.instance Definition _ : PseudoMetric R S :=
+  PseudoMetric.on (countable_uniform countable_uniformityT).
+
+End sup_pseudometric.
+
+Module gauge.
+Section gauge.
+Local Open Scope relation_scope.
+
+Let split_sym {T : uniformType} (W : set (T * T)) :=
+  (split_ent W) `&` (split_ent W)^-1.
+
+Section entourage_gauge.
+Context {T : uniformType} (E : set (T * T)) (entE : entourage E).
+
+Definition gauge :=
+  filter_from [set: nat] (fun n => iter n split_sym (E `&` E^-1)).
+
+Lemma iter_split_ent j : entourage (iter j split_sym (E `&` E^-1)).
+Proof. by elim: j => [|i IH]; exact: filterI. Qed.
+
+Lemma gauge_ent A : gauge A -> entourage A.
+Proof.
+case=> n; elim: n A; first by move=> ? _ /filterS; apply; apply: filterI.
+by move=> n ? A _ /filterS; apply; apply: filterI; have ? := iter_split_ent n.
+Qed.
+
+Lemma gauge_filter : Filter gauge.
+Proof.
+apply: filter_from_filter; first by exists 0%N.
+move=> i j _ _; wlog ilej : i j / (i <= j)%N.
+  by move=> WH; have [|/ltnW] := leqP i j;
+    [|rewrite (setIC (iter _ _ _))]; exact: WH.
+exists j => //; rewrite subsetI; split => //; elim: j i ilej => [i|j IH i].
+  by rewrite leqn0 => /eqP ->.
+rewrite leq_eqVlt => /predU1P[<-//|/ltnSE/IH]; apply: subset_trans.
+by move=> x/= [jx _]; apply: split_ent_subset => //; exact: iter_split_ent.
+Qed.
+
+Lemma gauge_refl A : gauge A -> diagonal `<=` A.
+Proof.
+case=> n _; apply: subset_trans => -[_ a]/diagonalP ->.
+by apply: entourage_refl; exact: iter_split_ent.
+Qed.
+
+Lemma gauge_inv A : gauge A -> gauge A^-1.
+Proof.
+case=> n _ EA; apply: (@filterS _ _ _ (iter n split_sym (E `&` E^-1))).
+- exact: gauge_filter.
+- by case: n EA; last move=> n; move=> EA [? ?] [/=] ? ?; exact: EA.
+- by exists n .
+Qed.
+
+Lemma gauge_split A : gauge A -> exists2 B, gauge B & B \; B `<=` A.
+Proof.
+case => n _ EA; exists (iter n.+1 split_sym (E `&` E^-1)); first by exists n.+1.
+apply: subset_trans EA; apply: subset_trans; first last.
+  by apply: subset_split_ent; exact: iter_split_ent.
+by case=> a c [b] [] ? ? [] ? ?; exists b.
+Qed.
+
+Let gauged : Type := T.
+
+HB.instance Definition _ := Choice.on gauged.
+HB.instance Definition _ :=
+  @isUniform.Build gauged gauge gauge_filter gauge_refl gauge_inv gauge_split.
+
+Lemma gauge_countable_uniformity : countable_uniformity gauged.
+Proof.
+exists [set iter n split_sym (E `&` E^-1) | n in [set: nat]].
+split; [exact: card_image_le | by move=> W [n] _ <-; exists n|].
+by move=> D [n _ ?]; exists (iter n split_sym (E `&` E^-1)).
+Qed.
+
+Definition type := countable_uniform.type gauge_countable_uniformity.
+End entourage_gauge.
+
+End gauge.
+Module Exports. HB.reexport. End Exports.
+End gauge.
+Export gauge.Exports.
+
+Lemma uniform_pseudometric_sup {R : realType} {T : puniformType} :
+    @entourage T = @sup_ent T {E : set (T * T) | @entourage T E}
+  (fun E => Uniform.class (@gauge.type T (projT1 E) (projT2 E))).
+Proof.
+rewrite eqEsubset; split => [E entE|E].
+  exists E => //=.
+  pose pe : {classic {E0 : set (T * T) | _}} * _ := (exist _ E entE, E).
+  have entPE : `[< @entourage (gauge.type entE) E >].
+    by apply/asboolP; exists 0%N => // ? [].
+  exists (fset1 (exist _ pe entPE)) => //=; first by move=> ?; rewrite in_setE.
+  by rewrite set_fset1 bigcap_set1.
+case=> W /= [/= J] _ <- /filterS; apply; apply: filter_bigI => -[] [] [] /= D.
+move=> entD G /[dup] /asboolP [n _ + _ _] => /filterS; apply.
+exact: gauge.iter_split_ent.
+Qed.

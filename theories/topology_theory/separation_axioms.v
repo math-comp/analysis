@@ -5,7 +5,7 @@ From mathcomp Require Import boolp classical_sets functions wochoice.
 From mathcomp Require Import cardinality fsbigop set_interval filter reals.
 From mathcomp Require Import topology_structure compact subspace_topology
   discrete_topology order_topology uniform_structure uniform_metrizable
-  pseudometric_structure num_topology one_point_compactification  connected
+  pseudometric_structure num_topology one_point_compactification connected
   supremum_topology sigT_topology.
 
 (**md**************************************************************************)
@@ -15,7 +15,7 @@ From mathcomp Require Import topology_structure compact subspace_topology
 (* properties about separating points and sets. They are sometimes denoted by *)
 (* the names T0 through T6. Although we use their full names (hausdorff,      *)
 (* accessible, uniform, etc). This file also provides related topological     *)
-(* properties like zero dimensional and perfect, and discrete.                *)
+(* properties like zero dimensional and discrete.                             *)
 (*                                                                            *)
 (* ```                                                                        *)
 (*              set_nbhs A == filter from open sets containing A              *)
@@ -35,21 +35,9 @@ From mathcomp Require Import topology_structure compact subspace_topology
 (*  totally_disconnected A == the only connected subsets of A are             *)
 (*                            empty or singletons                             *)
 (*      zero_dimensional T == points are separable by a clopen set            *)
-(*           perfect_set A == A is closed, and every point in A is            *)
-(*                            a limit point of A                              *)
-(* ```                                                                        *)
-(* ## metrizability for uniform spaces                                        *)
-(* ```                                                                        *)
-(*        sup_pseudometric == the pseudometric induced for the supremum       *)
-(*                            of countably many pseudoMetrics                 *)
-(*                 gauge E == for an entourage E, gauge E is a filter which   *)
-(*                            includes `iter n split_ent E`.                  *)
-(*                            Critically, `gauge E` forms a uniform space     *)
-(*                            with a countable uniformity.                    *)
 (* ```                                                                        *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -653,166 +641,6 @@ exists V; split; first split.
 Qed.
 
 End totally_disconnected.
-
-Definition sup_pseudometric (R : realType) (T : Type) (Ii : Type)
-  (Tc : Ii -> PseudoMetric R T) (Icnt : countable [set: Ii]) : Type := T.
-
-Section sup_pseudometric.
-Variable (R : realType) (T : choiceType) (Ii : Type).
-Variable (Tc : Ii -> PseudoMetric R T).
-
-Hypothesis Icnt : countable [set: Ii].
-
-Local Notation S := (sup_pseudometric Tc Icnt).
-
-Let TS := fun i => PseudoMetric.Pack (Tc i).
-
-Let countable_uniformityT := @countable_sup_ent T Ii Tc Icnt
-  (fun i => @countable_uniformity_metric _ (TS i)).
-
-HB.instance Definition _ : PseudoMetric R S :=
-  PseudoMetric.on (countable_uniform countable_uniformityT).
-
-End sup_pseudometric.
-
-Module gauge.
-Section gauge.
-Local Open Scope relation_scope.
-
-Let split_sym {T : uniformType} (W : set (T * T)) :=
-  (split_ent W) `&` (split_ent W)^-1.
-
-Section entourage_gauge.
-Context {T : uniformType} (E : set (T * T)) (entE : entourage E).
-
-Definition gauge :=
-  filter_from [set: nat] (fun n => iter n split_sym (E `&` E^-1)).
-
-Lemma iter_split_ent j : entourage (iter j split_sym (E `&` E^-1)).
-Proof. by elim: j => [|i IH]; exact: filterI. Qed.
-
-Lemma gauge_ent A : gauge A -> entourage A.
-Proof.
-case=> n; elim: n A; first by move=> ? _ /filterS; apply; apply: filterI.
-by move=> n ? A _ /filterS; apply; apply: filterI; have ? := iter_split_ent n.
-Qed.
-
-Lemma gauge_filter : Filter gauge.
-Proof.
-apply: filter_from_filter; first by exists 0%N.
-move=> i j _ _; wlog ilej : i j / (i <= j)%N.
-  by move=> WH; have [|/ltnW] := leqP i j;
-    [|rewrite (setIC (iter _ _ _))]; exact: WH.
-exists j => //; rewrite subsetI; split => //; elim: j i ilej => [i|j IH i].
-  by rewrite leqn0 => /eqP ->.
-rewrite leq_eqVlt => /predU1P[<-//|/ltnSE/IH]; apply: subset_trans.
-by move=> x/= [jx _]; apply: split_ent_subset => //; exact: iter_split_ent.
-Qed.
-
-Lemma gauge_refl A : gauge A -> diagonal `<=` A.
-Proof.
-case=> n _; apply: subset_trans => -[_ a]/diagonalP ->.
-by apply: entourage_refl; exact: iter_split_ent.
-Qed.
-
-Lemma gauge_inv A : gauge A -> gauge A^-1.
-Proof.
-case=> n _ EA; apply: (@filterS _ _ _ (iter n split_sym (E `&` E^-1))).
-- exact: gauge_filter.
-- by case: n EA; last move=> n; move=> EA [? ?] [/=] ? ?; exact: EA.
-- by exists n .
-Qed.
-
-Lemma gauge_split A : gauge A -> exists2 B, gauge B & B \; B `<=` A.
-Proof.
-case => n _ EA; exists (iter n.+1 split_sym (E `&` E^-1)); first by exists n.+1.
-apply: subset_trans EA; apply: subset_trans; first last.
-  by apply: subset_split_ent; exact: iter_split_ent.
-by case=> a c [b] [] ? ? [] ? ?; exists b.
-Qed.
-
-Let gauged : Type := T.
-
-HB.instance Definition _ := Choice.on gauged.
-HB.instance Definition _ :=
-  @isUniform.Build gauged gauge gauge_filter gauge_refl gauge_inv gauge_split.
-
-Lemma gauge_countable_uniformity : countable_uniformity gauged.
-Proof.
-exists [set iter n split_sym (E `&` E^-1) | n in [set: nat]].
-split; [exact: card_image_le | by move=> W [n] _ <-; exists n|].
-by move=> D [n _ ?]; exists (iter n split_sym (E `&` E^-1)).
-Qed.
-
-Definition type := countable_uniform.type gauge_countable_uniformity.
-End entourage_gauge.
-
-End gauge.
-Module Exports. HB.reexport. End Exports.
-End gauge.
-Export gauge.Exports.
-
-Lemma uniform_pseudometric_sup {R : realType} {T : puniformType} :
-    @entourage T = @sup_ent T {E : set (T * T) | @entourage T E}
-  (fun E => Uniform.class (@gauge.type T (projT1 E) (projT2 E))).
-Proof.
-rewrite eqEsubset; split => [E entE|E].
-  exists E => //=.
-  pose pe : {classic {E0 : set (T * T) | _}} * _ := (exist _ E entE, E).
-  have entPE : `[< @entourage (gauge.type entE) E >].
-    by apply/asboolP; exists 0%N => // ? [].
-  exists (fset1 (exist _ pe entPE)) => //=; first by move=> ?; rewrite in_setE.
-  by rewrite set_fset1 bigcap_set1.
-case=> W /= [/= J] _ <- /filterS; apply; apply: filter_bigI => -[] [] [] /= D.
-move=> entD G /[dup] /asboolP [n _ + _ _] => /filterS; apply.
-exact: gauge.iter_split_ent.
-Qed.
-
-Section perfect_sets.
-
-Implicit Types (T : topologicalType).
-
-Definition perfect_set {T} (A : set T) := closed A /\ limit_point A = A.
-
-Lemma perfectP {T} (A : set T) :
-  perfect_set A <-> closed A /\ isolated A = set0.
-Proof.
-split=> [[cA limA]|[cA isoA]]; have := closure_isolated_limit_point A.
-- move=> /(congr1 (fun x => x `\` limit_point A)).
-  rewrite setUDK.
-    by apply/disj_setPS; rewrite disj_set_sym disjoint_isolated_limit_point.
-  by rewrite limA -(closure_id A).1// setDv.
-- by rewrite isoA set0U -(closure_id A).1.
-Qed.
-
-Lemma perfectTP {T} : perfect_set [set: T] <-> forall x : T, ~ open [set x].
-Proof.
-split.
-  case=> _; rewrite eqEsubset; case=> _ + x Ox => /(_ x I [set x]).
-  by (case; [by apply: open_nbhs_nbhs; split |]) => y [+ _] => /[swap] -> /eqP.
-move=> NOx; split; [exact: closedT |]; rewrite eqEsubset; split => x // _.
-move=> U; rewrite nbhsE; case=> V [] oV Vx VU.
-have Vnx: V != [set x] by apply/eqP => M; apply: (NOx x); rewrite -M.
-have /existsNP [y /existsNP [Vy Ynx]] : ~ forall y, V y -> y = x.
-  move/negP: Vnx; apply: contra_not => Vxy; apply/eqP; rewrite eqEsubset.
-  by split => // ? ->.
-by exists y; split => //; [exact/eqP | exact: VU].
-Qed.
-
-Lemma perfectTP_ex {T} : perfect_set [set: T] <->
-  forall (U : set T), open U -> U !=set0 ->
-  exists x y, [/\ U x, U y & x != y] .
-Proof.
-apply: (iff_trans perfectTP); split.
-  move=> nx1 U oU [] x Ux; exists x.
-  have : U <> [set x] by move=> Ux1; apply: (nx1 x); rewrite -Ux1.
-  apply: contra_notP => /not_existsP/contrapT=> Uyx; rewrite eqEsubset.
-  by split => [y Uy|? ->//]; have /not_and3P[//|//|/negP/negPn/eqP] := Uyx y.
-move=> Unxy x Ox; have [] := Unxy _ Ox; first by exists x.
-by move=> y [] ? [->] -> /eqP.
-Qed.
-
-End perfect_sets.
 
 Section sigT_separations.
 Context {I : choiceType} {X : I -> topologicalType}.

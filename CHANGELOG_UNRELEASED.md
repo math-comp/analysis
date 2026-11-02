@@ -20,6 +20,22 @@
 - from `separation_axioms.v` to `uniform_metrizable.v`:
   + module `countable_uniform`
   + notation `countable_uniform`
+  + definition `sup_pseudometric`
+  + module `gauge`
+    * definition `gauge`
+    * lemma `iter_split_ent`
+    * lemma `gauge_ent`
+    * lemma `gauge_filter`
+    * lemma `gauge_refl`
+    * lemma `gauge_inv`
+    * lemma `gauge_split`
+    * lemma `gauge_countable_uniformity`
+    * definition `type`
+  + lemma `uniform_pseudometric_sup`
+
+- from `separation_axioms.v` to `topology_structure.v`:
+  + definition `perfect_set`
+  + lemmas `perfectP`, `perfectTP`, `perfectTP_ex`
 
 ### Renamed
 
