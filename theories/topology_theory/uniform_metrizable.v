@@ -25,14 +25,14 @@ Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-(* This section proves that uniform spaces, with a countable base for their
-   entourage, are metrizable. The definition of this metric is rather arcane,
-   and the proof is tough. That's ok because the resulting metric is not
-   intended to be used explicitly. Instead, this is typically used in
-   applications that do not depend on the metric:
-   - `metric spaces are T4`
-   - `in metric spaces, compactness and sequential compactness agree`
-   - infinite products of metric spaces are metrizable
+(**md This section proves that uniform spaces, with a countable base for their
+  entourage, are metrizable. The definition of this metric is rather arcane,
+  and the proof is tough. That's ok because the resulting metric is not
+  intended to be used explicitly. Instead, this is typically used in
+  applications that do not depend on the metric:
+  - "metric spaces are T4"
+  - "in metric spaces, compactness and sequential compactness agree"
+  - infinite products of metric spaces are metrizable
 *)
 Module countable_uniform.
 Section countable_uniform.
@@ -49,11 +49,11 @@ Proof. by have [] := projT2 (cid2 (iffLR countable_uniformityP cnt_unif)). Qed.
 Let entF : forall n, entourage (f_ n).
 Proof. by have [] := projT2 (cid2 (iffLR countable_uniformityP cnt_unif)). Qed.
 
-(* Step 1:
+(**md Step 1:
    We build a nicer base `g` for `entourage` with better assumptions than `f`
-   - each (g_ n) is symmetric
-   - the sets (g_ n) are nested downward
-   - g_ n.+1 \o g_ n.+1 \o g_ n.+1 `<=` g_ n says the sets descend `quickly`
+   - each `g_ n` is symmetric
+   - the sets `g_ n` are nested downward
+   - ``g_ n.+1 \; g_ n.+1 \; g_ n.+1 `<=` g_ n`` says the sets descend "quickly"
  *)
 
 Local Fixpoint g_ n : set (T * T) :=
@@ -105,21 +105,14 @@ move=> /countableBase [N] fnA; exists N.+1.
 by apply: subset_trans fnA; exact: gsubf.
 Qed.
 
-(* Step 2.
+(**md Step 2.
    We build a sensible notion of balls for our metric.
-   The naive attempt,
-                     `ball x e y := g_ (distN e) (x,y))
+   The naive attempt, `ball x e y := g_ (distN e) (x,y)`
    doesn't respect triangle inequality. We need to cook triangle inequality
    into the balls themselves. So we define balls in terms of steps:
-      `ball x e y := there are n steps x_0 = x,...,x_i,..., x_n.+1 = y and
-                     e_1,...,e_n such that
-                           g_ (distN e_i) (x_i,x_i+1)
-                                    and
-                               sum (e_i) = e
+   `ball x e y :=` there are `n` steps `x_0 = x,...,x_i,..., x_n.+1 = y` and
+   `e_1,...,e_n` such that `g_ (distN e_i) (x_i,x_i+1)` and `sum (e_i) = e`.
 *)
-
-Local Open Scope classical_set_scope.
-Local Open Scope ring_scope.
 
 Local Definition distN (e : R) : nat := Num.truncn e^-1.
 
@@ -160,7 +153,7 @@ Local Lemma entourage_nball e :
   0 < e -> entourage [set xy | step_ball xy.1 e xy.2].
 Proof.
 move=> epos; apply: (@filterS _ _ _ (g_ (distN e))) => // [[x y]] ?.
-by exists 0%N.
+by exists 0.
 Qed.
 
 Local Lemma n_step_ball_center x e : 0 < e -> n_step_ball 0 x e x.
@@ -201,32 +194,34 @@ Qed.
 Local Lemma step_ball_sym x y e : step_ball x e y -> step_ball y e x.
 Proof. by case=> n /n_step_ball_sym ?; exists n. Qed.
 
-(* Step 3:
-   We prove that step_ball respects the original entourage. This requires an
+(**md Step 3:
+   We prove that `step_ball` respects the original entourage. This requires an
    induction on the length of the steps, which is pretty tricky. The central
    lemma is `split_n_step_ball`, which lets us break a list into parts three
-   parts as: half + one_step + half. Then our we can break apart our n +1 path
-
+   parts as: half + one_step + half. Then our we can break apart our n + 1 path
+```
                          nlong + one_step
+```
    into
+```
                   (half + one_step + half) + one_step
                                 =
                   half + one_step + (half + one_step)
-
+```
    and we can we can use our (strong) induction hypothesis.
-   And lastly we finish with splitG3.
+   And lastly we finish with `splitG3`.
 *)
 
 Local Lemma n_step_ball_le n x e1 e2 :
   e1 <= e2 -> n_step_ball n x e1 `<=` n_step_ball n x e2.
 Proof.
 move: x e1 e2; elim: n.
-  move=> x e1 e2 e1e2 y [?] gxy; split; first exact: (lt_le_trans _ e1e2).
-  by apply: descendG; last (exact: gxy); exact: distN_le.
+  move=> x e1 e2 e1e2 y [?] gxy; split; first exact: lt_le_trans e1e2.
+  by apply: descendG gxy; exact: distN_le.
 move=> n IH x e1 e2 e1e2 z [y] [d1] [d2] [] /IH P d1pos d2pos gyz d1d2e1.
 exists y, (e2 - d2), d2; split => //.
 - by apply: P; rewrite lerBrDr d1d2e1.
-- by apply: lt_le_trans d1pos _; rewrite lerBrDr d1d2e1.
+- by rewrite (lt_le_trans d1pos)// lerBrDr d1d2e1.
 - by rewrite subrK.
 Qed.
 
@@ -234,11 +229,12 @@ Local Lemma step_ball_le x e1 e2 :
   e1 <= e2 -> step_ball x e1 `<=` step_ball x e2.
 Proof. by move=> e1e2 ? [n P]; exists n; exact: (n_step_ball_le e1e2). Qed.
 
+Local Open Scope ring_scope.
+
 Local Lemma distN_half (n : nat) : n.+1%:R^-1 / (2:R) <= n.+2%:R^-1.
 Proof.
 rewrite -invrM //; [exact: unitf_gt0 |exact: unitf_gt0|].
-rewrite lef_pV2 ?posrE // -?natrM ?ler_nat -addn1 -addn1 -addnA mulnDr.
-by rewrite muln1 leq_add2r leq_pmull.
+by rewrite lef_pV2 ?posrE// -natrM ler_nat ltn_Pmull.
 Qed.
 
 Local Lemma split_n_step_ball n x e1 e2 z :
@@ -253,34 +249,32 @@ Local Lemma split_n_step_ball n x e1 e2 z :
 Proof.
 move: e1 e2 x z; elim: n.
   move=> e1 e2 x z e1pos e2pos [y] [d1] [d2] [] Oxy ? ? gd2yz deE.
-  case: (pselect (e1 <= d1)).
-    move=> e1d1; exists x, y, 0%N, 0%N; split.
+  have [e1d1|e1d1] := leP e1 d1.
+    exists x, y, 0%N, 0%N; split.
     - exact: n_step_ball_center.
     - apply: n_step_ball_le; last exact: Oxy.
       by rewrite -deE lerDl; apply: ltW.
     - by apply: (@n_step_ball_le _ _ d2); rewrite // -(lerD2l e1) -deE lerD.
     - by rewrite addn0.
-  move=> /negP; rewrite -ltNge//.
-  move=> e1d1; exists y, z, 0%N, 0%N; split.
+  exists y, z, 0%N, 0%N; split.
   - by apply: n_step_ball_le; last (exact: Oxy); exact: ltW.
   - by apply: (@n_step_ball_le _ _ d2); rewrite // -deE lerDr ltW.
   - exact: n_step_ball_center.
   - by rewrite addn0.
 move=> n IH e1 e2 x z e1pos e2pos [y] [d1] [d2] [] Od1xy d1pos d2pos gd2yz deE.
-case: (pselect (e2 <= d2)).
-  move=> e2d2; exists y, z, n.+1, 0%N; split.
+have [e2d2|d2lee2] := leP e2 d2.
+  exists y, z, n.+1, 0%N; split.
   - by apply: (@n_step_ball_le _ _ d1); rewrite // -(lerD2r e2) -deE lerD.
   - by apply: (@n_step_ball_le _ _ d2); rewrite // -deE lerDr; exact: ltW.
   - exact: n_step_ball_center.
   - by rewrite addn0.
 have d1E' : d1 = e1 + (e2 - d2) by rewrite addrA -deE addrK.
-move=> /negP; rewrite -ltNge// => d2lee2.
-  case: (IH e1 (e2 - d2) x y); rewrite ?subr_gt0 // -d1E' //.
-  move=> t1 [t2] [c1] [c2] [] Oxy1 gt1t2 t2y <-.
-  exists t1, t2, c1, c2.+1; split => //.
-  - by apply: (@n_step_ball_le _ _ d1); rewrite -?deE // ?lerDl; exact: ltW.
-  - by exists y, (e2 - d2), d2; rewrite // ?subr_gt0// subrK.
-  - by rewrite addnS.
+case: (IH e1 (e2 - d2) x y); rewrite ?subr_gt0 // -d1E' //.
+move=> t1 [t2] [c1] [c2] [] Oxy1 gt1t2 t2y <-.
+exists t1, t2, c1, c2.+1; split => //.
+- by apply: (@n_step_ball_le _ _ d1); rewrite -?deE // ?lerDl; exact: ltW.
+- by exists y, (e2 - d2), d2; rewrite // ?subr_gt0// subrK.
+- by rewrite addnS.
 Qed.
 
 Local Lemma n_step_ball_le_g x n :
@@ -314,11 +308,11 @@ Proof. by move=> y [] n; exact: subset_n_step_ball. Qed.
 Local Lemma step_ball_entourage : entourage = entourage_ step_ball.
 Proof.
 rewrite predeqE => E; split; first last.
-  by case=> e /= epos esubE; apply: (filterS esubE); exact: entourage_nball.
-move=> entE; case: (countableBase entE) => N fN.
+  by case=> e /= epos /filterS; apply; exact: entourage_nball.
+move=> entE; have [N fN] := countableBase entE.
 exists N.+2%:R^-1; first by rewrite /= invr_gt0.
-apply: (subset_trans _ fN); apply: subset_trans; last apply: gsubf.
-by case=> x y /= N1ball; apply: (@subset_step_ball x N.+1).
+apply: subset_trans fN; apply: subset_trans; last exact: gsubf.
+by case=> x y /= N1ball; exact: (@subset_step_ball x N.+1).
 Qed.
 
 Definition type : Type := let _ := countableBase in let _ := entF in T.
@@ -331,7 +325,7 @@ Definition type : Type := let _ := countableBase in let _ := entF in T.
 
 Lemma countable_uniform_bounded (x y : T) : @ball _ type x 2 y.
 Proof.
-rewrite /ball; exists O%N; rewrite /n_step_ball; split; rewrite // /distN.
+rewrite /ball; exists 0; rewrite /n_step_ball; split; rewrite // /distN.
 rewrite (_ : Num.truncn _ = 0)//.
 by apply/eqP; rewrite truncn_eq// invr_ge0// ler0n/= invf_lt1// ltr1n.
 Qed.
