@@ -205,6 +205,7 @@
     `pmf_expectation_bind`
   + lemmas `nondecreasing_esum_Efn`, `esum_pmf_lim_r`, `esum_pmf_lim_r_r`, `esum_pmf_lim`
   + lemma `pmf_lim_limn`
+- new file `uniform_metrizable.v`
 
 - new subdirectory `derive`
   + new files `differential.v`, `derivable.v`, `directional_derive_lemmas.v`, `derive_matrix.v`
@@ -337,6 +338,12 @@
 
 - in `differential.com` (was `derive.v` (old))
   + lemma `differentiable_comp` (`f` and `g` are now explicit)
+- from `pseudometric_structure.v` to `uniform_structure.v`:
+  + definition `entourage_`
+
+- from `separation_axioms.v` to `uniform_metrizable.v`:
+  + module `countable_uniform`
+  + notation `countable_uniform`
 
 ### Renamed
 
