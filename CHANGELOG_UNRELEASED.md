@@ -64,6 +64,8 @@
 - new subdirectory `number_theory`
   + new file `number.v`
 
+- new file `uniform_metrizable.v`
+
 ### Changed
 
 - in `lebesgue_integral_nonneg.v`, generalized and deprecated:
@@ -97,6 +99,13 @@
 
 - moved from `theories/showcase` to `number_theory`:
   + files `pnt.v`
+
+- from `pseudometric_structure.v` to `uniform_structure.v`:
+  + definition `entourage_`
+
+- from `separation_axioms.v` to `uniform_metrizable.v`:
+  + module `countable_uniform`
+  + notation `countable_uniform`
 
 ### Renamed
 
