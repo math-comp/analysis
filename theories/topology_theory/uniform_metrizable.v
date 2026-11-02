@@ -14,7 +14,7 @@ From mathcomp Require Import topology_structure uniform_structure
 (*                            entourage has a countable basis                 *)
 (* ```                                                                        *)
 (*                                                                            *)
-(*****************************************************************************)
+(******************************************************************************)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
