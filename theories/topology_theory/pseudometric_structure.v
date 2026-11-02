@@ -63,9 +63,6 @@ Obligation Tactic := idtac.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Definition entourage_ {R : numDomainType} {T T'} (ball : T -> R -> set T') :=
-  @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
-
 Lemma entourage_E {R : numDomainType} {T T'} (ball : T -> R -> set T') :
   entourage_ ball =
   @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).

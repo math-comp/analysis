@@ -7,10 +7,19 @@
 - in `ereal_normedtype.v`:
   + lemma `ge0_cvgMly`
 
+- new file `uniform_metrizable.v`
+
 ### Changed
 
 - in `lebesgue_integral_nonneg.v`, generalized and deprecated:
   + lemma `ge0_integralZl_EFin` (no condition on `k`)
+
+- from `pseudometric_structure.v` to `uniform_structure.v`:
+  + definition `entourage_`
+
+- from `separation_axioms.v` to `uniform_metrizable.v`:
+  + module `countable_uniform`
+  + notation `countable_uniform`
 
 ### Renamed
 

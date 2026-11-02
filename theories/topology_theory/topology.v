@@ -14,6 +14,7 @@ From mathcomp Require Export subtype_topology.
 From mathcomp Require Export supremum_topology.
 From mathcomp Require Export topology_structure.
 From mathcomp Require Export uniform_structure.
+From mathcomp Require Export uniform_metrizable.
 From mathcomp Require Export initial_topology.
 From mathcomp Require Export one_point_compactification.
 From mathcomp Require Export sigT_topology.
