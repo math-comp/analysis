@@ -154,7 +154,8 @@ rewrite (@ge0_continuous_FTC2y _ _
   (fun x => - (expR (- rate * x))) _ 0)//.
 - by move=> x _; apply: exponential_pdf_ge0; exact: ltW.
 - exact: within_continuous_exponential_pdf.
-- rewrite -oppr0; apply: cvgN.
+- apply/cvg_EFin => //=; first exact: nearW.
+  rewrite -oppr0; apply: cvgN.
   rewrite (_ : (fun x => expR (- rate * x)) =
                (fun z => expR (- z)) \o (fun z => rate * z)).
     by apply: eq_fun => x; rewrite mulNr.
