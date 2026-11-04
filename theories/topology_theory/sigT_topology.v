@@ -43,7 +43,7 @@ Local Lemma sigT_nbhs_nbhs x A: sigT_nbhs x A -> sigT_nbhs x (sigT_nbhs^~ A).
 Proof.
 case: x => i Xi /=.
 rewrite sigT_nbhsE /= nbhsE /= => -[W [oW Wz WlA]].
-by exists W => // x /= Wx; exact/(filterS WlA)/open_nbhs_nbhs.
+by exists W => // x /= Wx; exact/(filterS WlA)/open_mem_nbhs.
 Qed.
 
 HB.instance Definition _ := Nbhs_isNbhsTopological.Build _ {i & X i}
@@ -69,7 +69,7 @@ Lemma sigT_openP (U : set {i & X i}) :
 Proof.
 split=> [oU i|?]; first by apply: open_comp=> // y _; exact: existT_continuous.
 rewrite openE => -[i x Uxi].
-by rewrite /interior /nbhs/= sigT_nbhsE; exact: open_nbhs_nbhs.
+by rewrite /interior /nbhs/= sigT_nbhsE; exact: open_mem_nbhs.
 Qed.
 
 Lemma sigT_continuous {d'} {Z : topologicalType d'} (f : forall i, X i -> Z) :

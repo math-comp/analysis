@@ -178,7 +178,8 @@ exists (\bigcap_(w in [set` F]) f w); repeat split.
     move=> /= ? /imfsetP [[[/= i w /[dup] /asboolP entw ? Fiw ->]]].
     by apply/mem_set; rewrite /f /=; exists i => //; exact: open_interior.
   by rewrite set_imfset bigcap_image //=.
-- by IEntP=> ? ? /open_nbhs_entourage entw ??; apply entw.
+- IEntP=> cI1 E7 /open_nbhs_entourage entw ent_of_cI1 ?.
+  exact: (nbhs_singleton (entw _).2).
 - move=> t /= Ifwt.
   by apply/mem_set/FsubE => it /Ifwt/interior_subset => /set_mem.
 Qed.
