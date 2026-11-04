@@ -62,6 +62,8 @@ functional_analysis/hahn_banach_theorem.v
 
 realfun.v
 sequences.v
+negligible_seq.v
+negligible_seq_harmonic.v
 exp.v
 
 elementary_functions/trigonometry_functions.v

@@ -5,6 +5,8 @@ From mathcomp Require Export cantor.
 From mathcomp Require Export normedtype.
 From mathcomp Require Export realfun.
 From mathcomp Require Export sequences.
+From mathcomp Require Export negligible_seq.
+From mathcomp Require Export negligible_seq_harmonic.
 From mathcomp Require Export exp.
 From mathcomp Require Export trigo.
 From mathcomp Require Export esum.
