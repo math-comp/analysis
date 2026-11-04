@@ -10,6 +10,9 @@
     `pownMexpr_cvgn0`
   + instance `is_derive1_powRl`
 
+- in `topology_structure.v`:
+  + lemma `open_nbhs_mem`
+
 ### Changed
 
 - in `lebesgue_integral_nonneg.v`, generalized and deprecated:
@@ -25,6 +28,11 @@
   + lemmas `derivable_oo_LRcontinuousZ`, `derivable_oo_LRcontinuousD`, 
     `derivable_oo_LRcontinuousN`, `derivable_oo_LRcontinuous_shift`,
     `derivable_oo_LRcontinuousS`
+
+- in `topology_structure.v`:
+  + definition `open_nbhs`
+  + lemma `open_nbhs_nbhs` changed to `open_mem_nbhs`
+
 
 ### Changed
 

@@ -139,7 +139,7 @@ Proof.
 move=> [x y]; have [pE U /= Upinf|] := eqVneq (edist (x, y)) +oo%E.
   rewrite nbhs_simpl /=; apply (@filterS _ _ _ [set xy | edist xy = +oo]%E).
     by move=> z /= ->; apply: nbhs_singleton; move: pE Upinf => ->.
-  by apply: open_nbhs_nbhs; split => //; exact: edist_pinfty_open.
+  by apply: open_mem_nbhs => //; exact: edist_pinfty_open.
 rewrite -ltey -ge0_fin_numE// => efin.
 rewrite /continuous_at -[edist (x, y)]fineK//; apply: cvg_EFin.
   by have := edist_fin_open efin; apply: filter_app; near=> w.
