@@ -67,6 +67,9 @@ From mathcomp Require Export filter.
 (* `closure U`                                                                *)
 (* : the smallest closed set containing `U`                                   *)
 (*                                                                            *)
+(* `perfect_set A`                                                            *)
+(* : `A` is closed, and every point in `A` is a limit point of `A`            *)
+(*                                                                            *)
 (* `regopen U`                                                                *)
 (* : `U` is regular open, i.e., equal to the interior of its closure          *)
 (*                                                                            *)
@@ -946,6 +949,52 @@ by rewrite eqEsubset; split => //; exact: subset_closure.
 Qed.
 
 End closure_lemmas.
+
+Section perfect_sets.
+
+Implicit Types (T : topologicalType).
+
+Definition perfect_set {T} (A : set T) := closed A /\ limit_point A = A.
+
+Lemma perfectP {T} (A : set T) :
+  perfect_set A <-> closed A /\ isolated A = set0.
+Proof.
+split=> [[cA limA]|[cA isoA]]; have := closure_isolated_limit_point A.
+- move=> /(congr1 (fun x => x `\` limit_point A)).
+  rewrite setUDK.
+    by apply/disj_setPS; rewrite disj_set_sym disjoint_isolated_limit_point.
+  by rewrite limA -(closure_id A).1// setDv.
+- by rewrite isoA set0U -(closure_id A).1.
+Qed.
+
+Lemma perfectTP {T} : perfect_set [set: T] <-> forall x : T, ~ open [set x].
+Proof.
+split.
+  case=> _; rewrite eqEsubset; case=> _ + x Ox => /(_ x I [set x]).
+  by (case; [by apply: open_nbhs_nbhs; split |]) => y [+ _] => /[swap] -> /eqP.
+move=> NOx; split; [exact: closedT |]; rewrite eqEsubset; split => x // _.
+move=> U; rewrite nbhsE; case=> V [] oV Vx VU.
+have Vnx: V != [set x] by apply/eqP => M; apply: (NOx x); rewrite -M.
+have /existsNP [y /existsNP [Vy Ynx]] : ~ forall y, V y -> y = x.
+  move/negP: Vnx; apply: contra_not => Vxy; apply/eqP; rewrite eqEsubset.
+  by split => // ? ->.
+by exists y; split => //; [exact/eqP | exact: VU].
+Qed.
+
+Lemma perfectTP_ex {T} : perfect_set [set: T] <->
+  forall (U : set T), open U -> U !=set0 ->
+  exists x y, [/\ U x, U y & x != y] .
+Proof.
+apply: (iff_trans perfectTP); split.
+  move=> nx1 U oU [] x Ux; exists x.
+  have : U <> [set x] by move=> Ux1; apply: (nx1 x); rewrite -Ux1.
+  apply: contra_notP => /not_existsP/contrapT=> Uyx; rewrite eqEsubset.
+  by split => [y Uy|? ->//]; have /not_and3P[//|//|/negP/negPn/eqP] := Uyx y.
+move=> Unxy x Ox; have [] := Unxy _ Ox; first by exists x.
+by move=> y [] ? [->] -> /eqP.
+Qed.
+
+End perfect_sets.
 
 Section regular_open_closed.
 Context {T : topologicalType}.

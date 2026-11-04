@@ -344,6 +344,9 @@ Lemma unif_continuous_comp {U V W : uniformType} (f : U -> V) (g : V -> W) :
   unif_continuous f -> unif_continuous g -> unif_continuous (g \o f).
 Proof. by move=> cf cg A /cg /cf; exact. Qed.
 
+Definition entourage_ {R : numDomainType} {T T'} (ball : T -> R -> set T') :=
+  @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
+
 Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
   exists2 B, entourage B & forall PQ, A PQ -> forall p q,
     PQ.1 p -> PQ.2 q -> B (p,q).
