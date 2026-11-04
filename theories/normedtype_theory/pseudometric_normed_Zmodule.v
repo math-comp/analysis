@@ -581,7 +581,9 @@ by apply: le_lt_trans; rewrite [in leRHS]addrC ler_distD.
 Qed.
 
 Lemma ball_open_nbhs (x : V) (r : K) : 0 < r -> open_nbhs x (ball x r).
-Proof. by move=> e0; split; [exact: ball_open|exact: ballxx]. Qed.
+Proof.
+by move=> e0; rewrite open_nbhs_mem; split; [exact:ball_open|exact:ballxx].
+Qed.
 
 (**md Neighborhoods defined by the norm: *)
 Local Notation ball_norm := (ball_ (@Num.norm K V)).

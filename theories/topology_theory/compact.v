@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import boot order algebra finmap.
+From mathcomp Require Import boot order algebra interval_inference finmap.
 From mathcomp Require Import all_classical.
-From mathcomp Require Import interval_inference reals topology_structure.
+From mathcomp Require Import reals topology_structure.
 From mathcomp Require Import uniform_structure pseudometric_structure.
 
 (**md**************************************************************************)
@@ -411,9 +411,8 @@ move=> D [] oD cD /=; have cmpt : cover_compact D.
   by rewrite -compact_cover; exact: (subclosed_compact _ cmpT).
 have h (x : T) : exists V : set T, D x -> [/\ B V, nbhs x V & V `<=` D].
   have [Dx|] := pselect (D x); last by move=> ?; exists set0.
-  have [V [BV Vx VD]] := Bbase x D (open_nbhs_nbhs (conj oD Dx)).
-  exists V => _; split => //; apply: open_nbhs_nbhs; split => //.
-  exact: obase.
+  have [V [BV Vx VD]] := Bbase x D (open_mem_nbhs oD Dx).
+  by exists V => _; split => //; apply: open_mem_nbhs => //; exact: obase.
 pose h' := fun z => projT1 (cid (h z)).
 have [fs fsD DsubC] : finite_subset_cover D h' D.
   apply: cmpt.

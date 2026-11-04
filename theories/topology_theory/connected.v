@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra all_classical.
 From mathcomp Require Import topology_structure.
@@ -7,15 +7,18 @@ From mathcomp Require Import topology_structure.
 (* # Connectedness                                                            *)
 (* This file provides connected and its related notions.                      *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*                   connected A <-> the only non empty subset of A which is  *)
-(*                                   both open and closed in A is A           *)
-(*                  separated A B == the two sets A and B are separated       *)
-(*          connected_component x == the connected component of point x       *)
-(* ```                                                                        *)
+(* `connected A`                                                              *)
+(* : the only non empty subset of `A` which is both open and closed in `A`    *)
+(* : is `A`                                                                   *)
+(*                                                                            *)
+(* `separated A B`                                                            *)
+(* : the two sets `A` and `B` are separated                                   *)
+(*                                                                            *)
+(* `connected_component x`                                                    *)
+(* : the connected component of point `x`                                     *)
+(*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -151,7 +154,7 @@ suff : A `<=` U.
   by apply: closedI => //; exact: closed_closure.
 rewrite -setIidPl; apply: ctdA.
 - move: U0; rewrite C1E => -[z [clAx C1z]]; have [] := clAx C1.
-    exact: open_nbhs_nbhs.
+    exact: open_mem_nbhs.
   by move=> w [Aw C1w]; exists w; rewrite setIA (setIidl (@subset_closure _ _)).
 - by exists C1 => //; rewrite C1E setIA (setIidl (@subset_closure _ _)).
 - by exists C2 => //; rewrite C2E setIA (setIidl (@subset_closure _ _)).

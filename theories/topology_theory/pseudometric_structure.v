@@ -51,7 +51,6 @@ From mathcomp Require Import uniform_structure.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -220,8 +219,7 @@ Proof. by move=> e0; apply/nbhs_ballP; exists eps. Qed.
 
 Lemma open_nbhs_ball x (eps : {posnum R}) : open_nbhs x (ball x eps%:num)°.
 Proof.
-split; first exact: open_interior.
-by apply: nbhs_singleton; apply: nbhs_interior; exact: nbhsx_ballx.
+by split; [exact: open_interior|apply: nbhs_interior; exact: nbhsx_ballx].
 Qed.
 
 Lemma le_ball x (e1 e2 : R) : e1 <= e2 -> ball x e1 `<=` ball x e2.

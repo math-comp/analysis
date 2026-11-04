@@ -168,8 +168,9 @@ Qed.
 Local Lemma tree_map_surj : set_surj [set: T] [set: X] tree_map.
 Proof.
 move=> z _; suff : exists g, forall n, branch_apx g n z.
-  case=> g gnz; exists g => //; apply: close_eq => // U [oU Uz] V ngV; exists z.
-  by split => //; have [n _] := @cvg_tree_map g _ ngV; exact.
+  case=> g gnz; exists g => //.
+  apply: close_eq => // U [oU /nbhs_singleton Uz] V ngV; exists z.
+  by split => //; have [n ?] := @cvg_tree_map g _ ngV; exact.
 have zcov' : forall n (U : set X), exists e, U z -> @refine_apx n U e z.
   move=> n U; have [|?] := pselect (U z); last by exists point.
   by rewrite [X in X z -> _](@refine_cover n U); case => e _ ?; exists e.

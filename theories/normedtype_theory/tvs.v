@@ -490,7 +490,7 @@ split.
   exact: initial_nbhs_preimage.
 move=> /= A [a' [/= [/= b ob <-] /= b0 ba]].
 have /nbhsb  [b' Bb bb'] : nbhs 0 b.
-  by apply: open_nbhs_nbhs; split; rewrite -?(linear0 (\val : U -> V)).
+  by apply: open_mem_nbhs; rewrite -?(linear0 (\val : U -> V)).
 by exists (val @^-1` b') => /=; [exists b'|move => x /= /bb' /ba].
 Qed.
 
@@ -534,7 +534,8 @@ split; first by exists [set: E]; split; first exact: filter_nbhsT.
   move=> P Q; rewrite /entourage nbhsE /=.
   move=> [U [[B B0] BU Bxy]] [V [[C C0] CV Cxy]].
   exists (U `&` V); split => [|xy].
-    by exists (B `&` C); [exact: open_nbhsI|exact: setISS].
+    exists (B `&` C); last exact: setISS.
+    by rewrite -open_nbhs_mem; apply: open_nbhsI; rewrite open_nbhs_mem.
   by rewrite !in_setI => /andP[/Bxy-> /Cxy->].
 by move=> P Q PQ [U [HU Hxy]]; exists U; split => [|xy /Hxy /[!inE] /PQ].
 Qed.
@@ -562,7 +563,8 @@ have := @add_continuous (0, 0); rewrite /continuous_at/= addr0 => /(_ U U0)[]/=.
 move=> [W1 W2] []; rewrite nbhsE/= => [[U1 nU1 UW1] [U2 nU2 UW2]] Wadd.
 exists [set w | (W1 `&` W2) (w.1 - w.2)].
   exists (W1 `&` W2); split; last by [].
-  exists (U1 `&` U2); first exact: open_nbhsI.
+  exists (U1 `&` U2).
+    by rewrite -open_nbhs_mem; apply: open_nbhsI; rewrite open_nbhs_mem.
   by move=> t [U1t U2t]; split; [exact: UW1|exact: UW2].
 move => xy /= [z [H1 _] [_ H2]]; apply/set_mem/(Uxy xy)/mem_set.
 rewrite [_ - _](_ : _ = (xy.1 - z) + (z - xy.2)); first by rewrite addrA subrK.
@@ -1570,7 +1572,7 @@ apply/seteqP; split => y /=; rewrite /ball/= sub0r normrN ger0_norm ?gauge_ge0//
 move=> Ary.
 have : exists2 t : R , 0 < t < 1 & r^-1 *: y \in ( *:%R t ) @` A.
   have /continuousZl : nbhs (1 *: (r^-1 *: y)) A.
-    by rewrite scale1r; exact: open_nbhs_nbhs.
+    by rewrite scale1r; exact: open_mem_nbhs.
   move => [s /= s0] b1s.
   have ? : 0 < `|s| / 2 by rewrite divr_gt0 ?normr_gt0 ?gt_eqF.
   exists ((1 + `|s| / 2)^-1).

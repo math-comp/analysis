@@ -209,7 +209,7 @@ Proof.
 case; case => L R [/= oL oR AL cLR <-].
 have [R' []] : exists R', [/\ open R', closure L `<=` R' & closure R' `<=` R].
   have := @normalT (closure L) (@closed_closure T L).
-  case/(_ R); first by move=> x /cLR ?; apply: open_nbhs_nbhs.
+  case/(_ R); first by move=> x /cLR ?; exact: open_mem_nbhs.
   move=> V /set_nbhsP [U] [? ? ? cVR]; exists U; split => //.
   by apply: (subset_trans _ cVR); exact: closureS.
 move=> oR' cLR' cR'R; exists (apxU (L, R')), (apxU (R', R)).
@@ -288,9 +288,8 @@ Lemma normal_uniform_separator (B : set T) :
   closed A -> closed B -> A `&` B = set0 -> uniform_separator A B.
 Proof.
 move=> clA clB AB0; have /(_ (~`B))[x Ax|] := normalT clA.
-  apply: open_nbhs_nbhs; split => //.
-  - exact/closed_openC.
-  - by move: x Ax; apply/ disjoints_subset.
+  apply: open_mem_nbhs; first exact/closed_openC.
+  by move: x Ax; exact/disjoints_subset.
 move=> V /set_nbhsP [U [oU AU UV]] cVcb.
 exists (Uniform.class urysohnType), (apxU (U, ~` B)); split => //.
 - move=> ?; apply:sub_gen_smallest; exists (U, ~`B) => //; split => //=.
@@ -307,12 +306,12 @@ move=> [[/= P Q] [/= oP oQ AP cPQ <-]]; rewrite /apxU /=.
 set M := [set y | _ \/ _].
 have [Qx|nQx] := pselect (Q x); first last.
   suff -> : M = ~` closure P.
-    apply: open_nbhs_nbhs; split; first exact/closed_openC/closed_closure.
+    apply: open_mem_nbhs; first exact/closed_openC/closed_closure.
     by move/cPQ.
   rewrite eqEsubset /M; split => z; first by do 2!case.
   by move=> ?; right; split => // /cPQ.
 have [nPx|cPx] := pselect (closure P x).
-  suff -> : M = Q by apply: open_nbhs_nbhs; split.
+  suff -> : M = Q by exact: open_mem_nbhs.
   rewrite eqEsubset /M; split => z; first by do 2!case.
   by move=> ?; left; split.
 suff -> : M = setT by exact: filterT.
@@ -341,7 +340,7 @@ exists (Uniform.class T'), ([set xy | ball (f xy.1) 1 (f xy.2)]); split.
 - rewrite -subset0 => -[a b [[/= Aa Bb]]].
   by rewrite (imsub1 fA0)// (imsub1 fB1)// /ball/= sub0r normrN normr1 ltxx.
 - move=> x U [V [[W oW <- /=]]] ? /filterS; apply.
-  by apply: ctsf; exact: open_nbhs_nbhs.
+  by apply: ctsf; exact: open_mem_nbhs.
 Qed.
 
 Section normalP.
@@ -448,7 +447,7 @@ Let completely_regular_nbhsE : @nbhs X X = nbhs_ (@entourage X').
 Proof.
 rewrite nbhs_entourageE; apply/funext => x; apply/seteqP; split; first last.
   apply/cvg_sup => -[f ctsf] U [/= _ [[V /= oV <- /= Vfx]]] /filterS.
-  by apply; exact/ctsf/open_nbhs_nbhs.
+  by apply; exact/ctsf/open_mem_nbhs.
 move=> U; wlog oU : U / @open X U.
   move=> WH; rewrite nbhsE => -[V [oV Vx /filterS]].
   apply; first exact: (@nbhs_filter X').
@@ -550,7 +549,7 @@ Lemma regular_openP {T : topologicalType} (x : T) :
 Proof.
 split.
   move=> + A clA nAx => /(_ (~` A)) [].
-    by apply: open_nbhs_nbhs; split => //; exact: closed_openC.
+    by apply: open_mem_nbhs => //; exact: closed_openC.
   move=> U Ux /subsetC; rewrite setCK => AclU; exists U°.
   exists (~` closure U) ; split => //; first exact: open_interior.
     exact/closed_openC/closed_closure.
@@ -559,7 +558,7 @@ split.
 move=> + A Ax => /(_ (~` A°)) []; [|exact|].
   exact/open_closedC/open_interior.
 move=> U [V] [oU oV Ux /subsetC cAV /disjoints_subset UV]; exists U.
-  exact/open_nbhs_nbhs.
+  exact/open_mem_nbhs.
 apply: (subset_trans (closureS UV)).
 move/open_closedC/closure_id : oV => <-.
 by apply: (subset_trans cAV); rewrite setCK; exact: interior_subset.
