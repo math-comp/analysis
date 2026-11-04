@@ -226,9 +226,9 @@ Proof.
 move: y => [y| |].
 - exists [set` Interval (BSide b y) +oo%O]; first by [].
   by exists [set +oo%E]; [constructor|rewrite -punct_eitv_bndy].
-- by case: b; rewrite ?itv_oyy ?itv_cyy.
-- case: b; first by rewrite itv_cNyy.
-  by rewrite itv_oNyy; exact/measurableC.
+- by case: b; rewrite ?itv_oyey ?itv_cyey.
+- case: b; first by rewrite itv_cNyey.
+  by rewrite itv_oNyey; exact/measurableC.
 Qed.
 
 Let emeasurable_itv_Nybnd b (y : \bar R) :

@@ -33,6 +33,46 @@ Import numFieldNormedType.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
+Section econtinuity_under_integral.
+Context {R : realType} d {Y : measurableType d}
+  {mu : {measure set Y -> \bar R}}.
+Context (M : pseudoPMetricType R).
+Local Open Scope ereal_scope.
+
+Variable f : M -> Y -> \bar R.
+Variable B : set Y.
+Hypothesis mB : measurable B.
+
+Variable (I : set M).
+
+Hypothesis int_f : forall x, I x -> mu.-integrable B (f x).
+Hypothesis cf : {ae mu, forall y, B y -> {within I, continuous (f ^~ y)}}.
+
+Variable g : Y -> \bar R.
+
+Hypothesis int_g : mu.-integrable B g.
+Hypothesis g_ub : forall x, I x -> 
+  {ae mu, forall y, B y -> `|f x y| <= g y}.
+
+Let F x := \int[mu]_(y in B) f x y.
+
+Lemma econtinuity_under_integral :
+  {within I, continuous (fun l => \int[mu]_(x in B) f l x)}.
+Proof.
+apply/subspace_continuousP => a Ia; rewrite /from_subspace.
+rewrite /continuous_at.
+apply/cvg_withinP => w [Iw wa].
+have [n|||||] // := @dominated_convergence _ _ _ 
+    mu B mB (fun n x => f (w n) x) (f a) g.
+- by apply/(measurable_int mu)/int_f.
+- by apply/(measurable_int mu)/int_f.
+- move: cf; apply: filterS => y + By => /(_ By) /subspace_continuousP /(_ a Ia).
+  by move/cvg_withinP/(_ w (conj Iw wa)).
+- by apply: ae_foralln => n; apply: g_ub.
+Qed.
+
+End econtinuity_under_integral.
+
 Section continuity_under_integral.
 Context {R : realType} d {Y : measurableType d}
   {mu : {measure set Y -> \bar R}}.
@@ -57,69 +97,12 @@ Let F x := (\int[mu]_(y in B) f x y)%R.
 Lemma continuity_under_integral :
   {in I, continuous (fun l => \int[mu]_(x in B) f l x)}.
 Proof.
-move=> a /set_mem Ia.
-have [Z [mZ Z0 /subsetCPl ncfZ]] := cf.
-have BZ_cf x : x \in B `\` Z -> {in I, continuous (f ^~ x)}.
-  by rewrite inE/= => -[Bx nZx]; exact: ncfZ.
-have [vu|uv] := lerP v u.
-  by move: Ia; rewrite /I set_itv_ge// -leNgt bnd_simp.
-apply/(@cvg_nbhsP _ R^o) => w wa.
-have /near_in_itvoo[e /= e0 aeuv] : a \in `]u, v[ by rewrite inE.
-move/cvgrPdist_lt : (wa) => /(_ _ e0)[N _ aue].
-have IwnN n : I (w (n + N)) by apply: aeuv; apply: aue; exact: leq_addl.
-have : forall n, {ae mu, forall y, B y -> `|f (w (n + N)) y| <= g y}.
-  by move=> n; exact: g_ub.
-move/choice => [/= U /all_and3[mU U0 Ug_ub]].
-have mUU n : measurable (\big[setU/set0]_(k < n) U k).
-  exact: bigsetU_measurable.
-set UU := \bigcup_n U n.
-have mUUoo : measurable UU by exact: bigcup_measurable.
-have {U0}UU0 : mu UU = 0.
-  rewrite /UU seqDU_bigcup_eq measure_bigcup//.
-    by move=> ? _; apply: measurableD => //; exact: bigsetU_measurable.
-  apply: eseries0 => n _ _; apply/eqP; rewrite -measure_le0.
-  rewrite -[leRHS](U0 n) le_measure ?inE//; first exact: measurableD.
-  exact: subIsetl.
-set ZUU := Z `|` UU.
-have mZUU : measurable ZUU by exact: measurableU.
-have {Z0 UU0}ZUU0 : mu ZUU = 0.
-  apply/eqP; rewrite -measure_le0.
-  by rewrite (le_trans (measureU2 _ _ mUUoo))// [X in X + _]Z0 add0e [leLHS]UU0.
-have : {near \oo, (fun n => \int[mu]_(x in B `\` ZUU) f (w n) x) =1
-        (fun n => \int[mu]_(x in B) f (w n) x)}.
-  move: (Ia); rewrite /I/= in_itv/= => /andP[ua av].
-  near=> t.
-  rewrite /Rintegral [in RHS](negligible_integral mZUU)//.
-  apply: int_f.
-  rewrite /I/= in_itv/=; apply/andP; split.
-  - by near: t; exact: (cvgr_gt a).
-  - by near: t; exact: (cvgr_lt a).
-move/near_eq_cvg/cvg_trans; apply.
-rewrite -(cvg_shiftn N).
-apply: fine_cvg.
-rewrite /Rintegral (negligible_integral mZUU)//; first exact: int_f.
-rewrite fineK.
-  rewrite fin_num_abs -(negligible_integral mZUU)//; first exact: int_f.
-  by have /integrableP[? ?] := int_f Ia; exact/abse_integralP.
-apply: (@dominated_cvg _ _ _ mu _ _
-    (fun n x => (f (w (n + N)) x)%:E) _ (EFin \o g)) => //=.
-- exact: measurableD.
-- move=> n; apply/(measurable_int mu)/(integrableS mB).
-  + exact: measurableD.
-  + exact: subIsetr.
-  + exact/int_f/aeuv/aue/leq_addl.
-- move=> x BZUUx.
-  have {}BZUUx : x \in B `\`ZUU by rewrite inE.
-  apply: cvg_EFin; first exact: nearW.
-  have : x \in B `\` Z.
-    move: BZUUx; rewrite inE/= => -[Bx nZUUx]; rewrite inE/=; split => //.
-    by apply: contra_not nZUUx; left.
-  move/(BZ_cf x)/(_ a); move/mem_set : Ia => /[swap] /[apply].
-  by move/(@cvg_nbhsP _ R^o); apply; rewrite (cvg_shiftn N).
-- by apply: (integrableS mB) => //; exact: measurableD.
-- move=> n x [Bx ZUUx]; rewrite lee_fin.
-  move/subsetCPl : (Ug_ub n); apply => //=.
-  by apply: contra_not ZUUx => ?; right; exists n.
+rewrite -continuous_open_subspace//.
+apply: within_continuous_fine => [a /set_mem Ia|].
+  by apply: integrable_fin_num => //; apply: int_f.
+apply: (econtinuity_under_integral _ _ _ (g := EFin \o g)) => //.
+near=> y => By; apply: within_econtinuous_EFin.
+by rewrite continuous_open_subspace//; move: By; near: y.
 Unshelve. end_near. Qed.
 
 End continuity_under_integral.
