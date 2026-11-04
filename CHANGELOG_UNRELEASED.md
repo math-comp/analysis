@@ -63,6 +63,8 @@
 
 - new subdirectory `number_theory`
   + new file `number.v`
+- in `topology_structure.v`:
+  + lemma `open_nbhs_mem`
 
 ### Changed
 
@@ -97,6 +99,12 @@
 
 - moved from `theories/showcase` to `number_theory`:
   + files `pnt.v`
+- in `topology_structure.v`:
+  + definition `open_nbhs`
+  + lemma `open_nbhs_nbhs` changed to `open_mem_nbhs`
+
+
+### Changed
 
 ### Renamed
 

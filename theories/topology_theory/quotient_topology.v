@@ -13,7 +13,6 @@ From mathcomp Require Import topology_structure.
 (* `quotient_display Q`                                                       *)
 (* : display for `quotient_topology T`                                        *)
 (*                                                                            *)
-(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
