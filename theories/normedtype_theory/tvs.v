@@ -1876,7 +1876,6 @@ Qed.
 
 End generating_seminorm.
 
-
 Section kernel.
 Context (R : realFieldType) (F : convexTvsType R).
 
