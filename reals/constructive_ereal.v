@@ -529,7 +529,7 @@ HB.instance Definition _ := Order.hasTop.Build ereal_display (\bar R) leey.
 End ERealOrder_realDomainType.
 
 Section ERealZmodule.
-Context {R : zmodType}.
+Context {R : baseZmodType}.
 Implicit Types x y z : \bar R.
 
 Definition oppe x :=
