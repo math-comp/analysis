@@ -1657,7 +1657,6 @@ apply: (@squeeze_cvgr _ (nbhs x)) => /=; first exact: nearp.
 exact: pshift0.
 Qed.
 
-
 Lemma hausdorff_seminorm_on :
 hausdorff_space (seminorm_on P0) <-> (forall x : E, x != 0 -> exists2 p, P p & 0 < p x).
 Proof.
@@ -1700,7 +1699,6 @@ Definition gauge_fun_basis (b : set E) (h : open_nbhsbasis_convextvs b) :=
 
 Definition seminorm_of := [set p : Norm.SemiNorm.type E |
   exists b (h : open_nbhsbasis_convextvs b), p = gauge_fun_basis h].
-
 
 Lemma seminorm_ofneq0 : seminorm_of !=set0.
 Proof.
