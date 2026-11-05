@@ -214,7 +214,6 @@ rewrite /ball /= ltr_pdivlMr //= gtr_pMr ?normr_gt0 ?subr_eq0 //.
 by rewrite ltrn1.
 Qed.
 
-
 Section TopologicalLmodule_theory.
 Context {R : numFieldType} (E : topologicalLmodType R).
 
@@ -333,7 +332,6 @@ Qed.
 End TopologicalLmodule_theory.
 
 Section topologicalLmodType_realFieldType.
-
 Context {R : realFieldType} {E : topologicalLmodType R}.
 Implicit Type x : E.
 
@@ -402,6 +400,34 @@ HB.structure Definition SubConvexSpace (R : numDomainType) (V : convType R) S :=
 HB.structure Definition SubConvexTvs (R : numDomainType) (V : convexTvsType R)
     (S : pred V) :=
   { U of SubTopological V S U & ConvexTvs R U & @GRing.SubLmodule R V S U }.
+
+Section ConvexTvs_theory.
+Context (R : numFieldType) (E : convexTvsType R).
+
+Lemma closure_convextvs (b : set E) :
+  closure b = \bigcap_(a in (nbhs (0 : E))) (b `+ a).
+Proof.
+have [absconv [] nbhs0 basis] :=  (svalP (cid2 (@locally_convex _ E))).
+apply/seteqP; split => z H.
+  move=> a' /basis [/=a /[dup] /mem_set /absconv [_ bala]].
+  move=> /nbhs0 /[dup] na /(nbhs_add1set z)/H  [y [by' [? -> [t ta zty]]]] aa'.
+  exists y => //; exists (-t); last by apply: (addrI t); rewrite addrCA subrr addr0 addrC.
+  by rewrite -scaleN1r; apply/aa'/(bala (-1)); rewrite ?normrN ?normr1 //=; exists t.
+move=> d; rewrite nbhsE0.
+move =>  [dz] [/=a /basis [ /= a'/[dup] /mem_set /= /absconv [_ bala]]].
+move=> /nbhs0 /H [x bx [y ay]] xyz  aa' zcd.
+exists x; split => //; apply: zcd; exists (-y).
+  by rewrite -scaleN1r; apply/aa'/(bala (-1)); rewrite ?normrN ?normr1 //=; exists y.
+by apply: (addrI y); rewrite addrCA subrr addr0 addrC.
+Qed.
+
+Lemma closure_addset (b : set E) : (nbhs 0 b) ->  closure b `<=` b `+ b.
+Proof.
+move=> nb z; rewrite closure_convextvs /bigcap /= => /(_ b nb) [x bx [y by' <-]].
+by exists x => //; exists y.
+Qed.
+
+End ConvexTvs_theory.
 
 Section SubLmodule_isSubConvexTvs.
 Context (R : numFieldType) (V : convexTvsType R) (S : pred V) (U : subLmodType S).
@@ -677,7 +703,6 @@ HB.instance Definition _ :=
 HB.instance Definition _ := Uniform_isConvexTvs.Build R E locally_convex.
 
 HB.end.
-
 
 HB.factory Record NbhsBasisAt0_isConvexTvs (R : numFieldType) E
     & GRing.Lmodule R E := {
@@ -1282,34 +1307,12 @@ End openbasis.
 
 
 Section closedbasis.
+(* This section shows that every convexTvsType admits a basis of closed
+absolutely convex sets *)
 Context (R : realFieldType) (E: convexTvsType R).
 
-Definition closed_nbhsbasis_ctvs := [set closure b | b in  (@nbhsbasis_convextvs R E)].
-
-(* TODO : convex is enough and then take balanced closure *)
-
-Lemma closure_convextvs ( b : set E) :
-  closure b = \bigcap_(a in (nbhs (0 : E))) (b `+ a).
-Proof.
-have [absconv [] nbhs0 basis] :=  (svalP (cid2 (@locally_convex _ E))).
-apply/seteqP; split => z H.
-  move=> a' /basis [/=a /[dup] /mem_set /absconv [_ bala]].
-  move=> /nbhs0 /[dup] na /(nbhs_add1set z)/H  [y [by' [? -> [t ta zty]]]] aa'.
-  exists y => //; exists (-t); last by apply: (addrI t); rewrite addrCA subrr addr0 addrC.
-  by rewrite -scaleN1r; apply/aa'/(bala (-1)); rewrite ?normrN ?normr1 //=; exists t.
-move=> d; rewrite nbhsE0.
-move =>  [dz] [/=a /basis [ /= a'/[dup] /mem_set /= /absconv [_ bala]]].
-move=> /nbhs0 /H [x bx [y ay]] xyz  aa' zcd.
-exists x; split => //; apply: zcd; exists (-y).
-  by rewrite -scaleN1r; apply/aa'/(bala (-1)); rewrite ?normrN ?normr1 //=; exists y.
-by apply: (addrI y); rewrite addrCA subrr addr0 addrC.
-Qed.
-
-Lemma closure_addsetset (b : set E) : (nbhs 0 b) ->  closure b `<=` b `+ b.
-Proof.
-move=> nb z. rewrite closure_convextvs /bigcap /= => /(_ b nb) [x bx [y by' <-]].
-by exists x => //; exists y.
-Qed.
+Definition closed_nbhsbasis_ctvs :=
+  [set closure b | b in  (@nbhsbasis_convextvs R E)].
 
 Lemma has_closed_nbhs_basis :
   nbhs_basis 0 closed_nbhsbasis_ctvs
@@ -1320,7 +1323,7 @@ split.
   split; move=> /= a /=.
     by move=> [b /nbhs0 nbhsb <-]; apply: filterS; first by apply: subset_closure.
    move=> /nbhs0_add [b] /[dup] /basis [/= c nc cb].
-   move=> /closure_addsetset /subset_trans /[apply] cba.
+   move=> /closure_addset /subset_trans /[apply] cba.
    exists (closure c); first by exists c.
    apply: subset_trans; last by exact: cba.
    by apply: closureS.
@@ -1358,9 +1361,6 @@ by exists z.
 Qed.
 
 End closedbasis.
-
-
-Import Norm.
 
 Definition gauge_fun (K : realType) (V : lmodType K) (A : set V)
     (absA : absolutely_convex_set A) (absorbA : absorbing_set A) : V -> K :=

@@ -1,4 +1,4 @@
-From HB Require Import structures. 
+From HB Require Import structures.
 From mathcomp Require Import boot order algebra interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
@@ -27,6 +27,10 @@ From mathcomp Require Import reals convex topology normedtype.
 (* | hahn_banach_extension_normed         | subNormedmodType | normedModType |*)
 (* | hahn_banach_extension_subcvts        | subconvextvsType | convexTvsType |*)
 (* | hahn_banach_extension_initialsubctvs | subLmodType      | convexTvsType |*)
+(*                                                                            *)
+(* Theorem `hahn_banach_extension_hausdorff` states, given a non-null point   *)
+(* in a convexTvsType, the existence of a linear continuous form non-null at  *)
+(* this point.                                                                *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -490,7 +494,7 @@ Qed.
 
 End hahn_banach_extension_ctvs.
 
-(* TBA : to classical *)
+(* TBA : to classical ? Where shoudl this go *)
 Lemma scaler_eq0 (R : numFieldType) (V: lmodType R) (a : V) t :  a != 0 -> (t *: a = 0 -> t = 0).
 Proof.
 move=> a0 ta; apply: contrapT => /eqP t0.
