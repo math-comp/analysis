@@ -1,5 +1,5 @@
 digraph dependencies {
-  node [shape = ellipse,style=filled,colorscheme = paired12];
+  node [shape = box,style = "filled,rounded",colorscheme = paired12];
   subgraph cluster_AnalysisStdlib { label="AnalysisStdlib" }
   subgraph cluster_Classical { label="Classical" }
   subgraph cluster_ExperimentalReals { label="ExperimentalReals" }
@@ -18,7 +18,7 @@ subgraph cluster_Classical {
     "classical/all_classical"[
         label="all_classical",
         URL="mathcomp.classical.all_classical.html",
-        fillcolor=1
+        fillcolor=lightgrey
     ]
 }
   "classical/boolp" -> "classical/all_classical";
@@ -36,7 +36,7 @@ subgraph cluster_Classical {
     "classical/internal_Eqdep_dec"[
         label="internal_Eqdep_dec",
         URL="mathcomp.classical.internal_Eqdep_dec.html",
-        fillcolor=1
+        fillcolor=lightgrey
     ]
 }
 
@@ -44,7 +44,7 @@ subgraph cluster_Classical {
     "classical/boolp"[
         label="boolp",
         URL="mathcomp.classical.boolp.html",
-        fillcolor=1
+        fillcolor=lightgrey
     ]
 }
   "classical/internal_Eqdep_dec" -> "classical/boolp";
@@ -54,7 +54,7 @@ subgraph cluster_Classical {
     "classical/contra"[
         label="contra",
         URL="mathcomp.classical.contra.html",
-        fillcolor=1
+        fillcolor=lightgrey
     ]
 }
   "classical/boolp" -> "classical/contra";
@@ -63,7 +63,7 @@ subgraph cluster_Classical {
     "classical/wochoice"[
         label="wochoice",
         URL="mathcomp.classical.wochoice.html",
-        fillcolor=1
+        fillcolor=lightgrey
     ]
 }
   "classical/boolp" -> "classical/wochoice";
@@ -73,7 +73,7 @@ subgraph cluster_Classical {
     "classical/classical_sets"[
         label="classical_sets",
         URL="mathcomp.classical.classical_sets.html",
-        fillcolor=1
+        fillcolor=lightgrey
     ]
 }
   "classical/boolp" -> "classical/classical_sets";
@@ -84,7 +84,7 @@ subgraph cluster_Classical {
     "classical/mathcomp_compat"[
         label="mathcomp_compat",
         URL="mathcomp.classical.mathcomp_compat.html",
-        fillcolor=1
+        fillcolor=lightgrey
     ]
 }
 
@@ -92,7 +92,7 @@ subgraph cluster_Classical {
     "classical/mathcomp_extra"[
         label="mathcomp_extra",
         URL="mathcomp.classical.mathcomp_extra.html",
-        fillcolor=1
+        fillcolor=lightgrey
     ]
 }
   "classical/mathcomp_compat" -> "classical/mathcomp_extra";
@@ -101,7 +101,7 @@ subgraph cluster_Classical {
     "classical/unstable"[
         label="unstable",
         URL="mathcomp.classical.unstable.html",
-        fillcolor=1
+        fillcolor=lightgrey
     ]
 }
 
@@ -109,7 +109,7 @@ subgraph cluster_Classical {
     "classical/functions"[
         label="functions",
         URL="mathcomp.classical.functions.html",
-        fillcolor=1
+        fillcolor=lightgrey
     ]
 }
   "classical/boolp" -> "classical/functions";
@@ -120,7 +120,7 @@ subgraph cluster_Classical {
     "classical/cardinality"[
         label="cardinality",
         URL="mathcomp.classical.cardinality.html",
-        fillcolor=1
+        fillcolor=lightgrey
     ]
 }
   "classical/boolp" -> "classical/cardinality";
@@ -131,7 +131,7 @@ subgraph cluster_Classical {
     "classical/fsbigop"[
         label="fsbigop",
         URL="mathcomp.classical.fsbigop.html",
-        fillcolor=1
+        fillcolor=lightgrey
     ]
 }
   "classical/boolp" -> "classical/fsbigop";
@@ -144,7 +144,7 @@ subgraph cluster_Classical {
     "classical/set_interval"[
         label="set_interval",
         URL="mathcomp.classical.set_interval.html",
-        fillcolor=1
+        fillcolor=lightgrey
     ]
 }
   "classical/boolp" -> "classical/set_interval";
@@ -156,7 +156,7 @@ subgraph cluster_Classical {
     "classical/classical_orders"[
         label="classical_orders",
         URL="mathcomp.classical.classical_orders.html",
-        fillcolor=1
+        fillcolor=lightgrey
     ]
 }
   "classical/boolp" -> "classical/classical_orders";
@@ -168,7 +168,7 @@ subgraph cluster_Classical {
     "classical/filter"[
         label="filter",
         URL="mathcomp.classical.filter.html",
-        fillcolor=1
+        fillcolor=lightgrey
     ]
 }
   "classical/boolp" -> "classical/filter";
@@ -183,7 +183,7 @@ subgraph cluster_Reals {
     "reals/constructive_ereal"[
         label="constructive_ereal",
         URL="mathcomp.reals.constructive_ereal.html",
-        fillcolor=2
+        fillcolor=lightskyblue
     ]
 }
 
@@ -191,7 +191,7 @@ subgraph cluster_Reals {
     "reals/reals"[
         label="reals",
         URL="mathcomp.reals.reals.html",
-        fillcolor=2
+        fillcolor=lightskyblue
     ]
 }
   "classical/boolp" -> "reals/reals";
@@ -204,7 +204,7 @@ subgraph cluster_Reals {
     "reals/real_interval"[
         label="real_interval",
         URL="mathcomp.reals.real_interval.html",
-        fillcolor=2
+        fillcolor=lightskyblue
     ]
 }
   "classical/boolp" -> "reals/real_interval";
@@ -219,7 +219,7 @@ subgraph cluster_Reals {
     "reals/prodnormedzmodule"[
         label="prodnormedzmodule",
         URL="mathcomp.reals.prodnormedzmodule.html",
-        fillcolor=2
+        fillcolor=lightskyblue
     ]
 }
   "classical/all_classical" -> "reals/prodnormedzmodule";
@@ -228,7 +228,7 @@ subgraph cluster_Reals {
     "reals/all_reals"[
         label="all_reals",
         URL="mathcomp.reals.all_reals.html",
-        fillcolor=2
+        fillcolor=lightskyblue
     ]
 }
   "reals/constructive_ereal" -> "reals/all_reals";
@@ -239,7 +239,7 @@ subgraph cluster_ExperimentalReals {
     "experimental_reals/xfinmap"[
         label="xfinmap",
         URL="mathcomp.experimental_reals.xfinmap.html",
-        fillcolor=1
+        fillcolor=cyan
     ]
 }
 
@@ -247,7 +247,7 @@ subgraph cluster_ExperimentalReals {
     "experimental_reals/discrete"[
         label="discrete",
         URL="mathcomp.experimental_reals.discrete.html",
-        fillcolor=1
+        fillcolor=cyan
     ]
 }
   "classical/boolp" -> "experimental_reals/discrete";
@@ -258,7 +258,7 @@ subgraph cluster_ExperimentalReals {
     "experimental_reals/realseq"[
         label="realseq",
         URL="mathcomp.experimental_reals.realseq.html",
-        fillcolor=1
+        fillcolor=cyan
     ]
 }
   "classical/boolp" -> "experimental_reals/realseq";
@@ -273,7 +273,7 @@ subgraph cluster_ExperimentalReals {
     "experimental_reals/realsum"[
         label="realsum",
         URL="mathcomp.experimental_reals.realsum.html",
-        fillcolor=1
+        fillcolor=cyan
     ]
 }
   "classical/boolp" -> "experimental_reals/realsum";
@@ -294,7 +294,7 @@ subgraph cluster_ExperimentalReals {
     "experimental_reals/distr"[
         label="distr",
         URL="mathcomp.experimental_reals.distr.html",
-        fillcolor=1
+        fillcolor=cyan
     ]
 }
   "classical/boolp" -> "experimental_reals/distr";
@@ -310,7 +310,7 @@ subgraph cluster_Reals {
     "reals_stdlib/Rstruct"[
         label="Rstruct",
         URL="mathcomp.reals_stdlib.Rstruct.html",
-        fillcolor=2
+        fillcolor=lightskyblue
     ]
 }
   "classical/boolp" -> "reals_stdlib/Rstruct";
@@ -321,7 +321,7 @@ subgraph cluster_Reals {
     "reals_stdlib/nsatz_realtype"[
         label="nsatz_realtype",
         URL="mathcomp.reals_stdlib.nsatz_realtype.html",
-        fillcolor=2
+        fillcolor=lightskyblue
     ]
 }
   "classical/boolp" -> "reals_stdlib/nsatz_realtype";
@@ -332,7 +332,7 @@ subgraph cluster_Analysis {
     "theories/ereal"[
         label="ereal",
         URL="mathcomp.analysis.ereal.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/ereal";
@@ -350,7 +350,7 @@ subgraph cluster_Analysis {
     "theories/landau"[
         label="landau",
         URL="mathcomp.analysis.landau.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/landau";
@@ -365,7 +365,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/topology"[
         label="topology",
         URL="mathcomp.analysis.topology_theory.topology.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "theories/topology_theory/bool_topology" -> "theories/topology_theory/topology";
@@ -395,7 +395,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/bool_topology"[
         label="bool_topology",
         URL="mathcomp.analysis.topology_theory.bool_topology.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/bool_topology";
@@ -411,7 +411,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/compact"[
         label="compact",
         URL="mathcomp.analysis.topology_theory.compact.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/compact";
@@ -424,7 +424,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/connected"[
         label="connected",
         URL="mathcomp.analysis.topology_theory.connected.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/connected";
@@ -434,7 +434,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/matrix_topology"[
         label="matrix_topology",
         URL="mathcomp.analysis.topology_theory.matrix_topology.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/matrix_topology";
@@ -446,7 +446,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/nat_topology"[
         label="nat_topology",
         URL="mathcomp.analysis.topology_theory.nat_topology.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/nat_topology";
@@ -462,7 +462,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/order_topology"[
         label="order_topology",
         URL="mathcomp.analysis.topology_theory.order_topology.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/order_topology";
@@ -476,7 +476,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/product_topology"[
         label="product_topology",
         URL="mathcomp.analysis.topology_theory.product_topology.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/product_topology";
@@ -490,7 +490,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/pseudometric_structure"[
         label="pseudometric_structure",
         URL="mathcomp.analysis.topology_theory.pseudometric_structure.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/pseudometric_structure";
@@ -502,7 +502,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/subspace_topology"[
         label="subspace_topology",
         URL="mathcomp.analysis.topology_theory.subspace_topology.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/subspace_topology";
@@ -519,7 +519,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/subtype_topology"[
         label="subtype_topology",
         URL="mathcomp.analysis.topology_theory.subtype_topology.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/subtype_topology";
@@ -537,7 +537,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/supremum_topology"[
         label="supremum_topology",
         URL="mathcomp.analysis.topology_theory.supremum_topology.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/supremum_topology";
@@ -548,7 +548,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/topology_structure"[
         label="topology_structure",
         URL="mathcomp.analysis.topology_theory.topology_structure.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/topology_structure";
@@ -558,7 +558,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/uniform_structure"[
         label="uniform_structure",
         URL="mathcomp.analysis.topology_theory.uniform_structure.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/uniform_structure";
@@ -569,7 +569,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/weak_topology"[
         label="weak_topology",
         URL="mathcomp.analysis.topology_theory.weak_topology.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/weak_topology";
@@ -584,7 +584,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/initial_topology"[
         label="initial_topology",
         URL="mathcomp.analysis.topology_theory.initial_topology.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/initial_topology";
@@ -600,7 +600,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/num_topology"[
         label="num_topology",
         URL="mathcomp.analysis.topology_theory.num_topology.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/num_topology";
@@ -616,7 +616,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/quotient_topology"[
         label="quotient_topology",
         URL="mathcomp.analysis.topology_theory.quotient_topology.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/quotient_topology";
@@ -626,7 +626,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/one_point_compactification"[
         label="one_point_compactification",
         URL="mathcomp.analysis.topology_theory.one_point_compactification.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/one_point_compactification";
@@ -640,7 +640,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/sigT_topology"[
         label="sigT_topology",
         URL="mathcomp.analysis.topology_theory.sigT_topology.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/sigT_topology";
@@ -653,7 +653,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/discrete_topology"[
         label="discrete_topology",
         URL="mathcomp.analysis.topology_theory.discrete_topology.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/all_classical" -> "theories/topology_theory/discrete_topology";
@@ -668,7 +668,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/separation_axioms"[
         label="separation_axioms",
         URL="mathcomp.analysis.topology_theory.separation_axioms.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/boolp" -> "theories/topology_theory/separation_axioms";
@@ -697,7 +697,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/metric_structure"[
         label="metric_structure",
         URL="mathcomp.analysis.topology_theory.metric_structure.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/boolp" -> "theories/topology_theory/metric_structure";
@@ -716,7 +716,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/function_spaces"[
         label="function_spaces",
         URL="mathcomp.analysis.topology_theory.function_spaces.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/boolp" -> "theories/topology_theory/function_spaces";
@@ -741,7 +741,7 @@ subgraph cluster_Topology {
     "theories/topology_theory/edist"[
         label="edist",
         URL="mathcomp.analysis.topology_theory.edist.html",
-        fillcolor=4
+        fillcolor=lightpink
     ]
 }
   "classical/boolp" -> "theories/topology_theory/edist";
@@ -762,7 +762,7 @@ subgraph cluster_Topology {
     "theories/homotopy_theory/homotopy"[
         label="homotopy",
         URL="mathcomp.analysis.homotopy_theory.homotopy.html",
-        fillcolor=7
+        fillcolor=lightcoral
     ]
 }
   "theories/homotopy_theory/continuous_path" -> "theories/homotopy_theory/homotopy";
@@ -772,7 +772,7 @@ subgraph cluster_Topology {
     "theories/homotopy_theory/wedge_sigT"[
         label="wedge_sigT",
         URL="mathcomp.analysis.homotopy_theory.wedge_sigT.html",
-        fillcolor=7
+        fillcolor=lightcoral
     ]
 }
   "classical/boolp" -> "theories/homotopy_theory/wedge_sigT";
@@ -788,7 +788,7 @@ subgraph cluster_Topology {
     "theories/homotopy_theory/continuous_path"[
         label="continuous_path",
         URL="mathcomp.analysis.homotopy_theory.continuous_path.html",
-        fillcolor=7
+        fillcolor=lightcoral
     ]
 }
   "classical/boolp" -> "theories/homotopy_theory/continuous_path";
@@ -804,7 +804,7 @@ subgraph cluster_Analysis {
     "theories/ess_sup_inf"[
         label="ess_sup_inf",
         URL="mathcomp.analysis.ess_sup_inf.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/ess_sup_inf";
@@ -822,7 +822,7 @@ subgraph cluster_Analysis {
     "theories/cantor"[
         label="cantor",
         URL="mathcomp.analysis.cantor.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/cantor";
@@ -837,7 +837,7 @@ subgraph cluster_Normedtype {
     "theories/normedtype_theory/num_normedtype"[
         label="num_normedtype",
         URL="mathcomp.analysis.normedtype_theory.num_normedtype.html",
-        fillcolor=9
+        fillcolor=lightgreen
     ]
 }
   "classical/boolp" -> "theories/normedtype_theory/num_normedtype";
@@ -854,7 +854,7 @@ subgraph cluster_Normedtype {
     "theories/normedtype_theory/matrix_normedtype"[
         label="matrix_normedtype",
         URL="mathcomp.analysis.normedtype_theory.matrix_normedtype.html",
-        fillcolor=9
+        fillcolor=lightgreen
     ]
 }
   "classical/boolp" -> "theories/normedtype_theory/matrix_normedtype";
@@ -871,7 +871,7 @@ subgraph cluster_Normedtype {
     "theories/normedtype_theory/ereal_normedtype"[
         label="ereal_normedtype",
         URL="mathcomp.analysis.normedtype_theory.ereal_normedtype.html",
-        fillcolor=9
+        fillcolor=lightgreen
     ]
 }
   "classical/boolp" -> "theories/normedtype_theory/ereal_normedtype";
@@ -886,7 +886,7 @@ subgraph cluster_Normedtype {
     "theories/normedtype_theory/pseudometric_normed_Zmodule"[
         label="pseudometric_normed_Zmodule",
         URL="mathcomp.analysis.normedtype_theory.pseudometric_normed_Zmodule.html",
-        fillcolor=9
+        fillcolor=lightgreen
     ]
 }
   "classical/boolp" -> "theories/normedtype_theory/pseudometric_normed_Zmodule";
@@ -904,7 +904,7 @@ subgraph cluster_Normedtype {
     "theories/normedtype_theory/tvs"[
         label="tvs",
         URL="mathcomp.analysis.normedtype_theory.tvs.html",
-        fillcolor=9
+        fillcolor=lightgreen
     ]
 }
   "classical/boolp" -> "theories/normedtype_theory/tvs";
@@ -924,7 +924,7 @@ subgraph cluster_Normedtype {
     "theories/normedtype_theory/normed_module"[
         label="normed_module",
         URL="mathcomp.analysis.normedtype_theory.normed_module.html",
-        fillcolor=9
+        fillcolor=lightgreen
     ]
 }
   "classical/boolp" -> "theories/normedtype_theory/normed_module";
@@ -948,7 +948,7 @@ subgraph cluster_Normedtype {
     "theories/normedtype_theory/complete_normed_module"[
         label="complete_normed_module",
         URL="mathcomp.analysis.normedtype_theory.complete_normed_module.html",
-        fillcolor=9
+        fillcolor=lightgreen
     ]
 }
   "classical/boolp" -> "theories/normedtype_theory/complete_normed_module";
@@ -963,7 +963,7 @@ subgraph cluster_Normedtype {
     "theories/normedtype_theory/urysohn"[
         label="urysohn",
         URL="mathcomp.analysis.normedtype_theory.urysohn.html",
-        fillcolor=9
+        fillcolor=lightgreen
     ]
 }
   "classical/boolp" -> "theories/normedtype_theory/urysohn";
@@ -982,7 +982,7 @@ subgraph cluster_Normedtype {
     "theories/normedtype_theory/vitali_lemma"[
         label="vitali_lemma",
         URL="mathcomp.analysis.normedtype_theory.vitali_lemma.html",
-        fillcolor=9
+        fillcolor=lightgreen
     ]
 }
   "classical/boolp" -> "theories/normedtype_theory/vitali_lemma";
@@ -1003,7 +1003,7 @@ subgraph cluster_Normedtype {
     "theories/normedtype_theory/normedtype"[
         label="normedtype",
         URL="mathcomp.analysis.normedtype_theory.normedtype.html",
-        fillcolor=9
+        fillcolor=lightgreen
     ]
 }
   "reals/real_interval" -> "theories/normedtype_theory/normedtype";
@@ -1021,7 +1021,7 @@ subgraph cluster_FunctionalAnalysis {
     "theories/functional_analysis/hahn_banach_theorem"[
         label="hahn_banach_theorem",
         URL="mathcomp.analysis.functional_analysis.hahn_banach_theorem.html",
-        fillcolor=3
+        fillcolor=chartreuse
     ]
 }
   "classical/boolp" -> "theories/functional_analysis/hahn_banach_theorem";
@@ -1038,7 +1038,7 @@ subgraph cluster_Analysis {
     "theories/sequences"[
         label="sequences",
         URL="mathcomp.analysis.sequences.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/sequences";
@@ -1059,7 +1059,7 @@ subgraph cluster_Analysis {
     "theories/realfun"[
         label="realfun",
         URL="mathcomp.analysis.realfun.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/realfun";
@@ -1083,7 +1083,7 @@ subgraph cluster_Analysis {
     "theories/exp"[
         label="exp",
         URL="mathcomp.analysis.exp.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/exp";
@@ -1105,7 +1105,7 @@ subgraph cluster_ElementaryFunctions {
     "theories/elementary_functions/trigonometry_functions"[
         label="trigonometry_functions",
         URL="mathcomp.analysis.elementary_functions.trigonometry_functions.html",
-        fillcolor=6
+        fillcolor=plum
     ]
 }
   "classical/boolp" -> "theories/elementary_functions/trigonometry_functions";
@@ -1126,7 +1126,7 @@ subgraph cluster_ElementaryFunctions {
     "theories/elementary_functions/trigonometry_integral"[
         label="trigonometry_integral",
         URL="mathcomp.analysis.elementary_functions.trigonometry_integral.html",
-        fillcolor=6
+        fillcolor=plum
     ]
 }
   "classical/boolp" -> "theories/elementary_functions/trigonometry_integral";
@@ -1152,7 +1152,7 @@ subgraph cluster_ElementaryFunctions {
     "theories/elementary_functions/trigo"[
         label="trigo",
         URL="mathcomp.analysis.elementary_functions.trigo.html",
-        fillcolor=6
+        fillcolor=plum
     ]
 }
   "theories/elementary_functions/trigonometry_functions" -> "theories/elementary_functions/trigo";
@@ -1162,7 +1162,7 @@ subgraph cluster_Analysis {
     "theories/esum"[
         label="esum",
         URL="mathcomp.analysis.esum.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/esum";
@@ -1182,7 +1182,7 @@ subgraph cluster_Analysis {
     "theories/derive"[
         label="derive",
         URL="mathcomp.analysis.derive.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/derive";
@@ -1200,7 +1200,7 @@ subgraph cluster_Analysis {
     "theories/numfun"[
         label="numfun",
         URL="mathcomp.analysis.numfun.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/numfun";
@@ -1220,7 +1220,7 @@ subgraph cluster_Measure {
     "theories/measure_theory/measurable_structure"[
         label="measurable_structure",
         URL="mathcomp.analysis.measure_theory.measurable_structure.html",
-        fillcolor=11
+        fillcolor=orange
     ]
 }
   "classical/boolp" -> "theories/measure_theory/measurable_structure";
@@ -1234,7 +1234,7 @@ subgraph cluster_Measure {
     "theories/measure_theory/measure_function"[
         label="measure_function",
         URL="mathcomp.analysis.measure_theory.measure_function.html",
-        fillcolor=11
+        fillcolor=orange
     ]
 }
   "classical/boolp" -> "theories/measure_theory/measure_function";
@@ -1256,7 +1256,7 @@ subgraph cluster_Measure {
     "theories/measure_theory/counting_measure"[
         label="counting_measure",
         URL="mathcomp.analysis.measure_theory.counting_measure.html",
-        fillcolor=11
+        fillcolor=orange
     ]
 }
   "classical/boolp" -> "theories/measure_theory/counting_measure";
@@ -1275,7 +1275,7 @@ subgraph cluster_Measure {
     "theories/measure_theory/dirac_measure"[
         label="dirac_measure",
         URL="mathcomp.analysis.measure_theory.dirac_measure.html",
-        fillcolor=11
+        fillcolor=orange
     ]
 }
   "classical/boolp" -> "theories/measure_theory/dirac_measure";
@@ -1297,7 +1297,7 @@ subgraph cluster_Measure {
     "theories/measure_theory/probability_measure"[
         label="probability_measure",
         URL="mathcomp.analysis.measure_theory.probability_measure.html",
-        fillcolor=11
+        fillcolor=orange
     ]
 }
   "classical/boolp" -> "theories/measure_theory/probability_measure";
@@ -1316,7 +1316,7 @@ subgraph cluster_Measure {
     "theories/measure_theory/measure_negligible"[
         label="measure_negligible",
         URL="mathcomp.analysis.measure_theory.measure_negligible.html",
-        fillcolor=11
+        fillcolor=orange
     ]
 }
   "classical/boolp" -> "theories/measure_theory/measure_negligible";
@@ -1337,7 +1337,7 @@ subgraph cluster_Measure {
     "theories/measure_theory/measure_extension"[
         label="measure_extension",
         URL="mathcomp.analysis.measure_theory.measure_extension.html",
-        fillcolor=11
+        fillcolor=orange
     ]
 }
   "classical/boolp" -> "theories/measure_theory/measure_extension";
@@ -1359,7 +1359,7 @@ subgraph cluster_Measure {
     "theories/measure_theory/measurable_function"[
         label="measurable_function",
         URL="mathcomp.analysis.measure_theory.measurable_function.html",
-        fillcolor=11
+        fillcolor=orange
     ]
 }
   "classical/boolp" -> "theories/measure_theory/measurable_function";
@@ -1372,7 +1372,7 @@ subgraph cluster_Measure {
     "theories/measure_theory/signed_measure"[
         label="signed_measure",
         URL="mathcomp.analysis.measure_theory.signed_measure.html",
-        fillcolor=11
+        fillcolor=orange
     ]
 }
   "classical/boolp" -> "theories/measure_theory/signed_measure";
@@ -1399,7 +1399,7 @@ subgraph cluster_Measure {
     "theories/measure_theory/measure"[
         label="measure",
         URL="mathcomp.analysis.measure_theory.measure.html",
-        fillcolor=11
+        fillcolor=orange
     ]
 }
   "theories/measure_theory/counting_measure" -> "theories/measure_theory/measure";
@@ -1416,7 +1416,7 @@ subgraph cluster_RealMeasure {
     "theories/real_measure/lebesgue_stieltjes_measure"[
         label="lebesgue_stieltjes_measure",
         URL="mathcomp.analysis.real_measure.lebesgue_stieltjes_measure.html",
-        fillcolor=11
+        fillcolor=coral
     ]
 }
   "classical/boolp" -> "theories/real_measure/lebesgue_stieltjes_measure";
@@ -1437,7 +1437,7 @@ subgraph cluster_RealMeasure {
     "theories/real_measure/lebesgue_measure"[
         label="lebesgue_measure",
         URL="mathcomp.analysis.real_measure.lebesgue_measure.html",
-        fillcolor=11
+        fillcolor=coral
     ]
 }
   "classical/boolp" -> "theories/real_measure/lebesgue_measure";
@@ -1461,7 +1461,7 @@ subgraph cluster_RealMeasure {
     "theories/real_measure/measurable_realfun"[
         label="measurable_realfun",
         URL="mathcomp.analysis.real_measure.measurable_realfun.html",
-        fillcolor=11
+        fillcolor=coral
     ]
 }
   "classical/boolp" -> "theories/real_measure/measurable_realfun";
@@ -1483,7 +1483,7 @@ subgraph cluster_RealMeasure {
     "theories/real_measure/real_measure"[
         label="real_measure",
         URL="mathcomp.analysis.real_measure.real_measure.html",
-        fillcolor=11
+        fillcolor=coral
     ]
 }
   "theories/real_measure/lebesgue_measure" -> "theories/real_measure/real_measure";
@@ -1494,7 +1494,7 @@ subgraph cluster_Analysis {
     "theories/borel_hierarchy"[
         label="borel_hierarchy",
         URL="mathcomp.analysis.borel_hierarchy.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/borel_hierarchy";
@@ -1512,7 +1512,7 @@ subgraph cluster_LebesgueIntegral {
     "theories/lebesgue_integral_theory/simple_functions"[
         label="simple_functions",
         URL="mathcomp.analysis.lebesgue_integral_theory.simple_functions.html",
-        fillcolor=10
+        fillcolor=lightyellow
     ]
 }
   "classical/boolp" -> "theories/lebesgue_integral_theory/simple_functions";
@@ -1536,7 +1536,7 @@ subgraph cluster_LebesgueIntegral {
     "theories/lebesgue_integral_theory/lebesgue_integral_definition"[
         label="lebesgue_integral_definition",
         URL="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_definition.html",
-        fillcolor=10
+        fillcolor=lightyellow
     ]
 }
   "classical/boolp" -> "theories/lebesgue_integral_theory/lebesgue_integral_definition";
@@ -1561,7 +1561,7 @@ subgraph cluster_LebesgueIntegral {
     "theories/lebesgue_integral_theory/measurable_fun_approximation"[
         label="measurable_fun_approximation",
         URL="mathcomp.analysis.lebesgue_integral_theory.measurable_fun_approximation.html",
-        fillcolor=10
+        fillcolor=lightyellow
     ]
 }
   "classical/boolp" -> "theories/lebesgue_integral_theory/measurable_fun_approximation";
@@ -1588,7 +1588,7 @@ subgraph cluster_LebesgueIntegral {
     "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence"[
         label="lebesgue_integral_monotone_convergence",
         URL="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_monotone_convergence.html",
-        fillcolor=10
+        fillcolor=lightyellow
     ]
 }
   "classical/boolp" -> "theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence";
@@ -1616,7 +1616,7 @@ subgraph cluster_LebesgueIntegral {
     "theories/lebesgue_integral_theory/lebesgue_integral_nonneg"[
         label="lebesgue_integral_nonneg",
         URL="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_nonneg.html",
-        fillcolor=10
+        fillcolor=lightyellow
     ]
 }
   "classical/boolp" -> "theories/lebesgue_integral_theory/lebesgue_integral_nonneg";
@@ -1645,7 +1645,7 @@ subgraph cluster_LebesgueIntegral {
     "theories/lebesgue_integral_theory/lebesgue_integrable"[
         label="lebesgue_integrable",
         URL="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integrable.html",
-        fillcolor=10
+        fillcolor=lightyellow
     ]
 }
   "classical/boolp" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
@@ -1675,7 +1675,7 @@ subgraph cluster_LebesgueIntegral {
     "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence"[
         label="lebesgue_integral_dominated_convergence",
         URL="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_dominated_convergence.html",
-        fillcolor=10
+        fillcolor=lightyellow
     ]
 }
   "classical/boolp" -> "theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence";
@@ -1705,7 +1705,7 @@ subgraph cluster_LebesgueIntegral {
     "theories/lebesgue_integral_theory/lebesgue_integral_under"[
         label="lebesgue_integral_under",
         URL="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_under.html",
-        fillcolor=10
+        fillcolor=lightyellow
     ]
 }
   "classical/boolp" -> "theories/lebesgue_integral_theory/lebesgue_integral_under";
@@ -1738,7 +1738,7 @@ subgraph cluster_LebesgueIntegral {
     "theories/lebesgue_integral_theory/lebesgue_Rintegral"[
         label="lebesgue_Rintegral",
         URL="mathcomp.analysis.lebesgue_integral_theory.lebesgue_Rintegral.html",
-        fillcolor=10
+        fillcolor=lightyellow
     ]
 }
   "classical/boolp" -> "theories/lebesgue_integral_theory/lebesgue_Rintegral";
@@ -1769,7 +1769,7 @@ subgraph cluster_LebesgueIntegral {
     "theories/lebesgue_integral_theory/lebesgue_integral_fubini"[
         label="lebesgue_integral_fubini",
         URL="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_fubini.html",
-        fillcolor=10
+        fillcolor=lightyellow
     ]
 }
   "classical/boolp" -> "theories/lebesgue_integral_theory/lebesgue_integral_fubini";
@@ -1799,7 +1799,7 @@ subgraph cluster_LebesgueIntegral {
     "theories/lebesgue_integral_theory/lebesgue_integral_differentiation"[
         label="lebesgue_integral_differentiation",
         URL="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral_differentiation.html",
-        fillcolor=10
+        fillcolor=lightyellow
     ]
 }
   "classical/boolp" -> "theories/lebesgue_integral_theory/lebesgue_integral_differentiation";
@@ -1831,7 +1831,7 @@ subgraph cluster_LebesgueIntegral {
     "theories/lebesgue_integral_theory/lebesgue_integral"[
         label="lebesgue_integral",
         URL="mathcomp.analysis.lebesgue_integral_theory.lebesgue_integral.html",
-        fillcolor=10
+        fillcolor=lightyellow
     ]
 }
   "theories/lebesgue_integral_theory/counting_lebesgue" -> "theories/lebesgue_integral_theory/lebesgue_integral";
@@ -1852,7 +1852,7 @@ subgraph cluster_LebesgueIntegral {
     "theories/lebesgue_integral_theory/radon_nikodym"[
         label="radon_nikodym",
         URL="mathcomp.analysis.lebesgue_integral_theory.radon_nikodym.html",
-        fillcolor=10
+        fillcolor=lightyellow
     ]
 }
   "classical/boolp" -> "theories/lebesgue_integral_theory/radon_nikodym";
@@ -1884,7 +1884,7 @@ subgraph cluster_LebesgueIntegral {
     "theories/lebesgue_integral_theory/giry"[
         label="giry",
         URL="mathcomp.analysis.lebesgue_integral_theory.giry.html",
-        fillcolor=10
+        fillcolor=lightyellow
     ]
 }
   "classical/boolp" -> "theories/lebesgue_integral_theory/giry";
@@ -1912,7 +1912,7 @@ subgraph cluster_LebesgueIntegral {
     "theories/lebesgue_integral_theory/counting_lebesgue"[
         label="counting_lebesgue",
         URL="mathcomp.analysis.lebesgue_integral_theory.counting_lebesgue.html",
-        fillcolor=10
+        fillcolor=lightyellow
     ]
 }
   "classical/boolp" -> "theories/lebesgue_integral_theory/counting_lebesgue";
@@ -1936,7 +1936,7 @@ subgraph cluster_Analysis {
     "theories/ftc"[
         label="ftc",
         URL="mathcomp.analysis.ftc.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/ftc";
@@ -1963,7 +1963,7 @@ subgraph cluster_Analysis {
     "theories/hoelder"[
         label="hoelder",
         URL="mathcomp.analysis.hoelder.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/hoelder";
@@ -1989,7 +1989,7 @@ subgraph cluster_Probability {
     "theories/probability_theory/random_variable"[
         label="random_variable",
         URL="mathcomp.analysis.probability_theory.random_variable.html",
-        fillcolor=12
+        fillcolor=gold
     ]
 }
   "classical/boolp" -> "theories/probability_theory/random_variable";
@@ -2017,7 +2017,7 @@ subgraph cluster_Probability {
     "theories/probability_theory/bernoulli_distribution"[
         label="bernoulli_distribution",
         URL="mathcomp.analysis.probability_theory.bernoulli_distribution.html",
-        fillcolor=12
+        fillcolor=gold
     ]
 }
   "classical/boolp" -> "theories/probability_theory/bernoulli_distribution";
@@ -2042,7 +2042,7 @@ subgraph cluster_Probability {
     "theories/probability_theory/binomial_distribution"[
         label="binomial_distribution",
         URL="mathcomp.analysis.probability_theory.binomial_distribution.html",
-        fillcolor=12
+        fillcolor=gold
     ]
 }
   "classical/boolp" -> "theories/probability_theory/binomial_distribution";
@@ -2064,7 +2064,7 @@ subgraph cluster_Probability {
     "theories/probability_theory/uniform_distribution"[
         label="uniform_distribution",
         URL="mathcomp.analysis.probability_theory.uniform_distribution.html",
-        fillcolor=12
+        fillcolor=gold
     ]
 }
   "classical/boolp" -> "theories/probability_theory/uniform_distribution";
@@ -2085,7 +2085,7 @@ subgraph cluster_Probability {
     "theories/probability_theory/normal_distribution"[
         label="normal_distribution",
         URL="mathcomp.analysis.probability_theory.normal_distribution.html",
-        fillcolor=12
+        fillcolor=gold
     ]
 }
   "classical/boolp" -> "theories/probability_theory/normal_distribution";
@@ -2112,7 +2112,7 @@ subgraph cluster_Probability {
     "theories/probability_theory/exponential_distribution"[
         label="exponential_distribution",
         URL="mathcomp.analysis.probability_theory.exponential_distribution.html",
-        fillcolor=12
+        fillcolor=gold
     ]
 }
   "classical/boolp" -> "theories/probability_theory/exponential_distribution";
@@ -2135,7 +2135,7 @@ subgraph cluster_Probability {
     "theories/probability_theory/poisson_distribution"[
         label="poisson_distribution",
         URL="mathcomp.analysis.probability_theory.poisson_distribution.html",
-        fillcolor=12
+        fillcolor=gold
     ]
 }
   "classical/boolp" -> "theories/probability_theory/poisson_distribution";
@@ -2155,7 +2155,7 @@ subgraph cluster_Probability {
     "theories/probability_theory/beta_distribution"[
         label="beta_distribution",
         URL="mathcomp.analysis.probability_theory.beta_distribution.html",
-        fillcolor=12
+        fillcolor=gold
     ]
 }
   "classical/boolp" -> "theories/probability_theory/beta_distribution";
@@ -2182,7 +2182,7 @@ subgraph cluster_Probability {
     "theories/probability_theory/probability"[
         label="probability",
         URL="mathcomp.analysis.probability_theory.probability.html",
-        fillcolor=12
+        fillcolor=gold
     ]
 }
   "theories/probability_theory/bernoulli_distribution" -> "theories/probability_theory/probability";
@@ -2199,7 +2199,7 @@ subgraph cluster_Probability {
     "theories/probability_theory/independence"[
         label="independence",
         URL="mathcomp.analysis.probability_theory.independence.html",
-        fillcolor=12
+        fillcolor=gold
     ]
 }
   "classical/boolp" -> "theories/probability_theory/independence";
@@ -2227,7 +2227,7 @@ subgraph cluster_Analysis {
     "theories/convex"[
         label="convex",
         URL="mathcomp.analysis.convex.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/convex";
@@ -2241,7 +2241,7 @@ subgraph cluster_Analysis {
     "theories/charge"[
         label="charge",
         URL="mathcomp.analysis.charge.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/charge";
@@ -2269,7 +2269,7 @@ subgraph cluster_Analysis {
     "theories/kernel"[
         label="kernel",
         URL="mathcomp.analysis.kernel.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/kernel";
@@ -2292,7 +2292,7 @@ subgraph cluster_Analysis {
     "theories/pi_irrational"[
         label="pi_irrational",
         URL="mathcomp.analysis.pi_irrational.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/pi_irrational";
@@ -2317,7 +2317,7 @@ subgraph cluster_Analysis {
     "theories/gauss_integral"[
         label="gauss_integral",
         URL="mathcomp.analysis.gauss_integral.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/gauss_integral";
@@ -2344,7 +2344,7 @@ subgraph cluster_Analysis {
     "theories/all_analysis"[
         label="all_analysis",
         URL="mathcomp.analysis.all_analysis.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "theories/cantor" -> "theories/all_analysis";
@@ -2375,7 +2375,7 @@ subgraph cluster_Analysis {
     "theories/showcase/summability"[
         label="summability",
         URL="mathcomp.analysis.showcase.summability.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/showcase/summability";
@@ -2389,7 +2389,7 @@ subgraph cluster_Analysis {
     "theories/showcase/pnt"[
         label="pnt",
         URL="mathcomp.analysis.showcase.pnt.html",
-        fillcolor=5
+        fillcolor=aquamarine
     ]
 }
   "classical/boolp" -> "theories/showcase/pnt";
@@ -2404,7 +2404,7 @@ subgraph cluster_AnalysisStdlib {
     "analysis_stdlib/Rstruct_topology"[
         label="Rstruct_topology",
         URL="mathcomp.analysis_stdlib.Rstruct_topology.html",
-        fillcolor=5
+        fillcolor=lightpink
     ]
 }
   "classical/boolp" -> "analysis_stdlib/Rstruct_topology";
@@ -2421,7 +2421,7 @@ subgraph cluster_AnalysisStdlib {
     "analysis_stdlib/showcase/uniform_bigO"[
         label="uniform_bigO",
         URL="mathcomp.analysis_stdlib/showcase.uniform_bigO.html",
-        fillcolor=5
+        fillcolor=lightpink
     ]
 }
   "analysis_stdlib/Rstruct_topology" -> "analysis_stdlib/showcase/uniform_bigO";

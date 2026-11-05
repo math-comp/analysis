@@ -158,6 +158,20 @@ div.ssrdoc {
     background-color: #f2f1f1;
 }
 
+div.md table {
+    border-collapse: collapse;
+}
+div.md th,
+div.md td {
+    border-left: 1px solid #888;
+    border-right: 1px solid #888;
+    padding: 2px 10px;
+}
+div.md th {
+    background-color: #ddd;
+    font-weight: bold;
+}
+
 .warning {
     color: #cd0000;
 }
