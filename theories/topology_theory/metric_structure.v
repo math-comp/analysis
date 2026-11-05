@@ -21,6 +21,8 @@ From mathcomp Require Import topology_structure uniform_structure
 (* ```                                                                        *)
 (******************************************************************************)
 
+Reserved Notation "d .-mdist" (at level 4, format "d .-mdist").
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -31,7 +33,8 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-HB.mixin Record PseudoMetric_isMetric (K : numDomainType) M & PseudoMetric K M := {
+HB.mixin Record PseudoMetric_isMetric d (K : numDomainType) M 
+  & PseudoMetric d K M := {
   mdist : M -> M -> K ;
   mdist_ge0 : forall x y, 0 <= mdist x y ;
   mdist_positivity : forall x y, mdist x y = 0 -> x = y;
@@ -39,13 +42,21 @@ HB.mixin Record PseudoMetric_isMetric (K : numDomainType) M & PseudoMetric K M :
 }.
 
 #[short(type="metricType")]
-HB.structure Definition Metric (K : numDomainType) :=
-  { M of PseudoMetric K M & PseudoMetric_isMetric K M }.
+HB.structure Definition Metric d (K : numDomainType) :=
+  { M of PseudoMetric d K M & PseudoMetric_isMetric d K M }.
+
+Module ExplicitNbhsDisplays.
+Export separation_axioms.ExplicitNbhsDisplays.
+
+Notation "d .-mdist" := (@mdist d _ _) : fdisp_scope.
+Notation "'mdist'" := (@mdist default_fdisp _ _) (only printing) : fdisp_scope.
+
+End ExplicitNbhsDisplays.
 
 Section metric_numDomainType.
-Context {R : numDomainType} (T : metricType R).
+Context {d} {R : numDomainType} (T : metricType d R).
 
-Let dist := @mdist R T.
+Let dist := @mdist d R T.
 
 Lemma metric_sym x y : dist x y = dist y x.
 Proof.
@@ -53,11 +64,11 @@ have cxy : dist x y >=< dist y x.
   by apply: real_comparable; apply: ger0_real; exact: mdist_ge0.
 apply/eqP; rewrite eq_le; apply/andP; split.
 - rewrite comparable_leNgt//; apply/negP => xy.
-  have := @ball_sym _ _ y x (dist x y); rewrite !ballEmdist/= => /(_ xy).
+  have := @ball_sym _ _ _ y x (dist x y); rewrite !ballEmdist/= => /(_ xy).
   by rewrite ltxx.
 - rewrite comparable_leNgt//; first by rewrite comparable_sym.
   apply/negP => xy.
-  have := @ball_sym _ _ x y (dist y x); rewrite !ballEmdist/= => /(_ xy).
+  have := @ball_sym _ _ _ x y (dist y x); rewrite !ballEmdist/= => /(_ xy).
   by rewrite ltxx.
 Qed.
 
@@ -78,9 +89,9 @@ Qed.
 End metric_numDomainType.
 
 Section metric_numFieldType.
-Context {R : numFieldType} (T : metricType R).
+Context {d} {R : numFieldType} (T : metricType d R).
 
-Let dist := @mdist R T.
+Let dist := @mdist d R T.
 
 Lemma metric_triangle x y z : dist x z <= dist x y + dist y z.
 Proof.
@@ -110,7 +121,7 @@ Qed.
 End metric_numFieldType.
 
 Section prod_metric.
-Context {K : numDomainType} (T U : metricType K).
+Context {d d'} {K : numDomainType} (T : metricType d K) (U : metricType d' K).
 
 Let M := (T * U)%type.
 
@@ -133,7 +144,7 @@ rewrite (surjective_pairing x) (surjective_pairing y).
 by congr pair; exact: mdist_positivity.
 Qed.
 
-Let ballEprod_mdist x d : ball x d = [set y | prod_mdist x y < d].
+Let ballEprod_mdist x e : ball x e = [set y | prod_mdist x y < e].
 Proof.
 apply/seteqP; split => [y []|y /= xyd].
   rewrite !ballEmdist/= /prod_mdist => b1 b2.
@@ -142,12 +153,13 @@ rewrite /ball/= /prod_ball/= !ballEmdist/=.
 by apply/andP; rewrite -comparable_gt_max.
 Qed.
 
-HB.instance Definition _ := PseudoMetric_isMetric.Build K (T * U)%type
+HB.instance Definition _ := PseudoMetric_isMetric.Build _ K (T * U)%type
   prod_mdist_ge0 prod_mdist_positivity ballEprod_mdist.
 
 End prod_metric.
 
-HB.factory Record isMetric (K : numFieldType) (M : Type) & Choice M := {
+HB.factory Record isMetric (d : fdisp_t) (K : numFieldType) (M : Type) 
+  & Choice M := {
   mdist : M -> M -> K ;
   mdistxx : forall x, mdist x x = 0 ;
   mdist_positivity : forall x y, mdist x y = 0 -> x = y ;
@@ -155,7 +167,7 @@ HB.factory Record isMetric (K : numFieldType) (M : Type) & Choice M := {
   mdist_triangle : forall y x z, mdist x z <= mdist x y + mdist y z
 }.
 
-HB.builders Context K M & isMetric K M.
+HB.builders Context d K M & isMetric d K M.
 
 Let ball (x : M) e : set M := [set y | mdist x y < e].
 
@@ -165,7 +177,7 @@ Let nbhs (x : M) : set_system M := nbhs_ ent x.
 
 Let nbhsE : nbhs = nbhs_ ent. Proof. by []. Qed.
 
-HB.instance Definition _ := hasNbhs.Build M nbhs.
+HB.instance Definition _ := hasNbhs.Build d M nbhs.
 
 Let ball_center x (e : K) : 0 < e -> ball x e x.
 Proof. by move=> e0; rewrite /ball/= mdistxx. Qed.
@@ -181,7 +193,7 @@ Qed.
 
 Let entourageE : ent = entourage_ ball. Proof. by []. Qed.
 
-HB.instance Definition _ := @Nbhs_isPseudoMetric.Build K M
+HB.instance Definition _ := @Nbhs_isPseudoMetric.Build _ K M
   ent nbhsE ball ball_center ball_sym ball_triangle entourageE.
 
 Let mdist_ge0 x y : 0 <= mdist x y.
@@ -190,9 +202,9 @@ rewrite -(@pmulrn_lge0 _ _ 2)// -(mdistxx x).
 by rewrite (le_trans (mdist_triangle y _ _))// mdist_sym -mulr2n.
 Qed.
 
-Let ballEmdist x d : ball x d = [set y | mdist x y < d]. Proof. by []. Qed.
+Let ballEmdist x e : ball x e = [set y | mdist x y < e]. Proof. by []. Qed.
 
-HB.instance Definition _ := PseudoMetric_isMetric.Build K M
+HB.instance Definition _ := PseudoMetric_isMetric.Build _ K M
   mdist_ge0 mdist_positivity ballEmdist.
 
 HB.end.
@@ -213,7 +225,7 @@ Let ballEmdist x d : ball x d = [set y | dist x y < d].
 Proof. by apply/seteqP; split => [|]/= A; rewrite /ball/= distrC. Qed.
 
 HB.instance Definition _ :=
-  @PseudoMetric_isMetric.Build R R^o dist dist_ge0 dist_positivity ballEmdist.
+  @PseudoMetric_isMetric.Build _ R R^o dist dist_ge0 dist_positivity ballEmdist.
 
 End numFieldType_metric.
 
@@ -224,12 +236,12 @@ from pseudoMetricNormedZmod
 to
 metricType *)
 Section metricType_numDomainType.
-Context {K : numDomainType} {V : metricType K}.
+Context {d} {K : numDomainType} {V : metricType d K}.
 
 Local Notation ball_mdist := (fun x d => [set y : V | mdist x y < d]).
 
 Lemma ball_mdistE : ball_mdist = ball.
-Proof. by apply/funext => x; apply/funext=> d; rewrite - ballEmdist. Qed.
+Proof. by apply/funext => ?; apply/funext=> ?; rewrite -ballEmdist. Qed.
 
 Local Notation nbhs_mdist := (nbhs_ball_ ball_mdist).
 
@@ -283,7 +295,7 @@ from
 pseudoMetricNormedZmodType
 to
 metricType *)
-Variables (R : numFieldType) (V : metricType R).
+Context d (R : numFieldType) (V : metricType d R).
 
 Lemma nbhsr0P (P : set V) x :
   (\forall y \near x, P y) <->
@@ -292,14 +304,14 @@ Proof.
 rewrite near_withinE.
 split.
   move => /nbhs_mdistP[/= _/posnumP[e] /(_ _) Px].
-  apply/(@nbhs_mdistP R R^o).
+  apply/(@nbhs_mdistP _ R R^o).
   exists e%:num => //= r /= re yr y xyr.
   apply: Px => /=.
   rewrite (le_lt_trans _ re)//.
   rewrite (le_trans xyr)//.
   by rewrite /mdist/= subr0 real_ler_norm// gtr0_real.
-move => /(@nbhs_mdistP R R^o)[/= _/posnumP[e] /(_ _) Px].
-apply/(@nbhs_mdistP R V).
+move => /(@nbhs_mdistP _ R R^o)[/= _/posnumP[e] /(_ _) Px].
+apply/(@nbhs_mdistP _ R V).
 exists (e%:num / 2) => //= r /= re; apply: (Px (e%:num / 2)) => //=.
   by rewrite /mdist/= subr0 gtr0_norm// ltr_pdivrMr// ltr_pMr// ltr1n.
 by rewrite ltW.
@@ -313,12 +325,12 @@ Let cvgrP {F : set_system V} {FF : Filter F} (y : V) : [<->
 Proof.
 tfae; first by move=> *; apply: cvgr_dist_le.
 - by move=> Fy; near do apply: Fy; apply: nbhs_right_gt.
-- move=> Fy; near=> e; near (0:R)^'+ => d; near=> x.
-  rewrite (@le_lt_trans _ _ d)//; first by near: x; near: d.
-  by near: d; apply: nbhs_right_lt; near: e; apply: nbhs_right_gt.
-- move=> Fy; apply/cvgrPdist_lt => e e_gt0; near (0:R)^'+ => d.
-  near=> x; rewrite (@lt_le_trans _ _ d)//; first by near: x; near: d.
-  by near: d; apply: nbhs_right_le.
+- move=> Fy; near=> e; near (0:R)^'+ => e'; near=> x.
+  rewrite (@le_lt_trans _ _ e')//; first by near: x; near: e'.
+  by near: e'; apply: nbhs_right_lt; near: e; apply: nbhs_right_gt.
+- move=> Fy; apply/cvgrPdist_lt => e e_gt0; near (0:R)^'+ => e'.
+  near=> x; rewrite (@lt_le_trans _ _ e')//; first by near: x; near: e'.
+  by near: e'; apply: nbhs_right_le.
 Unshelve. all: by end_near. Qed.
 
 Lemma cvgrPdist_le {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
@@ -368,7 +380,7 @@ Lemma real_cvgr_gt {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
 Proof.
 move=> yr Fy z zy; near=> x => fxr.
 rewrite -ltrN2 -(ltrD2l y) real_ltr_normlW// ?rpredB// distrC.
-by near: x; apply: (@metricType_numDomainType.cvgr_dist_lt _ R^o) => //; rewrite subr_gt0.
+by near: x; apply: (@metricType_numDomainType.cvgr_dist_lt _ _ R^o) => //; rewrite subr_gt0.
 Unshelve. all: by end_near. Qed.
 
 Lemma real_cvgr_ge {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
@@ -393,14 +405,14 @@ Lemma cvgr_lt f (y : R) :
   f @ F --> y -> forall z, z > y -> \forall t \near F, f t < z.
 Proof.
 move=> Fy z zy; near=> x; rewrite -(ltrD2r (- y)) ltr_normlW//.
-by near: x; apply: (@metricType_numDomainType.cvgr_dist_lt _ R^o) => //; rewrite subr_gt0.
+by near: x; apply: (@metricType_numDomainType.cvgr_dist_lt _ _ R^o) => //; rewrite subr_gt0.
 Unshelve. all: by end_near. Qed.
 
 Lemma cvgr_gt f (y : R) :
   f @ F --> y -> forall z, y > z -> \forall t \near F, f t > z.
 Proof.
 move=> Fy z zy; near=> x; rewrite -ltrN2 -(ltrD2l y) ltr_normlW// distrC.
-by near: x; apply: (@metricType_numDomainType.cvgr_dist_lt _ R^o) => //; rewrite subr_gt0.
+by near: x; apply: (@metricType_numDomainType.cvgr_dist_lt _ _ R^o) => //; rewrite subr_gt0.
 Unshelve. all: by end_near. Qed.
 
 Lemma cvgr_le f (y : R) :
@@ -419,7 +431,7 @@ Lemma squeeze_cvgr f g h : (\forall x \near F, f x <= g x <= h x) ->
   forall l : R, f @ F --> l -> h @ F --> l -> g @ F --> l.
 Proof.
 move=> fgh l lfa lga.
-apply/(@metricType_numDomainType.cvgrPdist_lt R R^o) => e e_gt0.
+apply/(@metricType_numDomainType.cvgrPdist_lt _ R R^o) => e e_gt0.
 near=> x; have /(_ _)/andP[//|fg gh] := near fgh x.
 rewrite ltr_distl (lt_le_trans _ fg) ?(le_lt_trans gh)//=.
   by near: x; apply: (cvgr_gt lfa); rewrite // gtrDl oppr_lt0.

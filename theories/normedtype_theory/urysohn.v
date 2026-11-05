@@ -39,12 +39,12 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section urysohn_separator.
-Context {T : uniformType} {R : realType}.
+Context {d} {T : uniformType d} {R : realType}.
 Context (A B : set T) (E : set (T * T)).
 Hypothesis entE : entourage E.
 Hypothesis AB0 : A `*` B `&` E = set0.
 
-Local Notation T' := [the pseudoMetricType R of gauge.type entE].
+Let T' : pseudoMetricType _ R := gauge.type entE.
 
 Local Lemma urysohn_separation : exists (f : T -> R),
   [/\ continuous f, range f `<=` `[0, 1],
@@ -52,7 +52,7 @@ Local Lemma urysohn_separation : exists (f : T -> R),
 Proof.
 have [eps exy] : exists (eps : {posnum R}),
     forall (x y : T'), A x -> B y -> ~ ball x eps%:num y.
-  have : @entourage T' E by exists O => /=.
+  have : @entourage _ T' E by exists O => /=.
   rewrite -entourage_ballE; case=> _/posnumP[eps] epsdiv; exists eps.
   move=> x y Ax By bxy; have divxy := epsdiv (x, y) bxy.
   by have : set0 (x, y) by rewrite -AB0; split.
@@ -61,12 +61,12 @@ have [->|/set0P[a A0]] := eqVneq A set0.
   - by move=> ? [? _ <-]; rewrite /= in_itv /=; apply/andP; split => //.
   - by rewrite image_set0.
   - by move=> ? [? ? <-].
-have dfin x : @edist_inf R T' A x \is a fin_num.
+have dfin x : @edist_inf _ R T' A x \is a fin_num.
   rewrite ge0_fin_numE ?edist_inf_ge0 //; apply: le_lt_trans.
     by apply: ereal_inf_lbound; exists a.
   rewrite -ge0_fin_numE ?edist_ge0 //; apply/edist_finP => /=; exists 2 => //.
   exact: countable_uniform.countable_uniform_bounded.
-pose f' := (fun z => fine (@edist_inf R T' A z)) \min (fun=> eps%:num).
+pose f' := (fun z => fine (@edist_inf _ R T' A z)) \min (fun=> eps%:num).
 pose f z := (f' z)/eps%:num; exists f; split.
 - move=> x; rewrite /f; apply: (@cvgM R T (nbhs x)) => //.
   suff : {for x, continuous (f' : T' -> R)}.
@@ -82,19 +82,19 @@ pose f z := (f' z)/eps%:num; exists f; split.
 - by move=> ? [z Az] <-; rewrite /f/f' /= edist_inf0 // fine0 min_l// mul0r.
 - move=> ? [b Bb] <-; rewrite /f /f'/=; case: ltP; rewrite ?divff//.
   rewrite -lte_fin fineK// => /ereal_inf_lt [_ [z Az <-]] ebz.
-  by have [] := exy _ _ Az Bb; exact/ball_sym/(@edist_lt_ball R T' _ (b, z)).
+  by have [] := exy _ _ Az Bb; exact/ball_sym/(@edist_lt_ball _ R T' _ (b, z)).
 Qed.
 
 End urysohn_separator.
 
 Section topological_urysohn_separator.
-Context {T : topologicalType} {R : realType}.
+Context {d} {T : topologicalType d} {R : realType}.
 
 Definition uniform_separator (A B : set T) :=
-  exists (uT : @Uniform.axioms_ T^o) (E : set (T * T)),
+  exists d (uT : @Uniform.axioms_ d T^o) (E : set (T * T)),
     let UT := Uniform.Pack uT in [/\
-      @entourage UT E, A `*` B `&` E = set0 &
-      (forall x, @nbhs UT UT x `<=` @nbhs T T x)].
+      @entourage _ UT E, A `*` B `&` E = set0 &
+      (forall x, @nbhs _ UT UT x `<=` @nbhs _ T T x)].
 
 Local Lemma Urysohn' (A B : set T) : exists (f : T -> R),
     [/\ continuous f,
@@ -102,8 +102,8 @@ Local Lemma Urysohn' (A B : set T) : exists (f : T -> R),
     & uniform_separator A B ->
     f @` A `<=` [set 0] /\ f @` B `<=` [set 1]].
 Proof.
-have [[? [E [entE ABE0 coarseT]]]|nP] := pselect (uniform_separator A B).
-  have [f] := @urysohn_separation _ R _ _ _ entE ABE0.
+have [[d' [? [E [entE ABE0 coarseT]]]]|nP] := pselect (uniform_separator A B).
+  have [f] := @urysohn_separation _ _ R _ _ _ entE ABE0.
   by case=> ctsf ? ? ?; exists f; split => // ? ? /= ?; exact/coarseT/ctsf.
 exists (cst 1); split => //; first exact: cst_continuous.
 by move=> ? [? _ <-]/=; rewrite bound_itvE.
@@ -146,15 +146,15 @@ Qed.
 End urysohn_facts.
 End topological_urysohn_separator.
 
-Lemma uniform_separatorW {T : uniformType} (A B : set T) :
+Lemma uniform_separatorW {d} {T : uniformType d} (A B : set T) :
     (exists2 E, entourage E & A `*` B `&` E = set0) ->
   uniform_separator A B.
-Proof. by case=> E entE AB0; exists (Uniform.class T), E; split => // ?. Qed.
+Proof. by case=> E entE AB0; exists d, (Uniform.class T), E; split => // ?. Qed.
 
 Section Urysohn.
 Local Open Scope relation_scope.
-Context {T : topologicalType}.
-Hypothesis normalT : normal_space T.
+Context {d} {T : topologicalType d}.
+Hypothesis normalT : normal_space d T.
 Section normal_uniform_separators.
 Context (A : set T).
 
@@ -208,7 +208,7 @@ Local Lemma ury_base_split E : ury_base E ->
 Proof.
 case; case => L R [/= oL oR AL cLR <-].
 have [R' []] : exists R', [/\ open R', closure L `<=` R' & closure R' `<=` R].
-  have := @normalT (closure L) (@closed_closure T L).
+  have := @normalT (closure L) (@closed_closure _ T L).
   case/(_ R); first by move=> x /cLR ?; apply: open_nbhs_nbhs.
   move=> V /set_nbhsP [U] [? ? ? cVR]; exists U; split => //.
   by apply: (subset_trans _ cVR); exact: closureS.
@@ -279,10 +279,10 @@ Definition urysohnType : Type := T.
 
 HB.instance Definition _ := Choice.on urysohnType.
 
-HB.instance Definition _ :=
-  isUniform.Build urysohnType ury_unif_filter ury_unif_refl ury_unif_inv
-  ury_unif_split.
-HB.instance Definition _ {p : Pointed T} := Pointed.copy urysohnType (Pointed.Pack p).
+HB.instance Definition _ := isUniform.Build default_fdisp urysohnType
+  ury_unif_filter ury_unif_refl ury_unif_inv ury_unif_split.
+HB.instance Definition _ {p : Pointed T} := 
+  Pointed.copy urysohnType (Pointed.Pack p).
 
 Lemma normal_uniform_separator (B : set T) :
   closed A -> closed B -> A `&` B = set0 -> uniform_separator A B.
@@ -292,7 +292,8 @@ move=> clA clB AB0; have /(_ (~`B))[x Ax|] := normalT clA.
   - exact/closed_openC.
   - by move: x Ax; apply/ disjoints_subset.
 move=> V /set_nbhsP [U [oU AU UV]] cVcb.
-exists (Uniform.class urysohnType), (apxU (U, ~` B)); split => //.
+exists default_fdisp, (Uniform.class urysohnType), (apxU (U, ~` B)). 
+split => //.
 - move=> ?; apply:sub_gen_smallest; exists (U, ~`B) => //; split => //=.
     exact/closed_openC.
   by move: UV => /closureS/subset_trans; apply.
@@ -300,7 +301,7 @@ exists (Uniform.class urysohnType), (apxU (U, ~` B)); split => //.
   by have /subset_closure ? := AU _ Aa; case.
 move=> x ? [E gE] /(@filterS T); apply; move: gE.
 rewrite /= /ury_unif filterI_iterE; case => K /= [i _] /= uiK KE.
-suff : @nbhs T T x [set y | K (x, y)] by apply: filterS => y /KE/xsectionP.
+suff : @nbhs _ T T x [set y | K (x, y)] by apply: filterS => y /KE/xsectionP.
 elim: i K uiK {E KE}; last by move=> ? H ? [N] /H ? [M] /H ? <-; apply: filterI.
 move=> K [->|]; first exact: filterT.
 move=> [[/= P Q] [/= oP oQ AP cPQ <-]]; rewrite /apxU /=.
@@ -323,7 +324,8 @@ Qed.
 End normal_uniform_separators.
 End Urysohn.
 
-Lemma uniform_separatorP {T : topologicalType} {R : realType} (A B : set T) :
+Lemma uniform_separatorP {d} {T : topologicalType d} 
+    {R : realType} (A B : set T) :
   uniform_separator A B <->
   exists (f : T -> R), [/\ continuous f, range f `<=` `[0, 1],
                            f @` A `<=` [set 0] & f @` B `<=` [set 1]].
@@ -334,7 +336,8 @@ split; first do [move=> ?; exists (Urysohn A B); split].
 - exact: Urysohn_sub0.
 - exact: Urysohn_sub1.
 case=> f [ctsf f01 fA0 fB1].
-pose T' : uniformType := initial_topology f.
+pose T' : uniformType _ := initial_topology f.
+eexists.
 exists (Uniform.class T'), ([set xy | ball (f xy.1) 1 (f xy.2)]); split.
 - exists [set xy | ball xy.1 1 xy.2]; last by case.
   by rewrite -entourage_ballE; exists 1 => //=.
@@ -345,19 +348,19 @@ exists (Uniform.class T'), ([set xy | ball (f xy.1) 1 (f xy.2)]); split.
 Qed.
 
 Section normalP.
-Context {R : realType} {T : topologicalType}.
+Context {d} {R : realType} {T : topologicalType d}.
 
 (* Ideally, R should be an instance of realType here,
    rather than a section variable. *)
 Let normal_spaceP : [<->
-  (* 0 *) normal_space T;
+  (* 0 *) normal_space d T;
   (* 1 *) forall (A B : set T), closed A -> closed B -> A `&` B = set0 ->
     uniform_separator A B;
   (* 2 *) forall (A B : set T), closed A -> closed B -> A `&` B = set0 ->
     exists U V, [/\ open U, open V, A `<=` U, B `<=` V & U `&` V = set0] ].
 Proof.
 tfae; first by move=> ?; exact: normal_uniform_separator.
-- move=> + A B clA clB AB0 => /(_ _ _ clA clB AB0) /(@uniform_separatorP _ R).
+- move=> + A B clA clB AB0 => /(_ _ _ clA clB AB0) /(@uniform_separatorP _ _ R).
   case=> f [cf f01 /imsub1P/subset_trans fa0 /imsub1P/subset_trans fb1].
   exists (f@^-1` `]-1, 1/2[), (f @^-1` `]1/2, 2[); split.
   + by apply: open_comp; [|exact: interval_open].
@@ -379,12 +382,12 @@ apply/subsetCr; have := open_closedC oV; rewrite closure_id => ->.
 exact/closureS/subsetC/subset_closure.
 Qed.
 
-Lemma normal_openP : normal_space T <->
+Lemma normal_openP : normal_space d T <->
   forall (A B : set T), closed A -> closed B -> A `&` B = set0 ->
   exists U V, [/\ open U, open V, A `<=` U, B `<=` V & U `&` V = set0].
 Proof. exact: (normal_spaceP 0%N 2%N). Qed.
 
-Lemma normal_separatorP : normal_space T <->
+Lemma normal_separatorP : normal_space d T <->
   forall (A B : set T), closed A -> closed B -> A `&` B = set0 ->
   uniform_separator A B.
 Proof. exact: (normal_spaceP 0%N 1%N). Qed.
@@ -402,32 +405,32 @@ Context {R : realType}.
    If you don't care, you can use the `completely_regular_uniformity.type`
    which builds the uniformity.
 *)
-Definition completely_regular_space (T : topologicalType) :=
+Definition completely_regular_space d (T : topologicalType d) :=
   forall (a : T) (B : set T), closed B -> ~ B a -> uniform_separator [set a] B.
 
-Lemma point_uniform_separator {T : uniformType} (x : T) (B : set T) :
+Lemma point_uniform_separator {d} {T : uniformType d} (x : T) (B : set T) :
   closed B -> ~ B x -> uniform_separator [set x] B.
 Proof.
 move=> clB nBx; have : open (~` B) by rewrite openC.
 rewrite openE => /(_ _ nBx); rewrite /interior /= -nbhs_entourageE.
 case=> E entE EnB.
-pose T' : pseudoMetricType R := gauge.type entE.
-exists (Uniform.class T); exists E; split => //; last by move => ?.
+pose T' : pseudoMetricType _ R := gauge.type entE.
+eexists; exists (Uniform.class T), E; split => //; last by move => ?.
 by rewrite -subset0 => -[? w [/= [-> ? /xsectionP ?]]]; exact: (EnB w).
 Qed.
 
-Lemma uniform_completely_regular {T : uniformType} :
-  @completely_regular_space T.
+Lemma uniform_completely_regular {d} {T : uniformType d} :
+  @completely_regular_space d T.
 Proof. by move=> x B clB Bx; exact: point_uniform_separator. Qed.
 
-Lemma normal_completely_regular {T : topologicalType} :
-  normal_space T -> accessible_space T -> completely_regular_space T.
+Lemma normal_completely_regular {d} {T : topologicalType d} :
+  normal_space d T -> accessible_space T -> completely_regular_space T.
 Proof.
 move/normal_separatorP => + /accessible_closed_set1 cl1 x A ? ?; apply => //.
 by apply/disjoints_subset => ? ->.
 Qed.
 
-Lemma uniform_regular {X : uniformType} : @regular_space X.
+Lemma uniform_regular {d} {X : uniformType d} : @regular_space d X.
 Proof.
 move=> x A; rewrite /= -nbhs_entourageE => -[E entE].
 move/(subset_trans (ent_closure entE)) => ExA.
@@ -438,20 +441,20 @@ End completely_regular.
 
 Module completely_regular_uniformity.
 Section completely_regular_uniformity.
-Context {R : realType} {X : topologicalType}.
+Context {d} {R : realType} {X : topologicalType d}.
 Hypothesis crs : completely_regular_space X.
 
-Let X' : uniformType := @sup_topology X {f : X -> R | continuous f}
+Let X' : uniformType _ := @sup_topology X {f : X -> R | continuous f} _
   (fun f => Uniform.class (initial_topology (projT1 f))).
 
-Let completely_regular_nbhsE : @nbhs X X = nbhs_ (@entourage X').
+Let completely_regular_nbhsE : @nbhs _ X X = nbhs_ (@entourage _ X').
 Proof.
 rewrite nbhs_entourageE; apply/funext => x; apply/seteqP; split; first last.
   apply/cvg_sup => -[f ctsf] U [/= _ [[V /= oV <- /= Vfx]]] /filterS.
   by apply; exact/ctsf/open_nbhs_nbhs.
-move=> U; wlog oU : U / @open X U.
+move=> U; wlog oU : U / @open _ X U.
   move=> WH; rewrite nbhsE => -[V [oV Vx /filterS]].
-  apply; first exact: (@nbhs_filter X').
+  apply; first exact: (@nbhs_filter _ X').
   by apply: WH => //; move: oV; rewrite openE; exact.
 move=> /[dup] nUx /nbhs_singleton Ux.
 have ufs : uniform_separator [set x] (~` U).
@@ -467,7 +470,7 @@ exists E; first last.
   by apply: fU1; exists z.
 move=> r /= [_]; apply => /=.
 pose f' : {classic {f : X -> R | continuous f}} := exist _ f ctsf.
-suff /asboolP entE : @entourage (initial_topology f) (f', E).2.
+suff /asboolP entE : @entourage _ (initial_topology f) (f', E).2.
   by exists (exist _ (f', E) entE).
 exists (fun pq => ball pq.1 1 pq.2) => //=.
 by rewrite /entourage /=; exists 1 => /=.
@@ -477,12 +480,12 @@ Definition type : Type := let _ := completely_regular_nbhsE in X.
 
 #[export] HB.instance Definition _ := Topological.copy type X.
 #[export] HB.instance Definition _ := @Nbhs_isUniform.Build
-  type
-  (@entourage X')
-  (@entourage_filter X')
-  (@entourage_diagonal_subproof X')
-  (@entourage_inv X')
-  (@entourage_split_ex X')
+  _ type
+  (@entourage _ X')
+  (@entourage_filter _ X')
+  (@entourage_diagonal_subproof _ X')
+  (@entourage_inv _ X')
+  (@entourage_split_ex _ X')
   completely_regular_nbhsE.
 (*#[export] HB.instance Definition _ := Uniform.on type.*)
 (* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
@@ -493,7 +496,7 @@ End completely_regular_uniformity.
 Export completely_regular_uniformity.Exports.
 
 Section locally_compact_uniform.
-Context {X : topologicalType} {R : realType}.
+Context {d} {X : topologicalType d} {R : realType}.
 Hypothesis lcpt : locally_compact [set: X].
 Hypothesis hsdf : hausdorff_space X.
 
@@ -511,23 +514,24 @@ Qed.
 
 #[local]
 HB.instance Definition _ := Uniform.copy opc
-  (@completely_regular_uniformity.type R _
+  (@completely_regular_uniformity.type _ R _
     one_point_compactification_completely_reg).
 
 Let X' := @initial_topology X opc Some.
-Lemma nbhs_one_point_compactification_weakE : @nbhs X X = nbhs_ (@entourage X').
+Lemma nbhs_one_point_compactification_weakE : 
+  @nbhs _ X X = nbhs_ (@entourage _ X').
 Proof.
 by rewrite nbhs_entourageE one_point_compactification_initial_topology.
 Qed.
 
 #[local, non_forgetful_inheritance]
 HB.instance Definition _ := @Nbhs_isUniform.Build
-  X
-  (@entourage X')
-  (@entourage_filter X')
-  (@entourage_diagonal_subproof X')
-  (@entourage_inv X')
-  (@entourage_split_ex X')
+  _ X
+  (@entourage _ X')
+  (@entourage_filter _ X')
+  (@entourage_diagonal_subproof _ X')
+  (@entourage_inv _ X')
+  (@entourage_split_ex _ X')
   nbhs_one_point_compactification_weakE.
 
 Lemma locally_compact_completely_regular : completely_regular_space X.
@@ -535,17 +539,17 @@ Proof. exact: uniform_completely_regular. Qed.
 
 End locally_compact_uniform.
 
-Lemma completely_regular_regular {R : realType} {X : topologicalType} :
-  completely_regular_space X -> @regular_space X.
+Lemma completely_regular_regular {d} {R : realType} {X : topologicalType d} :
+  completely_regular_space X -> @regular_space _ X.
 Proof.
-move=> crsX; pose P' := @completely_regular_uniformity.type R _ crsX.
-exact: (@uniform_regular P').
+move=> crsX; pose P' := @completely_regular_uniformity.type _ R _ crsX.
+exact: (@uniform_regular _ P').
 Qed.
 
 Section pseudometric_normal.
 
-Lemma regular_openP {T : topologicalType} (x : T) :
-  {for x, @regular_space T} <-> forall A, closed A -> ~ A x ->
+Lemma regular_openP {d} {T : topologicalType d} (x : T) :
+  {for x, @regular_space d T} <-> forall A, closed A -> ~ A x ->
   exists U V : set T, [/\ open U, open V, U x, A `<=` V & U `&` V = set0].
 Proof.
 split.
@@ -555,7 +559,7 @@ split.
   exists (~` closure U) ; split => //; first exact: open_interior.
     exact/closed_openC/closed_closure.
   apply/disjoints_subset; rewrite setCK.
-  exact: (subset_trans (@interior_subset _ _) (@subset_closure _ _)).
+  exact: (subset_trans (@interior_subset _ _ _) (@subset_closure _ _ _)).
 move=> + A Ax => /(_ (~` A°)) []; [|exact|].
   exact/open_closedC/open_interior.
 move=> U [V] [oU oV Ux /subsetC cAV /disjoints_subset UV]; exists U.
@@ -565,14 +569,14 @@ move/open_closedC/closure_id : oV => <-.
 by apply: (subset_trans cAV); rewrite setCK; exact: interior_subset.
 Qed.
 
-Lemma pseudometric_normal {R : realType} {X : pseudoMetricType R} :
-  normal_space X.
+Lemma pseudometric_normal {d} {R : realType} {X : pseudoMetricType d R} :
+  normal_space d X.
 Proof.
-apply/(@normal_openP R) => A B clA clB AB0.
+apply/(@normal_openP _ R) => A B clA clB AB0.
 have eps' (D : set X) : closed D -> forall x, exists eps : {posnum R}, ~ D x ->
     ball x eps%:num `&` D = set0.
   move=> clD x; have [nDx|?] := pselect (~ D x); last by exists 1%:pos.
-  have /regular_openP/(_ _ clD) [//|] := @uniform_regular X x.
+  have /regular_openP/(_ _ clD) [//|] := @uniform_regular _ X x.
   move=> U [V] [+ oV] Ux /subsetC BV /disjoints_subset UV0.
   rewrite openE /interior => /(_ _ Ux); rewrite -nbhs_ballE => -[].
   move => _/posnumP[eps] beU; exists eps => _; apply/disjoints_subset.

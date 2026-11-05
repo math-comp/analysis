@@ -325,8 +325,8 @@ Qed.
 End hahn_banach.
 
 Section hahn_banach_normed.
-Variable (R : realType) (V : normedModType R) (F : pred V)
-  (F' : subNormedModType F) (f : {linear_continuous F' -> R}).
+Context d d' (R : realType) (V : normedModType d R) (F : pred V)
+  (F' : subNormedModType d' F) (f : {linear_continuous F' -> R}).
 
 Theorem hahn_banach_extension_normed :
   exists g : {linear_continuous V -> R}, forall x : F', g (val x) = f x.
@@ -360,7 +360,7 @@ have contg : continuous (g : V -> R).
   - rewrite lerNl -linearN (le_trans (majgp (- y)))//.
     by rewrite /p -(mul1r M) ltW// ltr_pM// ltW.
   - by rewrite (le_trans (majgp y))// /p -(mul1r M) -normrN ltW// ltr_pM// ltW.
-pose lcg := isLinearContinuous.Build _ _ _ _ g ling contg.
+pose lcg := isLinearContinuous.Build _ _ _ _ _ _ g ling contg.
 pose g' : {linear_continuous V -> R | *%R} := HB.pack (g : V -> R) lcg.
 by exists g'.
 Qed.
@@ -368,7 +368,7 @@ Qed.
 End hahn_banach_normed.
 
 Section hahn_banach_extension_ctvs.
-Context {R : realType} {V : convexTvsType R} (F : pred V).
+Context {d} {R : realType} {V : convexTvsType d R} (F : pred V).
 (**md Contrary to the normed case, the extension theorem is not true for any
   subtopology on `F`, but only for the finest one. *)
 
@@ -380,7 +380,7 @@ Let $V$ be a real vector space, $F$ a subspace of $V$, and $p \in V^{\#}$
 (the set of all sublinear functionals on $V$) and $p$ is a seminorm,
 if $f \in F^*$ satisfies $|f| \leq p|_F$, then a $g\in V^*$ exists
 such that $g|_F = f$. *)
-Theorem hahn_banach_extension_subctvs (F' : subConvexTvsType F)
+Theorem hahn_banach_extension_subctvs d' (F' : subConvexTvsType d' F)
   (f : {linear F' -> R}) :
   (exists2 p : SemiNorm.type V,
     seminorm_of p & forall z : F', f z <= p (val z)) ->
@@ -396,7 +396,7 @@ have [g majgp F_eqgf] := @hahn_banach_extension R V _ F' f p convp fp.
 have ling : linear (g : V -> R) by exact: linearP.
 have contg : continuous (g : V -> R).
   by apply/lcfun_seminorm; exists p => //; exact: continuous_seminorm_of.
-pose lcg := isLinearContinuous.Build _ _ _ _ g ling contg.
+pose lcg := isLinearContinuous.Build _ _ _ _ _ _ g ling contg.
 pose g' : {linear_continuous V -> R | *%R} := HB.pack (g : V -> R) lcg.
 by exists g'.
 Qed.
@@ -451,7 +451,7 @@ have [g majgp F_eqgf] := @hahn_banach_extension R V _ F' f p' convp fp'.
 have ling : linear (g : V -> R) by exact: linearP.
 have contg : continuous (g : V -> R).
   by apply/lcfun_seminorm; exists p' => //; exact: continuous_seminorm_of.
-pose lcg := isLinearContinuous.Build _ _ _ _ g ling contg.
+pose lcg := isLinearContinuous.Build _ _ _ _ _ _ g ling contg.
 pose g' : {linear_continuous V -> R | *%R} := HB.pack (g : V -> R) lcg.
 by exists g'.
 Qed.

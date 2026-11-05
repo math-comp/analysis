@@ -22,31 +22,38 @@ Unset Printing Implicit Defensive.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
+Fact supremum_fdisp {I} (d : I -> fdisp_t) : fdisp_t.
+Proof. by []. Qed.
+
+Notation "d .-sup" := (supremum_fdisp d) : fdisp_scope.
+
 Definition sup_topology {T : Type} {I : Type}
-  (Tc : I -> Topological T) : Type := T.
+  {d : I -> fdisp_t} (Tc : forall i, Topological (d i) T) : Type := T.
 
 Section Sup_Topology.
-Variable (T : choiceType) (I : Type) (Tc : I -> Topological T).
+Context (T : choiceType) (I : Type)
+  (d : I -> fdisp_t) (Tc : forall i, Topological (d i) T).
 Local Notation S := (sup_topology Tc).
 
 Let TS := fun i => Topological.Pack (Tc i).
 
-Definition sup_subbase := \bigcup_i (@open (TS i) : set_system T).
+Definition sup_subbase := \bigcup_i (@open _ (TS i) : set_system T).
 
 HB.instance Definition _ := Choice.on S.
-HB.instance Definition _ := isSubBaseTopological.Build S sup_subbase id.
+HB.instance Definition _ := 
+  isSubBaseTopological.Build (supremum_fdisp d) S sup_subbase id.
 
 Lemma cvg_sup (F : set_system T) (t : T) :
   Filter F -> F --> (t : S) <-> forall i, F --> (t : TS i).
 Proof.
 move=> Ffilt; split=> cvFt.
-  move=> i A /=; rewrite (@nbhsE (TS i)) => - [B [Bop Bt] sBA].
+  move=> i A /=; rewrite (@nbhsE _ (TS i)) => - [B [Bop Bt] sBA].
   apply: cvFt; exists B; split=> //; exists [set B]; last first.
     by rewrite predeqE => ?; split=> [[_ ->]|] //; exists B.
   move=> _ ->; exists [fset B]%fset.
     by move=> ?; rewrite inE inE => /eqP->; exists i.
   by rewrite predeqE=> ?; split=> [|??]; [apply|]; rewrite /= inE // =>/eqP->.
-move=> A /=; rewrite (@nbhsE S).
+move=> A /=; rewrite (@nbhsE _ S).
 move=> [_ [[B sB <-] [C BC Ct] sUBA]].
 rewrite nbhs_filterE; apply: filterS sUBA _; apply: (@filterS _ _ _ C).
   by move=> ? ?; exists C.
@@ -57,17 +64,19 @@ Qed.
 
 End Sup_Topology.
 
-HB.instance Definition _ (I : Type) (T : pointedType) (f : I -> Topological T) :=
+HB.instance Definition _ (I : Type) (T : pointedType) 
+  (d : I -> fdisp_t) (f : forall i, Topological (d i) T) :=
   Pointed.on (sup_topology f).
 
 Section sup_uniform.
 Local Open Scope relation_scope.
-Context {T : choiceType} {Ii : Type} (Tc : Ii -> Uniform T).
+Context {T : choiceType} {Ii : Type} {d : Ii -> fdisp_t} 
+  (Tc : forall i : Ii, Uniform (d i) T).
 
 Let I : choiceType := {classic Ii}.
 Let TS := fun i => Uniform.Pack (Tc i).
 Notation Tt := (sup_topology Tc).
-Let ent_of (p : I * set (T * T)) := `[< @entourage (TS p.1) p.2 >].
+Let ent_of (p : I * set (T * T)) := `[< @entourage _ (TS p.1) p.2 >].
 Let IEntType := {p : (I * set (T * T)) | ent_of p}.
 Let IEnt : choiceType := IEntType.
 
@@ -117,7 +126,7 @@ Qed.
 Local Lemma sup_ent_split A : sup_ent A -> exists2 B, sup_ent B & B \; B `<=` A.
 Proof.
 have spt : (forall ie : IEnt, ent_of ((projT1 ie).1,
-    (@split_ent (TS (projT1 ie).1) (projT1 ie).2))).
+    (@split_ent _ (TS (projT1 ie).1) (projT1 ie).2))).
   by case=> [[/= ? ?] /asboolP/entourage_split_ent ?]; exact/asboolP.
 pose g : (IEnt -> IEnt) := fun x => exist ent_of _ (spt x).
 case => W [F _ <-] sA; exists (\bigcap_(x in [set` F]) (projT1 (g x)).2).
@@ -127,12 +136,12 @@ case => W [F _ <-] sA; exists (\bigcap_(x in [set` F]) (projT1 (g x)).2).
     by move => ?; apply/(Igxy (g ie))/imfsetP; exists ie.
   by move=> /imfsetP [?? ->]; exact: Igxy.
 case => ?? [z Fxz Fzy]; apply: sA; IEntP=> i e ? ? eF.
-apply: ((@entourage_split (TS i)) z) => //.
+apply: ((@entourage_split _ (TS i)) z) => //.
   exact: (Fxz _ eF).
 exact: (Fzy _ eF).
 Qed.
 
-Local Lemma sup_ent_nbhs : @nbhs Tt Tt = nbhs_ sup_ent.
+Local Lemma sup_ent_nbhs : @nbhs _ Tt Tt = nbhs_ sup_ent.
 Proof.
 rewrite predeq2E => x V; split.
   move=> [/= X [[/= B + <-] [W BW Wx BV]]] => /(_ W BW) [] /=.
@@ -145,7 +154,7 @@ rewrite predeq2E => x V; split.
     move=> /= v; apply: cid; case (pselect (v \in F)); first last.
       by move=> ?; exists (exist ent_of _ (IEnt_pointT i0)).
     move=> /[dup] /Fx vx /Fsup/set_mem [i _]; rewrite openE => /(_ x vx).
-    by move=> /(@nbhsP (TS i)) [w /asboolP ent ?]; exists (exist _ (i, w) ent).
+    by move=> /(@nbhsP _ (TS i)) [w /asboolP ent]; exists (exist _ (i, w) ent).
   exists (\bigcap_(w in [set` F]) (projT1 (projT1 (f w))).2); first last.
     move=> v /= /xsectionP Fgw; apply: BV; exists (\bigcap_(i in [set` F]) i) => //.
     by move=> w /[dup] ? /Fgw /= /mem_set/(projT2 (f w)); exact.
@@ -159,7 +168,7 @@ case=> E [D [/= F FsubEnt <-] FsubE EsubV].
 have F_nbhs_x : Filter (nbhs x) by typeclasses eauto.
 apply: (filterS EsubV).
 pose f : IEnt -> set T := fun w =>
-  @interior (TS (projT1 w).1) (xsection (projT1 w).2 x).
+  @interior _ (TS (projT1 w).1) (xsection (projT1 w).2 x).
 exists (\bigcap_(w in [set` F]) f w); repeat split.
 - exists [set \bigcap_(w in [set` F]) f w]; last by rewrite bigcup_set1.
   move=> ? ->; exists [fset f w | w in F]%fset.
@@ -171,7 +180,7 @@ exists (\bigcap_(w in [set` F]) f w); repeat split.
   by apply/mem_set/FsubE => it /Ifwt/interior_subset => /set_mem.
 Qed.
 
-HB.instance Definition _ := @Nbhs_isUniform.Build Tt sup_ent
+HB.instance Definition _ := @Nbhs_isUniform.Build (supremum_fdisp d) Tt sup_ent
    sup_ent_filter sup_ent_refl sup_ent_inv sup_ent_split sup_ent_nbhs.
 
 Lemma countable_sup_ent :
@@ -201,7 +210,7 @@ exists (open_finI_from (\bigcup_n g n) id); split.
   case=> [[n w]] p /imfsetP [x /= xA M]; apply: Ia.
   by rewrite (_ : w = x) // (svalP (h x) xA) -M.
 - move=> E [w] [ A _ wIA wsubE].
-  have ent_Ip (i : IEnt) : @entourage (TS (projT1 i).1) (projT1 i).2.
+  have ent_Ip (i : IEnt) : @entourage _ (TS (projT1 i).1) (projT1 i).2.
     by apply/asboolP; exact: (projT2 i).
   pose h (i : IEnt) : {x : set (T * T) | _} := cid2 (and3_rec
     (fun _ _ P => P) (projT2 (f (projT1 i).1)) (projT1 i).2 (ent_Ip i)).

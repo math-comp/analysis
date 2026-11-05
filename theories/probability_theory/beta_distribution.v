@@ -45,8 +45,8 @@ Implicit Types x y : R.
 
 Lemma continuous_onemXn n x : {for x, continuous (fun y => y.~ ^+ n)}.
 Proof.
-apply: (@continuous_comp _ _ _ (@onem R) (fun x => x ^+ n)).
-  exact: (@cvgB _ R^o).
+apply: (@continuous_comp _ _ _ _ _ _ (@onem R) (fun x => x ^+ n)).
+  exact: (@cvgB _ _ R^o).
 exact: exprn_continuous.
 Qed.
 
@@ -54,7 +54,7 @@ Import MeasurableR.
 
 Lemma onemXn_derivable n x : derivable (fun y => y.~ ^+ n) x 1.
 Proof.
-have := @derivableX _ _ (@onem R) n x 1.
+have := @derivableX _ _ _ (@onem R) n x 1.
 by rewrite fctE; apply; exact: derivableB.
 Qed.
 

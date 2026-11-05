@@ -40,6 +40,8 @@ From mathcomp Require Import pseudometric_structure.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
+Reserved Notation "f .-initial" (at level 4, format "f .-initial").
+
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -48,11 +50,17 @@ Unset Printing Implicit Defensive.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
+Fact initial_fdisp (S T : Type) (f : S -> T) : fdisp_t.
+Proof. by []. Qed.
+
+Notation "f .-initial" := (initial_fdisp f) : fdisp_scope.
+
 Definition initial_topology {S : Type} {T : Type}
   (f : S -> T) : Type := S.
 
 Section Initial_Topology.
-Variable (S : choiceType) (T : topologicalType) (f : S -> T).
+Context (d : fdisp_t) (S : choiceType) (T : topologicalType d).
+Context (f : S -> T).
 Local Notation W := (initial_topology f).
 
 Definition initial_open := [set f @^-1` A | A in open].
@@ -81,7 +89,8 @@ Qed.
 
 HB.instance Definition _ := Choice.on W.
 HB.instance Definition _ :=
-  isOpenTopological.Build W initial_opT initial_opI initial_op_bigU.
+  isOpenTopological.Build (initial_fdisp f) W 
+    initial_opT initial_opI initial_op_bigU.
 
 Lemma initial_continuous : continuous (f : W -> T).
 Proof. by apply/continuousP => A ?; exists A. Qed.
@@ -111,35 +120,37 @@ End Initial_Topology.
 (*#[deprecated(since="mathcomp-analysis 1.17.0", note="renamed `initial_open`")]
 Notation wopen := initial_open (only parsing).*)
 
-HB.instance Definition _ (S : pointedType) (T : topologicalType) (f : S -> T) :=
-  Pointed.on (initial_topology f).
+HB.instance Definition _ d (S : pointedType) (T : topologicalType d) 
+  (f : S -> T) := Pointed.on (initial_topology f).
 
 Definition sub_initial_topology (V : Type) (S : pred V) (U : subChoiceType S)
   : Type := initial_topology (\val : U -> V).
 
 Section SubType_isSubTopological.
-Context (V : topologicalType) (S : pred V) (U : subChoiceType S).
+Context (d : fdisp_t).
+Context (V : topologicalType d) (S : pred V) (U : subChoiceType S).
 
 Local Notation T := (sub_initial_topology U).
 HB.instance Definition _ := SubChoice.on T.
 HB.instance Definition _ := Nbhs.on T.
 HB.instance Definition _ := Topological.on T.
 
-Let top_continuous_valE : continuous (val : T -> V).
+Let top_continuous_valE : continuous (\val : T -> V).
 Proof. exact: initial_continuous. Qed.
 
-HB.instance Definition _ := @isSubNbhs.Build V S T top_continuous_valE.
+HB.instance Definition _ := @isSubNbhs.Build _ _ V S T top_continuous_valE.
 
 End SubType_isSubTopological.
 
 Section initial_uniform.
 Local Open Scope relation_scope.
-Variable (pS : choiceType) (U : uniformType) (f : pS -> U).
+Context (d : fdisp_t) (pS : choiceType) (U : uniformType d).
+Context (f : pS -> U).
 
 Let S := initial_topology f.
 
 Definition initial_ent : set_system (S * S) :=
-  filter_from (@entourage U) (fun V => (map_pair f)@^-1` V).
+  filter_from (@entourage _ U) (fun V => (map_pair f)@^-1` V).
 
 Let initial_ent_filter : Filter initial_ent.
 Proof.
@@ -174,36 +185,38 @@ rewrite predeq2E => x V; split.
   by move=> ? ?; exact/BsubV/WsubB.
 case=> W [V' entV' V'subW] /filterS; apply.
 have : nbhs (f x) (xsection V' (f x)) by apply/nbhsP; exists V'.
-rewrite (@nbhsE U) => [[O [openU Ofx Osub]]].
+rewrite (@nbhsE _ U) => [[O [openU Ofx Osub]]].
 (exists (f @^-1` O); repeat split => //); first by exists O => //.
 by move=> w ?; apply/mem_set; apply: V'subW; apply/set_mem; exact: Osub.
 Qed.
 
-HB.instance Definition _ := @Nbhs_isUniform.Build (initial_topology f)
+HB.instance Definition _ := @Nbhs_isUniform.Build 
+  _ (initial_topology f)
   initial_ent initial_ent_filter initial_ent_refl initial_ent_inv
   initial_ent_split initial_ent_nbhs.
 
 End initial_uniform.
 
 Section initial_unif_continuous.
-Context {T : choiceType} {U : uniformType} (f : T -> U).
+Context {d : fdisp_t} {T : choiceType} {U : uniformType d} (f : T -> U).
 
-Lemma initial_unif_continuous : unif_continuous (f : initial_topology f -> U).
+Lemma initial_unif_continuous : 
+  unif_continuous (f : initial_topology f -> U).
 Proof. by move=> A entA; by exists A. Qed.
 
-Lemma initial_unif_continuous_comp
-    (V : uniformType) (g : V -> initial_topology f) :
+Lemma initial_unif_continuous_comp d'
+    (V : uniformType d') (g : V -> initial_topology f) :
   unif_continuous (f \o g : V -> U) -> unif_continuous g.
 Proof. by move=> fg /= A [B entB BA]; apply: filterS _ _ BA _; exact: fg. Qed.
 
-Lemma initial_unif_continuous_comp_fst (V : uniformType) :
+Lemma initial_unif_continuous_comp_fst d' (V : uniformType d') :
   unif_continuous (fun x : initial_topology f * V => f x.1).
 Proof.
 by apply: unif_continuous_comp;
   [exact: fst_unif_continuous|exact: initial_unif_continuous].
 Qed.
 
-Lemma initial_unif_continuous_comp_snd (V : uniformType) :
+Lemma initial_unif_continuous_comp_snd d' (V : uniformType d') :
   unif_continuous (fun x : V * initial_topology f => f x.2).
 Proof.
 by apply: unif_continuous_comp;
@@ -212,12 +225,12 @@ Qed.
 
 End initial_unif_continuous.
 
-HB.instance Definition _ (pS : pointedType) (U : uniformType) (f : pS -> U) :=
-  Pointed.on (initial_topology f).
+HB.instance Definition _ (d : fdisp_t) (pS : pointedType) 
+  (U : uniformType d) (f : pS -> U) := Pointed.on (initial_topology f).
 
 Section initial_pseudoMetric.
-Context {R : realType} (pS : choiceType) (U : pseudoMetricType R) .
-Variable (f : pS -> U).
+Context (d : fdisp_t) {R : realType} (U : pseudoMetricType d R).
+Context (pS : choiceType) (f : pS -> U).
 
 Notation S := (initial_topology f).
 
@@ -251,9 +264,10 @@ rewrite eqEsubset; split; apply/filter_fromP.
 - by move=> e ?; exists [set xy | ball xy.1 e xy.2] => //; exists e => /=.
 Qed.
 
-HB.instance Definition _ := Uniform_isPseudoMetric.Build R S
-  initial_pseudo_metric_ball_center (fun _ _ _ => @ball_sym _ _ _ _ _)
-  (fun _ _ _ _ _ => @ball_triangle _ _ _ _ _ _ _)
+HB.instance Definition _ := Uniform_isPseudoMetric.Build _ R S
+  initial_pseudo_metric_ball_center 
+  (fun _ _ _ => @ball_sym _ _ _ _ _ _)
+  (fun _ _ _ _ _ => @ball_triangle _ _ _ _ _ _ _ _)
   initial_pseudo_metric_entourageE.
 
 Lemma initial_ballE (e : R) (x : S) : f @^-1` (ball (f x) e) = ball x e.
@@ -267,12 +281,13 @@ End initial_pseudoMetric.
     Consider `[0,1[ | {2}` as a subset of `[0,3]` for an example
 *)
 Section initial_order_refine.
-Context {d} {X : orderTopologicalType d} {Y : subType X}.
+Context {td : fdisp_t} {od : Order.disp_t}.
+Context {X : orderTopologicalType td od} {Y : subType X}.
 
-Let OrdU : orderTopologicalType d := order_topology (sub_type Y).
-Let InitialU : topologicalType := @initial_topology (sub_type Y) X val.
+Let OrdU : orderTopologicalType _ od := order_topology (sub_type Y).
+Let InitialU : topologicalType _ := initial_topology (val : sub_type Y -> X).
 
-Lemma open_order_initial (U : set Y) : @open OrdU U -> @open InitialU U.
+Lemma open_order_initial (U : set Y) : @open _ OrdU U -> @open _ InitialU U.
 Proof.
 rewrite ?openE /= /interior => + x Ux => /(_ x Ux); rewrite itv_nbhsE /=.
 move=> [][][[]l|[]] [[]r|[]][]//= _ xlr /filterS; apply.
@@ -290,7 +305,8 @@ Qed.
 
 End initial_order_refine.
 
-Lemma continuous_comp_initial {Y : choiceType} {X Z : topologicalType}
+Lemma continuous_comp_initial {d d' : fdisp_t} {Y : choiceType} 
+  {X : topologicalType d} {Z : topologicalType d'}
   (w : Y -> Z) (f : X -> initial_topology w) :
   continuous (w \o f) -> continuous f.
 Proof.

@@ -25,7 +25,7 @@ Import numFieldNormedType.Exports.
 Local Open Scope classical_set_scope.
 
 Section Gdelta_Fsigma.
-Context {T : topologicalType}.
+Context {d} {T : topologicalType d}.
 Implicit Type S : set T.
 
 Definition Gdelta S :=
