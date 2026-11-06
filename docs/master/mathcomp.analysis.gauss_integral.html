@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Module mathcomp.analysis.gauss_integral</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis eca10f8 2026.11.05-23:48">
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis eca10f8 2026.11.06-23:16">
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -65,7 +65,16 @@
 <span class="vernacular">Context</span><span class="id"> {</span><span id="gauss_fun.R" class="id"><span name="gauss_fun.R" class="id anchor tooltip">R<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/gauss_integral.v#L26" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span>.<br>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> ring_scope</span>.<br>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="gauss_fun" class="id"><span name="gauss_fun" class="id anchor tooltip">gauss_fun<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><hr>Used by
+<span class="vernacular">Definition</span><span class="id"> </span><span id="gauss_fun" class="id"><span name="gauss_fun" class="id anchor tooltip">gauss_fun<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>esum :
+forall {R : realFieldType} {T : choiceType},
+set T -&gt; (T -&gt; \bar R) -&gt; GRing.BaseAddMagma.sort \bar R
+
+esum is not universe polymorphic
+Arguments esum {R T} A%_classical_set_scope f%_function_scope
+esum is transparent
+Expands to: Constant mathcomp.analysis.esum.esum
+Declared in library mathcomp.analysis.esum, line 362, characters 11-15
+</p><hr>Used by
 <ul><li>mathcomp.analysis.probability_theory.normal_distribution</li></ul><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/gauss_integral.v#L29" target="_blank">Source code</a></span></span></span>&nbsp;(<span id="x:2" class="id"><span name="x:2" class="id anchor tooltip">x<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/gauss_integral.v#L29" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.gauss_integral.html#gauss_fun.R">R</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.sequences.html#expR">expR</a></span>&nbsp;(<span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#::ring_scope:'-'_x">-</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.gauss_integral.html#x:2">x</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#663140372ac3b275aae871b74b140513"> ^+</a></span><span class="id"> </span><span class="id">2</span>).<br>
 <br>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="gauss_fun_ge0" class="id"><span name="gauss_fun_ge0" class="id anchor tooltip">gauss_fun_ge0<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content -->Used by

@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Module mathcomp.reals.reals</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis eca10f8 2026.11.05-23:48">
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis eca10f8 2026.11.06-23:16">
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -1170,7 +1170,14 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> rational</span>.<br>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="rational.R" class="id"><span name="rational.R" class="id anchor tooltip">R<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/reals/reals.v#L870" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals.reals.html#realType">realType</a></span><span class="id">}</span>.<br>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="rational" class="id"><span name="rational" class="id anchor tooltip">rational<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><hr>Used by
+<span class="vernacular">Definition</span><span class="id"> </span><span id="rational" class="id"><span name="rational" class="id anchor tooltip">rational<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>sup : forall {R : realType}, set R -&gt; R
+
+sup is not universe polymorphic
+Arguments sup {R} A%_classical_set_scope
+sup is transparent
+Expands to: Constant mathcomp.reals.reals.sup
+Declared in library mathcomp.reals.reals, line 135, characters 11-14
+</p><hr>Used by
 <ul><li>mathcomp.analysis.pi_irrational</li><li>mathcomp.analysis.borel_hierarchy</li></ul><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/reals/reals.v#L872" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals.reals.html#rational.R">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.rat.html#ratr">ratr</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#3841cb3d3064bec36c216d013b694b70"> @`</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">[set:</a></span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.rat.html#rat">rat</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#36b9f1631384d2c3b944cb9d5855cd98">]</a></span>.<br>
 <br>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="rationalP" class="id"><span name="rationalP" class="id anchor tooltip">rationalP<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content -->Used by
@@ -1185,13 +1192,13 @@ Qed.</div></details>
 <span class="id">by</span><span class="id"> rewrite</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.divalg.html#GRing.Theory.fmorph_div">fmorph_div</a></span><span class="id">/=</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.rat.html#ratr_nat">ratr_nat</a></span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.rat.html#ratr_int">ratr_int</a></span>.<br>
 Qed.</div></details>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="irrational" class="id"><span name="irrational" class="id anchor tooltip">irrational<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>sup : forall {R : realType}, set R -&gt; R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="irrational" class="id"><span name="irrational" class="id anchor tooltip">irrational<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>inf : forall {R : realType}, set R -&gt; R
 
-sup is not universe polymorphic
-Arguments sup {R} A%_classical_set_scope
-sup is transparent
-Expands to: Constant mathcomp.reals.reals.sup
-Declared in library mathcomp.reals.reals, line 135, characters 11-14
+inf is not universe polymorphic
+Arguments inf {R} E%_classical_set_scope
+inf is transparent
+Expands to: Constant mathcomp.reals.reals.inf
+Declared in library mathcomp.reals.reals, line 136, characters 11-14
 </p><hr>Used by
 <ul><li>mathcomp.analysis.borel_hierarchy</li></ul><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/reals/reals.v#L883" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals.reals.html#rational.R">R</a></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#a89cad8a77dea0eb3c15a935f79663f1">~`</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals.reals.html#rational">rational</a></span>.<br>
 <br>
