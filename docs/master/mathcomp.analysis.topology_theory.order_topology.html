@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Module mathcomp.analysis.topology_theory.order_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis eca10f8 2026.11.04-23:45">
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis eca10f8 2026.11.05-23:48">
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -163,7 +163,7 @@ Qed.</div></details>
 Qed.</div></details>
 <br>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="rray_closed" class="id"><span name="rray_closed" class="id anchor tooltip">rray_closed<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content -->Used by
-<ul><li>mathcomp.analysis.topology_theory.num_topology</li><li>mathcomp.analysis.topology_theory.separation_axioms</li></ul><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/order_topology.v#L102" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="x:45" class="id"><span name="x:45" class="id anchor tooltip">x<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/order_topology.v#L102" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> @</span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.order_topology.html#order_topologies.T">T</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#15b7e1a0c6e4df0db66b48da271129e4">`[</a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.order_topology.html#x:45">x</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#15b7e1a0c6e4df0db66b48da271129e4">,</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#15b7e1a0c6e4df0db66b48da271129e4"> +oo[</a></span>.<br>
+<ul><li>mathcomp.analysis.topology_theory.separation_axioms</li><li>mathcomp.analysis.topology_theory.num_topology</li></ul><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/order_topology.v#L102" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="x:45" class="id"><span name="x:45" class="id anchor tooltip">x<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/order_topology.v#L102" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> @</span><span class="id link"><a href="mathcomp.analysis.topology_theory.topology_structure.html#closed">closed</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.order_topology.html#order_topologies.T">T</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#15b7e1a0c6e4df0db66b48da271129e4">`[</a></span><span class="id link"><a href="mathcomp.analysis.topology_theory.order_topology.html#x:45">x</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#15b7e1a0c6e4df0db66b48da271129e4">,</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#15b7e1a0c6e4df0db66b48da271129e4"> +oo[</a></span>.<br>
 <details>
 <summary class="toggleproof">Proof.</summary>
 <div class="proofscript">
@@ -281,7 +281,32 @@ Qed.</div></details>
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> rray_closed</span><span class="id"> :</span><span class="id"> core</span>.<br>
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> itv_closed</span><span class="id"> :</span><span class="id"> core</span>.<br>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="order_topology" class="id"><span name="order_topology" class="id anchor tooltip">order_topology<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><hr>Used by
+<span class="vernacular">Definition</span><span class="id"> </span><span id="order_topology" class="id"><span name="order_topology" class="id anchor tooltip">order_topology<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>compact_near : forall {X : topologicalType}, set_system X -&gt; Prop
+
+compact_near is not universe polymorphic
+Arguments compact_near {X} F
+compact_near is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.compact_near
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 254, characters 11-23
+precompact : forall {X : topologicalType}, set X -&gt; Prop
+
+precompact is not universe polymorphic
+Arguments precompact {X} C%_classical_set_scope
+precompact is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.precompact
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 257, characters 11-21
+locally_compact : forall {X : topologicalType}, set X -&gt; Prop
+
+locally_compact is not universe polymorphic
+Arguments locally_compact {X} A%_classical_set_scope
+locally_compact is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.locally_compact
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 281, characters 11-26
+</p><hr>Used by
 <ul><li>mathcomp.analysis.topology_theory.initial_topology</li></ul><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/order_topology.v#L197" target="_blank">Source code</a></span></span></span>&nbsp;(<span id="T:61" class="id"><span name="T:61" class="id anchor tooltip">T<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/order_topology.v#L197" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.order_topology.html#T:61">T</a></span>.<br>
 <br>
 <span class="vernacular">Section</span><span class="id"> induced_order_topology</span>.<br>
