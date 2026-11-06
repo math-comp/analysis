@@ -563,11 +563,7 @@ pose xline := exist (linepred x) _ xlinepred;have <- : \val xline = x by [].
 rewrite Pg.
 suff -> : lcl xline = 1 by [].
 move/eqP: (xchooseP (line_linepred xline)).
-(*have lem :(\val (xline)) = x by []. Fail rewrite lem.*)
-set xline':= (X in X =_ -> _); have -> : xline' = x by [].
-(*TODO weakness of line, to be understood *)
-(* Fail rewrite -(scale1r (x : V)). *)
-set x':= (X in X =_ -> _). ; rewrite  -(scale1r x').
+have {1}-> :(\val (xline)) = x by []; rewrite -{1}(scale1r (x : V)).
 move/scaleIl => H; apply/eqP; rewrite eq_sym; apply/eqP.
 by apply: H.
 Qed.
