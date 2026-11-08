@@ -287,7 +287,7 @@ Notation "\P_[ mu ] E"     := (pr mu E).
 Notation "\P_[ mu , A ] E" := (prc mu E A).
 Notation "\E_[ mu ] f"     := (pmf_expectation mu f).
 Notation "\E_[ mu , A ] f" := (espc mu f A).
-Notation dweight mu        := (\P_[mu] predT).
+Abbreviation dweight mu        := (\P_[mu] predT).
 
 (* NB: not used *)
 (*Section Esp.
@@ -370,7 +370,7 @@ Import MeasurableR.
 Context {d} {T : pmeasurableType d} {R : realType} (P : probability T R)
   (X : {dRV P >-> R}).
 
-Local Notation pmfX := (@pmf _ _ _ P X).
+Local Abbreviation pmfX := (@pmf _ _ _ P X).
 
 Lemma esum_pmf_range :
   esum [set: R] (EFin \o pmfX) = \esum_(r in range X) (pmfX r)%:E.
@@ -433,7 +433,7 @@ End RestrTheory.
 Section DRat.
 Context {R : realType} (T : choiceType).
 
-Local Notation distr := R.-pmf T.
+Local Abbreviation distr := R.-pmf T.
 
 Implicit Types (s : seq T).
 
@@ -535,7 +535,7 @@ End MeasureOfDunit.
 Section Flip.
 Context {R : realType}.
 
-Local Notation clamp := (@clamp R 0 1).
+Local Abbreviation clamp := (@clamp R 0 1).
 
 Definition dflip_fun (xt : R) :=
   fun b => if b then clamp xt else 1 - clamp xt.
@@ -1294,8 +1294,8 @@ Qed.
 
 End MeasureOfDmargin.
 
-Notation dfst mu := (dmargin fst mu).
-Notation dsnd mu := (dmargin snd mu).
+Abbreviation dfst mu := (dmargin fst mu).
+Abbreviation dsnd mu := (dmargin snd mu).
 
 (* -------------------------------------------------------------------- *)
 Section DSwap.
@@ -1585,55 +1585,45 @@ Import MeasurableR.
 Context {d} {T : pmeasurableType d} {R : realType} (P : probability T R)
   (X : {dRV P >-> R}).
 
-Local Notation pmfX := (@pmf d T R P X).
+Local Abbreviation pmfX := (@pmf d T R P X).
 
 Local Open Scope ereal_scope.
 
-Lemma distribution_integral_counting (A : set R) : measurable A ->
-  distribution P X A = \int[@counting R R]_(r in A) (pmfX r)%:E.
-Proof.
-move=> mA.
-rewrite -dRV_esum_pmf_distribution// integral_counting_esum//=.
-by apply/measurable_EFinP; exact: pmf_measurable.
-Qed.
+Lemma measure_of_pmf_distribution (A : set R) :
+  measurable A ->
+  measure_of_pmf pmfX A = distribution P X A.
+Proof. exact: dRV_esum_pmf_distribution. Qed.
 
 Lemma ge0_expectation_pmf (f : R -> \bar R) :
   measurable_fun [set: R] f -> (forall r, 0 <= f r) ->
  'E_(measure_of_pmf pmfX) [f] = \int[P]_w f (X w).
 Proof.
 move=> mf f0.
-(*rewrite unlock/=.
-rewrite -ge0_integral_distribution//.*)
-rewrite expectation_pmf.
-have mfh : measurable_fun [set: R] (fun r => f r * (pmfX r)%:E).
-  by apply: emeasurable_funM => //; apply/measurable_EFinP; exact: pmf_measurable.
-have fh0 r : 0 <= f r * (pmfX r)%:E.
-  by apply: mule_ge0; [exact: f0|rewrite lee_fin pmf_ge0].
-rewrite [LHS](_ : _  = \int[@counting R R]_r (f r * (pmfX r)%:E)).
-  by rewrite (*/epmf_expectation*) -integral_counting_esum//; exact: measurable_set1.
-have <- : \int[distribution P X]_r f r =
-          \int[@counting R R]_r (f r * (pmfX r)%:E).
-  rewrite -(integral_measure_of_density _ (pmf_measurable X))//=.
-  apply: eq_measure_integral =>  A mA _ /=.
-  exact: distribution_integral_counting.
-by rewrite /distribution ge0_integral_pushforward.
+rewrite unlock /= -ge0_integral_distribution//.
+have mid : measurable_fun [set: discrete_measurable_space R]
+    (idfun : discrete_measurable_space R -> R).
+  by move=> _ Y _.
+transitivity (\int[giry_map mid (measure_of_pmf pmfX)]_y f y).
+  by symmetry;  apply: giry_int_map.
+apply: eq_measure_integral => A mA _.
+exact: measure_of_pmf_distribution.
+Qed.
+
+Lemma expectation_pmf_RV (f : R -> \bar R) :
+  measurable_fun [set: R] f ->
+  'E_(measure_of_pmf pmfX) [f] = \int[P]_w f (X w).
+Proof.
+move=> mf; rewrite unlock integralE [RHS]integralE; congr (_ - _).
+- rewrite -[LHS]expectation_def ge0_expectation_pmf => //=;
+    first exact: measurable_funepos.
+  by apply: eq_integral => w _; rewrite !funeposE.
+- rewrite -[LHS]expectation_def ge0_expectation_pmf => //=;
+    first exact: measurable_funeneg.
+  by apply: eq_integral => w _; rewrite !funenegE.
 Qed.
 
 Lemma expectation_pmf_dRV : 'E_(measure_of_pmf pmfX) [EFin] = 'E_P[EFin \o X].
-Proof.
-rewrite expectation_pmf.
-rewrite (*/epmf_expectation*) esumE expectation_def integralE; congr (_ - _).
-- transitivity ('E_(measure_of_pmf pmfX) [(@EFin R)^\+%E]).
-    rewrite expectation_pmf.
-    by apply: eq_esum => r _; rewrite !funeposE maxe_pMl ?lee_fin// mul0e.
-  rewrite ge0_expectation_pmf => //=; first exact: measurable_funepos.
-  by apply: eq_integral => w _; rewrite !funeposE.
-- transitivity ('E_(measure_of_pmf pmfX) [(@EFin R)^\-%E]).
-  rewrite expectation_pmf.
-    by apply: eq_esum => r _; rewrite !funenegE maxe_pMl ?lee_fin// mul0e mulNe.
-  rewrite ge0_expectation_pmf//=; first exact: measurable_funeneg.
-  by apply: eq_integral => w _; rewrite !funenegE.
-Qed.
+Proof. by rewrite expectation_pmf_RV //= unlock. Qed.
 
 End espe_pmf.
 
