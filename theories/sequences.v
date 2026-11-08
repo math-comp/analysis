@@ -3334,7 +3334,7 @@ have O_open : forall n, open ( O n ).
     exact: open_gt.
   move=> x Hx; apply: continuous_comp; last exact: norm_continuous.
   have Li : linear i := proj2 (Propf _ Fi).
-  apply: (@linear_continuous _ _ K V W (pack_linear Li)) => /=.
+  apply: (@linear_continuous _ K V _ W (pack_linear Li)) => /=.
   exact/(proj1 (bounded_landau (pack_linear Li)))/(proj1 (Propf _ Fi)).
 set O_inf := \bigcap_i (O i).
 have O_infempty : O_inf = set0.

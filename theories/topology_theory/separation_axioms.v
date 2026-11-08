@@ -51,13 +51,6 @@ From mathcomp Require Import topology_structure compact subspace_topology
 (* ```                                                                        *)
 (******************************************************************************)
 
-Reserved Notation "d .-close" (at level 5, format "d .-close").
-Reserved Notation "d .-totally_disconnected" 
-  (at level 5, format "d .-totally_disconnected").
-Reserved Notation "d .-zero_dimensional" 
-  (at level 5, format "d .-zero_dimensional").
-Reserved Notation "d .-perfect_set" (at level 5, format "d .-perfect_set").
-
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -561,11 +554,11 @@ Qed.
 
 End set_separations.
 
-Arguments normal_space : clear implicits.
-Arguments regular_space : clear implicits.
+Arguments normal_space {d} T.
+Arguments regular_space {d} T.
 
 Local Open Scope relation_scope.
-Lemma uniform_regular {d} {T : uniformType d} : @regular_space _ T.
+Lemma uniform_regular {d} {T : uniformType d} : regular_space T.
 Proof.
 move=> x R /=; rewrite -{1}nbhs_entourageE => -[E entE ER].
 pose E' := split_ent E; have eE' : entourage E' by exact: entourage_split_ent.
@@ -1167,22 +1160,3 @@ by rewrite -(existT_inj2 lr).
 Qed.
 
 End sigT_separations.
-
-Module ExplicitNbhsDisplays.
-Export subspace_topology.ExplicitNbhsDisplays.
-
-Notation "d .-close" := (@close d _).
-Notation "'close'" := (@close default_fdisp _) (only printing).
-
-Notation "d .-totally_disconnected" := (@totally_disconnected d _).
-Notation "'totally_disconnected'" := 
-  (@totally_disconnected default_fdisp _) (only printing).
-
-Notation "d .-zero_dimensional" := (@zero_dimensional d _).
-Notation "'zero_dimensional'" := 
-  (@zero_dimensional default_fdisp _) (only printing).
-
-Notation "d .-perfect_set" := (@perfect_set d _).
-Notation "'perfect_set'" := (@perfect_set default_fdisp _) (only printing).
-
-End ExplicitNbhsDisplays.

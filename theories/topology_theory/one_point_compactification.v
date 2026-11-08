@@ -23,8 +23,6 @@ Definition one_point_compactification (X : Type) : Type := option X.
 Fact opc_fdisp : fdisp_t.
 Proof. by []. Qed.
 
-Notation "'opc'" := (opc_fdisp) (only printing) : fdisp_scope.
-
 Section one_point_compactification.
 Context {d} {X : topologicalType d}.
 

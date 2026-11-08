@@ -26,7 +26,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section Prod_Topology.
-Context {d1 d2} {T : topologicalType d1} {U : topologicalType d2}.
+Context {d1} {T : topologicalType d1} {d2} {U : topologicalType d2}.
 
 Let prod_nbhs (p : T * U) := filter_prod (nbhs p.1) (nbhs p.2).
 
@@ -53,7 +53,7 @@ HB.instance Definition _ := Nbhs_isNbhsTopological.Build _ (T * U)%type
 
 End Prod_Topology.
 
-Lemma fst_open {d1 d2} {U : topologicalType d1} {V : topologicalType d2} 
+Lemma fst_open {d1} {U : topologicalType d1} {d2} {V : topologicalType d2} 
   (A : set (U * V)) :
   open A -> open (fst @` A).
 Proof.
@@ -62,7 +62,7 @@ have [[P Q] [Pa Qb] pqA] := oA _ Aab; apply: (@filterS _ _ _ P) => // p Pp.
 by exists (p, b) => //=; apply: pqA; split=> //=; exact: nbhs_singleton.
 Qed.
 
-Lemma snd_open {d1 d2} {U : topologicalType d1} {V : topologicalType d2} 
+Lemma snd_open {d1} {U : topologicalType d1} {d2} {V : topologicalType d2} 
   (A : set (U * V)) :
   open A -> open (snd @` A).
 Proof.
@@ -74,7 +74,7 @@ Qed.
 (** product of two uniform spaces *)
 Section prod_Uniform.
 Local Open Scope relation_scope.
-Context {d1 d2} {U : uniformType d1} {V : uniformType d2}.
+Context {d1} {U : uniformType d1} {d2} {V : uniformType d2}.
 Implicit Types A : set ((U * V) * (U * V)).
 
 Definition prod_ent :=
@@ -156,7 +156,7 @@ HB.instance Definition _ := Nbhs_isUniform.Build _ (U * V)%type
 
 End prod_Uniform.
 
-Lemma entourage_prod_exS d1 d2 (U : uniformType d1) (V : uniformType d2) 
+Lemma entourage_prod_exS d1 (U : uniformType d1) d2 (V : uniformType d2) 
   (P : set ((U * V) * (U * V))) :
     entourage P ->
   exists (A : set (U * U)) (B : set (V * V)),
@@ -173,8 +173,8 @@ Qed.
 Definition interchange_prod {T U} (x : (T * U) * (T * U)) : (T * T) * (U * U) :=
   (x.1.1, x.2.1, (x.1.2, x.2.2)).
 
-Lemma entourage_interchange_prod {d1 d2} {U : uniformType d1} 
-  {V : uniformType d2} (B : set (U * U)) (C : set (V * V)) :
+Lemma entourage_interchange_prod {d1} {U : uniformType d1} 
+  {d2} {V : uniformType d2} (B : set (U * U)) (C : set (V * V)) :
 entourage B -> entourage C -> entourage (interchange_prod @^-1` (B `*` C)).
 Proof.
 move=> entB entC; exists (B, C) => //= -[[x1 x2] [x3 x4]] [/= HB HC].
@@ -182,7 +182,8 @@ by exists (x1, x3, (x2, x4)).
 Qed.
 
 Section unif_continuous_pair.
-Context d1 d2 d3 {U : uniformType d1} {V : uniformType d2} {W : uniformType d3}.
+Context {d1} {U : uniformType d1} {d2} {V : uniformType d2}
+  {d3} {W : uniformType d3}.
 
 Lemma pair_unif_continuous (f : U -> V) (g : U -> W) :
   unif_continuous f -> unif_continuous g ->
@@ -216,8 +217,8 @@ End unif_continuous_pair.
 
 (** product of two pseudoMetric spaces *)
 Section prod_PseudoMetric.
-Context {d1 d2} {R : numDomainType} 
-  {U : pseudoMetricType d1 R} {V : pseudoMetricType d2 R}.
+Context {d1} {R : numDomainType} 
+  {U : pseudoMetricType d1 R} {d2} {V : pseudoMetricType d2 R}.
 Implicit Types (x y : U * V).
 
 Definition prod_ball x (eps : R) y := ball x.1 eps y.1 /\ ball x.2 eps y.2.
@@ -258,8 +259,8 @@ HB.instance Definition _ := Uniform_isPseudoMetric.Build _ R (U * V)%type
 End prod_PseudoMetric.
 
 Section Nbhs_fct2.
-Context {d1 d2} {T : Type} {R : numDomainType} 
-  {U : pseudoMetricType d1 R} {V : pseudoMetricType d2 R}.
+Context {T : Type} {d1} {R : numDomainType} 
+  {U : pseudoMetricType d1 R} {d2} {V : pseudoMetricType d2 R}.
 Lemma fcvg_ball2P {F : set_system U} {G : set_system V}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
   (F, G) --> (y, z) <->
@@ -280,7 +281,7 @@ Qed.
 
 End Nbhs_fct2.
 
-Lemma compact_setX {d1 d2} {U : topologicalType d1} {V : topologicalType d2} 
+Lemma compact_setX {d1} {U : topologicalType d1} {d2} {V : topologicalType d2} 
   (P : set U) (Q : set V) :
   compact P -> compact Q -> compact (P `*` Q).
 Proof.
@@ -304,8 +305,8 @@ by case => //= ? ? [] ? ?; exact: UVW.
 Qed.
 
 Section reassociate_continuous.
-Context {d1 d2 d3} 
-  {X : topologicalType d1} {Y : topologicalType d2} {Z : topologicalType d3}.
+Context {d1} {X : topologicalType d1} {d2} {Y : topologicalType d2} 
+  {d3} {Z : topologicalType d3}.
 
 Lemma prodA_continuous : continuous (@prodA X Y Z).
 Proof.

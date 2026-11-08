@@ -28,7 +28,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section matrix_Topology.
-Variables (d : fdisp_t) (m n : nat) (T : topologicalType d).
+Context (m n : nat) d (T : topologicalType d).
 
 Implicit Types M : 'M[T]_(m, n).
 
@@ -60,7 +60,7 @@ End matrix_Topology.
 
 Section matrix_Uniform.
 Local Open Scope relation_scope.
-Variables (d : fdisp_t) (m n : nat) (T : uniformType d).
+Context (m n : nat) d (T : uniformType d).
 
 Implicit Types A : set ('M[T]_(m, n) * 'M[T]_(m, n)).
 
@@ -147,8 +147,8 @@ by apply: filter_bigI => ??; apply: entP.
 Unshelve. all: by end_near. Qed.
 
 Section matrix_PointedTopology.
-Variables (d : fdisp_t) (m n : nat).
-HB.instance Definition _ (T : ptopologicalType d) := 
+Context (m n : nat).
+HB.instance Definition _ d (T : ptopologicalType d) := 
   Filtered.on 'M[T]_(m, n).
 (*HB.instance Definition _ (T : ptopologicalType) := Pointed.on 'M[T]_(m, n).*)
 (* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
@@ -160,13 +160,13 @@ HB.instance Definition _ (T : ptopologicalType d) :=
 (* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 (*HB.instance Definition _ (T : uniformType) := Uniform.on 'M[T]_(m, n).*)
 (* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
-HB.instance Definition _ (T : puniformType d) := Pointed.on 'M[T]_(m, n).
+HB.instance Definition _ d (T : puniformType d) := Pointed.on 'M[T]_(m, n).
 (*HB.instance Definition _ (T : puniformType) := PointedUniform.on 'M[T]_(m, n).*)
 (* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 End matrix_PointedTopology.
 
 Section matrix_Complete.
-Variables (d : fdisp_t) (T : completeType d) (m n : nat).
+Context d (T : completeType d) (m n : nat).
 
 Lemma mx_complete (F : set_system 'M[T]_(m, n)) :
   ProperFilter F -> cauchy F -> cvg F.
@@ -192,7 +192,7 @@ End matrix_Complete.
 
 (**md Matrices: *)
 Section matrix_PseudoMetric.
-Context d (m n : nat) (R : numDomainType) (T : pseudoMetricType d R).
+Context (m n : nat) d (R : numDomainType) (T : pseudoMetricType d R).
 Implicit Types (x y : 'M[T]_(m, n)) (e : R).
 
 Definition mx_ball x e y := 0 < e /\ forall i j, ball (x i j) e (y i j).
@@ -234,5 +234,5 @@ HB.instance Definition _ := Uniform_isPseudoMetric.Build
 End matrix_PseudoMetric.
 
 HB.instance Definition _ d (R : numFieldType) 
-  (T : completePseudoMetricType d R)  (m n : nat) := 
+  (T : completePseudoMetricType d R) (m n : nat) := 
   Uniform_isComplete.Build _ 'M[T]_(m, n) cauchy_cvg.

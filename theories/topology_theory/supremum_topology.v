@@ -25,8 +25,6 @@ Local Open Scope ring_scope.
 Fact supremum_fdisp {I} (d : I -> fdisp_t) : fdisp_t.
 Proof. by []. Qed.
 
-Notation "d .-sup" := (supremum_fdisp d) : fdisp_scope.
-
 Definition sup_topology {T : Type} {I : Type}
   {d : I -> fdisp_t} (Tc : forall i, Topological (d i) T) : Type := T.
 

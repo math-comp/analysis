@@ -188,6 +188,7 @@ HB.instance Definition _ := @Discrete_ofPseudometric.Build d R T discrete_ballE.
 HB.end.
 
 Definition discrete_topology (T : Type) : Type := T.
+
 Fact discrete_fdisp : fdisp_t.
 Proof. by []. Qed.
 
@@ -206,7 +207,6 @@ HB.instance Definition _ {R : numDomainType} (T : choiceType) :=
   @DiscretePseudoMetric_ofUniform.Build _ R (discrete_topology T).
 
 Section discrete_topology.
-
 Context {d} {X : discreteTopologicalType d}.
 
 Lemma discrete_open (A : set X) : open A.

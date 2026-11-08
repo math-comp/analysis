@@ -1264,7 +1264,7 @@ HB.end.
 Section Tietze.
 Context {d} {X : topologicalType d} {R : realType}.
 
-Hypothesis normalX : normal_space d X.
+Hypothesis normalX : normal_space X.
 
 Lemma urysohn_ext_itv A B x y :
   closed A -> closed B -> A `&` B = set0 -> x < y ->
@@ -1276,9 +1276,9 @@ have /(@uniform_separatorP _ _ R)[f [cf f01 f0 f1]]
   := urysohn_ext R _ _ cA cB A0.
 pose g : X -> R := line_path x y \o f; exists g; split; rewrite /g /=.
   move=> t; apply: continuous_comp; first exact: cf.
-  apply: (@continuousD _ _ R R^o).
+  apply: (@continuousD _ R R^o).
     apply: continuousM; last exact: cst_continuous.
-    by apply: (@continuousB _ _ _ R^o) => //; exact: cst_continuous.
+    by apply: (@continuousB _ _ R^o) => //; exact: cst_continuous.
   by apply: continuousM => //; exact: cst_continuous.
 - by rewrite -image_comp => z /= [? /f0 -> <-]; rewrite line_path0.
 - by rewrite -image_comp => z /= [? /f1 -> <-]; rewrite line_path1.
@@ -1401,7 +1401,7 @@ exists (lim (h_ @ \oo)); split.
       eventually_filter (_ : nat -> R^o) (cvg_geometric M%:num twothirds1).
   apply: filter_app; near_simpl; apply: nearW => n /le_lt_trans; apply.
   by rewrite (le_trans ((f_geo n).2 _ _)) // ler_norm.
-- apply: (@uniform_limit_continuous _ _ X _ (h_ @ \oo) (lim (h_ @ \oo))) => //.
+- apply: (@uniform_limit_continuous _ X _ _ (h_ @ \oo) (lim (h_ @ \oo))) => //.
   near_simpl; apply: nearW; elim.
     by rewrite /h_ /series /= big_geq// => ?; exact: cst_continuous.
   move=> n; rewrite /h_ /series /= big_nat_recr /= // => IH t.
@@ -1414,7 +1414,7 @@ exists (lim (h_ @ \oo)); split.
   have cvg_gt : cvgn [normed series (g_^~ t)].
     apply: (series_squeeze_is_cvgn _ _ (g_bd ^~ t)
       (is_cvg_geometric_series _)) => //.
-    by move=> n; rewrite mulr_ge0.
+    by move=> n; rewrite /geometric mulr_ge0.
   rewrite (le_trans (lim_series_norm _))//; apply: le_trans.
     exact/(lim_series_le cvg_gt _ (g_bd ^~ t))/is_cvg_geometric_series.
   rewrite (cvg_lim _ (cvg_geometric_series _))//; first exact: Rhausdorff.

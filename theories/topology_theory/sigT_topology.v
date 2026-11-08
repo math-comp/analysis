@@ -15,8 +15,6 @@ From mathcomp Require Import topology_structure compact subspace_topology.
 (* ```                                                                        *)
 (******************************************************************************)
 
-Reserved Notation "X .-sig" (at level 4, format "X .-sig").
-
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Local Open Scope classical_set_scope.
@@ -24,8 +22,6 @@ Local Open Scope ring_scope.
 
 Fact sigT_fdisp {I : choiceType} : (I -> fdisp_t) -> fdisp_t.
 Proof. by []. Qed.
-
-Notation "X .-sig" := (sigT_fdisp X) : fdisp_scope.
 
 Section sigT_topology.
 Context {I : choiceType} {d : I -> fdisp_t}.

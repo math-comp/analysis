@@ -39,28 +39,28 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Local Open Scope quotient_scope.
 
-HB.mixin Record isPath {d d'} {i : bpTopologicalType d} 
-    {T : topologicalType d'} (x y : T) (f : i -> T) 
-    & isContinuous d d' i T f := {
+HB.mixin Record isPath {d} {i : bpTopologicalType d} 
+    {d'} {T : topologicalType d'} (x y : T) (f : i -> T) 
+    & isContinuous d i d' T f := {
   path_zero : f zero = x;
   path_one : f one = y;
 }.
 
 #[short(type="pathType")]
-HB.structure Definition Path {d d'} {i : bpTopologicalType d} 
-    {T : topologicalType d'} (x y : T) := 
-  {f of isPath d d' i T x y f & isContinuous d d' i T f}.
+HB.structure Definition Path {d} {i : bpTopologicalType d} 
+    {d'} {T : topologicalType d'} (x y : T) := 
+  {f of isPath d i d' T x y f & isContinuous d i d' T f}.
 
 Notation "{ 'path' i 'from' x 'to' y }" := (pathType i x y) : type_scope.
 Notation "{ 'path' i 'from' x 'to' y 'in' T }" :=
-  (@pathType _ _ i T x y) : type_scope.
+  (@pathType _ i _ T x y) : type_scope.
 
-HB.instance Definition _ {d d'} {i : bpTopologicalType d}
-  {T : topologicalType d'} (x y : T) := gen_eqMixin {path i from x to y}.
-HB.instance Definition _ {d d'} {i : bpTopologicalType d}
+HB.instance Definition _ {d} {i : bpTopologicalType d}
+  {d'} {T : topologicalType d'} (x y : T) := gen_eqMixin {path i from x to y}.
+HB.instance Definition _ {d} {i : bpTopologicalType d} {d'} 
   {T : topologicalType d'} (x y : T) := gen_choiceMixin {path i from x to y}.
-HB.instance Definition _ {d d'} {i : bpTopologicalType d}
-    {T : topologicalType d'} (x y : T) :=
+HB.instance Definition _ {d} {i : bpTopologicalType d}
+    {d'} {T : topologicalType d'} (x y : T) :=
   Topological.copy {path i from x to y}
     (@initial_topology {path i from x to y} {compact-open, i -> T} id).
 
@@ -81,12 +81,12 @@ End path_eq.
 Section cst_path.
 Context {d d'} {T : topologicalType d} {i : bpTopologicalType d'} (x: T).
 
-HB.instance Definition _ := @isPath.Build _ _ i T x x (cst x) erefl erefl.
+HB.instance Definition _ := @isPath.Build _ i _ T x x (cst x) erefl erefl.
 End cst_path.
 
 Section path_domain_path.
 Context {d} {i : bpTopologicalType d}.
-HB.instance Definition _ := @isPath.Build _ _ i i zero one idfun erefl erefl.
+HB.instance Definition _ := @isPath.Build _ i _ i zero one idfun erefl erefl.
 End path_domain_path.
 
 Section path_compose.
@@ -100,7 +100,7 @@ Proof. by rewrite /= !path_zero. Qed.
 Local Lemma fp_one : (f \o p) one = f y.
 Proof. by rewrite /= !path_one. Qed.
 
-HB.instance Definition _ := isPath.Build _ _ i U (f x) (f y) (f \o p)
+HB.instance Definition _ := isPath.Build _ i _ U (f x) (f y) (f \o p)
   fp_zero fp_one.
 
 End path_compose.
@@ -127,7 +127,7 @@ Proof. by move=> ?; apply: continuous_comp; exact: continuous_fun. Qed.
 
 HB.instance Definition _ := isContinuous.Build _ _ _ _ reparameterize fphi_cts.
 
-HB.instance Definition _ := isPath.Build _ _ j T x y reparameterize
+HB.instance Definition _ := isPath.Build _ j _ T x y reparameterize
   fphi_zero fphi_one.
 
 End path_reparameterize.
@@ -139,8 +139,8 @@ Context (f0 : f zero = x) (f1 : f one = y).
 
 Definition mk_path : i -> T := let _ := (ctsf, f0, f1) in f.
 
-HB.instance Definition _ := isContinuous.Build _ _ i T mk_path ctsf.
-HB.instance Definition _ := @isPath.Build _ _ i T x y mk_path f0 f1.
+HB.instance Definition _ := isContinuous.Build _ i _ T mk_path ctsf.
+HB.instance Definition _ := @isPath.Build _ i _ T x y mk_path f0 f1.
 End mk_path.
 
 

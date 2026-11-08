@@ -15,11 +15,6 @@ From mathcomp Require Import topology_structure.
 (* ```                                                                        *)
 (******************************************************************************)
 
-Reserved Notation "d .-connected" (at level 5, format "d .-connected").
-Reserved Notation "d .-separated" (at level 5, format "d .-separated").
-Reserved Notation "d .-connected_component" 
-  (at level 5, format "d .-connected_component").
-
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -243,19 +238,3 @@ End connected_sets.
 
 Arguments connected {d T}.
 Arguments connected_component {d T}.
-
-Module ExplicitNbhsDisplays.
-Export topology_structure.ExplicitNbhsDisplays.
-
-Notation "d .-connected" := (@connected d _) (format "d .-connected").
-Notation "'connected'" := (@connected default_fdisp _) (only printing).
-
-Notation "d .-separated" := (@separated d _) (format "d .-separated").
-Notation "'separated'" := (@separated default_fdisp _) (only printing).
-
-Notation "d .-connected_component" := (@connected_component d _)
-  (format "d .-connected_component").
-Notation "'connected_component'" := 
-  (@connected_component default_fdisp _) (only printing).
-
-End ExplicitNbhsDisplays.

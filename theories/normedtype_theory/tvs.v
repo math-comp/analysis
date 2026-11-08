@@ -354,7 +354,7 @@ Proof.
 move=> x; rewrite /continuous_at.
 rewrite -(@eq_cvg _ _ _ (fun x => -1 *: x)); first by move=> y; rewrite scaleN1r.
 rewrite -[- x]scaleN1r.
-apply: (@continuous_comp _ _ _ M (R^o * M)%type M (fun x => (-1, x))
+apply: (@continuous_comp _ M _ (R^o * M)%type _ M (fun x => (-1, x))
   (fun x => x.1 *: x.2)); last exact: scale_continuous.
 by apply: (@cvg_pair _ _ _ _ (nbhs (-1 : R^o))); [exact: cvg_cst|exact: cvg_id].
 Qed.
@@ -390,9 +390,9 @@ HB.structure Definition SubConvexSpace (R : numDomainType) (V : convType R) S :=
   { U of SubChoice V S U & ConvexSpace R U & isSubConvexSpace R V S U }.
 
 #[short(type="subConvexTvsType")]
-HB.structure Definition SubConvexTvs d d' (R : numDomainType) 
+HB.structure Definition SubConvexTvs d' d (R : numDomainType) 
     (V : convexTvsType d R) (S : pred V) :=
-  { U of SubTopological d d' S U & ConvexTvs d' R U 
+  { U of SubTopological d' S U & ConvexTvs d' R U 
     & @GRing.SubLmodule R V S U }.
 
 Section SubLmodule_isSubConvexTvs.
@@ -986,8 +986,8 @@ HB.instance Definition _ :=
 End standard_topology.
 
 Section prod_ConvexTvs.
-Context d d' (K : numFieldType) 
-  (E : convexTvsType d K) (F : convexTvsType d' K).
+Context d (K : numFieldType) (E : convexTvsType d K) 
+  d' (F : convexTvsType d' K).
 
 Local Lemma prod_scale_continuous :
   continuous (fun z : K^o * (E * F) => z.1 *: z.2).
@@ -1029,29 +1029,29 @@ HB.instance Definition _ :=
 
 End prod_ConvexTvs.
 
-HB.structure Definition LinearContinuous d d' (K : numDomainType) 
-  (E : NbhsLmodule.type d K) (F : NbhsZmodule.type d') (s : K -> F -> F) :=
-  {f of @GRing.Linear K E F s f & @Continuous d d' E F f }.
+HB.structure Definition LinearContinuous d (K : numDomainType) 
+  (E : NbhsLmodule.type d K) d' (F : NbhsZmodule.type d') (s : K -> F -> F) :=
+  {f of @GRing.Linear K E F s f & @Continuous d E d' F f }.
 
 (* see https://github.com/math-comp/math-comp/issues/1536
    we use GRing.Scale.law even though it is claimed to be internal *)
-HB.factory Structure isLinearContinuous d d' (K : numDomainType) 
-  (E : NbhsLmodule.type d K) (F : NbhsZmodule.type d') 
+HB.factory Structure isLinearContinuous d (K : numDomainType) 
+  (E : NbhsLmodule.type d K) d' (F : NbhsZmodule.type d') 
   (s : GRing.Scale.law K F) (f : E -> F) := {
     linearP : linear_for s f ;
     continuousP : continuous f
   }.
 
-HB.builders Context d d' K E F s f & @isLinearContinuous d d' K E F s f.
+HB.builders Context d K E d' F s f & @isLinearContinuous d K E d' F s f.
 
 HB.instance Definition _ := GRing.isLinear.Build K E F s f linearP.
-HB.instance Definition _ := isContinuous.Build _ _ E F f continuousP.
+HB.instance Definition _ := isContinuous.Build _ E _ F f continuousP.
 
 HB.end.
 
 Section lcfun_pred.
-Context {d d'} {K : numDomainType} {E : NbhsLmodule.type d K} 
-  {F : NbhsZmodule.type d'} {s : K -> F -> F}.
+Context {d} {K : numDomainType} {E : NbhsLmodule.type d K} 
+  {d'} {F : NbhsZmodule.type d'} {s : K -> F -> F}.
 
 Definition lcfun : {pred E -> F} :=
   mem [set f | linear_for s f /\ continuous f].
@@ -1063,22 +1063,22 @@ Canonical lcfun_keyed := KeyedPred lcfun_key.
 End lcfun_pred.
 
 Notation "{ 'linear_continuous' U -> V | s }" :=
-  (@LinearContinuous.type _ _ _ U%type V%type s) : type_scope.
+  (@LinearContinuous.type _ _ U%type _ V%type s) : type_scope.
 Notation "{ 'linear_continuous' U -> V }" :=
   {linear_continuous U%type -> V%type | *:%R} : type_scope.
 
 Section lcfun.
-Context {d d'} {R : numDomainType} {E : NbhsLmodule.type d R}
-  {F : NbhsZmodule.type d'} {s : GRing.Scale.law R F}.
+Context {d} {R : numDomainType} {E : NbhsLmodule.type d R}
+  {d'} {F : NbhsZmodule.type d'} {s : GRing.Scale.law R F}.
 
 Notation T := {linear_continuous E -> F | s}.
 
-Notation lcfun := (@lcfun _ _ _ E F s).
+Notation lcfun := (@lcfun _ _ E _ F s).
 
 Section Sub.
 Context (f : E -> F) (fP : f \in lcfun).
 
-#[local] Definition lcfun_Sub_subproof := @isLinearContinuous.Build _ _ _ E F s
+#[local] Definition lcfun_Sub_subproof := @isLinearContinuous.Build _ _ E _ F s
   f (proj1 (set_mem fP)) (proj2 (set_mem fP)).
 
 #[local] HB.instance Definition _ := lcfun_Sub_subproof.
@@ -1125,8 +1125,8 @@ Qed.
 End lcfun.
 
 Section lcfun_comp.
-Context {d1 d2 d3} {R : numDomainType} {E : NbhsLmodule.type d1 R} 
-  {F : NbhsLmodule.type d2 R} {S : NbhsZmodule.type d3} 
+Context {d1} {R : numDomainType} {E : NbhsLmodule.type d1 R} 
+  {d2} {F : NbhsLmodule.type d2 R} {d3} {S : NbhsZmodule.type d3} 
   {s : GRing.Scale.law R S} (f : {linear_continuous E -> F}) 
   (g : {linear_continuous F -> S | s}).
 
@@ -1136,41 +1136,41 @@ Proof. by move=> *; move=> *; rewrite !linearP. Qed.
 #[local] Lemma lcfun_comp_subproof2 : continuous (g \o f).
 Proof. by move=> x; apply: continuous_comp; exact/continuous_fun. Qed.
 
-HB.instance Definition _ := @isLinearContinuous.Build _ _ R E S s (g \o f)
+HB.instance Definition _ := @isLinearContinuous.Build _ R E _ S s (g \o f)
   lcfun_comp_subproof1 lcfun_comp_subproof2.
 
 End lcfun_comp.
 
 Section lcfun_lmodtype.
 Import GRing.Theory.
-Context {d d'} {R : numFieldType} 
-  {E : convexTvsType d R} {F : convexTvsType d' R}.
+Context {d} {R : numFieldType} {E : convexTvsType d R} 
+  {d'} {F : convexTvsType d' R}.
 Implicit Types (r : R) (f g : {linear_continuous E -> F}).
 
 Lemma null_fun_continuous : continuous (\0 : E -> F).
 Proof. by apply: cst_continuous. Qed.
 
-HB.instance Definition _ := isContinuous.Build _ _ E F \0 null_fun_continuous.
+HB.instance Definition _ := isContinuous.Build _ E _ F \0 null_fun_continuous.
 
 #[local] Lemma lcfun_continuousD f g : continuous (f \+ g).
 Proof. by move=> /= x; apply: cvgD; exact: continuous_fun. Qed.
 
 HB.instance Definition _ f g :=
-  isContinuous.Build _ _ E F (f \+ g) (@lcfun_continuousD f g).
+  isContinuous.Build _ E _ F (f \+ g) (@lcfun_continuousD f g).
 
 #[local] Lemma lcfun_continuousN f : continuous (\- f).
 Proof. by move=> /= x; apply: cvgN; exact: continuous_fun. Qed.
 
 HB.instance Definition _ f :=
-  isContinuous.Build _ _ E F (\- f) (@lcfun_continuousN f).
+  isContinuous.Build _ E _ F (\- f) (@lcfun_continuousN f).
 
 #[local] Lemma lcfun_continuousM r g : continuous (r \*: g).
 Proof. by move=> /= x; apply: fun_cvgZr; exact: continuous_fun. Qed.
 
 HB.instance Definition _ r g :=
-  isContinuous.Build _ _ E F (r \*: g) (@lcfun_continuousM r g).
+  isContinuous.Build _ E _ F (r \*: g) (@lcfun_continuousM r g).
 
-#[local] Lemma lcfun_submod_closed : submod_closed (@lcfun _ _ R E F *:%R).
+#[local] Lemma lcfun_submod_closed : submod_closed (@lcfun _ R E _ F *:%R).
 Proof.
 split; first by rewrite inE; split; first apply/linearP; exact: cst_continuous.
 move=> r /= _ _  /lcfunP[f] /lcfunP[g].
@@ -1178,7 +1178,7 @@ by rewrite inE /=; split; [exact: linearP | exact: lcfun_continuousD].
 Qed.
 
 HB.instance Definition _ :=
-  @GRing.isSubmodClosed.Build _  _ lcfun lcfun_submod_closed.
+  @GRing.isSubmodClosed.Build _ _ lcfun lcfun_submod_closed.
 
 HB.instance Definition _ :=
   [SubChoice_isSubLmodule of {linear_continuous E -> F } by <:].
@@ -1186,8 +1186,8 @@ HB.instance Definition _ :=
 End lcfun_lmodtype.
 
 Section lcfunproperties.
-Context {d d'} {R : numDomainType} {E : NbhsLmodule.type d R} 
-  {F : NbhsLmodule.type d' R} (f : {linear_continuous E -> F}).
+Context {d} {R : numDomainType} {E : NbhsLmodule.type d R} 
+  {d'} {F : NbhsLmodule.type d' R} (f : {linear_continuous E -> F}).
 
 #[warn(note="Consider using `continuous_fun` instead.",cats="discoverability")]
 Lemma lcfun_continuous : continuous f.

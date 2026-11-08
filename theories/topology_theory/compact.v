@@ -34,10 +34,6 @@ From mathcomp Require Import uniform_structure pseudometric_structure.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
-Reserved Notation "d .-cluster" (at level 5, format "d .-cluster").
-Reserved Notation "d .-compact" (at level 5, format "d .-compact").
-Reserved Notation "d .-precompact" (at level 5, format "d .-precompact").
-
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -482,17 +478,3 @@ suff : @clopen _ T = set0 \/ $|{surjfun [set: nat] >-> @clopen _ T}|.
   by case => //; rewrite eqEsubset => -[/(_ _ clopenT)].
 exact/pfcard_geP/clopen_countable/compact_second_countable.
 Qed.
-
-Module ExplicitNbhsDisplays.
-Export pseudometric_structure.ExplicitNbhsDisplays.
-
-Notation "d .-cluster" := (@cluster d _).
-Notation "'cluster'" := (@cluster default_fdisp _) (only printing).
-
-Notation "d .-compact" := (@compact d _).
-Notation "'compact'" := (@compact default_fdisp _) (only printing).
-
-Notation "d .-precompact" := (@precompact d _).
-Notation "'precompact'" := (@precompact default_fdisp _) (only printing).
-
-End ExplicitNbhsDisplays.

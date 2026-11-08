@@ -200,9 +200,6 @@ Definition order_topology (T : Type) : Type := T.
 Fact order_fdisp (od : Order.disp_t) : fdisp_t.
 Proof. by []. Qed.
 
-Notation "od .-order" := (order_fdisp od) (format "od .-order") : fdisp_scope.
-Notation "'order'" := (order_fdisp (Order.Disp _ _)) : fdisp_scope.
-
 Section induced_order_topology.
 
 Context {od} {T : orderType od}.
@@ -285,8 +282,8 @@ rewrite min_l// leNgt; apply: contra_notN (xNy b) => ba.
 by rewrite xb (lt_trans ba).
 Qed.
 
-Lemma min_fun_continuous {td od} 
-  {X : topologicalType td} {T : orderTopologicalType td od}
+Lemma min_fun_continuous {td} 
+  {X : topologicalType td} {od} {T : orderTopologicalType td od}
   (f g : X -> T) :
   continuous f -> continuous g -> continuous (f \min g).
 Proof.
@@ -325,9 +322,8 @@ rewrite max_r// leNgt; apply: contra_notN (xNy b) => ba.
 by rewrite xb (lt_trans ba).
 Qed.
 
-Lemma max_fun_continuous {td od} 
-  {X : topologicalType td} {T : orderTopologicalType td od}
-  (f g : X -> T) :
+Lemma max_fun_continuous {td} {X : topologicalType td} 
+  {od} {T : orderTopologicalType td od} (f g : X -> T) :
   continuous f -> continuous g -> continuous (f \max g).
 Proof.
 move=> fc gc z; apply: continuous2_cvg; [|exact: fc|exact: gc].

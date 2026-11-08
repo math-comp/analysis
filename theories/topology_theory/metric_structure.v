@@ -21,8 +21,6 @@ From mathcomp Require Import topology_structure uniform_structure
 (* ```                                                                        *)
 (******************************************************************************)
 
-Reserved Notation "d .-mdist" (at level 4, format "d .-mdist").
-
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -44,14 +42,6 @@ HB.mixin Record PseudoMetric_isMetric d (K : numDomainType) M
 #[short(type="metricType")]
 HB.structure Definition Metric d (K : numDomainType) :=
   { M of PseudoMetric d K M & PseudoMetric_isMetric d K M }.
-
-Module ExplicitNbhsDisplays.
-Export separation_axioms.ExplicitNbhsDisplays.
-
-Notation "d .-mdist" := (@mdist d _ _) : fdisp_scope.
-Notation "'mdist'" := (@mdist default_fdisp _ _) (only printing) : fdisp_scope.
-
-End ExplicitNbhsDisplays.
 
 Section metric_numDomainType.
 Context {d} {R : numDomainType} (T : metricType d R).
@@ -121,7 +111,7 @@ Qed.
 End metric_numFieldType.
 
 Section prod_metric.
-Context {d d'} {K : numDomainType} (T : metricType d K) (U : metricType d' K).
+Context {d} {K : numDomainType} (T : metricType d K) {d'} (U : metricType d' K).
 
 Let M := (T * U)%type.
 

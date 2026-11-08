@@ -154,7 +154,7 @@ Proof. by case=> E entE AB0; exists d, (Uniform.class T), E; split => // ?. Qed.
 Section Urysohn.
 Local Open Scope relation_scope.
 Context {d} {T : topologicalType d}.
-Hypothesis normalT : normal_space d T.
+Hypothesis normalT : normal_space T.
 Section normal_uniform_separators.
 Context (A : set T).
 
@@ -353,7 +353,7 @@ Context {d} {R : realType} {T : topologicalType d}.
 (* Ideally, R should be an instance of realType here,
    rather than a section variable. *)
 Let normal_spaceP : [<->
-  (* 0 *) normal_space d T;
+  (* 0 *) normal_space T;
   (* 1 *) forall (A B : set T), closed A -> closed B -> A `&` B = set0 ->
     uniform_separator A B;
   (* 2 *) forall (A B : set T), closed A -> closed B -> A `&` B = set0 ->
@@ -382,12 +382,12 @@ apply/subsetCr; have := open_closedC oV; rewrite closure_id => ->.
 exact/closureS/subsetC/subset_closure.
 Qed.
 
-Lemma normal_openP : normal_space d T <->
+Lemma normal_openP : normal_space T <->
   forall (A B : set T), closed A -> closed B -> A `&` B = set0 ->
   exists U V, [/\ open U, open V, A `<=` U, B `<=` V & U `&` V = set0].
 Proof. exact: (normal_spaceP 0%N 2%N). Qed.
 
-Lemma normal_separatorP : normal_space d T <->
+Lemma normal_separatorP : normal_space T <->
   forall (A B : set T), closed A -> closed B -> A `&` B = set0 ->
   uniform_separator A B.
 Proof. exact: (normal_spaceP 0%N 1%N). Qed.
@@ -424,7 +424,7 @@ Lemma uniform_completely_regular {d} {T : uniformType d} :
 Proof. by move=> x B clB Bx; exact: point_uniform_separator. Qed.
 
 Lemma normal_completely_regular {d} {T : topologicalType d} :
-  normal_space d T -> accessible_space T -> completely_regular_space T.
+  normal_space T -> accessible_space T -> completely_regular_space T.
 Proof.
 move/normal_separatorP => + /accessible_closed_set1 cl1 x A ? ?; apply => //.
 by apply/disjoints_subset => ? ->.
@@ -570,7 +570,7 @@ by apply: (subset_trans cAV); rewrite setCK; exact: interior_subset.
 Qed.
 
 Lemma pseudometric_normal {d} {R : realType} {X : pseudoMetricType d R} :
-  normal_space d X.
+  normal_space X.
 Proof.
 apply/(@normal_openP _ R) => A B clA clB AB0.
 have eps' (D : set X) : closed D -> forall x, exists eps : {posnum R}, ~ D x ->

@@ -29,15 +29,11 @@ From mathcomp Require Import product_topology subspace_topology.
 
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
-Reserved Notation "A .-type" (at level 4, format "A .-type").
-
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Fact subtype_fdisp {T} (A : set T) : fdisp_t.
 Proof. by []. Qed.
-
-Notation "A .-type" := (subtype_fdisp A) : fdisp_scope. 
 
 Definition set_type_topology_def {d} {X : topologicalType d} (A : set X) :=
   with_fdisp (subtype_fdisp A) (initial_topology (set_val : A -> X)).
@@ -55,10 +51,8 @@ HB.instance Definition _ {d} {R : realType} {X : pseudoMetricType d R}
 Section subspace_sig.
 Context {d} {X : topologicalType d} (A : set X).
 
-Import ExplicitNbhsDisplays.
-
 Lemma subspace_subtypeP (x : A) (U : set A) :
-  nbhs x U <-> A.-sub.-nbhs (set_val x) (set_val @` U).
+  nbhs x U <-> nbhs (set_val x : subspace A) (set_val @` U).
 Proof.
 rewrite /nbhs /= -nbhs_subspace_in //.
   by case: x; rewrite set_valE => //= ? /set_mem.
@@ -78,7 +72,7 @@ Lemma subspace_sigL_continuousP {d'} {Y : topologicalType d'} (f : X -> Y) :
 Proof.
 split.
   have /continuous_subspaceT/subspaceT_continuous/= :=
-    @initial_continuous _ A X set_val.
+    @initial_continuous A _ X set_val.
   move=> svf ctsf; apply/continuous_subspace_setT => x /=.
   apply: (continuous_comp (S := subspace A) (g := f)); last exact: ctsf.
   by move=> U nfU; exact: svf.
@@ -105,8 +99,8 @@ Proof. exact: (@subspace_valL_continuousP' _ _ point). Qed.
 
 End subspace_sig.
 
-Lemma within_continuous_comp {d d' d''}
-  {U : topologicalType d} {V : topologicalType d'} {W : topologicalType d''}
+Lemma within_continuous_comp {d1} {U : topologicalType d1}
+  {d2} {V : topologicalType d2} {d3} {W : topologicalType d3}
   (A : set V) (f : V -> U) (g : U -> W) :
   {in f @` A, continuous g} ->
   {within A, continuous f} ->
@@ -118,7 +112,7 @@ by apply/cg/image_f; rewrite inE; exact/set_valP.
 Qed.
 
 Section subtype_setX.
-Context {d d'} {X : topologicalType d} {Y : topologicalType d'}.
+Context {d} {X : topologicalType d} {d'} {Y : topologicalType d'}.
 Context (A : set X) (B : set Y).
 
 Program Definition setX_of_sigT (ab : A `*` B) : (A * B)%type :=

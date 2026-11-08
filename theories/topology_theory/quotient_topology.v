@@ -25,8 +25,6 @@ Fact quotient_fdisp : fdisp_t.
 Proof. by []. Qed.
 Definition quotient_topology (T : Type) (Q : quotType T) : Type := Q.
 
-Notation "'quot'" := (quotient_fdisp) (only printing) : fdisp_scope.
-
 Section quotients.
 Local Open Scope quotient_scope.
 Section unpointed.

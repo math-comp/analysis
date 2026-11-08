@@ -267,13 +267,11 @@ apply: wedge_fun_continuous; last exact: wedge_prod_pointE.
 exact: dfwith_continuous.
 Qed.
 
-Import ExplicitNbhsDisplays.
-
 Lemma wedge_prod_open (x : wedge) (A : set wedge) :
   finite_set [set: I] ->
   (forall i, closed [set p0 i]) ->
   nbhs x A ->
-  (range wedge_prod).-sub.-nbhs (wedge_prod x) (wedge_prod @` A).
+  nbhs (wedge_prod x : subspace (range wedge_prod)) (wedge_prod @` A).
 Proof.
 move=> fsetI clI; case: wedge_nbhs_specP => [//|i0 bcA|i z zNp0 /= wNz].
   pose B_ i : set (subspace (range wedge_prod)) :=
@@ -298,8 +296,7 @@ rewrite [x in nbhs x _]/wedge_prod /= wedge_lift_funE.
 have : wedge_prod @` (A `&` (@wedge_lift i @` (~`[set p0 i])))
     `<=`  wedge_prod @` A.
   by move=> ? [] ? [] + /= [w] wpi => /[swap] <- Aw <-; exists (wedge_lift w).
-move/filterS; apply; first exact: (@nbhs_filter _ (subspace _)).
-apply/nbhs_subspace_ex.
+move/filterS; apply; apply/nbhs_subspace_ex.
   exists (wedge_lift z) => //.
   by rewrite /wedge_prod wedge_lift_funE //; exact: wedge_prod_pointE.
 exists (proj i @^-1` (@wedge_lift i @^-1`

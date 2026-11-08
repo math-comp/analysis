@@ -130,14 +130,6 @@ Reserved Notation "A °" (format "A °").
 Reserved Notation "[ 'locally' P ]" (format "[ 'locally'  P ]").
 Reserved Notation "x ^'" (format "x ^'").
 
-Reserved Notation "d .-open" (at level 5, format "d .-open").
-Reserved Notation "d .-interior" (at level 5, format "d .-interior").
-Reserved Notation "d .-open_nbhs" (at level 5, format "d .-open_nbhs").
-Reserved Notation "d .-basis" (at level 5, format "d .-basis").
-Reserved Notation "d .-closure" (at level 5, format "d .-closure").
-Reserved Notation "d .-closed" (at level 5, format "d .-closed").
-Reserved Notation "d .-clopen" (at level 5, format "d .-clopen").
-
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -168,10 +160,10 @@ HB.structure Definition BiPointedTopological d :=
   { X of BiPointed X & Topological d X }.
 
 #[short(type="subTopologicalType")]
-HB.structure Definition SubTopological d d' (V : topologicalType d)
-  (S : pred V) := {U of @SubNbhs d d' V S U & Topological d' U}.
+HB.structure Definition SubTopological d' d (V : topologicalType d)
+  (S : pred V) := {U of @SubNbhs d' d V S U & Topological d' U}.
 
-HB.instance Definition _ (d d' : fdisp_t) (T : topologicalType d) :=
+HB.instance Definition _ d' d (T : topologicalType d) :=
   @Nbhs_isTopological.Build d' (with_fdisp d' T) open nbhs_pfilter_subproof nbhsE_subproof openE_subproof.
 HB.saturate with_fdisp.
 
@@ -319,7 +311,7 @@ Notation "A °" := (@interior _ _ A) (only parsing)
 #[deprecated(since="mathcomp-analysis 1.10.0", note="use the notation instead ° instead of ^°")]
 Notation "A ^°" := (A°) (only parsing).
 
-Lemma continuousP d d' (S : topologicalType d) (T : topologicalType d')
+Lemma continuousP d (S : topologicalType d) d' (T : topologicalType d')
   (f : S -> T) :
   continuous f <-> forall A, open A -> open (f @^-1` A).
 Proof.
@@ -356,8 +348,8 @@ Unshelve. all: by end_near. Qed.
 
 (* limit composition *)
 
-Lemma continuous_cvg {T : Type} d d' {V : topologicalType d} 
-  {U : topologicalType d'} (F : set_system T) (FF : Filter F)
+Lemma continuous_cvg {T : Type} d {V : topologicalType d} 
+  d' {U : topologicalType d'} (F : set_system T) (FF : Filter F)
   (f : T -> V) (h : V -> U) (a : V) :
   {for a, continuous h} ->
   f @ F --> a -> (h \o f) @ F --> h a.
@@ -376,9 +368,9 @@ move=> ach /cvg_ex[l fxl]; apply/cvg_ex; exists (h l).
 by apply: continuous_cvg => //; exact: ach.
 Qed.
 
-Lemma continuous2_cvg {d d' d''} {T : Type}
-  {V : topologicalType d} {W : topologicalType d'}
-  {U : topologicalType d''} (F : set_system T) (FF : Filter F)
+Lemma continuous2_cvg T
+  {d1} {V : topologicalType d1} {d2} {W : topologicalType d2}
+  {d3} {U : topologicalType d3} (F : set_system T) (FF : Filter F)
   (f : T -> V) (g : T -> W) (h : V -> W -> U) (a : V) (b : W) :
   h z.1 z.2 @[z --> (a, b)] --> h a b ->
   f @ F --> a -> g @ F --> b -> (fun x => h (f x) (g x)) @ F --> h a b.
@@ -387,9 +379,9 @@ move=> h_continuous fa fb; apply: (cvg_trans _ h_continuous).
 exact: (cvg_comp _ (fun x => h x.1 x.2) (cvg_pair fa fb)).
 Qed.
 
-Lemma continuous_comp_cvg {d d' d''}
-  {T : topologicalType d} {V : topologicalType d'}
-  {U : topologicalType d''} (f : T -> V) (h : V -> U) (r : T) (l : U) :
+Lemma continuous_comp_cvg 
+  {d1} {T : topologicalType d1} {d2} {V : topologicalType d2}
+  {d3} {U : topologicalType d3} (f : T -> V) (h : V -> U) (r : T) (l : U) :
   {for f r, continuous h} ->
   (h \o f) x @[x --> r] --> l -> h x @[x --> f r] --> l.
 Proof.
@@ -400,30 +392,29 @@ have /hfrl : nbhs l Y by exact: open_nbhs_nbhs.
 by rewrite nbhsE => -[W [oW Wr]]; exact.
 Qed.
 
-Lemma cvg_near_cst {d} (T : Type) (U : topologicalType d)
+Lemma cvg_near_cst T d (U : topologicalType d)
   (l : U) (f : T -> U) (F : set_system T) {FF : Filter F} :
   (\forall x \near F, f x = l) -> f @ F --> l.
 Proof.
 move=> fFl P /=; rewrite !near_simpl => Pl.
 by apply: filterS fFl => _ ->; exact: nbhs_singleton.
 Qed.
-Arguments cvg_near_cst {d T U} l {f F FF}.
+Arguments cvg_near_cst {T d U} l {f F FF}.
 
-Lemma is_cvg_near_cst {d} (T : Type) (U : ptopologicalType d)
+Lemma is_cvg_near_cst T d (U : ptopologicalType d)
   (l : U) (f : T -> U) (F : set_system T) {FF : Filter F} :
   (\forall x \near F, f x = l) -> cvg (f @ F).
 Proof. by move=> /cvg_near_cst/cvgP. Qed.
-Arguments is_cvg_near_cst {d T U} l {f F FF}.
+Arguments is_cvg_near_cst {T d U} l {f F FF}.
 
-Lemma near_cst_continuous {d d'} 
-  (T : topologicalType d) (U : topologicalType d')
-  (l : U) (f : T -> U) (x : T) :
+Lemma near_cst_continuous d (T : topologicalType d) 
+  d' (U : topologicalType d') (l : U) (f : T -> U) (x : T) :
   (\forall y \near x, f y = l) -> {for x, continuous f}.
 Proof.
 move=> eq_f_l; apply: cvg_near_cst; apply: filterS (eq_f_l) => y ->.
 by rewrite (nbhs_singleton eq_f_l).
 Qed.
-Arguments near_cst_continuous {d d' T U} l [f x].
+Arguments near_cst_continuous {d T d' U} l [f x].
 
 Lemma cvg_cst d (U : topologicalType d) (x : U) (T : Type)
     (F : set_system T) {FF : Filter F} :
@@ -440,8 +431,8 @@ Arguments is_cvg_cst {d U} x {T F FF}.
 #[global] Hint Extern 0 (cvg (_ @ _)) => solve [apply: is_cvg_cst] : core.
 #[global] Hint Extern 0 (cvgn (_ @ _)) => solve [apply: is_cvg_cst] : core.
 
-Lemma cst_continuous {d d'} 
-  {T : topologicalType d} {U : topologicalType d'} (x : U) :
+Lemma cst_continuous {d} {T : topologicalType d} 
+  {d'} {U : topologicalType d'} (x : U) :
   continuous (fun _ : T => x).
 Proof. by move=> t; exact: cvg_cst. Qed.
 
@@ -726,7 +717,7 @@ Lemma cvg_within_filter {T U} {f : T -> U} (F : set_system T) {FF : (Filter F) }
   (G : set_system U) (D : set T) : (f @ F) --> G -> (f @ within D F) --> G.
 Proof. exact: cvg_trans (cvg_fmap2 (cvg_within _)). Qed.
 
-Lemma cvg_app_within {d} {T} {U : ptopologicalType d} 
+Lemma cvg_app_within {T} {d} {U : ptopologicalType d} 
   (f : T -> U) (F : set_system T) (D : set T) : 
   Filter F -> cvg (f @ F) -> cvg (f @ within D F).
 Proof.
@@ -890,7 +881,7 @@ End Closed.
 #[deprecated(since="mathcomp-analysis 1.15.0", note="use `closure_isolated_limit_point` instead")]
 Notation closure_limit_point := __deprecated__closure_limit_point (only parsing).
 
-Lemma preimage_closed {d d'} {T : topologicalType d} {U : topologicalType d'}
+Lemma preimage_closed {d} {T : topologicalType d} {d'} {U : topologicalType d'}
   (f : T -> U) (D : set U) :
   {in ~` f @^-1` D, continuous f} -> closed D -> closed (f @^-1` D).
 Proof.
@@ -903,7 +894,7 @@ Qed.
 #[deprecated(since="mathcomp-analysis 1.16.0", note="renamed to `preimage_closed`")]
 Notation closed_comp := preimage_closed (only parsing).
 
-Lemma closed_cvg {d T} {V : topologicalType d} {F} {FF : ProperFilter F}
+Lemma closed_cvg {T d} {V : topologicalType d} {F} {FF : ProperFilter F}
     (u_ : T -> V) (A : V -> Prop) :
     (* BUG: elim does not see this as an elimination principle if A : set V *)
     closed A -> (\forall n \near F, A (u_ n)) ->
@@ -912,10 +903,10 @@ Proof.
 move=> + FAu_ l u_Fl; apply => B /u_Fl /=; rewrite nbhs_filterE.
 by move=> /(filterI FAu_) => /filter_ex[t [Au_t u_Bt]]; exists (u_ t).
 Qed.
-Arguments closed_cvg {d T V F FF u_} _ _ _ _ _.
+Arguments closed_cvg {T d V F FF u_} _ _ _ _ _.
 
-Lemma continuous_closedP d d' 
-  (S : topologicalType d) (T : topologicalType d') (f : S -> T) :
+Lemma continuous_closedP d (S : topologicalType d) d' (T : topologicalType d') 
+    (f : S -> T) :
   continuous f <-> forall A, closed A -> closed (f @^-1` A).
 Proof.
 rewrite continuousP; split=> ctsf ? ?.
@@ -1226,58 +1217,59 @@ Qed.
 End basis.
 
 Section ClopenSets.
-Implicit Types (d : fdisp_t).
+Context {d} {T : topologicalType d}.
 
-Definition clopen {d} {T : topologicalType d} (A : set T) := open A /\ closed A.
+Definition clopen (A : set T) := open A /\ closed A.
 
-Lemma clopenI {d} {T : topologicalType d} : setI_closed (@clopen d T).
+Lemma clopenI : setI_closed clopen.
 Proof. by move=> ? ? [] ? ? [] ? ?; split; [exact: openI|exact: closedI]. Qed.
 
-Lemma clopenU {d} {T : topologicalType d} : setU_closed (@clopen d T).
+Lemma clopenU : setU_closed clopen.
 Proof. by move=> ? ? [] ? ? [] ? ?; split; [exact: openU|exact: closedU]. Qed.
 
-Lemma clopenC {d} {T : topologicalType d} (A B : set T) : 
+Lemma clopenC (A B : set T) : 
   clopen A -> clopen (~`A).
 Proof. by case=> ? ?; split;[exact: closed_openC | exact: open_closedC ]. Qed.
 
-Lemma clopen0 {d} {T : topologicalType d} : @clopen d T set0.
+Lemma clopen0 : clopen set0.
 Proof. by split; [exact: open0 | exact: closed0]. Qed.
 
-Lemma clopenT {d} {T : topologicalType d} : clopen [set: T].
+Lemma clopenT : clopen [set: T].
 Proof. by split; [exact: openT | exact: closedT]. Qed.
 
-Lemma preimage_clopen 
-  {d d'} {T : topologicalType d} {U : topologicalType d'}
+End ClopenSets.
+
+Lemma preimage_clopen d {T : topologicalType d} d' {U : topologicalType d'}
   (f : T -> U) (A : set U) :
  clopen A -> continuous f -> clopen (f @^-1` A).
 Proof. by case=> ? ?; split; [ exact: open_comp | exact: preimage_closed]. Qed.
 
-End ClopenSets.
 #[deprecated(since="mathcomp-analysis 1.16.0", note="renamed to `preimage_clopen`")]
 Notation clopen_comp := preimage_clopen (only parsing).
 
-HB.mixin Record isContinuous {d d'} {X : nbhsType d} {Y : nbhsType d'} 
+HB.mixin Record isContinuous {d} {X : nbhsType d} {d'} {Y : nbhsType d'} 
   (f : X -> Y) := { 
   continuous_fun : continuous f
 }.
 
 #[short(type = "continuousType")]
-HB.structure Definition Continuous {d d'} {X : nbhsType d} {Y : nbhsType d'} := {
-  f of @isContinuous d d' X Y f
+HB.structure Definition Continuous {d} {X : nbhsType d} 
+    {d'} {Y : nbhsType d'} := {
+  f of @isContinuous d X d' Y f
 }.
 
 #[deprecated(since="mathcomp-analysis 1.17.0",
              note="use `continuous_fun` instead")]
 Notation cts_fun := (continuous_fun) (only parsing).
 
-HB.instance Definition _ {d d'} 
-  {X : topologicalType d} {Y : topologicalType d'} :=
+HB.instance Definition _ {d} {X : topologicalType d} 
+    {d'} {Y : topologicalType d'} :=
   gen_eqMixin (continuousType X Y).
-HB.instance Definition _ {d d'}
-  {X : topologicalType d} {Y : topologicalType d'} :=
+HB.instance Definition _ {d} {X : topologicalType d} 
+    {d'} {Y : topologicalType d'} :=
   gen_choiceMixin (continuousType X Y).
 
-Lemma continuousEP {d d'} {X : nbhsType d} {Y : nbhsType d'} 
+Lemma continuousEP {d} {X : nbhsType d} {d'} {Y : nbhsType d'} 
   (f g : continuousType X Y) :
   f = g <-> f =1 g.
 Proof.
@@ -1288,22 +1280,22 @@ rewrite eqfg in ffun *; congr {| Continuous.sort := _; Continuous.class := {|
 exact: Prop_irrelevance.
 Qed.
 
-Definition mkcts {d d'} {X : nbhsType d} {Y : nbhsType d'} 
+Definition mkcts {d} {X : nbhsType d} {d'} {Y : nbhsType d'} 
   (f : X -> Y) (f_cts : continuous f) := f.
 
-HB.instance Definition _ {d d'} {X : nbhsType d} {Y : nbhsType d'} 
+HB.instance Definition _ {d} {X : nbhsType d} {d'} {Y : nbhsType d'} 
   (f: X -> Y) (f_cts : continuous f) :=
-  @isContinuous.Build d d' X Y (mkcts f_cts) f_cts.
+  @isContinuous.Build d X d' Y (mkcts f_cts) f_cts.
 
 Section continuous_comp.
-Context {d d' d''} 
-  {X : topologicalType d} {Y : topologicalType d'} {Z : topologicalType d''}
+Context {d1} {X : topologicalType d1} {d2} {Y : topologicalType d2} 
+  {d3} {Z : topologicalType d3} 
   (f : continuousType X Y) (g : continuousType Y Z).
 
 #[local] Lemma cts_fun_comp : continuous (g \o f).
 Proof. move=> x; apply: continuous_comp; exact: continuous_fun. Qed.
 
-HB.instance Definition _ := @isContinuous.Build d d'' X Z (g \o f) cts_fun_comp.
+HB.instance Definition _ := @isContinuous.Build d1 X d3 Z (g \o f) cts_fun_comp.
 
 End continuous_comp.
 
@@ -1311,43 +1303,16 @@ Section continuous_id.
 Context {d} {X : topologicalType d}.
 
 HB.instance Definition _ := 
-  @isContinuous.Build d d X X (@idfun X) id_continuous.
+  @isContinuous.Build d X d X (@idfun X) id_continuous.
 
 End continuous_id.
 
 Section continuous_const.
-Context {d d'} {X : topologicalType d} {Y : topologicalType d'} (y : Y).
+Context {d} {X : topologicalType d} {d'} {Y : topologicalType d'} (y : Y).
 
 #[local] Lemma cts_const : continuous (@cst X Y y).
 Proof. by move=> x; exact: cvg_cst. Qed.
 
-HB.instance Definition _ := @isContinuous.Build d d' X Y (cst y) cts_const.
+HB.instance Definition _ := @isContinuous.Build d X d' Y (cst y) cts_const.
 
 End continuous_const.
-
-Module ExplicitNbhsDisplays.
-Export filter.ExplicitNbhsDisplays.
-
-Notation "d .-open" := (@open d _).
-Notation "'open'" := (@open default_fdisp _) (only printing).
-
-Notation "d .-interior" := (@interior d _).
-Notation "A °" := (@interior default_fdisp _ A) (only printing) 
-  : classical_set_scope.
-
-Notation "d .-open_nbhs" := (@open_nbhs d _).
-Notation "'open_nbhs'" := (@open_nbhs default_fdisp _) (only printing).
-
-Notation "d .-basis" := (@basis d _).
-Notation "'basis'" := (@basis default_fdisp _) (only printing).
-
-Notation "d .-closure" := (@closure d _).
-Notation "'closure'" := (@closure default_fdisp _) (only printing).
-
-Notation "d .-closed" := (@closed d _).
-Notation "'closed'" := (@closed default_fdisp _) (only printing).
-
-Notation "d .-clopen" := (@clopen d _).
-Notation "'clopen'" := (@clopen default_fdisp _) (only printing).
-
-End ExplicitNbhsDisplays.

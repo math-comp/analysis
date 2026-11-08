@@ -40,8 +40,6 @@ From mathcomp Require Import pseudometric_structure.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
-Reserved Notation "f .-initial" (at level 4, format "f .-initial").
-
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -53,14 +51,11 @@ Local Open Scope ring_scope.
 Fact initial_fdisp (S T : Type) (f : S -> T) : fdisp_t.
 Proof. by []. Qed.
 
-Notation "f .-initial" := (initial_fdisp f) : fdisp_scope.
-
 Definition initial_topology {S : Type} {T : Type}
   (f : S -> T) : Type := S.
 
 Section Initial_Topology.
-Context (d : fdisp_t) (S : choiceType) (T : topologicalType d).
-Context (f : S -> T).
+Context (S : choiceType) d (T : topologicalType d) (f : S -> T).
 Local Notation W := (initial_topology f).
 
 Definition initial_open := [set f @^-1` A | A in open].
@@ -120,15 +115,15 @@ End Initial_Topology.
 (*#[deprecated(since="mathcomp-analysis 1.17.0", note="renamed `initial_open`")]
 Notation wopen := initial_open (only parsing).*)
 
-HB.instance Definition _ d (S : pointedType) (T : topologicalType d) 
+HB.instance Definition _ (S : pointedType) d (T : topologicalType d) 
   (f : S -> T) := Pointed.on (initial_topology f).
 
 Definition sub_initial_topology (V : Type) (S : pred V) (U : subChoiceType S)
   : Type := initial_topology (\val : U -> V).
 
 Section SubType_isSubTopological.
-Context (d : fdisp_t).
-Context (V : topologicalType d) (S : pred V) (U : subChoiceType S).
+Context (d : fdisp_t) (V : topologicalType d) (S : pred V) 
+  (U : subChoiceType S).
 
 Local Notation T := (sub_initial_topology U).
 HB.instance Definition _ := SubChoice.on T.
@@ -144,8 +139,7 @@ End SubType_isSubTopological.
 
 Section initial_uniform.
 Local Open Scope relation_scope.
-Context (d : fdisp_t) (pS : choiceType) (U : uniformType d).
-Context (f : pS -> U).
+Context (pS : choiceType) d (U : uniformType d) (f : pS -> U).
 
 Let S := initial_topology f.
 
@@ -198,7 +192,7 @@ HB.instance Definition _ := @Nbhs_isUniform.Build
 End initial_uniform.
 
 Section initial_unif_continuous.
-Context {d : fdisp_t} {T : choiceType} {U : uniformType d} (f : T -> U).
+Context {T : choiceType} {d} {U : uniformType d} (f : T -> U).
 
 Lemma initial_unif_continuous : 
   unif_continuous (f : initial_topology f -> U).
@@ -225,12 +219,12 @@ Qed.
 
 End initial_unif_continuous.
 
-HB.instance Definition _ (d : fdisp_t) (pS : pointedType) 
-  (U : uniformType d) (f : pS -> U) := Pointed.on (initial_topology f).
+HB.instance Definition _ (pS : pointedType) d (U : uniformType d) (f : pS -> U)
+  := Pointed.on (initial_topology f).
 
 Section initial_pseudoMetric.
-Context (d : fdisp_t) {R : realType} (U : pseudoMetricType d R).
-Context (pS : choiceType) (f : pS -> U).
+Context d {R : realType} (U : pseudoMetricType d R) 
+  (pS : choiceType) (f : pS -> U).
 
 Notation S := (initial_topology f).
 
@@ -281,8 +275,7 @@ End initial_pseudoMetric.
     Consider `[0,1[ | {2}` as a subset of `[0,3]` for an example
 *)
 Section initial_order_refine.
-Context {td : fdisp_t} {od : Order.disp_t}.
-Context {X : orderTopologicalType td od} {Y : subType X}.
+Context {td od} {X : orderTopologicalType td od} {Y : subType X}.
 
 Let OrdU : orderTopologicalType _ od := order_topology (sub_type Y).
 Let InitialU : topologicalType _ := initial_topology (val : sub_type Y -> X).
@@ -305,9 +298,8 @@ Qed.
 
 End initial_order_refine.
 
-Lemma continuous_comp_initial {d d' : fdisp_t} {Y : choiceType} 
-  {X : topologicalType d} {Z : topologicalType d'}
-  (w : Y -> Z) (f : X -> initial_topology w) :
+Lemma continuous_comp_initial {Y : choiceType} {d} {X : topologicalType d} 
+  {d'} {Z : topologicalType d'} (w : Y -> Z) (f : X -> initial_topology w) :
   continuous (w \o f) -> continuous f.
 Proof.
 move=> cf z U [?/= [[W oW <-]]] /= Wsfz /filterS; apply; apply: cf.

@@ -51,8 +51,6 @@ From mathcomp Require Import uniform_structure.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
-Reserved Notation "d .-ball" (at level 5, format "d .-ball").
-
 Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -91,7 +89,7 @@ HB.structure Definition PseudoMetric d (R : numDomainType) :=
 HB.structure Definition PseudoPointedMetric d (R : numDomainType) :=
   {T of Pointed T & Uniform d T & Uniform_isPseudoMetric d R T}.
 
-HB.instance Definition _ (d d' : fdisp_t) R (T : pseudoMetricType d R) :=
+HB.instance Definition _ d' d R (T : pseudoMetricType d R) :=
   Uniform_isPseudoMetric.Build d' R (with_fdisp d' T) 
     ball_center_subproof ball_sym_subproof ball_triangle_subproof 
     entourageE_subproof.
@@ -179,9 +177,6 @@ Definition nbhs_ball_ {R : numDomainType} {T T'} (ball : T -> R -> set T')
 
 Definition nbhs_ball d {R : numDomainType} {M : pseudoMetricType d R} :=
   nbhs_ball_ (@ball d R M).
-
-Notation "d .-nbhs_ball" := (@nbhs_ball d _ _) (format "d .-nbhs_ball").
-Notation "'nbhs_ball'" := (@nbhs_ball default_fdisp _ _) (only printing).
 
 Lemma nbhs_ballE d {R : numDomainType} {M : pseudoMetricType d R} :
   @nbhs_ball d R M = nbhs.
@@ -316,8 +311,8 @@ Proof. by move=> bxz /ball_sym /(ball_split bxz). Qed.
 
 End pseudoMetricType_numFieldType.
 
-Lemma cvg_withinP {d} {T : topologicalType d} {R : archiRealFieldType}
-  {M : pseudoMetricType d R} (f : M -> T) (p : M) (l : T) (A : set M) :
+Lemma cvg_withinP {d} {T : topologicalType d} {d'} {R : archiRealFieldType}
+  {M : pseudoMetricType d' R} (f : M -> T) (p : M) (l : T) (A : set M) :
   f @ within A (nbhs p) --> l <->
   (forall u : M^nat, (forall n, A (u n)) /\ u @ \oo --> p ->
     f (u n) @[n --> \oo] --> l).
@@ -352,8 +347,8 @@ exists (fun n => sval (cid (hV (PosNum (invn n))))).
   by rewrite /sval/=; case: cid => // x [Ax xpN].
 Unshelve. all: by end_near. Qed.
 
-Lemma cvg_nbhsP {d} {T : topologicalType d} {R : archiRealFieldType}
-  {M : pseudoMetricType d R} (f : M -> T) (p : M) (l : T) :
+Lemma cvg_nbhsP {d} {T : topologicalType d} {d'} {R : archiRealFieldType}
+  {M : pseudoMetricType d' R} (f : M -> T) (p : M) (l : T) :
   f @ p --> l <->
   (forall u : M^nat, u @ \oo --> p -> f (u n) @[n --> \oo] --> l).
 Proof.
@@ -365,8 +360,8 @@ Qed.
 Section entourages.
 Context {R : numDomainType}.
 
-Lemma unif_continuousP {d d'} 
-  (U : pseudoMetricType d R) (V : pseudoMetricType d' R) (f : U -> V) :
+Lemma unif_continuousP d (U : pseudoMetricType d R)
+  d' (V : pseudoMetricType d' R) (f : U -> V) :
   unif_continuous f <->
   forall e, e > 0 -> exists2 d, d > 0 &
     forall x, ball x.1 d x.2 -> ball (f x.1) e (f x.2).
@@ -378,12 +373,12 @@ Qed.
 
 End entourages.
 
-Lemma countable_uniformity_metric d {R : realType} {T : pseudoMetricType d R} :
+Lemma countable_uniformity_metric {d} {R : realType} {T : pseudoMetricType d R}:
   countable_uniformity T.
 Proof.
 apply/countable_uniformityP.
 exists (fun n => [set xy : T * T | ball xy.1 n.+1%:R^-1 xy.2]); last first.
-  by move=> n; exact: (entourage_ball _ n.+1%:R^-1%:pos).
+  by move=> n; apply: (entourage_ball _ n.+1%:R^-1%:pos).
 move=> E; rewrite -entourage_ballE => -[e e0 subE].
 exists (Num.truncn e^-1); apply: subset_trans subE => xy; apply: le_ball.
 by rewrite /= -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0// ltW// truncnS_gt.
@@ -539,11 +534,3 @@ move:r => _/posnumP[r] z /(_ (ball z ((r%:num/2)%:pos)%:num)) [].
   exact: nbhsx_ballx.
 by move=> y [+/ball_sym]; rewrite [t in ball x t z]splitr; apply: ball_triangle.
 Qed.
-
-Module ExplicitNbhsDisplays.
-Export uniform_structure.ExplicitNbhsDisplays.
-
-Notation "d .-ball" := (@ball d _ _).
-Notation "'ball'" := (@ball default_fdisp _ _) (only printing).
-
-End ExplicitNbhsDisplays.

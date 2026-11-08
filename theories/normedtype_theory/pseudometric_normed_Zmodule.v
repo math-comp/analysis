@@ -137,7 +137,7 @@ HB.structure Definition TopologicalNmodule d :=
   PreTopologicalNmodule_isTopologicalNmodule d M}.
 
 Section TopologicalNmodule_theory.
-Context {d} {E : Type} {F : topologicalNmodType d} (U : set_system E).
+Context {E : Type} {d} {F : topologicalNmodType d} (U : set_system E).
 
 Lemma cvg_sum (I : Type) (r : seq I) (P : pred I)
     (Ff : I -> E -> F) (Fa : I -> F) :
@@ -155,7 +155,7 @@ Qed.
 End TopologicalNmodule_theory.
 
 Section TopologicalNmodule_theory.
-Context {d d'} {E : topologicalType d} {F : topologicalNmodType d'}.
+Context {d} {E : topologicalType d} {d'} {F : topologicalNmodType d'}.
 
 Lemma sum_continuous (I : Type) (r : seq I) (P : pred I) (f : I -> E -> F) :
     (forall i, P i -> continuous (f i)) ->
@@ -165,7 +165,7 @@ Proof. by move=> FC0; apply: continuous_big => //; exact: add_continuous. Qed.
 End TopologicalNmodule_theory.
 
 Section cvg_composition_topologicalNmodType.
-Context {d} {T : Type} {V : topologicalNmodType d} (F : set_system T)
+Context {T : Type} {d} {V : topologicalNmodType d} (F : set_system T)
     {FF : Filter F}.
 Implicit Types (f g : T -> V) (a b : V).
 
@@ -185,7 +185,8 @@ End cvg_composition_topologicalNmodType.
 Notation fun_cvgD := cvgD (only parsing).
 
 Section within_continuous_topologicalNmodType.
-Context {d d'} {T : topologicalType d} {V : topologicalNmodType d'} (A : set T).
+Context {d} {T : topologicalType d} {d'} {V : topologicalNmodType d'} 
+  (A : set T).
 Implicit Types f g : T -> V.
 
 Lemma within_continuousD f g :
@@ -303,7 +304,7 @@ HB.instance Definition _ :=
 HB.end.
 
 Section cvg_composition_topologicalZmodType.
-Context {d} {T : Type} (V : topologicalZmodType d) (F : set_system T)
+Context {T : Type} {d} (V : topologicalZmodType d) (F : set_system T)
     {FF : Filter F}.
 Implicit Types (f g : T -> V) (a b : V).
 
@@ -344,7 +345,8 @@ End cvg_composition_topologicalZmodType.
 Notation fun_cvgN := cvgN (only parsing).
 
 Section within_continuous_topologicalZmodType.
-Context {d d'} {T : topologicalType d} {V : topologicalZmodType d'} (A : set T).
+Context {d} {T : topologicalType d} {d'} {V : topologicalZmodType d'} 
+  (A : set T).
 Implicit Types f g : T -> V.
 
 Lemma within_continuousB f g :
@@ -369,7 +371,7 @@ HB.structure Definition UniformNmodule d :=
   {M of PreUniformNmodule d M & PreUniformNmodule_isUniformNmodule d M & TopologicalNmodule d M}.
 
 Section prod_TopologicalNmodule.
-Context {d d'} {E : topologicalNmodType d} {F : topologicalNmodType d'}.
+Context {d} {E : topologicalNmodType d} {d'} {F : topologicalNmodType d'}.
 
 Let prod_add_continuous : continuous (fun x : (E * F) * (E * F) => x.1 + x.2).
 Proof.
@@ -388,7 +390,7 @@ HB.instance Definition _ := PreTopologicalNmodule_isTopologicalNmodule.Build
 End prod_TopologicalNmodule.
 
 Section prod_UniformNmodule.
-Context {d d'} {E : UniformNmodule.type d} {F : UniformNmodule.type d'}.
+Context {d} {E : UniformNmodule.type d} {d'} {F : UniformNmodule.type d'}.
 
 Let prod_add_unif_continuous :
   unif_continuous (fun x : (E * F) * (E * F) => x.1 + x.2).
@@ -428,7 +430,8 @@ HB.structure Definition UniformZmodule d :=
     & UniformNmodule_isUniformZmodule d M & TopologicalZmodule d M}.
 
 Section prod_TopologicalZmodule.
-Context {d d'} {E : TopologicalZmodule.type d} {F : TopologicalZmodule.type d'}.
+Context {d} {E : TopologicalZmodule.type d} 
+  {d'} {F : TopologicalZmodule.type d'}.
 
 Let prod_opp_continuous : continuous (-%R : E * F -> E * F).
 Proof.
@@ -445,7 +448,7 @@ HB.instance Definition _ := TopologicalNmodule_isTopologicalZmodule.Build
 End prod_TopologicalZmodule.
 
 Section prod_UniformZmodule.
-Context {d d'} {E : UniformZmodule.type d} {F : UniformZmodule.type d'}.
+Context {d} {E : UniformZmodule.type d} {d'} {F : UniformZmodule.type d'}.
 
 Lemma prod_opp_unif_continuous : unif_continuous (-%R : E * F -> E * F).
 Proof.
@@ -738,7 +741,7 @@ rewrite propeqE nbhs0P [X in _ <-> X]nbhs0P/= -propeqE.
 by apply: eq_near => e; rewrite [_ + _ + _]addrC subrKA.
 Qed.
 
-Lemma cvg_comp_shift {T : Type} (x y : V) (f : V -> T) :
+Lemma cvg_comp_shift {T} (x y : V) (f : V -> T) :
   (f \o shift x) @ y = f @ (y + x).
 Proof.
 rewrite funeqE => A; rewrite /= !near_simpl (near_shift (y + x)).
@@ -952,8 +955,8 @@ HB.instance Definition _ :=
 HB.end.
 
 Section prod_pseudoMetricNormedZmod.
-Context {d d' : fdisp_t} {K : numDomainType}.
-Context {U : metricNormedZmodType d K} {V : metricNormedZmodType d' K}.
+Context {d} {K : numDomainType} {U : metricNormedZmodType d K} 
+  {d'} {V : metricNormedZmodType d' K}.
 
 Lemma ball_prod_normE : ball = ball_ (fun x => `| x : U * V |).
 Proof.
@@ -971,8 +974,8 @@ HB.instance Definition _ :=
 End prod_pseudoMetricNormedZmod.
 
 Section prod_NormedModule_lemmas.
-Context {d d' : fdisp_t} {T : Type} {K : numDomainType}.
-Context {U : metricNormedZmodType d K} {V : metricNormedZmodType d' K}.
+Context {T : Type} {d} {K : numDomainType} {U : metricNormedZmodType d K} 
+  {d'} {V : metricNormedZmodType d' K}.
 
 Lemma fcvgr2dist_ltP {F : set_system U} {G : set_system V}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V) :
@@ -1161,14 +1164,14 @@ Proof.
 by rewrite at_leftN -?fmap_comp; under [_ \o _]eq_fun => ? do rewrite /= opprK.
 Qed.
 
-Lemma fmap_at_left0P {T : Type} {R : numFieldType} x (f : R -> T) :
+Lemma fmap_at_left0P {T} {R : numFieldType} x (f : R -> T) :
   (f (x - e) @[e --> 0^'+]) = (f @ x^'-).
 Proof.
 rewrite -(subrr (- x)) at_right_shift at_rightN -fmap_comp.
 by apply: near_eq_cvg_eq; apply/nearW => y/=; rewrite opprB addNKr opprK.
 Qed.
 
-Lemma fmap_at_right0E {T : Type} {R : numFieldType} (x : R) (f : R -> T) :
+Lemma fmap_at_right0E {T} {R : numFieldType} (x : R) (f : R -> T) :
   (f (x + e) @[e --> 0^'+]) = (f @ x^'+).
 Proof.
 rewrite -(subrr x) at_right_shift.
@@ -1462,7 +1465,7 @@ Ltac near_simpl := rewrite ?near_simpl.
 End NearNorm.
 
 Section cvg_composition_metricNormedZmodType.
-Context {d} {K : numFieldType} {V : metricNormedZmodType d K} {T : Type}
+Context {d} {K : numFieldType} {V : metricNormedZmodType d K} {T}
   (F : set_system T) {FF : Filter F}.
 Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a b : V).
 
@@ -1512,7 +1515,7 @@ Proof. by rewrite norm_cvg0P. Qed.
 End cvg_composition_metricNormedZmodType.
 
 Section limit_composition_metricNormedZmodType.
-Context {d} {K : numFieldType} {V : metricNormedZmodType d K} {T : Type}
+Context {d} {K : numFieldType} {V : metricNormedZmodType d K} {T}
   (F : set_system T) {FF : ProperFilter F}.
 Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a : V).
 
@@ -1537,9 +1540,9 @@ Qed.
 End limit_composition_metricNormedZmodType.
 
 Section domination.
-Context {d d' : fdisp_t} {T : Type} {K : numDomainType}. 
-Context {V : PseudoMetricNormedZmodule.type d K} 
-        {W : PseudoMetricNormedZmodule.type d' K}.
+Context {T : Type} {d} {K : numDomainType} 
+  {V : PseudoMetricNormedZmodule.type d K} 
+  {d'} {W : PseudoMetricNormedZmodule.type d' K}.
 
 Definition dominated_by (h : T -> V) (k : K) (f : T -> W) (F : set_system T) :=
   F [set x | `|f x| <= k * `|h x|].
@@ -1562,9 +1565,9 @@ Lemma sub_dominatedr d (T : Type) (K : numDomainType)
 Proof. by move=> le_fg; apply: filterS2 le_fg => x; apply: le_trans. Qed.
 
 Section ex_dom_bound.
-Context {d d' : fdisp_t} {T : Type} {K : numFieldType}.
-Context {V : PseudoMetricNormedZmodule.type d K} 
-        {W : PseudoMetricNormedZmodule.type d' K}.
+Context {T : Type} {d} {K : numFieldType} 
+  {V : PseudoMetricNormedZmodule.type d K} 
+  {d'} {W : PseudoMetricNormedZmodule.type d' K}.
 
 Lemma ex_dom_bound (h : T -> V) (f : T -> W) (F : set_system T)
     {PF : ProperFilter F} :
@@ -1598,7 +1601,7 @@ Qed.
 
 End ex_dom_bound.
 
-Definition bounded_near {d} {T : Type} {K : numFieldType}
+Definition bounded_near {T d} {K : numFieldType}
     {V : PseudoMetricNormedZmodule.type d K}
   (f : T -> V) (F : set_system T) :=
   \forall M \near +oo, F [set x | `|f x| <= M].
@@ -1608,14 +1611,14 @@ Notation "[ 'bounded' E | x 'in' A ]" :=
 Notation bounded_set := [set A | [bounded x | x in A]].
 Notation bounded_fun := [set f | [bounded f x | x in setT]].
 
-Definition fun1 {T : Type} {K : numFieldType} : T -> K^o := fun=> 1.
+Definition fun1 {T} {K : numFieldType} : T -> K^o := fun=> 1.
 Arguments fun1 {T K} x /.
 
 Section bounded_near.
-Context {d} {T : Type} {K : numFieldType} {V : metricNormedZmodType d K}.
+Context {T : Type} {d} {K : numFieldType} {V : metricNormedZmodType d K}.
 
 Lemma sub_boundedr (F G : set_system T) : F `=>` G ->
-  (@bounded_near _ T K V)^~ G `<=` bounded_near^~ F.
+  (@bounded_near T _ K V)^~ G `<=` bounded_near^~ F.
 Proof. by move=> FG f; rewrite /bounded_near; apply: filterS=> M; apply: FG. Qed.
 
 Lemma sub_boundedl (f g : T -> V) (F : set_system T) (FF : Filter F) :
@@ -1633,19 +1636,19 @@ by apply: filterS FM => x /le_lt_trans/= ->//; rewrite ltrDl.
 Qed.
 
 Lemma dominated_by1 :
-  @dominated_by _ _ T K K^o V fun1 = fun k f F => F [set x | `|f x| <= k].
+  @dominated_by T _ K K^o _ V fun1 = fun k f F => F [set x | `|f x| <= k].
 Proof.
 rewrite funeq3E => k f F.
 by congr F; rewrite funeqE => x/=; rewrite normr1 mulr1.
 Qed.
 
 Lemma boundedE :
-  @bounded_near _ T K V 
+  @bounded_near T _ K V 
   = fun f F => \forall M \near +oo, dominated_by fun1 M f F.
 Proof. by rewrite dominated_by1. Qed.
 
 Lemma strictly_dominated_by1 :
-  @strictly_dominated_by _ _ T K K^o V fun1 
+  @strictly_dominated_by T _ K K^o _ V fun1 
   = fun k f F => F [set x | `|f x| < k].
 Proof.
 rewrite funeq3E => k f F.
@@ -1685,7 +1688,7 @@ have : i \in enum_fset I by [].
 by rewrite enum_fsetE => /mapP[/= j Ij ->] ; exact: le_bigmax.
 Qed.
 
-Lemma bounded_image d T (K : numFieldType) (V : metricNormedZmodType d K)
+Lemma bounded_image T d (K : numFieldType) (V : metricNormedZmodType d K)
     (f : T -> V) (A : set T) :
   [bounded f x | x in A] <-> bounded_set (f @` A).
 Proof.
@@ -1694,22 +1697,22 @@ split; rewrite /bounded_set /bounded_near.
 - by apply: filterS => r /= + t At => /(_ (f t)); apply; exists t.
 Qed.
 
-Lemma ub_bounded d (K : realFieldType) (M : K)
-    (V : metricNormedZmodType d K) T (f : T -> V) (A : set T) :
+Lemma ub_bounded d (K : realFieldType) (V : metricNormedZmodType d K) T 
+    (f : T -> V) (A : set T) (M : K) :
   (forall x, A x -> `|f x| <= M) -> [bounded f x | x in A].
 Proof.
 rewrite /bounded_near => M_ub.
 by near=> r => /= t At; rewrite (le_trans (M_ub _ At)).
 Unshelve. all: by end_near. Qed.
-Arguments ub_bounded {d K} M.
+Arguments ub_bounded {d K V T f A} M.
 
-Lemma bounded_ex_gt0 d T (K : realFieldType) (V : metricNormedZmodType d K)
+Lemma bounded_ex_gt0 T d (K : realFieldType) (V : metricNormedZmodType d K)
     (f : T -> V) (A : set T) :
   [bounded f x | x in A] ->
   exists2 M : K, M > 0 & forall x, A x -> `|f x| <= M.
 Proof. by rewrite /bounded_near; move/pinfty_ex_gt0. Qed.
 
-Lemma bounded_setU d T (K : realFieldType) (V : metricNormedZmodType d K)
+Lemma bounded_setU T d (K : realFieldType) (V : metricNormedZmodType d K)
     (f : T -> V) (A B : set T) :
   [bounded f x | x in A] -> [bounded f x | x in B] ->
   [bounded f x | x in A `|` B].
@@ -1720,27 +1723,27 @@ apply/(ub_bounded (MA + MB)) => x [Ax|Bx].
 - by rewrite (le_trans (MB_ub _ Bx))// lerDr ltW.
 Qed.
 
-Lemma bounded_set0 d T (K : numFieldType) (V : metricNormedZmodType d K)
+Lemma bounded_set0 T d (K : numFieldType) (V : metricNormedZmodType d K)
     (f : T -> V) :
   [bounded f x | x in set0].
 Proof. by near=> M => /=. Unshelve. all: by end_near. Qed.
 
-Lemma bounded_set1 d T (K : realFieldType) (V : metricNormedZmodType d K)
+Lemma bounded_set1 T d (K : realFieldType) (V : metricNormedZmodType d K)
     (f : T -> V) (x0 : T) :
   [bounded f x | x in [set x0]].
 Proof. by apply: ub_bounded => ? ->. Qed.
 
 Hint Resolve bounded_set0 bounded_set1 : core.
 
-Lemma boundedS d T (B A : set T) (K : realFieldType)
-    (V : metricNormedZmodType d K) (f : T -> V) : A `<=` B ->
+Lemma boundedS T d (K : realFieldType) (V : metricNormedZmodType d K) 
+    (B A : set T) (f : T -> V) : A `<=` B ->
   [bounded f x | x in B] -> [bounded f x | x in A].
 Proof.
 by move=> AB /bounded_ex_gt0[M M0 Mub]; apply: ub_bounded => x /AB; exact: Mub.
 Qed.
-Arguments boundedS {d T} B.
+Arguments boundedS {T d K V} B.
 
-Lemma boundedD d T (K : realFieldType) (V : metricNormedZmodType d K)
+Lemma boundedD T d (K : realFieldType) (V : metricNormedZmodType d K)
     (f g : T -> V) (A : set T) :
   [bounded f x | x in A] -> [bounded g x | x in A] ->
   [bounded f x + g x | x in A].
@@ -1750,7 +1753,7 @@ apply: ub_bounded => x Ax /=.
 by rewrite (le_trans (ler_normD _ _))//; apply: lerD; [exact:Mf_ub|exact:Mg_ub].
 Qed.
 
-Lemma bounded_itvbb td d (T : orderType d) (K : realFieldType) 
+Lemma bounded_itvbb od (T : orderType od) td (K : realFieldType) 
   (V : metricNormedZmodType td K) (f : T -> V) 
   (a b : T) (b1 b2 b1' b2' : bool) :
   [bounded f x | x in [set` Interval (BSide b1 a) (BSide b2 b)]] ->
@@ -1763,7 +1766,7 @@ rewrite -(setUitv_set2 b1 b2)//.
 by apply/bounded_setU; last exact/bounded_setU.
 Qed.
 
-Lemma eq_bounded d T (K : numFieldType) (V : metricNormedZmodType d K)
+Lemma eq_bounded T d (K : numFieldType) (V : metricNormedZmodType d K)
   (f g : T -> V) (A : set T) :
   {in A, f =1 g} -> [bounded f x | x in A] = [bounded g x | x in A].
 Proof.
@@ -1771,14 +1774,15 @@ move=> fg; apply: eq_near => M; apply/propeqP; apply: eq_forall => x.
 by apply: eq_forall => Ax /=; rewrite fg ?inE.
 Qed.
 
-Lemma continuous_compact_bounded d d' (T : topologicalType d) 
-  (K : realFieldType) (V : metricNormedZmodType d' K) (A : set T) (f : T -> V) :
+Lemma continuous_compact_bounded d (T : topologicalType d) 
+  d' (K : realFieldType) (V : metricNormedZmodType d' K) 
+  (A : set T) (f : T -> V) :
   compact A -> {within A, continuous f} -> [bounded f x | x in A].
 Proof.
 by move=> cA cf; exact/bounded_image/compact_bounded/continuous_compact.
 Qed.
 
-Lemma bounded_comp d T U (K : realFieldType) (V : metricNormedZmodType d K)
+Lemma bounded_comp T U d (K : realFieldType) (V : metricNormedZmodType d K)
     (f : T -> U) (g : U -> V) (E : set T) (F : set U) :
   f @` E `<=` F ->
   [bounded g y | y in F] -> [bounded g (f x) | x in E].
@@ -1787,7 +1791,7 @@ move=> rng_sub /bounded_ex_gt0[Mg Mg_gt0 Mg_ub].
 by apply/ub_bounded => x Ex; exact/(Mg_ub (f x))/rng_sub.
 Qed.
 
-Lemma bounded_center d (T : numDomainType) (K : realFieldType)
+Lemma bounded_center (T : numDomainType) d (K : realFieldType)
     (V : metricNormedZmodType d K) (f : T -> V) (x y a : T) (b1 b2 : bool) :
   [bounded f z | z in [set` Interval (BSide b1 (x - a)) (BSide b2 (y - a))]] ->
   [bounded f ((*z - a*) center a z) | z in [set` Interval (BSide b1 x) (BSide b2 y)]].

@@ -11,25 +11,24 @@ From mathcomp Require Import product_topology.
 (* # Subspaces of topological spaces                                          *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*                        subspace A == for (A : set T), this is a copy of T  *)
-(*                                      with a topology that ignores points   *)
-(*                                      outside A                             *)
-(*                   incl_subspace x == with x of type subspace A with        *)
-(*                                      (A : set T), inclusion of subspace A  *)
-(*                                      into T                                *)
-(*                   nbhs_subspace x == filter associated with x : subspace A *)
-(*          {within A, continuous f} == f is continuous as a function with    *)
-(*                                      domain subspace A                     *)
-(*           {into B, continuous f}  == f is continuous as a function with    *)
-(*                                      codomain subspace B                   *)
-(* {within A & into B, continuous f} == f is continuous as a function with    *)
-(*                                      domain subspace A, codomain subspace B*)
-(*                    subspace_ent A == subspace entourages                   *)
-(*                   subspace_ball A == balls of the pseudometric             *)
-(*                                      subspace structure                    *)
-(*        continuousSubspaceType A B == type of continuous functions from     *)
-(*                                      set A to set B with domain subspace A *)
-(*                                      The HB structure is ContinuousFun.    *)
+(*                 subspace A == for (A : set T), this is a copy of T with a  *)
+(*                               topology that ignores points outside A       *)
+(*            incl_subspace x == with x of type subspace A with (A : set T),  *)
+(*                               inclusion of subspace A into T               *)
+(*            nbhs_subspace x == filter associated with x : subspace A        *)
+(*          from_subspace A f == function of type `subspace A -> U` given a   *)
+(*                               function f of type `A -> U`                  *)
+(*                               The purpose of this definition is to         *)
+(*                               preserve the pretty-printing of the notation *)
+(*                               {within _, continuous _} below. Its use is   *)
+(*                               however likely to be later superseded by a   *)
+(*                               better (compositional) mechanism.            *)
+(*   {within A, continuous f} := continuous (from_subspace A f))              *)
+(*             subspace_ent A == subspace entourages                          *)
+(*            subspace_ball A == balls of the pseudometric subspace structure *)
+(* continuousSubspaceType A B == type of continuous functions from set A to   *)
+(*                             set B with domain subspace A                   *)
+(*                             The HB structure is ContinuousFun.             *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* `subdiagonal X`                                                            *)
@@ -37,23 +36,8 @@ From mathcomp Require Import product_topology.
 (*                                                                            *)
 (******************************************************************************)
 
-Reserved Notation "A .-sub" (at level 4, format "A .-sub").
 Reserved Notation "{ 'within' A , 'continuous' f }"
   (format "{ 'within'  A ,  'continuous'  f }").
-Reserved Notation "{ 'into' B , 'continuous' f }"
-  (format "{ 'into'  B ,  'continuous'  f }").
-Reserved Notation "{ 'within' A & 'into' B , 'continuous' f }"
-  (format "{ 'within'  A  &  'into'  B ,  'continuous'  f }").
-Reserved Notation "{ 'within' A , E @[ x --> F ] --> l }"
-  (x name, format "{ 'within'  A ,  E  @[ x  -->  F ]  -->  l }").
-Reserved Notation "{ 'into' B , F --> l }"
-  (format "{ 'into'  B ,  F  -->  l }").
-Reserved Notation "{ 'within' A & 'into' B , E @[ x --> F ] --> l }"
-  (x name, format "{ 'within'  A  &  'into'  B ,  E  @[ x  -->  F ]  -->  l }").
-Reserved Notation "A .-sub.-nbhs" (at level 5).
-Reserved Notation "A .-sub.-entourage" (at level 5).
-Reserved Notation "A .-sub.-ball" (at level 5).
-Reserved Notation "A .-sub.-open" (at level 5).
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -65,15 +49,14 @@ Local Open Scope ring_scope.
 Definition subspace {T : Type} (A : set T) := T.
 Arguments subspace {T} _ : simpl never.
 
-Fact subspace_fdisp {T} (A : set T) : fdisp_t.
+Fact subspace_fdisp {T : Type} (A : set T) : fdisp_t.
 Proof. by []. Qed.
-
-Notation "A .-sub" := (subspace_fdisp A).
 
 Definition incl_subspace {T A} (x : subspace A) : T := x.
 
 Section Subspace.
 Context {d} {T : topologicalType d} (A : set T).
+
 Definition nbhs_subspace (x : subspace A) : set_system (subspace A) :=
   if x \in A then within A (nbhs x) else globally [set x].
 
@@ -105,8 +88,8 @@ Qed.
 
 HB.instance Definition _ := Choice.copy (subspace A) _.
 
-HB.instance Definition _ := hasNbhs.Build 
-  (subspace_fdisp A) (subspace A) nbhs_subspace.
+HB.instance Definition _ := 
+  hasNbhs.Build (subspace_fdisp A) (subspace A) nbhs_subspace.
 
 Lemma nbhs_subspaceP (x : subspace A) :
   nbhs_subspace_spec x (A x) (~ A x) (x \in A) (nbhs x).
@@ -129,8 +112,8 @@ Lemma subspace_cvgP (F : set_system T) (x : T) : Filter F -> A x ->
   (F --> (x : subspace A)) <-> (F --> within A (nbhs x)).
 Proof. by case: _ / nbhs_subspaceP. Qed.
 
-Lemma subspace_continuousP {d'} {S : topologicalType d'} (f : T -> S) :
-  continuous (f : subspace A -> S) <->
+Lemma subspace_continuousP {d'} {U : topologicalType d'} (f : T -> U) :
+  continuous (f : subspace A -> U) <->
   (forall x, A x -> f @ within A (nbhs x) --> f x) .
 Proof.
 split => [ctsf x Ax W /=|wA x].
@@ -140,8 +123,8 @@ rewrite /continuous_at; case: _ / (nbhs_subspaceP x) => Ax.
 by move=> ? /nbhs_singleton //= ?; rewrite nbhs_simpl => ? ->.
 Qed.
 
-Lemma subspace_eq_continuous {d'} {S : topologicalType d'} 
-  (f g : subspace A -> S) :
+Lemma subspace_eq_continuous {d'} {U : topologicalType d'} 
+  (f g : subspace A -> U) :
   {in A, f =1 g} -> continuous f -> continuous g.
 Proof.
 rewrite ?subspace_continuousP => feq L x Ax; rewrite -(feq x) ?inE //.
@@ -204,8 +187,8 @@ Lemma open_subspaceTI (U : set (subspace A)) :
 Proof. by rewrite setIC open_subspaceIT. Qed.
 
 Lemma closed_subspaceT : closed (A : set (subspace A)).
-Proof. 
-rewrite -{2}(setCK A).
+Proof.
+rewrite -[X in closed X](setCK A);
 by apply: open_closedC; rewrite -open_subspaceIT setICl; exact: open0.
 Qed.
 
@@ -342,80 +325,21 @@ Global Instance subspace_proper_filter {d} {T : topologicalType d}
     (A : set T) (x : subspace A) :
   ProperFilter (nbhs_subspace x) := nbhs_subspace_filter x.
 
-Definition __deprecated__from_subspace {T U : Type} (A : set T) (f : T -> U)
+Definition from_subspace {T U : Type} (A : set T) (f : T -> U)
   : subspace A -> U := f.
-Arguments __deprecated__from_subspace {T U} A f.
-
-#[deprecated(since="1.20.0")]
-Notation from_subspace := __deprecated__from_subspace (only parsing).
+Arguments from_subspace {T U} A f.
 
 Notation "{ 'within' A , 'continuous' f }" :=
-  (continuous (f :> subspace A -> _)) (only parsing) : classical_set_scope.
-Notation "{ 'within' A , 'continuous' f }" :=
-  (forall x, @continuous_at (subspace_fdisp A) _ _ _ x f) 
-  (only printing) : classical_set_scope.
-Notation "{ 'within' A , E @[ x --> F ] --> l }" :=
-  (E @[x --> (F :> set_system (subspace A))] --> l)
-  (only parsing).
-Notation "{ 'within' A , E @[ x --> F ] --> l }" :=
-  (fmap (fun x => E) (@nbhs (subspace_fdisp A) _ _ F) --> l)
-  (only printing).
-
-Notation "{ 'into' B , 'continuous' f }" := 
-  (continuous (f :> _ -> subspace B)) (only parsing) 
-  : classical_set_scope.
-Notation "{ 'into' B , 'continuous' f }" := 
-  (forall x, @continuous_at _ (subspace_fdisp B) _ _ x f) 
-  (only printing) : classical_set_scope.
-Notation "{ 'into' B , F --> l }" :=
-  (F --> (l :> subspace B))
-  (only parsing).
-Notation "{ 'into' B , F --> l }" :=
-  (cvg_to F (@nbhs (subspace_fdisp B) _ _ l))
-  (only printing).
-Notation "{ 'into' B , F --> l }" :=
-  (cvg_to (nbhs F) (@nbhs (subspace_fdisp B) _ _ l))
-  (only printing).
-
-Notation "{ 'within' A & 'into' B , 'continuous' f }" := 
-  (continuous (f :> subspace A -> subspace B)) 
-  (only parsing): classical_set_scope.
-Notation "{ 'within' A & 'into' B , 'continuous' f }" := 
-  (forall x, @continuous_at 
-    (subspace_fdisp A) 
-    (subspace_fdisp B) _ _ x f) 
-  (only printing) : classical_set_scope.
-Notation "{ 'within' A & 'into' B , E @[ x --> F ] --> l }" :=
-  (E @[x --> (F :> set_system (subspace A))] --> (l :> subspace B))
-  (only parsing).
-Notation "{ 'within' A & 'into' B , E @[ x --> F ] --> l }" :=
-  (cvg_to 
-    (nbhs (fmap (fun x => E) (@nbhs (subspace_fdisp A) _ _ F)))
-    (@nbhs (subspace_fdisp B) _ _ l))
-  (only printing).
-
-Module ExplicitNbhsDisplays.
-Export connected.ExplicitNbhsDisplays.
-Export compact.ExplicitNbhsDisplays.
-
-Notation "A .-sub.-nbhs" := (@nbhs _ _ (subspace A)) (only parsing).
-Notation "A .-sub.-entourage" := (@entourage _ (subspace A)) (only parsing).
-Notation "A .-sub.-ball" := (@ball _ _ (subspace A)) (only parsing).
-Notation "A .-sub.-open" := (@open _ (subspace A)) (only parsing).
-Notation "A .-sub.-compact" := (@compact _ (subspace A)) (only parsing).
-
-End ExplicitNbhsDisplays.
-
-Import ExplicitNbhsDisplays.
+  (continuous (from_subspace A f)) : classical_set_scope.
 
 Arguments nbhs_subspaceP {d T} A x.
 
 Section SubspaceRelative.
-Context {d d' : fdisp_t} {T : topologicalType d}.
-Implicit Types (U : topologicalType d') (A B : set T).
+Context {d} {T : topologicalType d}.
+Implicit Types (A B : set T).
 
 Lemma nbhs_subspace_subset A B (x : T) :
-  A `<=` B -> B.-sub.-nbhs x `<=` A.-sub.-nbhs x.
+  A `<=` B -> nbhs (x : subspace B) `<=` nbhs (x : subspace A).
 Proof.
 rewrite /= => AB; case: (nbhs_subspaceP A); case: (nbhs_subspaceP B).
 - by move=> ? ?; apply: within_subset => //=; exact: (nbhs_filter x).
@@ -424,46 +348,48 @@ rewrite /= => AB; case: (nbhs_subspaceP A); case: (nbhs_subspaceP B).
 - by move=> ? ?.
 Qed.
 
-Lemma continuous_subspaceW {U} A B (f : T -> U) :
+Lemma continuous_subspaceW {d'} {U : topologicalType d'} A B (f : T -> U) :
   A `<=` B ->
   {within B, continuous f} -> {within A, continuous f}.
 Proof.
 by move=> ? ctsF ? ? ?; apply: (@nbhs_subspace_subset A B) => //; exact: ctsF.
 Qed.
 
-Lemma nbhs_subspaceT (x : T) : [set: T].-sub.-nbhs x = nbhs x.
+Lemma nbhs_subspaceT (x : T) : nbhs (x : subspace setT) = nbhs x.
 Proof.
 have [_|] := nbhs_subspaceP [set: T]; last by cbn.
 rewrite eqEsubset withinE; split => [W [V nbhsV]|W ?]; last by exists W.
 by rewrite 2!setIT => ->.
 Qed.
 
-Lemma continuous_subspaceT_for {U} A (f : T -> U) (x : T) :
-  A x -> {for x, continuous f} -> {for x, {within A, continuous f}}.
+Lemma continuous_subspaceT_for {d'} {U : topologicalType d'} A 
+    (f : T -> U) (x : T) :
+  A x -> {for x, continuous f} -> {for x, continuous (f : subspace A -> U)}.
 Proof.
 rewrite /continuous_at /prop_for => inA ctsf.
 have [_|//] := nbhs_subspaceP A x.
 by apply: (cvg_trans _ ctsf); apply: cvg_fmap2; exact: cvg_within.
 Qed.
 
-Lemma continuous_in_subspaceT {U} A (f : T -> U) :
+Lemma continuous_in_subspaceT {d'} {U : topologicalType d'} A (f : T -> U) :
   {in A, continuous f} -> {within A, continuous f}.
 Proof.
 rewrite continuous_subspace_in ?in_setP => ctsf t At.
 by apply: continuous_subspaceT_for => //=; exact: ctsf.
 Qed.
 
-Lemma continuous_subspaceT {U} A (f : T -> U) :
+Lemma continuous_subspaceT {d'} {U : topologicalType d'} A (f : T -> U) :
   continuous f -> {within A, continuous f}.
 Proof.
 move=> ctsf; rewrite continuous_subspace_in => ? ?.
 exact: continuous_in_subspaceT.
 Qed.
 
-Lemma cst_within_continuous {U} A u : {within A, continuous (@cst T U u)}.
+Lemma cst_within_continuous {d'} {U : topologicalType d'} A u : 
+  {within A, continuous (@cst T U u)}.
 Proof. by apply: continuous_subspaceT; exact: cst_continuous. Qed.
 
-Lemma continuous_open_subspace {U} A (f : T -> U) :
+Lemma continuous_open_subspace {d'} {U : topologicalType d'} A (f : T -> U) :
   open A -> {within A, continuous f} = {in A, continuous f}.
 Proof.
 rewrite openE continuous_subspace_in /= => oA; rewrite propeqE ?in_setP.
@@ -471,7 +397,7 @@ by split => + x /[dup] Ax /oA Aox => /(_ _ Ax);
   rewrite /continuous_at -(nbhs_subspace_interior Aox).
 Qed.
 
-Lemma continuous_inP {U} A (f : T -> U) : open A ->
+Lemma continuous_inP {d'} {U : topologicalType d'} A (f : T -> U) : open A ->
   {in A, continuous f} <-> open `<=` image_set_system A f open.
 Proof.
 move=> oA; rewrite -continuous_open_subspace// continuousP.
@@ -479,7 +405,8 @@ by under eq_forall do rewrite -open_setSI//.
 Qed.
 
 (* pasting lemma *)
-Lemma withinU_continuous {U} A B (f : T -> U) : closed A -> closed B ->
+Lemma withinU_continuous {d'} {U : topologicalType d'} A B (f : T -> U) :
+  closed A -> closed B ->
   {within A, continuous f} -> {within B, continuous f} ->
   {within A `|` B, continuous f}.
 Proof.
@@ -493,8 +420,9 @@ rewrite [RHS]setIUr -V2W -V1W eqEsubset; split=> t.
 by case=> [][] ? ?; split=> []; [left | left | right | right].
 Qed.
 
-Lemma subspaceT_continuous {U} A (B : set U) (f : {fun A >-> B}) :
-  {within A, continuous f} -> {within A & into B, continuous f}.
+Lemma subspaceT_continuous {d'} {U : topologicalType d'} A (B : set U) 
+    (f : {fun A >-> B}) :
+  {within A, continuous f} -> continuous (f : subspace A -> subspace B).
 Proof.
 move=> /continuousP ctsf; apply/continuousP => O /open_subspaceP [V oV VBOB].
 rewrite -open_subspaceIT; apply/open_subspaceP.
@@ -504,13 +432,14 @@ rewrite fVA -setIA setIid eqEsubset; split => x [fVx Ax]; split => //.
 - by have /[!esym VBOB]-[] : (O `&` B) (f x) by split => //; exact: funS.
 Qed.
 
-Lemma continuous_subspace0 {U} (f : T -> U) : {within set0, continuous f}.
+Lemma continuous_subspace0 {d'} {U : topologicalType d'} (f : T -> U) : 
+  {within set0, continuous f}.
 Proof.
 move=> x Q /=.
 by case: (nbhs_subspaceP (@set0 T) x) => // _ /nbhs_singleton /= ? ? ->.
 Qed.
 
-Lemma continuous_subspace1 {U} (a : T) (f : T -> U) :
+Lemma continuous_subspace1 {d'} {U : topologicalType d'} (a : T) (f : T -> U) :
   {within [set a], continuous f}.
 Proof.
 move=> x Q /=.
@@ -564,7 +493,7 @@ move=> [x y] [z /= Ez zE] /=; case: Ez; case: zE.
   by apply: subset_split_ent => //; exists z.
 Qed.
 
-Let subspace_uniform_nbhsE : A.-sub.-nbhs = nbhs_ subspace_ent.
+Let subspace_uniform_nbhsE : @nbhs _ _ (subspace A) = nbhs_ subspace_ent.
 Proof.
 pose EA := [set xy | xy.1 = xy.2 \/ A xy.1 /\ A xy.2].
 have entEA : subspace_ent EA.
@@ -627,7 +556,8 @@ rewrite /subspace_ball; (repeat case: ifP => /asboolP).
 - by move=> _ _ -> ->.
 Qed.
 
-Let subspace_pm_entourageE : A.-sub.-entourage = entourage_ subspace_ball.
+Let subspace_pm_entourageE : 
+  @entourage _ (subspace A) = entourage_ subspace_ball.
 Proof.
 rewrite eqEsubset; split; rewrite /subspace_ball.
   move=> U [W + subU]; rewrite -entourage_ballE => [[eps] nneg subW].
@@ -657,7 +587,7 @@ Section SubspaceInitial.
 Context {d} {T : topologicalType d} {U : choiceType} (f : U -> T).
 
 Lemma initial_subspace_open (A : set (initial_topology f)) :
-  open A -> (range f).-sub.-open (f @` A).
+  open A -> open (f @` A : set (subspace (range f))).
 Proof.
 case=> B oB <-; apply/open_subspaceP; exists B => //; rewrite eqEsubset.
 split => z [] /[swap]; first by case=> w _ <- ?; split; exists w.
@@ -666,8 +596,8 @@ Qed.
 
 End SubspaceInitial.
 
-Lemma continuous_compact {d d'} 
-  {T : topologicalType d} {U : topologicalType d'} (f : T -> U) A :
+Lemma continuous_compact {d} {T : topologicalType d} 
+    {d'} {U : topologicalType d'} (f : T -> U) A :
   {within A, continuous f} -> compact A -> compact (f @` A).
 Proof.
 move=> fcont Aco F FF FfA; set G := filter_from F (fun C => A `&` f @^-1` C).
@@ -684,8 +614,8 @@ have : image_set_system A f G B by exists B.
 by move=> /clsGp /(_ p_Cf) [q [[]]]; exists (f q).
 Qed.
 
-Lemma connected_continuous_connected {d d'} 
-  {T : topologicalType d} {U : topologicalType d'} (A : set T) (f : T -> U) :
+Lemma connected_continuous_connected {d} {T : topologicalType d} 
+    {d'} {U : topologicalType d'} (A : set T) (f : T -> U) :
   connected A -> {within A, continuous f} -> connected (f @` A).
 Proof.
 move=> cA cf; apply: contrapT => /connectedPn[E [E0 fAE sE]].
@@ -696,9 +626,10 @@ suff sAfE : separated (AfE false) (AfE true).
     have [t Et ftu] : (f @` A) u by rewrite fAE; case: b Ebu; [right|left].
     by exists t; split => //=; rewrite /preimage ftu.
   - by rewrite -setIUr -preimage_setU -fAE; exact/esym/setIidPl/preimage_image.
-  + rewrite -{2}(setIid A) ?setIA -(@closure_subspaceW _ _ A); first by move=> ?[].
+  + rewrite -{2}(setIid A) ?setIA -(@closure_subspaceW _ _ A). 
+      by move=> ?[].
     by rewrite -/(AfE false) -setIA -/(AfE true); case: sAfE.
-  + rewrite -{1}(setIid A) setIC ?setIA -(@closure_subspaceW _ _ A)
+  + rewrite -{1}(setIid A) setIC ?setIA -(@closure_subspaceW _ _ A) 
       => [? []//|].
     by rewrite -/(AfE true) -setIA -/(AfE false) setIC; case: sAfE.
 suff cI0 b : closure (AfE b) `&` AfE (~~ b) = set0.
@@ -727,8 +658,8 @@ have : f @` closure (AfE b) `&` f @` AfE (~~ b) = set0.
 by rewrite predeqE => /(_ (f t)) [fcAfEb] _; apply: fcAfEb; split; exists t.
 Qed.
 
-Lemma continuous_localP {d d'} 
-  {X : topologicalType d} {Y : topologicalType d'} (f : X -> Y) :
+Lemma continuous_localP {d} {X : topologicalType d} 
+    {d'} {Y : topologicalType d'} (f : X -> Y) :
   continuous f <->
   forall x : X, \forall U \near powerset_filter_from (nbhs x),
     {within U, continuous f}.
@@ -743,18 +674,17 @@ move/nbhs_singleton: nbhsU; move: x; apply/in_setP.
 by rewrite -continuous_open_subspace.
 Unshelve. end_near. Qed.
 
-Lemma continuous_subspace_setT {d d'} 
-  {T : topologicalType d} {U : topologicalType d'} (f : T -> U) :
+Lemma continuous_subspace_setT {d} {T : topologicalType d} 
+    {d'} {U : topologicalType d'} (f : T -> U) :
   continuous f <-> {within setT, continuous f}.
 Proof. by split => + x K nfK=> /(_ x K nfK); rewrite nbhs_subspaceT. Qed.
 
 Section subspace_product.
-Context {d d' d''} 
-  {X : topologicalType d} {Y : topologicalType d'} {Z : topologicalType d''} 
-  (A : set X) (B : set Y).
+Context {d1} {X : topologicalType d1} {d2} {Y : topologicalType d2} 
+  {d3} {Z : topologicalType d3} (A : set X) (B : set Y).
 
 Lemma nbhs_prodX_subspace_inE x : (A `*` B) x ->
-  (A `*` B).-sub.-nbhs x = @nbhs _ _ (subspace A * subspace B)%type x.
+  nbhs (x : subspace (A `*` B)) = @nbhs _ _ (subspace A * subspace B)%type x.
 Proof.
 case: x => a b [/= Aa Bb]; rewrite /nbhs/= -nbhs_subspace_in//.
 rewrite funeqE => U /=; rewrite propeqE; split; rewrite /nbhs /=.
@@ -780,9 +710,9 @@ Qed.
 End subspace_product.
 
 #[short(type = "continuousSubspaceType")]
-HB.structure Definition ContinuousSubspace {d d'} 
-  {X : topologicalType d} {Y : topologicalType d'} (A : set X) (B : set Y) :=
-  {f of @isFun (subspace A) Y A B f & @Continuous _ _ (subspace A) Y f }.
+HB.structure Definition ContinuousSubspace {d} {X : topologicalType d} 
+    {d'} {Y : topologicalType d'} (A : set X) (B : set Y) :=
+  {f of @isFun (subspace A) Y A B f & @Continuous _ (subspace A) _ Y f }.
 
 #[deprecated(since="mathcomp-analysis 1.16.0", note="renamed to `continuousSubspaceType`")]
 Notation continuousFunType := continuousSubspaceType.
@@ -790,12 +720,11 @@ Notation continuousFunType := continuousSubspaceType.
 Notation ContinuousFun A B := (ContinuousSubspace A B).
 
 Section continuous_fun_comp.
-Context {d d' d''} 
-  {X : topologicalType d} {Y : topologicalType d'} {Z : topologicalType d''} 
-  (A : set X) (B : set Y) (C : set Z)
+Context {d1} {X : topologicalType d1} {d2} {Y : topologicalType d2} 
+  {d3} {Z : topologicalType d3} (A : set X) (B : set Y) (C : set Z)
   {f : continuousSubspaceType A B} {g : continuousSubspaceType B C}.
 
-#[local] Lemma continuous_comp_subproof : {within A, continuous g \o f}.
+#[local] Lemma continuous_comp_subproof : continuous (g \o f : subspace A -> Z).
 Proof.
 move=> x; apply: continuous_comp; last exact: continuous_fun.
 exact/subspaceT_continuous/continuous_fun.
@@ -808,7 +737,7 @@ Qed.
 End continuous_fun_comp.
 
 Section continuous_patch.
-Context {d d'} {U : topologicalType d} {V : topologicalType d'} 
+Context {d} {U : topologicalType d} {d'} {V : topologicalType d'} 
   (A B : set U) (f g : U -> V).
 Hypotheses (contf : {within A, continuous f})
   (contg : {within B, continuous g})
@@ -835,7 +764,7 @@ Definition subdiagonal {d} {X : uniformType d} (A : set X) :
 Arguments subdiagonal {d X} _.
 
 Lemma ent_subdiagonal {d} {X : uniformType d} (A : set X) :
-  A.-sub.-entourage (subdiagonal A).
+  @entourage _ (subspace A) (subdiagonal A).
 Proof.
 rewrite -[entourage (subdiagonal A)]/(subspace_ent A (subdiagonal A)).
 rewrite /subspace_ent /filter_from /=.
@@ -846,7 +775,7 @@ move=> z /= [z12|[A1 [A2 _]]].
 Qed.
 
 Section HeineCantorUniform.
-Context {d d'} {X : uniformType d} {Y : uniformType d'}.
+Context {d} {X : uniformType d} {d'} {Y : uniformType d'}.
 
 Let unif_cont_at (A : set X) (f : X -> Y) (E : set (Y * Y))
     (i : subspace A * subspace A) (x : subspace A) : Prop :=
@@ -894,13 +823,13 @@ Unshelve. all: end_near. Qed.
 
 Lemma heine_cantor_subspace (A : set X) (f : X -> Y) :
   compact A -> {within A, continuous f} ->
-  @unif_continuous _ _ (subspace A) Y f.
+  @unif_continuous _ (subspace A) _ Y f.
 Proof.
 move=> cA cf E entE.
 rewrite -[nbhs _ E]/(subspace_ent A
   [set xy : subspace A * subspace A | E (f xy.1, f xy.2)]).
-have compactA_subspace : A.-sub.-compact A.
-  rewrite -[A in compact A](@setTI (subspace A)).
+have compactA_subspace : @compact _ (subspace A) A.
+  rewrite -[A](@setTI (subspace A)).
   have [_] := @compact_subspaceIP _ X A setT.
   by rewrite setTI; exact.
 have A_unif_cont_at : \forall V \near entourage, A `<=` @unif_cont_at A f E V.

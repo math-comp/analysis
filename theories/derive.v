@@ -128,8 +128,8 @@ Reserved Notation "f ^` ()" (format "f ^` ()").
 Reserved Notation "f ^` ( n )" (format "f ^` ( n )").
 
 Section Differential.
-Context {d d'} {K : numDomainType} 
-  {V : normedModType d K} {W : normedModType d' K}.
+Context {d} {K : numDomainType} {V : normedModType d K} 
+  {d'} {W : normedModType d' K}.
 
 Definition diff (F : filter_on V) (_ : phantom (set_system V) F) (f : V -> W) :=
   (get (fun (df : {linear V -> W}) => continuous df /\ forall x,
@@ -184,8 +184,8 @@ Unshelve. all: by end_near. Qed.
 End Differential.
 
 Section Differential_numFieldType.
-Context {d d'} {K : numFieldType (*TODO: to numDomainType?*)} 
-  {V : normedModType d K} {W : normedModType d' K}.
+Context {d} {K : numFieldType (*TODO: to numDomainType?*)} 
+  {V : normedModType d K} {d'} {W : normedModType d' K}.
 
 (* duplicate from Section Differential *)
 Local Notation differentiable f F :=
@@ -250,9 +250,8 @@ End jacobian.
 Notation "''J' f p" := (jacobian f p).
 
 Section DifferentialR.
-
-Context {d d'} {R : numFieldType} 
-  {V : normedModType d R} {W : normedModType d' R}.
+Context {d} {R : numFieldType} {V : normedModType d R}
+  {d'} {W : normedModType d' R}.
 
 (* split in multiple bits:
 - a linear map which is locally bounded is a little o of 1
@@ -269,8 +268,8 @@ by apply/eqolim0P; apply: (cvg_trans (dfc 0)); rewrite linear0.
 Unshelve. all: by end_near. Qed.
 
 Section littleo_lemmas.
-Context {d1 d2 d3} 
-  {X : normedModType d1 R} {Y : normedModType d2 R} {Z : normedModType d3 R}.
+Context {d1} {X : normedModType d1 R} 
+  {d2} {Y : normedModType d2 R} {d3} {Z : normedModType d3 R}.
 
 Lemma normm_littleo x (f : X -> Y) : `| [o_(x \near x) (1 : R) of f x]| = 0.
 Proof.
@@ -396,8 +395,8 @@ Notation "''D_' v f c" := (derive f c v). (* printing *)
 #[global] Hint Extern 0 (derivable _ _ _) => solve[apply: ex_derive] : core.
 
 Section DifferentialR_numFieldType.
-Context {d d'} {R : numFieldType} 
-  {V : normedModType d R} {W : normedModType d' R}.
+Context {d} {R : numFieldType} {V : normedModType d R}
+  {d'} {W : normedModType d' R}.
 
 Lemma deriveE (f : V -> W) (a v : V) :
   differentiable f a -> 'D_v f a = 'd f a v.
@@ -499,7 +498,7 @@ apply/eqaddoE; rewrite addr0 funeqE => ? /=; rewrite -[LHS]addr0; congr (_ + _).
 by rewrite littleoE; first exact: littleo0_subproof.
 Qed.
 
-Context {d d'} (V : normedModType d R) (W : normedModType d' R).
+Context {d} (V : normedModType d R) {d'} (W : normedModType d' R).
 
 Fact dadd (f g : V -> W) x :
   differentiable f x -> differentiable g x ->
@@ -547,9 +546,9 @@ apply/eqaddoE; rewrite funeqE => y /=.
 by rewrite diff_locallyx //= !scalerDl scaleolx.
 Qed.
 
-Context {d0 d0' d0'' : fdisp_t}.
-Implicit Types (U : normedModType d0 R) (V : normedModType d0' R)
-  (W : normedModType d0'' R).
+Context {d1 d2 d3 : fdisp_t}.
+Implicit Types (U : normedModType d1 R) (V : normedModType d2 R)
+  (W : normedModType d3 R).
 
 Fact dlin V' W' (f : {linear V' -> W'}) x :
   continuous f -> f \o shift x = cst (f x) + f +o_ 0 id.
@@ -649,9 +648,9 @@ Lemma diff_cst `(V : normedModType d R) `(W : normedModType d' R) a x :
   ('d (cst a) x : V -> W) = 0.
 Proof. by apply/diff_unique; have [] := dcst a x. Qed.
 
-Context d d' (V : normedModType d R) (W : normedModType d' R).
+Context d1 (V : normedModType d1 R) d2 (W : normedModType d2 R).
 
-Lemma differentiable_cst `(W' : normedModType d'' R) (a : W') (x : V) :
+Lemma differentiable_cst `(W' : normedModType d3 R) (a : W') (x : V) :
   differentiable (cst a) x.
 Proof. by apply/diff_locallyP; rewrite diff_cst; have := dcst a x. Qed.
 
@@ -750,13 +749,13 @@ Proof.
 by move=> df; apply/diff_locallyP; rewrite diffZl //; have [] := dscalel f df.
 Qed.
 
-Lemma diff_lin `(V' : normedModType d0 R) `(W' : normedModType d1 R) 
+Lemma diff_lin `(V' : normedModType d R) `(W' : normedModType d' R) 
   (f : {linear V' -> W'}) x :
   continuous f -> 'd f x = f :> (V' -> W').
 Proof. by move=> fcont; apply/diff_unique => //; apply: dlin. Qed.
 
-Lemma linear_differentiable d0 d0' (V' : normedModType d0 R) 
-  (W' : normedModType d0' R) (f : {linear V' -> W'}) x : 
+Lemma linear_differentiable d (V' : normedModType d R) 
+  d' (W' : normedModType d' R) (f : {linear V' -> W'}) x : 
   continuous f -> differentiable f x.
 Proof.
 by move=> fcont; apply/diff_locallyP; rewrite diff_lin //; have := dlin x fcont.

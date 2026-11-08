@@ -44,8 +44,6 @@ From mathcomp Require Import topology_structure.
 (* ```                                                                        *)
 (******************************************************************************)
 
-Reserved Notation "d .-entourage" (at level 5, format "d .-entourage").
-
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -81,7 +79,7 @@ HB.structure Definition Uniform d :=
 HB.structure Definition PointedUniform d :=
   {T of PointedTopological d T & Nbhs_isUniform_mixin d T}.
 
-HB.instance Definition _ (d d' : fdisp_t) (T : uniformType d) :=
+HB.instance Definition _ d' d (T : uniformType d) :=
   Nbhs_isUniform_mixin.Build d' (with_fdisp d' T)
     entourage_filter entourage_diagonal_subproof entourage_inv_subproof 
     entourage_split_ex_subproof nbhsE_subproof.
@@ -257,9 +255,6 @@ Qed.
 
 End uniformType1.
 
-Notation "d .-split_ent" := (@split_ent d _) (format "d .-split_ent").
-Notation "'split_ent'" := (@split_ent default_fdisp _) (only printing).
-
 Global Instance entourage_pfilter {d} {M : puniformType d} :
   ProperFilter (@entourage d M).
 Proof.
@@ -287,7 +282,7 @@ move=> y; rewrite xsectionI => -[/xsectionP xy [_ /xsectionP yz]].
 by apply/xsectionP; move: xy yz; exact: entourage_split.
 Qed.
 
-Lemma continuous_withinNx {d d'} {U : uniformType d} {V : uniformType d'} 
+Lemma continuous_withinNx {d} {U : uniformType d} {d'} {V : uniformType d'} 
   (f : U -> V) x :
   {for x, continuous f} <-> f @ x^' --> f x.
 Proof.
@@ -298,8 +293,8 @@ rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
 Unshelve. all: by end_near. Qed.
 
-Lemma continuous_injective_withinNx d d'
-  (T : topologicalType d) (U : topologicalType d') (f : T -> U) (x : T) :
+Lemma continuous_injective_withinNx d (T : topologicalType d) 
+  d' (U : topologicalType d') (f : T -> U) (x : T) :
   {for x, continuous f} ->
   (forall y, f y = f x -> y = x) -> f @ x^' --> (f x)^'.
 Proof.
@@ -338,12 +333,12 @@ move=> entA; split; first exact: open_interior.
 by apply: nbhs_singleton; apply: nbhs_interior; exact: nbhs_entourage.
 Qed.
 
-Definition unif_continuous d d' (U : uniformType d) (V : uniformType d') 
+Definition unif_continuous d (U : uniformType d) d' (V : uniformType d') 
   (f : U -> V) :=
   (map_pair f) @ entourage --> entourage.
 
-Lemma unif_continuous_continuous d d' 
-  (U : uniformType d) (V : uniformType d') (f : U -> V) :
+Lemma unif_continuous_continuous d (U : uniformType d) 
+  d' (V : uniformType d') (f : U -> V) :
   unif_continuous f -> continuous f.
 Proof.
 rewrite /unif_continuous /cvg_to !nbhs_simpl => ucf.
@@ -355,8 +350,8 @@ rewrite -image_sub => v [] u' /= Yfuu' <-.
 exact: YX.
 Qed.
 
-Lemma unif_continuous_comp d d' d'' 
-  {U : uniformType d} {V : uniformType d'} {W : uniformType d''} 
+Lemma unif_continuous_comp {d1} {U : uniformType d1} 
+  {d2} {V : uniformType d2} {d3} {W : uniformType d3} 
   (f : U -> V) (g : V -> W) :
   unif_continuous f -> unif_continuous g -> unif_continuous (g \o f).
 Proof. by move=> cf cg A /cg /cf; exact. Qed.
@@ -390,7 +385,7 @@ HB.mixin Record Uniform_isComplete d T & PointedUniform d T := {
 HB.structure Definition Complete d :=
   {T of Uniform d T & Uniform_isComplete d T & isPointed T}.
 
-HB.instance Definition _ d d' (T : completeType d) :=
+HB.instance Definition _ d' d (T : completeType d) :=
   Uniform_isComplete.Build d' (with_fdisp d' T) cauchy_cvg.
 
 Section completeType1.
@@ -403,11 +398,3 @@ Proof. by split=> [/cauchy_cvg|/cvg_cauchy]. Qed.
 End completeType1.
 Arguments cauchy_cvg {d T} F {FF} _ : rename.
 Arguments cauchy_cvgP {d T} F {FF}.
-
-Module ExplicitNbhsDisplays.
-Export topology_structure.ExplicitNbhsDisplays.
-
-Notation "d .-entourage" := (@entourage d _).
-Notation "'entourage'" := (@entourage default_fdisp _) (only printing).
-
-End ExplicitNbhsDisplays.
