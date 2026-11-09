@@ -495,16 +495,18 @@ Qed.
 End hahn_banach_extension_ctvs.
 
 (* TBA : to classical ? Where shoudl this go *)
-Lemma scaler_eq0 (R : numFieldType) (V: lmodType R) (a : V) t :  a != 0 -> (t *: a = 0 -> t = 0).
+Lemma scaler_eq0 (R : numFieldType) (V: lmodType R) (a : V) t :
+  a != 0 -> (t *: a = 0 -> t = 0).
 Proof.
 move=> a0 ta; apply: contrapT => /eqP t0.
 have : t^-1 *: (t *: a) = 0 by rewrite ta scaler0.
 by rewrite scalerA mulVf// scale1r; apply/eqP.
 Qed.
 
-Lemma scaleIl (R : numFieldType) (V: lmodType R) (a : V) :  a != 0 -> injective (fun t => t *: a).
+Lemma scaleIl (R : numFieldType) (V: lmodType R) (a : V) :
+  a != 0 -> injective (fun t => t *: a).
 Proof.
-move=> a0 s t => /eqP; rewrite -subr_eq0 -scalerBl => /eqP /(scaler_eq0 a0) /eqP.
+move=> a0 s t => /eqP; rewrite -subr_eq0 -scalerBl=> /eqP /(scaler_eq0 a0) /eqP.
 by rewrite subr_eq0 => /eqP.
 Qed.
 (*END TBA *)
