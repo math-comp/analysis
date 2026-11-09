@@ -2654,8 +2654,8 @@ pose dh (x : R) := df x - (f b - f a) / (g b - g a) * dg x.
 have his_der y : y \in `]a, b[%R -> is_derive x 1 h (dh x).
   by move=> yab; apply: is_deriveB; [exact: fdf|apply: is_deriveZ; exact: gdg].
 exists x => //.
-have := @derive_val _ _ _ R _ _ _ _ _ (his_der _ xab).
-have -> := @derive_val _ _ _ R _ _ _ _ _ derh.
+have := @derive_val _ _ R _ _ _ _ _ _ (his_der _ xab).
+have -> := @derive_val _ _ _ _ R _ _ _ _ derh.
 by move=> /eqP; rewrite eq_sym subr_eq add0r => /eqP ->; rewrite mulfK // dg0.
 Qed.
 

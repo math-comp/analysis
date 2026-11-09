@@ -71,7 +71,7 @@ Lemma entourage_E {R : numDomainType} {T T'} (ball : T -> R -> set T') :
   @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
 Proof. by []. Qed.
 
-HB.mixin Record Uniform_isPseudoMetric d (R : numDomainType) M 
+HB.mixin Record Uniform_isPseudoMetric d (R : numDomainType) M
   & Uniform d M := {
   ball : M -> R -> M -> Prop ;
   ball_center_subproof : forall x (e : R), 0 < e -> ball x e x ;
@@ -90,8 +90,8 @@ HB.structure Definition PseudoPointedMetric d (R : numDomainType) :=
   {T of Pointed T & Uniform d T & Uniform_isPseudoMetric d R T}.
 
 HB.instance Definition _ d' d R (T : pseudoMetricType d R) :=
-  Uniform_isPseudoMetric.Build d' R (with_fdisp d' T) 
-    ball_center_subproof ball_sym_subproof ball_triangle_subproof 
+  Uniform_isPseudoMetric.Build d' R (with_fdisp d' T)
+    ball_center_subproof ball_sym_subproof ball_triangle_subproof
     entourageE_subproof.
 HB.saturate with_fdisp.
 
@@ -526,8 +526,8 @@ End closed_ball_lemmas.
 #[deprecated(since="mathcomp-analysis 1.14.0", note="renamed to `closure_ballE`")]
 Notation closure_ball := closure_ballE (only parsing).
 
-Lemma subset_closure_half d {R : numFieldType} {V : pseudoMetricType d R} 
-  (x : V) (r : R) : 
+Lemma subset_closure_half d {R : numFieldType} {V : pseudoMetricType d R}
+  (x : V) (r : R) :
   0 < r -> closed_ball x (r / 2) `<=` ball x r.
 Proof.
 move:r => _/posnumP[r] z /(_ (ball z ((r%:num/2)%:pos)%:num)) [].

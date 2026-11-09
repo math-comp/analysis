@@ -52,7 +52,7 @@ move=> [P M_P sPA]; exists (fun i j => (P i j)°).
 by move=> ? ?; exists P.
 Qed.
 
-HB.instance Definition _ := Nbhs_isNbhsTopological.Build 
+HB.instance Definition _ := Nbhs_isNbhsTopological.Build
   _ 'M[T]_(m, n)
   mx_nbhs_filter mx_nbhs_singleton mx_nbhs_nbhs.
 
@@ -120,7 +120,7 @@ move=> [B [C entC sCB] sBA]; exists (fun i j => xsection (C i j) (M i j)).
 by move=> N CMN; apply/sBA; apply/xsectionP/sCB => ? ?; exact/xsectionP/CMN.
 Qed.
 
-HB.instance Definition _ := Nbhs_isUniform.Build 
+HB.instance Definition _ := Nbhs_isUniform.Build
   _ 'M[T]_(m, n)
   mx_ent_filter mx_ent_refl mx_ent_inv mx_ent_split mx_ent_nbhsE.
 
@@ -148,7 +148,7 @@ Unshelve. all: by end_near. Qed.
 
 Section matrix_PointedTopology.
 Context (m n : nat).
-HB.instance Definition _ d (T : ptopologicalType d) := 
+HB.instance Definition _ d (T : ptopologicalType d) :=
   Filtered.on 'M[T]_(m, n).
 (*HB.instance Definition _ (T : ptopologicalType) := Pointed.on 'M[T]_(m, n).*)
 (* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
@@ -228,11 +228,11 @@ apply: le_trans (@bigmin_le _ {posnum R} _ _ i _) _.
 exact: bigmin_le.
 Qed.
 
-HB.instance Definition _ := Uniform_isPseudoMetric.Build 
+HB.instance Definition _ := Uniform_isPseudoMetric.Build
   _ R 'M[T]_(m, n)
   mx_ball_center mx_ball_sym mx_ball_triangle mx_entourage.
 End matrix_PseudoMetric.
 
-HB.instance Definition _ d (R : numFieldType) 
-  (T : completePseudoMetricType d R) (m n : nat) := 
+HB.instance Definition _ d (R : numFieldType)
+  (T : completePseudoMetricType d R) (m n : nat) :=
   Uniform_isComplete.Build _ 'M[T]_(m, n) cauchy_cvg.

@@ -281,7 +281,7 @@ End TopologicalLmodule_numDomain.
 
 Section TopologicalLmodule_numField.
 
-Lemma openZ d (R : numFieldType) (E : topologicalLmodType d R) 
+Lemma openZ d (R : numFieldType) (E : topologicalLmodType d R)
   (U : set E) (r : R) :
   r != 0 -> open U -> open ( *:%R r @` U ).
 Proof.
@@ -293,8 +293,8 @@ Qed.
 End TopologicalLmodule_numField.
 
 Section TopologicalLmodule_theory.
-Context {d d'} {E : Type} {R : numFieldType} 
-  {F : topologicalLmodType d R} {G : topologicalLmodType d' R}.
+Context {E : Type} {d} {R : numFieldType} {F : topologicalLmodType d R}
+  {d'} {G : topologicalLmodType d' R}.
 
 Lemma continuousfor0_continuous (f : {linear F -> G}) :
   {for 0, continuous f} -> continuous f.
@@ -343,7 +343,7 @@ Qed.
 
 End topologicalLmodType_realFieldType.
 
-HB.factory Record TopologicalNmodule_isTopologicalLmodule 
+HB.factory Record TopologicalNmodule_isTopologicalLmodule
     d (R : numDomainType) M & PreTopologicalLmodule d R M := {
   scale_continuous : continuous (fun z : R^o * M => z.1 *: z.2) }.
 
@@ -377,7 +377,7 @@ absolutely_convex_set can be derived from it, by taking the absolute_convex clos
 
 #[short(type="convexTvsType")]
 HB.structure Definition ConvexTvs d (R : numDomainType) :=
-  {E of Uniform_isConvexTvs d R E 
+  {E of Uniform_isConvexTvs d R E
       & UniformZmodule d E & TopologicalLmodule d R E}.
 
 HB.mixin Record isSubConvexSpace (R : numDomainType) (V : convType R)
@@ -390,13 +390,13 @@ HB.structure Definition SubConvexSpace (R : numDomainType) (V : convType R) S :=
   { U of SubChoice V S U & ConvexSpace R U & isSubConvexSpace R V S U }.
 
 #[short(type="subConvexTvsType")]
-HB.structure Definition SubConvexTvs d' d (R : numDomainType) 
+HB.structure Definition SubConvexTvs d' d (R : numDomainType)
     (V : convexTvsType d R) (S : pred V) :=
-  { U of SubTopological d' S U & ConvexTvs d' R U 
+  { U of SubTopological d' S U & ConvexTvs d' R U
     & @GRing.SubLmodule R V S U }.
 
 Section SubLmodule_isSubConvexTvs.
-Context d (R : numFieldType) (V : convexTvsType d R) 
+Context d (R : numFieldType) (V : convexTvsType d R)
   (S : pred V) (U : subLmodType S).
 
 Definition init_subconvextvs := sub_initial_topology U.
@@ -657,7 +657,7 @@ HB.instance Definition _ := Uniform_isConvexTvs.Build _ R E locally_convex.
 
 HB.end.
 
-HB.factory Record NbhsBasisAt0_isConvexTvs 
+HB.factory Record NbhsBasisAt0_isConvexTvs
   (d : fdisp_t) (R : numFieldType) (E : Type) & GRing.Lmodule R E := {
   nbhsbasis_at0 : set_system E ;
   nonempty_nbhsbasis_at0 : nbhsbasis_at0 !=set0 ;
@@ -667,7 +667,7 @@ HB.factory Record NbhsBasisAt0_isConvexTvs
   expand_nbhsbasis_at0 : forall B r, nbhsbasis_at0 B ->
     exists2 U, nbhsbasis_at0 U & ( *:%R r) @` U `<=` B ;
   nbhsbasis_at0I : forall U V, nbhsbasis_at0 U -> nbhsbasis_at0 V ->
-    exists2 W, nbhsbasis_at0 W & W `<=` U `&` V 
+    exists2 W, nbhsbasis_at0 W & W `<=` U `&` V
 }.
 
 Definition filter_from_basis0 (R : numFieldType) (E : zmodType)
@@ -833,7 +833,7 @@ HB.instance Definition _ := @PreTopologicalLmod_isConvexTvs.Build _ R E
 
 HB.end.
 
-HB.factory Record NbhsSubbasisAt0_isConvexTvs 
+HB.factory Record NbhsSubbasisAt0_isConvexTvs
     (d : fdisp_t) (R : numFieldType) E & GRing.Lmodule R E := {
   nbhssubbasis_at0 : set_system E ;
   nonempty_nbhssubbasis_at0 : nbhssubbasis_at0 !=set0 ;
@@ -977,7 +977,7 @@ split; first by move=> /= ? [r r0 ->]; exact: nbhsx_ballx.
 by move=> /= B [r r0 Br]; exists (ball 0 r); [exists r|exact: Br].
 Qed.
 
-HB.instance Definition _ := TopologicalNmodule_isTopologicalLmodule.Build _ 
+HB.instance Definition _ := TopologicalNmodule_isTopologicalLmodule.Build _
   R R^o standard_scale_continuous.
 
 HB.instance Definition _ :=
@@ -986,7 +986,7 @@ HB.instance Definition _ :=
 End standard_topology.
 
 Section prod_ConvexTvs.
-Context d (K : numFieldType) (E : convexTvsType d K) 
+Context d (K : numFieldType) (E : convexTvsType d K)
   d' (F : convexTvsType d' K).
 
 Local Lemma prod_scale_continuous :
@@ -1029,14 +1029,14 @@ HB.instance Definition _ :=
 
 End prod_ConvexTvs.
 
-HB.structure Definition LinearContinuous d (K : numDomainType) 
+HB.structure Definition LinearContinuous d (K : numDomainType)
   (E : NbhsLmodule.type d K) d' (F : NbhsZmodule.type d') (s : K -> F -> F) :=
   {f of @GRing.Linear K E F s f & @Continuous d E d' F f }.
 
 (* see https://github.com/math-comp/math-comp/issues/1536
    we use GRing.Scale.law even though it is claimed to be internal *)
-HB.factory Structure isLinearContinuous d (K : numDomainType) 
-  (E : NbhsLmodule.type d K) d' (F : NbhsZmodule.type d') 
+HB.factory Structure isLinearContinuous d (K : numDomainType)
+  (E : NbhsLmodule.type d K) d' (F : NbhsZmodule.type d')
   (s : GRing.Scale.law K F) (f : E -> F) := {
     linearP : linear_for s f ;
     continuousP : continuous f
@@ -1050,7 +1050,7 @@ HB.instance Definition _ := isContinuous.Build _ E _ F f continuousP.
 HB.end.
 
 Section lcfun_pred.
-Context {d} {K : numDomainType} {E : NbhsLmodule.type d K} 
+Context {d} {K : numDomainType} {E : NbhsLmodule.type d K}
   {d'} {F : NbhsZmodule.type d'} {s : K -> F -> F}.
 
 Definition lcfun : {pred E -> F} :=
@@ -1125,9 +1125,9 @@ Qed.
 End lcfun.
 
 Section lcfun_comp.
-Context {d1} {R : numDomainType} {E : NbhsLmodule.type d1 R} 
-  {d2} {F : NbhsLmodule.type d2 R} {d3} {S : NbhsZmodule.type d3} 
-  {s : GRing.Scale.law R S} (f : {linear_continuous E -> F}) 
+Context {d1} {R : numDomainType} {E : NbhsLmodule.type d1 R}
+  {d2} {F : NbhsLmodule.type d2 R} {d3} {S : NbhsZmodule.type d3}
+  {s : GRing.Scale.law R S} (f : {linear_continuous E -> F})
   (g : {linear_continuous F -> S | s}).
 
 #[local] Lemma lcfun_comp_subproof1 : linear_for s (g \o f).
@@ -1143,7 +1143,7 @@ End lcfun_comp.
 
 Section lcfun_lmodtype.
 Import GRing.Theory.
-Context {d} {R : numFieldType} {E : convexTvsType d R} 
+Context {d} {R : numFieldType} {E : convexTvsType d R}
   {d'} {F : convexTvsType d' R}.
 Implicit Types (r : R) (f g : {linear_continuous E -> F}).
 
@@ -1186,7 +1186,7 @@ HB.instance Definition _ :=
 End lcfun_lmodtype.
 
 Section lcfunproperties.
-Context {d} {R : numDomainType} {E : NbhsLmodule.type d R} 
+Context {d} {R : numDomainType} {E : NbhsLmodule.type d R}
   {d'} {F : NbhsLmodule.type d' R} (f : {linear_continuous E -> F}).
 
 #[warn(note="Consider using `continuous_fun` instead.",cats="discoverability")]
@@ -1381,7 +1381,7 @@ HB.instance Definition _ := @isSemiNorm.Build  K V gauge_fun gauge0
 
 End gauge.
 
-Fact seminorm_fdisp {R : realFieldType} {E : lmodType R} 
+Fact seminorm_fdisp {R : realFieldType} {E : lmodType R}
   (P : set (Norm.SemiNorm.type E)) : fdisp_t.
 Proof. by []. Qed.
 
@@ -1485,7 +1485,7 @@ rewrite inE /ball /ball_ /= sub0r normrN !normZ !normrM !normr_id !normfV.
 by rewrite -mulrA mulVf ?normr_eq0// mulr1 !gtr0_norm ?gtr_pMr ?invf_lt1 ?ltr1n.
 Qed.
 
-HB.instance Definition _ := @NbhsSubbasisAt0_isConvexTvs.Build 
+HB.instance Definition _ := @NbhsSubbasisAt0_isConvexTvs.Build
   (seminorm_fdisp P) R (seminorm_on P0)
   seminorm_subbasis nonempty_subbasis mem0_seminorm_subbasis absorbing_seminorm
   absolutely_convex_seminorm_subbasis expand_seminorm_subbasis.
@@ -1519,7 +1519,7 @@ apply/seteqP; split => z /=.
 by rewrite norm0 => b0rp; exists 0 => //; exists z => //; rewrite add0r.
 Qed.
 
-Lemma continuous_seminorm x p : 
+Lemma continuous_seminorm x p :
   P p -> continuous_at x (p : seminorm_on P0 -> R).
 Proof.
 move=> Pp.

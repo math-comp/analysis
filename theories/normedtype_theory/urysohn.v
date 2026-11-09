@@ -281,7 +281,7 @@ HB.instance Definition _ := Choice.on urysohnType.
 
 HB.instance Definition _ := isUniform.Build default_fdisp urysohnType
   ury_unif_filter ury_unif_refl ury_unif_inv ury_unif_split.
-HB.instance Definition _ {p : Pointed T} := 
+HB.instance Definition _ {p : Pointed T} :=
   Pointed.copy urysohnType (Pointed.Pack p).
 
 Lemma normal_uniform_separator (B : set T) :
@@ -292,7 +292,7 @@ move=> clA clB AB0; have /(_ (~`B))[x Ax|] := normalT clA.
   - exact/closed_openC.
   - by move: x Ax; apply/ disjoints_subset.
 move=> V /set_nbhsP [U [oU AU UV]] cVcb.
-exists default_fdisp, (Uniform.class urysohnType), (apxU (U, ~` B)). 
+exists default_fdisp, (Uniform.class urysohnType), (apxU (U, ~` B)).
 split => //.
 - move=> ?; apply:sub_gen_smallest; exists (U, ~`B) => //; split => //=.
     exact/closed_openC.
@@ -324,7 +324,7 @@ Qed.
 End normal_uniform_separators.
 End Urysohn.
 
-Lemma uniform_separatorP {d} {T : topologicalType d} 
+Lemma uniform_separatorP {d} {T : topologicalType d}
     {R : realType} (A B : set T) :
   uniform_separator A B <->
   exists (f : T -> R), [/\ continuous f, range f `<=` `[0, 1],
@@ -518,7 +518,7 @@ HB.instance Definition _ := Uniform.copy opc
     one_point_compactification_completely_reg).
 
 Let X' := @initial_topology X opc Some.
-Lemma nbhs_one_point_compactification_weakE : 
+Lemma nbhs_one_point_compactification_weakE :
   @nbhs _ X X = nbhs_ (@entourage _ X').
 Proof.
 by rewrite nbhs_entourageE one_point_compactification_initial_topology.

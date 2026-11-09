@@ -231,7 +231,7 @@ move=> [[P Q]] /= [Px Qx] /= [/open_subspaceW oP /open_subspaceW oQ].
 by move=> ?; exists (P, Q); split.
 Qed.
 
-Lemma discrete_hausdorff {d} {T : discreteTopologicalType d} : 
+Lemma discrete_hausdorff {d} {T : discreteTopologicalType d} :
   hausdorff_space T.
 Proof.
 by move=> p q /(_ _ _ (discrete_set1 p) (discrete_set1 q)) [] // x [] -> ->.
@@ -980,7 +980,7 @@ Export countable_uniform.Exports.
 Notation countable_uniform := countable_uniform.type.
 
 Definition sup_pseudometric (R : realType) (T : Type) (Ii : Type)
-  (d : Ii -> fdisp_t) (Tc : forall i, PseudoMetric (d i) R T) 
+  (d : Ii -> fdisp_t) (Tc : forall i, PseudoMetric (d i) R T)
   (Icnt : countable [set: Ii]) : Type := T.
 
 Section sup_pseudometric.
@@ -1061,7 +1061,7 @@ Let gauged : Type := T.
 
 HB.instance Definition _ := Choice.on gauged.
 HB.instance Definition _ :=
-  @isUniform.Build default_fdisp 
+  @isUniform.Build default_fdisp
   gauged gauge gauge_filter gauge_refl gauge_inv gauge_split.
 
 Lemma gauge_countable_uniformity : countable_uniformity gauged.

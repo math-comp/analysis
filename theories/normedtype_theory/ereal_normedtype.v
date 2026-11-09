@@ -521,7 +521,7 @@ apply/seteqP; split=> A.
   + by rewrite set_itvE/= subTset => _ ->; exact: filter_nbhsT.
 Qed.
 
-HB.instance Definition _ := 
+HB.instance Definition _ :=
   Order_isNbhs.Build default_fdisp _ (\bar R) ereal_order_nbhsE.
 
 End ereal_OrderNbhs.

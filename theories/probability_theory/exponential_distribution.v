@@ -52,7 +52,7 @@ move=> x.
 apply: (@continuousM _ _ R^o (fun=> rate) (fun x => expR (- rate * x))).
   exact: cst_continuous.
 apply: continuous_comp; last exact: continuous_expR.
-by apply: continuousM => //; apply: (@continuousN _ _ _ R^o)
+by apply: continuousM => //; apply: (@continuousN _ _ R^o)
   ; exact: cst_continuous.
 Qed.
 
@@ -116,7 +116,7 @@ Qed.
 Let cexpNM : continuous (fun z : R^o => expR (- rate * z)).
 Proof.
 move=> z; apply: continuous_comp; last exact: continuous_expR.
-by apply: continuousM => //; apply: (@continuousN _ _ _ R^o)
+by apply: continuousM => //; apply: (@continuousN _ _ R^o)
   ; exact: cst_continuous.
 Qed.
 
@@ -128,7 +128,7 @@ rewrite (_ : 1 = - (- expR (- rate * 0))%:E)%E.
   by rewrite mulr0 expR0 EFinN oppeK.
 rewrite addeC.
 apply: (@continuous_FTC2 _ _ (fun x => - expR (- rate * x))) => //.
-- apply (@continuous_subspaceW _ _ _ R^o _ [set` `[0, +oo[%R]).
+- apply: (@continuous_subspaceW _ R^o _ _ _ [set` `[0, +oo[%R]).
   + exact: subset_itvl.
   + exact: within_continuous_exponential_pdf.
 - split.

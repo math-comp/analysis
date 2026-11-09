@@ -138,7 +138,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 (** Topological spaces *)
-HB.mixin Record Nbhs_isTopological d (T : Type) 
+HB.mixin Record Nbhs_isTopological d (T : Type)
 & Nbhs d T := {
   open : set_system T;
   nbhs_pfilter_subproof : forall p : T, ProperFilter (nbhs p) ;
@@ -306,7 +306,7 @@ Global Instance alias_nbhs_pfilter d {T : topologicalType d} x :
 Proof. exact: @nbhs_pfilter T x. Qed.
 
 Reserved Notation "A ^°" (at level 1, format "A ^°").
-Notation "A °" := (@interior _ _ A) (only parsing) 
+Notation "A °" := (@interior _ _ A) (only parsing)
   : classical_set_scope.
 #[deprecated(since="mathcomp-analysis 1.10.0", note="use the notation instead ° instead of ^°")]
 Notation "A ^°" := (A°) (only parsing).
@@ -320,7 +320,7 @@ move=> s A; rewrite nbhs_simpl /= !nbhsE => - [B [Bop Bfs] sBA].
 by exists (f @^-1` B); [split=> //; apply/fcont|move=> ? /sBA].
 Qed.
 
-Lemma open_comp {d d'} {T : topologicalType d'} {U : topologicalType d} 
+Lemma open_comp {d} {T : topologicalType d} {d'} {U : topologicalType d'}
   (f : T -> U) (D : set U) :
   {in f @^-1` D, continuous f} -> open D -> open (f @^-1` D).
 Proof.
@@ -328,7 +328,7 @@ rewrite !openE => fcont Dop x /= Dfx.
 by apply: fcont; [rewrite inE|exact: Dop].
 Qed.
 
-Lemma cvg_fmap d d' {T: topologicalType d} {U : topologicalType d'}
+Lemma cvg_fmap {d} {T: topologicalType d} {d'} {U : topologicalType d'}
   (F : set_system T) x (f : T -> U) :
    {for x, continuous f} -> F --> x -> f @ F --> f x.
 Proof. by move=> cf fx P /cf /fx. Qed.
@@ -348,7 +348,7 @@ Unshelve. all: by end_near. Qed.
 
 (* limit composition *)
 
-Lemma continuous_cvg {T : Type} d {V : topologicalType d} 
+Lemma continuous_cvg {T : Type} d {V : topologicalType d}
   d' {U : topologicalType d'} (F : set_system T) (FF : Filter F)
   (f : T -> V) (h : V -> U) (a : V) :
   {for a, continuous h} ->
@@ -358,8 +358,8 @@ move=> h_continuous fa fb; apply: (cvg_trans _ h_continuous).
 exact: (cvg_comp _ h fa).
 Qed.
 
-Lemma continuous_is_cvg {T : Type} d d' 
-  {V : ptopologicalType d} {U : ptopologicalType d'} [F : set_system T]
+Lemma continuous_is_cvg {T : Type} {d} {V : ptopologicalType d}
+  {d'} {U : ptopologicalType d'} [F : set_system T]
   (FF : Filter F) (f : T -> V) (h : V -> U) :
   (forall l, f x @[x --> F] --> l -> {for l, continuous h}) ->
   cvg (f x @[x --> F]) -> cvg ((h \o f) x @[x --> F]).
@@ -379,7 +379,7 @@ move=> h_continuous fa fb; apply: (cvg_trans _ h_continuous).
 exact: (cvg_comp _ (fun x => h x.1 x.2) (cvg_pair fa fb)).
 Qed.
 
-Lemma continuous_comp_cvg 
+Lemma continuous_comp_cvg
   {d1} {T : topologicalType d1} {d2} {V : topologicalType d2}
   {d3} {U : topologicalType d3} (f : T -> V) (h : V -> U) (r : T) (l : U) :
   {for f r, continuous h} ->
@@ -407,7 +407,7 @@ Lemma is_cvg_near_cst T d (U : ptopologicalType d)
 Proof. by move=> /cvg_near_cst/cvgP. Qed.
 Arguments is_cvg_near_cst {T d U} l {f F FF}.
 
-Lemma near_cst_continuous d (T : topologicalType d) 
+Lemma near_cst_continuous d (T : topologicalType d)
   d' (U : topologicalType d') (l : U) (f : T -> U) (x : T) :
   (\forall y \near x, f y = l) -> {for x, continuous f}.
 Proof.
@@ -431,7 +431,7 @@ Arguments is_cvg_cst {d U} x {T F FF}.
 #[global] Hint Extern 0 (cvg (_ @ _)) => solve [apply: is_cvg_cst] : core.
 #[global] Hint Extern 0 (cvgn (_ @ _)) => solve [apply: is_cvg_cst] : core.
 
-Lemma cst_continuous {d} {T : topologicalType d} 
+Lemma cst_continuous {d} {T : topologicalType d}
   {d'} {U : topologicalType d'} (x : U) :
   continuous (fun _ : T => x).
 Proof. by move=> t; exact: cvg_cst. Qed.
@@ -484,7 +484,7 @@ move=> [V FV AU]; rewrite /within /prop_near1 nbhs_simpl/=; near=> w => Aw.
 by have []// : (U `&` A) w; rewrite AU; split => //; apply: (near FV).
 Unshelve. all: by end_near. Qed.
 
-Lemma fmap_within_eq {d'} {S : topologicalType d'} 
+Lemma fmap_within_eq {d'} {S : topologicalType d'}
   (F : set_system T) (f g : T -> S) :
   Filter F -> {in A, f =1 g} -> f @ within A F --> g @ within A F.
 Proof.
@@ -717,8 +717,8 @@ Lemma cvg_within_filter {T U} {f : T -> U} (F : set_system T) {FF : (Filter F) }
   (G : set_system U) (D : set T) : (f @ F) --> G -> (f @ within D F) --> G.
 Proof. exact: cvg_trans (cvg_fmap2 (cvg_within _)). Qed.
 
-Lemma cvg_app_within {T} {d} {U : ptopologicalType d} 
-  (f : T -> U) (F : set_system T) (D : set T) : 
+Lemma cvg_app_within {T} {d} {U : ptopologicalType d}
+  (f : T -> U) (F : set_system T) (D : set T) :
   Filter F -> cvg (f @ F) -> cvg (f @ within D F).
 Proof.
 by move => FF /cvg_ex [l H]; apply/cvg_ex; exists l; exact: cvg_within_filter.
@@ -905,7 +905,7 @@ by move=> /(filterI FAu_) => /filter_ex[t [Au_t u_Bt]]; exists (u_ t).
 Qed.
 Arguments closed_cvg {T d V F FF u_} _ _ _ _ _.
 
-Lemma continuous_closedP d (S : topologicalType d) d' (T : topologicalType d') 
+Lemma continuous_closedP d (S : topologicalType d) d' (T : topologicalType d')
     (f : S -> T) :
   continuous f <-> forall A, closed A -> closed (f @^-1` A).
 Proof.
@@ -1092,11 +1092,11 @@ rewrite /regclosed -(setCK A) openC => cCA.
 by rewrite closureC -[in RHS]interior_closed_regopen// !(closureC, interiorC).
 Qed.
 
-Lemma interior_closure_idem : 
+Lemma interior_closure_idem :
   @idempotent_fun (set T) (@interior _ _ \o @closure _ _).
 Proof. move=> ?; exact/interior_closed_regopen/closed_closure. Qed.
 
-Lemma closure_interior_idem : 
+Lemma closure_interior_idem :
   @idempotent_fun (set T) (@closure _ _ \o @interior _ _).
 Proof. move=> ?; exact/closure_open_regclosed/open_interior. Qed.
 
@@ -1227,7 +1227,7 @@ Proof. by move=> ? ? [] ? ? [] ? ?; split; [exact: openI|exact: closedI]. Qed.
 Lemma clopenU : setU_closed clopen.
 Proof. by move=> ? ? [] ? ? [] ? ?; split; [exact: openU|exact: closedU]. Qed.
 
-Lemma clopenC (A B : set T) : 
+Lemma clopenC (A B : set T) :
   clopen A -> clopen (~`A).
 Proof. by case=> ? ?; split;[exact: closed_openC | exact: open_closedC ]. Qed.
 
@@ -1247,13 +1247,13 @@ Proof. by case=> ? ?; split; [ exact: open_comp | exact: preimage_closed]. Qed.
 #[deprecated(since="mathcomp-analysis 1.16.0", note="renamed to `preimage_clopen`")]
 Notation clopen_comp := preimage_clopen (only parsing).
 
-HB.mixin Record isContinuous {d} {X : nbhsType d} {d'} {Y : nbhsType d'} 
-  (f : X -> Y) := { 
+HB.mixin Record isContinuous {d} {X : nbhsType d} {d'} {Y : nbhsType d'}
+  (f : X -> Y) := {
   continuous_fun : continuous f
 }.
 
 #[short(type = "continuousType")]
-HB.structure Definition Continuous {d} {X : nbhsType d} 
+HB.structure Definition Continuous {d} {X : nbhsType d}
     {d'} {Y : nbhsType d'} := {
   f of @isContinuous d X d' Y f
 }.
@@ -1262,14 +1262,14 @@ HB.structure Definition Continuous {d} {X : nbhsType d}
              note="use `continuous_fun` instead")]
 Notation cts_fun := (continuous_fun) (only parsing).
 
-HB.instance Definition _ {d} {X : topologicalType d} 
+HB.instance Definition _ {d} {X : topologicalType d}
     {d'} {Y : topologicalType d'} :=
   gen_eqMixin (continuousType X Y).
-HB.instance Definition _ {d} {X : topologicalType d} 
+HB.instance Definition _ {d} {X : topologicalType d}
     {d'} {Y : topologicalType d'} :=
   gen_choiceMixin (continuousType X Y).
 
-Lemma continuousEP {d} {X : nbhsType d} {d'} {Y : nbhsType d'} 
+Lemma continuousEP {d} {X : nbhsType d} {d'} {Y : nbhsType d'}
   (f g : continuousType X Y) :
   f = g <-> f =1 g.
 Proof.
@@ -1280,16 +1280,16 @@ rewrite eqfg in ffun *; congr {| Continuous.sort := _; Continuous.class := {|
 exact: Prop_irrelevance.
 Qed.
 
-Definition mkcts {d} {X : nbhsType d} {d'} {Y : nbhsType d'} 
+Definition mkcts {d} {X : nbhsType d} {d'} {Y : nbhsType d'}
   (f : X -> Y) (f_cts : continuous f) := f.
 
-HB.instance Definition _ {d} {X : nbhsType d} {d'} {Y : nbhsType d'} 
+HB.instance Definition _ {d} {X : nbhsType d} {d'} {Y : nbhsType d'}
   (f: X -> Y) (f_cts : continuous f) :=
   @isContinuous.Build d X d' Y (mkcts f_cts) f_cts.
 
 Section continuous_comp.
-Context {d1} {X : topologicalType d1} {d2} {Y : topologicalType d2} 
-  {d3} {Z : topologicalType d3} 
+Context {d1} {X : topologicalType d1} {d2} {Y : topologicalType d2}
+  {d3} {Z : topologicalType d3}
   (f : continuousType X Y) (g : continuousType Y Z).
 
 #[local] Lemma cts_fun_comp : continuous (g \o f).
@@ -1302,7 +1302,7 @@ End continuous_comp.
 Section continuous_id.
 Context {d} {X : topologicalType d}.
 
-HB.instance Definition _ := 
+HB.instance Definition _ :=
   @isContinuous.Build d X d X (@idfun X) id_continuous.
 
 End continuous_id.

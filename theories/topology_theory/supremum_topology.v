@@ -38,7 +38,7 @@ Let TS := fun i => Topological.Pack (Tc i).
 Definition sup_subbase := \bigcup_i (@open _ (TS i) : set_system T).
 
 HB.instance Definition _ := Choice.on S.
-HB.instance Definition _ := 
+HB.instance Definition _ :=
   isSubBaseTopological.Build (supremum_fdisp d) S sup_subbase id.
 
 Lemma cvg_sup (F : set_system T) (t : T) :
@@ -62,13 +62,13 @@ Qed.
 
 End Sup_Topology.
 
-HB.instance Definition _ (I : Type) (T : pointedType) 
+HB.instance Definition _ (I : Type) (T : pointedType)
   (d : I -> fdisp_t) (f : forall i, Topological (d i) T) :=
   Pointed.on (sup_topology f).
 
 Section sup_uniform.
 Local Open Scope relation_scope.
-Context {T : choiceType} {Ii : Type} {d : Ii -> fdisp_t} 
+Context {T : choiceType} {Ii : Type} {d : Ii -> fdisp_t}
   (Tc : forall i : Ii, Uniform (d i) T).
 
 Let I : choiceType := {classic Ii}.

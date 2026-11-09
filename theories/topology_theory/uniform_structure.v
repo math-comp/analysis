@@ -81,7 +81,7 @@ HB.structure Definition PointedUniform d :=
 
 HB.instance Definition _ d' d (T : uniformType d) :=
   Nbhs_isUniform_mixin.Build d' (with_fdisp d' T)
-    entourage_filter entourage_diagonal_subproof entourage_inv_subproof 
+    entourage_filter entourage_diagonal_subproof entourage_inv_subproof
     entourage_split_ex_subproof nbhsE_subproof.
 HB.saturate with_fdisp.
 
@@ -169,7 +169,7 @@ Definition nbhs_simpl :=
   (nbhs_simpl,@filter_from_entourageE,@nbhs_entourageE).
 End NbhsEntourage.
 
-Lemma nbhsP {d} {M : uniformType d} (x : M) P : 
+Lemma nbhsP {d} {M : uniformType d} (x : M) P :
   nbhs x P <-> nbhs_ entourage x P.
 Proof. by rewrite nbhs_simpl. Qed.
 
@@ -282,7 +282,7 @@ move=> y; rewrite xsectionI => -[/xsectionP xy [_ /xsectionP yz]].
 by apply/xsectionP; move: xy yz; exact: entourage_split.
 Qed.
 
-Lemma continuous_withinNx {d} {U : uniformType d} {d'} {V : uniformType d'} 
+Lemma continuous_withinNx {d} {U : uniformType d} {d'} {V : uniformType d'}
   (f : U -> V) x :
   {for x, continuous f} <-> f @ x^' --> f x.
 Proof.
@@ -293,7 +293,7 @@ rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
 Unshelve. all: by end_near. Qed.
 
-Lemma continuous_injective_withinNx d (T : topologicalType d) 
+Lemma continuous_injective_withinNx d (T : topologicalType d)
   d' (U : topologicalType d') (f : T -> U) (x : T) :
   {for x, continuous f} ->
   (forall y, f y = f x -> y = x) -> f @ x^' --> (f x)^'.
@@ -333,11 +333,11 @@ move=> entA; split; first exact: open_interior.
 by apply: nbhs_singleton; apply: nbhs_interior; exact: nbhs_entourage.
 Qed.
 
-Definition unif_continuous d (U : uniformType d) d' (V : uniformType d') 
+Definition unif_continuous d (U : uniformType d) d' (V : uniformType d')
   (f : U -> V) :=
   (map_pair f) @ entourage --> entourage.
 
-Lemma unif_continuous_continuous d (U : uniformType d) 
+Lemma unif_continuous_continuous d (U : uniformType d)
   d' (V : uniformType d') (f : U -> V) :
   unif_continuous f -> continuous f.
 Proof.
@@ -350,8 +350,8 @@ rewrite -image_sub => v [] u' /= Yfuu' <-.
 exact: YX.
 Qed.
 
-Lemma unif_continuous_comp {d1} {U : uniformType d1} 
-  {d2} {V : uniformType d2} {d3} {W : uniformType d3} 
+Lemma unif_continuous_comp {d1} {U : uniformType d1}
+  {d2} {V : uniformType d2} {d3} {W : uniformType d3}
   (f : U -> V) (g : V -> W) :
   unif_continuous f -> unif_continuous g -> unif_continuous (g \o f).
 Proof. by move=> cf cg A /cg /cf; exact. Qed.
@@ -362,7 +362,7 @@ Definition entourage_set d (U : uniformType d) (A : set ((set U) * (set U))) :=
 
 (** Complete uniform spaces *)
 
-Definition cauchy {d} {T : uniformType d} (F : set_system T) := 
+Definition cauchy {d} {T : uniformType d} (F : set_system T) :=
   (F, F) --> entourage.
 
 Lemma cvg_cauchy {d} {T : puniformType d} (F : set_system T) : Filter F ->

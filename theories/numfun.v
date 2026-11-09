@@ -1272,7 +1272,7 @@ Lemma urysohn_ext_itv A B x y :
     f @` A `<=` [set x], f @` B `<=` [set y] & range f `<=` `[x, y]].
 Proof.
 move=> cA cB A0 xy; move/normal_separatorP : normalX => urysohn_ext.
-have /(@uniform_separatorP _ _ R)[f [cf f01 f0 f1]] 
+have /(@uniform_separatorP _ _ R)[f [cf f01 f0 f1]]
   := urysohn_ext R _ _ cA cB A0.
 pose g : X -> R := line_path x y \o f; exists g; split; rewrite /g /=.
   move=> t; apply: continuous_comp; first exact: cf.
@@ -1397,7 +1397,7 @@ exists (lim (h_ @ \oo)); split.
     rewrite telescope_sumr //= subrKC.
     over.
   apply/norm_cvg0P/cvgr0Pnorm_lt => eps epos.
-  have /(_ _ epos) := @cvgr0_norm_lt _ R _ _ _ 
+  have /(_ _ epos) := @cvgr0_norm_lt _ R _ _ _
       eventually_filter (_ : nat -> R^o) (cvg_geometric M%:num twothirds1).
   apply: filter_app; near_simpl; apply: nearW => n /le_lt_trans; apply.
   by rewrite (le_trans ((f_geo n).2 _ _)) // ler_norm.

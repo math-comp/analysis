@@ -111,7 +111,7 @@ HB.structure Definition NormedModule d (K : numDomainType) :=
 #[short(type="subNormedModType")]
 HB.structure Definition SubNormedModule d' d (R : numDomainType)
     (V : normedModType d R) (S : pred V) :=
-  { U of SubChoice V S U & NormedModule d' R U & 
+  { U of SubChoice V S U & NormedModule d' R U &
     @GRing.SubLmodule R V S U
        & @Num.SubNormedZmodule R V S U & @SubConvexTvs d' d R V S U}.
 
@@ -313,7 +313,7 @@ Definition nbhs (x : T) : set_system T := nbhs_ ent x.
 
 Lemma nbhsE : nbhs = nbhs_ ent. Proof. by []. Qed.
 
-#[export] HB.instance Definition _ := 
+#[export] HB.instance Definition _ :=
   hasNbhs.Build default_fdisp T nbhs.
 
 Lemma ball_center x (e : K) : 0 < e -> ball x e x.
@@ -500,9 +500,9 @@ HB.instance Definition _ d (K : numDomainType) (V : normedModType d K) :=
 HB.instance Definition _ d (K : numDomainType) (V : normedModType d K) :=
   Norm.SemiNorm_isNorm.Build K V (@Num.norm K V) (@normr0_eq0 _ V).
 
-Definition self_sub d (K : numDomainType) 
-  (V : normedModType d K) d' (W : normedModType d' K)
-  (f : V -> W) (x : V * V) : W := f x.1 - f x.2.
+Definition self_sub d (K : numDomainType) (V : normedModType d K)
+  d' (W : normedModType d' K) (f : V -> W) (x : V * V) : W
+  := f x.1 - f x.2.
 Arguments self_sub {d K V d' W} f x /.
 
 Section NormedModule_numFieldType.
@@ -545,7 +545,7 @@ Arguments cvg_at_rightE {d K V} f x.
 Arguments cvg_at_leftE {d K V} f x.
 
 Section NormedModule_continuous.
-Context d (K : numFieldType) (U : normedModType d K) 
+Context d (K : numFieldType) (U : normedModType d K)
   d' (V : normedModType d' K).
 
 Lemma continuous_shift (f : U -> V) u :
@@ -643,8 +643,8 @@ Qed.
 
 End cvg_composition_normed.
 
-Lemma within_continuousZ d (T : topologicalType d) 
-  (A : set T) d' (K : numFieldType) (V : normedModType d' K) 
+Lemma within_continuousZ d (T : topologicalType d)
+  (A : set T) d' (K : numFieldType) (V : normedModType d' K)
   (k : K) (f : T -> V) :
   {within A, continuous f} -> {within A, continuous k *: f}.
 Proof. by move=> cf x; apply: cvgZl_tmp; exact: cf. Qed.
@@ -824,7 +824,7 @@ Proof. exact: cvgr_to_le. Qed.
 End ProperFilterRealType.
 
 Section local_continuity.
-Context {d} {K : numFieldType} {V : normedModType d K} 
+Context {d} {K : numFieldType} {V : normedModType d K}
   {d'} {T : topologicalType d'}.
 Implicit Types (f g : T -> V) (s t : T -> K) (x : T) (k : K) (a : V).
 
@@ -871,7 +871,7 @@ Notation continuousZr := continuousZl_tmp (only parsing).
 Notation continuousZl := continuousZr_tmp (only parsing).
 
 Section cvg_fin.
-Context {R : numFieldType} {I : Type} {F : set_system I} {FF : Filter F} 
+Context {R : numFieldType} {I : Type} {F : set_system I} {FF : Filter F}
   (f : I -> \bar R).
 
 Lemma neq0_fine_cvgP a : a != 0 -> f @ F --> a%:E <-> fine \o f @ F --> a.
@@ -1757,8 +1757,8 @@ exact: segment_connected.
 Qed.
 
 Section prod_normedModType.
-Context {d d'} {K : numFieldType} 
-  {U : normedModType d K} {V : normedModType d' K}.
+Context {d} {K : numFieldType} {U : normedModType d K}
+  {d'} {V : normedModType d' K}.
 
 Let prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
 Proof. by rewrite prod_normE /= !normrZ maxr_pMr. Qed.
@@ -1957,24 +1957,24 @@ End bounded_mul.
 Notation "k .-lipschitz_on f" :=
   (dominated_by (self_sub id) k (self_sub f)) : type_scope.
 
-Lemma sub_klipschitz d (K : numFieldType) (V : normedModType d K) 
+Lemma sub_klipschitz d (K : numFieldType) (V : normedModType d K)
     d' (W : normedModType d' K) (k : K)
     (f : V -> W) (F G : set_system (V * V)) :
   F `=>` G -> k.-lipschitz_on f G -> k.-lipschitz_on f F.
 Proof. exact. Qed.
 
-Definition lipschitz_on d (K : numFieldType) (V : normedModType d K) 
+Definition lipschitz_on d (K : numFieldType) (V : normedModType d K)
     d' (W : normedModType d' K)
     (f : V -> W) (F : set_system (V * V)) :=
   \forall M \near +oo, M.-lipschitz_on f F.
 
-Lemma sub_lipschitz d (K : numFieldType) (V : normedModType d K) 
+Lemma sub_lipschitz d (K : numFieldType) (V : normedModType d K)
     d' (W : normedModType d' K)
     (f : V -> W) (F G : set_system (V * V)) :
   F `=>` G -> lipschitz_on f G -> lipschitz_on f F.
 Proof. by move=> FG; rewrite /lipschitz_on; apply: filterS => M; apply: FG. Qed.
 
-Lemma klipschitzW d (K : numFieldType) (V : normedModType d K) 
+Lemma klipschitzW d (K : numFieldType) (V : normedModType d K)
     d' (W : normedModType d' K) (k : K)
     (f : V -> W) (F : set_system (V * V)) {PF : ProperFilter F} :
   k.-lipschitz_on f F -> lipschitz_on f F.
@@ -1987,13 +1987,13 @@ Notation "[ 'lipschitz' E | x 'in' A ]" :=
   (lipschitz_on (fun x => E) (globally (A `*` A))) : type_scope.
 Notation lipschitz f := [lipschitz f x | x in setT].
 
-Lemma lipschitz_set0 d (K : numFieldType) (V : normedModType d K) 
-  d' (W : normedModType d' K) (f : V -> W) : 
+Lemma lipschitz_set0 d (K : numFieldType) (V : normedModType d K)
+  d' (W : normedModType d' K) (f : V -> W) :
   [lipschitz f x | x in set0].
 Proof. by apply: nearW; rewrite setX0 => ?; apply: globally0. Qed.
 
-Lemma lipschitz_set1 d (K : numFieldType) (V : normedModType d K) 
-  d' (W : normedModType d' K) (f : V -> W) (a : V) : 
+Lemma lipschitz_set1 d (K : numFieldType) (V : normedModType d K)
+  d' (W : normedModType d' K) (f : V -> W) (a : V) :
   [lipschitz f x | x in [set a]].
 Proof.
 apply: (@klipschitzW _ _ _ _ _ `|f a|).
@@ -2001,12 +2001,12 @@ apply: (@klipschitzW _ _ _ _ _ `|f a|).
 by move=> [x y] /= [] -> ->; rewrite !subrr !normr0 mulr0.
 Qed.
 
-Lemma klipschitz_locally d (R : numFieldType) (V : normedModType d R) 
+Lemma klipschitz_locally d (R : numFieldType) (V : normedModType d R)
     d' (W : normedModType d' R) (k : R) (f : V -> W) (A : set V) :
   k.-lipschitz_A f -> [locally k.-lipschitz_A f].
 Proof. by move=> + x Ax; apply: sub_klipschitz; apply: within_nbhsW. Qed.
 
-Lemma lipschitz_locally d (R : numFieldType) (V : normedModType d R) 
+Lemma lipschitz_locally d (R : numFieldType) (V : normedModType d R)
     d' (W : normedModType d' R) (A : set V) (f : V -> W) :
   [lipschitz f x | x in A] -> [locally [lipschitz f x | x in A]].
 Proof. by move=> + x Ax; apply: sub_lipschitz; apply: within_nbhsW. Qed.
@@ -2017,7 +2017,7 @@ Proof. by move=> [/= x y] _; rewrite mul1r. Qed.
 Arguments lipschitz_id {d R V}.
 
 Section LinearContinuousBounded.
-Context d (R : numFieldType) (V : normedModType d R) 
+Context d (R : numFieldType) (V : normedModType d R)
   d' (W : normedModType d' R).
 
 Lemma linear_boundedP (f : {linear V -> W}) : bounded_near f (nbhs 0) <->
@@ -2077,7 +2077,7 @@ Unshelve. all: by end_near. Qed.
 End LinearContinuousBounded.
 
 Section contractions.
-Context {d} {R : numDomainType} {X : normedModType d R} 
+Context {d} {R : numDomainType} {X : normedModType d R}
   {d'} {Y : normedModType d' R} {U : set X} {V : set Y}.
 
 Definition contraction (q : {nonneg R}) (f : {fun U >-> V}) :=
@@ -2295,8 +2295,8 @@ Qed.
 
 End countable_isolated.
 
-Lemma closed_disjoint_closed_ball {d} {R : realFieldType} 
-    {M : normedModType d R} (K : set M) z : 
+Lemma closed_disjoint_closed_ball {d} {R : realFieldType}
+    {M : normedModType d R} (K : set M) z :
   closed K -> ~ K z ->
   \forall d \near 0^'+, closed_ball z d `&` K = set0.
 Proof.
@@ -2782,7 +2782,7 @@ by rewrite ler_pM2r// le_max lexx orbT.
 Unshelve. all: by end_near. Qed.
 
 Lemma linear_findim_continuous d (V : normedVectType d R)
-  d' (W : normedModType d' R) (f : {linear V -> W}) : 
+  d' (W : normedModType d' R) (f : {linear V -> W}) :
   continuous f.
 Proof.
 set V' := @fullv _ V.

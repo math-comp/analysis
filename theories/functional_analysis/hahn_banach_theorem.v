@@ -325,8 +325,9 @@ Qed.
 End hahn_banach.
 
 Section hahn_banach_normed.
-Context d d' (R : realType) (V : normedModType d R) (F : pred V)
-  (F' : subNormedModType d' F) (f : {linear_continuous F' -> R}).
+Context d (R : realType) (V : normedModType d R)
+  d' (F : pred V) (F' : subNormedModType d' F)
+  (f : {linear_continuous F' -> R}).
 
 Theorem hahn_banach_extension_normed :
   exists g : {linear_continuous V -> R}, forall x : F', g (val x) = f x.

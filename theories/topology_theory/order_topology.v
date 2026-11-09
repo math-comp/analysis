@@ -209,7 +209,7 @@ Local Notation oT := (order_topology T).
 HB.instance Definition _ := isPointed.Build (interval T) (`]-oo,+oo[).
 
 HB.instance Definition _ := Order.Total.on oT.
-HB.instance Definition _ := @isSubBaseTopological.Build 
+HB.instance Definition _ := @isSubBaseTopological.Build
   (order_fdisp od) oT (interval T) (itv_is_open_unbounded) (fun i => [set` i]).
 
 Lemma order_nbhs_itv (x : oT) : nbhs x = filter_from
@@ -282,7 +282,7 @@ rewrite min_l// leNgt; apply: contra_notN (xNy b) => ba.
 by rewrite xb (lt_trans ba).
 Qed.
 
-Lemma min_fun_continuous {td} 
+Lemma min_fun_continuous {td}
   {X : topologicalType td} {od} {T : orderTopologicalType td od}
   (f g : X -> T) :
   continuous f -> continuous g -> continuous (f \min g).
@@ -322,7 +322,7 @@ rewrite max_r// leNgt; apply: contra_notN (xNy b) => ba.
 by rewrite xb (lt_trans ba).
 Qed.
 
-Lemma max_fun_continuous {td} {X : topologicalType td} 
+Lemma max_fun_continuous {td} {X : topologicalType td}
   {od} {T : orderTopologicalType td od} (f g : X -> T) :
   continuous f -> continuous g -> continuous (f \max g).
 Proof.

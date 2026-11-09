@@ -44,7 +44,7 @@ HB.instance Definition _ {d} {X : topologicalType d} (A : set X) :=
 HB.instance Definition _ {d} {X : uniformType d} (A : set X) :=
   Uniform.copy (A : Type) (set_type_topology_def A).
 
-HB.instance Definition _ {d} {R : realType} {X : pseudoMetricType d R} 
+HB.instance Definition _ {d} {R : realType} {X : pseudoMetricType d R}
   (A : set X) :=
   PseudoMetric.copy (A : Type) (set_type_topology_def A).
 
@@ -85,7 +85,7 @@ apply: filter_app; apply: nearW => w Ww /= /mem_set Aw.
 by have /= := svWU (@exist _ _ w Aw); rewrite ?set_valE /=; exact.
 Qed.
 
-Lemma subspace_valL_continuousP' {d'} {Y : topologicalType d'} 
+Lemma subspace_valL_continuousP' {d'} {Y : topologicalType d'}
   (y : Y) (f : A -> Y) :
   {within A, continuous (valL_ y f)} <-> continuous f.
 Proof.

@@ -62,7 +62,7 @@ exists (~` C); first by split => //; exact: closed_openC.
 by move=> z /= nCz; apply: nCA; left.
 Qed.
 
-HB.instance Definition _ := 
+HB.instance Definition _ :=
   hasNbhs.Build opc_fdisp opc one_point_nbhs.
 
 HB.instance Definition _ := @Nbhs_isNbhsTopological.Build _ opc

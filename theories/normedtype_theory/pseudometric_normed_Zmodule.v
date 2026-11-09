@@ -133,7 +133,7 @@ HB.mixin Record PreTopologicalNmodule_isTopologicalNmodule d M
 
 #[short(type="topologicalNmodType")]
 HB.structure Definition TopologicalNmodule d :=
-  {M of PreTopologicalNmodule d M & 
+  {M of PreTopologicalNmodule d M &
   PreTopologicalNmodule_isTopologicalNmodule d M}.
 
 Section TopologicalNmodule_theory.
@@ -185,7 +185,7 @@ End cvg_composition_topologicalNmodType.
 Notation fun_cvgD := cvgD (only parsing).
 
 Section within_continuous_topologicalNmodType.
-Context {d} {T : topologicalType d} {d'} {V : topologicalNmodType d'} 
+Context {d} {T : topologicalType d} {d'} {V : topologicalNmodType d'}
   (A : set T).
 Implicit Types f g : T -> V.
 
@@ -277,7 +277,7 @@ Proof.
 move=> x; rewrite /continuous_at.
 rewrite -(@eq_cvg _ _ _ (fun x => 0 - x)); first by move=> y; exact: add0r.
 rewrite -[- x]add0r.
-apply: (continuous_comp 
+apply: (continuous_comp
   (f := fun x => (0, x)) (g := fun x : M * M => x.1 - x.2)
 ); first exact: cvg_pair.
 exact: sub_continuous.
@@ -345,7 +345,7 @@ End cvg_composition_topologicalZmodType.
 Notation fun_cvgN := cvgN (only parsing).
 
 Section within_continuous_topologicalZmodType.
-Context {d} {T : topologicalType d} {d'} {V : topologicalZmodType d'} 
+Context {d} {T : topologicalType d} {d'} {V : topologicalZmodType d'}
   (A : set T).
 Implicit Types f g : T -> V.
 
@@ -360,7 +360,7 @@ Proof. move=> cf x; apply: cvgN; exact: cf. Qed.
 
 End within_continuous_topologicalZmodType.
 
-HB.structure Definition PreUniformNmodule d := 
+HB.structure Definition PreUniformNmodule d :=
   {M of Uniform d M & GRing.Nmodule M}.
 
 HB.mixin Record PreUniformNmodule_isUniformNmodule d M & PreUniformNmodule d M := {
@@ -417,7 +417,7 @@ HB.instance Definition _ := PreUniformNmodule_isUniformNmodule.Build
 
 End prod_UniformNmodule.
 
-HB.structure Definition PreUniformZmodule d := 
+HB.structure Definition PreUniformZmodule d :=
   {M of Uniform d M & GRing.Zmodule M}.
 
 HB.mixin Record UniformNmodule_isUniformZmodule d M
@@ -426,11 +426,11 @@ HB.mixin Record UniformNmodule_isUniformZmodule d M
 }.
 
 HB.structure Definition UniformZmodule d :=
-  {M of UniformNmodule d M & GRing.Zmodule M 
+  {M of UniformNmodule d M & GRing.Zmodule M
     & UniformNmodule_isUniformZmodule d M & TopologicalZmodule d M}.
 
 Section prod_TopologicalZmodule.
-Context {d} {E : TopologicalZmodule.type d} 
+Context {d} {E : TopologicalZmodule.type d}
   {d'} {F : TopologicalZmodule.type d'}.
 
 Let prod_opp_continuous : continuous (-%R : E * F -> E * F).
@@ -814,7 +814,7 @@ Lemma norm_cvg_unique {F} {FF : ProperFilter F} :
   is_subset1 [set x : V | F --> x].
 Proof. exact: cvg_unique. Qed.
 
-Lemma norm_cvg_eq (x y : V) : x --> y -> x = y. 
+Lemma norm_cvg_eq (x y : V) : x --> y -> x = y.
 Proof. exact: (@cvg_eq _ V). Qed.
 Lemma norm_lim_id (x : V) : lim (nbhs x) = x. Proof. exact: lim_id. Qed.
 
@@ -910,7 +910,7 @@ Proof. by move=> /normr0_eq0/subr0_eq. Qed.
 Let ballEmdist x e : ball x e = [set y | mdist x y < e].
 Proof. by rewrite -ball_normE. Qed.
 
-HB.instance Definition _ := @PseudoMetric_isMetric.Build _ K T 
+HB.instance Definition _ := @PseudoMetric_isMetric.Build _ K T
   mdist mdist_ge0 mdist_positivity ballEmdist.
 
 Let add_continuous : continuous (fun x : T * T => x.1 + x.2).
@@ -955,7 +955,7 @@ HB.instance Definition _ :=
 HB.end.
 
 Section prod_pseudoMetricNormedZmod.
-Context {d} {K : numDomainType} {U : metricNormedZmodType d K} 
+Context {d} {K : numDomainType} {U : metricNormedZmodType d K}
   {d'} {V : metricNormedZmodType d' K}.
 
 Lemma ball_prod_normE : ball = ball_ (fun x => `| x : U * V |).
@@ -968,13 +968,13 @@ Qed.
 Let prod_norm_ball : @ball _ _ (U * V)%type = ball_ (fun x => `|x|).
 Proof. by rewrite /= - ball_prod_normE. Qed.
 
-HB.instance Definition _ := 
+HB.instance Definition _ :=
   NormedZmod_PseudoMetric_eq.Build _ K (U * V)%type prod_norm_ball.
 
 End prod_pseudoMetricNormedZmod.
 
 Section prod_NormedModule_lemmas.
-Context {T : Type} {d} {K : numDomainType} {U : metricNormedZmodType d K} 
+Context {T : Type} {d} {K : numDomainType} {U : metricNormedZmodType d K}
   {d'} {V : metricNormedZmodType d' K}.
 
 Lemma fcvgr2dist_ltP {F : set_system U} {G : set_system V}
@@ -1409,7 +1409,7 @@ by rewrite gtr_pMr// invf_lt1// ltr1n.
 Unshelve. all: by end_near. Qed.
 
 Section pseudoMetricNormedZmodule_numFieldType.
-Context {d} {R : numFieldType} {V : PseudoMetricNormedZmodule.type d R} 
+Context {d} {R : numFieldType} {V : PseudoMetricNormedZmodule.type d R}
   {I : Type} (F : set_system I) (FF : Filter F) (f : I -> V) (y : V).
 
 Lemma cvgr_norm_lty :
@@ -1540,8 +1540,8 @@ Qed.
 End limit_composition_metricNormedZmodType.
 
 Section domination.
-Context {T : Type} {d} {K : numDomainType} 
-  {V : PseudoMetricNormedZmodule.type d K} 
+Context {T : Type} {d} {K : numDomainType}
+  {V : PseudoMetricNormedZmodule.type d K}
   {d'} {W : PseudoMetricNormedZmodule.type d' K}.
 
 Definition dominated_by (h : T -> V) (k : K) (f : T -> W) (F : set_system T) :=
@@ -1557,16 +1557,16 @@ Proof. by move=> FG f; exact: FG. Qed.
 
 End domination.
 
-Lemma sub_dominatedr d (T : Type) (K : numDomainType) 
-  (V : metricNormedZmodType d K) (h : T -> V) (k : K) (f g : T -> V) 
+Lemma sub_dominatedr d (T : Type) (K : numDomainType)
+  (V : metricNormedZmodType d K) (h : T -> V) (k : K) (f g : T -> V)
   (F : set_system T) (FF : Filter F) :
    (\forall x \near F, `|f x| <= `|g x|) ->
    dominated_by h k g F -> dominated_by h k f F.
 Proof. by move=> le_fg; apply: filterS2 le_fg => x; apply: le_trans. Qed.
 
 Section ex_dom_bound.
-Context {T : Type} {d} {K : numFieldType} 
-  {V : PseudoMetricNormedZmodule.type d K} 
+Context {T : Type} {d} {K : numFieldType}
+  {V : PseudoMetricNormedZmodule.type d K}
   {d'} {W : PseudoMetricNormedZmodule.type d' K}.
 
 Lemma ex_dom_bound (h : T -> V) (f : T -> W) (F : set_system T)
@@ -1643,12 +1643,12 @@ by congr F; rewrite funeqE => x/=; rewrite normr1 mulr1.
 Qed.
 
 Lemma boundedE :
-  @bounded_near T _ K V 
+  @bounded_near T _ K V
   = fun f F => \forall M \near +oo, dominated_by fun1 M f F.
 Proof. by rewrite dominated_by1. Qed.
 
 Lemma strictly_dominated_by1 :
-  @strictly_dominated_by T _ K K^o _ V fun1 
+  @strictly_dominated_by T _ K K^o _ V fun1
   = fun k f F => F [set x | `|f x| < k].
 Proof.
 rewrite funeq3E => k f F.
@@ -1697,7 +1697,7 @@ split; rewrite /bounded_set /bounded_near.
 - by apply: filterS => r /= + t At => /(_ (f t)); apply; exists t.
 Qed.
 
-Lemma ub_bounded d (K : realFieldType) (V : metricNormedZmodType d K) T 
+Lemma ub_bounded d (K : realFieldType) (V : metricNormedZmodType d K) T
     (f : T -> V) (A : set T) (M : K) :
   (forall x, A x -> `|f x| <= M) -> [bounded f x | x in A].
 Proof.
@@ -1735,7 +1735,7 @@ Proof. by apply: ub_bounded => ? ->. Qed.
 
 Hint Resolve bounded_set0 bounded_set1 : core.
 
-Lemma boundedS T d (K : realFieldType) (V : metricNormedZmodType d K) 
+Lemma boundedS T d (K : realFieldType) (V : metricNormedZmodType d K)
     (B A : set T) (f : T -> V) : A `<=` B ->
   [bounded f x | x in B] -> [bounded f x | x in A].
 Proof.
@@ -1753,8 +1753,8 @@ apply: ub_bounded => x Ax /=.
 by rewrite (le_trans (ler_normD _ _))//; apply: lerD; [exact:Mf_ub|exact:Mg_ub].
 Qed.
 
-Lemma bounded_itvbb od (T : orderType od) td (K : realFieldType) 
-  (V : metricNormedZmodType td K) (f : T -> V) 
+Lemma bounded_itvbb od (T : orderType od) td (K : realFieldType)
+  (V : metricNormedZmodType td K) (f : T -> V)
   (a b : T) (b1 b2 b1' b2' : bool) :
   [bounded f x | x in [set` Interval (BSide b1 a) (BSide b2 b)]] ->
   [bounded f x | x in [set` Interval (BSide b1' a) (BSide b2' b)]].
@@ -1774,8 +1774,8 @@ move=> fg; apply: eq_near => M; apply/propeqP; apply: eq_forall => x.
 by apply: eq_forall => Ax /=; rewrite fg ?inE.
 Qed.
 
-Lemma continuous_compact_bounded d (T : topologicalType d) 
-  d' (K : realFieldType) (V : metricNormedZmodType d' K) 
+Lemma continuous_compact_bounded d (T : topologicalType d)
+  d' (K : realFieldType) (V : metricNormedZmodType d' K)
   (A : set T) (f : T -> V) :
   compact A -> {within A, continuous f} -> [bounded f x | x in A].
 Proof.

@@ -108,14 +108,14 @@ Lemma right_continuousW (R : numFieldType) {td od} (U : orderNbhsType td od)
   (f : R -> U) : continuous f -> right_continuous f.
 Proof. by move=> cf x; apply: cvg_within_filter; exact/cf. Qed.
 
-HB.mixin Record isCumulative (R : numFieldType) {td od} 
+HB.mixin Record isCumulative (R : numFieldType) {td od}
   (U : orderNbhsType td od) (f : R -> U) := {
   cumulative_is_nondecreasing : nondecreasing f ;
   cumulative_is_right_continuous : right_continuous f }.
 
 #[short(type=cumulative)]
 HB.structure Definition Cumulative
-  (R : numFieldType) {td od} (U : orderNbhsType td od) := 
+  (R : numFieldType) {td od} (U : orderNbhsType td od) :=
     { f of isCumulative R td od U f }.
 
 Arguments cumulative_is_nondecreasing {R td od U} _.
@@ -471,7 +471,7 @@ Definition open_type : Type := R.
 
 HB.instance Definition _ := Pointed.on open_type.
 
-Let measurable : set_system R := 
+Let measurable : set_system R :=
   @measurable _ (g_sigma_algebraType (@open _ R)).
 
 Let measurable0 : measurable set0. Proof. exact: measurable0. Qed.

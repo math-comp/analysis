@@ -31,7 +31,7 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-HB.mixin Record PseudoMetric_isMetric d (K : numDomainType) M 
+HB.mixin Record PseudoMetric_isMetric d (K : numDomainType) M
   & PseudoMetric d K M := {
   mdist : M -> M -> K ;
   mdist_ge0 : forall x y, 0 <= mdist x y ;
@@ -148,7 +148,7 @@ HB.instance Definition _ := PseudoMetric_isMetric.Build _ K (T * U)%type
 
 End prod_metric.
 
-HB.factory Record isMetric (d : fdisp_t) (K : numFieldType) (M : Type) 
+HB.factory Record isMetric (d : fdisp_t) (K : numFieldType) (M : Type)
   & Choice M := {
   mdist : M -> M -> K ;
   mdistxx : forall x, mdist x x = 0 ;

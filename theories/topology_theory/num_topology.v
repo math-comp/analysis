@@ -27,7 +27,7 @@ Unset Printing Implicit Defensive.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-HB.instance Definition _ (R : numDomainType) := hasNbhs.Build 
+HB.instance Definition _ (R : numDomainType) := hasNbhs.Build
   default_fdisp R^o (nbhs_ball_ (ball_ (fun x => `|x|))).
 
 Module TopologicalNumDomainType.
@@ -74,7 +74,7 @@ End TopologicalNumDomainType.
 
 End TopologicalNumDomainType.
 
-HB.instance Definition _ (R : numDomainType) := Nbhs_isNbhsTopological.Build 
+HB.instance Definition _ (R : numDomainType) := Nbhs_isNbhsTopological.Build
   _ R^o
   (@TopologicalNumDomainType.nbhs_filter R)
   (@TopologicalNumDomainType.nbhs_singleton R)
@@ -158,7 +158,7 @@ rewrite predeqE => A; split=> //= -[] e e_gt0 xeA; exists e => //= y /=.
 by rewrite -opprD normrN => ?; rewrite -[y]opprK; apply: xeA; rewrite /= opprK.
 Qed.
 
-Lemma cvg_compNP {d} {T : topologicalType d} {R : numFieldType} 
+Lemma cvg_compNP {d} {T : topologicalType d} {R : numFieldType}
   (f : R -> T) (a : R) (l : T) :
   (f \o -%R) x @[x --> a] --> l <-> f x @[x --> (- a)] --> l.
 Proof. by rewrite nbhsN. Qed.
@@ -237,7 +237,7 @@ apply; last by rewrite gtrBl.
 by rewrite /= opprB addrC subrK ger0_norm// gtr_pMr// invf_lt1// ltr1n.
 Qed.
 
-Lemma cvg_dnbhs_at_right d (T : topologicalType d) 
+Lemma cvg_dnbhs_at_right d (T : topologicalType d)
   (f : R -> T) (p : R) (l : T) :
   f x @[x --> p^'] --> l -> f x @[x --> p^'+] --> l.
 Proof.

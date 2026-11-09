@@ -143,9 +143,9 @@ HB.instance Definition _ d (T : I -> uniformType d) :=
     (sup_topology (fun i => Uniform.class (initial_topology (@proj _ T i)))).
 
 HB.instance Definition _ d (R : realType) (Ii : countType)
-    (Tc : Ii -> pseudoMetricType d R) := 
+    (Tc : Ii -> pseudoMetricType d R) :=
   PseudoMetric.copy (prod_topology Tc)
-    (sup_pseudometric 
+    (sup_pseudometric
       (fun i => PseudoMetric.class (initial_topology (@proj _ Tc i)))
     (countableP _)).
 
@@ -385,7 +385,7 @@ Proof.
 suff : continuous (join_product : initialT -> PU).
   by move=> cts x U => /cts; rewrite nbhs_simpl /= -initial_sep_nbhsE.
 move=> x; apply/cvg_sup; first exact/fmap_filter/(nbhs_filter (x : initialT)).
-move=> i; move: x. 
+move=> i; move: x.
 apply/(@continuousP _ _ _ (initial_topology (@^~ i))) => A [B ? E].
 rewrite -E (_ : @^~ i =  proj i) //.
 have -> : join_product @^-1` (proj i @^-1` B) = f_ i @^-1` B by [].
@@ -489,7 +489,7 @@ Qed.
 
 
 #[export] HB.instance Definition _ := Choice.on (arrow_uniform_type T U).
-#[export] HB.instance Definition _ := 
+#[export] HB.instance Definition _ :=
   isUniform.Build (arrow_uniform_fdisp U) (arrow_uniform_type T U)
   fct_ent_filter fct_ent_refl fct_ent_inv fct_ent_split.
 
@@ -527,7 +527,7 @@ move: (t); near: g; near: f; apply: nearP_dep; apply: Fc.
 by exists (split_ent A)^-1%relation => /=.
 Unshelve. all: by end_near. Qed.
 
-HB.instance Definition _ := 
+HB.instance Definition _ :=
   Uniform_isComplete.Build _ (arrow_uniform_type T U) fun_complete.
 
 (*HB.instance Definition _ (R : numFieldType) :=
@@ -721,8 +721,8 @@ Notation "{ 'family' fam , F --> f }" :=
 
 HB.instance Definition _ {U : choiceType} {d} {V : uniformType d}
     (fam : set U -> Prop) :=
-  Uniform.copy {family fam, U -> V} 
-    (with_fdisp (uniform_fam_disp V fam) 
+  Uniform.copy {family fam, U -> V}
+    (with_fdisp (uniform_fam_disp V fam)
       (sup_topology
         (fun k : sigT fam => Uniform.class {uniform` projT1 k -> V}))).
 
@@ -901,7 +901,7 @@ Qed.
 
 Section FamilyConvergence.
 
-Lemma fam_cvgE {U : choiceType} {d} {V : uniformType d} 
+Lemma fam_cvgE {U : choiceType} {d} {V : uniformType d}
     (F : set_system (U -> V)) (f : U -> V) fam :
   {family fam, F --> f} = (F --> (f : {family fam, U -> V})).
 Proof. by []. Qed.
@@ -971,7 +971,7 @@ Qed.
 
 HB.instance Definition _ := Choice.on compact_openK.
 
-HB.instance Definition _ := 
+HB.instance Definition _ :=
   hasNbhs.Build default_fdisp compact_openK compact_openK_nbhs.
 
 Definition compact_open_of_nbhs := [set A : set compact_openK | A `<=` nbhs^~ A].
@@ -998,7 +998,7 @@ HB.instance Definition _ :=
 End compact_open_setwise.
 
 Definition compact_open_def :=
-  with_fdisp (compact_open_disp T U) 
+  with_fdisp (compact_open_disp T U)
     (sup_topology (fun i : sigT (@compact _ T) =>
       Topological.class (@compact_openK (projT1 i)))).
 
@@ -1029,12 +1029,12 @@ Qed.
 
 End compact_open.
 
-HB.instance Definition _  {d} {U : topologicalType d} 
-    {d'} {V : ptopologicalType d'} K := 
+HB.instance Definition _  {d} {U : topologicalType d}
+    {d'} {V : ptopologicalType d'} K :=
   Pointed.on (@compact_openK _ U _ V K).
 
-HB.instance Definition _ {d} {U : topologicalType d} 
-    {d'} {V : ptopologicalType d'} := 
+HB.instance Definition _ {d} {U : topologicalType d}
+    {d'} {V : ptopologicalType d'} :=
   Pointed.on (@compact_open U V).
 
 
@@ -1096,10 +1096,10 @@ Unshelve. all: by end_near. Qed.
 End compact_open_uniform.
 
 Module ArrowAsCompactOpen.
-HB.instance Definition _ d (U : topologicalType d) d' (V : topologicalType d') 
+HB.instance Definition _ d (U : topologicalType d) d' (V : topologicalType d')
   := Topological.copy (U -> V) {compact-open, U -> V}.
 
-HB.instance Definition _ d (U : topologicalType d) d' (V : topologicalType d') 
+HB.instance Definition _ d (U : topologicalType d) d' (V : topologicalType d')
   := Topological.copy (continuousType U V)
       (initial_topology (id : (continuousType U V) -> (U -> V)) ).
 End ArrowAsCompactOpen.
@@ -1107,7 +1107,7 @@ End ArrowAsCompactOpen.
 Definition compactly_in {d} {U : topologicalType d} (A : set U) :=
   [set B | B `<=` A /\ compact B].
 
-Lemma compact_cvg_within_compact {d} {U : topologicalType d} {d'} 
+Lemma compact_cvg_within_compact {d} {U : topologicalType d} {d'}
     {V : uniformType d'} (C : set U) (F : set_system (U -> V)) (f : U -> V) :
   Filter F -> compact C ->
   {uniform C, F --> f} <-> {family compactly_in C, F --> f}.
@@ -1120,7 +1120,7 @@ Qed.
 
 Section UniformContinuousLimits.
 
-Lemma uniform_limit_continuous {d} {U : topologicalType d} 
+Lemma uniform_limit_continuous {d} {U : topologicalType d}
     {d'} {V : uniformType d'} (F : set_system (U -> V)) (f : U -> V) :
   ProperFilter F -> (\forall g \near F, continuous (g : U -> V)) ->
   {uniform, F --> f} -> continuous f.
@@ -1134,8 +1134,8 @@ apply/Ff/uniform_nbhs; exists (split_ent (split_ent A))^-1%relation.
 by split; [exact: entourage_inv | move=> g fg; near_simpl; near=> z; exact: fg].
 Unshelve. all: end_near. Qed.
 
-Lemma uniform_limit_continuous_subspace {d} {U : topologicalType d} 
-    {d'} {V : puniformType d'} (K : set U) (F : set_system (U -> V)) 
+Lemma uniform_limit_continuous_subspace {d} {U : topologicalType d}
+    {d'} {V : puniformType d'} (K : set U) (F : set_system (U -> V))
     (f : subspace K -> V) :
   ProperFilter F -> (\forall g \near F, continuous (g : subspace K -> V)) ->
   {uniform K, F --> f} -> {within K, continuous f}.
@@ -1191,7 +1191,7 @@ Qed.
 End UniformPointwise.
 
 Section ArzelaAscoli.
-Context {d} {X : topologicalType d} {d'} {Y : puniformType d'} 
+Context {d} {X : topologicalType d} {d'} {Y : puniformType d'}
   {hsdf : hausdorff_space Y}.
 Implicit Types (I : Type).
 
@@ -1437,7 +1437,7 @@ Section currying.
 Local Import ArrowAsCompactOpen.
 
 Section cartesian_closed.
-Context {d1} {U : topologicalType d1} {d2} {V : topologicalType d2} 
+Context {d1} {U : topologicalType d1} {d2} {V : topologicalType d2}
   {d3} {W : topologicalType d3}.
 
 (**md In this section, we consider under what conditions \
@@ -1510,7 +1510,7 @@ move=> v; have [B] := @lcV v I; rewrite withinET => Bv [cptB clB].
 by move=> z; exact: (compact_regular _ cptB).
 Qed.
 
-Lemma curry_continuous (f : (U * V)%type -> W) : continuous f -> 
+Lemma curry_continuous (f : (U * V)%type -> W) : continuous f ->
   regular_space U -> {for f, continuous curry}.
 Proof.
 move=> ctsf regU; apply/compact_open_cvgP.
@@ -1626,7 +1626,7 @@ Proof.
 by move=> F_cont x; apply: cvg_big => // i /F_cont; exact.
 Qed.
 
-Lemma within_continuous_big {d'} {T : topologicalType d'} (A : set T) 
+Lemma within_continuous_big {d'} {T : topologicalType d'} (A : set T)
     (r : seq I) (F : I -> T -> U) :
   (forall i, P i -> {within A, continuous (F i)}) ->
   {within A, continuous (fun x => \big[op/x0]_(i <- r | P i) F i x)}.
@@ -1642,7 +1642,7 @@ Section composition.
 
 Local Import ArrowAsCompactOpen.
 
-Lemma eval_continuous {d} {X : topologicalType d} 
+Lemma eval_continuous {d} {X : topologicalType d}
     {d'} {Y : topologicalType d'} :
   locally_compact [set: X] -> regular_space X -> continuous (@eval _ X _ Y).
 Proof.
@@ -1651,7 +1651,7 @@ move=> lcX rsX; apply: continuous_uncurry_regular => //.
 by move=> ?; exact: continuous_fun.
 Qed.
 
-Lemma compose_continuous {d1} {X : topologicalType d1} 
+Lemma compose_continuous {d1} {X : topologicalType d1}
     {d2} {Y : topologicalType d2} {d3} {Z : topologicalType d3} :
   locally_compact [set: X] -> regular_space X ->
   locally_compact [set: Y] -> regular_space Y ->

@@ -17,7 +17,7 @@ Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-HB.instance Definition _ := 
+HB.instance Definition _ :=
   hasNbhs.Build default_fdisp bool principal_filter.
 HB.instance Definition _ := Discrete_ofNbhs.Build _ bool erefl.
 HB.instance Definition _ := DiscreteUniform_ofNbhs.Build _ bool.

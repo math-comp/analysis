@@ -278,7 +278,7 @@ move=> clA; rewrite propeqE; split=> [[B AsubB [ + _ ]]|].
 by rewrite {1}(_ : A = closure A) ?precompactE// -closure_id.
 Qed.
 
-Definition locally_compact (A : set X) := 
+Definition locally_compact (A : set X) :=
   [locally precompact A].
 
 End Precompact.
@@ -431,7 +431,7 @@ move=> /DsubC /= [y /= yfs hyz]; exists (h' y) => //.
 by rewrite set_imfset /=; exists y.
 Qed.
 
-Lemma compact_cauchy_cvg {d} {T : puniformType d} 
+Lemma compact_cauchy_cvg {d} {T : puniformType d}
   (U : set T) (F : set_system T) :
   ProperFilter F -> cauchy F -> F U -> compact U -> cvg F.
 Proof.

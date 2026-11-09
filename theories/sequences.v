@@ -848,7 +848,7 @@ End cesaro_converse.
 
 Section series_convergence.
 
-Lemma cvg_series_cvg_0 d (K : numFieldType) (V : normedModType d K) 
+Lemma cvg_series_cvg_0 d (K : numFieldType) (V : normedModType d K)
   (u_ : V ^nat) :
   cvgn (series u_) -> u_ @ \oo --> 0.
 Proof.
@@ -972,7 +972,7 @@ Proof.
 by move=> u_gt0; rewrite funeqE => n /=; apply: eq_bigr => k; rewrite ger0_norm.
 Qed.
 
-Lemma cauchy_seriesP {d} {R : numFieldType} (V : normedModType d R) 
+Lemma cauchy_seriesP {d} {R : numFieldType} (V : normedModType d R)
   (u_ : V ^nat) :
   cauchy (series u_ @ \oo) <->
   forall e : R, e > 0 ->
@@ -1019,7 +1019,7 @@ move: cvg_v => /(is_cvg_series_shiftn N); apply: series_squeeze_is_cvgn => /= n.
   by apply; exact: leq_addl.
 Unshelve. all: by end_near. Qed.
 
-Lemma normed_cvg {d} {R : realType} (V : completeNormedModType d R) 
+Lemma normed_cvg {d} {R : realType} (V : completeNormedModType d R)
   (u_ : V ^nat) :
   cvgn [normed series u_] -> cvgn (series u_).
 Proof.
@@ -1029,7 +1029,7 @@ apply: filterS => n /=; rewrite ger0_norm ?sumr_ge0//.
 by apply: le_lt_trans; apply: ler_norm_sum.
 Qed.
 
-Lemma lim_series_norm {d} {R : realType} (V : completeNormedModType d R) 
+Lemma lim_series_norm {d} {R : realType} (V : completeNormedModType d R)
   (f : V ^nat) :
     cvgn [normed series f] ->
   `|limn (series f)| <= limn [normed series f].
@@ -3272,12 +3272,12 @@ Unshelve. all: by end_near. Qed.
 End Baire.
 
 (* TODO: generalize once PR#1107 is integrated *)
-Definition bounded_fun_norm d d' (K : realType) (V : normedModType d K)
-    (W : normedModType d' K) (f : V -> W) :=
+Definition bounded_fun_norm d (K : realType) (V : normedModType d K)
+    d' (W : normedModType d' K) (f : V -> W) :=
   forall r, exists M, forall x, `|x| <= r -> `|f x| <= M.
 
-Lemma bounded_landau d d' (K : realType) (V : normedModType d K)
-    (W : normedModType d' K) (f : {linear V -> W}) :
+Lemma bounded_landau d (K : realType) (V : normedModType d K)
+    d' (W : normedModType d' K) (f : {linear V -> W}) :
   bounded_fun_norm f <-> ((f : V -> W) =O_ (0 : V) cst (1:K)).
 Proof.
 rewrite eqOP; split => [|Bf].
@@ -3305,17 +3305,17 @@ Definition pointwise_bounded (K : realType) (V : normedModType K) (W : normedMod
 Definition uniform_bounded (K : realType) (V : normedModType K) (W : normedModType K)
  (F : set (V -> W)) := bounded_top F {uniform V -> W}.  *)
 
-Definition pointwise_bounded d d' (K : realType) (V : normedModType d K) 
-  (W : normedModType d' K) (F : set (V -> W)) := 
+Definition pointwise_bounded d (K : realType) (V : normedModType d K)
+  d' (W : normedModType d' K) (F : set (V -> W)) :=
   forall x, exists M, forall f, F f -> `|f x| <= M.
 
-Definition uniform_bounded d d' (K : realType) (V : normedModType d K) 
-  (W : normedModType d' K) (F : set (V -> W)) := 
+Definition uniform_bounded d (K : realType) (V : normedModType d K)
+  d' (W : normedModType d' K) (F : set (V -> W)) :=
   forall r, exists M, forall f, F f -> forall x, `|x| <= r -> `|f x| <= M.
 
 Section banach_steinhaus.
-Context d d' (K : realType) 
-  (V : completeNormedModType d K) (W : normedModType d' K).
+Context d (K : realType) (V : completeNormedModType d K)
+  d' (W : normedModType d' K).
 
 Let pack_linear (f : V -> W) (lf : linear f) : {linear V -> W}
  := HB.pack f (GRing.isLinear.Build _ _ _ _ _ lf).

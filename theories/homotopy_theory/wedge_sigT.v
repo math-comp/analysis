@@ -205,7 +205,7 @@ Qed.
 Definition wedge_fun {Z : Type} (f : forall i, X i -> Z) : wedge -> Z :=
   sigT_fun f \o repr.
 
-Lemma wedge_fun_continuous {d'} {Z : topologicalType d'} 
+Lemma wedge_fun_continuous {d'} {Z : topologicalType d'}
     (f : forall i, X i -> Z) :
   (forall i, continuous (f i)) -> (forall i j, f i (p0 i) = f j (p0 j)) ->
   continuous (wedge_fun f).
@@ -338,7 +338,7 @@ move=> /wedge_prod_continuous nV; have := clxy _ _ nU nV.
 by case => z [/= ? ?]; exists (wedge_prod z).
 Qed.
 
-Lemma wedge_fun_joint_continuous d' d'' 
+Lemma wedge_fun_joint_continuous d' d''
   (T : topologicalType d') (R : topologicalType d'')
   (k : forall (x : I), T -> X x -> R):
   finite_set [set: I] ->

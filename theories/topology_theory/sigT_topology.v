@@ -34,7 +34,7 @@ Lemma sigT_nbhsE (i : I) (x : X i) :
   sigT_nbhs (existT _ i x) = (existT _ _) @ (nbhs x).
 Proof. by done. Qed.
 
-HB.instance Definition _ := 
+HB.instance Definition _ :=
   hasNbhs.Build (sigT_fdisp d) {i & X i} sigT_nbhs.
 
 Local Lemma sigT_nbhs_proper x : ProperFilter (sigT_nbhs x).

@@ -40,7 +40,7 @@ HB.mixin Record Discrete_ofNbhs d T & Nbhs d T := {
 #[short(type="discreteNbhsType")]
 HB.structure Definition DiscreteNbhs d := {T of Nbhs d T & Discrete_ofNbhs d T}.
 
-HB.instance Definition _ d d' (T : discreteNbhsType d) :=
+HB.instance Definition _ d' d (T : discreteNbhsType d) :=
   Discrete_ofNbhs.Build d' (with_fdisp d' T) nbhs_principalE.
 
 Definition discrete_ent {T} : set_system (T * T) :=
@@ -82,7 +82,7 @@ HB.structure Definition DiscreteUniform d :=
 
 #[short(type="discretePseudoMetricType")]
 HB.structure Definition DiscretePseudoMetric {R : numDomainType} d :=
-  { T of Discrete_ofPseudometric d R T & PseudoMetric d R T 
+  { T of Discrete_ofPseudometric d R T & PseudoMetric d R T
     & DiscreteUniform d T }.
 
 HB.saturate with_fdisp.
@@ -104,7 +104,7 @@ HB.instance Definition _ := @Nbhs_isNbhsTopological.Build d T
 
 HB.end.
 
-HB.factory Record DiscreteUniform_ofNbhs d T 
+HB.factory Record DiscreteUniform_ofNbhs d T
   & Discrete_ofNbhs d T & Nbhs d T := {}.
 HB.builders Context d T & DiscreteUniform_ofNbhs d T.
 

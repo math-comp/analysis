@@ -53,7 +53,7 @@ HB.instance Definition _ := Nbhs_isNbhsTopological.Build _ (T * U)%type
 
 End Prod_Topology.
 
-Lemma fst_open {d1} {U : topologicalType d1} {d2} {V : topologicalType d2} 
+Lemma fst_open {d1} {U : topologicalType d1} {d2} {V : topologicalType d2}
   (A : set (U * V)) :
   open A -> open (fst @` A).
 Proof.
@@ -62,7 +62,7 @@ have [[P Q] [Pa Qb] pqA] := oA _ Aab; apply: (@filterS _ _ _ P) => // p Pp.
 by exists (p, b) => //=; apply: pqA; split=> //=; exact: nbhs_singleton.
 Qed.
 
-Lemma snd_open {d1} {U : topologicalType d1} {d2} {V : topologicalType d2} 
+Lemma snd_open {d1} {U : topologicalType d1} {d2} {V : topologicalType d2}
   (A : set (U * V)) :
   open A -> open (snd @` A).
 Proof.
@@ -92,7 +92,7 @@ Qed.
 
 Lemma prod_ent_filter : Filter prod_ent.
 Proof.
-have prodF := filter_prod_filter 
+have prodF := filter_prod_filter
   (@entourage_filter _ U) (@entourage_filter _ V).
 split; rewrite /prod_ent.
 - by rewrite -setXTT; apply: prod_entP filterT filterT.
@@ -156,7 +156,7 @@ HB.instance Definition _ := Nbhs_isUniform.Build _ (U * V)%type
 
 End prod_Uniform.
 
-Lemma entourage_prod_exS d1 (U : uniformType d1) d2 (V : uniformType d2) 
+Lemma entourage_prod_exS d1 (U : uniformType d1) d2 (V : uniformType d2)
   (P : set ((U * V) * (U * V))) :
     entourage P ->
   exists (A : set (U * U)) (B : set (V * V)),
@@ -173,7 +173,7 @@ Qed.
 Definition interchange_prod {T U} (x : (T * U) * (T * U)) : (T * T) * (U * U) :=
   (x.1.1, x.2.1, (x.1.2, x.2.2)).
 
-Lemma entourage_interchange_prod {d1} {U : uniformType d1} 
+Lemma entourage_interchange_prod {d1} {U : uniformType d1}
   {d2} {V : uniformType d2} (B : set (U * U)) (C : set (V * V)) :
 entourage B -> entourage C -> entourage (interchange_prod @^-1` (B `*` C)).
 Proof.
@@ -217,7 +217,7 @@ End unif_continuous_pair.
 
 (** product of two pseudoMetric spaces *)
 Section prod_PseudoMetric.
-Context {d1} {R : numDomainType} 
+Context {d1} {R : numDomainType}
   {U : pseudoMetricType d1 R} {d2} {V : pseudoMetricType d2 R}.
 Implicit Types (x y : U * V).
 
@@ -259,7 +259,7 @@ HB.instance Definition _ := Uniform_isPseudoMetric.Build _ R (U * V)%type
 End prod_PseudoMetric.
 
 Section Nbhs_fct2.
-Context {T : Type} {d1} {R : numDomainType} 
+Context {T : Type} {d1} {R : numDomainType}
   {U : pseudoMetricType d1 R} {d2} {V : pseudoMetricType d2 R}.
 Lemma fcvg_ball2P {F : set_system U} {G : set_system V}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
@@ -281,7 +281,7 @@ Qed.
 
 End Nbhs_fct2.
 
-Lemma compact_setX {d1} {U : topologicalType d1} {d2} {V : topologicalType d2} 
+Lemma compact_setX {d1} {U : topologicalType d1} {d2} {V : topologicalType d2}
   (P : set U) (Q : set V) :
   compact P -> compact Q -> compact (P `*` Q).
 Proof.
@@ -296,7 +296,7 @@ case=> a [b i] /= [N2a [N1b]] Gi.
 by apply: (ngPr (b, a, i)); split => //; exact: N1N2N.
 Unshelve. all: by end_near. Qed.
 
-Lemma swap_continuous {d1 d2} 
+Lemma swap_continuous {d1 d2}
   {X : topologicalType d1} {Y : topologicalType d2} :
   continuous (@swap X Y).
 Proof.
@@ -305,7 +305,7 @@ by case => //= ? ? [] ? ?; exact: UVW.
 Qed.
 
 Section reassociate_continuous.
-Context {d1} {X : topologicalType d1} {d2} {Y : topologicalType d2} 
+Context {d1} {X : topologicalType d1} {d2} {Y : topologicalType d2}
   {d3} {Z : topologicalType d3}.
 
 Lemma prodA_continuous : continuous (@prodA X Y Z).

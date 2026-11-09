@@ -103,9 +103,10 @@ Qed.
 (*                                                                            *)
 (******************************************************************************)
 Section topological_trees.
-Context {d d'} {K : nat -> pdiscreteTopologicalType d} {X : ptopologicalType d'}
-        (refine_apx : forall n, set X -> K n -> set X)
-        (tree_invariant : set X -> Prop).
+Context {d} {K : nat -> pdiscreteTopologicalType d}
+  {d'} {X : ptopologicalType d'}
+  (refine_apx : forall n, set X -> K n -> set X)
+  (tree_invariant : set X -> Prop).
 
 Hypothesis cmptX : compact [set: X].
 Hypothesis hsdfX : hausdorff_space X.
@@ -292,7 +293,7 @@ Local Lemma cantor_map : exists f : cantor_space -> T,
       set_surj [set: cantor_space] [set: T] f &
       set_inj [set: cantor_space] f ].
 Proof.
-have [] := @tree_map_props _ _ (fun=> bool) T c_ind c_invar cmptT hsdfT.
+have [] := @tree_map_props _ (fun=> bool) _ T c_ind c_invar cmptT hsdfT.
 - move=> n V; rewrite eqEsubset; split => [t Vt|t [? ? []]//].
   have [?|?] := pselect ((U_ n `&` V !=set0) /\ ~` U_ n `&` V !=set0).
   + have [Unt|Unt] := pselect (U_ n t).
@@ -340,7 +341,7 @@ Proof.
 exists tree_map => /=.
 have [cts surj inje] := projT2 (cid cantor_map); split; first exact: cts.
 move=> A clA; apply: (compact_closed hsdfT).
-apply: (@continuous_compact _ _ _ _ tree_map). 
+apply: (@continuous_compact _ _ _ _ tree_map).
   exact: continuous_subspaceT.
 apply: (@subclosed_compact _ _ _ [set: cantor_space]) => //.
 exact: cantor_space_compact.
@@ -359,12 +360,12 @@ Section FinitelyBranchingTrees.
 Definition tree_of (T : nat -> pointedType) : Type :=
   prod_topology (fun n => discrete_topology (T n)).
 
-HB.instance Definition _ (T : nat -> pointedType) : Pointed (tree_of T):= 
+HB.instance Definition _ (T : nat -> pointedType) : Pointed (tree_of T):=
   Pointed.on (tree_of T).
 
 HB.instance Definition _ (T : nat -> pointedType) := Uniform.on (tree_of T).
 
-HB.instance Definition _ (T : nat -> pointedType) : 
+HB.instance Definition _ (T : nat -> pointedType) :
     @PseudoMetric _ R _ :=
    @PseudoMetric.on (tree_of T).
 
@@ -473,9 +474,9 @@ Let K n := discrete_topology (K' n).
 Let Tree := @tree_of K.
 
 HB.instance Definition _ n :=
-  DiscreteTopology.on (K n). 
+  DiscreteTopology.on (K n).
 HB.instance Definition _ n :=
-  Pointed.on (K n). 
+  Pointed.on (K n).
 
 Let embed_refine n (U : set T) (k : K n) :=
   (if pselect (projT1 k `&` U !=set0)
@@ -496,7 +497,7 @@ Local Lemma cantor_surj_pt1 : exists2 f : Tree -> T,
 Proof.
 pose entn n := projT2 (cid (ent_balls' (count_unif n))).
 have [ | |? []//| |? []// | |] := @tree_map_props
-    _ _ K T (embed_refine) (embed_invar) cptT hsdfT.
+    _ K _ T (embed_refine) (embed_invar) cptT hsdfT.
 - move=> n U; rewrite eqEsubset; split=> [t Ut|t [? ? []]//].
   have [//|_ _ _ + _] := entn n; rewrite -subTset.
   move=> /(_ t I)[W cbW Wt]; exists (existT _ W cbW) => //.

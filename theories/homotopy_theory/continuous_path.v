@@ -39,16 +39,16 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Local Open Scope quotient_scope.
 
-HB.mixin Record isPath {d} {i : bpTopologicalType d} 
-    {d'} {T : topologicalType d'} (x y : T) (f : i -> T) 
+HB.mixin Record isPath {d} {i : bpTopologicalType d}
+    {d'} {T : topologicalType d'} (x y : T) (f : i -> T)
     & isContinuous d i d' T f := {
   path_zero : f zero = x;
   path_one : f one = y;
 }.
 
 #[short(type="pathType")]
-HB.structure Definition Path {d} {i : bpTopologicalType d} 
-    {d'} {T : topologicalType d'} (x y : T) := 
+HB.structure Definition Path {d} {i : bpTopologicalType d}
+    {d'} {T : topologicalType d'} (x y : T) :=
   {f of isPath d i d' T x y f & isContinuous d i d' T f}.
 
 Notation "{ 'path' i 'from' x 'to' y }" := (pathType i x y) : type_scope.
@@ -57,7 +57,7 @@ Notation "{ 'path' i 'from' x 'to' y 'in' T }" :=
 
 HB.instance Definition _ {d} {i : bpTopologicalType d}
   {d'} {T : topologicalType d'} (x y : T) := gen_eqMixin {path i from x to y}.
-HB.instance Definition _ {d} {i : bpTopologicalType d} {d'} 
+HB.instance Definition _ {d} {i : bpTopologicalType d} {d'}
   {T : topologicalType d'} (x y : T) := gen_choiceMixin {path i from x to y}.
 HB.instance Definition _ {d} {i : bpTopologicalType d}
     {d'} {T : topologicalType d'} (x y : T) :=
@@ -65,7 +65,7 @@ HB.instance Definition _ {d} {i : bpTopologicalType d}
     (@initial_topology {path i from x to y} {compact-open, i -> T} id).
 
 Section path_eq.
-Context {d d'} {T : topologicalType d} {i : bpTopologicalType d'} (x y : T).
+Context {d} {T : topologicalType d} {d'} {i : bpTopologicalType d'} (x y : T).
 
 Lemma path_eqP (a b : {path i from x to y}) : a = b <-> a =1 b.
 Proof.
@@ -79,7 +79,7 @@ Qed.
 End path_eq.
 
 Section cst_path.
-Context {d d'} {T : topologicalType d} {i : bpTopologicalType d'} (x: T).
+Context {d} {T : topologicalType d} {d'} {i : bpTopologicalType d'} (x: T).
 
 HB.instance Definition _ := @isPath.Build _ i _ T x x (cst x) erefl erefl.
 End cst_path.
@@ -90,8 +90,8 @@ HB.instance Definition _ := @isPath.Build _ i _ i zero one idfun erefl erefl.
 End path_domain_path.
 
 Section path_compose.
-Context {d d' d''} {T : topologicalType d} {U : topologicalType d'} 
-  (i: bpTopologicalType d'') (x y : T).
+Context {d1} {T : topologicalType d1} {d2} {U : topologicalType d2}
+  {d3} (i: bpTopologicalType d3) (x y : T).
 Context (f : continuousType T U) (p : {path i from x to y}).
 
 Local Lemma fp_zero : (f \o p) zero = f x.
@@ -106,8 +106,8 @@ HB.instance Definition _ := isPath.Build _ i _ U (f x) (f y) (f \o p)
 End path_compose.
 
 Section path_reparameterize.
-Context {d d' d''} {T : topologicalType d} 
-  (i : bpTopologicalType d') (j: bpTopologicalType d'') (x y : T).
+Context {d1} {T : topologicalType d1} {d2} (i : bpTopologicalType d2)
+  {d3} (j: bpTopologicalType d3) (x y : T).
 Context (f : {path i from x to y}) (phi : {path j from zero to one in i}).
 
 (* we use reparameterize, as opposed to just `\o` because we can simplify the
@@ -133,7 +133,7 @@ HB.instance Definition _ := isPath.Build _ j _ T x y reparameterize
 End path_reparameterize.
 
 Section mk_path.
-Context {d d'} {i : bpTopologicalType d} {T : topologicalType d'}.
+Context {d} {i : bpTopologicalType d} {d'} {T : topologicalType d'}.
 Context {x y : T} (f : i -> T) (ctsf : continuous f).
 Context (f0 : f zero = x) (f1 : f one = y).
 
@@ -144,12 +144,14 @@ HB.instance Definition _ := @isPath.Build _ i _ T x y mk_path f0 f1.
 End mk_path.
 
 
-Definition chain_path {d d'} {i j : bpTopologicalType d} 
-    {T : topologicalType d'} (f : i -> T) (g : j -> T) : bpwedge i j -> T :=
+Definition chain_path
+    {d} {i j : bpTopologicalType d} {d'} {T : topologicalType d'}
+    (f : i -> T) (g : j -> T) : bpwedge i j -> T :=
   wedge_fun (fun b => if b return (if b then i else j) -> T then f else g).
 
-Lemma chain_path_cts_point {d d'} {i j : bpTopologicalType d} 
-    {T : topologicalType d'} (f : i -> T) (g : j -> T) :
+Lemma chain_path_cts_point
+    {d} {i j : bpTopologicalType d} {d'} {T : topologicalType d'}
+    (f : i -> T) (g : j -> T) :
   continuous f ->
   continuous g ->
   f one = g zero ->
@@ -157,7 +159,8 @@ Lemma chain_path_cts_point {d d'} {i j : bpTopologicalType d}
 Proof. by move=> cf cg fgE; apply: wedge_fun_continuous => // [[]|[] []]. Qed.
 
 Section chain_path.
-Context {d d'} {T : topologicalType d} {i j : bpTopologicalType d'} (x y z : T).
+Context {d} {T : topologicalType d} {d'} {i j : bpTopologicalType d'}
+  (x y z : T).
 Context (p : {path i from x to y}) (q : {path j from y to z}).
 
 Let chain_path_zero : chain_path p q zero = x.
@@ -178,7 +181,7 @@ apply: chain_path_cts_point; [exact: continuous_fun..|].
 by rewrite path_zero path_one.
 Qed.
 
-HB.instance Definition _ := 
+HB.instance Definition _ :=
   @isContinuous.Build _ _ _ T (chain_path p q) chain_path_cts.
 HB.instance Definition _ := @isPath.Build _ _ _ T x z (chain_path p q)
   chain_path_zero chain_path_one.
