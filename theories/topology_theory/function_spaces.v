@@ -1365,7 +1365,7 @@ move=> W; wlog Wf : f W / W f.
     by (rewrite closureEcvg; exists F; [|split]) => // ? /= /filterS; exact.
   by apply: (filterS _ FW) => z Wz; exact: subset_closure.
 move=> FW ectsW; split=> [ptwsF|]; last exact: pointwise_cvg_compact_family.
-apply/fam_cvgP  => K cK U /=; rewrite uniform_nbhs => -[E [eE EsubU]].
+apply/fam_cvgP => K cK U /=; rewrite uniform_nbhs => -[E [eE EsubU]].
 suff : \forall g \near within W (nbhs (f : {ptws X -> Y})),
     forall y, K y -> E (f y, g y).
   rewrite near_withinE; near_simpl => N; apply: (filter_app _ _ FW).
