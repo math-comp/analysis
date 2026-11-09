@@ -4,6 +4,22 @@
 
 ### Added
 
+- in `classical_sets.v`
+  + lemma `in1_mksetP`
+
+- in `topology_structure.v`
+  + lemmas `open_bigcup_basis`, `continuous_on_basis`
+
+- in `num_normedtype.v`
+  + definition `itvoo_basis`
+  + lemma `itvoo_basis_is_basis`
+
+- in `lebesgue_integrable.v`
+  + lemma `compact_continuous_Rintegrable`
+
+- in `lebesgue_Rintegral.v`
+  + lemmas `Rintegral_gt0`, `Rintegral_gt0_itvcc`
+
 - in `exp.v`:
   + lemmas `cvgy_expR`, `cvgNy_expR`, `lny`, `ge0_lt1_powR_cvg0`, 
     `pownMexpR_cvgr0`, `powRMexpR_cvgr0`, `pownMpowR_cvgr0`,
@@ -33,6 +49,10 @@
   + new definition `supremum_display`.
 - in `tvs.v`:
   + new definition `seminorm_display`.
+### Moved
+
+- from `pseudometric_normed_Zmodule.v` to `num_topology.v`
+  + lemma `ball_itv`
 
 ### Changed
 
