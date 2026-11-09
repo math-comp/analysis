@@ -32,8 +32,6 @@
     `pownMexpR_cvgr0`, `powRMexpR_cvgr0`, `pownMpowR_cvgr0`,
     `pownMexpr_cvgn0`
   + instance `is_derive1_powRl`
-- in `ereal_normedtype.v`:
-  + lemma `ge0_cvgMly`
 
 ### Changed
 
