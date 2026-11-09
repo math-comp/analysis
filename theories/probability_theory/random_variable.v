@@ -536,7 +536,7 @@ Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : subprobability T R).
 Import MeasurableR.
 
-Lemma expectation_def (X : T -> \bar R) : 'E_P[X] = (\int[P]_w X w)%E.
+Lemma expectation_def (X : T -> \bar R) : 'E_P[X] = \int[P]_w X w.
 Proof. by rewrite unlock. Qed.
 
 Lemma expectation_fin_num (X : T -> R) : X \in Lfun P 1 ->
@@ -561,22 +561,18 @@ Proof.
 by move=> ?; rewrite unlock muleC -integralZr//; exact/Lfun1_integrable.
 Qed.
 
-Lemma expectation_ge0 (X : T -> \bar R) : (forall x, 0 <= X x)%E ->
+Lemma expectation_ge0 (X : T -> \bar R) : (forall x, 0 <= X x) ->
   0 <= 'E_P[X].
 Proof. by move=> ?; rewrite unlock integral_ge0. Qed.
 
 Lemma expectation_le (X Y : T -> \bar R) :
     measurable_fun [set: T] X -> measurable_fun [set: T] Y ->
-    (forall x, 0 <= X x)%E -> (forall x, 0 <= Y x)%E ->
-  {ae P, (forall x, X x <= Y x)%E} -> 'E_P[X] <= 'E_P[Y].
+    (forall x, 0 <= X x) -> (forall x, 0 <= Y x) ->
+  {ae P, forall x, X x <= Y x} -> 'E_P[X] <= 'E_P[Y].
 Proof.
 move=> mX mY X0 Y0 XY; rewrite unlock ae_ge0_le_integral => //.
-(*- by move=> t _; apply: X0.
-- exact/measurable_EFinP.
-- by move=> t _; apply: Y0.
-- exact/measurable_EFinP.*)
-- move: XY => [N [mN PN XYN]]; exists N; split => // t /= h.
-  by apply: XYN => /=; apply: contra_not h.
+move: XY => [N [mN PN XYN]]; exists N; split => // t /= h.
+by apply: XYN => /=; exact: contra_not h.
 Qed.
 
 Lemma expectationD (X Y : T -> R) : X \in Lfun P 1 -> Y \in Lfun P 1 ->
