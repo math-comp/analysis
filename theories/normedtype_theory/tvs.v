@@ -402,23 +402,23 @@ HB.structure Definition SubConvexTvs (R : numDomainType) (V : convexTvsType R)
   { U of SubTopological V S U & ConvexTvs R U & @GRing.SubLmodule R V S U }.
 
 Section ConvexTvs_theory.
-Context (R : numFieldType) (E : convexTvsType R).
+Context {R : numFieldType} {E : convexTvsType R}.
 
 Lemma closure_convextvs (b : set E) :
-  closure b = \bigcap_(a in (nbhs (0 : E))) (b `+ a).
+  closure b = \bigcap_(a in nbhs (0 : E)) (b `+ a).
 Proof.
-have [absconv [] nbhs0 basis] :=  (svalP (cid2 (@locally_convex _ E))).
+have [absconv [] nbhs0 basis] := svalP (cid2 (@locally_convex _ E)).
 apply/seteqP; split => z H.
   move=> a' /basis [/=a /[dup] /mem_set /absconv [_ bala]].
   move=> /nbhs0 /[dup] na /(nbhs_add1set z)/H  [y [by' [? -> [t ta zty]]]] aa'.
-  exists y => //; exists (-t); last by apply: (addrI t); rewrite addrCA subrr addr0 addrC.
-  by rewrite -scaleN1r; apply/aa'/(bala (-1)); rewrite ?normrN ?normr1 //=; exists t.
+  exists y => //; exists (- t); last by apply/eqP; rewrite subr_eq zty.
+  by rewrite -scaleN1r; apply/aa'/(bala (- 1)); rewrite ?normrN1//=; exists t.
 move=> d; rewrite nbhsE0.
-move =>  [dz] [/=a /basis [ /= a'/[dup] /mem_set /= /absconv [_ bala]]].
+move=>  [dz] [/=a /basis [/= a'/[dup] /mem_set /= /absconv [_ bala]]].
 move=> /nbhs0 /H [x bx [y ay]] xyz  aa' zcd.
-exists x; split => //; apply: zcd; exists (-y).
-  by rewrite -scaleN1r; apply/aa'/(bala (-1)); rewrite ?normrN ?normr1 //=; exists y.
-by apply: (addrI y); rewrite addrCA subrr addr0 addrC.
+exists x; split => //; apply: zcd; exists (- y).
+  by rewrite -scaleN1r; apply/aa'/(bala (- 1)); rewrite ?normrN1//=; exists y.
+by  apply/eqP; rewrite subr_eq xyz.
 Qed.
 
 Lemma closure_addset (b : set E) : (nbhs 0 b) ->  closure b `<=` b `+ b.
@@ -430,7 +430,7 @@ Qed.
 End ConvexTvs_theory.
 
 Section SubLmodule_isSubConvexTvs.
-Context (R : numFieldType) (V : convexTvsType R) (S : pred V) (U : subLmodType S).
+Context {R : numFieldType} {V : convexTvsType R} (S : pred V) (U : subLmodType S).
 
 Definition init_subconvextvs := sub_initial_topology U.
 
@@ -539,18 +539,18 @@ HB.instance Definition _ :=
   @Uniform_isConvexTvs.Build R init_subconvextvs locally_convex_sub.
 HB.instance Definition _ := GRing.SubLmodule.on init_subconvextvs.
 
-Lemma hausdorff_init_convextvs : hausdorff_space V -> hausdorff_space init_subconvextvs.
+Lemma hausdorff_init_convextvs :
+  hausdorff_space V -> hausdorff_space init_subconvextvs.
 Proof.
 move=> hV x y; rewrite /cluster /= /nbhs /= => cl.
-apply: val_inj; apply: hV; rewrite nbhsE => A B /= [A' [oA Ax AA']].
+apply/val_inj/hV; rewrite nbhsE => A B /= [A' [oA Ax AA']].
 rewrite nbhsE /= => -[B' [oB By BB']].
-have valA: nbhs_of_open (initial_open \val) x (\val @^-1` A').
-   by rewrite /nbhs_of_open; exists (\val @^-1` A'); split => //=; exists A'.
+have valA : nbhs_of_open (initial_open \val) x (\val @^-1` A').
+  by exists (\val @^-1` A'); split => //=; exists A'.
 have : nbhs_of_open (initial_open \val) y (\val @^-1` B').
-   by rewrite /nbhs_of_open; exists (\val @^-1` B'); split => //=; exists B'.
+  by exists (\val @^-1` B'); split => //=; exists B'.
 move/(cl (val @^-1` A') (val @^-1` B') valA) => [z /= [Az Bz]]; exists (val z).
-split; first exact: AA'.
-exact: BB'.
+by split; [exact: AA'|exact: BB'].
 Qed.
 
 End SubLmodule_isSubConvexTvs.

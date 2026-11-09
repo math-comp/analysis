@@ -266,27 +266,25 @@ Proof.
 move=> na.
 have := add_continuous 0 A.
 rewrite add0r => /(_ na) /= -[[b1 b2] /= [n1 n2] ba].
-exists (b1 `&` b2); first by apply: filterI.
-by move => z /= [x [x1 _]] [y [_ y2]] <-; apply (ba (x,y)); split => /=.
+exists (b1 `&` b2); first exact: filterI.
+by move => z /= [x [x1 _]] [y [_ y2]] <-; exact: (ba (x, y)).
 Qed.
 
-Lemma hausdorff_convextvs : (hausdorff_space M) <-> closed ([set 0 : M]).
+Lemma hausdorff_convextvs : hausdorff_space M <-> closed [set 0 : M].
 Proof.
-split.
-  move=> /(_ (0:M)) hF x /= cl; apply/eqP; rewrite eq_sym; apply/eqP; apply: hF.
+split=> [|cl].
+  move=> /(_ (0:M)) hF x /= cl; apply/esym/hF.
   move=> a b n0a /(cl b) [? [-> b0]].
-  exists 0; split => //; exact: nbhs_singleton.
-move => cl.
-(* simpler proof using the closed subbasis ?*)
-move=> x y H; apply: subr0_eq; have := H.
-contra => xy0.
-have nxy : nbhs (x-y) (~`[set 0]).
-  apply: open_nbhs_nbhs; split => /=; first by apply: closed_openC.
-  by apply/eqP.
-have /(_ (~`[set 0]) nxy) [] : continuous_at (x,y) (fun z => (z.1 - z.2)).
-  by exact: sub_continuous.
+  by exists 0; split => //; exact: nbhs_singleton.
+(* NB: simpler proof using the closed subbasis? *)
+move=> x y H; apply: subr0_eq.
+move: (H); contra => xy0.
+have nxy : nbhs (x - y) (~` [set 0]).
+  by apply: open_nbhs_nbhs; split => /=; [exact: closed_openC|exact/eqP].
+have /(_ (~` [set 0]) nxy) [] : continuous_at (x, y) (fun z => z.1 - z.2).
+  exact: sub_continuous.
 move=> [a b] /= [na nb] ab0; exists a; exists b => //; split => // z az bz.
-by have := ab0 (z,z) => /=; rewrite subrr; apply.
+by have := ab0 (z, z) => /=; rewrite subrr; exact.
 Qed.
 
 End TopologicalZmoduleTheory.
