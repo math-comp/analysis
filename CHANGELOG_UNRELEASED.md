@@ -10,6 +10,9 @@
     `pownMexpr_cvgn0`
   + instance `is_derive1_powRl`
 
+- in `ftc.v`:
+  + lemmas `parameterized_integralN`, `parameterized_integralN_continuous`
+
 ### Changed
 
 - in `lebesgue_integral_nonneg.v`, generalized and deprecated:
