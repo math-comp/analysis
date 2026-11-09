@@ -385,15 +385,26 @@ rewrite addrC addKr Rintegral_itvob_itvcb//.
 by apply: integrableS itf => //; exact/subset_itvr/ltW.
 Qed.
 
+(* TODO: this lemma can be generalized to stcictly positive measures;
+   as a special case, the Lebesgue measure is strictly positive. *)
 Lemma Rintegral_gt0 f D :
   mu.-integrable D (EFin \o f) ->
   open D ->
-  {in D, continuous f} ->
+  {within D, continuous f} ->
   {in D, forall x : R, 0 <= f x} ->
   ~ {in D, forall x : R, f x == 0} ->
+  (* To the reviewer:
+     this line can be plainly an existential parameter
+     ` (exists x : R, x \in D /\ f x != 0) -> `
+     or even destructed into three parameters
+     ` forall x : R, x \in D -> f x != 0 -> ` ;
+     however the former cannot be written using the notation {in _ , ...}
+     and the latter breaks the clausal integrity of this hypothesis *)
   0 < \int[mu]_(x in D) f x.
 Proof.
-move=> f_ble oD cf f_ge0 /existsNP [] c /not_implyP [] cD /negP fc_neq0.
+move=> f_ble oD.
+rewrite continuous_open_subspace// => cf.
+move=> f_ge0 /existsNP [] c /not_implyP [] cD /negP fc_neq0.
 have fc_gt0 : f c > 0 by rewrite lt_neqAle eq_sym fc_neq0 f_ge0.
 pose U := `]f c / 2, +oo[%classic.
 have oU : open U by exact: itv_open_ends_open.
@@ -433,15 +444,14 @@ Qed.
 
 Lemma Rintegral_gt0_itvcc f (a b : R) :
   a < b ->
-  {in `[a, b], continuous f} ->
+  {within `[a, b], continuous f} ->
   {in `[a, b], forall x : R, 0 <= f x} ->
   ~ {in `[a, b], forall x : R, f x == 0} ->
   0 < \int[mu]_(x in `[a, b]) f x.
 Proof.
 move=> ab cf f_ge0 f_neq0.
-have ooSab : `]a, b[ `<=` `[a, b] by exact: subset_itvW.
-have cf_oo := sub_in1 ooSab cf.
-have within_cf := continuous_subspace_itv cf.
+have ooabScc : `]a, b[ `<=` `[a, b] by exact: subset_itvW.
+have cf_oo := continuous_subspaceW ooabScc cf.
 have := f_neq0 => /existsNP[] p /not_implyP[] pab /negP fp_neq0.
 have fp_gt0 : 0 < f p by rewrite lt_neqAle eq_sym fp_neq0/= f_ge0.
 have f_ble : mu.-integrable `[a, b] (EFin \o f).
@@ -455,13 +465,12 @@ suff : (0 < \int[mu]_(x in `[a, b]) (f x)%:E)%E.
 rewrite integral_itvbb_itvoo/=.
   apply/measurable_EFinP.
   apply: subspace_continuous_measurable_fun => //.
-  exact: continuous_subspace_itv.
 rewrite -[ltRHS]fineK ?integrable_fin_num//=.
 rewrite lte_fin Rintegral_gt0//.
-- by rewrite -in1_mksetP.
-- by rewrite -in1_mksetP; apply: (sub_in1 ooSab).
+- by rewrite -in1_mksetP; apply: (sub_in1 ooabScc).
 (* the rest of the proof is just for ~ {in `]a, b[, forall x : R, f x == 0},
    i.e., about extending a constant function on an open interval to its closure *)
+clear f_ble f_ble_oo.
 move=> f_eq0oo.
 have faboo_sing : f @` `]a, b[%classic = [set 0].
   apply/seteqP; split => x /=.
@@ -475,7 +484,7 @@ case => [pa|pb]/=.
   have : connected `[a, b[%classic.
     exact/connected_intervalP/interval_is_interval.
   have : {within `[a, b[, continuous f}.
-    have := within_cf; apply: continuous_subspaceW.
+    have := cf; apply: continuous_subspaceW.
     by apply/subset_itvl; rewrite bnd_simp.
   move/connected_continuous_connected/[apply].
   rewrite -setU_1itvob ?bnd_simp// image_setU faboo_sing -pa image_set1.
@@ -487,7 +496,7 @@ case => [pa|pb]/=.
 have : connected `]a, b]%classic.
   exact/connected_intervalP/interval_is_interval.
 have : {within `]a, b], continuous f}.
-  have := within_cf; apply: continuous_subspaceW.
+  have := cf; apply: continuous_subspaceW.
   by apply/subset_itvr; rewrite bnd_simp.
 move/connected_continuous_connected/[apply].
 rewrite -setU_itvob1 ?bnd_simp// image_setU faboo_sing -pb image_set1.

@@ -23,6 +23,8 @@ From mathcomp Require Import cardinality set_interval reals real_interval
 (*  bigcup_ointsub U q == union of open real intervals included               *)
 (*                        in U and that contain the rational                  *)
 (*                        number q                                            *)
+(*         itvoo_basis == set of all open intervals in (R : realType);        *)
+(*                        proved to be a basis for R                          *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ```                                                                        *)
@@ -835,6 +837,27 @@ move/has_ubPn : uX => /(_ x) [z Xz xz].
 by apply: (iX y z); rewrite ?ltW.
 Qed.
 
+(* TODO: should be generalized to balls after cleaning metric spaces *)
+Section real_itvoo_basis.
+Context {R : realFieldType}.
+
+Definition itvoo_basis : set_system R :=
+  [set `]x, y[%classic | x in [set: R] & y in [set: R]].
+
+Lemma itvoo_basis_is_basis : basis itvoo_basis.
+Proof.
+split; first by move=> U [] x _ [] y _ <-; exact: interval_open.
+move=> x U [] e /= e0 bU.
+exists (ball_ Num.Def.normr x e) => //=.
+rewrite subrr normr0; split => //.
+exists (x - e) => //; exists (x + e) => //.
+by rewrite -ball_itv.
+Qed.
+
+End real_itvoo_basis.
+
+(* TODO: factorize this section;
+   every open set is the disjoint union of open connected components. *)
 Section open_union_rat.
 Context {R : realType}.
 Implicit Types A U : set R.

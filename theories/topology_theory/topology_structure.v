@@ -1225,6 +1225,17 @@ rewrite bigcup_mkcond => nPsA; apply: bigcupT_separable => n.
 by case: ifPn => [/set_mem/nPsA//|_]; exact: separable_set0.
 Qed.
 
+Lemma open_bigcup_basis (F : set_system T) (A : set T) :
+  basis F -> open A ->
+  A = \bigcup_(i in [set i | F i /\ i `<=` A]) i.
+Proof.
+case=> Fo Ffilt oA; apply/seteqP; split => x.
+  move=> Ax.
+  have:= Ffilt x A (open_nbhs_nbhs (conj oA Ax)).
+  by case=> U /= [] FU Ux UA; exists U => //; split.
+by case=> U /= [] FU; exact.
+Qed.
+
 End basis.
 
 Lemma continuous_on_basis {d} {S : topologicalType d} {d'}
