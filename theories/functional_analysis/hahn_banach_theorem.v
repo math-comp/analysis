@@ -516,7 +516,7 @@ Proof.
 split; last first.
 (* proof in here is different than in the book - Jarchow mentions "a" continuous
 seminorm in 7.2.3 but refers to 2.7.1 which proves the results for a seminorm of
-the set of seminorm generating the topology - its probably lacks an argument
+the set of seminorms generating the topology - it probably lacks an argument
 saying that continuous seminorms are always bounded by this set of seminorms,
 which we haven't formalised here *)
   move => H.
