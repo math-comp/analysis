@@ -28,7 +28,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section matrix_Topology.
-Context (m n : nat) d (T : topologicalType d).
+Context (m n : nat) {d} (T : topologicalType d).
 
 Implicit Types M : 'M[T]_(m, n).
 
@@ -60,7 +60,7 @@ End matrix_Topology.
 
 Section matrix_Uniform.
 Local Open Scope relation_scope.
-Context (m n : nat) d (T : uniformType d).
+Context (m n : nat) {d} (T : uniformType d).
 
 Implicit Types A : set ('M[T]_(m, n) * 'M[T]_(m, n)).
 
@@ -166,7 +166,7 @@ HB.instance Definition _ d (T : puniformType d) := Pointed.on 'M[T]_(m, n).
 End matrix_PointedTopology.
 
 Section matrix_Complete.
-Context d (T : completeType d) (m n : nat).
+Context {d} (T : completeType d) (m n : nat).
 
 Lemma mx_complete (F : set_system 'M[T]_(m, n)) :
   ProperFilter F -> cauchy F -> cvg F.
@@ -192,7 +192,7 @@ End matrix_Complete.
 
 (**md Matrices: *)
 Section matrix_PseudoMetric.
-Context (m n : nat) d (R : numDomainType) (T : pseudoMetricType d R).
+Context (m n : nat) {d} {R : numDomainType} (T : pseudoMetricType d R).
 Implicit Types (x y : 'M[T]_(m, n)) (e : R).
 
 Definition mx_ball x e y := 0 < e /\ forall i j, ball (x i j) e (y i j).

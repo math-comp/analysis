@@ -276,7 +276,7 @@ Module Exports. Export numFieldTopology.Exports. HB.reexport. End Exports.
 End numFieldNormedType.
 Import numFieldNormedType.Exports.
 
-Lemma within_continuous_compN {d} {R : realFieldType} {K : numDomainType}
+Lemma within_continuous_compN {R : realFieldType} {d} {K : numDomainType}
     {U : metricNormedZmodType d K} (f : R -> U) (a b : R) :
   {within `[- b, - a], continuous f} -> {within `[a, b], continuous f \o -%R}.
 Proof.
@@ -643,9 +643,8 @@ Qed.
 
 End cvg_composition_normed.
 
-Lemma within_continuousZ d (T : topologicalType d)
-  (A : set T) d' (K : numFieldType) (V : normedModType d' K)
-  (k : K) (f : T -> V) :
+Lemma within_continuousZ d (T : topologicalType d) (A : set T)
+  d' (K : numFieldType) (V : normedModType d' K) (k : K) (f : T -> V) :
   {within A, continuous f} -> {within A, continuous k *: f}.
 Proof. by move=> cf x; apply: cvgZl_tmp; exact: cf. Qed.
 
@@ -2099,10 +2098,10 @@ by rewrite [in leLHS]fixx [in leLHS]fixy; exact: (ctrfq (_, _)).
 Qed.
 
 Section cvg_seq_bounded.
-Context {K : numFieldType}.
+Context {d : fdisp_t} {K : numFieldType} {V : normedModType d K}.
 Local Notation "'+oo'" := (@pinfty_nbhs K).
 
-Lemma cvg_seq_bounded {d} {V : normedModType d K} (a : nat -> V) :
+Lemma cvg_seq_bounded (a : nat -> V) :
   cvgn a -> bounded_fun a.
 Proof.
 move=> /cvg_bounded/ex_bound => -[/= Moo] => -[N _ /(_ _) aM].

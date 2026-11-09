@@ -285,7 +285,7 @@ from
 pseudoMetricNormedZmodType
 to
 metricType *)
-Context d (R : numFieldType) (V : metricType d R).
+Context {d} {R : numFieldType} (V : metricType d R).
 
 Lemma nbhsr0P (P : set V) x :
   (\forall y \near x, P y) <->

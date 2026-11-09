@@ -1195,8 +1195,9 @@ End continuous_within_itvP.
 #[deprecated(since="analysis 1.19.0", note="Use continuous_within_itvccP instead.")]
 Notation continuous_within_itvP := continuous_within_itvccP (only parsing).
 
-Lemma within_continuous_continuous {d} {R : realFieldType} {K : numDomainType}
-    {U : pseudoMetricType d K} a b (ba bb : bool) (f : R -> U) x : (a <= b)%R ->
+Lemma within_continuous_continuous {R : realFieldType} {d} {K : numDomainType}
+    {U : pseudoMetricType d K} a b (ba bb : bool) (f : R -> U) x :
+  (a <= b)%R ->
   {within [set` Interval (BSide ba a) (BSide bb b)], continuous f} ->
   x \in `]a, b[%R -> {for x, continuous f}.
 Proof.

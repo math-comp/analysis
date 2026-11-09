@@ -296,8 +296,8 @@ case=> a [b i] /= [N2a [N1b]] Gi.
 by apply: (ngPr (b, a, i)); split => //; exact: N1N2N.
 Unshelve. all: by end_near. Qed.
 
-Lemma swap_continuous {d1 d2}
-  {X : topologicalType d1} {Y : topologicalType d2} :
+Lemma swap_continuous {d1} {X : topologicalType d1}
+  {d2} {Y : topologicalType d2} :
   continuous (@swap X Y).
 Proof.
 case=> a b W /= [[U V]][] /= Ub Va UVW; exists (V, U); first by split.

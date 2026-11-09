@@ -129,25 +129,25 @@ Proof. by []. Qed.
 
 Section Product_Topology.
 
-Variable I : Type.
-
-Definition product_topology_def d (T : I -> topologicalType d) :=
+Definition product_topology_def d I (T : I -> topologicalType d) :=
   sup_topology (fun i => Topological.class
     (initial_topology (fun f : (forall i, T i) => f i))).
 
-HB.instance Definition _ d (T : I -> topologicalType d) :=
+HB.instance Definition _ d I (T : I -> topologicalType d) :=
   Topological.copy (prod_topology T) (product_topology_def T).
 
-HB.instance Definition _ d (T : I -> uniformType d) :=
+HB.instance Definition _ d I (T : I -> uniformType d) :=
   Uniform.copy (prod_topology T)
-    (sup_topology (fun i => Uniform.class (initial_topology (@proj _ T i)))).
+    (sup_topology (fun i => 
+      Uniform.class (initial_topology (@proj _ T i)))).
 
-HB.instance Definition _ d (R : realType) (Ii : countType)
+HB.instance Definition _ (Ii : countType) d (R : realType)
     (Tc : Ii -> pseudoMetricType d R) :=
   PseudoMetric.copy (prod_topology Tc)
     (sup_pseudometric
-      (fun i => PseudoMetric.class (initial_topology (@proj _ Tc i)))
-    (countableP _)).
+      (fun i => 
+        PseudoMetric.class (initial_topology (@proj _ Tc i)))
+      (countableP _)).
 
 End Product_Topology.
 
@@ -178,7 +178,7 @@ Section product_spaces.
 Local Import ArrowAsProduct.
 
 Section projection_maps.
-Context {I : eqType} {d} {K : I -> topologicalType d}.
+Context {d} {I : eqType} {K : I -> topologicalType d}.
 
 Lemma proj_continuous i : continuous (@proj I K i).
 Proof.
@@ -264,13 +264,13 @@ apply/cvg_sup => i; apply/cvg_image=> //.
 by have /(xgetPex (a0 i)) [] := cvpFA i.
 Qed.
 
-Lemma perfect_prod {I : Type} {d} (i : I) (K : I -> topologicalType d) :
+Lemma perfect_prod {d} {I : Type} (K : I -> topologicalType d) (i : I) :
   perfect_set [set: K i] -> perfect_set [set: forall i, K i].
 Proof.
 move=> /perfectTP KPo; apply/perfectTP => f oF; apply: (KPo (f i)).
 rewrite (_ : [set f i] = proj i @` [set f]).
   by rewrite eqEsubset; split => ? //; [move=> -> /=; exists f | case=> g ->].
-by apply: (@proj_open {classic I} _ _ i); exact: oF.
+by apply: (@proj_open _ {classic I} _ i); exact: oF.
 Qed.
 
 Lemma perfect_diagonal d (K : nat -> topologicalType d) :
@@ -293,7 +293,7 @@ rewrite /g ltnn /derange eq_sym; have [->|//] := eqVneq (f N) (distincts N).1.
 exact: projT2 (sigW (npts N)).
 Qed.
 
-Lemma zero_dimension_prod (I : choiceType) d (T : I -> topologicalType d) :
+Lemma zero_dimension_prod d (I : choiceType) (T : I -> topologicalType d) :
   (forall i, zero_dimensional (T i)) ->
   zero_dimensional (forall i, T i).
 Proof.
@@ -304,8 +304,8 @@ exists (proj i @^-1` U); split => //; apply: preimage_clopen => //.
 exact/proj_continuous.
 Qed.
 
-Lemma totally_disconnected_prod (I : choiceType) d
-  (T : I -> topologicalType d) (A : forall i, set (T i)) :
+Lemma totally_disconnected_prod d (I : choiceType) (T : I -> topologicalType d)
+  (A : forall i, set (T i)) :
   (forall i, totally_disconnected (A i)) ->
   @totally_disconnected _ (forall i, T i) (fun f => forall i, A i (f i)).
 Proof.
@@ -328,7 +328,7 @@ Qed.
 
   are equivalent (the last equivalence seems to require `accessible_space`). *)
 Section product_embeddings.
-Context {I : choiceType} {d} {T : topologicalType d} {d'}
+Context {d} {T : topologicalType d} {d'} {I : choiceType}
   {U_ : I -> topologicalType d'}.
 Variable (f_ : forall i, T -> U_ i).
 
@@ -339,7 +339,9 @@ Hypothesis sepf : separate_points_from_closed.
 Hypothesis ctsf : forall i, continuous (f_ i).
 
 Let initialT : topologicalType _ :=
-  sup_topology (fun i => Topological.on (initial_topology (f_ i))).
+  sup_topology (fun i => 
+    Topological.on (initial_topology (f_ i))
+  ).
 
 Let PU : topologicalType _ := prod_topology U_.
 
@@ -436,7 +438,7 @@ Qed.
 
 End product_embeddings.
 
-Global Instance prod_topology_filter (U : Type) d (T : U -> ptopologicalType d)
+Global Instance prod_topology_filter d (U : Type) (T : U -> ptopologicalType d)
   (f : prod_topology T) : ProperFilter (nbhs f).
 Proof. exact: nbhs_pfilter. Qed.
 
@@ -453,7 +455,7 @@ Proof. by []. Qed.
 
 Section fct_Uniform.
 Local Open Scope relation_scope.
-Context (T : choiceType) d (U : uniformType d).
+Context {T : choiceType} {d} {U : uniformType d}.
 
 Definition fct_ent := filter_from (@entourage _ U)
   (fun P => [set fg | forall t : T, P (fg.1 t, fg.2 t)]).

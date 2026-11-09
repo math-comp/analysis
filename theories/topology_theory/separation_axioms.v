@@ -259,7 +259,7 @@ move=> npzq; exists (`]-oo, q[, `]p, +oo[)%classic; split => //=.
 Qed.
 
 Section ball_hausdorff.
-Context d (R : numDomainType) (T : pseudoMetricType d R).
+Context {d} {R : numDomainType} (T : pseudoMetricType d R).
 
 Lemma ball_hausdorff : hausdorff_space T =
   forall (a b : T), a != b ->
@@ -277,6 +277,7 @@ move=> r s /eqP brs_eq0; exists ((ball a r%:num)°, (ball b s%:num)°) => /=.
 split; do ?by apply: open_interior.
 by rewrite (subsetI_eq0 _ _ brs_eq0)//; exact: interior_subset.
 Qed.
+
 End ball_hausdorff.
 
 Import numFieldTopology.Exports.
@@ -306,7 +307,7 @@ move=> lcpt hsdfX [x|] [y|] //=.
 Qed.
 
 Section hausdorff_topologicalType.
-Context d (T : topologicalType d).
+Context {d} (T : topologicalType d).
 Implicit Types x y : T.
 
 Local Open Scope classical_set_scope.
@@ -376,7 +377,7 @@ Proof. by move=> ffun fx fy; rewrite -closeE //; exact: cvgi_close. Qed.
 End hausdorff_topologicalType.
 
 Section hausdorff_ptopologicalType.
-Context d (T : ptopologicalType d).
+Context {d} (T : ptopologicalType d).
 Implicit Types x y : T.
 
 Lemma close_cvg (F1 F2 : set_system T) {FF2 : ProperFilter F2} :
@@ -672,7 +673,7 @@ End totally_disconnected.
 Module countable_uniform.
 Section countable_uniform.
 Local Open Scope relation_scope.
-Context {d} {R : realType} {T : uniformType d}.
+Context {R : realType} {d} {T : uniformType d}.
 
 Hypothesis cnt_unif : @countable_uniformity _ T.
 
@@ -979,13 +980,13 @@ Export countable_uniform.Exports.
 
 Notation countable_uniform := countable_uniform.type.
 
-Definition sup_pseudometric (R : realType) (T : Type) (Ii : Type)
-  (d : Ii -> fdisp_t) (Tc : forall i, PseudoMetric (d i) R T)
-  (Icnt : countable [set: Ii]) : Type := T.
+Definition sup_pseudometric (Ii : Type) (d : Ii -> _) (R : realType) (T : Type)
+  (Tc : forall i, PseudoMetric (d i) R T) (Icnt : countable [set: Ii])
+  : Type := T.
 
 Section sup_pseudometric.
-Variable (R : realType) (T : choiceType) (Ii : Type).
-Variable (d : Ii -> fdisp_t) (Tc : forall i, PseudoMetric (d i) R T).
+Context {Ii : Type} {d : Ii -> _} {R : realType} {T : choiceType}
+  (Tc : forall i, PseudoMetric (d i) R T).
 
 Hypothesis Icnt : countable [set: Ii].
 
@@ -993,10 +994,10 @@ Local Notation S := (sup_pseudometric Tc Icnt).
 
 Let TS := fun i => PseudoMetric.Pack (Tc i).
 
-Let countable_uniformityT := @countable_sup_ent T Ii d Tc Icnt
+Let countable_uniformityT := @countable_sup_ent Ii d T Tc Icnt
   (fun i => @countable_uniformity_metric _ _ (TS i)).
 
-HB.instance Definition _ : PseudoMetric (supremum_fdisp d) R S :=
+HB.instance Definition _ : PseudoMetric _ R S :=
   PseudoMetric.on (countable_uniform countable_uniformityT).
 
 End sup_pseudometric.
@@ -1080,8 +1081,9 @@ End gauge.
 Export gauge.Exports.
 
 Lemma uniform_pseudometric_sup {d} {R : realType} {T : puniformType d} :
-    @entourage _ T = @sup_ent T {E : set (T * T) | @entourage _ T E}
-  _ (fun E => Uniform.class (@gauge.type _ T (projT1 E) (projT2 E))).
+    @entourage _ T 
+      = @sup_ent {E : set (T * T) | @entourage _ T E} _ _
+        (fun e => Uniform.class (@gauge.type _ T (projT1 e) (projT2 e))).
 Proof.
 rewrite eqEsubset; split => [E entE|E].
   exists E => //=.
@@ -1142,8 +1144,7 @@ Qed.
 End perfect_sets.
 
 Section sigT_separations.
-Context {I : choiceType} {d : I -> fdisp_t}.
-Context {X : forall i, topologicalType (d i)}.
+Context {I : choiceType} {d} {X : I -> topologicalType d}.
 
 Lemma sigT_hausdorff :
   (forall i, hausdorff_space (X i)) -> hausdorff_space {i & X i}.

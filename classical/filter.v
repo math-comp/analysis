@@ -471,8 +471,7 @@ Proof. by symmetry; congr (nbhs _); rewrite predeqE => -[]. Qed.
 
 Definition near2E := (@near2_curry, @near2_pair).
 
-Lemma filter_of_nearI (X : Type) d (fX : filteredType d X)
-  (x : fX) : forall P,
+Lemma filter_of_nearI d (X : Type) (fX : filteredType d X) (x : fX) P :
   nbhs x P = @prop_near1 X _ fX x P (inPhantom (forall x, P x)).
 Proof. by []. Qed.
 
@@ -692,10 +691,10 @@ Ltac done :=
    | match goal with H : ~ _ |- _ => solve [case H; trivial] end
    | match goal with |- ?x \is_near _ => near: x; apply: prop_ofP end ].
 
-Lemma have_near U d (fT : filteredType d U) (x : fT) (P : Prop) :
+Lemma have_near d U (fT : filteredType d U) (x : fT) (P : Prop) :
   ProperFilter (nbhs x) -> (\forall x \near x, P) -> P.
 Proof. by move=> FF nP; have [] := @filter_ex _ _ FF (fun=> P). Qed.
-Arguments have_near {U d fT} x.
+Arguments have_near {d U fT} x.
 
 Tactic Notation "near" constr(F) "=>" ident(x) :=
   apply: (have_near F); near=> x.
@@ -994,7 +993,7 @@ Lemma near_eq_is_cvg T d (U : pnbhsType d) (F : set_system T)
   Filter F -> {near F, f =1 g} -> cvg (f x @[x --> F]) -> cvg(g x @[x --> F]).
 Proof. by move=> FF /near_eq_cvg_eq ->. Qed.
 
-Lemma eq_is_cvg_in T U d (fT : pfilteredType d U) (F : set_system T)
+Lemma eq_is_cvg_in T d U (fT : pfilteredType d U) (F : set_system T)
     (f g : T -> U) :
   f =1 g -> [cvg (f @ F) in fT] = [cvg (g @ F) in fT].
 Proof. by move=> /funext ->. Qed.
@@ -1028,9 +1027,8 @@ Definition continuous_at d (T : nbhsType d) d' (U : nbhsType d')
   (x : T) (f : T -> U) := (f%function @ x --> f%function x).
 Notation continuous f := (forall x, continuous_at x f).
 
-Lemma continuous_comp d1
-  (R : nbhsType d1) d2 (S : nbhsType d2) d3 (T : nbhsType d3)
-  (f : R -> S) (g : S -> T) x :
+Lemma continuous_comp d1 (R : nbhsType d1) d2 (S : nbhsType d2)
+  d3 (T : nbhsType d3) (f : R -> S) (g : S -> T) x :
   {for x, continuous f} -> {for (f x), continuous g} ->
   {for x, continuous (g \o f)}.
 Proof. exact: cvg_comp. Qed.

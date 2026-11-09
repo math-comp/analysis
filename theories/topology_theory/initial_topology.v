@@ -55,7 +55,7 @@ Definition initial_topology {S : Type} {T : Type}
   (f : S -> T) : Type := S.
 
 Section Initial_Topology.
-Context (S : choiceType) d (T : topologicalType d) (f : S -> T).
+Context {S : choiceType} {d} {T : topologicalType d} (f : S -> T).
 Local Notation W := (initial_topology f).
 
 Definition initial_open := [set f @^-1` A | A in open].
@@ -122,15 +122,14 @@ Definition sub_initial_topology (V : Type) (S : pred V) (U : subChoiceType S)
   : Type := initial_topology (\val : U -> V).
 
 Section SubType_isSubTopological.
-Context (d : fdisp_t) (V : topologicalType d) (S : pred V)
-  (U : subChoiceType S).
+Context d (V : topologicalType d) (S : pred V) (U : subChoiceType S).
 
 Local Notation T := (sub_initial_topology U).
 HB.instance Definition _ := SubChoice.on T.
 HB.instance Definition _ := Nbhs.on T.
 HB.instance Definition _ := Topological.on T.
 
-Let top_continuous_valE : continuous (\val : T -> V).
+Let top_continuous_valE : continuous (val : T -> V).
 Proof. exact: initial_continuous. Qed.
 
 HB.instance Definition _ := @isSubNbhs.Build _ _ V S T top_continuous_valE.
@@ -139,7 +138,7 @@ End SubType_isSubTopological.
 
 Section initial_uniform.
 Local Open Scope relation_scope.
-Context (pS : choiceType) d (U : uniformType d) (f : pS -> U).
+Context {pS : choiceType} {d} {U : uniformType d} (f : pS -> U).
 
 Let S := initial_topology f.
 
@@ -198,8 +197,8 @@ Lemma initial_unif_continuous :
   unif_continuous (f : initial_topology f -> U).
 Proof. by move=> A entA; by exists A. Qed.
 
-Lemma initial_unif_continuous_comp d'
-    (V : uniformType d') (g : V -> initial_topology f) :
+Lemma initial_unif_continuous_comp d' (V : uniformType d')
+    (g : V -> initial_topology f) :
   unif_continuous (f \o g : V -> U) -> unif_continuous g.
 Proof. by move=> fg /= A [B entB BA]; apply: filterS _ _ BA _; exact: fg. Qed.
 

@@ -277,9 +277,8 @@ Proof.
 move=> x; rewrite /continuous_at.
 rewrite -(@eq_cvg _ _ _ (fun x => 0 - x)); first by move=> y; exact: add0r.
 rewrite -[- x]add0r.
-apply: (continuous_comp
-  (f := fun x => (0, x)) (g := fun x : M * M => x.1 - x.2)
-); first exact: cvg_pair.
+apply: (@continuous_comp _ _ _ _ _ _ (fun x => (0, x)) (fun x => x.1 - x.2)).
+  exact: cvg_pair.
 exact: sub_continuous.
 Qed.
 
@@ -1697,14 +1696,14 @@ split; rewrite /bounded_set /bounded_near.
 - by apply: filterS => r /= + t At => /(_ (f t)); apply; exists t.
 Qed.
 
-Lemma ub_bounded d (K : realFieldType) (V : metricNormedZmodType d K) T
-    (f : T -> V) (A : set T) (M : K) :
+Lemma ub_bounded d (K : realFieldType) (V : metricNormedZmodType d K) 
+    (M : K) T (f : T -> V) (A : set T) :
   (forall x, A x -> `|f x| <= M) -> [bounded f x | x in A].
 Proof.
 rewrite /bounded_near => M_ub.
 by near=> r => /= t At; rewrite (le_trans (M_ub _ At)).
 Unshelve. all: by end_near. Qed.
-Arguments ub_bounded {d K V T f A} M.
+Arguments ub_bounded {d K V} M.
 
 Lemma bounded_ex_gt0 T d (K : realFieldType) (V : metricNormedZmodType d K)
     (f : T -> V) (A : set T) :
@@ -1735,13 +1734,14 @@ Proof. by apply: ub_bounded => ? ->. Qed.
 
 Hint Resolve bounded_set0 bounded_set1 : core.
 
-Lemma boundedS T d (K : realFieldType) (V : metricNormedZmodType d K)
-    (B A : set T) (f : T -> V) : A `<=` B ->
+Lemma boundedS T (B A : set T) d (K : realFieldType) 
+    (V : metricNormedZmodType d K) (f : T -> V) : 
+  A `<=` B ->
   [bounded f x | x in B] -> [bounded f x | x in A].
 Proof.
 by move=> AB /bounded_ex_gt0[M M0 Mub]; apply: ub_bounded => x /AB; exact: Mub.
 Qed.
-Arguments boundedS {T d K V} B.
+Arguments boundedS {T} B.
 
 Lemma boundedD T d (K : realFieldType) (V : metricNormedZmodType d K)
     (f g : T -> V) (A : set T) :

@@ -288,7 +288,7 @@ Definition finite_subset_cover (I : choiceType) (D : set I)
   exists2 D' : {fset I}, {subset D' <= D} & A `<=` cover [set` D'] F.
 
 Section Covers.
-Context d (T : topologicalType d).
+Context {d} {T : topologicalType d}.
 
 Definition cover_compact (A : set T) :=
   forall (I : choiceType) (D : set I) (f : I -> set T),

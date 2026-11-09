@@ -74,7 +74,7 @@ split.
   have /continuous_subspaceT/subspaceT_continuous/= :=
     @initial_continuous A _ X set_val.
   move=> svf ctsf; apply/continuous_subspace_setT => x /=.
-  apply: (continuous_comp (S := subspace A) (g := f)); last exact: ctsf.
+  apply: (@continuous_comp _ (subspace _) _ (subspace A)); last exact: ctsf.
   by move=> U nfU; exact: svf.
 rewrite continuous_subspace_in => + x Ax U nfxU.
 move=> /(_ (@exist _ _ x Ax) U) /= []; first exact: nfxU.

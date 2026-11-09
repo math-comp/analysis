@@ -21,9 +21,10 @@ Unset Printing Implicit Defensive.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Fact quotient_fdisp : fdisp_t.
-Proof. by []. Qed.
 Definition quotient_topology (T : Type) (Q : quotType T) : Type := Q.
+
+Fact quotient_fdisp T (Q : quotType T) : fdisp_t.
+Proof. by []. Qed.
 
 Section quotients.
 Local Open Scope quotient_scope.
@@ -31,7 +32,7 @@ Section unpointed.
 Context {d} {T : topologicalType d} {Q0 : quotType T}.
 
 Local Notation Q := (quotient_topology Q0).
-Local Notation dQ := quotient_fdisp.
+Local Notation dQ := (quotient_fdisp Q0).
 
 HB.instance Definition _ := Quotient.copy Q Q0.
 HB.instance Definition _ := [Sub Q of T by %/].

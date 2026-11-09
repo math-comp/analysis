@@ -24,7 +24,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section connected_sets.
-Context d (T : topologicalType d).
+Context {d} {T : topologicalType d}.
 Implicit Types A B C D : set T.
 
 Definition connected A :=

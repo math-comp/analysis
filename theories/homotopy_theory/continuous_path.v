@@ -143,7 +143,6 @@ HB.instance Definition _ := isContinuous.Build _ i _ T mk_path ctsf.
 HB.instance Definition _ := @isPath.Build _ i _ T x y mk_path f0 f1.
 End mk_path.
 
-
 Definition chain_path
     {d} {i j : bpTopologicalType d} {d'} {T : topologicalType d'}
     (f : i -> T) (g : j -> T) : bpwedge i j -> T :=

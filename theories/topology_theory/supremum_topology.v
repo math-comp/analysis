@@ -22,15 +22,16 @@ Unset Printing Implicit Defensive.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Fact supremum_fdisp {I} (d : I -> fdisp_t) : fdisp_t.
+Definition sup_topology {I : Type} {d : I -> _} {T : Type} 
+  (Tc : forall i, Topological (d i) T)
+  : Type := T.
+
+Fact supremum_fdisp {I} {X : I -> _} (Tc : forall i, X i) : fdisp_t.
 Proof. by []. Qed.
 
-Definition sup_topology {T : Type} {I : Type}
-  {d : I -> fdisp_t} (Tc : forall i, Topological (d i) T) : Type := T.
-
 Section Sup_Topology.
-Context (T : choiceType) (I : Type)
-  (d : I -> fdisp_t) (Tc : forall i, Topological (d i) T).
+Context (I : Type) (d : I -> _) (T : choiceType) 
+  (Tc : forall i, Topological (d i) T).
 Local Notation S := (sup_topology Tc).
 
 Let TS := fun i => Topological.Pack (Tc i).
@@ -39,7 +40,7 @@ Definition sup_subbase := \bigcup_i (@open _ (TS i) : set_system T).
 
 HB.instance Definition _ := Choice.on S.
 HB.instance Definition _ :=
-  isSubBaseTopological.Build (supremum_fdisp d) S sup_subbase id.
+  isSubBaseTopological.Build (supremum_fdisp Tc) S sup_subbase id.
 
 Lemma cvg_sup (F : set_system T) (t : T) :
   Filter F -> F --> (t : S) <-> forall i, F --> (t : TS i).
@@ -62,14 +63,14 @@ Qed.
 
 End Sup_Topology.
 
-HB.instance Definition _ (I : Type) (T : pointedType)
-  (d : I -> fdisp_t) (f : forall i, Topological (d i) T) :=
+HB.instance Definition _ (I : Type) d (T : pointedType)
+  (f : I -> Topological d T) :=
   Pointed.on (sup_topology f).
 
 Section sup_uniform.
 Local Open Scope relation_scope.
-Context {T : choiceType} {Ii : Type} {d : Ii -> fdisp_t}
-  (Tc : forall i : Ii, Uniform (d i) T).
+Context {Ii : Type} {d : Ii -> _} {T : choiceType} 
+  (Tc : forall i, Uniform (d i) T).
 
 Let I : choiceType := {classic Ii}.
 Let TS := fun i => Uniform.Pack (Tc i).
@@ -178,7 +179,7 @@ exists (\bigcap_(w in [set` F]) f w); repeat split.
   by apply/mem_set/FsubE => it /Ifwt/interior_subset => /set_mem.
 Qed.
 
-HB.instance Definition _ := @Nbhs_isUniform.Build (supremum_fdisp d) Tt sup_ent
+HB.instance Definition _ := @Nbhs_isUniform.Build _ Tt sup_ent
    sup_ent_filter sup_ent_refl sup_ent_inv sup_ent_split sup_ent_nbhs.
 
 Lemma countable_sup_ent :

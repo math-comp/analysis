@@ -282,9 +282,8 @@ rewrite min_l// leNgt; apply: contra_notN (xNy b) => ba.
 by rewrite xb (lt_trans ba).
 Qed.
 
-Lemma min_fun_continuous {td}
-  {X : topologicalType td} {od} {T : orderTopologicalType td od}
-  (f g : X -> T) :
+Lemma min_fun_continuous {td} {X : topologicalType td}
+  {od} {T : orderTopologicalType td od} (f g : X -> T) :
   continuous f -> continuous g -> continuous (f \min g).
 Proof.
 move=> fc gc z; apply: continuous2_cvg; [|exact: fc|exact: gc].

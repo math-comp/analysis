@@ -238,7 +238,7 @@ by rewrite /= opprB addrC subrK ger0_norm// gtr_pMr// invf_lt1// ltr1n.
 Qed.
 
 Lemma cvg_dnbhs_at_right d (T : topologicalType d)
-  (f : R -> T) (p : R) (l : T) :
+    (f : R -> T) (p : R) (l : T) :
   f x @[x --> p^'] --> l -> f x @[x --> p^'+] --> l.
 Proof.
 by apply: cvg_trans; apply: cvg_app; apply: within_subset=> r ?; rewrite gt_eqF.
@@ -449,7 +449,7 @@ have : inf X <= inf X - f%:num by exact: ge_inf.
 by apply/negP; rewrite -ltNge; rewrite ltrBlDr ltrDl.
 Qed.
 
-Lemma in_continuous_mksetP {d} {T : realFieldType} {U : nbhsType d}
+Lemma in_continuous_mksetP {T : realFieldType} {d} {U : nbhsType d}
     (i : interval T) (f : T -> U) :
   {in i, continuous f} <-> {in [set` i], continuous f}.
 Proof.

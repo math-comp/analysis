@@ -206,7 +206,7 @@ Hint Extern 0 (is_true (0%R <= edist _)%E) => solve [apply: edist_ge0] : core.
 Hint Extern 0 (is_true (edist _ != -oo%E)) => solve [apply: edist_neqNy] : core.
 
 Section edist_inf.
-Context  {d} {R : realType} {T : pseudoMetricType d R} (A : set T).
+Context {d} {R : realType} {T : pseudoMetricType d R} (A : set T).
 
 Definition edist_inf z := ereal_inf [set edist (z, a) | a in A].
 

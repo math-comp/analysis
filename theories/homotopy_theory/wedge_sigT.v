@@ -56,7 +56,7 @@ Local Open Scope ring_scope.
 Local Open Scope quotient_scope.
 
 Section wedge.
-Context {I : choiceType} d (X : I -> topologicalType d) (p0 : forall i, X i).
+Context {d} {I : choiceType} (X : I -> topologicalType d) (p0 : forall i, X i).
 Implicit Types i : I.
 
 Let wedge_rel' (a b : {i & X i}) :=
@@ -338,9 +338,8 @@ move=> /wedge_prod_continuous nV; have := clxy _ _ nU nV.
 by case => z [/= ? ?]; exists (wedge_prod z).
 Qed.
 
-Lemma wedge_fun_joint_continuous d' d''
-  (T : topologicalType d') (R : topologicalType d'')
-  (k : forall (x : I), T -> X x -> R):
+Lemma wedge_fun_joint_continuous d' (T : topologicalType d')
+  d'' (R : topologicalType d'') (k : forall (x : I), T -> X x -> R) :
   finite_set [set: I] ->
   (forall x, closed [set p0 x]) ->
   (forall t x y, k x t (p0 x) = k y t (p0 y)) ->
@@ -380,7 +379,7 @@ Unshelve. all: by end_near. Qed.
 End wedge.
 
 Section pwedge.
-Context {I : pointedType} {d} (X : I -> ptopologicalType d).
+Context {d} {I : pointedType} (X : I -> ptopologicalType d).
 
 Definition pwedge := wedge (fun i => @point (X i)).
 
@@ -397,8 +396,8 @@ Context d (X Y : bpTopologicalType d).
 
 Definition bpwedge_shared_pt b :=
   if b return (if b then X else Y) then @one X else @zero Y.
-Local Notation bpwedge := (@wedge bool _ _ bpwedge_shared_pt).
-Local Notation bpwedge_lift := (@wedge_lift bool _ _ bpwedge_shared_pt).
+Local Notation bpwedge := (@wedge _ bool _ bpwedge_shared_pt).
+Local Notation bpwedge_lift := (@wedge_lift _ bool _ bpwedge_shared_pt).
 
 Local Lemma wedge_neq : @bpwedge_lift true zero != @bpwedge_lift false one.
 Proof.
@@ -412,5 +411,5 @@ HB.instance Definition _ := @isBiPointed.Build
   bpwedge (@bpwedge_lift true zero) (@bpwedge_lift false one) wedge_neq.
 End bpwedge.
 
-Notation bpwedge X Y := (@wedge bool _ _ (bpwedge_shared_pt X Y)).
-Notation bpwedge_lift X Y := (@wedge_lift bool _ _ (bpwedge_shared_pt X Y)).
+Notation bpwedge X Y := (@wedge _ bool _ (bpwedge_shared_pt X Y)).
+Notation bpwedge_lift X Y := (@wedge_lift _ bool _ (bpwedge_shared_pt X Y)).

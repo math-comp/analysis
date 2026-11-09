@@ -101,7 +101,6 @@ From mathcomp Require Import pseudometric_normed_Zmodule.
 (*                                                                            *)
 (******************************************************************************)
 
-Reserved Notation "P .-seminorm" (at level 4, format "P .-seminorm").
 Reserved Notation "'{' 'linear_continuous' U '->' V '|' s '}'"
   (at level 0, U at level 98, V at level 99,
    format "{ 'linear_continuous'  U  ->  V  |  s }").
@@ -1384,8 +1383,6 @@ End gauge.
 Fact seminorm_fdisp {R : realFieldType} {E : lmodType R}
   (P : set (Norm.SemiNorm.type E)) : fdisp_t.
 Proof. by []. Qed.
-
-Notation "P .-seminorm" := (seminorm_fdisp P) : fdisp_scope.
 
 Definition seminorm_on {R : realFieldType} {E : lmodType R}
   (P : set (Norm.SemiNorm.type E)) (Hp : P !=set0) : Type := E.

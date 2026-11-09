@@ -444,7 +444,7 @@ Section completely_regular_uniformity.
 Context {d} {R : realType} {X : topologicalType d}.
 Hypothesis crs : completely_regular_space X.
 
-Let X' : uniformType _ := @sup_topology X {f : X -> R | continuous f} _
+Let X' : uniformType _ := @sup_topology {f : X -> R | continuous f} _ X
   (fun f => Uniform.class (initial_topology (projT1 f))).
 
 Let completely_regular_nbhsE : @nbhs _ X X = nbhs_ (@entourage _ X').
