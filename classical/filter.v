@@ -37,7 +37,7 @@ From mathcomp Require Import boolp classical_sets functions wochoice
 (* "natural", "default" or otherwise does not require custom pretty-printing. *)
 (*                                                                            *)
 (* By default, displays are not shown on `nbhs` or later derived notions.     *)
-(* The module `ExplicitNbhsDisplays` can be imported on demande to add        *)
+(* The module `ExplicitNbhsDisplays` can be imported on demand to add         *)
 (* disambiguating notations.                                                  *)
 (*                                                                            *)
 (* ## Structure of filter                                                     *)
