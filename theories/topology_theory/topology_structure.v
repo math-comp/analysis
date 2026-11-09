@@ -1117,6 +1117,15 @@ apply/not_implyP; split; first exact: openT.
 by rewrite setTI => -[].
 Qed.
 
+Lemma closed_Ndense {T : topologicalType} (A : set T) :
+  A != [set: T] -> closed A ->  ~ dense A.
+Proof.
+move=> AT.
+have A0 : (~` A) !=set0 by apply/set0P; contra: AT; rewrite -setCT => /setC_inj.
+rewrite -openC => /[swap] /(_ _) /[swap] oNA /(_ _ A0 oNA).
+by rewrite setICl => /set0P; rewrite eqxx.
+Qed.
+
 Section basis.
 Context {T : topologicalType}.
 
