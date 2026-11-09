@@ -576,7 +576,7 @@ End PseudoMetricNormedZmodule_numDomainType.
 Section PseudoMetricNormedZmodule_numDomainType.
 Context {d} {K : numDomainType} {V : PseudoMetricNormedZmodule.type d K}.
 
-Lemma ball_open (x : V) (r : K) : open (ball x r).
+Lemma pseudo_ball_open (x : V) (r : K) : open (ball x r).
 Proof.
 rewrite openE/= -ball_normE/= /interior => y /= bxy; rewrite -nbhs_ballE.
 exists (r - `|x - y|) => /=; first by rewrite subr_gt0.
@@ -584,8 +584,10 @@ move=> z; rewrite -ball_normE/= ltrBrDr.
 by apply: le_lt_trans; rewrite [in leRHS]addrC ler_distD.
 Qed.
 
-Lemma ball_open_nbhs (x : V) (r : K) : 0 < r -> open_nbhs x (ball x r).
-Proof. by move=> e0; split; [exact: ball_open|exact: ballxx]. Qed.
+Lemma pseudo_ball_open_nbhs (x : V) (r : K) : 0 < r -> open_nbhs x (ball x r).
+Proof.
+by move=> e0; split; [exact: pseudo_ball_open|exact: ballxx].
+Qed.
 
 (**md Neighborhoods defined by the norm: *)
 Local Notation ball_norm := (ball_ (@Num.norm K V)).
@@ -746,6 +748,11 @@ by rewrite (_ : _ \o _ = A \o f) // funeqE=> z; rewrite /= opprD addNKr addrNK.
 Qed.
 
 End PseudoMetricNormedZmodule_numDomainType.
+#[deprecated(since="mathcomp-analysis 1.20.0", use=pseudo_ball_open)]
+Notation ball_open := pseudo_ball_open (only parsing).
+#[deprecated(since="mathcomp-analysis 1.20.0", use=pseudo_ball_open_nbhs)]
+Notation ball_open_nbhs := pseudo_ball_open_nbhs (only parsing).
+
 #[global] Hint Resolve normr_ge0 : core.
 Arguments cvgr_dist_lt {_ _ _ _ F FF}.
 Arguments cvgr_distC_lt {_ _ _ _ F FF}.
