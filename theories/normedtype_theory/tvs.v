@@ -206,7 +206,7 @@ HB.structure Definition TopologicalLmodule d (K : numDomainType) :=
   {M of TopologicalZmodule d M & GRing.Lmodule K M
         & TopologicalZmodule_isTopologicalLmodule d K M}.
 
-
+(* TBD when PR#2166 is merged *)
 Lemma accessible_field (K : numFieldType) : accessible_space K^o.
 Proof.
 move=> x y xy.
