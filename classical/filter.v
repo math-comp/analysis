@@ -22,7 +22,7 @@ From mathcomp Require Import boolp classical_sets functions wochoice
 (* that should be displayed differently.                                      *)
 (*                                                                            *)
 (* Much like in MathComp, displays cannot help refine type inference on their *)
-(* own : the display is inferred from an alias of the carried type, never the *)
+(* own: the display is inferred from an alias of the carried type, never the  *)
 (* other way around.                                                          *)
 (*                                                                            *)
 (* New filter displays should be defined as opaque terms of type `fdisp_t`    *)
