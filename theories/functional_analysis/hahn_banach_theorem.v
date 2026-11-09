@@ -510,7 +510,7 @@ Qed.
 (*END TBA *)
 
 (* 7.2.3 in Jarchow *)
-Lemma hahn_banach_extension_hausdorff (R : realType) (V : convexTvsType R) :
+Corollary hahn_banach_extension_hausdorff (R : realType) (V : convexTvsType R) :
 (hausdorff_space V) <-> (forall x : V,  x != 0 -> exists l : {linear_continuous V -> R^o}, l(x) != 0).
 Proof.
 split; last first.
