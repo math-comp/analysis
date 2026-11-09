@@ -1877,73 +1877,71 @@ Qed.
 End generating_seminorm.
 
 Section kernel.
-Context (R : realFieldType) (F : convexTvsType R).
+Context {R : realFieldType} {F : convexTvsType R}.
 
-(* Introduce a notation for kernels ?*)
-Lemma continuous_closedkernel (f : {linear F -> R^o}): continuous f <-> closed (f @^-1` [set 0]).
+(* TODO: Introduce a notation for kernels? *)
+Lemma continuous_closedkernel (f : {linear F -> R^o}) :
+  continuous f <-> closed (f @^-1` [set 0]).
 Proof.
 split.
   move=> /continuous_closedP /(_ [set 0]); apply.
-  by apply: accessible_closed_set1; apply: accessible_field.
-have []:= (eqVneq (f @^-1` [set 0]) [set : F]).
-  move => h _.
-  suff -> : f = (fun y=> 0) :> (F -> R) by apply: cst_continuous.
+  exact/accessible_closed_set1/accessible_field.
+have [h _|] := eqVneq (f @^-1` [set 0]) [set: F].
+  suff -> : f = (fun y=> 0) :> (F -> R) by exact: cst_continuous.
   apply: funext => x.
-  by have : [set : F] x by []; rewrite -h.
-move=> s0 /closed_Ndense; move=> /(_ s0) /existsNP [U] /not_implyP [[x Ux]].
-move=> /not_implyP [oU] /forallNP /= Uf.
-have [B Bconv [B0 Bbasis]] := (@locally_convex _ F).
-have /nbhsE0 [_ [V' /Bbasis [/= V BV VV'] VU]]: nbhs x U by rewrite nbhsE; exists U.
-have [_ aV]: absolutely_convex_set V by apply: Bconv; rewrite inE.
-have nfU: forall z, V z -> f z != f x.
-  move=> z Vz; apply/eqP => fzx.
+  by move/seteqP : h => [_ /(_ x)] ->.
+move=> s0 /closed_Ndense => /(_ s0) /existsNP[/= U] /not_implyP[[x Ux]].
+move=> /not_implyP[oU] /forallNP /= Uf.
+have [B Bconv [B0 Bbasis]] := @locally_convex _ F.
+have /nbhsE0 [_ [V' /Bbasis [/= V BV VV'] VU]] : nbhs x U.
+  by rewrite nbhsE; exists U.
+have [_ aV] : absolutely_convex_set V by exact/Bconv/mem_set.
+have nfU z : V z -> f z != f x.
+  move=> Vz; apply/eqP => fzx.
   have Vnz : V (- z).
-    rewrite -scaleN1r; apply: aV; last by exists z => //.
-    by rewrite normrN normr1.
-  apply: Uf; split; first by apply: VU ; exists (-z); first by apply: VV'.
+    rewrite -scaleN1r; apply: (aV (- 1)); first by rewrite normrN1.
+    by exists z.
+  apply: Uf; split; first by apply: VU; exists (- z) => //; exact: VV'.
   by rewrite linearB; rewrite fzx subrr.
-have [/=M fM]: exists M, forall z, V z -> `|f z | < M.
-  apply: contrapT; rewrite -forallNE /= => /(_  (`|f x|)) /existsNP [y].
-  move=> /not_implyP [Vy] /negP; rewrite -leNgt => fxy.
+have [/= M fM] : exists M, forall z, V z -> `|f z | < M.
+  apply: contrapT; rewrite -forallNE /= => /(_  `|f x|) /existsNP[y].
+  move=> /not_implyP[Vy] /negP; rewrite -leNgt => fxy.
   have fy0 : f y != 0.
-    apply/eqP => fy0; move: fxy; rewrite fy0 normr0 normr_le0 => /eqP fx0.
-    by apply: (Uf x); split.
-  have Vyx : V ((`| f x|/ `| f y|) *: y).
+    apply/eqP; move: fxy => /[swap] ->; rewrite normr0 normr_le0 => /eqP fx0.
+    exact: (Uf x).
+  have Vyx : V ((`| f x | / `| f y |) *: y).
     apply: aV; last by exists y.
-    rewrite ger0_norm ?mulr_ge0 ?invr_ge0 //.
-    rewrite ler_pdivrMr ?mul1r // normr_gt0; apply/eqP => fy.
-    have := fxy; rewrite fy normr0 normr_le0 => /eqP fx0.
-    by apply: (Uf x); split.
-  have Vnyx : V ( - (`| f x|/ `| f y|) *: y).
-    apply: aV; last by exists ((`| f x|/ `| f y|) *: y); rewrite // scalerA -mulN1r.
-    by rewrite normrN normr1.
-  have [fxy0|fxy0|/eqP] := ltgtP 0 ((f x)/(f y)).
+    by rewrite ger0_norm ?divr_ge0// ler_pdivrMr ?mul1r// normr_gt0.
+  have Vnyx : V ( - (`| f x |/ `| f y |) *: y).
+    apply: (aV (- 1)); first by rewrite normrN1.
+    by exists ((`| f x |/ `| f y |) *: y) => //=; rewrite scaleN1r scaleNr.
+  have [fxy0|fxy0|/esym/eqP] := ltgtP 0 (f x / f y).
   - apply: (Uf ( x - (`|f x| / `|f y|) *: y)); split.
-      apply: VU; exists (- (`|f x| / `|f y|) *: y); first by apply: VV'.
+      apply: VU; exists (- (`|f x| / `|f y|) *: y); first exact: VV'.
       by rewrite scaleNr.
-    rewrite linearD linearN linearZ /=.
-    have -> : `|f x| / `|f y| = (f x)/(f y) by rewrite -normfV -normrM gtr0_norm.
-    by rewrite -[_ *: _]/(_ * _) -mulrA mulVf ?mulr1 ?subrr.
+    rewrite linearD linearN linearZ/=.
+    have -> : `|f x| / `|f y| = f x / f y by rewrite -normfV -normrM gtr0_norm.
+    by rewrite -[X in _ - X]mulrAC -mulrA divff// mulr1 subrr.
   - apply: (Uf ( x + (`|f x| / `|f y|) *: y)); split.
-      by apply: VU; exists ((`|f x| / `|f y|) *: y); first by apply: VV'.
-    rewrite linearD linearZ /=.
-    have -> : `|f x| / `|f y| = - (f x)/(f y).
+      by apply: VU; exists ((`|f x| / `|f y|) *: y); first exact: VV'.
+    rewrite linearD linearZ/=.
+    have -> : `|f x| / `|f y| = - f x / f y.
       by rewrite -normfV -normrM ltr0_norm ?mulNr.
     by rewrite -[_ *: _]/(_ * _) -mulrA mulVf ?mulr1 ?subrr.
-  - rewrite eq_sym mulf_eq0 => /orP [] /eqP.
-      by move=> fx0; apply: (Uf x); split.
-    by rewrite -invr0 => /invr_inj fyn0; move/eqP: fy0; apply.
-have [M0|M0] := leP M 0 => //.
-  have := (fM 0); move => /(_ (nbhs_singleton _)); move=> /(_ (B0 V BV)).
+  - rewrite mulf_eq0 => /predU1P[dx0|].
+      by apply: (Uf x); split.
+    by rewrite invr_eq0; exact/negP.
+have [M0|M0] := leP M 0.
+  have /(_ (nbhs_singleton (B0 V BV))) := fM 0.
   by move=> /lt_le_trans /(_ M0); rewrite normr_lt0.
-apply: continuousfor0_continuous => /= A; rewrite linear0 => -[r /= r0] rA.
-have rM0 : r/ M != 0 by apply: lt0r_neq0; rewrite ?mulr_gt0 ?invr_gt0 //.
-apply: (@filterS  _  _ _ ( *:%R (r * M^-1) @` V)); last first.
-  by rewrite -(@scaler0 _ _ (r/M)); apply: nbhsZ; last by apply: B0.
-move=> z /= [t] Vt <-; rewrite linearE /=; apply: rA => /=.
-rewrite sub0r normrN -[_ *: _]/(_ * _) normrM -ltr_pdivlMl ?normr_gt0 //.
-rewrite [in X in _ <X ]gtr0_norm  ?mulr_gt0 ?invr_gt0 //.
-by rewrite invfM mulrAC mulVf ?lt0r_neq0 ?invrK ?mul1r //; apply: fM.
+apply: continuousfor0_continuous => /= A; rewrite linear0 => -[r /= r0 rA].
+have rM0 : r / M != 0 by rewrite gt_eqF// divr_gt0.
+apply: (@filterS _ _ _ ( *:%R (r * M^-1) @` V)); last first.
+  by rewrite -(@scaler0 _ _ (r / M)); apply: nbhsZ => //; exact: B0.
+move=> z /= [t Vt <-]; rewrite linearE /=; apply: rA => /=.
+rewrite sub0r normrN normrM -ltr_pdivlMl ?normr_gt0//.
+rewrite [in X in _ < X]gtr0_norm  ?divr_gt0//.
+by rewrite invfM mulrAC mulVf ?gt_eqF// div1r invrK fM.
 Qed.
 
 End kernel.
