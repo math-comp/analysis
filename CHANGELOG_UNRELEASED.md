@@ -63,6 +63,8 @@
   + lemma `ball_open_nbhs`
   + lemma `metric_accessible`
 
+- in `realfun.v`:
+  + lemma `nondecreasing_discontinuity`.
 ### Changed
 
 - in `lebesgue_integral_nonneg.v`, generalized and deprecated:
@@ -104,6 +106,9 @@
 ### Deprecated
 
 ### Removed
+
+- in `realfun.v`:
+  + lemma `nondecreasing_fun_sum_le`.
 
 ### Infrastructure
 
