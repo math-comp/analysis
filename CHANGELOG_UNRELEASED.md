@@ -10,6 +10,8 @@
     `pownMexpr_cvgn0`
   + instance `is_derive1_powRl`
 
+- in `realfun.v`:
+  + lemma `nondecreasing_discontinuity`.
 ### Changed
 
 - in `lebesgue_integral_nonneg.v`, generalized and deprecated:
@@ -38,6 +40,9 @@
 ### Deprecated
 
 ### Removed
+
+- in `realfun.v`:
+  + lemma `nondecreasing_fun_sum_le`.
 
 ### Infrastructure
 
