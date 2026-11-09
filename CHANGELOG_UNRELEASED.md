@@ -12,7 +12,7 @@
 
 - in `tvs.v`
   + lemma `closure_convextvs`, `closure_addset`
-  + lemma ` accessible field`
+  + lemma `accessible field`
   + lemma `hausdorff_init_convextvs`
   + definition `closed_nbhsbasis_convextvs`
   + lemma `has_closed_nbhs_basis`
