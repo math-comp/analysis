@@ -458,7 +458,7 @@ Lemma nbhs_nearE {U d} {T : filteredType d U} (x : T) (P : set U) :
 Proof. by []. Qed.
 
 Lemma near_nbhs {U d} {T : filteredType d U} (x : T) (P : set U) :
-  (\forall x \near nbhs x, P x) = (\forall x0 \near x, P x0).
+  (\forall x0 \near nbhs x, P x0) = (\forall x0 \near x, P x0).
 Proof. by []. Qed.
 
 Lemma near2_curry {U V} (F : set_system U) (G : set_system V) (P : U -> set V) :
