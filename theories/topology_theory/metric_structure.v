@@ -99,6 +99,14 @@ Proof. by move=> e0; split; [exact: ball_open|exact: ballxx]. Qed.
 
 End metric_numDomainType.
 
+Lemma metric_accessible {R : numFieldType} (T : metricType R) : accessible_space T.
+Proof.
+move=> x y xy.
+exists (ball x (mdist x y / 2)); split; rewrite ?inE /=; first exact: ball_open.
+  by apply: ballxx; rewrite divr_gt0// mdist_gt0.
+by rewrite ballEmdist/= ltr_pdivlMr//= gtr_pMr ?ltrn1// mdist_gt0.
+Qed.
+
 Section metric_numFieldType.
 Context {d} {R : numFieldType} (T : metricType d R).
 
@@ -239,14 +247,6 @@ HB.instance Definition _ :=
   @PseudoMetric_isMetric.Build _ R R^o dist dist_ge0 dist_positivity ballEmdist.
 
 End numFieldType_metric.
-
-Lemma accessible_field (K : numFieldType) : accessible_space K^o.
-Proof.
-move=> x y xy.
-exists (ball x (`|x - y| / 2)); split; rewrite ?inE /=; first exact: ball_open.
-  by apply: ballxx; rewrite divr_gt0// normr_gt0 subr_eq0.
-by rewrite /ball/= ltr_pdivlMr//= gtr_pMr ?ltrn1// normr_gt0 subr_eq0.
-Qed.
 
 Module metricType_numDomainType.
 (* tentative generalization of the section
