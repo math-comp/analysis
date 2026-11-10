@@ -1190,6 +1190,13 @@ Lemma fin_numM x y : x \is a fin_num -> y \is a fin_num ->
   x * y \is a fin_num.
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
+Lemma fin_numMK (a b : \bar R):
+  fine (a * b) = (fine a * fine b)%R.
+Proof.
+by case: a => [r| |]; case: b => [s| |]//=;
+rewrite /mule/= ?mulr0 ?mul0r//; do ![case: ifPn => //= _].
+Qed.
+
 Lemma prode_fin_num (I : Type) (s : seq I) (P : pred I) (f : I -> \bar R) :
   (forall i, P i -> f i \is a fin_num) ->
   \prod_(i <- s | P i) f i \is a fin_num.
