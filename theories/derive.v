@@ -436,7 +436,7 @@ Qed.
 End DifferentialR_numFieldType.
 
 Section DifferentialR2.
-Context {d : fdisp_t} {R : numFieldType}.
+Context {d : filter_display} {R : numFieldType}.
 Implicit Type V : normedModType d R.
 
 Lemma deriveEjacobian m n (f : 'rV[R]_m -> 'rV[R]_n) (a v : 'rV[R]_m) :

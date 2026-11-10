@@ -20,7 +20,7 @@ Local Open Scope ring_scope.
 
 Definition one_point_compactification (X : Type) : Type := option X.
 
-Fact opc_fdisp (X : Type) : fdisp_t.
+Fact opc_display (X : Type) : filter_display.
 Proof. by []. Qed.
 
 Section one_point_compactification.
@@ -63,7 +63,7 @@ by move=> z /= nCz; apply: nCA; left.
 Qed.
 
 HB.instance Definition _ :=
-  hasNbhs.Build (opc_fdisp X) opc one_point_nbhs.
+  hasNbhs.Build (opc_display X) opc one_point_nbhs.
 
 HB.instance Definition _ := @Nbhs_isNbhsTopological.Build _ opc
   one_point_filter one_point_singleton one_point_nbhs_nbhs.

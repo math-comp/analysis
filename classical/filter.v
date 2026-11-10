@@ -15,34 +15,31 @@ From mathcomp Require Import boolp classical_sets functions wochoice
 (*                                                                            *)
 (* ## Filter displays                                                         *)
 (*                                                                            *)
-(* Similar to orders in MathComp, "filter displays" of type `fdisp_t` are     *)
-(* associated with every filtered type. These displays can then be used for   *)
-(* pretty-printing purposes. In the case of topologies, this is useful when   *)
-(* a single carrier type may be endowed with multiple distinct topologies     *)
-(* that should be displayed differently.                                      *)
+(* Similar to orders in MathComp, "filter displays" of type `filter_display`  *)
+(* are associated with every filtered type. These displays can then be used   *)
+(* for pretty-printing purposes. In the case of topologies, this is useful    *)
+(* when a single carrier type may be endowed with multiple distinct           *)
+(* topologies that should be displayed differently.                           *)
 (*                                                                            *)
 (* Much like in MathComp, displays cannot help refine type inference on their *)
 (* own: the display is inferred from an alias of the carried type, never the  *)
 (* other way around.                                                          *)
 (*                                                                            *)
-(* New filter displays should be defined as opaque terms of type `fdisp_t`    *)
-(* using the idiom :                                                          *)
-(* ``` Fact my_display : fdisp_t. Proof. by []. Qed. ```                      *)
+(* New filter displays should be defined as opaque terms of type              *)
+(* `filter_display` using the idiom :                                         *)
+(* ``` Fact my_display : filter_display. Proof. by []. Qed. ```               *)
 (* Any additional arguments needed for pretty-printing may be added to this   *)
 (* declaration.                                                               *)
 (*                                                                            *)
-(* The type `fdisp_t` has a constructor `default_fdisp` that triggers default *)
-(* notations (like any display not associated with custom ones). It should    *)
-(* preferably be used when a given filtered structure is considered           *)
-(* "natural", "default" or otherwise does not require custom pretty-printing. *)
-(*                                                                            *)
-(* By default, displays are not shown on `nbhs` or later derived notions.     *)
-(* The module `ExplicitNbhsDisplays` can be imported on demand to add         *)
-(* disambiguating notations.                                                  *)
+(* The type `filter_display` has a constructor `default_filter_display` that  *)
+(* triggers default notations (like any display not associated with custom    *)
+(*  ones). It should preferably be used when a given filtered structure is    *)
+(* considered "natural", "default" or otherwise does not require custom       *)
+(* pretty-printing.                                                           *)
 (*                                                                            *)
 (* ## Structure of filter                                                     *)
 (* ```                                                                        *)
-(*                     fdisp_t == type of filter displays                     *)
+(*              filter_display == type of filter displays                     *)
 (*            filteredType d U == interface type for types whose elements     *)
 (*                                represent sets of sets on U, with display d *)
 (*                                These sets are intended to be filters on U  *)
@@ -52,11 +49,11 @@ From mathcomp Require Import boolp classical_sets functions wochoice
 (*                      nbhs p == set of sets associated to p (in a filtered  *)
 (*                                type)                                       *)
 (*           pfilteredType d U == a pointed and filtered type                 *)
-(*                     hasNbhs == factory for filteredType                    *)
+(*                   hasNbhs d == factory for filteredType                    *)
 (*                  nbhsType d == type of a structure that has a set system   *)
 (*                                of neighborhoods associated to each point,  *)
 (*                                with display d                              *)
-(*                 pnbhsType d == same has nbhsType for pointed types         *)
+(*                 pnbhsType d == same as nbhsType for pointed types          *)
 (*                continuous f == f is continuous w.r.t the topology          *)
 (*        isSubNbhs d' d V S U == interface that states the continuity of val *)
 (*                                for U which has a `subChoiceType` and a     *)
@@ -72,8 +69,8 @@ From mathcomp Require Import boolp classical_sets functions wochoice
 (* ```                                                                        *)
 (*                                                                            *)
 (* We endow several standard types with the structure of filter, e.g.:        *)
-(* - products `(X1 * X2)%type`                                                *)
-(* - matrices `'M[X]_(m, n)`                                                  *)
+(* - products `(X1 * X2)%type` (display `prod_display`)                       *)
+(* - matrices `'M[X]_(m, n)` (display `matrix_display`)                       *)
 (* - natural numbers `nat`                                                    *)
 (*                                                                            *)
 (* ## Theory of filters                                                       *)
@@ -246,16 +243,16 @@ Reserved Notation "E `@[ x --> F ]"
   (at level 60, x name, format "E  `@[ x  -->  F ]").
 Reserved Notation "f `@ F" (at level 60, format "f  `@  F").
 
-Inductive fdisp_t := default_fdisp.
+Inductive filter_display := default_fdisp.
 
 Declare Scope fdisp_scope.
-Delimit Scope fdisp_scope with fdisp.
-Bind Scope fdisp_scope with fdisp_t.
+Delimit Scope fdisp_scope with fd.
+Bind Scope fdisp_scope with filter_display.
 
 (* `with_fdisp T` is an alias of `T` with an alternative display *)
-Definition with_fdisp (d : fdisp_t) (T : Type) := T.
+Definition with_fdisp (d : filter_display) (T : Type) := T.
 
-HB.mixin Record isFiltered (d : fdisp_t) U T := {
+HB.mixin Record isFiltered (d : filter_display) U T := {
   nbhs : T -> set_system U
 }.
 
@@ -270,7 +267,7 @@ HB.structure Definition PointedFiltered d (U : Type) :=
 
 HB.instance Definition _ d (T : choiceType) := Choice.on (with_fdisp d T).
 HB.instance Definition _ d (T : pointedType) := Pointed.on (with_fdisp d T).
-HB.instance Definition _ (d : fdisp_t) T (S : pred T) (U : subChoiceType S)
+HB.instance Definition _ d T (S : pred T) (U : subChoiceType S)
   := SubChoice.on (with_fdisp d U).
 HB.instance Definition _ d' U d (T : filteredType d U) :=
   isFiltered.Build d' U (with_fdisp d' T) nbhs.
@@ -283,7 +280,9 @@ HB.instance Definition _ T :=
 
 HB.mixin Record selfFiltered T := {}.
 
-HB.factory Record hasNbhs (d : fdisp_t) T := { nbhs : T -> set_system T }.
+HB.factory Record hasNbhs (d : filter_display) T := { 
+  nbhs : T -> set_system T 
+}.
 HB.builders Context d T & hasNbhs d T.
   HB.instance Definition _ := isFiltered.Build d T T nbhs.
   HB.instance Definition _ := selfFiltered.Build T.
@@ -385,14 +384,11 @@ Notation cvg F := (F --> lim F).
 Definition eventually := filter_from setT (fun N => [set n | (N <= n)%N]).
 Notation "'\oo'" := eventually : classical_set_scope.
 
-Fact prod_fdisp (d1 d2 : fdisp_t) : fdisp_t.
-Proof. by []. Qed.
-
 Section FilteredTheory.
 
 HB.instance Definition _ X1 X2 d1 (Z1 : filteredType d1 X1) d2
   (Z2 : filteredType d2 X2) :=
-  isFiltered.Build (prod_fdisp d1 d2) (X1 * X2)%type (Z1 * Z2)%type
+  isFiltered.Build default_fdisp (X1 * X2)%type (Z1 * Z2)%type
     (fun x => filter_prod (nbhs x.1) (nbhs x.2)).
 
 HB.instance Definition _ d1 (X1 : nbhsType d1) d2 (X2 : nbhsType d2) :=

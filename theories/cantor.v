@@ -103,7 +103,7 @@ Qed.
 (*                                                                            *)
 (******************************************************************************)
 Section topological_trees.
-Context {d} {K : nat -> pdiscreteTopologicalType d}
+Context {d} {K : forall n : nat, pdiscreteTopologicalType (d n)}
   {d'} {X : ptopologicalType d'}
   (refine_apx : forall n, set X -> K n -> set X)
   (tree_invariant : set X -> Prop).
@@ -123,7 +123,9 @@ Hypothesis refine_separates: forall x y : X, x != y ->
 Let refine_subset n U e : @refine_apx n U e `<=` U.
 Proof. by rewrite [X in _ `<=` X](refine_cover n); exact: bigcup_sup. Qed.
 
-Let T := prod_topology (K : nat -> ptopologicalType d).
+Let T := prod_topology (K : forall n, ptopologicalType (d n)).
+
+HB.instance Definition _ := Topological.on T.
 
 Local Fixpoint branch_apx (b : T) n :=
   if n is m.+1 then refine_apx (branch_apx b m) (b m) else [set: X].
@@ -360,7 +362,7 @@ Section FinitelyBranchingTrees.
 Definition tree_of (T : nat -> pointedType) : Type :=
   prod_topology (fun n => discrete_topology (T n)).
 
-HB.instance Definition _ (T : nat -> pointedType) : Pointed (tree_of T):=
+HB.instance Definition _ (T : nat -> pointedType) : Pointed (tree_of T) :=
   Pointed.on (tree_of T).
 
 HB.instance Definition _ (T : nat -> pointedType) := Uniform.on (tree_of T).
@@ -369,7 +371,7 @@ HB.instance Definition _ (T : nat -> pointedType) :
     @PseudoMetric _ R _ :=
    @PseudoMetric.on (tree_of T).
 
-Lemma cantor_like_finite_prod d (T : nat -> ptopologicalType d) :
+Lemma cantor_like_finite_prod d (T : forall n : nat, ptopologicalType (d n)) :
   (forall n, finite_set [set: discrete_topology (T n)]) ->
   (forall n, (exists xy : T n * T n, xy.1 != xy.2)) ->
   cantor_like (tree_of T).
@@ -470,13 +472,8 @@ HB.instance Definition _ n := gen_eqMixin (K' n).
 HB.instance Definition _ n := gen_choiceMixin (K' n).
 HB.instance Definition _ n := isPointed.Build (K' n) (K'p n).
 
-Let K n := discrete_topology (K' n).
+Let K n : pdiscreteTopologicalType _ := discrete_topology (K' n).
 Let Tree := @tree_of K.
-
-HB.instance Definition _ n :=
-  DiscreteTopology.on (K n).
-HB.instance Definition _ n :=
-  Pointed.on (K n).
 
 Let embed_refine n (U : set T) (k : K n) :=
   (if pselect (projT1 k `&` U !=set0)

@@ -148,7 +148,7 @@ HB.instance Definition _ := PseudoMetric_isMetric.Build _ K (T * U)%type
 
 End prod_metric.
 
-HB.factory Record isMetric (d : fdisp_t) (K : numFieldType) (M : Type)
+HB.factory Record isMetric (d : filter_display) (K : numFieldType) (M : Type)
   & Choice M := {
   mdist : M -> M -> K ;
   mdistxx : forall x, mdist x x = 0 ;

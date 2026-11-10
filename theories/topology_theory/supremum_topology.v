@@ -26,7 +26,7 @@ Definition sup_topology {I : Type} {d : I -> _} {T : Type}
   (Tc : forall i, Topological (d i) T)
   : Type := T.
 
-Fact supremum_fdisp {I} {X : I -> _} (Tc : forall i, X i) : fdisp_t.
+Fact supremum_display {I} {X : I -> _} (Tc : forall i, X i) : filter_display.
 Proof. by []. Qed.
 
 Section Sup_Topology.
@@ -40,7 +40,7 @@ Definition sup_subbase := \bigcup_i (@open _ (TS i) : set_system T).
 
 HB.instance Definition _ := Choice.on S.
 HB.instance Definition _ :=
-  isSubBaseTopological.Build (supremum_fdisp Tc) S sup_subbase id.
+  isSubBaseTopological.Build (supremum_display Tc) S sup_subbase id.
 
 Lemma cvg_sup (F : set_system T) (t : T) :
   Filter F -> F --> (t : S) <-> forall i, F --> (t : TS i).

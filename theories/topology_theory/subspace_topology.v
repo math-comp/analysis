@@ -49,7 +49,7 @@ Local Open Scope ring_scope.
 Definition subspace {T : Type} (A : set T) := T.
 Arguments subspace {T} _ : simpl never.
 
-Fact subspace_fdisp {T : Type} (A : set T) : fdisp_t.
+Fact subspace_display {T : Type} (A : set T) : filter_display.
 Proof. by []. Qed.
 
 Definition incl_subspace {T A} (x : subspace A) : T := x.
@@ -89,7 +89,7 @@ Qed.
 HB.instance Definition _ := Choice.copy (subspace A) _.
 
 HB.instance Definition _ :=
-  hasNbhs.Build (subspace_fdisp A) (subspace A) nbhs_subspace.
+  hasNbhs.Build (subspace_display A) (subspace A) nbhs_subspace.
 
 Lemma nbhs_subspaceP (x : subspace A) :
   nbhs_subspace_spec x (A x) (~ A x) (x \in A) (nbhs x).

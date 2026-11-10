@@ -32,11 +32,8 @@ Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Fact subtype_fdisp {T} (A : set T) : fdisp_t.
-Proof. by []. Qed.
-
 Definition set_type_topology_def {d} {X : topologicalType d} (A : set X) :=
-  with_fdisp (subtype_fdisp A) (initial_topology (set_val : A -> X)).
+  with_fdisp default_fdisp (initial_topology (set_val : A -> X)).
 
 HB.instance Definition _ {d} {X : topologicalType d} (A : set X) :=
   Topological.copy (set_type A) (set_type_topology_def A).

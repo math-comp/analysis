@@ -16,16 +16,16 @@ From mathcomp Require Export filter.
 (*                                                                            *)
 (* ### Topology                                                               *)
 (*                                                                            *)
-(* `topologicalType`                                                          *)
+(* `topologicalType d`                                                        *)
 (* : interface type for topological space structure                           *)
 (* : The HB class is `Topological`.                                           *)
 (*                                                                            *)
-(* `subTopologicalType S`                                                     *)
+(* `subTopologicalType d S`                                                   *)
 (* : join of `SubNbhs` and `Topological` where `S` has type `pred V` with `V` *)
-(* : a `topologicalType`                                                      *)
+(* : a `topologicalType` and `d` is a display                                 *)
 (* : The HB class is `SubTopological`.                                        *)
 (*                                                                            *)
-(* `ptopologicalType`                                                         *)
+(* `ptopologicalType d`                                                     *)
 (* : a pointed `topologicalType`                                              *)
 (*                                                                            *)
 (* `open`                                                                     *)
@@ -175,6 +175,7 @@ Definition open_nbhs (p : T) (A : set T) := open A /\ A p.
 Global Instance nbhs_pfilter (p : T) : ProperFilter (nbhs p).
 Proof. by apply: nbhs_pfilter_subproof; case: T p => ? []. Qed.
 Typeclasses Opaque nbhs.
+
 Lemma nbhs_filter (p : T) : Filter (nbhs p).
 Proof. exact: (@nbhs_pfilter). Qed.
 
@@ -532,7 +533,7 @@ HB.end.
 Definition nbhs_of_open (T : Type) (op : set_system T) (p : T) (A : set T) :=
   exists B, [/\ op B, B p & B `<=` A].
 
-HB.factory Record isOpenTopological (d : fdisp_t) T & Choice T := {
+HB.factory Record isOpenTopological (d : filter_display) T & Choice T := {
   op : set_system T ;
   opT : op setT ;
   opI : setI_closed op ;
@@ -584,7 +585,7 @@ Notation open_from := openU_from (only parsing).
 
 (** Topology defined by a base of open sets *)
 
-HB.factory Record isBaseTopological (d : fdisp_t) T & Choice T := {
+HB.factory Record isBaseTopological (d : filter_display) T & Choice T := {
   I : pointedType ;
   D : set I ;
   b : I -> set T ;
@@ -643,7 +644,7 @@ HB.instance Definition _ := isOpenTopological.Build d T
 HB.end.
 
 
-HB.factory Record isSubBaseTopological (d : fdisp_t) T & Choice T := {
+HB.factory Record isSubBaseTopological (d : filter_display) T & Choice T := {
   I : pointedType ;
   D : set I ;
   b : I -> set T

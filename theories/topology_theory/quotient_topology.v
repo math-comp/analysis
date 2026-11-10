@@ -23,7 +23,7 @@ Local Open Scope ring_scope.
 
 Definition quotient_topology (T : Type) (Q : quotType T) : Type := Q.
 
-Fact quotient_fdisp T (Q : quotType T) : fdisp_t.
+Fact quotient_display T (Q : quotType T) : filter_display.
 Proof. by []. Qed.
 
 Section quotients.
@@ -32,7 +32,7 @@ Section unpointed.
 Context {d} {T : topologicalType d} {Q0 : quotType T}.
 
 Local Notation Q := (quotient_topology Q0).
-Local Notation dQ := (quotient_fdisp Q0).
+Local Notation dQ := (quotient_display Q0).
 
 HB.instance Definition _ := Quotient.copy Q Q0.
 HB.instance Definition _ := [Sub Q of T by %/].

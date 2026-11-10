@@ -418,7 +418,7 @@ End hausdorff_ptopologicalType.
 Arguments close_cvg {d T} F1 F2 {FF2} _.
 
 Section close_uniform.
-Context {d : fdisp_t}.
+Context {d : filter_display}.
 Implicit Types (U : uniformType d).
 
 Lemma entourage_close {U} (x y : U) :
@@ -577,7 +577,7 @@ Local Close Scope relation_scope.
 #[global] Hint Resolve uniform_regular : core.
 
 Section totally_disconnected.
-Context {d : fdisp_t}.
+Context {d : filter_display}.
 Implicit Types (T : topologicalType d).
 
 Definition totally_disconnected {T} (A : set T) :=
@@ -1098,7 +1098,7 @@ exact: gauge.iter_split_ent.
 Qed.
 
 Section perfect_sets.
-Context {d : fdisp_t}.
+Context {d : filter_display}.
 Implicit Types (T : topologicalType d).
 
 Definition perfect_set {T} (A : set T) := closed A /\ limit_point A = A.
@@ -1144,7 +1144,7 @@ Qed.
 End perfect_sets.
 
 Section sigT_separations.
-Context {I : choiceType} {d} {X : I -> topologicalType d}.
+Context {I : choiceType} {d} {X : forall i : I, topologicalType (d i)}.
 
 Lemma sigT_hausdorff :
   (forall i, hausdorff_space (X i)) -> hausdorff_space {i & X i}.

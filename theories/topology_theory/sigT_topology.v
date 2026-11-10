@@ -20,11 +20,8 @@ Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Fact sigT_fdisp {I} (X : I -> Type) : fdisp_t.
-Proof. by []. Qed.
-
 Section sigT_topology.
-Context {d} {I : choiceType} {X : I -> topologicalType d}.
+Context {I : choiceType} {d} {X : forall i : I, topologicalType (d i)}.
 
 Definition sigT_nbhs (x : {i & X i}) : set_system {i & X i} :=
   existT _ _ @ nbhs (projT2 x).
@@ -34,7 +31,7 @@ Lemma sigT_nbhsE (i : I) (x : X i) :
 Proof. by done. Qed.
 
 HB.instance Definition _ :=
-  hasNbhs.Build (sigT_fdisp X) {i & X i} sigT_nbhs.
+  hasNbhs.Build default_fdisp {i & X i} sigT_nbhs.
 
 Local Lemma sigT_nbhs_proper x : ProperFilter (sigT_nbhs x).
 Proof. by case: x => i xi; exact: fmap_proper_filter. Qed.

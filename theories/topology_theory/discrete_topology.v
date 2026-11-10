@@ -189,7 +189,7 @@ HB.end.
 
 Definition discrete_topology (T : Type) : Type := T.
 
-Fact discrete_fdisp : fdisp_t.
+Fact discrete_display (T : Type) : filter_display.
 Proof. by []. Qed.
 
 HB.instance Definition _ (T : choiceType) :=
@@ -197,7 +197,7 @@ HB.instance Definition _ (T : choiceType) :=
 HB.instance Definition _ (T : pointedType) :=
   Pointed.on (discrete_topology T).
 HB.instance Definition _ (T : choiceType) :=
-  hasNbhs.Build discrete_fdisp (discrete_topology T) principal_filter.
+  hasNbhs.Build (discrete_display T) (discrete_topology T) principal_filter.
 HB.instance Definition _ (T : choiceType) :=
   Discrete_ofNbhs.Build _ (discrete_topology T) erefl.
 HB.saturate discrete_topology.

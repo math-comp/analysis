@@ -197,7 +197,7 @@ Hint Resolve itv_closed : core.
 
 Definition order_topology (T : Type) : Type := T.
 
-Fact order_fdisp (od : Order.disp_t) : fdisp_t.
+Fact order_display (T : Type) : filter_display.
 Proof. by []. Qed.
 
 Section induced_order_topology.
@@ -210,7 +210,7 @@ HB.instance Definition _ := isPointed.Build (interval T) (`]-oo,+oo[).
 
 HB.instance Definition _ := Order.Total.on oT.
 HB.instance Definition _ := @isSubBaseTopological.Build
-  (order_fdisp od) oT (interval T) (itv_is_open_unbounded) (fun i => [set` i]).
+  (order_display T) oT (interval T) (itv_is_open_unbounded) (fun i => [set` i]).
 
 Lemma order_nbhs_itv (x : oT) : nbhs x = filter_from
     (fun i => itv_open_ends i /\ x \in i)

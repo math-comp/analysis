@@ -657,7 +657,7 @@ HB.instance Definition _ := Uniform_isConvexTvs.Build _ R E locally_convex.
 HB.end.
 
 HB.factory Record NbhsBasisAt0_isConvexTvs
-  (d : fdisp_t) (R : numFieldType) (E : Type) & GRing.Lmodule R E := {
+  (d : filter_display) (R : numFieldType) (E : Type) & GRing.Lmodule R E := {
   nbhsbasis_at0 : set_system E ;
   nonempty_nbhsbasis_at0 : nbhsbasis_at0 !=set0 ;
   mem0_nbhsbasis_at0 : forall B, nbhsbasis_at0 B -> B 0 ;
@@ -833,7 +833,7 @@ HB.instance Definition _ := @PreTopologicalLmod_isConvexTvs.Build _ R E
 HB.end.
 
 HB.factory Record NbhsSubbasisAt0_isConvexTvs
-    (d : fdisp_t) (R : numFieldType) E & GRing.Lmodule R E := {
+    (d : filter_display) (R : numFieldType) E & GRing.Lmodule R E := {
   nbhssubbasis_at0 : set_system E ;
   nonempty_nbhssubbasis_at0 : nbhssubbasis_at0 !=set0 ;
   mem0_nbhssubbasis_at0 : forall B, nbhssubbasis_at0 B -> B 0 ;
@@ -1380,12 +1380,12 @@ HB.instance Definition _ := @isSemiNorm.Build  K V gauge_fun gauge0
 
 End gauge.
 
-Fact seminorm_fdisp {R : realFieldType} {E : lmodType R}
-  (P : set (Norm.SemiNorm.type E)) : fdisp_t.
-Proof. by []. Qed.
-
 Definition seminorm_on {R : realFieldType} {E : lmodType R}
   (P : set (Norm.SemiNorm.type E)) (Hp : P !=set0) : Type := E.
+
+Fact seminorm_display {R : realFieldType} {E : lmodType R}
+  (P : set (Norm.SemiNorm.type E)) : filter_display.
+Proof. by []. Qed.
 
 Section convex_topology_seminorm.
 Context {R : realFieldType} {E : lmodType R} (P : set (Norm.SemiNorm.type E))
@@ -1483,7 +1483,7 @@ by rewrite -mulrA mulVf ?normr_eq0// mulr1 !gtr0_norm ?gtr_pMr ?invf_lt1 ?ltr1n.
 Qed.
 
 HB.instance Definition _ := @NbhsSubbasisAt0_isConvexTvs.Build
-  (seminorm_fdisp P) R (seminorm_on P0)
+  (seminorm_display P) R (seminorm_on P0)
   seminorm_subbasis nonempty_subbasis mem0_seminorm_subbasis absorbing_seminorm
   absolutely_convex_seminorm_subbasis expand_seminorm_subbasis.
 

@@ -133,7 +133,7 @@ HB.end.
 
 Local Open Scope relation_scope.
 
-HB.factory Record isUniform (d : fdisp_t) M & Choice M := {
+HB.factory Record isUniform (d : filter_display) M & Choice M := {
   entourage : set_system (M * M);
   entourage_filter : Filter entourage;
   entourage_diagonal : forall A, entourage A -> diagonal `<=` A;

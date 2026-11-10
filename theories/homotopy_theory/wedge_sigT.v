@@ -56,7 +56,8 @@ Local Open Scope ring_scope.
 Local Open Scope quotient_scope.
 
 Section wedge.
-Context {d} {I : choiceType} (X : I -> topologicalType d) (p0 : forall i, X i).
+Context {I : choiceType} {d} (X : forall i : I, topologicalType (d i)) 
+  (p0 : forall i, X i).
 Implicit Types i : I.
 
 Let wedge_rel' (a b : {i & X i}) :=
@@ -379,7 +380,7 @@ Unshelve. all: by end_near. Qed.
 End wedge.
 
 Section pwedge.
-Context {d} {I : pointedType} (X : I -> ptopologicalType d).
+Context {I : pointedType} {d} (X : forall i : I, ptopologicalType (d i)).
 
 Definition pwedge := wedge (fun i => @point (X i)).
 
@@ -396,8 +397,8 @@ Context d (X Y : bpTopologicalType d).
 
 Definition bpwedge_shared_pt b :=
   if b return (if b then X else Y) then @one X else @zero Y.
-Local Notation bpwedge := (@wedge _ bool _ bpwedge_shared_pt).
-Local Notation bpwedge_lift := (@wedge_lift _ bool _ bpwedge_shared_pt).
+Local Notation bpwedge := (@wedge bool _ _ bpwedge_shared_pt).
+Local Notation bpwedge_lift := (@wedge_lift bool _ _ bpwedge_shared_pt).
 
 Local Lemma wedge_neq : @bpwedge_lift true zero != @bpwedge_lift false one.
 Proof.
@@ -411,5 +412,5 @@ HB.instance Definition _ := @isBiPointed.Build
   bpwedge (@bpwedge_lift true zero) (@bpwedge_lift false one) wedge_neq.
 End bpwedge.
 
-Notation bpwedge X Y := (@wedge _ bool _ (bpwedge_shared_pt X Y)).
-Notation bpwedge_lift X Y := (@wedge_lift _ bool _ (bpwedge_shared_pt X Y)).
+Notation bpwedge X Y := (@wedge bool _ _ (bpwedge_shared_pt X Y)).
+Notation bpwedge_lift X Y := (@wedge_lift bool _ _ (bpwedge_shared_pt X Y)).

@@ -48,11 +48,10 @@ Unset Printing Implicit Defensive.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Fact initial_fdisp (S T : Type) (f : S -> T) : fdisp_t.
-Proof. by []. Qed.
+Definition initial_topology {S T : Type} (f : S -> T) : Type := S.
 
-Definition initial_topology {S : Type} {T : Type}
-  (f : S -> T) : Type := S.
+Fact initial_display {S T : Type} (f : S -> T) : filter_display.
+Proof. by []. Qed.
 
 Section Initial_Topology.
 Context {S : choiceType} {d} {T : topologicalType d} (f : S -> T).
@@ -84,7 +83,7 @@ Qed.
 
 HB.instance Definition _ := Choice.on W.
 HB.instance Definition _ :=
-  isOpenTopological.Build (initial_fdisp f) W
+  isOpenTopological.Build (initial_display f) W
     initial_opT initial_opI initial_op_bigU.
 
 Lemma initial_continuous : continuous (f : W -> T).

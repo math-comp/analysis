@@ -124,30 +124,32 @@ Local Open Scope ring_scope.
 (** Product topology, also known as the topology of pointwise convergence *)
 Definition prod_topology {I : Type} (T : I -> Type) := forall i, T i.
 
-Fact prod_display {I} (T : I -> Type) : fdisp_t.
+Fact ptws_display {I} (T : I -> Type) : filter_display.
 Proof. by []. Qed.
 
 Section Product_Topology.
 
-Definition product_topology_def d I (T : I -> topologicalType d) :=
+Definition product_topology_def I d (T : forall i : I, topologicalType (d i)) :=
   sup_topology (fun i => Topological.class
     (initial_topology (fun f : (forall i, T i) => f i))).
 
-HB.instance Definition _ d I (T : I -> topologicalType d) :=
-  Topological.copy (prod_topology T) (product_topology_def T).
+HB.instance Definition _ I d (T : forall i : I, topologicalType (d i)) :=
+  Topological.copy (prod_topology T)
+    (with_fdisp (ptws_display T) (product_topology_def T)).
 
-HB.instance Definition _ d I (T : I -> uniformType d) :=
+HB.instance Definition _ I d (T : forall i : I, uniformType (d i)) :=
   Uniform.copy (prod_topology T)
-    (sup_topology (fun i => 
-      Uniform.class (initial_topology (@proj _ T i)))).
+    (with_fdisp (ptws_display T)
+      (sup_topology (fun i =>
+        Uniform.class (initial_topology (@proj _ T i))))).
 
 HB.instance Definition _ (Ii : countType) d (R : realType)
-    (Tc : Ii -> pseudoMetricType d R) :=
+    (Tc : forall i : Ii, pseudoMetricType (d i) R) :=
   PseudoMetric.copy (prod_topology Tc)
-    (sup_pseudometric
-      (fun i => 
-        PseudoMetric.class (initial_topology (@proj _ Tc i)))
-      (countableP _)).
+    (with_fdisp (ptws_display Tc)
+      (sup_pseudometric
+        (fun i => PseudoMetric.class (initial_topology (@proj _ Tc i)))
+        (countableP _))).
 
 End Product_Topology.
 
@@ -156,10 +158,10 @@ Notation "{ 'ptws' , F --> f }" :=
   (cvg_to F (nbhs (f : {ptws _ -> _}))) : classical_set_scope.
 
 Module ArrowAsProduct.
-HB.instance Definition _ d (U : Type) (T : U -> topologicalType d) :=
+HB.instance Definition _ U d (T : forall u : U, topologicalType (d u)) :=
   Topological.copy (forall x : U, T x) (prod_topology T).
 
-HB.instance Definition _ d (U : Type) (T : U -> uniformType d) :=
+HB.instance Definition _ U d (T : forall u : U, uniformType (d u)) :=
   Uniform.copy (forall x : U, T x) (prod_topology T).
 
 HB.instance Definition _ d (U : topologicalType d) d' (T : topologicalType d')
@@ -178,7 +180,7 @@ Section product_spaces.
 Local Import ArrowAsProduct.
 
 Section projection_maps.
-Context {d} {I : eqType} {K : I -> topologicalType d}.
+Context {I : eqType} {d} {K : forall i : I, topologicalType (d i)}.
 
 Lemma proj_continuous i : continuous (@proj I K i).
 Proof.
@@ -228,7 +230,7 @@ Qed.
 
 End projection_maps.
 
-Lemma tychonoff (I : eqType) d (T : I -> topologicalType d)
+Lemma tychonoff (I : eqType) d (T : forall i : I, topologicalType (d i))
   (A : forall i, set (T i)) :
   (forall i, compact (A i)) ->
   compact [set f : forall i, T i | forall i, A i (f i)].
@@ -264,16 +266,16 @@ apply/cvg_sup => i; apply/cvg_image=> //.
 by have /(xgetPex (a0 i)) [] := cvpFA i.
 Qed.
 
-Lemma perfect_prod {d} {I : Type} (K : I -> topologicalType d) (i : I) :
+Lemma perfect_prod {I d} (K : forall i : I, topologicalType (d i)) (i : I) :
   perfect_set [set: K i] -> perfect_set [set: forall i, K i].
 Proof.
 move=> /perfectTP KPo; apply/perfectTP => f oF; apply: (KPo (f i)).
 rewrite (_ : [set f i] = proj i @` [set f]).
   by rewrite eqEsubset; split => ? //; [move=> -> /=; exists f | case=> g ->].
-by apply: (@proj_open _ {classic I} _ i); exact: oF.
+by apply: (@proj_open {classic I} _ _ i); exact: oF.
 Qed.
 
-Lemma perfect_diagonal d (K : nat -> topologicalType d) :
+Lemma perfect_diagonal d (K : forall n : nat, topologicalType (d n)) :
   (forall i, exists xy : K i * K i, xy.1 != xy.2) ->
   perfect_set [set: forall i, K i].
 Proof.
@@ -293,7 +295,8 @@ rewrite /g ltnn /derange eq_sym; have [->|//] := eqVneq (f N) (distincts N).1.
 exact: projT2 (sigW (npts N)).
 Qed.
 
-Lemma zero_dimension_prod d (I : choiceType) (T : I -> topologicalType d) :
+Lemma zero_dimension_prod (I : choiceType) d
+    (T : forall i : I, topologicalType (d i)) :
   (forall i, zero_dimensional (T i)) ->
   zero_dimensional (forall i, T i).
 Proof.
@@ -304,8 +307,8 @@ exists (proj i @^-1` U); split => //; apply: preimage_clopen => //.
 exact/proj_continuous.
 Qed.
 
-Lemma totally_disconnected_prod d (I : choiceType) (T : I -> topologicalType d)
-  (A : forall i, set (T i)) :
+Lemma totally_disconnected_prod (I : choiceType) d
+    (T : forall i : I, topologicalType (d i)) (A : forall i, set (T i)) :
   (forall i, totally_disconnected (A i)) ->
   @totally_disconnected _ (forall i, T i) (fun f => forall i, A i (f i)).
 Proof.
@@ -328,8 +331,8 @@ Qed.
 
   are equivalent (the last equivalence seems to require `accessible_space`). *)
 Section product_embeddings.
-Context {d} {T : topologicalType d} {d'} {I : choiceType}
-  {U_ : I -> topologicalType d'}.
+Context {d} {T : topologicalType d} {I : choiceType} {d'}
+  {U_ : forall i : I, topologicalType (d' i)}.
 Variable (f_ : forall i, T -> U_ i).
 
 Definition separate_points_from_closed := forall (U : set T) x,
@@ -339,9 +342,7 @@ Hypothesis sepf : separate_points_from_closed.
 Hypothesis ctsf : forall i, continuous (f_ i).
 
 Let initialT : topologicalType _ :=
-  sup_topology (fun i => 
-    Topological.on (initial_topology (f_ i))
-  ).
+  sup_topology (fun i => Topological.on (initial_topology (f_ i))).
 
 Let PU : topologicalType _ := prod_topology U_.
 
@@ -403,7 +404,7 @@ Proof.
 move=> oA; rewrite openE => y /= [x Ax] jxy.
 have [// | i nAfiy] := @sepf (~` A) x (open_closedC oA).
 pose B : set PU := proj i @^-1` (~` closure (f_ i @` (~` A))).
-apply: (@filterS _ _ _ (range join_product `&` B)).
+apply: (@filterS (subspace _) _ _ (range join_product `&` B)).
   move=> z [[w ?]] wzE Bz; exists w => //.
   move: Bz; rewrite /B -wzE -interiorC interiorEbigcup.
   case=> K [oK KsubA] /KsubA.
@@ -438,8 +439,9 @@ Qed.
 
 End product_embeddings.
 
-Global Instance prod_topology_filter d (U : Type) (T : U -> ptopologicalType d)
-  (f : prod_topology T) : ProperFilter (nbhs f).
+Global Instance prod_topology_filter U d 
+  (T : forall u : U, ptopologicalType (d u)) (f : prod_topology T) :
+  ProperFilter (nbhs f).
 Proof. exact: nbhs_pfilter. Qed.
 
 End product_spaces.
@@ -450,7 +452,7 @@ End product_spaces.
 (**md the uniform topologies type *)
 Definition arrow_uniform_type T U : Type := T -> U.
 
-Fact arrow_uniform_fdisp (U : Type) : fdisp_t.
+Fact arrow_uniform_display (T U : Type) : filter_display.
 Proof. by []. Qed.
 
 Section fct_Uniform.
@@ -489,10 +491,9 @@ move=> fg [h spBfh spBhg].
 by apply: sBA => t; apply: entourage_split (spBfh t) (spBhg t).
 Qed.
 
-
 #[export] HB.instance Definition _ := Choice.on (arrow_uniform_type T U).
 #[export] HB.instance Definition _ :=
-  isUniform.Build (arrow_uniform_fdisp U) (arrow_uniform_type T U)
+  isUniform.Build (arrow_uniform_display T U) (arrow_uniform_type T U)
   fct_ent_filter fct_ent_refl fct_ent_inv fct_ent_split.
 
 End fct_Uniform.
@@ -575,8 +576,7 @@ HB.instance Definition _ (U : choiceType) d (R : numFieldType)
   PseudoMetric.copy (U -> V) (arrow_uniform_type U V).
 
 HB.instance Definition _ d (U : topologicalType d) d' (T : uniformType d') :=
-  Uniform.copy
-    (continuousType U T)
+  Uniform.copy (continuousType U T)
     (initial_topology (id : continuousType U T -> (U -> T))).
 
 (*HB.instance Definition _ (U : topologicalType) (R : realType)
@@ -640,7 +640,7 @@ End Cvg_switch.
 
 Definition uniform_fun {U : Type} (A : set U) (V : Type) : Type := U -> V.
 
-Fact uniform_fdisp U (A : set U) (V : Type) : fdisp_t.
+Fact uniform_display U (A : set U) (V : Type) : filter_display.
 Proof. by []. Qed.
 
 Notation "{ 'uniform`' A -> V }" := (@uniform_fun _ A V) : type_scope.
@@ -655,7 +655,7 @@ Definition sigL_arrow {U : choiceType} (A : set U) {d} (V : uniformType d) :
 
 HB.instance Definition _ (U : choiceType) (A : set U) {d} (V : uniformType d) :=
   Uniform.copy {uniform` A -> V} (
-    with_fdisp (uniform_fdisp A V) (initial_topology (@sigL_arrow _ A _ V))
+    with_fdisp (uniform_display A V) (initial_topology (@sigL_arrow _ A _ V))
   ).
 
 Section RestrictedUniformTopology.
@@ -714,7 +714,7 @@ Proof. by []. Qed.
 
 Definition uniform_fun_family {U} V (fam : set U -> Prop) := U -> V.
 
-Definition uniform_fam_disp {U} (V : Type) (fam : set_system U) : fdisp_t.
+Fact uniform_fam_display {U} (V : Type) (fam : set_system U) : filter_display.
 Proof. by []. Qed.
 
 Notation "{ 'family' fam , U -> V }" :=  (@uniform_fun_family U V fam).
@@ -724,7 +724,7 @@ Notation "{ 'family' fam , F --> f }" :=
 HB.instance Definition _ {U : choiceType} {d} {V : uniformType d}
     (fam : set U -> Prop) :=
   Uniform.copy {family fam, U -> V}
-    (with_fdisp (uniform_fam_disp V fam)
+    (with_fdisp (uniform_fam_display V fam)
       (sup_topology
         (fun k : sigT fam => Uniform.class {uniform` projT1 k -> V}))).
 
@@ -942,7 +942,7 @@ End FamilyConvergence.
    `curry`/`uncurry` to be continuous. *)
 Definition compact_open T U : Type := T -> U.
 
-Fact compact_open_disp (T U : Type) : fdisp_t.
+Fact compact_open_display (T U : Type) : filter_display.
 Proof. by []. Qed.
   
 Section compact_open.
@@ -1000,14 +1000,16 @@ HB.instance Definition _ :=
 End compact_open_setwise.
 
 Definition compact_open_def :=
-  with_fdisp (compact_open_disp T U)
-    (sup_topology (fun i : sigT (@compact _ T) =>
-      Topological.class (@compact_openK (projT1 i)))).
+  sup_topology (fun i : sigT (@compact _ T) =>
+    Topological.class (@compact_openK (projT1 i))).
 
-HB.instance Definition _ := Nbhs.copy compact_open compact_open_def.
+HB.instance Definition _ := 
+  Nbhs.copy compact_open 
+    (with_fdisp (compact_open_display T U) compact_open_def).
 
 HB.instance Definition _ : Nbhs_isTopological _ compact_open :=
-  Topological.copy compact_open compact_open_def.
+  Topological.copy compact_open 
+    (with_fdisp (compact_open_display T U) compact_open_def).
 
 Lemma compact_open_cvgP (F : set_system compact_open) (f : compact_open) :
   Filter F ->
@@ -1103,7 +1105,7 @@ HB.instance Definition _ d (U : topologicalType d) d' (V : topologicalType d')
 
 HB.instance Definition _ d (U : topologicalType d) d' (V : topologicalType d')
   := Topological.copy (continuousType U V)
-      (initial_topology (id : (continuousType U V) -> (U -> V)) ).
+      (initial_topology (id : (continuousType U V) -> (U -> V))).
 End ArrowAsCompactOpen.
 
 Definition compactly_in {d} {U : topologicalType d} (A : set U) :=

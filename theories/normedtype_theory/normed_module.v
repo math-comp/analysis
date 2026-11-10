@@ -2098,7 +2098,7 @@ by rewrite [in leLHS]fixx [in leLHS]fixy; exact: (ctrfq (_, _)).
 Qed.
 
 Section cvg_seq_bounded.
-Context {d : fdisp_t} {K : numFieldType} {V : normedModType d K}.
+Context {d : filter_display} {K : numFieldType} {V : normedModType d K}.
 Local Notation "'+oo'" := (@pinfty_nbhs K).
 
 Lemma cvg_seq_bounded (a : nat -> V) :
