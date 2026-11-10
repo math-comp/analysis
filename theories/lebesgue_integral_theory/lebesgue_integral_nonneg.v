@@ -85,6 +85,7 @@ Context d (T : measurableType d) (R : realType).
 Let sintegral_measure_zero (f : T -> R) : sintegral mzero f = 0.
 Proof. by rewrite sintegralE big1// => r _ /=; rewrite /mzero mule0. Qed.
 
+Import HBNNSimple.
 
 Lemma integral_measure_zero (D : set T) (f : T -> \bar R) :
   \int[mzero]_(x in D) f x = 0.
@@ -117,6 +118,7 @@ Context {d} {T : measurableType d} {R : realType}
 Hypothesis f0 : forall x, D x -> 0 <= f x.
 Hypothesis mf : measurable_fun D f.
 
+Import HBNNSimple.
 
 Let ge0_integralZl_EFin_subproof k : (0 <= k)%R ->
   \int[mu]_(x in D) (k%:E * f x) = k%:E * \int[mu]_(x in D) f x.
@@ -201,6 +203,7 @@ Hypothesis mf1 : measurable_fun D f1.
 Hypothesis f20 : forall x, D x -> 0 <= f2 x.
 Hypothesis mf2 : measurable_fun D f2.
 
+Import HBNNSimple.
 
 Lemma ge0_integralD : \int[mu]_(x in D) (f1 x + f2 x) =
   \int[mu]_(x in D) f1 x + \int[mu]_(x in D) f2 x.
@@ -446,6 +449,7 @@ rewrite !fsbig_set1 mul0e add0e preimage_restrict//.
 by rewrite ifN ?set0U ?setIidl//= notin_setE => /esym; exact/eqP.
 Qed.
 
+Import HBNNSimple.
 
 Local Lemma integral_cstr r : \int[mu]_(x in D) r%:E = r%:E * mu D.
 Proof.
@@ -687,6 +691,7 @@ Qed.
 End integral_measure_sum_nnsfun.
 
 Section integral_measure_add_nnsfun.
+Import HBNNSimple.
 
 Lemma integral_measure_add_nnsfun d (T : measurableType d) (R : realType)
     (m1 m2 : {measure set T -> \bar R}) (D : set T) (mD : measurable D)
@@ -705,6 +710,7 @@ Local Open Scope ereal_scope.
 Context {d} {T : measurableType d} {R : realType}
   (m_ : {measure set T -> \bar R}^nat).
 
+Import HBNNSimple.
 
 Lemma ge0_integral_measure_sum (D : set T) (mD : measurable D)
     (f : T -> \bar R) :
@@ -802,6 +808,7 @@ Context {d} {T : measurableType d} {R : realType}
   (m_ : {measure set T -> \bar R}^nat).
 Let m := mseries m_ O.
 
+Import HBNNSimple.
 
 Lemma ge0_integral_measure_series (D : set T) (mD : measurable D) (f : T -> \bar R) :
   (forall t, D t -> 0 <= f t) ->

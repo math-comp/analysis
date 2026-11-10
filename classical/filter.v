@@ -1239,7 +1239,7 @@ move=> near_hom fFG; apply/cvg_to_withinP; split.
 Qed.
 
 Lemma filter_bigI_within T (I : choiceType) (D : {fset I}) (f : I -> set T)
-  (F : set_system T) (P : set T) :
+    (F : set_system T) (P : set T) :
   Filter F -> (forall i, i \in D -> F [set j | P j -> f i j]) ->
   F ([set j | P j -> (\bigcap_(i in [set` D]) f i) j]).
 Proof. move=> FF FfD; exact: (@filter_bigI T I D f _ (within_filter P FF)). Qed.
