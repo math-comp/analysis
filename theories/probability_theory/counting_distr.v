@@ -73,6 +73,13 @@ by apply: (@reindex_esum R T (discrete_measurable_space T)
           [set: T] [set: discrete_measurable_space T] id f); split.
 Qed.
 
+Lemma measurable_discrete {T : choiceType}
+    (A : set (discrete_measurable_space T)) :
+  measurable A.
+Proof. by []. Qed.
+
+#[global] Hint Resolve measurable_discrete : core.
+
 Lemma measurable_fun_discrete {T : choiceType} {d'} {U : sigmaRingType d'}
     (D : set (discrete_measurable_space T))
     (f : discrete_measurable_space T -> U) :
@@ -376,6 +383,24 @@ Lemma drestrE (mu : R.-pmf T) x :
   drestr mu x = if p x then mu x else 0.
 Proof. by unlock drestr. Qed.
 End Restr.
+
+(* -------------------------------------------------------------------- *)
+Section MeasureOfDrestr.
+Context {R : realType} {T : choiceType}.
+
+Local Open Scope ereal_scope.
+
+Lemma measure_of_pmf_drestr (p : pred T) (mu : R.-pmf T)
+    (mp : measurable ([set` p] : set (discrete_measurable_space T)))
+    (S : set (discrete_measurable_space T)) :
+  measure_of_pmf (drestr p mu) S = mrestr (measure_of_pmf mu) mp S.
+Proof.
+rewrite /mrestr /measure_of_pmf esum_mkcondr.
+apply: eq_esum => x _ /=; rewrite drestrE mem_setE unfold_in.
+by case: (p x).
+Qed.
+
+End MeasureOfDrestr.
 
 Section pr_pmf.
 Import MeasurableR.
@@ -1670,8 +1695,7 @@ have fin : \esum_(x in [set: T]) ((E x)%:R * mu x)%:E \is a fin_num.
   by have := summable_pr E mu; rewrite esummableE.
 rewrite /pr fineK//.
 rewrite /measure_of_pmf [RHS]esum_mkcond esum_setT_discrete.
-apply: eq_esum => x _ /=.
-have -> : (x \in [set` E]) = E x by apply/idP/idP => [/set_mem//|/mem_set//].
+apply: eq_esum => x _ /=; rewrite mem_setE unfold_in.
 by case: (E x); rewrite ?mul1r ?mul0r.
 Qed.
 
