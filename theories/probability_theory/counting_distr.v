@@ -335,6 +335,18 @@ Lemma lef_dnull {R : realType} {T : choiceType} (mu : R.-pmf T) :
 Proof. by move=> x; rewrite dnullE. Qed.
 
 (* -------------------------------------------------------------------- *)
+Section MeasureOfDnull.
+Context {R : realType} {T : choiceType}.
+
+Local Open Scope ereal_scope.
+
+Lemma measure_of_pmf_dnull (S : set (discrete_measurable_space T)) :
+  measure_of_pmf (dnull : R.-pmf T) S = mzero S :> \bar R.
+Proof. by rewrite /measure_of_pmf esum1// => x _ /=; rewrite dnullE. Qed.
+
+End MeasureOfDnull.
+
+(* -------------------------------------------------------------------- *)
 Section Restr.
 Context (R : realType) (T : choiceType) (p : pred T).
 
@@ -1538,6 +1550,14 @@ rewrite expectation_def (eq_measure_integral (\d_(x : discrete_measurable_space 
 by rewrite integral_dirac//= diracT mul1e.
 Qed.
 
+Lemma eexp_dnull (f : T -> \bar R) :
+  'E_(measure_of_pmf (dnull : R.-pmf T)) [f] = 0.
+Proof.
+rewrite expectation_def (eq_measure_integral mzero).
+  by move=> A _ _; exact: measure_of_pmf_dnull.
+by rewrite integral_measure_zero.
+Qed.
+
 Lemma eexp_dlet {U: choiceType} mu (nu : T -> R.-pmf U) F :
   (forall x, 0 <= F x)%E ->
   'E_(measure_of_pmf (dlet nu mu)) [F] =
@@ -1694,6 +1714,15 @@ Proof. by rewrite /pmf_expectation -expectation_pmfEFin eexp_dunit. Qed.
 
 Lemma pr_dunit E x : \P_[dunit x] E = (E x)%:R :> R.
 Proof. by rewrite pr_exp exp_dunit. Qed.
+
+Lemma exp_dnull (f : T -> R) : \E_[dnull : R.-pmf T] f = 0.
+Proof. by rewrite /pmf_expectation -expectation_pmfEFin eexp_dnull. Qed.
+
+Lemma pr_dnull E : \P_[dnull : R.-pmf T] E = 0.
+Proof. by rewrite pr_exp exp_dnull. Qed.
+
+Lemma dweight_dnull : dweight (dnull : R.-pmf T) = 0.
+Proof. exact: pr_dnull. Qed.
 
 Lemma exp_dmargin {U : choiceType} (h : T -> U) mu (g : U -> R) :
   (forall y, 0 <= g y) -> \E_[dmargin h mu] g = \E_[mu] (g \o h).
