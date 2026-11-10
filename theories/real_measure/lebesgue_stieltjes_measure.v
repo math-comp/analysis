@@ -463,21 +463,6 @@ Qed.
 End rgenopensets.
 End RGenOpenSets.
 
-(* Could be moved elsewhere and generalized to metric spaces *)
-Section normed_lemmas.
-Context {R : realType} {N : normedModType R}.
-
-Lemma set1_bigcap_ball (x : N) : [set x] = \bigcap_n ball x n.+1%:R^-1.
-Proof.
-rewrite eqEsubset/bigcap; split=> [y -> n _ | y /= bn]/=.
-  by apply: ballxx; rewrite invr_gt0.
-apply: close_eq _=>//; rewrite ball_close=> e0; rewrite ball_symE.
-apply: (le_ball _ (bn (truncn e0%:num^-1) I)). rewrite invf_ple ?posrE//.
-exact: (ltW (truncnS_gt _)).
-Qed.
-
-End normed_lemmas.
-
 (* Should be moved to a more general file *)
 Section open.
 Context {R : realType} {N : normedModType R}.
@@ -507,22 +492,23 @@ Notation "N .-open" := (sigma_display (@open N)) : measure_display_scope.
 Notation "N .-open.-measurable" := (measurable : set_system (@open_type _ N)) :
   classical_set_scope.
 
-Module MeasurableOpen.
+Module MeasurableNormedModuleOpen.
 Section measurableOpen.
 Context {R : realType} {N : normedModType R}.
+Import numFieldNormedType.Exports.
 
-Definition measurableTypeO := g_sigma_algebraType (@open N).
+Definition measurableTypeNormedModule := g_sigma_algebraType (@open N).
 
 Definition borel_display : measure_display := N.-open.
 
-Definition measurableO : set_system N := N.-open.-measurable.
+Definition measurableNormedModule : set_system N := N.-open.-measurable.
 
-HB.instance Definition _ : Measurable borel_display measurableTypeO :=
-   Measurable.on measurableTypeO.
+HB.instance Definition _ : Measurable borel_display measurableTypeNormedModule :=
+   Measurable.on measurableTypeNormedModule.
 (* Presumably it is safe to use NFI here because morally R is unique
    and nothing else can be used here *)
 #[non_forgetful_inheritance]
-HB.instance Definition _ := Measurable.copy N measurableTypeO.
+HB.instance Definition _ := Measurable.copy N measurableTypeNormedModule.
 
 Lemma measurable_set1 (x : N) : measurable [set x].
 Proof.
@@ -535,14 +521,14 @@ Lemma measurable_ball_norm (x : N) e : measurable (ball x e).
 Proof. by apply: (sub_sigma_algebra (ball_open _ _)). Qed.
 
 End measurableOpen.
-Arguments measurableTypeO : clear implicits.
+Arguments measurableTypeNormedModule : clear implicits.
 #[global]
 Hint Extern 0 (measurable (_ @^-1` [set _])) =>
   solve [apply: measurable_funPTI; exact: measurable_set1] : core.
 #[global]
 Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 
-Lemma measurable_funP1 {d} {aT : measurableType d} {rT : realType} 
+Lemma measurable_funP1 {d} {aT : measurableType d} {rT : realType}
   {nT : normedModType rT} (f : {mfun aT >-> nT}) D (z : nT) :
   measurable D -> measurable (D `&` f @^-1` [set z]).
 Proof. by move=> /(measurable_funP f); exact. Qed.
@@ -555,11 +541,12 @@ Section measurableReal.
 Context {R : realType}.
 Import numFieldNormedType.Exports.
 
-Definition measurableTypeR := @measurableTypeO R R.
+Definition measurableTypeR := @measurableTypeNormedModule R R.
 
 Definition lebesgue_display : measure_display := @borel_display R R.
 
-Definition measurableR := @measurableO R R.
+Definition measurableR := @measurableNormedModule R R.
+
 (* Shouldn't be needing ideally... *)
 HB.instance Definition _ := Measurable.copy R measurableTypeR.
 
@@ -575,11 +562,11 @@ Arguments measurableTypeR : clear implicits.
 #[global]
 Hint Extern 0 (measurable [set` _] ) => exact: measurable_itv : core.
 
-End MeasurableOpen.
+End MeasurableNormedModuleOpen.
 
 Module MeasurableR.
 Export numFieldNormedType.Exports.
-Export MeasurableOpen.
+Export MeasurableNormedModuleOpen.
 End MeasurableR.
 
 Section ocitv_measure.
