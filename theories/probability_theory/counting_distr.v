@@ -467,20 +467,20 @@ Qed.
 End RestrTheory.
 
 (* -------------------------------------------------------------------- *)
-Section DRat.
+Section DCount.
 Context {R : realType} (T : choiceType).
 
 Local Abbreviation distr := R.-pmf T.
 
 Implicit Types (s : seq T).
 
-Definition drat_fun (s : seq T) : T -> R :=
+Definition dcount_fun (s : seq T) : T -> R :=
   fun x : T => (count (pred1 x) s)%:R / (size s)%:R.
 
-Lemma drat_ge0 s : forall x, 0 <= drat_fun s x.
+Lemma dcount_ge0 s : forall x, 0 <= dcount_fun s x.
 Proof. by move=> x; rewrite mulr_ge0 ?invr_ge0 // ler0n. Qed.
 
-Lemma has_sup_drat s J : uniq J -> \sum_(i <- J) drat_fun s i <= 1.
+Lemma has_sup_dcount s J : uniq J -> \sum_(i <- J) dcount_fun s i <= 1.
 Proof.
 move=> uqJ; rewrite -mulr_suml /= -natr_sum; case: (size s =P 0%N).
   by move=> ->; rewrite invr0 mulr0 ler01.
@@ -497,8 +497,8 @@ apply/uniq_perm; rewrite ?filter_uniq ?undup_uniq //.
 by move=> x; rewrite !mem_filter mem_undup andbC.
 Qed.
 
-Lemma drat_sup s : (0 < size s)%N ->
-  \sum_(i <- undup s) drat_fun s i = 1.
+Lemma dcount_sup s : (0 < size s)%N ->
+  \sum_(i <- undup s) dcount_fun s i = 1.
 Proof.
 move=> gt0_s; rewrite -mulr_suml -natr_sum.
 apply/(mulIf (x := (size s)%:R)); first by rewrite pnatr_eq0 -lt0n.
@@ -507,48 +507,48 @@ rewrite -sum1_size -[in RHS]big_undup_iterop_count/=; apply: eq_bigr => i _.
 by rewrite Monoid.iteropE iter_addn addn0 mul1n.
 Qed.
 
-Lemma summable_drat s: esummable [set :T] (EFin \o (drat_fun s)).
+Lemma summable_dcount s: esummable [set :T] (EFin \o (dcount_fun s)).
 Proof.
 rewrite /esummable (@le_lt_trans _ _ 1%:E) ?ltey//.
 rewrite ge0_esum.
 + by move => ? _;rewrite lee_fin.
 rewrite ge_ereal_sup//= => _ [X [finX _]] <-.
 rewrite fsumEFin // lee_fin fsbig_finite //=.
-rewrite (eq_bigr (drat_fun s)).
-+ move => ??; rewrite ger0_norm ?drat_ge0 //.
-by apply/has_sup_drat.
+rewrite (eq_bigr (dcount_fun s)).
++ move => ??; rewrite ger0_norm ?dcount_ge0 //.
+by apply/has_sup_dcount.
 Qed.
 
-Lemma isd_drat s : sub_distr (drat_fun s).
-Proof. by split; [exact/drat_ge0|exact/has_sup_drat]. Qed.
+Lemma isd_dcount s : sub_distr (dcount_fun s).
+Proof. by split; [exact/dcount_ge0|exact/has_sup_dcount]. Qed.
 
 HB.instance Definition _ (s : seq T) :=
-  @uniq_isSubPmf.Build R T (drat_fun s) (proj1 (isd_drat s)) (proj2 (isd_drat s)).
+  @uniq_isSubPmf.Build R T (dcount_fun s) (proj1 (isd_dcount s)) (proj2 (isd_dcount s)).
 
-Definition drat (s : seq T) := @locked R.-pmf T (drat_fun s).
+Definition dcount (s : seq T) := @locked R.-pmf T (dcount_fun s).
 
-Lemma drat1E s x :
-  drat s x = (count_mem x s)%:R / (size s)%:R.
-Proof. by unlock drat. Qed.
+Lemma dcount1E s x :
+  dcount s x = (count_mem x s)%:R / (size s)%:R.
+Proof. by unlock dcount. Qed.
 
-Definition dunit x := drat [:: x].
-Definition duni  s := drat (undup s).
+Definition dunit x := dcount [:: x].
+Definition duni  s := dcount (undup s).
 
 Lemma dunit1E x y : (dunit x) y = (x == y)%:R.
-Proof. by rewrite /dunit drat1E /= addn0 divr1. Qed.
+Proof. by rewrite /dunit dcount1E /= addn0 divr1. Qed.
 
 Lemma dunit_id x : (dunit x) x = 1.
-Proof. by rewrite /dunit drat1E /= addn0 divr1 eqxx. Qed.
+Proof. by rewrite /dunit dcount1E /= addn0 divr1 eqxx. Qed.
 
 Lemma dunit_diff x y: x <> y -> (dunit x) y = 0.
-Proof. by rewrite /dunit drat1E /= addn0 divr1 => /eqP /negPf ->. Qed.
+Proof. by rewrite /dunit dcount1E /= addn0 divr1 => /eqP /negPf ->. Qed.
 
 Lemma duni1E s x : (duni s) x = (x \in s)%:R / (size (undup s))%:R.
-Proof. by rewrite /duni drat1E count_uniq_mem ?(mem_undup, undup_uniq). Qed.
+Proof. by rewrite /duni dcount1E count_uniq_mem ?(mem_undup, undup_uniq). Qed.
 
 Lemma in_dunit t t' : t' \in dinsupp (dunit t) -> t' = t :> T.
 Proof. by rewrite in_dinsupp /= dunit1E  pnatr_eq0 eqb0 negbK => /eqP. Qed.
-End DRat.
+End DCount.
 
 (* -------------------------------------------------------------------- *)
 Section MeasureOfDunit.
