@@ -1528,6 +1528,12 @@ Lemma ereal_nonincreasing_is_cvgn (R : realType) (u_ : (\bar R) ^nat) :
   nonincreasing_seq u_ -> cvgn u_.
 Proof. by move=> ?; apply/cvg_ex; eexists; apply: ereal_nonincreasing_cvgn. Qed.
 
+Lemma sup_range_lim (R : realType) (u : (\bar R)^nat) :
+  nondecreasing_seq u -> ereal_sup (range u) = limn u.
+Proof.
+by move=> ndu; apply/esym/cvg_lim => //; exact: ereal_nondecreasing_cvgn.
+Qed.
+
 (* NB: see also nondecreasing_series *)
 Lemma ereal_nondecreasing_series (R : realDomainType) (u_ : (\bar R)^nat)
   (P : pred nat) N : (forall n, (N <= n)%N -> P n -> 0 <= u_ n) ->
