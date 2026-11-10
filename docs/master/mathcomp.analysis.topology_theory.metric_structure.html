@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Module mathcomp.analysis.topology_theory.metric_structure</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis eca10f8 2026.11.10-01:42">
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis eca10f8 2026.11.10-23:16">
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -180,24 +180,17 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="id"> by</span><span class="id"> apply:</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.Theory.real_comparable">real_comparable</a></span><span class="id">;</span><span class="id"> apply:</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.Theory.ger0_real">ger0_real</a></span><span class="id">;</span><span class="id"> exact:</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.metric_structure.html#mdist_ge0">mdist_ge0</a></span>. Qed.</div></details>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="prod_mdist" class="id"><span name="prod_mdist" class="id anchor tooltip">prod_mdist<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>countable_uniformity : uniformType -&gt; Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="prod_mdist" class="id"><span name="prod_mdist" class="id anchor tooltip">prod_mdist<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>sigT_of_setX :
+forall {X Y : topologicalType} (A : set X) (B : set Y),
+A * B -&gt; (A `*` B)%classic
 
-countable_uniformity is not universe polymorphic
-Arguments countable_uniformity T
-countable_uniformity is transparent
+sigT_of_setX is not universe polymorphic
+Arguments sigT_of_setX {X Y} (A B)%_classical_set_scope ab
+sigT_of_setX is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.uniform_structure.countable_uniformity
+            mathcomp.analysis.topology_theory.subtype_topology.sigT_of_setX
 Declared in
-library mathcomp.analysis.topology_theory.uniform_structure, line 301, characters 11-31
-unif_continuous : forall [U V : uniformType], (U -&gt; V) -&gt; Prop
-
-unif_continuous is not universe polymorphic
-Arguments unif_continuous [U V] f%_function_scope
-unif_continuous is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.uniform_structure.unif_continuous
-Declared in
-library mathcomp.analysis.topology_theory.uniform_structure, line 328, characters 11-26
+library mathcomp.analysis.topology_theory.subtype_topology, line 113, characters 19-31
 </p><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/metric_structure.v#L120" target="_blank">Source code</a></span></span></span>&nbsp;(<span id="x:36" class="id"><span name="x:36" class="id anchor tooltip">x<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/metric_structure.v#L120" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="y:37" class="id"><span name="y:37" class="id anchor tooltip">y<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/metric_structure.v#L120" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.metric_structure.html#prod_metric.M">M</a></span>)<span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.Def.maxr">maxr</a></span>&nbsp;(<span class="id link"><a href="mathcomp.analysis.topology_theory.metric_structure.html#mdist">mdist</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.metric_structure.html#x:36">x</a></span>.<span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.metric_structure.html#y:37">y</a></span>.<span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.1'">1</a></span>)&nbsp;(<span class="id link"><a href="mathcomp.analysis.topology_theory.metric_structure.html#mdist">mdist</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.metric_structure.html#x:36">x</a></span>.<span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.metric_structure.html#y:37">y</a></span>.<span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrfun.html#::pair_scope:x_'.2'">2</a></span>).<br>
 <br>
 <span class="vernacular">Let</span><span class="id"> </span><span id="prod_metric.prod_mdist_ge0" class="id"><span name="prod_metric.prod_mdist_ge0" class="id anchor tooltip">prod_mdist_ge0<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/metric_structure.v#L122" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="x:38" class="id"><span name="x:38" class="id anchor tooltip">x<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/metric_structure.v#L122" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="y:39" class="id"><span name="y:39" class="id anchor tooltip">y<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/metric_structure.v#L122" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> 0</span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#cb42ec59ad57b25928e1718b4e69e031"> &lt;=</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.metric_structure.html#prod_mdist">prod_mdist</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.metric_structure.html#x:38">x</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.metric_structure.html#y:39">y</a></span>.<br>

@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Module mathcomp.analysis.convex</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis eca10f8 2026.11.10-01:42">
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis eca10f8 2026.11.10-23:16">
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -220,7 +220,15 @@ Qed.</div></details>
 <br>
 <span class="vernacular">Local</span><span class="vernacular"> Open</span><span class="vernacular"> Scope</span><span class="id"> convex_scope</span>.<br>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="convex_lmodType" class="id"><span name="convex_lmodType" class="id anchor tooltip">convex_lmodType<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><hr>Used by
+<span class="vernacular">Definition</span><span class="id"> </span><span id="convex_lmodType" class="id"><span name="convex_lmodType" class="id anchor tooltip">convex_lmodType<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>ConvexQuasiAssoc.law :
+forall [R : numDomainType] [T : Type], ({i01 R} -&gt; T -&gt; T -&gt; T) -&gt; Prop
+
+ConvexQuasiAssoc.law is not universe polymorphic
+Arguments ConvexQuasiAssoc.law [R] [T]%_type_scope conv%_function_scope
+ConvexQuasiAssoc.law is transparent
+Expands to: Constant mathcomp.analysis.convex.ConvexQuasiAssoc.law
+Declared in library mathcomp.analysis.convex, line 87, characters 11-14
+</p><hr>Used by
 <ul><li>mathcomp.analysis.normedtype_theory.normed_module</li></ul><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/convex.v#L157" target="_blank">Source code</a></span></span></span><span class="id"> {</span><span id="R:65" class="id"><span name="R:65" class="id anchor tooltip">R<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/convex.v#L157" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span><span class="id">}</span>&nbsp;(<span id="E:66" class="id"><span name="E:66" class="id anchor tooltip">E<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/convex.v#L157" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Lmodule.Exports.lmodType">lmodType</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.convex.html#R:65">R</a></span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.convex.html#E:66">E</a></span>.<br>
 <br>
 <span class="vernacular">Section</span><span class="id"> lmodType_convex_space</span>.<br>
@@ -279,14 +287,14 @@ Qed.</div></details>
 <span class="id">by</span><span class="id"> rewrite</span><span class="id"> [in</span><span class="id"> X</span><span class="gallina-kwd"> in</span>&nbsp;(_<span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span>&nbsp;&nbsp;_<span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span>&nbsp;&nbsp;(<span class="id"> </span>_<span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#c7f78cf1f6a5e4f664654f7d671ca752"> +</a></span><span class="id"> </span><span class="id">X</span>))<span class="id">]</span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Theory.addrCA">addrCA</a></span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Theory.addrN">addrN</a></span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Theory.addr0">addr0</a></span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Theory.scale1r">scale1r</a></span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#GRing.Theory.addrA">addrA</a></span>.<br>
 Qed.</div></details>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="convex_numDomainType" class="id"><span name="convex_numDomainType" class="id anchor tooltip">convex_numDomainType<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>ConvexQuasiAssoc.law :
+<span class="vernacular">Definition</span><span class="id"> </span><span id="convex_numDomainType" class="id"><span name="convex_numDomainType" class="id anchor tooltip">convex_numDomainType<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>convex_quasi_associative :
 forall [R : numDomainType] [T : Type], ({i01 R} -&gt; T -&gt; T -&gt; T) -&gt; Prop
 
-ConvexQuasiAssoc.law is not universe polymorphic
-Arguments ConvexQuasiAssoc.law [R] [T]%_type_scope conv%_function_scope
-ConvexQuasiAssoc.law is transparent
-Expands to: Constant mathcomp.analysis.convex.ConvexQuasiAssoc.law
-Declared in library mathcomp.analysis.convex, line 87, characters 11-14
+convex_quasi_associative is not universe polymorphic
+Arguments convex_quasi_associative [R] [T]%_type_scope conv%_function_scope
+convex_quasi_associative is transparent
+Expands to: Constant mathcomp.analysis.convex.convex_quasi_associative
+Declared in library mathcomp.analysis.convex, line 127, characters 11-35
 </p><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/convex.v#L201" target="_blank">Source code</a></span></span></span>&nbsp;(<span id="R:85" class="id"><span name="R:85" class="id anchor tooltip">R<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/convex.v#L201" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#Num.NumDomain.Exports.numDomainType">numDomainType</a></span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.convex.html#R:85">R</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.algebraic_hierarchy.rings_modules_and_algebras.html#32d8c90f413029fb5c0e82f0559cd7ef">^o</a></span>.<br>
 <br>
 <span class="vernacular">Section</span><span class="id"> numDomainType_convex_space</span>.<br>
@@ -385,15 +393,7 @@ Qed.</div></details>
 <br>
 <span class="vernacular">End</span><span class="id"> conv_numDomainType</span>.<br>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="convex_set" class="id"><span name="convex_set" class="id anchor tooltip">convex_set<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>convex_quasi_associative :
-forall [R : numDomainType] [T : Type], ({i01 R} -&gt; T -&gt; T -&gt; T) -&gt; Prop
-
-convex_quasi_associative is not universe polymorphic
-Arguments convex_quasi_associative [R] [T]%_type_scope conv%_function_scope
-convex_quasi_associative is transparent
-Expands to: Constant mathcomp.analysis.convex.convex_quasi_associative
-Declared in library mathcomp.analysis.convex, line 127, characters 11-35
-convex_lmodType : forall {R : numDomainType}, lmodType R -&gt; Type
+<span class="vernacular">Definition</span><span class="id"> </span><span id="convex_set" class="id"><span name="convex_set" class="id anchor tooltip">convex_set<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>convex_lmodType : forall {R : numDomainType}, lmodType R -&gt; Type
 
 convex_lmodType is not universe polymorphic
 Arguments convex_lmodType {R} E
