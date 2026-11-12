@@ -703,7 +703,7 @@ Hint Extern 0 (hausdorff_space _) => (exact: Rhausdorff) : core.
 Local Open Scope ereal_scope.
 Context (rT : realType) (A : set rT).
 Let mu : measure _ _ := @lebesgue_measure rT.
-Let R  : measurableType _ := measurableTypeR rT.
+Let R  : measurableType _ := rT(*measurableTypeR rT*).
 Hypothesis mA : measurable A.
 Hypothesis finA : mu A < +oo.
 

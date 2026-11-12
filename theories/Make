@@ -83,6 +83,7 @@ measure_theory/measurable_function.v
 measure_theory/signed_measure.v
 measure_theory/measure.v
 
+real_measure/normedtype_measurable.v
 real_measure/lebesgue_stieltjes_measure.v
 real_measure/lebesgue_measure.v
 real_measure/measurable_realfun.v

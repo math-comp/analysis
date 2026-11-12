@@ -7,7 +7,7 @@ From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import reals ereal topology numfun normedtype sequences
   measure realfun exp.
-From mathcomp Require Import lebesgue_stieltjes_measure.
+From mathcomp Require Import lebesgue_stieltjes_measure normedtype_measurable.
 
 (**md**************************************************************************)
 (* # Measurable Functions over $\mathbb{R}$ and $\overline{\mathbb{R}}$       *)
@@ -45,7 +45,6 @@ From mathcomp Require Import lebesgue_stieltjes_measure.
 (* ```                                                                        *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -186,7 +185,7 @@ End puncture_ereal_itv.
 Section salgebra_R_ssets.
 Context {R : realType}.
 
-HB.instance Definition _ := (ereal_isMeasurable (R.-ocitv.-measurable)).
+HB.instance Definition _ := ereal_isMeasurable (@open R).
 (* NB: Until we dropped support for Coq 8.12, we were using
 HB.instance (\bar (Real.sort R))
   (ereal_isMeasurable (@measurable (@itvs_semiRingOfSets R))).
@@ -205,7 +204,7 @@ Import MeasurableR.
 Lemma measurable_image_EFin (A : set R) :
   measurable A -> measurable (EFin @` A).
 Proof.
-move=> mA; exists A; first by rewrite RGenOpenSets.measurableE.
+move=> mA; exists A => //.
 by exists set0; [constructor|rewrite setU0].
 Qed.
 
@@ -224,7 +223,7 @@ Let emeasurable_itv_bndy b (y : \bar R) :
   measurable [set` Interval (BSide b y) +oo%O].
 Proof.
 move: y => [y| |].
-- exists [set` Interval (BSide b y) +oo%O]; first by [].
+- exists [set` Interval (BSide b y) +oo%O] => //.
   by exists [set +oo%E]; [constructor|rewrite -punct_eitv_bndy].
 - by case: b; rewrite ?itv_oyy ?itv_cyy.
 - case: b; first by rewrite itv_cNyy.
@@ -249,24 +248,24 @@ Lemma measurable_image_fine (X : set \bar R) : measurable X ->
 Proof.
 case => Y mY [X' [ | <-{X} | <-{X} | <-{X} ]].
 - rewrite setU0 => <-{X}.
-  rewrite [X in measurable X](_ : _ = Y) -?RGenOpenSets.measurableE// predeqE => r; split.
+  rewrite [X in measurable X](_ : _ = Y)// predeqE => r; split.
     by move=> [x [[x' Yx' <-{x}/= _ <-//]]].
   by move=> Yr; exists r%:E; split => [|[]//]; exists r.
-- rewrite [X in measurable X](_ : _ = Y) -?RGenOpenSets.measurableE// predeqE => r; split.
+- rewrite [X in measurable X](_ : _ = Y)// predeqE => r; split.
     move=> [x [[[x' Yx' <- _ <-//]|]]].
     by move=> <-; rewrite not_orP => -[]/(_ erefl).
   by move=> Yr; exists r%:E => //; split => [|[]//]; left; exists r.
-- rewrite [X in measurable X](_ : _ = Y) -?RGenOpenSets.measurableE// predeqE => r; split.
+- rewrite [X in measurable X](_ : _ = Y)// predeqE => r; split.
     move=> [x [[[x' Yx' <-{x} _ <-//]|]]].
     by move=> ->; rewrite not_orP => -[_]/(_ erefl).
   by move=> Yr; exists r%:E => //; split => [|[]//]; left; exists r.
-- rewrite [X in measurable X](_ : _ = Y) -?RGenOpenSets.measurableE// predeqE => r; split.
+- rewrite [X in measurable X](_ : _ = Y)// predeqE => r; split.
     by rewrite setDUl setDv setU0 => -[_ [[x' Yx' <-]] _ <-].
   by move=> Yr; exists r%:E => //; split => [|[]//]; left; exists r.
 Qed.
 
 Lemma measurable_ball (x : R) e : measurable (ball x e).
-Proof. by rewrite ball_itv -?RGenOpenSets.measurableE//. Qed.
+Proof. by rewrite ball_itv. Qed.
 
 Lemma measurable_closed_ball (x : R) r : measurable (closed_ball x r).
 Proof.
@@ -444,9 +443,9 @@ rewrite eset1y; apply: bigcapT_measurable => i.
 by apply: sub_sigma_algebra; exists i%:R.
 Qed.
 
-Lemma measurableE : emeasurable (@ocitv R) = G.-sigma.-measurable.
+Lemma measurableE : emeasurable (@open R) = G.-sigma.-measurable.
 Proof.
-apply/seteqP; split; last first.
+rewrite /emeasurable -RGenOpenSets.measurableE; apply/seteqP; split; last first.
   apply: smallest_sub.
     split; first exact: emeasurable0.
       by move=> *; rewrite setTD; exact: emeasurableC.
@@ -497,9 +496,9 @@ apply: bigcap_measurable => // j _; rewrite -setCitvr; apply: measurableC.
 by apply: sub_sigma_algebra; exists (i%:R + j.+1%:R^-1)%R.
 Qed.
 
-Lemma measurableE : emeasurable (@ocitv R) = G.-sigma.-measurable.
+Lemma measurableE : emeasurable (@open R) = G.-sigma.-measurable.
 Proof.
-apply/seteqP; split; last first.
+rewrite /emeasurable -RGenOpenSets.measurableE; apply/seteqP; split; last first.
   apply: smallest_sub.
     split; first exact: emeasurable0.
       by move=> *; rewrite setTD; exact: emeasurableC.
@@ -533,7 +532,7 @@ Context (R : realType).
 
 Definition G := [set A : set \bar R | exists r, A = `]-oo, r%:E[%classic].
 
-Lemma measurableE : emeasurable (@ocitv R) = G.-sigma.-measurable.
+Lemma measurableE : emeasurable (@open R) = G.-sigma.-measurable.
 Proof.
 rewrite ErealGenCInfty.measurableE eqEsubset; split => A.
   apply: smallest_sub; first exact: smallest_sigma_algebra.
@@ -551,7 +550,7 @@ End ErealGenInftyO.
 
 Lemma is_interval_measurable (R : realType) (I : set R) :
   is_interval I -> measurable I.
-Proof. by move/is_intervalP => ->; rewrite -?RGenOpenSets.measurableE//. Qed.
+Proof. by move/is_intervalP => ->. Qed.
 
 Section coutinuous_measurable.
 Context {R : realType}.
@@ -582,8 +581,8 @@ Lemma subspace_continuous_measurable_fun (D : set R) (f : subspace D -> R) :
   measurable D -> continuous f -> measurable_fun D f.
 Proof.
 move=> mD /continuousP cf.
-rewrite /measurable_fun -?RGenOpenSets.measurableE.
-apply: (measurability _ (RGenOpens.measurableE R)).
+rewrite /measurable_fun -!RGenOpenSets.measurableE.
+apply: (measurability _ (RGenItvoo.measurableE R)).
 move=> _ [_ [a [b ->] <-]].
 rewrite RGenOpenSets.measurableE.
 apply: open_measurable_subspace => //.
@@ -635,7 +634,7 @@ have [x0|x0] := leP 0 x; last first.
   rewrite [X in measurable X](_ : _ = setT)// predeqE => r.
   by split => // _; rewrite /= in_itv /= andbT (lt_le_trans x0).
 rewrite [X in measurable X](_ : _ = `]-oo, (- x)[ `|` `]x, +oo[); last first.
-  exact: measurableU.
+  by apply: measurableU => //; exact: MeasurableRocitv.ocitv_measurable_itv.
 rewrite predeqE => r; split => [|[|]]; rewrite preimage_itv ?in_itv ?andbT/=.
 - (have [r0|r0] := leP 0 r; [rewrite ger0_norm|rewrite ltr0_norm]) => // xr;
     rewrite 2!in_itv/=.
@@ -1238,7 +1237,7 @@ Lemma EFin_measurable (D : set R) : measurable_fun D EFin.
 Proof.
 move=> mD; apply: (measurability _ (ErealGenOInfty.measurableE R)) => //.
 move=> /= _ [_ [x ->]] <-; apply: measurableI => //.
-by rewrite -RGenOpenSets.measurableE preimage_itvoy EFin_itv.
+by rewrite preimage_itvoy EFin_itv.
 Qed.
 
 Lemma abse_measurable (D : set (\bar R)) : measurable_fun D abse.
@@ -1249,14 +1248,12 @@ rewrite [X in _ @^-1` X](punct_eitv_bndy _ x) preimage_setU setIUr.
 apply: measurableU; last first.
   by rewrite preimage_abse_pinfty; apply: measurableI => //; exact: measurableU.
 apply: measurableI => //; exists (normr @^-1` `]x, +oo[%classic).
-  rewrite -[X in measurable X]setTI.
-  rewrite RGenOpenSets.measurableE.
-  exact: normr_measurable.
+  by rewrite -[X in measurable X]setTI; exact: normr_measurable.
 exists set0; first by constructor.
 rewrite setU0 predeqE => -[y| |]; split => /= => -[r];
   rewrite ?/= /= ?in_itv /= ?andbT => xr//.
   + by move=> [ry]; exists `|y| => //=; rewrite in_itv/= andbT -ry.
-  + by move=> [ry]; exists y => //=; rewrite /= in_itv/= andbT -ry.
+  + by move=> [ry]; exists y => //=; rewrite in_itv/= andbT -ry.
 Qed.
 
 Lemma oppe_measurable (D : set (\bar R)) :
@@ -1284,7 +1281,6 @@ Proof.
 split=> [mf mD A mA|]; last by move=> mg; exact: measurableT_comp.
 rewrite [X in measurable X](_ : _ = D `&` (EFin \o g) @^-1` (EFin @` A)); last first.
   apply: mf => //; exists A => //.
-    by rewrite RGenOpenSets.measurableE//.
   by exists set0; [constructor|rewrite setU0].
 congr (_ `&` _);rewrite eqEsubset; split=> [|? []/= _ /[swap] -[->//]].
 by move=> ? ?; exact: preimage_image.
