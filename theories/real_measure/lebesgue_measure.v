@@ -8,7 +8,8 @@ From mathcomp Require Import boolp classical_sets functions cardinality fsbigop
   reals.
 From mathcomp Require Import topology ereal numfun normedtype sequences
   esum measure.
-From mathcomp Require Export normedtype_measure lebesgue_stieltjes_measure measurable_realfun.
+From mathcomp Require Export normedtype_measurable lebesgue_stieltjes_measure
+  measurable_realfun.
 
 (**md**************************************************************************)
 (* # Lebesgue Measure                                                         *)

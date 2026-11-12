@@ -7,7 +7,7 @@ From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import reals ereal topology numfun normedtype sequences
   measure realfun exp.
-From mathcomp Require Import lebesgue_stieltjes_measure normedtype_measure.
+From mathcomp Require Import lebesgue_stieltjes_measure normedtype_measurable.
 
 (**md**************************************************************************)
 (* # Measurable Functions over $\mathbb{R}$ and $\overline{\mathbb{R}}$       *)
@@ -45,7 +45,6 @@ From mathcomp Require Import lebesgue_stieltjes_measure normedtype_measure.
 (* ```                                                                        *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -608,8 +607,7 @@ End coutinuous_measurable.
 Lemma lower_semicontinuous_measurable {R : realType} (f : R -> \bar R) :
   lower_semicontinuous f -> measurable_fun setT f.
 Proof.
-move=> scif.
-apply: (measurability _ (ErealGenOInfty.measurableE R)).
+move=> scif; apply: (measurability _ (ErealGenOInfty.measurableE R)).
 move=> /= _ [_ [a ->]] <-; apply: measurableI => //; apply: open_measurable.
 by rewrite preimage_itvoy; move/lower_semicontinuousP : scif; exact.
 Qed.

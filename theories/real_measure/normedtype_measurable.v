@@ -14,7 +14,7 @@ From mathcomp Require Import topology normedtype measure.
 (* : the set of measurable sets                                               *)
 (*                                                                            *)
 (* `MeasurableNormedModule`                                                   *)
-(* : module that contains the definition of the sigma-algebra for normed      *)
+(* : module that contains the definition of a sigma-algebra for normed        *)
 (* : modules                                                                  *)
 (*                                                                            *)
 (******************************************************************************)

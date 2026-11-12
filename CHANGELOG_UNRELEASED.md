@@ -10,6 +10,16 @@
     `pownMexpr_cvgn0`
   + instance `is_derive1_powRl`
 
+- in `metric_structure.v`:
+  + lemma `set1_bigcap_ball`
+
+- file `normedtype_measurable.v`
+  + module `MeasurableNormedModuleOpen`
+    * definition `borel_display`
+    * lemma `measurable_set1`
+    * lemma `measurable_ball_norm`
+    * lemma ` measurable_funP1`
+
 ### Changed
 
 - in `lebesgue_integral_nonneg.v`, generalized and deprecated:
@@ -26,9 +36,21 @@
     `derivable_oo_LRcontinuousN`, `derivable_oo_LRcontinuous_shift`,
     `derivable_oo_LRcontinuousS`
 
-### Changed
+- from `lebesgue_stieltjes_measure.v` to (new) `normedtyped_measurable.v`:
+  + move definition `open_type`
+  + move notations `.-open`, `.-open.-measurable`
+
+- in `lebesgue_stieltjes_measure.v`:
+  + sigma-algebra for `\bar R` now uses open sets instead of octiv
 
 ### Renamed
+
+- in `lebesgue_stieltjes_measure.v`:
+  + `RGenOpens` -> `RGenItvoo`
+  + `MeasurableRocitv.measurable_set1` -> `MeasurableRocitv.ocitv_measurable_set1`
+  + `MeasurableRocitv.measurable_itv` -> `MeasurableRocitv.ocitv_measurable_itv`
+
+- in `lebesgue_stieltjes_measure.v`:
 
 ### Generalized
 
@@ -38,6 +60,10 @@
 ### Deprecated
 
 ### Removed
+
+- in `lebesgue_stieltjes_measure.v`:
+  + definition `MeasurableRocitv.lebesgue_display`
+  + definition `MeasurableRocitv.measurableR`
 
 ### Infrastructure
 

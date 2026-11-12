@@ -6,7 +6,7 @@ From mathcomp Require Import interval_inference archimedean.
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets fsbigop cardinality.
 From mathcomp Require Import reals ereal topology normedtype sequences esum
-  measure realfun normedtype_measure.
+  measure realfun normedtype_measurable.
 
 (**md**************************************************************************)
 (* # Lebesgue Stieltjes Measure                                               *)
@@ -719,8 +719,6 @@ HB.instance Definition _ (f : cumulative R R) :=
     (wlength_ge0 f)
     (wlength_semi_additive f).
 
-(*Hint Extern 0 (measurable _) => solve [apply: is_ocitv] : core.*)
-
 Lemma cumulative_content_sub_fsum (f : cumulative R R) (D : {fset nat}) a0 b0
     (a b : nat -> R) : (forall i, i \in D -> a i <= b i) ->
     `]a0, b0] `<=` \big[setU/set0]_(i <- D) `]a i, b i]%classic ->
@@ -892,7 +890,7 @@ by rewrite RGenOpenSets.measurableE.
 Qed.
 
 Lemma lebesgue_stieltjes_measure_unique
-    (mu : {measure set ((*measurableTypeR*) R) -> \bar R}) :
+    (mu : {measure set R -> \bar R}) :
     (forall X, ocitv X -> lebesgue_stieltjes_measure f X = mu X) ->
   forall A : set R, measurable A -> lebesgue_stieltjes_measure f A = mu A.
 Proof.
