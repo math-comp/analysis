@@ -29,8 +29,9 @@
   + lemma `set1_bigcap_ball`
 
 - file `normedtype_measurable.v`
+  + definition `borel_type`
+  + definition `borel_display`
   + module `MeasurableNormedModuleOpen`
-    * definition `borel_display`
     * lemma `measurable_set1`
     * lemma `measurable_ball_norm`
     * lemma ` measurable_funP1`

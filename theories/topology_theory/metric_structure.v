@@ -114,10 +114,10 @@ Context {R : archiRealFieldType} {N : metricType R}.
 
 Lemma set1_bigcap_ball (x : N) : [set x] = \bigcap_n ball x n.+1%:R^-1.
 Proof.
-rewrite eqEsubset; split=> [y -> n _ | y /= bn]/=; first by apply: ballxx;
-  rewrite invr_gt0.
-apply: close_eq _=>//; first exact: metric_hausdorff; rewrite ball_close=> e0;
-rewrite ball_symE. apply: (le_ball _ (bn (truncn e0%:num^-1) I)).
+rewrite eqEsubset; split=> [y -> n _ | y /= bn]/=; first exact: ballxx.
+apply: close_eq _ => //; first exact: metric_hausdorff.
+rewrite ball_close => e0.
+apply/ball_sym/(le_ball _ (bn (truncn e0%:num^-1) Logic.I)).
 by rewrite invf_ple ?posrE//; exact: (ltW (truncnS_gt _)).
 Qed.
 

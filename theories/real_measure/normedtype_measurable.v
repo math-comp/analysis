@@ -7,8 +7,11 @@ From mathcomp Require Import topology normedtype measure.
 (**md**************************************************************************)
 (* # Sigma-algebra for normed modules                                         *)
 (*                                                                            *)
-(* `open_type N`                                                              *)
+(* `borel_type N`                                                             *)
 (* : alias for `N : normedModType R`                                          *)
+(*                                                                            *)
+(* `borel_display N`                                                          *)
+(* : display for `borel_type N`                                               *)
 (*                                                                            *)
 (* `N .-open.-measurable`                                                     *)
 (* : the set of measurable sets                                               *)
@@ -33,47 +36,34 @@ Local Open Scope ring_scope.
 Section open.
 Context {R : numFieldType} {N : normedModType R}.
 
-(* TODO: borel_type? *)
-Definition open_type : Type := N.
+Definition borel_type : Type := N.
 
-HB.instance Definition _ := Pointed.on open_type.
+Definition borel_display : measure_display := sigma_display (@open N).
 
-Let measurable : set_system N := @measurable _ (g_sigma_algebraType (@open N)).
-
-Let measurable0 : measurable set0. Proof. exact: measurable0. Qed.
-
-Let measurableC A : measurable A -> measurable (~` A).
-Proof. by move=> /measurableC. Qed.
-
-Let measurable_bigcup (F : (set N)^nat) : (forall i, measurable (F i)) ->
-  measurable (\bigcup_i (F i)).
-Proof. move=> mF; exact: bigcupT_measurable. Qed.
+(*HB.instance Definition _ := Pointed.on borel_type.*)
 
 HB.instance Definition _ :=
-  @isMeasurable.Build (sigma_display (@open N))
-    open_type measurable measurable0 measurableC measurable_bigcup.
+  Measurable.copy borel_type (g_sigma_algebraType (@open N)).
 
 End open.
+Arguments borel_type {R} N.
+Arguments borel_display {R} N.
 
-Notation "N .-open" := (sigma_display (@open N)) : measure_display_scope.
-Notation "N .-open.-measurable" := (measurable : set_system (@open_type _ N)) :
+Notation "N .-open" := (borel_display N) : measure_display_scope.
+Notation "N .-open.-measurable" := (measurable : set_system (@borel_type _ N)) :
   classical_set_scope.
 
 Module MeasurableNormedModuleOpen.
 Section measurableOpen.
 Context {R : archiRealFieldType} {N : normedModType R}.
-Import numFieldNormedType.Exports.
 
 Let measurableTypeNormedModule := g_sigma_algebraType (@open N).
 
-Definition borel_display : measure_display := N.-open.
-
-Let measurableNormedModule : set_system N := N.-open.-measurable.
-
-HB.instance Definition _ : Measurable borel_display measurableTypeNormedModule :=
+HB.instance Definition _ : Measurable (borel_display N) measurableTypeNormedModule :=
    Measurable.on measurableTypeNormedModule.
-(* Presumably it is safe to use NFI here because morally R is unique
-   and nothing else can be used here *)
+
+(* Presumably it is safe to use NFI here because the sigma-algebra of opens
+   for N is unique and nothing else can be used here *)
 #[non_forgetful_inheritance]
 HB.instance Definition _ := Measurable.copy N measurableTypeNormedModule.
 
