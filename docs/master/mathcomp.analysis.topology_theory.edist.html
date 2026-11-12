@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Module mathcomp.analysis.topology_theory.edist</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis eca10f8 2026.11.12-00:22">
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis eca10f8 2026.11.12-23:36">
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -284,14 +284,15 @@ Qed.</div></details>
 <span class="vernacular">Section</span><span class="id"> edist_inf</span>.<br>
 <span class="vernacular">Context</span><span class="id"> {</span><span id="edist_inf.R" class="id"><span name="edist_inf.R" class="id anchor tooltip">R<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/edist.v#L209" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals.reals.html#Real.Exports.realType">realType</a></span><span class="id">}</span><span class="id"> {</span><span id="edist_inf.T" class="id"><span name="edist_inf.T" class="id anchor tooltip">T<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/edist.v#L209" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.pseudometric_structure.html#PseudoMetric.Exports.pseudoMetricType">pseudoMetricType</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.edist.html#R:34">R</a></span><span class="id">}</span>&nbsp;(<span id="edist_inf.A" class="id"><span name="edist_inf.A" class="id anchor tooltip">A<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/edist.v#L209" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#set">set</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.edist.html#T:35">T</a></span>).<br>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="edist_inf" class="id"><span name="edist_inf" class="id anchor tooltip">edist_inf<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>edist : forall {R : realType} {X : pseudoMetricType R}, X * X -&gt; \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="edist_inf" class="id"><span name="edist_inf" class="id anchor tooltip">edist_inf<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>order_topology : Type -&gt; Type
 
-edist is not universe polymorphic
-Arguments edist {R X} xy
-edist is transparent
-Expands to: Constant mathcomp.analysis.topology_theory.edist.edist
+order_topology is not universe polymorphic
+Arguments order_topology T%_type_scope
+order_topology is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.order_topology.order_topology
 Declared in
-library mathcomp.analysis.topology_theory.edist, line 37, characters 11-16
+library mathcomp.analysis.topology_theory.order_topology, line 198, characters 11-25
 </p><hr>Used by
 <ul><li>mathcomp.analysis.normedtype_theory.urysohn</li></ul><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/edist.v#L211" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="z:37" class="id"><span name="z:37" class="id anchor tooltip">z<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/edist.v#L211" target="_blank">Source code</a></span></span></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.ereal.html#ereal_inf">ereal_inf</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">[set</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.edist.html#edist">edist</a></span>&nbsp;(<span class="id link"><a href="mathcomp.analysis.topology_theory.edist.html#z:37">z</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.edist.html#a:38">a</a></span>)<span class="id link"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> |</a></span><span class="id"> </span><span id="a:38" class="id"><span name="a:38" class="id anchor tooltip">a<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/edist.v#L211" target="_blank">Source code</a></span></span></span><span class="gallina-kwd link"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df"> in</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.edist.html#edist_inf.A">A</a></span><span class="id link"><a href="mathcomp.classical.classical_sets.html#7e4573e059f309ba0ef27b7fc70cc4df">]</a></span>.<br>
 <br>
