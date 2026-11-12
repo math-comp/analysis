@@ -8,7 +8,7 @@ From mathcomp Require Import boolp classical_sets functions cardinality fsbigop
   reals.
 From mathcomp Require Import topology ereal numfun normedtype sequences
   esum measure.
-From mathcomp Require Export lebesgue_stieltjes_measure measurable_realfun.
+From mathcomp Require Export normedtype_measure lebesgue_stieltjes_measure measurable_realfun.
 
 (**md**************************************************************************)
 (* # Lebesgue Measure                                                         *)
@@ -572,9 +572,7 @@ apply: (@measure_semi_sigma_additive _ _ _ (@lebesgue_measure R)
   move=> [X mX [X' mX']] XX'Fn.
   apply: measurable_image_fine.
   rewrite -XX'Fn.
-  apply: measurableU.
-    apply: measurable_image_EFin.
-    by rewrite RGenOpenSets.measurableE/= in mX.
+  apply: measurableU; first exact: measurable_image_EFin.
   by case: mX' => //; exact: measurableU.
 - move=> i j _ _ [x [[a [Fia aoo ax] [b [Fjb boo] bx]]]].
   move: tF => /(_ i j Logic.I Logic.I); apply.
@@ -591,17 +589,16 @@ apply: (@measure_semi_sigma_additive _ _ _ (@lebesgue_measure R)
   + by rewrite not_orP => -[]/(_ erefl).
   + by rewrite not_orP => -[]/(_ erefl).
 - move: mUF.
-  rewrite {1}/measurable /emeasurable /= => -[X mX [Y []]] {Y};
-    have moX : measurable X by rewrite -RGenOpenSets.measurableE.
+  rewrite {1}/measurable /emeasurable /= => -[X mX [Y []]] {Y}.
   + rewrite setU0 => h.
-    rewrite [X in measurable X](_ : _ = X) // predeqE => r; split => [|Xr].
+    rewrite [X in measurable X](_ : _ = X)// predeqE => r; split => [|Xr].
       move=> -[n _ [x [Fnx xoo <-{r}]]].
       have : (\bigcup_n F n) x by exists n.
       by rewrite -h => -[x' Xx' <-].
     have [n _ Fnr] : (\bigcup_n F n) r%:E by rewrite -h; exists r.
     by exists n => //; exists r%:E => //; split => // -[].
   + move=> h.
-    rewrite [X in measurable X](_ : _ = X) // predeqE => r; split => [|Xr].
+    rewrite [X in measurable X](_ : _ = X)// predeqE => r; split => [|Xr].
       move=> -[n _ [x [Fnx xoo <-]]].
       have : (\bigcup_n F n) x by exists n.
       by rewrite -h => -[[x' Xx' <-//]|xoo']; move/not_orP : xoo => -[].
@@ -609,14 +606,14 @@ apply: (@measure_semi_sigma_additive _ _ _ (@lebesgue_measure R)
     by exists n => //; exists r%:E => //; split => // -[].
   + (* NB: almost the same as the previous one, factorize?*)
     move=> h.
-    rewrite [X in measurable X](_ : _ = X) // predeqE => r; split => [|Xr].
+    rewrite [X in measurable X](_ : _ = X)// predeqE => r; split => [|Xr].
       move=> -[n _ [x [Fnx xoo <-]]].
       have : (\bigcup_n F n) x by exists n.
       by rewrite -h => -[[x' Xx' <-//]|xoo']; move/not_orP : xoo => -[].
     have [n _ Fnr] : (\bigcup_n F n) r%:E by rewrite -h; left; exists r.
     by exists n => //; exists r%:E => //; split => // -[].
   + move=> h.
-    rewrite [X in measurable X](_ : _ = X) // predeqE => r; split => [|Xr].
+    rewrite [X in measurable X](_ : _ = X)// predeqE => r; split => [|Xr].
       move=> -[n _ [x [Fnx xoo <-]]].
       have : (\bigcup_n F n) x by exists n.
       by rewrite -h => -[[x' Xx' <-//]|].
