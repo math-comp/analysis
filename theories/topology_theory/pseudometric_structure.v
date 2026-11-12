@@ -93,7 +93,8 @@ HB.instance Definition _ d' d R (T : pseudoMetricType d R) :=
   Uniform_isPseudoMetric.Build d' R (with_fdisp d' T)
     ball_center_subproof ball_sym_subproof ball_triangle_subproof
     entourageE_subproof.
-HB.saturate with_fdisp.
+HB.instance Definition _ d' d R (T : pseudoPMetricType d R) :=
+  PseudoPointedMetric.on (with_fdisp d' T).
 
 (* was uniformityOfBallMixin *)
 HB.factory Record Nbhs_isPseudoMetric d (R : numFieldType) M & Nbhs d M := {
@@ -455,7 +456,9 @@ HB.instance Definition _ (R : zmodType) := Pointed.on R^o.
 #[short(type="completePseudoMetricType")]
 HB.structure Definition CompletePseudoMetric d R :=
   {T of Complete d T & PseudoPointedMetric d R T}.
-HB.saturate with_fdisp.
+
+HB.instance Definition _ d' d R (T : completePseudoMetricType d R) :=
+  CompletePseudoMetric.on (with_fdisp d' T).
 
 Definition cauchy_ex d {R : numDomainType} {T : pseudoMetricType d R}
     (F : set_system T) :=

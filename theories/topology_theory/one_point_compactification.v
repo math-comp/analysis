@@ -13,6 +13,8 @@ From mathcomp Require Import pseudometric_structure compact initial_topology.
 (*                                                                            *)
 (*      one_point_compactification X == the one-point compactification of `X` *)
 (*                                      as an alias of `option X`             *)
+(*                     opc_display X == display for                           *)
+(*                                      `one_point_compactification X`        *)
 (******************************************************************************)
 
 Local Open Scope classical_set_scope.

@@ -296,7 +296,10 @@ HB.structure Definition PointedNbhs d := {T of Pointed T & hasNbhs d T}.
 
 HB.instance Definition _ d' d (T : nbhsType d) :=
   hasNbhs.Build d' (with_fdisp d' T) (@nbhs _ _ T).
-HB.saturate with_fdisp.
+HB.instance Definition _ d' d U (T : pfilteredType d U) :=
+  PointedFiltered.on (with_fdisp d' T).
+HB.instance Definition _ d' d (T : pnbhsType d) :=
+  PointedNbhs.on (with_fdisp d' T).
 
 Definition filter_from {I T : Type} (D : set I) (B : I -> set T) :
   set_system T := [set P | exists2 i, D i & B i `<=` P].

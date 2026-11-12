@@ -10,6 +10,7 @@ From mathcomp Require Import topology_structure.
 (*          quotient_topology Q == the quotient topology corresponding to     *)
 (*                                 quotient Q : quotType T where T has type   *)
 (*                                 topologicalType                            *)
+(*           quotient_display Q == display for `quotient_topology T`          *)
 (* ```                                                                        *)
 (******************************************************************************)
 

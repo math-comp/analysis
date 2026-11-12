@@ -5,21 +5,35 @@
 ### Added
 
 - in `filter.v`:
+  + new type `filter_display`.
   + new definition `with_fdisp`.
+- in `discrete_topology.v`:
+  + new definition `discrete_display`.
 - in `function_spaces.v`:
-  + new definitions `product_uniform_def`, `product_pseudometric_def`, `uniform_topology_def`, `fam_topology_def`.
-  + new notations `pointwise_continuous` and `uniform_arrow`.
+  + new definitions `ptws_display`, `arrow_uniform_display`, `uniform_display`, `uniform_fam_display`, `compact_open_display`.
+- in `initial_topology.v`:
+  + new definition `initial_display`.
+- in `one_point_compactification.v`:
+  + new definition `opc_display`.
+- in `order_topology.v`:
+  + new definition `order_display`.
+- in `quotient_topology.v`:
+  + new definition `quotient_display`.
+- in `subspace_topology.v`:
+  + new definition `subspace_display`.
 - in `subtype_topology.v`:
   + new definition `set_type_topology_def`.
+- in `sup_topology.v`:
+  + new definition `supremum_display`.
+- in `tvs.v`:
+  + new definition `seminorm_display`.
+
 
 ### Changed
 
 ### Renamed
 
 ### Deprecated
-
-- in `subspace_topology.v`:
-  + `from_subspace` (superseded by topology displays)
 
 ### Removed
 

@@ -16,7 +16,7 @@ From mathcomp Require Export filter.
 (*                                                                            *)
 (* ### Topology                                                               *)
 (*                                                                            *)
-(* `topologicalType d`                                                        *)
+(* `topologicalType`                                                          *)
 (* : interface type for topological space structure                           *)
 (* : The HB class is `Topological`.                                           *)
 (*                                                                            *)
@@ -25,7 +25,7 @@ From mathcomp Require Export filter.
 (* : a `topologicalType` and `d` is a display                                 *)
 (* : The HB class is `SubTopological`.                                        *)
 (*                                                                            *)
-(* `ptopologicalType d`                                                     *)
+(* `ptopologicalType`                                                         *)
 (* : a pointed `topologicalType`                                              *)
 (*                                                                            *)
 (* `open`                                                                     *)
@@ -165,7 +165,8 @@ HB.structure Definition SubTopological d' d (V : topologicalType d)
 
 HB.instance Definition _ d' d (T : topologicalType d) :=
   @Nbhs_isTopological.Build d' (with_fdisp d' T) open nbhs_pfilter_subproof nbhsE_subproof openE_subproof.
-HB.saturate with_fdisp.
+HB.instance Definition _ d' d (T : ptopologicalType d) :=
+  PointedTopological.on (with_fdisp d' T).
 
 Section Topological1.
 Context d {T : topologicalType d}.

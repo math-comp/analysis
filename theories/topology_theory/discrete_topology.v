@@ -23,6 +23,7 @@ From mathcomp Require Import order_topology pseudometric_structure compact.
 (*                                  are singletons                            *)
 (*           discrete_topology T == alias attaching discrete structures for   *)
 (*                                  topology, uniformity, and pseudometric    *)
+(*            discrete_display T == display for `discrete_topology T`         *)
 (* ```                                                                        *)
 (******************************************************************************)
 
@@ -85,7 +86,10 @@ HB.structure Definition DiscretePseudoMetric {R : numDomainType} d :=
   { T of Discrete_ofPseudometric d R T & PseudoMetric d R T
     & DiscreteUniform d T }.
 
-HB.saturate with_fdisp.
+HB.instance Definition _ d' d (T : discreteTopologicalType d) :=
+  DiscreteTopology.on (with_fdisp d' T).
+HB.instance Definition _ d' d (T : pdiscreteTopologicalType d) :=
+  PointedDiscreteTopology.on (with_fdisp d' T).
 
 HB.builders Context d T & Discrete_ofNbhs d T.
 

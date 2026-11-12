@@ -17,6 +17,7 @@ From mathcomp Require Import product_topology pseudometric_structure.
 (*      POrderedPointedTopological == join of PointedTopological and isPOrder *)
 (*            orderTopologicalType == a topology built from intervals         *)
 (*                order_topology T == the induced order topology on T         *)
+(*                 order_display T == display for `order_topology T`          *)
 (* ```                                                                        *)
 (******************************************************************************)
 

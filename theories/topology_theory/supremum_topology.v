@@ -9,6 +9,7 @@ From mathcomp Require Import topology_structure uniform_structure.
 (* ```                                                                        *)
 (*                  sup_topology Tc == supremum topology of the family of     *)
 (*                                     topologicalType structures Tc on T     *)
+(*              supremum_display Tc == display for `sup_topology Tc`          *)
 (*                        sup_ent E == the entourages of the supremum         *)
 (* ```                                                                        *)
 (* `sup_topology` is equipped with the `Uniform` structure                    *)

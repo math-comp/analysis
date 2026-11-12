@@ -83,7 +83,8 @@ HB.instance Definition _ d' d (T : uniformType d) :=
   Nbhs_isUniform_mixin.Build d' (with_fdisp d' T)
     entourage_filter entourage_diagonal_subproof entourage_inv_subproof
     entourage_split_ex_subproof nbhsE_subproof.
-HB.saturate with_fdisp.
+HB.instance Definition _ d' d (T : puniformType d) :=
+  PointedUniform.on (with_fdisp d' T).
 
 HB.factory Record Nbhs_isUniform d M & Nbhs d M := {
   entourage : set_system (M * M);
