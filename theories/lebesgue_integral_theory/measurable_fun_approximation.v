@@ -377,18 +377,17 @@ End approximation.
 Section approximation_sfun.
 Context d (T : measurableType d) (R : realType) (f : T -> \bar R).
 Variables (D : set T) (mD : measurable D) (mf : measurable_fun D f).
-Import MeasurableR.
+
+Import HBSimple.
 (* NB: already instantiated in cardinality.v *)
 (*HB.instance Definition _ x : @FImFun T R (cst x) := FImFun.on (cst x).*)
 (* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
 
+Import HBNNSimple.
 (* NB: already instantiated in lebesgue_integral.v *)
 (*HB.instance Definition _ x : @NonNegFun T R (cst x%:num) :=
   NonNegFun.on (cst x%:num).*)
 (* generates Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default] *)
-
-Import HBSimple.
-Import HBNNSimple.
 
 Lemma approximation_sfun :
   exists g : {sfun T >-> R}^nat, (forall x, D x -> EFin \o g ^~ x @ \oo --> f x).
@@ -704,7 +703,7 @@ Hint Extern 0 (hausdorff_space _) => (exact: Rhausdorff) : core.
 Local Open Scope ereal_scope.
 Context (rT : realType) (A : set rT).
 Let mu : measure _ _ := @lebesgue_measure rT.
-Let R  : measurableType _ := rT(*measurableTypeR rT*).
+Let R  : measurableType _ := measurableTypeR rT.
 Hypothesis mA : measurable A.
 Hypothesis finA : mu A < +oo.
 

@@ -588,6 +588,7 @@ Section normal_prob_lemmas.
 Context {R : realType}.
 Local Notation mu := lebesgue_measure.
 Local Open Scope ereal_scope.
+
 Import MeasurableR.
 
 Lemma integral_normal_prob (m s : R) f U : measurable U ->

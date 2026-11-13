@@ -90,6 +90,7 @@ Hypothesis f10 : forall x, D x -> 0 <= f1 x.
 Hypothesis mf1 : measurable_fun D f1.
 Hypothesis mf2 : measurable_fun D f2.
 
+Import HBNNSimple.
 
 Lemma ge0_le_integral : (forall x, D x -> f1 x <= f2 x) ->
   \int[mu]_(x in D) f1 x <= \int[mu]_(x in D) f2 x.

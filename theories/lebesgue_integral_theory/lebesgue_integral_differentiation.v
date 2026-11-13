@@ -58,7 +58,7 @@ Section continuous_compact_integrable.
 Context {rT : realType}.
 Let mu : measure _ _ := @lebesgue_measure rT.
 Import MeasurableR.
-Let R  : measurableType _ := (*measurableTypeR*) rT.
+Let R  : measurableType _ := measurableTypeR rT.
 Local Open Scope ereal_scope.
 
 Lemma continuous_compact_integrable (f : R -> R^o) (A : set R^o) :
@@ -78,7 +78,7 @@ Section continuous_density_L1.
 Context (rT : realType).
 Let mu : measure _ _ := @lebesgue_measure rT.
 Import MeasurableR.
-Let R  : measurableType _ := (*measurableTypeR*) rT.
+Let R  : measurableType _ := measurableTypeR rT.
 Local Open Scope ereal_scope.
 
 Import HBSimple.
@@ -180,7 +180,7 @@ Section lebesgue_differentiation_continuous.
 Context {rT : realType}.
 Let mu : measure _ _ := @lebesgue_measure rT.
 Import MeasurableR.
-Let R  : measurableType _ := (*measurableTypeR*) rT.
+Let R  : measurableType _ := measurableTypeR rT.
 
 Let ballE (x : R) (r : {posnum rT}) :
   ball x r%:num = `](x - r%:num), (x + r%:num)[%classic :> set rT.

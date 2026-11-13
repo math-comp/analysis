@@ -860,7 +860,7 @@ Reserved Notation "{ 'mfun_' mu , U >-> V }"
 Notation "{ 'mfun_' mu , aT >-> T }" := (@aeEqMfun _ _ aT T _ mu)
    : form_scope.
 
-Import numFieldNormedType.Exports.
+Import numFieldNormedType.Exports HBNNSimple.
 
 HB.mixin Record isFinLebesgue d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E)

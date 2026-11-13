@@ -1,5 +1,4 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
-From HB Require Import structures.
 From mathcomp Require Import boot order algebra.
 From mathcomp Require Import boolp classical_sets functions cardinality.
 From mathcomp Require Import reals topology normedtype sequences.

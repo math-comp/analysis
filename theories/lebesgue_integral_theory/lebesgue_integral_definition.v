@@ -214,7 +214,6 @@ Qed.
 End le_sintegral.
 
 Section is_cvg_sintegral.
-
 Import HBNNSimple.
 
 Lemma is_cvg_sintegral d (T : measurableType d) (R : realType)

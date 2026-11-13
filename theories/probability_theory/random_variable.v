@@ -381,7 +381,7 @@ Context {R : realType} (f : cumulativeBounded (0:R) (1:R)).
 Local Open Scope measure_display_scope.
 Import MeasurableR.
 
-Let idTR : (*measurableTypeR*) R -> R := idfun.
+Let idTR : measurableTypeR R -> R := idfun.
 
 #[local] HB.instance Definition _ :=
   @isMeasurableFun.Build _ _ _ _ idTR (@measurable_id _ _ setT).
@@ -410,10 +410,10 @@ End cdf_of_lebesgue_stieltjes_measure.
 
 Section lebesgue_stieltjes_measure_of_cdf.
 Import MeasurableR.
-Context {R : realType} (P : probability ((*measurableTypeR*) R) R).
+Context {R : realType} (P : probability (measurableTypeR R) R).
 Local Open Scope measure_display_scope.
 
-Let idTR : (*measurableTypeR*) R -> R := idfun.
+Let idTR : measurableTypeR R -> R := idfun.
 
 #[local] HB.instance Definition _ :=
   @isMeasurableFun.Build _ _ _ _ idTR (@measurable_id _ _ setT).
@@ -626,7 +626,7 @@ Let mu : {measure set _ -> \bar R} := @lebesgue_measure R.
 Lemma ge0_expectation_ccdf (X : {RV P >-> R}) : (forall x, 0 <= X x)%R ->
   'E_P[X] = \int[mu]_(r in `[0%R, +oo[) ccdf X r.
 Proof.
-pose GR := (*measurableTypeR*) R.
+pose GR := measurableTypeR R.
 pose distrX := distribution P X.
 pose D : set R := `[0%R, +oo[%classic.
 move=> X_ge0.

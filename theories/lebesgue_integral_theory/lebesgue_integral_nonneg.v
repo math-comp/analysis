@@ -557,7 +557,7 @@ Local Notation mu := lebesgue_measure.
 Import MeasurableR.
 
 Lemma lebesgue_measureN (A : set R) : measurable A ->
-  pushforward mu (-%R : _ -> (*measurableTypeR*) R) A = mu A.
+  pushforward mu (-%R : _ -> measurableTypeR R) A = mu A.
 Proof.
 move=> mA; apply/esym/lebesgue_measure_unique => //= _ [[a b]] _ <-.
 rewrite /pushforward opp_preimage_itvbndbnd/= !lebesgue_measure_itv/=.
@@ -569,7 +569,7 @@ Lemma ge0_integration_by_substitution0 (f : R -> \bar R) :
   \int[mu]_(r in `[0%R, +oo[) f r = \int[mu]_(r in `]-oo, 0%R]) f (- r)%R.
 Proof.
 move=> mf f0; rewrite (_ : `]-oo, 0%R]%classic =
-    (-%R : _ -> (*measurableTypeR*) R) @^-1` `[0%R, +oo[).
+    (-%R : _ -> measurableTypeR R) @^-1` `[0%R, +oo[).
   by rewrite opp_preimage_itvbndy oppr0.
 rewrite -ge0_integral_pushforward//=; first exact: measurable_funS mf.
 by apply: eq_measure_integral => //= A mA AS; exact/esym/lebesgue_measureN.
@@ -691,7 +691,6 @@ Qed.
 End integral_measure_sum_nnsfun.
 
 Section integral_measure_add_nnsfun.
-
 Import HBNNSimple.
 
 Lemma integral_measure_add_nnsfun d (T : measurableType d) (R : realType)
@@ -1069,9 +1068,10 @@ End integral_patch.
 Section ge0_cvgn_integral.
 Local Open Scope ereal_scope.
 Import MeasurableR.
-Context {R : realType} (mu : {measure set ((*@measurableTypeR*) R) -> \bar R})
+Context {R : realType} (mu : {measure set (@measurableTypeR R) -> \bar R})
  (f : R -> R).
 Hypothesis f0 : (forall x, 0 <= f x)%R.
+
 
 Hypothesis mf : measurable_fun setT f.
 
