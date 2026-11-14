@@ -1360,19 +1360,18 @@ move=> PF /near_powerset_filter_fromP; case.
   exact: equicontinuous_subset_id.
 move=> W; wlog Wf : f W / W f.
   move=> + FW /equicontinuous_closure => /(_ f (closure (W : set {ptws X -> Y}))) Q.
-  split => Ff; last by apply: pointwise_cvg_compact_family.
+  split => Ff; last exact: pointwise_cvg_compact_family.
   apply/Q => //.
-    by (rewrite closureEcvg; exists F; [|split]) => // ? /= /filterS; apply.
-  by apply: (filterS _ FW) => z Wz; apply: subset_closure.
+    by (rewrite closureEcvg; exists F; [|split]) => // ? /= /filterS; exact.
+  by apply: (filterS _ FW) => z Wz; exact: subset_closure.
 move=> FW ectsW; split=> [ptwsF|]; last exact: pointwise_cvg_compact_family.
-apply/fam_cvgP => K ? U /=; rewrite uniform_nbhs => [[E [eE EsubU]]].
+apply/fam_cvgP => K cK U /=; rewrite uniform_nbhs => -[E [eE EsubU]].
 suff : \forall g \near within W (nbhs (f : {ptws X -> Y})),
     forall y, K y -> E (f y, g y).
   rewrite near_withinE; near_simpl => N; apply: (filter_app _ _ FW).
-  by apply: ptwsF; near=> g => ?; apply: EsubU; apply: (near N g).
+  by apply: ptwsF; near=> g => ?; apply: EsubU; exact: (near N g).
 near (powerset_filter_from (@entourage _ Y)) => E'.
 have entE' : entourage E' by exact: (near (near_small_set _)).
-pose Q := fun (h : X -> Y) x => E' (f x, h x).
 apply: (iffLR (compact_near_coveringP K)) => // x Kx.
 near=> y g => /=.
 apply: (entourage_split (f x) eE).
@@ -1466,7 +1465,7 @@ Theorem Ascoli (W : set {family compact, X -> Y}) :
     locally_compact [set: X] ->
   pointwise_precompact W id /\ equicontinuous W id <->
     (forall f, W f -> continuous f) /\
-    precompact (W : set {family compact, X -> Y}).
+    precompact (W :> set {family compact, X -> Y}).
 Proof.
 move=> lcpt; split => [[Wid ectsW]|[fWf]pcptW].
   split=> [?|]; first exact: equicontinuous_continuous.
