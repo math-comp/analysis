@@ -99,7 +99,8 @@ Proof. by move=> e0; split; [exact: ball_open|exact: ballxx]. Qed.
 
 End metric_numDomainType.
 
-Lemma metric_accessible {R : numFieldType} (T : metricType R) : accessible_space T.
+Lemma metric_accessible {d} {R : numFieldType} (T : metricType d R) :
+  accessible_space T.
 Proof.
 move=> x y xy.
 exists (ball x (mdist x y / 2)); split; rewrite ?inE /=; first exact: ball_open.
