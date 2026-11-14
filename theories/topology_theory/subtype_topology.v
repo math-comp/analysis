@@ -27,22 +27,24 @@ From mathcomp Require Import product_topology subspace_topology.
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
-
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-HB.instance Definition _ {X : topologicalType} (A : set X) :=
-  Topological.copy (set_type A) (initial_topology set_val).
+Definition set_type_topology_def {d} {X : topologicalType d} (A : set X) :=
+  with_fdisp default_fdisp (initial_topology (set_val : A -> X)).
 
-HB.instance Definition _ {X : uniformType} (A : set X) :=
-  Uniform.copy (A : Type) (@initial_topology (A : Type) X set_val).
+HB.instance Definition _ {d} {X : topologicalType d} (A : set X) :=
+  Topological.copy (set_type A) (set_type_topology_def A).
 
-HB.instance Definition _ {R : realType} {X : pseudoMetricType R} (A : set X) :=
-  PseudoMetric.copy (A : Type) (@initial_topology (A : Type) X set_val).
+HB.instance Definition _ {d} {X : uniformType d} (A : set X) :=
+  Uniform.copy (A : Type) (set_type_topology_def A).
+
+HB.instance Definition _ {d} {R : realType} {X : pseudoMetricType d R}
+  (A : set X) :=
+  PseudoMetric.copy (A : Type) (set_type_topology_def A).
 
 Section subspace_sig.
-Context {X : topologicalType} (A : set X).
+Context {d} {X : topologicalType d} (A : set X).
 
 Lemma subspace_subtypeP (x : A) (U : set A) :
   nbhs x U <-> nbhs (set_val x : subspace A) (set_val @` U).
@@ -60,14 +62,14 @@ move=> w /= /V'V Vsw; have : (V `&` A) (\val w).
 by rewrite -UAVA => -[[v ? /eq_sig_hprop] <-].
 Qed.
 
-Lemma subspace_sigL_continuousP {Y : topologicalType} (f : X -> Y) :
+Lemma subspace_sigL_continuousP {d'} {Y : topologicalType d'} (f : X -> Y) :
   {within A, continuous f} <-> continuous (sigL A f).
 Proof.
 split.
-  have /continuous_subspaceT/subspaceT_continuous :=
-    @initial_continuous A X set_val.
-  move=> svf ctsf; apply/continuous_subspace_setT => x.
-  apply: (@continuous_comp (subspace _) (subspace A)); last exact: ctsf.
+  have /continuous_subspaceT/subspaceT_continuous/= :=
+    @initial_continuous A _ X set_val.
+  move=> svf ctsf; apply/continuous_subspace_setT => x /=.
+  apply: (@continuous_comp _ (subspace _) _ (subspace A)); last exact: ctsf.
   by move=> U nfU; exact: svf.
 rewrite continuous_subspace_in => + x Ax U nfxU.
 move=> /(_ (@exist _ _ x Ax) U) /= []; first exact: nfxU.
@@ -78,21 +80,23 @@ apply: filter_app; apply: nearW => w Ww /= /mem_set Aw.
 by have /= := svWU (@exist _ _ w Aw); rewrite ?set_valE /=; exact.
 Qed.
 
-Lemma subspace_valL_continuousP' {Y : topologicalType} (y : Y) (f : A -> Y) :
+Lemma subspace_valL_continuousP' {d'} {Y : topologicalType d'}
+    (y : Y) (f : A -> Y) :
   {within A, continuous (valL_ y f)} <-> continuous f.
 Proof.
 rewrite -{2}[f](@valLK _ _ y A); split=> [/subspace_sigL_continuousP//|cf].
 exact/subspace_sigL_continuousP.
 Qed.
 
-Lemma subspace_valL_continuousP {Y : ptopologicalType} (f : A -> Y) :
+Lemma subspace_valL_continuousP {d'} {Y : ptopologicalType d'} (f : A -> Y) :
   {within A, continuous (valL f)} <-> continuous f.
-Proof. exact: (@subspace_valL_continuousP' _ point). Qed.
+Proof. exact: (@subspace_valL_continuousP' _ _ point). Qed.
 
 End subspace_sig.
 
-Lemma within_continuous_comp {U V W : topologicalType}
-  (A : set V) (f : V -> U) (g : U -> W) :
+Lemma within_continuous_comp {d1} {U : topologicalType d1}
+    {d2} {V : topologicalType d2} {d3} {W : topologicalType d3}
+    (A : set V) (f : V -> U) (g : U -> W) :
   {in f @` A, continuous g} ->
   {within A, continuous f} ->
   {within A, continuous (g \o f)}.
@@ -103,7 +107,8 @@ by apply/cg/image_f; rewrite inE; exact/set_valP.
 Qed.
 
 Section subtype_setX.
-Context {X Y : topologicalType} (A : set X) (B : set Y).
+Context {d} {X : topologicalType d} {d'} {Y : topologicalType d'}
+  (A : set X) (B : set Y).
 
 Program Definition setX_of_sigT (ab : A `*` B) : (A * B)%type :=
   (@exist _ _ ab.1 _, @exist _ _ ab.2 _).

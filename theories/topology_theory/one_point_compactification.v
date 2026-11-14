@@ -11,8 +11,12 @@ From mathcomp Require Import pseudometric_structure compact initial_topology.
 (* results are that the compactification is indeed compact, and that `X`      *)
 (* embeds into its one-point compactification.                                *)
 (*                                                                            *)
-(*      one_point_compactification X == the one-point compactification of `X` *)
-(*                                      as an alias of `option X`             *)
+(* `one_point_compactification X`                                             *)
+(* : the one-point compactification of `X` as an alias of `option X`          *)
+(*                                                                            *)
+(* `opc_display X`                                                            *)
+(* : display for `one_point_compactification X`                               *)
+(*                                                                            *)
 (******************************************************************************)
 
 Local Open Scope classical_set_scope.
@@ -20,8 +24,11 @@ Local Open Scope ring_scope.
 
 Definition one_point_compactification (X : Type) : Type := option X.
 
+Fact opc_display (X : Type) : filter_display.
+Proof. by []. Qed.
+
 Section one_point_compactification.
-Context {X : topologicalType}.
+Context {d} {X : topologicalType d}.
 
 Local Notation opc := (one_point_compactification X).
 
@@ -59,9 +66,10 @@ exists (~` C); first by split => //; exact: closed_openC.
 by move=> z /= nCz; apply: nCA; left.
 Qed.
 
-HB.instance Definition _ := hasNbhs.Build opc one_point_nbhs.
+HB.instance Definition _ :=
+  hasNbhs.Build (opc_display X) opc one_point_nbhs.
 
-HB.instance Definition _ := @Nbhs_isNbhsTopological.Build opc
+HB.instance Definition _ := @Nbhs_isNbhsTopological.Build _ opc
   one_point_filter one_point_singleton one_point_nbhs_nbhs.
 
 Lemma one_point_compactification_compact : compact [set: opc].
@@ -81,21 +89,21 @@ near=> j => z _; case: z => [z|].
 Unshelve. all: by end_near. Qed.
 
 Lemma one_point_compactification_some_nbhs (x : X) (U : set X) :
-  nbhs x U -> @nbhs _ opc (Some x) (Some @` U).
+  nbhs x U -> @nbhs _ _ opc (Some x) (Some @` U).
 Proof. exact/filterS/preimage_image. Qed.
 
 Lemma one_point_compactification_some_continuous : continuous (Some : X -> opc).
 Proof. by move=> x U. Qed.
 
 Lemma one_point_compactification_open_some (U : set X) :
-  open U -> @open opc (Some @` U).
+  open U -> @open _ opc (Some @` U).
 Proof.
 rewrite !openE/= => UU' opcX [x /UU' Ux <-].
 exact/one_point_compactification_some_nbhs.
 Qed.
 
 Lemma one_point_compactification_initial_topology :
-  @nbhs _ (@initial_topology X opc Some) = @nbhs _ X.
+  @nbhs _ _ (@initial_topology X opc Some) = @nbhs _ _ X.
 Proof.
 rewrite predeq2E => x U; split; rewrite /(@nbhs _ (initial_topology _))/=.
   case=> _ [[/= W] oW <- /= WSs] /filterS; apply.

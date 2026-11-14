@@ -7,11 +7,13 @@ From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop reals topology.
 
 (**md**************************************************************************)
-(* # wedge sum for sigT                                                       *)
+(* # Wedge sum for `sigT`                                                     *)
+(*                                                                            *)
 (* A foundational construction for homotopy theory. It glues a dependent sum  *)
 (* at a single point. It's classicaly used in the proof that every free group *)
 (* is a fundamental group of some space. We also will use it as part of our   *)
 (* construction of paths and path concatenation.                              *)
+(*                                                                            *)
 (* ```                                                                        *)
 (*    wedge_rel p0 x y == x and y are equal, or they are (p0 i) and           *)
 (*                        (p0 j) for some i and j                             *)
@@ -46,7 +48,6 @@ From mathcomp Require Import cardinality fsbigop reals topology.
 (* - bipointed                                                                *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -56,7 +57,8 @@ Local Open Scope ring_scope.
 Local Open Scope quotient_scope.
 
 Section wedge.
-Context {I : choiceType} (X : I -> topologicalType) (p0 : forall i, X i).
+Context {I : choiceType} {d} (X : forall i : I, topologicalType (d i))
+  (p0 : forall i, X i).
 Implicit Types i : I.
 
 Let wedge_rel' (a b : {i & X i}) :=
@@ -91,7 +93,7 @@ Lemma wedge_lift_continuous i : continuous (@wedge_lift i).
 Proof. by move=> ?; apply: continuous_comp => //; exact: pi_continuous. Qed.
 
 HB.instance Definition _ i :=
-  @isContinuous.Build _ _ (@wedge_lift i) (@wedge_lift_continuous i).
+  @isContinuous.Build _ _ _ _ (@wedge_lift i) (@wedge_lift_continuous i).
 
 Lemma wedge_lift_nbhs i (x : X i) :
   closed [set p0 i] -> x != p0 _ -> @wedge_lift i @ x = nbhs (@wedge_lift _ x).
@@ -139,7 +141,7 @@ Lemma wedge_point_nbhs i0 :
 Proof.
 rewrite eqEsubset; split => //= U /=; rewrite ?nbhs_simpl.
   case=> V [/= oV Vp] VU j _; apply: wedge_lift_continuous.
-  apply: (filterS VU); first exact: (@nbhs_filter wedge).
+  apply: (filterS VU); first exact: (@nbhs_filter _ wedge).
   apply: open_nbhs_nbhs; split => //.
   by rewrite (wedge_liftE (p0 i0)).
 move=> Uj; have V_ : forall i, {V : set (X i) |
@@ -205,7 +207,8 @@ Qed.
 Definition wedge_fun {Z : Type} (f : forall i, X i -> Z) : wedge -> Z :=
   sigT_fun f \o repr.
 
-Lemma wedge_fun_continuous {Z : topologicalType} (f : forall i, X i -> Z) :
+Lemma wedge_fun_continuous {d'} {Z : topologicalType d'}
+    (f : forall i, X i -> Z) :
   (forall i, continuous (f i)) -> (forall i j, f i (p0 i) = f j (p0 j)) ->
   continuous (wedge_fun f).
 Proof.
@@ -226,13 +229,11 @@ Lemma wedge_fun_comp {Z1 Z2 : Type} (h : Z1 -> Z2) (f : forall i, X i -> Z1) :
   h \o wedge_fun f = wedge_fun (fun i => h \o f i).
 Proof. exact/funext. Qed.
 
-(* The wedge maps into the product
-   \bigcup_i [x | x j = p0 j  when j != i]
+(**md The wedge maps into the product `\bigcup_i [x | x j = p0 j  when j != i]`.
 
    For the box topology, it's an embedding. But more practically,
    since the box and product agree when `I` is finite,
-   we get that the finite wedge embeds into the finite product.
- *)
+   we get that the finite wedge embeds into the finite product. *)
 Section wedge_as_product.
 
 Definition wedge_prod : wedge -> prod_topology X := wedge_fun (dfwith p0).
@@ -270,7 +271,7 @@ Lemma wedge_prod_open (x : wedge) (A : set wedge) :
   finite_set [set: I] ->
   (forall i, closed [set p0 i]) ->
   nbhs x A ->
-  @nbhs _ (subspace (range wedge_prod)) (wedge_prod x) (wedge_prod @` A).
+  nbhs (wedge_prod x : subspace (range wedge_prod)) (wedge_prod @` A).
 Proof.
 move=> fsetI clI; case: wedge_nbhs_specP => [//|i0 bcA|i z zNp0 /= wNz].
   pose B_ i : set (subspace (range wedge_prod)) :=
@@ -337,8 +338,8 @@ move=> /wedge_prod_continuous nV; have := clxy _ _ nU nV.
 by case => z [/= ? ?]; exists (wedge_prod z).
 Qed.
 
-Lemma wedge_fun_joint_continuous (T R : topologicalType)
-  (k : forall (x : I), T -> X x -> R):
+Lemma wedge_fun_joint_continuous d1 (T : topologicalType d1)
+  d2 (R : topologicalType d2) (k : forall (x : I), T -> X x -> R) :
   finite_set [set: I] ->
   (forall x, closed [set p0 x]) ->
   (forall t x y, k x t (p0 x) = k y t (p0 y)) ->
@@ -378,7 +379,7 @@ Unshelve. all: by end_near. Qed.
 End wedge.
 
 Section pwedge.
-Context {I : pointedType} (X : I -> ptopologicalType).
+Context {I : pointedType} {d} (X : forall i : I, ptopologicalType (d i)).
 
 Definition pwedge := wedge (fun i => @point (X i)).
 
@@ -391,12 +392,12 @@ HB.instance Definition _ := isPointed.Build pwedge pwedge_point.
 End pwedge.
 
 Section bpwedge.
-Context (X Y : bpTopologicalType).
+Context d (X Y : bpTopologicalType d).
 
 Definition bpwedge_shared_pt b :=
   if b return (if b then X else Y) then @one X else @zero Y.
-Local Notation bpwedge := (@wedge bool _ bpwedge_shared_pt).
-Local Notation bpwedge_lift := (@wedge_lift bool _ bpwedge_shared_pt).
+Local Notation bpwedge := (@wedge bool _ _ bpwedge_shared_pt).
+Local Notation bpwedge_lift := (@wedge_lift bool _ _ bpwedge_shared_pt).
 
 Local Lemma wedge_neq : @bpwedge_lift true zero != @bpwedge_lift false one.
 Proof.
@@ -410,5 +411,5 @@ HB.instance Definition _ := @isBiPointed.Build
   bpwedge (@bpwedge_lift true zero) (@bpwedge_lift false one) wedge_neq.
 End bpwedge.
 
-Notation bpwedge X Y := (@wedge bool _ (bpwedge_shared_pt X Y)).
-Notation bpwedge_lift X Y := (@wedge_lift bool _ (bpwedge_shared_pt X Y)).
+Notation bpwedge X Y := (@wedge bool _ _ (bpwedge_shared_pt X Y)).
+Notation bpwedge_lift X Y := (@wedge_lift bool _ _ (bpwedge_shared_pt X Y)).

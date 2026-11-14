@@ -53,7 +53,7 @@ HB.instance Definition _ := Nbhs.on cantor_space.
 HB.instance Definition _ := Topological.on cantor_space.
 HB.instance Definition _ := Uniform.on cantor_space.
 
-Definition cantor_like (T : topologicalType) :=
+Definition cantor_like d (T : topologicalType d) :=
   [/\ perfect_set [set: T],
       compact [set: T],
       hausdorff_space T &
@@ -61,7 +61,7 @@ Definition cantor_like (T : topologicalType) :=
 
 Lemma cantor_space_compact : compact [set: cantor_space].
 Proof.
-have := @tychonoff _ (fun _ : nat => _) _ (fun=> bool_compact).
+have := @tychonoff _ _ (fun _ : nat => _) _ (fun=> bool_compact).
 by congr (compact _); rewrite eqEsubset.
 Qed.
 
@@ -103,9 +103,10 @@ Qed.
 (*                                                                            *)
 (******************************************************************************)
 Section topological_trees.
-Context {K : nat -> pdiscreteTopologicalType} {X : ptopologicalType}
-        (refine_apx : forall n, set X -> K n -> set X)
-        (tree_invariant : set X -> Prop).
+Context {d} {K : forall n : nat, pdiscreteTopologicalType (d n)}
+  {d'} {X : ptopologicalType d'}
+  (refine_apx : forall n, set X -> K n -> set X)
+  (tree_invariant : set X -> Prop).
 
 Hypothesis cmptX : compact [set: X].
 Hypothesis hsdfX : hausdorff_space X.
@@ -122,7 +123,9 @@ Hypothesis refine_separates: forall x y : X, x != y ->
 Let refine_subset n U e : @refine_apx n U e `<=` U.
 Proof. by rewrite [X in _ `<=` X](refine_cover n); exact: bigcup_sup. Qed.
 
-Let T := prod_topology (K : nat -> ptopologicalType).
+Let T := prod_topology (K : forall n, ptopologicalType (d n)).
+
+HB.instance Definition _ := Topological.on T.
 
 Local Fixpoint branch_apx (b : T) n :=
   if n is m.+1 then refine_apx (branch_apx b m) (b m) else [set: X].
@@ -191,7 +194,7 @@ Proof.
 elim: n => [|n IH]; first by near=> z => ?; rewrite ltn0.
 near=> z => i; rewrite leq_eqVlt => /predU1P[|iSn]; last by rewrite (near IH z).
 move=> [->]; near: z; exists (proj n @^-1` [set b n]).
-split => //; suff : @open T (proj n @^-1` [set b n]) by [].
+split => //; suff : @open _ T (proj n @^-1` [set b n]) by [].
 apply: open_comp; [move=> + _; exact: proj_continuous| apply: discrete_open].
 Unshelve. all: end_near. Qed.
 
@@ -204,7 +207,7 @@ Qed.
 
 Let tree_map_apx b n : branch_apx b n (tree_map b).
 Proof.
-apply: (@closed_cvg _ _ _ (tree_map_filter b)); last exact: cvg_tree_map.
+apply: (@closed_cvg _ _ _ _ (tree_map_filter b)); last exact: cvg_tree_map.
   by apply: invar_cl; exact: tree_map_invar.
 by exists n.
 Qed.
@@ -257,13 +260,13 @@ End topological_trees.
 (******************************************************************************)
 
 Section TreeStructure.
-Context {R : realType} {T : pseudoPMetricType R}.
+Context {d} {R : realType} {T : pseudoPMetricType d R}.
 Hypothesis cantorT : cantor_like T.
 
 Let dsctT : zero_dimensional T.   Proof. by case: cantorT. Qed.
 Let pftT  : perfect_set [set: T]. Proof. by case: cantorT. Qed.
 Let cmptT : compact [set: T].     Proof. by case: cantorT. Qed.
-Let hsdfT : @hausdorff_space T.   Proof. by case: cantorT. Qed.
+Let hsdfT : hausdorff_space T.   Proof. by case: cantorT. Qed.
 
 Let c_invar (U : set T) := clopen U /\ U !=set0.
 
@@ -292,7 +295,7 @@ Local Lemma cantor_map : exists f : cantor_space -> T,
       set_surj [set: cantor_space] [set: T] f &
       set_inj [set: cantor_space] f ].
 Proof.
-have [] := @tree_map_props (fun=> bool) T c_ind c_invar cmptT hsdfT.
+have [] := @tree_map_props _ (fun=> bool) _ T c_ind c_invar cmptT hsdfT.
 - move=> n V; rewrite eqEsubset; split => [t Vt|t [? ? []]//].
   have [?|?] := pselect ((U_ n `&` V !=set0) /\ ~` U_ n `&` V !=set0).
   + have [Unt|Unt] := pselect (U_ n t).
@@ -340,8 +343,9 @@ Proof.
 exists tree_map => /=.
 have [cts surj inje] := projT2 (cid cantor_map); split; first exact: cts.
 move=> A clA; apply: (compact_closed hsdfT).
-apply: (@continuous_compact _ _ tree_map); first exact: continuous_subspaceT.
-apply: (@subclosed_compact _ _ [set: cantor_space]) => //.
+apply: (@continuous_compact _ _ _ _ tree_map).
+  exact: continuous_subspaceT.
+apply: (@subclosed_compact _ _ _ [set: cantor_space]) => //.
 exact: cantor_space_compact.
 Qed.
 
@@ -358,27 +362,27 @@ Section FinitelyBranchingTrees.
 Definition tree_of (T : nat -> pointedType) : Type :=
   prod_topology (fun n => discrete_topology (T n)).
 
-HB.instance Definition _ (T : nat -> pointedType) : Pointed (tree_of T):= 
+HB.instance Definition _ (T : nat -> pointedType) : Pointed (tree_of T) :=
   Pointed.on (tree_of T).
 
 HB.instance Definition _ (T : nat -> pointedType) := Uniform.on (tree_of T).
 
-HB.instance Definition _ (T : nat -> pointedType) : 
-    @PseudoMetric R _ :=
+HB.instance Definition _ (T : nat -> pointedType) :
+    @PseudoMetric _ R _ :=
    @PseudoMetric.on (tree_of T).
 
-Lemma cantor_like_finite_prod (T : nat -> ptopologicalType) :
+Lemma cantor_like_finite_prod d (T : forall n : nat, ptopologicalType (d n)) :
   (forall n, finite_set [set: discrete_topology (T n)]) ->
   (forall n, (exists xy : T n * T n, xy.1 != xy.2)) ->
   cantor_like (tree_of T).
 Proof.
 move=> finiteT twoElems; split.
-- exact/(@perfect_diagonal (discrete_topology \o T))/twoElems.
+- exact/(@perfect_diagonal _ (discrete_topology \o T))/twoElems.
 - have := tychonoff (fun n => finite_compact (finiteT n)).
   set A := (X in compact X -> _).
   suff : A = [set: tree_of (fun x : nat => T x)] by move=> ->.
   by rewrite eqEsubset.
-- apply: (@hausdorff_product _ (discrete_topology \o T)) => n.
+- apply: (@hausdorff_product _ _ (discrete_topology \o T)) => n.
   by apply: discrete_hausdorff; exact: discrete_space_discrete.
 - apply: zero_dimension_prod => ?; apply: discrete_zero_dimension.
 Qed.
@@ -389,7 +393,7 @@ End FinitelyBranchingTrees.
 (* ## Part 4: Building a finitely branching tree to cover `T`                 *)
 (******************************************************************************)
 Section alexandroff_hausdorff.
-Context {T : pseudoPMetricType R}.
+Context {d} {T : pseudoPMetricType d R}.
 
 Hypothesis cptT : compact [set: T].
 Hypothesis hsdfT : hausdorff_space T.
@@ -440,7 +444,7 @@ Qed.
 Let ent_balls E := projT1 (cid (ent_balls' E)).
 
 Let count_unif' := cid2
-  ((iffLR countable_uniformityP) (@countable_uniformity_metric _ T)).
+  ((iffLR countable_uniformityP) (@countable_uniformity_metric _ _ T)).
 
 Let count_unif := projT1 count_unif'.
 
@@ -468,13 +472,8 @@ HB.instance Definition _ n := gen_eqMixin (K' n).
 HB.instance Definition _ n := gen_choiceMixin (K' n).
 HB.instance Definition _ n := isPointed.Build (K' n) (K'p n).
 
-Let K n := discrete_topology (K' n).
+Let K n : pdiscreteTopologicalType _ := discrete_topology (K' n).
 Let Tree := @tree_of K.
-
-HB.instance Definition _ n :=
-  DiscreteTopology.on (K n). 
-HB.instance Definition _ n :=
-  Pointed.on (K n). 
 
 Let embed_refine n (U : set T) (k : K n) :=
   (if pselect (projT1 k `&` U !=set0)
@@ -495,7 +494,7 @@ Local Lemma cantor_surj_pt1 : exists2 f : Tree -> T,
 Proof.
 pose entn n := projT2 (cid (ent_balls' (count_unif n))).
 have [ | |? []//| |? []// | |] := @tree_map_props
-    K T (embed_refine) (embed_invar) cptT hsdfT.
+    _ K _ T (embed_refine) (embed_invar) cptT hsdfT.
 - move=> n U; rewrite eqEsubset; split=> [t Ut|t [? ? []]//].
   have [//|_ _ _ + _] := entn n; rewrite -subTset.
   move=> /(_ t I)[W cbW Wt]; exists (existT _ W cbW) => //.
@@ -526,15 +525,15 @@ have [ | |? []//| |? []// | |] := @tree_map_props
   have [z [Dz DzE]] := Csub _ cbD.
   have /ent_closure := DzE _ Dx => /(_ (ent_count_unif n))/xsectionP/ctE [_ /= Exz].
   have /ent_closure := DzE _ Dy => /(_ (ent_count_unif n))/xsectionP/ctE [Ezy _].
-  exact: (@entourage_split T z).
+  exact: (@entourage_split _ T z).
 by move=> f [ctsf surjf _]; exists f.
 Qed.
 
 Local Lemma cantor_surj_pt2 :
   exists f : {surj [set: cantor_space] >-> [set: Tree]}, continuous f.
 Proof.
-have [|f [ctsf _]] := @homeomorphism_cantor_like R Tree; last by exists f.
-apply: (@cantor_like_finite_prod (discrete_topology \o K)) => [n /=|n].
+have [|f [ctsf _]] := @homeomorphism_cantor_like _ R Tree; last by exists f.
+apply: (@cantor_like_finite_prod _ (discrete_topology \o K)) => [n /=|n].
   have [//| fs _ _ _ _] := projT2 (cid (ent_balls' (count_unif n))).
   suff -> : [set: {classic K' n}] =
       (@projT1 (set T) _) @^-1` (projT1 (cid (ent_balls' (count_unif n)))).

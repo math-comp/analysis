@@ -46,7 +46,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section center_radius.
-Context {R : numDomainType} {M : pseudoPMetricType R}.
+Context {d} {R : numDomainType} {M : pseudoPMetricType d R}.
 Implicit Types A : set M.
 
 (* NB: the identifier "center" is already taken! *)

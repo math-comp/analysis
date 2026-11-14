@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra all_classical.
 From mathcomp Require Import topology_structure.
@@ -15,7 +15,6 @@ From mathcomp Require Import topology_structure.
 (* ```                                                                        *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -24,7 +23,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section connected_sets.
-Variable T : topologicalType.
+Context {d} {T : topologicalType d}.
 Implicit Types A B C D : set T.
 
 Definition connected A :=
@@ -54,12 +53,13 @@ rewrite -propeqE; apply: notLR; rewrite propeqE.
 split=> [conE [E [E0 EU [E1 E2]]]|conE B B0 [C oC BAC] [D cD BAD]].
   suff : E true = A.
     move/esym/(congr1 (setD^~ (closure (E true)))); rewrite EU setDUl.
-    have := @subset_closure _ (E true); rewrite -setD_eq0 => ->; rewrite setU0.
+    have := @subset_closure _ _ (E true).
+    rewrite -setD_eq0 => ->; rewrite setU0.
     by move/setDidPl : E2 => ->; exact/eqP/set0P.
   apply: (conE _ (E0 true)).
   - exists (~` (closure (E false))); first exact/closed_openC/closed_closure.
     rewrite EU setIUl.
-    have /subsets_disjoint -> := @subset_closure _ (E false); rewrite set0U.
+    have /subsets_disjoint -> := @subset_closure _ _ (E false); rewrite set0U.
     by apply/esym/setIidPl/disjoints_subset; rewrite setIC.
   - exists (closure (E true)); first exact: closed_closure.
     by rewrite EU setIUl E2 set0U; exact/esym/setIidPl/subset_closure.
@@ -123,7 +123,7 @@ wlog E0c : E E0 EU sE / E false c.
   by apply: (G (E \o negb)) => //;
     [case => /=|rewrite EU setUC|rewrite separatedC].
 move: (E0 true) => /set0P/eqP; apply.
-have [/eqP //|/set0P[d E1d]] := boolP (E true == set0).
+have [/eqP //|/set0P[d' E1d]] := boolP (E true == set0).
 have : \bigcup_(i in P) A i `<=` E false.
   suff AE : forall i, P i -> A i `<=` E false by move=> x [j ? ?]; exact: (AE j).
   move=> j Pj.
@@ -132,7 +132,7 @@ have : \bigcup_(i in P) A i `<=` E false.
   exfalso; have E1c := AjE1 _ (AIc _ Pj).
   by move/separated_disjoint : sE; apply/eqP/set0P; exists c.
 rewrite EU subUset => -[_] /(_ _ E1d) E0d; exfalso.
-by move/separated_disjoint : sE; apply/eqP/set0P; exists d.
+by move/separated_disjoint : sE; apply/eqP/set0P; exists d'.
 Qed.
 
 Lemma connectedU A B : A `&` B !=set0 -> connected A -> connected B ->
@@ -152,9 +152,10 @@ suff : A `<=` U.
 rewrite -setIidPl; apply: ctdA.
 - move: U0; rewrite C1E => -[z [clAx C1z]]; have [] := clAx C1.
     exact: open_nbhs_nbhs.
-  by move=> w [Aw C1w]; exists w; rewrite setIA (setIidl (@subset_closure _ _)).
-- by exists C1 => //; rewrite C1E setIA (setIidl (@subset_closure _ _)).
-- by exists C2 => //; rewrite C2E setIA (setIidl (@subset_closure _ _)).
+  move=> w [Aw C1w]; exists w.
+  by rewrite setIA (setIidl (@subset_closure _ _ _)).
+- by exists C1 => //; rewrite C1E setIA (setIidl (@subset_closure _ _ _)).
+- by exists C2 => //; rewrite C2E setIA (setIidl (@subset_closure _ _ _)).
 Qed.
 
 Definition connected_component (A : set T) (x : T) :=
@@ -234,5 +235,5 @@ Qed.
 
 End connected_sets.
 
-Arguments connected {T}.
-Arguments connected_component {T}.
+Arguments connected {d T}.
+Arguments connected_component {d T}.

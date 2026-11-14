@@ -5,24 +5,27 @@ From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
 From mathcomp Require Import reals topology wedge_sigT.
 
 (**md**************************************************************************)
-(* # Paths                                                                    *)
-(* Paths from biPointed spaces.                                               *)
+(* # Paths from biPointed spaces.                                             *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*    mk_path ctsf f0 f1 == constructs a value in `pathType x y` given proofs *)
-(*                          that the endpoints of `f` are `x` and `y`         *)
-(*  reparameterize f phi == the path `f` with a different parameterization    *)
-(*        chain_path f g == the path which follows f, then follows g          *)
-(*                          Only makes sense when `f one = g zero`. The       *)
-(*                          domain is the wedge of domains of `f` and `g`.    *)
-(* ```                                                                        *)
+(* `mk_path ctsf f0 f1`                                                       *)
+(* : constructs a value in `pathType x y` given proofs that the endpoints of  *)
+(* : `f` are `x` and `y`                                                      *)
+(*                                                                            *)
+(* `reparameterize f phi`                                                     *)
+(* : the path `f` with a different parameterization                           *)
+(*                                                                            *)
+(* `chain_path f g`                                                           *)
+(* : the path which follows `f`, then follows `g`                             *)
+(* : Only makes sense when `f one = g zero`.                                  *)
+(* : The domain is the wedge of domains of `f` and `g`.                       *)
+(*                                                                            *)
 (* The type `{path i from x to y in T}` is the continuous functions on the    *)
-(* bipointed space i that go from x to y staying in T. It is endowed with     *)
-(* - Topology via the compact-open topology                                   *)
+(* bipointed space `i` that go from `x` to `y` staying in `T`. It is endowed  *)
+(* with:                                                                      *)
+(* - topology via the compact-open topology                                   *)
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -39,31 +42,33 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Local Open Scope quotient_scope.
 
-HB.mixin Record isPath {i : bpTopologicalType} {T : topologicalType} (x y : T)
-    (f : i -> T) & isContinuous i T f := {
+HB.mixin Record isPath {d} {i : bpTopologicalType d}
+    {d'} {T : topologicalType d'} (x y : T) (f : i -> T)
+    & isContinuous d i d' T f := {
   path_zero : f zero = x;
   path_one : f one = y;
 }.
 
 #[short(type="pathType")]
-HB.structure Definition Path {i : bpTopologicalType} {T : topologicalType}
-  (x y : T) := {f of isPath i T x y f & isContinuous i T f}.
+HB.structure Definition Path {d} {i : bpTopologicalType d}
+    {d'} {T : topologicalType d'} (x y : T) :=
+  {f of isPath d i d' T x y f & isContinuous d i d' T f}.
 
 Notation "{ 'path' i 'from' x 'to' y }" := (pathType i x y) : type_scope.
 Notation "{ 'path' i 'from' x 'to' y 'in' T }" :=
-  (@pathType i T x y) : type_scope.
+  (@pathType _ i _ T x y) : type_scope.
 
-HB.instance Definition _ {i : bpTopologicalType}
-  {T : topologicalType} (x y : T) := gen_eqMixin {path i from x to y}.
-HB.instance Definition _ {i : bpTopologicalType}
-  {T : topologicalType} (x y : T) := gen_choiceMixin {path i from x to y}.
-HB.instance Definition _ {i : bpTopologicalType}
-    {T : topologicalType} (x y : T) :=
+HB.instance Definition _ {d} {i : bpTopologicalType d}
+  {d'} {T : topologicalType d'} (x y : T) := gen_eqMixin {path i from x to y}.
+HB.instance Definition _ {d} {i : bpTopologicalType d} {d'}
+  {T : topologicalType d'} (x y : T) := gen_choiceMixin {path i from x to y}.
+HB.instance Definition _ {d} {i : bpTopologicalType d}
+    {d'} {T : topologicalType d'} (x y : T) :=
   Topological.copy {path i from x to y}
     (@initial_topology {path i from x to y} {compact-open, i -> T} id).
 
 Section path_eq.
-Context {T : topologicalType} {i : bpTopologicalType} (x y : T).
+Context {d} {T : topologicalType d} {d'} {i : bpTopologicalType d'} (x y : T).
 
 Lemma path_eqP (a b : {path i from x to y}) : a = b <-> a =1 b.
 Proof.
@@ -77,18 +82,19 @@ Qed.
 End path_eq.
 
 Section cst_path.
-Context {T : topologicalType} {i : bpTopologicalType} (x: T).
+Context {d} {T : topologicalType d} {d'} {i : bpTopologicalType d'} (x : T).
 
-HB.instance Definition _ := @isPath.Build i T x x (cst x) erefl erefl.
+HB.instance Definition _ := @isPath.Build _ i _ T x x (cst x) erefl erefl.
 End cst_path.
 
 Section path_domain_path.
-Context {i : bpTopologicalType}.
-HB.instance Definition _ := @isPath.Build i i zero one idfun erefl erefl.
+Context {d} {i : bpTopologicalType d}.
+HB.instance Definition _ := @isPath.Build _ i _ i zero one idfun erefl erefl.
 End path_domain_path.
 
 Section path_compose.
-Context {T U : topologicalType} (i: bpTopologicalType) (x y : T).
+Context {d1} {T : topologicalType d1} {d2} {U : topologicalType d2}
+  {d3} (i : bpTopologicalType d3) (x y : T).
 Context (f : continuousType T U) (p : {path i from x to y}).
 
 Local Lemma fp_zero : (f \o p) zero = f x.
@@ -97,19 +103,19 @@ Proof. by rewrite /= !path_zero. Qed.
 Local Lemma fp_one : (f \o p) one = f y.
 Proof. by rewrite /= !path_one. Qed.
 
-HB.instance Definition _ := isPath.Build i U (f x) (f y) (f \o p)
+HB.instance Definition _ := isPath.Build _ i _ U (f x) (f y) (f \o p)
   fp_zero fp_one.
 
 End path_compose.
 
 Section path_reparameterize.
-Context {T : topologicalType} (i j: bpTopologicalType) (x y : T).
+Context {d1} {T : topologicalType d1} {d2} (i : bpTopologicalType d2)
+  {d3} (j : bpTopologicalType d3) (x y : T).
 Context (f : {path i from x to y}) (phi : {path j from zero to one in i}).
 
-(* we use reparameterize, as opposed to just `\o` because we can simplify the
-   endpoints. So we don't end up with `f \o p : {path j from f zero to f one}`
-   but rather `{path j from zero to one}`
-*)
+(**md We use reparameterize, as opposed to just `\o` because we can simplify the
+   endpoints. So we do not end up with `f \o p : {path j from f zero to f one}`
+   but rather `{path j from zero to one}`.  *)
 Definition reparameterize := f \o phi.
 
 Let fphi_zero : reparameterize zero = x.
@@ -121,29 +127,31 @@ Proof. by rewrite /reparameterize /= ?path_one. Qed.
 Let fphi_cts : continuous reparameterize.
 Proof. by move=> ?; apply: continuous_comp; exact: continuous_fun. Qed.
 
-HB.instance Definition _ := isContinuous.Build _ _ reparameterize fphi_cts.
+HB.instance Definition _ := isContinuous.Build _ _ _ _ reparameterize fphi_cts.
 
-HB.instance Definition _ := isPath.Build j T x y reparameterize
+HB.instance Definition _ := isPath.Build _ j _ T x y reparameterize
   fphi_zero fphi_one.
 
 End path_reparameterize.
 
 Section mk_path.
-Context {i : bpTopologicalType} {T : topologicalType}.
+Context {d} {i : bpTopologicalType d} {d'} {T : topologicalType d'}.
 Context {x y : T} (f : i -> T) (ctsf : continuous f).
 Context (f0 : f zero = x) (f1 : f one = y).
 
 Definition mk_path : i -> T := let _ := (ctsf, f0, f1) in f.
 
-HB.instance Definition _ := isContinuous.Build i T mk_path ctsf.
-HB.instance Definition _ := @isPath.Build i T x y mk_path f0 f1.
+HB.instance Definition _ := isContinuous.Build _ i _ T mk_path ctsf.
+HB.instance Definition _ := @isPath.Build _ i _ T x y mk_path f0 f1.
 End mk_path.
 
-Definition chain_path {i j : bpTopologicalType} {T : topologicalType}
+Definition chain_path
+    {d} {i j : bpTopologicalType d} {d'} {T : topologicalType d'}
     (f : i -> T) (g : j -> T) : bpwedge i j -> T :=
   wedge_fun (fun b => if b return (if b then i else j) -> T then f else g).
 
-Lemma chain_path_cts_point {i j : bpTopologicalType} {T : topologicalType}
+Lemma chain_path_cts_point
+    {d} {i j : bpTopologicalType d} {d'} {T : topologicalType d'}
     (f : i -> T) (g : j -> T) :
   continuous f ->
   continuous g ->
@@ -152,7 +160,8 @@ Lemma chain_path_cts_point {i j : bpTopologicalType} {T : topologicalType}
 Proof. by move=> cf cg fgE; apply: wedge_fun_continuous => // [[]|[] []]. Qed.
 
 Section chain_path.
-Context {T : topologicalType} {i j : bpTopologicalType} (x y z: T).
+Context {d} {T : topologicalType d} {d'} {i j : bpTopologicalType d'}
+  (x y z : T).
 Context (p : {path i from x to y}) (q : {path j from y to z}).
 
 Let chain_path_zero : chain_path p q zero = x.
@@ -173,9 +182,9 @@ apply: chain_path_cts_point; [exact: continuous_fun..|].
 by rewrite path_zero path_one.
 Qed.
 
-HB.instance Definition _ :=  @isContinuous.Build _ T (chain_path p q)
-  chain_path_cts.
-HB.instance Definition _ :=  @isPath.Build _ T x z (chain_path p q)
+HB.instance Definition _ :=
+  @isContinuous.Build _ _ _ T (chain_path p q) chain_path_cts.
+HB.instance Definition _ := @isPath.Build _ _ _ T x z (chain_path p q)
   chain_path_zero chain_path_one.
 
 End chain_path.

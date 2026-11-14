@@ -13,38 +13,81 @@ From mathcomp Require Import boolp classical_sets functions wochoice
 (* element. And lastly it provides typeclass instances for verifying when     *)
 (* a (set_system T) is really a filter in T, as a Filter or Properfilter.     *)
 (*                                                                            *)
+(* ## Filter displays                                                         *)
+(*                                                                            *)
+(* Similar to orders in MathComp, "filter displays" of type `filter_display`  *)
+(* are associated with every filtered type. These displays can then be used   *)
+(* for pretty-printing purposes. In the case of topologies, this is useful    *)
+(* when a single carrier type may be endowed with multiple distinct           *)
+(* topologies that should be displayed differently.                           *)
+(*                                                                            *)
+(* Much like in MathComp, displays cannot help refine type inference on their *)
+(* own: the display is inferred from an alias of the carried type, never the  *)
+(* other way around.                                                          *)
+(*                                                                            *)
+(* New filter displays should be defined as opaque terms of type              *)
+(* `filter_display` using the idiom :                                         *)
+(* ``` Fact my_display : filter_display. Proof. by []. Qed. ```               *)
+(* Any additional arguments needed for pretty-printing may be added to this   *)
+(* declaration.                                                               *)
+(*                                                                            *)
+(* The type `filter_display` has a constructor `default_fdisp` that triggers  *)
+(* default notations (like any display not associated with custom ones).      *)
+(* It should preferably be used when a given filtered structure is considered *)
+(* "natural", "default", or otherwise does not require custom                 *)
+(* pretty-printing.                                                           *)
+(*                                                                            *)
 (* ## Structure of filter                                                     *)
-(* ```                                                                        *)
-(*              filteredType U == interface type for types whose elements     *)
-(*                                represent sets of sets on U                 *)
-(*                                These sets are intended to be filters on U  *)
-(*                                but this is not enforced yet.               *)
-(*                                The HB class is called Filtered.            *)
-(*                                It extends Pointed.                         *)
-(*                      nbhs p == set of sets associated to p (in a filtered  *)
-(*                                type)                                       *)
-(*             pfilteredType U == a pointed and filtered type                 *)
-(*                     hasNbhs == factory for filteredType                    *)
-(*                    nbhsType == type of a structure that has a set system   *)
-(*                                of neighborhoods associated to each point   *)
-(*                   pnbhsType == same has nbhsType for pointed types         *)
-(*                     continuous f == f is continuous w.r.t the topology     *)
-(*             isSubNbhs V S U == interface that states the continuity of val *)
-(*                                for U which has a subChoiceType and a       *)
-(*                                nbhsType                                    *)
-(*             subNbhsType V S == structure that extends a                    *)
-(*                                subChoiceType/nbhsType with the isSubNbhs   *)
-(*                                interface                                   *)
-(*                                The HB class is SubNbhs.                    *)
-(*            filterI_iter F n == nth stage of recursively building the       *)
-(*                                filter of finite intersections of F         *)
-(*          open_finI_from D f == set of \bigcap_(i in E) f i where E is a    *)
-(*                                a finite subset of D                        *)
-(* ```                                                                        *)
+(*                                                                            *)
+(* `filter_display`                                                           *)
+(* : type of filter displays                                                  *)
+(*                                                                            *)
+(* `filteredType d U`                                                         *)
+(* : interface type for types whose elements represent sets of sets on `U`,   *)
+(* : with display `d`                                                         *)
+(* : These sets are intended to be filters on `U` but this is not enforced    *)
+(* : yet.                                                                     *)
+(* : The HB class is called `Filtered`.                                       *)
+(* : It extends `Pointed`.                                                    *)
+(*                                                                            *)
+(* `nbhs p`                                                                   *)
+(* : set of sets associated to p (in a filtered type)                         *)
+(*                                                                            *)
+(* `pfilteredType d U`                                                        *)
+(* : a pointed and filtered type                                              *)
+(*                                                                            *)
+(* `hasNbhs d`                                                                *)
+(* : factory for `filteredType`                                               *)
+(*                                                                            *)
+(* `nbhsType d`                                                               *)
+(* : type of a structure that has a set system of neighborhoods associated to *)
+(* : each point, with display `d`                                             *)
+(*                                                                            *)
+(* `pnbhsType d`                                                              *)
+(* : same as `nbhsType` for pointed types                                     *)
+(*                                                                            *)
+(* `continuous f`                                                             *)
+(* : `f` is continuous w.r.t the topology                                     *)
+(*                                                                            *)
+(* `isSubNbhs d' d V S U`                                                     *)
+(* : interface that states the continuity of `val` for `U` which has a        *)
+(* : `subChoiceType` and a `nbhsType d'`, with V being a `nbhsType d`         *)
+(*                                                                            *)
+(* `subNbhsType d' V S`                                                       *)
+(* : structure that extends a `subChoiceType`/`nbhsType` with the             *)
+(* : `isSubNbhs` interface                                                    *)
+(* : The HB class is SubNbhs.                                                 *)
+(*                                                                            *)
+(* `filterI_iter F n`                                                         *)
+(* : `n`th stage of recursively building the filter of finite intersections   *)
+(* : of `F`                                                                   *)
+(*                                                                            *)
+(* `open_finI_from D f`                                                       *)
+(* : set of `\bigcap_(i in E) f i` where `E` is a a finite subset of `D`      *)
 (*                                                                            *)
 (* We endow several standard types with the structure of filter, e.g.:        *)
-(* - products `(X1 * X2)%type`                                                *)
-(* - matrices `'M[X]_(m, n)`                                                  *)
+(* - products `(X1 * X2)%type` (display `prod_display`)                       *)
+(* - matrices `'M[X]_(m, n)` (display `matrix_display`)                       *)
 (* - natural numbers `nat`                                                    *)
 (*                                                                            *)
 (* ## Theory of filters                                                       *)
@@ -177,7 +220,6 @@ From mathcomp Require Import boolp classical_sets functions wochoice
 (*   variable                                                                 *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -217,47 +259,76 @@ Reserved Notation "E `@[ x --> F ]"
   (at level 60, x name, format "E  `@[ x  -->  F ]").
 Reserved Notation "f `@ F" (at level 60, format "f  `@  F").
 
-HB.mixin Record isFiltered U T := {
+Inductive filter_display := default_fdisp.
+
+Declare Scope fdisp_scope.
+Delimit Scope fdisp_scope with fd.
+Bind Scope fdisp_scope with filter_display.
+
+(**md `with_fdisp T` is an alias of `T` with an alternative display *)
+Definition with_fdisp (d : filter_display) (T : Type) := T.
+
+HB.mixin Record isFiltered (d : filter_display) U T := {
   nbhs : T -> set_system U
 }.
 
 #[short(type="filteredType")]
-HB.structure Definition Filtered (U : Type) := {T of Choice T & isFiltered U T}.
-Arguments nbhs {_ _} _ _ : simpl never.
+HB.structure Definition Filtered d (U : Type) :=
+  {T of Choice T & isFiltered d U T}.
+Arguments nbhs {_ _ _} _ _ : simpl never.
 
 #[short(type="pfilteredType")]
-HB.structure Definition PointedFiltered (U : Type) := {T of Pointed T & isFiltered U T}.
+HB.structure Definition PointedFiltered d (U : Type) :=
+  {T of Pointed T & isFiltered d U T}.
+
+HB.instance Definition _ d (T : choiceType) := Choice.on (with_fdisp d T).
+HB.instance Definition _ d (T : pointedType) := Pointed.on (with_fdisp d T).
+HB.instance Definition _ d T (S : pred T) (U : subChoiceType S)
+  := SubChoice.on (with_fdisp d U).
+HB.instance Definition _ d' U d (T : filteredType d U) :=
+  isFiltered.Build d' U (with_fdisp d' T) nbhs.
 
 HB.instance Definition _ T := Equality.on (set_system T).
 HB.instance Definition _ T := Choice.on (set_system T).
 HB.instance Definition _ T := Pointed.on (set_system T).
-HB.instance Definition _ T := isFiltered.Build T (set_system T) id.
+HB.instance Definition _ T :=
+  isFiltered.Build default_fdisp T (set_system T) id.
 
 HB.mixin Record selfFiltered T := {}.
 
-HB.factory Record hasNbhs T := { nbhs : T -> set_system T }.
-HB.builders Context T & hasNbhs T.
-  HB.instance Definition _ := isFiltered.Build T T nbhs.
+HB.factory Record hasNbhs (d : filter_display) T :=
+  { nbhs : T -> set_system T }.
+HB.builders Context d T & hasNbhs d T.
+  HB.instance Definition _ := isFiltered.Build d T T nbhs.
   HB.instance Definition _ := selfFiltered.Build T.
 HB.end.
 
 #[short(type="nbhsType")]
-HB.structure Definition Nbhs := {T of Choice T & hasNbhs T}.
+HB.structure Definition Nbhs d := {T of Choice T & hasNbhs d T}.
 
 #[short(type="pnbhsType")]
-HB.structure Definition PointedNbhs := {T of Pointed T & hasNbhs T}.
+HB.structure Definition PointedNbhs d := {T of Pointed T & hasNbhs d T}.
+
+HB.instance Definition _ d' d (T : nbhsType d) :=
+  hasNbhs.Build d' (with_fdisp d' T) (@nbhs _ _ T).
+HB.instance Definition _ d' d U (T : pfilteredType d U) :=
+  PointedFiltered.on (with_fdisp d' T).
+HB.instance Definition _ d' d (T : pnbhsType d) :=
+  PointedNbhs.on (with_fdisp d' T).
 
 Definition filter_from {I T : Type} (D : set I) (B : I -> set T) :
   set_system T := [set P | exists2 i, D i & B i `<=` P].
 
 (* the canonical filter on matrices on X is the product of the canonical filter
    on X *)
-HB.instance Definition _ m n X (Z : filteredType X) :=
-  isFiltered.Build 'M[X]_(m, n) 'M[Z]_(m, n) (fun mx => filter_from
+HB.instance Definition _ m n X d (Z : filteredType d X) :=
+  isFiltered.Build default_fdisp
+  'M[X]_(m, n) 'M[Z]_(m, n) (fun mx => filter_from
     [set P | forall i j, nbhs (mx i j) (P i j)]
     (fun P => [set my : 'M[X]_(m, n) | forall i j, P i j (my i j)])).
 
-HB.instance Definition _ m n (X : nbhsType) := selfFiltered.Build 'M[X]_(m, n).
+HB.instance Definition _ m n d (X : nbhsType d) :=
+  selfFiltered.Build 'M[X]_(m, n).
 
 Definition filter_prod {T U : Type}
   (F : set_system T) (G : set_system U) : set_system (T * U) :=
@@ -270,19 +341,19 @@ Local Notation "{ 'all2' P }" := (forall x y, P x y : Prop) (at level 0).
 Local Notation "{ 'all3' P }" := (forall x y z, P x y z: Prop) (at level 0).
 Local Notation ph := (phantom _).
 
-Definition prop_near1 {X} {fX : filteredType X} (x : fX)
+Definition prop_near1 {X d} {fX : filteredType d X} (x : fX)
    P (phP : ph {all1 P}) := nbhs x P.
 
-Definition prop_near2 {X X'} {fX : filteredType X} {fX' : filteredType X'}
-  (x : fX) (x' : fX') := fun P & ph {all2 P} =>
+Definition prop_near2 {X X' d} {fX : filteredType d X} {d'}
+  {fX' : filteredType d' X'} (x : fX) (x' : fX') := fun P & ph {all2 P} =>
   filter_prod (nbhs x) (nbhs x') (fun x => P x.1 x.2).
-
 End Near.
 
-Notation "{ 'near' x , P }" := (@prop_near1 _ _ x _ (inPhantom P)) : type_scope.
+Notation "{ 'near' x , P }" :=
+  (@prop_near1 _ _ _ x _ (inPhantom P)) : type_scope.
 Notation "'\forall' x '\near' x_0 , P" := {near x_0, forall x, P} : type_scope.
 Notation "{ 'near' x & y , P }" :=
-  (@prop_near2 _ _ _ _ x y _ (inPhantom P)) : type_scope.
+  (@prop_near2 _ _ _ _ _ _ x y _ (inPhantom P)) : type_scope.
 Notation "'\forall' x '\near' x_0 & y '\near' y_0 , P" :=
   {near x_0 & y_0, forall x y, P} : type_scope.
 Notation "'\forall' x & y '\near' z , P" :=
@@ -320,10 +391,10 @@ Proof. by move=> FG GH P /GH /FG. Qed.
 Notation "F --> G" := (cvg_to (nbhs F) (nbhs G)) : classical_set_scope.
 Definition type_of_filter {T} (F : set_system T) := T.
 
-Definition lim_in {U : Type} (T : pfilteredType U) :=
+Definition lim_in {U : Type} {d} (T : pfilteredType d U) :=
   fun F : set_system U => get (fun l : T => F --> l).
-Notation "[ 'lim' F 'in' T ]" := (@lim_in _ T (nbhs F)) : classical_set_scope.
-Definition lim {T : pnbhsType} (F : set_system T) := [lim F in T].
+Notation "[ 'lim' F 'in' T ]" := (@lim_in _ _ T (nbhs F)) : classical_set_scope.
+Definition lim {d} {T : pnbhsType d} (F : set_system T) := [lim F in T].
 Notation "[ 'cvg' F 'in' T ]" := (F --> [lim F in T]) : classical_set_scope.
 Notation cvg F := (F --> lim F).
 
@@ -333,68 +404,73 @@ Notation "'\oo'" := eventually : classical_set_scope.
 
 Section FilteredTheory.
 
-HB.instance Definition _ X1 X2 (Z1 : filteredType X1) (Z2 : filteredType X2) :=
-  isFiltered.Build (X1 * X2)%type (Z1 * Z2)%type
+HB.instance Definition _ X1 X2 d1 (Z1 : filteredType d1 X1) d2
+  (Z2 : filteredType d2 X2) :=
+  isFiltered.Build default_fdisp (X1 * X2)%type (Z1 * Z2)%type
     (fun x => filter_prod (nbhs x.1) (nbhs x.2)).
 
-HB.instance Definition _ (X1 X2 : nbhsType)  :=
+HB.instance Definition _ d1 (X1 : nbhsType d1) d2 (X2 : nbhsType d2) :=
   selfFiltered.Build (X1 * X2)%type.
 
-Lemma cvg_prod T {U U' V V' : filteredType T} (x : U) (l : U') (y : V) (k : V') :
+Lemma cvg_prod T
+  {d1} {U : filteredType d1 T} {d1'} {U' : filteredType d1' T}
+  {d2} {V : filteredType d2 T} {d2'} {V' : filteredType d2' T}
+  (x : U) (l : U') (y : V) (k : V') :
   x --> l -> y --> k -> (x, y) --> (l, k).
 Proof.
 move=> xl yk X [[X1 X2] /= [HX1 HX2] H]; exists (X1, X2) => //=.
 split; [exact: xl | exact: yk].
 Qed.
 
-Lemma cvg_in_ex {U : Type} (T : pfilteredType U) (F : set_system U) :
+Lemma cvg_in_ex {U d} (T : pfilteredType d U) (F : set_system U) :
   [cvg F in T] <-> (exists l : T, F --> l).
 Proof. by split=> [cvg|/getPex//]; exists [lim F in T]. Qed.
 
-Lemma cvg_ex (T : pnbhsType) (F : set_system T) :
+Lemma cvg_ex {d} (T : pnbhsType d) (F : set_system T) :
   cvg F <-> (exists l : T, F --> l).
 Proof. exact: cvg_in_ex. Qed.
 
-Lemma cvg_inP {U : Type} (T : pfilteredType U) (F : set_system U) (l : T) :
-  F --> l -> [cvg F in T].
+Lemma cvg_inP {U d} (T : pfilteredType d U) (F : set_system U)
+  (l : T) : F --> l -> [cvg F in T].
 Proof. by move=> Fl; apply/cvg_in_ex; exists l. Qed.
 
-Lemma cvgP (T : pnbhsType) (F : set_system T) (l : T) : F --> l -> cvg F.
+Lemma cvgP {d} (T : pnbhsType d) (F : set_system T) (l : T) : F --> l -> cvg F.
 Proof. exact: cvg_inP. Qed.
 
-Lemma cvg_in_toP {U : Type} (T : pfilteredType U) (F : set_system U) (l : T) :
+Lemma cvg_in_toP {U d} (T : pfilteredType d U) (F : set_system U) (l : T) :
   [cvg F in T] -> [lim F in T] = l -> F --> l.
 Proof. by move=> /[swap]->. Qed.
 
-Lemma cvg_toP (T : pnbhsType) (F : set_system T) (l : T) :
+Lemma cvg_toP {d} (T : pnbhsType d) (F : set_system T) (l : T) :
   cvg F -> lim F = l -> F --> l.
 Proof. exact: cvg_in_toP. Qed.
 
-Lemma dvg_inP {U : Type} (T : pfilteredType U) (F : set_system U) :
+Lemma dvg_inP {U d} (T : pfilteredType d U) (F : set_system U) :
   ~ [cvg F in T] -> [lim F in T] = point.
 Proof. by rewrite /lim_in /=; case xgetP. Qed.
 
-Lemma dvgP (T : pnbhsType) (F : set_system T) : ~ cvg F -> lim F = point.
+Lemma dvgP {d} (T : pnbhsType d) (F : set_system T) : ~ cvg F -> lim F = point.
 Proof. exact: dvg_inP. Qed.
 
-Lemma cvg_inNpoint {U} (T : pfilteredType U) (F : set_system U) :
+Lemma cvg_inNpoint {U d} (T : pfilteredType d U) (F : set_system U) :
   [lim F in T] != point -> [cvg F in T].
 Proof. by apply: contra_neqP; apply: dvg_inP. Qed.
 
-Lemma cvgNpoint (T : pnbhsType) (F : set_system T) : lim F != point -> cvg F.
+Lemma cvgNpoint {d} (T : pnbhsType d) (F : set_system T) :
+  lim F != point -> cvg F.
 Proof. exact: cvg_inNpoint. Qed.
 
 End FilteredTheory.
-Arguments cvg_inP {U T F} l.
-Arguments dvg_inP {U} T {F}.
-Arguments cvgP {T F} l.
-Arguments dvgP {T F}.
+Arguments cvg_inP {U d T F} l.
+Arguments dvg_inP {U d} T {F}.
+Arguments cvgP {d T F} l.
+Arguments dvgP {d T F}.
 
-Lemma nbhs_nearE {U} {T : filteredType U} (x : T) (P : set U) :
+Lemma nbhs_nearE {U d} {T : filteredType d U} (x : T) (P : set U) :
   nbhs x P = \forall x0 \near x, P x0.
 Proof. by []. Qed.
 
-Lemma near_nbhs {U} {T : filteredType U} (x : T) (P : set U) :
+Lemma near_nbhs {U d} {T : filteredType d U} (x : T) (P : set U) :
   (\forall x0 \near nbhs x, P x0) = (\forall x0 \near x, P x0).
 Proof. by []. Qed.
 
@@ -408,9 +484,8 @@ Proof. by symmetry; congr (nbhs _); rewrite predeqE => -[]. Qed.
 
 Definition near2E := (@near2_curry, @near2_pair).
 
-Lemma filter_of_nearI (X : Type) (fX : filteredType X)
-  (x : fX) : forall P,
-  nbhs x P = @prop_near1 X fX x P (inPhantom (forall x, P x)).
+Lemma filter_of_nearI d (X : Type) (fX : filteredType d X) (x : fX) P :
+  nbhs x P = @prop_near1 X _ fX x P (inPhantom (forall x, P x)).
 Proof. by []. Qed.
 
 Module Export NearNbhs.
@@ -418,7 +493,8 @@ Definition near_simpl := (@near_nbhs, filter_of_nearI).
 End NearNbhs.
 
 Lemma near_swap {U V} (F : set_system U) (G : set_system V) (P : U -> set V) :
-  (\forall x \near F & y \near G, P x y) = (\forall y \near G & x \near F, P x y).
+  (\forall x \near F & y \near G, P x y) =
+  (\forall y \near G & x \near F, P x y).
 Proof.
 rewrite propeqE; split => -[[/=A B] [FA FB] ABP];
 by exists (B, A) => // -[x y] [/=Bx Ay]; apply: (ABP (y, x)).
@@ -486,7 +562,8 @@ HB.instance Definition _ T := gen_eqMixin (filter_on T).
 HB.instance Definition _ T := gen_choiceMixin (filter_on T).
 HB.instance Definition _ T := isPointed.Build (filter_on T)
   (FilterType _ (filter_setT T)).
-HB.instance Definition _ T := isFiltered.Build T (filter_on T) (@filter T).
+HB.instance Definition _ T :=
+  isFiltered.Build default_fdisp T (filter_on T) (@filter T).
 
 Global Instance filter_on_Filter T (F : filter_on T) : Filter F.
 Proof. by case: F. Qed.
@@ -627,10 +704,10 @@ Ltac done :=
    | match goal with H : ~ _ |- _ => solve [case H; trivial] end
    | match goal with |- ?x \is_near _ => near: x; apply: prop_ofP end ].
 
-Lemma have_near (U : Type) (fT : filteredType U) (x : fT) (P : Prop) :
+Lemma have_near d U (fT : filteredType d U) (x : fT) (P : Prop) :
   ProperFilter (nbhs x) -> (\forall x \near x, P) -> P.
 Proof. by move=> FF nP; have [] := @filter_ex _ _ FF (fun=> P). Qed.
-Arguments have_near {U fT} x.
+Arguments have_near {d U fT} x.
 
 Tactic Notation "near" constr(F) "=>" ident(x) :=
   apply: (have_near F); near=> x.
@@ -924,22 +1001,23 @@ Lemma eq_cvg (T U : Type) (F : set_system T) (f g : T -> U) (x : set_system U) :
   f =1 g -> (f @ F --> x) = (g @ F --> x).
 Proof. by move=> /funext->. Qed.
 
-Lemma near_eq_is_cvg (T : Type) (U : pnbhsType) (F : set_system T)
+Lemma near_eq_is_cvg T d (U : pnbhsType d) (F : set_system T)
   (f g : T -> U) :
   Filter F -> {near F, f =1 g} -> cvg (f x @[x --> F]) -> cvg(g x @[x --> F]).
 Proof. by move=> FF /near_eq_cvg_eq ->. Qed.
 
-Lemma eq_is_cvg_in (T U : Type) (fT : pfilteredType U) (F : set_system T)
+Lemma eq_is_cvg_in T d U (fT : pfilteredType d U) (F : set_system T)
     (f g : T -> U) :
   f =1 g -> [cvg (f @ F) in fT] = [cvg (g @ F) in fT].
 Proof. by move=> /funext ->. Qed.
 
-Lemma eq_is_cvg (T : Type) (U : pnbhsType) (F : set_system T) (f g : T -> U) :
+Lemma eq_is_cvg T d (U : pnbhsType d) (F : set_system T)
+  (f g : T -> U) :
   f =1 g -> cvg (f @ F) = cvg (g @ F).
 Proof. by move=> /funext->. Qed.
 
-Lemma near_eq_lim (T : Type) (U : pnbhsType) {F : set_system T} {FF : Filter F}
-    (f g : T -> U) :
+Lemma near_eq_lim T d (U : pnbhsType d)
+  {F : set_system T} {FF : Filter F} (f g : T -> U) :
   {near F, f =1 g} -> lim (f @ F) = lim (g @ F).
 Proof. by move=> /near_eq_cvg_eq ->. Qed.
 
@@ -950,39 +1028,41 @@ move=> eq_fg P /=; apply: filterS2 eq_fg => x eq_fg [y [fxy Py]].
 by exists y; rewrite -eq_fg.
 Qed.
 
-Lemma cvg_near_const (T U : Type) (f : T -> U) (F : set_system T) (G : set_system U) :
-  Filter F -> ProperFilter G ->
+Lemma cvg_near_const (T U : Type) (f : T -> U) (F : set_system T)
+    (G : set_system U) : Filter F -> ProperFilter G ->
   (\forall y \near G, \forall x \near F, f x = y) -> f @ F --> G.
 Proof.
 move=> FF FG fFG P /= GP; rewrite !near_simpl; apply: (have_near G).
 by apply: filter_app fFG; near do apply: filterS => x /= ->.
 Unshelve. all: by end_near. Qed.
 
-Definition continuous_at (T U : nbhsType) (x : T) (f : T -> U) :=
-  (f%function @ x --> f%function x).
+Definition continuous_at d (T : nbhsType d) d' (U : nbhsType d')
+  (x : T) (f : T -> U) := (f%function @ x --> f%function x).
 Notation continuous f := (forall x, continuous_at x f).
 
-Lemma continuous_comp (R S T : nbhsType) (f : R -> S) (g : S -> T) x :
+Lemma continuous_comp d1 (R : nbhsType d1) d2 (S : nbhsType d2)
+    d3 (T : nbhsType d3) (f : R -> S) (g : S -> T) x :
   {for x, continuous f} -> {for (f x), continuous g} ->
   {for x, continuous (g \o f)}.
 Proof. exact: cvg_comp. Qed.
+Arguments continuous_comp {d1 R d2 S d3 T} f g {x}.
 
 HB.mixin Record isSubNbhs
-  (V : nbhsType) (S : pred V) U & SubChoice V S U & Nbhs U := {
-  continuous_valE : continuous (val : U -> V)
-}.
+    d' d (V : nbhsType d) (S : pred V) U & SubChoice V S U & Nbhs d' U :=
+  { continuous_valE : continuous (val : U -> V) }.
 
 #[short(type="subNbhsType")]
-HB.structure Definition SubNbhs (V : nbhsType) (S : pred V) :=
-  { U of SubChoice V S U & Nbhs U & isSubNbhs V S U}.
+HB.structure Definition SubNbhs d' d (V : nbhsType d) (S : pred V) :=
+  { U of SubChoice V S U & Nbhs d' U & isSubNbhs d' d V S U}.
 
-Lemma near_fun (T T' : nbhsType) (f : T -> T') (x : T) (P : T' -> Prop) :
+Lemma near_fun d (T : nbhsType d) d' (T' : nbhsType d')
+  (f : T -> T') (x : T) (P : T' -> Prop) :
     {for x, continuous f} ->
   (\forall y \near f x, P y) -> (\forall x0 \near x, P (f x0)).
 Proof. exact. Qed.
-Arguments near_fun {T T'} f x.
+Arguments near_fun {d T d' T'} f x.
 
-(* globally filter *)
+(** Globally filter *)
 
 Definition globally {T : Type} (A : set T) : set_system T :=
    [set P : set T | forall x, A x -> P x].
@@ -1004,7 +1084,7 @@ Proof. by move=> Aa; apply: Build_ProperFilter => /(_ a); exact. Qed.
 (** Specific filters *)
 
 Section frechet_filter.
-Variable T : Type.
+Context {T : Type}.
 
 Definition frechet_filter := [set S : set T | finite_set (~` S)].
 
@@ -1373,7 +1453,7 @@ HB.instance Definition _ (P : choiceType) :=
 HB.instance Definition _ (P : pointedType) :=
   Pointed.on (principal_filter_type P).
 HB.instance Definition _ (P : choiceType) :=
-  hasNbhs.Build (principal_filter_type P) principal_filter.
+  hasNbhs.Build default_fdisp (principal_filter_type P) principal_filter.
 HB.instance Definition _ (P : pointedType) :=
   Filtered.on (principal_filter_type P).
 
@@ -1383,7 +1463,8 @@ Proof. by split=> [|? ? ->]; [exact|]. Qed.
 Lemma principal_filter_proper {X} (x : X) : ProperFilter (principal_filter x).
 Proof. exact: globally_properfilter. Qed.
 
-HB.instance Definition _ := hasNbhs.Build bool principal_filter.
+HB.instance Definition _ :=
+  hasNbhs.Build default_fdisp bool principal_filter.
 
 End PrincipalFilters.
 

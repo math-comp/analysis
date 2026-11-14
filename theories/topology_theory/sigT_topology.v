@@ -21,7 +21,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section sigT_topology.
-Context {I : choiceType} {X : I -> topologicalType}.
+Context {I : choiceType} {d} {X : forall i : I, topologicalType (d i)}.
 
 Definition sigT_nbhs (x : {i & X i}) : set_system {i & X i} :=
   existT _ _ @ nbhs (projT2 x).
@@ -30,7 +30,8 @@ Lemma sigT_nbhsE (i : I) (x : X i) :
   sigT_nbhs (existT _ i x) = (existT _ _) @ (nbhs x).
 Proof. by done. Qed.
 
-HB.instance Definition _ := hasNbhs.Build {i & X i} sigT_nbhs.
+HB.instance Definition _ :=
+  hasNbhs.Build default_fdisp {i & X i} sigT_nbhs.
 
 Local Lemma sigT_nbhs_proper x : ProperFilter (sigT_nbhs x).
 Proof. by case: x => i xi; exact: fmap_proper_filter. Qed.
@@ -45,7 +46,7 @@ rewrite sigT_nbhsE /= nbhsE /= => -[W [oW Wz WlA]].
 by exists W => // x /= Wx; exact/(filterS WlA)/open_nbhs_nbhs.
 Qed.
 
-HB.instance Definition _ := Nbhs_isNbhsTopological.Build {i & X i}
+HB.instance Definition _ := Nbhs_isNbhsTopological.Build _ {i & X i}
   sigT_nbhs_proper sigT_nbhs_singleton sigT_nbhs_nbhs.
 
 Lemma existT_continuous (i : I) : continuous (existT X i).
@@ -71,7 +72,7 @@ rewrite openE => -[i x Uxi].
 by rewrite /interior /nbhs/= sigT_nbhsE; exact: open_nbhs_nbhs.
 Qed.
 
-Lemma sigT_continuous {Z : topologicalType} (f : forall i, X i -> Z) :
+Lemma sigT_continuous {d'} {Z : topologicalType d'} (f : forall i, X i -> Z) :
   (forall i, continuous (f i)) -> continuous (sigT_fun f).
 Proof. by move=> ctsf [] i x U nU; apply: existT_continuous; exact: ctsf. Qed.
 

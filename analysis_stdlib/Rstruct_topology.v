@@ -58,7 +58,7 @@ apply iff_sym.
 have FF : Filter (f @ x)%classic.
   by typeclasses eauto.
   (*by apply fmap_filter; apply: @filter_filter' (locally_filter _).*)
-case: (@fcvg_ballP _ _ (f @ x)%classic FF (f x)) => {FF}H1 H2.
+case: (@fcvg_ballP _ _ _ (f @ x)%classic FF (f x)) => {FF}H1 H2.
 (* TODO: in need for lemmas and/or refactoring of already existing lemmas (ball vs. Rabs) *)
 split => [{H2} - /H1 {}H1 eps|{H1} H].
 - have {H1} [//|_/posnumP[x0] Hx0] := H1 eps%:num.
@@ -100,7 +100,7 @@ Lemma RexpE (x : R) : Rtrigo_def.exp x = expR x.
 Proof.
 apply/esym; rewrite /exp /exist_exp; case: Alembert_C3 => y.
 rewrite /Pser /infinite_sum /= => exp_ub.
-rewrite /expR /exp_coeff /series/=; apply: (@cvg_lim R^o) => //.
+rewrite /expR /exp_coeff /series/=; apply: (@cvg_lim _ R^o) => //.
 rewrite -cvg_shiftS /=; apply/cvgrPdist_lt => /= e /RltP /exp_ub[N Nexp_ub].
 near=> n.
 have nN : (n >= N)%coq_nat by apply/ssrnat.leP; near: n; exact: nbhs_infty_ge.
@@ -133,13 +133,13 @@ case: exist_cos => y.
 rewrite /cos_in /cos_n /infinite_sum/=.
 set G : nat -> R^o := (G in sum_f_R0 G).
 move=> cos_ub.
-have /(@cvg_lim R^o) <- // : series G x @[x --> \oo] --> y.
+have /(@cvg_lim _ R^o) <- // : series G x @[x --> \oo] --> y.
   rewrite -cvg_shiftS/=; apply/cvgrPdist_lt => /= e /RltP /cos_ub[N Ncos_ub].
   near=> n.
   have nN : (n >= N)%coq_nat by apply/ssrnat.leP; near: n; exact: nbhs_infty_ge.
   move: Ncos_ub => /(_ _ nN) /[!RdistE] /RltP /=.
   by rewrite /G distrC sum_f_R0E.
-apply: (@cvg_lim R^o) => //.
+apply: (@cvg_lim _ R^o) => //.
 suff -> : G = cos_coeff' x by exact: cvg_cos_coeff'.
 apply/funext=> n; rewrite /G cos_coeff'E cos_coeffE.
 rewrite odd_double/= mul1r plusE addn0 addnn Rsqr_def !RealsE.
