@@ -9,6 +9,13 @@
     `pownMexpR_cvgr0`, `powRMexpR_cvgr0`, `pownMpowR_cvgr0`,
     `pownMexpr_cvgn0`
   + instance `is_derive1_powRl`
+- in `constructive_ereal.v`:
+  + lemma `ltgte_fin_num`
+
+- in `num_normedtype.v`:
+  + lemma `nbhs_infty_gtr`
+- in `function_spaces.v`:
+  + lemmas `cvg_big`, `continuous_big`
 
 - in `filter.v`:
   + new type `filter_display`.
