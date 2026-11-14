@@ -1656,6 +1656,7 @@ subgraph cluster_LebesgueIntegral {
   "classical/unstable" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
   "reals/real_interval" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
   "reals/reals" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
+  "theories/derive" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
   "theories/ereal" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
   "theories/esum" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
   "theories/lebesgue_integral_theory/lebesgue_integral_definition" -> "theories/lebesgue_integral_theory/lebesgue_integrable";
