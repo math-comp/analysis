@@ -109,6 +109,10 @@ lebesgue_integral_theory/counting_lebesgue.v
 ftc.v
 hoelder.v
 
+number_theory/pi_irrational.v
+number_theory/pnt.v
+number_theory/number.v
+
 probability_theory/random_variable.v
 probability_theory/bernoulli_distribution.v
 probability_theory/binomial_distribution.v
@@ -123,7 +127,6 @@ probability_theory/independence.v
 convex.v
 charge.v
 kernel.v
-pi_irrational.v
 gauss_integral.v
 all_analysis.v
 showcase/summability.v
