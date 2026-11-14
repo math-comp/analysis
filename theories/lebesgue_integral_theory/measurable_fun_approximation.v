@@ -794,9 +794,9 @@ move=> D [/= mD Deps KDf]; exists (K `\` D); split => //.
   apply: (@le_trans _ _(\sum_(k <oo) (e2n k)%:E)); last exact: epsilon_trick0.
   by apply: lee_nneseries => // k _; apply: ltW; have [] := gKP k.
 apply: (@uniform_limit_continuous_subspace _ _ _ _ _ (g_ @ \oo)) => //.
-near_simpl; apply: nearW => // n
-    ; apply: (@continuous_subspaceW _ _ _ _ _ (gK n)).
-  by move=> z [+ _]; apply.
+near_simpl; apply: nearW => // n.
+apply: (@continuous_subspaceW _ _ _ _ _ (gK n)).
+  by move=> z [+ _]; exact.
 by have [] := projT2 (cid (gK' n)).
 Qed.
 

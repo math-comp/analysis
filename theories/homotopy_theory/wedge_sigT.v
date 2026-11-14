@@ -7,11 +7,13 @@ From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop reals topology.
 
 (**md**************************************************************************)
-(* # wedge sum for sigT                                                       *)
+(* # Wedge sum for `sigT`                                                     *)
+(*                                                                            *)
 (* A foundational construction for homotopy theory. It glues a dependent sum  *)
 (* at a single point. It's classicaly used in the proof that every free group *)
 (* is a fundamental group of some space. We also will use it as part of our   *)
 (* construction of paths and path concatenation.                              *)
+(*                                                                            *)
 (* ```                                                                        *)
 (*    wedge_rel p0 x y == x and y are equal, or they are (p0 i) and           *)
 (*                        (p0 j) for some i and j                             *)
@@ -46,7 +48,6 @@ From mathcomp Require Import cardinality fsbigop reals topology.
 (* - bipointed                                                                *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -56,7 +57,7 @@ Local Open Scope ring_scope.
 Local Open Scope quotient_scope.
 
 Section wedge.
-Context {I : choiceType} {d} (X : forall i : I, topologicalType (d i)) 
+Context {I : choiceType} {d} (X : forall i : I, topologicalType (d i))
   (p0 : forall i, X i).
 Implicit Types i : I.
 
@@ -228,13 +229,11 @@ Lemma wedge_fun_comp {Z1 Z2 : Type} (h : Z1 -> Z2) (f : forall i, X i -> Z1) :
   h \o wedge_fun f = wedge_fun (fun i => h \o f i).
 Proof. exact/funext. Qed.
 
-(* The wedge maps into the product
-   \bigcup_i [x | x j = p0 j  when j != i]
+(**md The wedge maps into the product `\bigcup_i [x | x j = p0 j  when j != i]`.
 
    For the box topology, it's an embedding. But more practically,
    since the box and product agree when `I` is finite,
-   we get that the finite wedge embeds into the finite product.
- *)
+   we get that the finite wedge embeds into the finite product. *)
 Section wedge_as_product.
 
 Definition wedge_prod : wedge -> prod_topology X := wedge_fun (dfwith p0).
@@ -339,8 +338,8 @@ move=> /wedge_prod_continuous nV; have := clxy _ _ nU nV.
 by case => z [/= ? ?]; exists (wedge_prod z).
 Qed.
 
-Lemma wedge_fun_joint_continuous d' (T : topologicalType d')
-  d'' (R : topologicalType d'') (k : forall (x : I), T -> X x -> R) :
+Lemma wedge_fun_joint_continuous d1 (T : topologicalType d1)
+  d2 (R : topologicalType d2) (k : forall (x : I), T -> X x -> R) :
   finite_set [set: I] ->
   (forall x, closed [set p0 x]) ->
   (forall t x y, k x t (p0 x) = k y t (p0 y)) ->

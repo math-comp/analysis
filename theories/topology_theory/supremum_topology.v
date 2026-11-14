@@ -6,16 +6,19 @@ From mathcomp Require Import topology_structure uniform_structure.
 (**md**************************************************************************)
 (* # Supremum topology                                                        *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*                  sup_topology Tc == supremum topology of the family of     *)
-(*                                     topologicalType structures Tc on T     *)
-(*              supremum_display Tc == display for `sup_topology Tc`          *)
-(*                        sup_ent E == the entourages of the supremum         *)
-(* ```                                                                        *)
+(* `sup_topology Tc`                                                          *)
+(* : supremum topology of the family of `topologicalType` structures `Tc` on  *)
+(* : `T`                                                                      *)
+(*                                                                            *)
+(* `supremum_display Tc`                                                      *)
+(* : display for `sup_topology Tc`                                            *)
+(*                                                                            *)
+(* `sup_ent E`                                                                *)
+(* : the entourages of the supremum                                           *)
+(*                                                                            *)
 (* `sup_topology` is equipped with the `Uniform` structure                    *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -23,7 +26,7 @@ Unset Printing Implicit Defensive.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Definition sup_topology {I : Type} {d : I -> _} {T : Type} 
+Definition sup_topology {I : Type} {d : I -> _} {T : Type}
   (Tc : forall i, Topological (d i) T)
   : Type := T.
 
@@ -31,7 +34,7 @@ Fact supremum_display {I} {X : I -> _} (Tc : forall i, X i) : filter_display.
 Proof. by []. Qed.
 
 Section Sup_Topology.
-Context (I : Type) (d : I -> _) (T : choiceType) 
+Context (I : Type) (d : I -> _) (T : choiceType)
   (Tc : forall i, Topological (d i) T).
 Local Notation S := (sup_topology Tc).
 

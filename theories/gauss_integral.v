@@ -46,7 +46,7 @@ Proof. by apply: measurableT_comp => //; exact: measurableT_comp. Qed.
 
 Lemma continuous_gauss_fun : continuous gauss_fun.
 Proof.
-move=> x; apply: (@continuous_comp _ _ _ _ _ _ (fun x : R => - x ^+ 2) expR).
+move=> x; apply: (continuous_comp (fun x : R => - x ^+ 2) expR).
   by apply: cvgN; exact: exprn_continuous.
 exact: continuous_expR.
 Qed.
@@ -120,7 +120,7 @@ Qed.
 Let continuous_gaussM x : continuous (fun r : R => gauss_fun (r * x)).
 Proof.
 move=> x0.
-apply: (@continuous_comp _ _ _ _ _ _ (fun r : R => - (r * x) ^+ 2) expR).
+apply: (continuous_comp (fun r : R => - (r * x) ^+ 2) expR).
   exact: continuous_NsqrM.
 exact: continuous_expR.
 Qed.

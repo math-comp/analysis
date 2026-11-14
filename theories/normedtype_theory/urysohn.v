@@ -324,8 +324,8 @@ Qed.
 End normal_uniform_separators.
 End Urysohn.
 
-Lemma uniform_separatorP {d} {T : topologicalType d}
-    {R : realType} (A B : set T) :
+Lemma uniform_separatorP {d} {T : topologicalType d} {R : realType}
+    (A B : set T) :
   uniform_separator A B <->
   exists (f : T -> R), [/\ continuous f, range f `<=` `[0, 1],
                            f @` A `<=` [set 0] & f @` B `<=` [set 1]].
@@ -337,10 +337,10 @@ split; first do [move=> ?; exists (Urysohn A B); split].
 - exact: Urysohn_sub1.
 case=> f [ctsf f01 fA0 fB1].
 pose T' : uniformType _ := initial_topology f.
-eexists.
-exists (Uniform.class T'), ([set xy | ball (f xy.1) 1 (f xy.2)]); split.
+exists (initial_display f), (Uniform.class T'),
+    ([set xy | ball (f xy.1) 1 (f xy.2)]); split.
 - exists [set xy | ball xy.1 1 xy.2]; last by case.
-  by rewrite -entourage_ballE; exists 1 => //=.
+  by rewrite -entourage_ballE; exists 1 => /=.
 - rewrite -subset0 => -[a b [[/= Aa Bb]]].
   by rewrite (imsub1 fA0)// (imsub1 fB1)// /ball/= sub0r normrN normr1 ltxx.
 - move=> x U [V [[W oW <- /=]]] ? /filterS; apply.
@@ -415,12 +415,12 @@ move=> clB nBx; have : open (~` B) by rewrite openC.
 rewrite openE => /(_ _ nBx); rewrite /interior /= -nbhs_entourageE.
 case=> E entE EnB.
 pose T' : pseudoMetricType _ R := gauge.type entE.
-eexists; exists (Uniform.class T), E; split => //; last by move => ?.
+exists d, (Uniform.class T), E; split => //; last by move => ?.
 by rewrite -subset0 => -[? w [/= [-> ? /xsectionP ?]]]; exact: (EnB w).
 Qed.
 
 Lemma uniform_completely_regular {d} {T : uniformType d} :
-  @completely_regular_space d T.
+  completely_regular_space T.
 Proof. by move=> x B clB Bx; exact: point_uniform_separator. Qed.
 
 Lemma normal_completely_regular {d} {T : topologicalType d} :
@@ -430,7 +430,7 @@ move/normal_separatorP => + /accessible_closed_set1 cl1 x A ? ?; apply => //.
 by apply/disjoints_subset => ? ->.
 Qed.
 
-Lemma uniform_regular {d} {X : uniformType d} : @regular_space d X.
+Lemma uniform_regular {d} {X : uniformType d} : regular_space X.
 Proof.
 move=> x A; rewrite /= -nbhs_entourageE => -[E entE].
 move/(subset_trans (ent_closure entE)) => ExA.
@@ -540,7 +540,7 @@ Proof. exact: uniform_completely_regular. Qed.
 End locally_compact_uniform.
 
 Lemma completely_regular_regular {d} {R : realType} {X : topologicalType d} :
-  completely_regular_space X -> @regular_space _ X.
+  completely_regular_space X -> regular_space X.
 Proof.
 move=> crsX; pose P' := @completely_regular_uniformity.type _ R _ crsX.
 exact: (@uniform_regular _ P').
@@ -549,7 +549,7 @@ Qed.
 Section pseudometric_normal.
 
 Lemma regular_openP {d} {T : topologicalType d} (x : T) :
-  {for x, @regular_space d T} <-> forall A, closed A -> ~ A x ->
+  {for x, regular_space T} <-> forall A, closed A -> ~ A x ->
   exists U V : set T, [/\ open U, open V, U x, A `<=` V & U `&` V = set0].
 Proof.
 split.

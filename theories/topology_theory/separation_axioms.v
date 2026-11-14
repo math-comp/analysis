@@ -385,7 +385,7 @@ Lemma close_cvg (F1 F2 : set_system T) {FF2 : ProperFilter F2} :
 Proof.
 move=> F12 F21.
 have [/(cvg_trans F21) F2l|dvgF1] := pselect (cvg F1).
-  by apply: (@cvg_close _ _ F2) => //; apply: cvgP F2l.
+  by apply: (@cvg_close _ _ F2) => //; exact: cvgP F2l.
 have [/(cvg_trans F12)/cvgP//|dvgF2] := pselect (cvg F2).
 rewrite dvgP // dvgP //; exact/close_refl.
 Qed.
@@ -466,7 +466,7 @@ rewrite propeqE; split => [cxy eps|cxy].
   have := [elaborate cxy _ (open_nbhs_ball _ (eps%:num/2)%:pos)].
   rewrite closureEonbhs/= meetsC meets_globallyr.
   move/(_ _ (open_nbhs_ball _ (eps%:num/2)%:pos)) => [z [zx zy]].
-  by apply: (@ball_splitl _ _ _ z); apply: interior_subset.
+  by apply: (ball_splitl z); exact: interior_subset.
 rewrite closeEnbhs => B A /nbhs_ballP[_/posnumP[e2 e2B]]
   /nbhs_ballP[_/posnumP[e1 e1A]].
 by exists y; split; [apply/e2B|apply/e1A; exact: ballxx].
@@ -981,7 +981,7 @@ Export countable_uniform.Exports.
 Notation countable_uniform := countable_uniform.type.
 
 Definition sup_pseudometric (Ii : Type) (d : Ii -> _) (R : realType) (T : Type)
-  (Tc : forall i, PseudoMetric (d i) R T) (Icnt : countable [set: Ii])
+    (Tc : forall i, PseudoMetric (d i) R T) (Icnt : countable [set: Ii])
   : Type := T.
 
 Section sup_pseudometric.

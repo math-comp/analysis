@@ -469,7 +469,8 @@ Proof. exact: cvge_to_le. Qed.
 
 End ProperFilterERealType.
 
-Lemma cvgenyP {R : realType} {T} {F : set_system T} {FF : Filter F} (f : T -> nat) :
+Lemma cvgenyP {R : realType} {T} {F : set_system T} {FF : Filter F}
+    (f : T -> nat) :
   (((f n)%:R : R)%:E @[n --> F] --> +oo%E) <-> (f @ F --> \oo).
 Proof. by rewrite cvgeryP cvgrnyP. Qed.
 

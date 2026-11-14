@@ -27,8 +27,6 @@ From mathcomp Require Import product_topology subspace_topology.
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
-
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
@@ -83,7 +81,7 @@ by have /= := svWU (@exist _ _ w Aw); rewrite ?set_valE /=; exact.
 Qed.
 
 Lemma subspace_valL_continuousP' {d'} {Y : topologicalType d'}
-  (y : Y) (f : A -> Y) :
+    (y : Y) (f : A -> Y) :
   {within A, continuous (valL_ y f)} <-> continuous f.
 Proof.
 rewrite -{2}[f](@valLK _ _ y A); split=> [/subspace_sigL_continuousP//|cf].
@@ -97,8 +95,8 @@ Proof. exact: (@subspace_valL_continuousP' _ _ point). Qed.
 End subspace_sig.
 
 Lemma within_continuous_comp {d1} {U : topologicalType d1}
-  {d2} {V : topologicalType d2} {d3} {W : topologicalType d3}
-  (A : set V) (f : V -> U) (g : U -> W) :
+    {d2} {V : topologicalType d2} {d3} {W : topologicalType d3}
+    (A : set V) (f : V -> U) (g : U -> W) :
   {in f @` A, continuous g} ->
   {within A, continuous f} ->
   {within A, continuous (g \o f)}.
@@ -109,8 +107,8 @@ by apply/cg/image_f; rewrite inE; exact/set_valP.
 Qed.
 
 Section subtype_setX.
-Context {d} {X : topologicalType d} {d'} {Y : topologicalType d'}.
-Context (A : set X) (B : set Y).
+Context {d} {X : topologicalType d} {d'} {Y : topologicalType d'}
+  (A : set X) (B : set Y).
 
 Program Definition setX_of_sigT (ab : A `*` B) : (A * B)%type :=
   (@exist _ _ ab.1 _, @exist _ _ ab.2 _).

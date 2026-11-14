@@ -116,8 +116,8 @@ Qed.
 Let cexpNM : continuous (fun z : R^o => expR (- rate * z)).
 Proof.
 move=> z; apply: continuous_comp; last exact: continuous_expR.
-by apply: continuousM => //; apply: (@continuousN _ _ R^o)
-  ; exact: cst_continuous.
+apply: continuousM => //.
+by apply: (@continuousN _ _ R^o); exact: cst_continuous.
 Qed.
 
 Lemma exponential_prob_itv0c (x : R) : 0 < x ->

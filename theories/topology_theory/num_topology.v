@@ -237,14 +237,15 @@ apply; last by rewrite gtrBl.
 by rewrite /= opprB addrC subrK ger0_norm// gtr_pMr// invf_lt1// ltr1n.
 Qed.
 
-Lemma cvg_dnbhs_at_right d (T : topologicalType d)
+Lemma cvg_dnbhs_at_right {d} {T : topologicalType d}
     (f : R -> T) (p : R) (l : T) :
   f x @[x --> p^'] --> l -> f x @[x --> p^'+] --> l.
 Proof.
 by apply: cvg_trans; apply: cvg_app; apply: within_subset=> r ?; rewrite gt_eqF.
 Qed.
 
-Lemma cvg_dnbhs_at_left d (T : topologicalType d) (f : R -> T) (p : R) (l : T) :
+Lemma cvg_dnbhs_at_left {d} {T : topologicalType d}
+    (f : R -> T) (p : R) (l : T) :
   f x @[x --> p^'] --> l -> f x @[x --> p^'-] --> l.
 Proof.
 by apply: cvg_trans; apply: cvg_app; apply: within_subset=> r ?; rewrite lt_eqF.
@@ -377,7 +378,7 @@ Notation "x ^'+" := (at_right x) : classical_set_scope.
 #[global] Hint Extern 0 (Filter (nbhs _^'-)) =>
   (apply: at_left_proper_filter) : typeclass_instances.
 
-Lemma cvg_at_right_left_dnbhs d (R : realFieldType) (T : topologicalType d)
+Lemma cvg_at_right_left_dnbhs {d} {R : realFieldType} {T : topologicalType d}
     (f : R -> T) (p : R) (l : T) :
   f x @[x --> p^'+] --> l -> f x @[x --> p^'-] --> l -> f x @[x --> p^'] --> l.
 Proof.

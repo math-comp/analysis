@@ -34,38 +34,56 @@ From mathcomp Require Import boolp classical_sets functions wochoice
 (* The type `filter_display` has a constructor `default_fdisp` that triggers  *)
 (* default notations (like any display not associated with custom ones).      *)
 (* It should preferably be used when a given filtered structure is considered *)
-(* "natural", "default" or otherwise does not require custom pretty-printing. *)
+(* "natural", "default", or otherwise does not require custom                 *)
+(* pretty-printing.                                                           *)
 (*                                                                            *)
 (* ## Structure of filter                                                     *)
-(* ```                                                                        *)
-(*              filter_display == type of filter displays                     *)
-(*            filteredType d U == interface type for types whose elements     *)
-(*                                represent sets of sets on U, with display d *)
-(*                                These sets are intended to be filters on U  *)
-(*                                but this is not enforced yet.               *)
-(*                                The HB class is called Filtered.            *)
-(*                                It extends Pointed.                         *)
-(*                      nbhs p == set of sets associated to p (in a filtered  *)
-(*                                type)                                       *)
-(*           pfilteredType d U == a pointed and filtered type                 *)
-(*                   hasNbhs d == factory for filteredType                    *)
-(*                  nbhsType d == type of a structure that has a set system   *)
-(*                                of neighborhoods associated to each point,  *)
-(*                                with display d                              *)
-(*                 pnbhsType d == same as nbhsType for pointed types          *)
-(*                continuous f == f is continuous w.r.t the topology          *)
-(*        isSubNbhs d' d V S U == interface that states the continuity of val *)
-(*                                for U which has a `subChoiceType` and a     *)
-(*                                `nbhsType d'`, with V being a `nbhsType d`. *)
-(*          subNbhsType d' V S == structure that extends a                    *)
-(*                                subChoiceType/nbhsType with the isSubNbhs   *)
-(*                                interface                                   *)
-(*                                The HB class is SubNbhs.                    *)
-(*            filterI_iter F n == nth stage of recursively building the       *)
-(*                                filter of finite intersections of F         *)
-(*          open_finI_from D f == set of \bigcap_(i in E) f i where E is a    *)
-(*                                a finite subset of D                        *)
-(* ```                                                                        *)
+(*                                                                            *)
+(* `filter_display`                                                           *)
+(* : type of filter displays                                                  *)
+(*                                                                            *)
+(* `filteredType d U`                                                         *)
+(* : interface type for types whose elements represent sets of sets on `U`,   *)
+(* : with display `d`                                                         *)
+(* : These sets are intended to be filters on `U` but this is not enforced    *)
+(* : yet.                                                                     *)
+(* : The HB class is called `Filtered`.                                       *)
+(* : It extends `Pointed`.                                                    *)
+(*                                                                            *)
+(* `nbhs p`                                                                   *)
+(* : set of sets associated to p (in a filtered type)                         *)
+(*                                                                            *)
+(* `pfilteredType d U`                                                        *)
+(* : a pointed and filtered type                                              *)
+(*                                                                            *)
+(* `hasNbhs d`                                                                *)
+(* : factory for `filteredType`                                               *)
+(*                                                                            *)
+(* `nbhsType d`                                                               *)
+(* : type of a structure that has a set system of neighborhoods associated to *)
+(* : each point, with display `d`                                             *)
+(*                                                                            *)
+(* `pnbhsType d`                                                              *)
+(* : same as `nbhsType` for pointed types                                     *)
+(*                                                                            *)
+(* `continuous f`                                                             *)
+(* : `f` is continuous w.r.t the topology                                     *)
+(*                                                                            *)
+(* `isSubNbhs d' d V S U`                                                     *)
+(* : interface that states the continuity of `val` for `U` which has a        *)
+(* : `subChoiceType` and a `nbhsType d'`, with V being a `nbhsType d`         *)
+(*                                                                            *)
+(* `subNbhsType d' V S`                                                       *)
+(* : structure that extends a `subChoiceType`/`nbhsType` with the             *)
+(* : `isSubNbhs` interface                                                    *)
+(* : The HB class is SubNbhs.                                                 *)
+(*                                                                            *)
+(* `filterI_iter F n`                                                         *)
+(* : `n`th stage of recursively building the filter of finite intersections   *)
+(* : of `F`                                                                   *)
+(*                                                                            *)
+(* `open_finI_from D f`                                                       *)
+(* : set of `\bigcap_(i in E) f i` where `E` is a a finite subset of `D`      *)
 (*                                                                            *)
 (* We endow several standard types with the structure of filter, e.g.:        *)
 (* - products `(X1 * X2)%type` (display `prod_display`)                       *)
@@ -202,7 +220,6 @@ From mathcomp Require Import boolp classical_sets functions wochoice
 (*   variable                                                                 *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -248,7 +265,7 @@ Declare Scope fdisp_scope.
 Delimit Scope fdisp_scope with fd.
 Bind Scope fdisp_scope with filter_display.
 
-(* `with_fdisp T` is an alias of `T` with an alternative display *)
+(**md `with_fdisp T` is an alias of `T` with an alternative display *)
 Definition with_fdisp (d : filter_display) (T : Type) := T.
 
 HB.mixin Record isFiltered (d : filter_display) U T := {
@@ -279,9 +296,8 @@ HB.instance Definition _ T :=
 
 HB.mixin Record selfFiltered T := {}.
 
-HB.factory Record hasNbhs (d : filter_display) T := { 
-  nbhs : T -> set_system T 
-}.
+HB.factory Record hasNbhs (d : filter_display) T :=
+  { nbhs : T -> set_system T }.
 HB.builders Context d T & hasNbhs d T.
   HB.instance Definition _ := isFiltered.Build d T T nbhs.
   HB.instance Definition _ := selfFiltered.Build T.
@@ -421,8 +437,7 @@ Proof. by move=> Fl; apply/cvg_in_ex; exists l. Qed.
 Lemma cvgP {d} (T : pnbhsType d) (F : set_system T) (l : T) : F --> l -> cvg F.
 Proof. exact: cvg_inP. Qed.
 
-Lemma cvg_in_toP {U d} (T : pfilteredType d U)
-  (F : set_system U) (l : T) :
+Lemma cvg_in_toP {U d} (T : pfilteredType d U) (F : set_system U) (l : T) :
   [cvg F in T] -> [lim F in T] = l -> F --> l.
 Proof. by move=> /[swap]->. Qed.
 
@@ -478,8 +493,8 @@ Definition near_simpl := (@near_nbhs, filter_of_nearI).
 End NearNbhs.
 
 Lemma near_swap {U V} (F : set_system U) (G : set_system V) (P : U -> set V) :
-  (\forall x \near F & y \near G, P x y)
-  = (\forall y \near G & x \near F, P x y).
+  (\forall x \near F & y \near G, P x y) =
+  (\forall y \near G & x \near F, P x y).
 Proof.
 rewrite propeqE; split => -[[/=A B] [FA FB] ABP];
 by exists (B, A) => // -[x y] [/=Bx Ay]; apply: (ABP (y, x)).
@@ -1013,8 +1028,8 @@ move=> eq_fg P /=; apply: filterS2 eq_fg => x eq_fg [y [fxy Py]].
 by exists y; rewrite -eq_fg.
 Qed.
 
-Lemma cvg_near_const (T U : Type) (f : T -> U) (F : set_system T) (G : set_system U) :
-  Filter F -> ProperFilter G ->
+Lemma cvg_near_const (T U : Type) (f : T -> U) (F : set_system T)
+    (G : set_system U) : Filter F -> ProperFilter G ->
   (\forall y \near G, \forall x \near F, f x = y) -> f @ F --> G.
 Proof.
 move=> FF FG fFG P /= GP; rewrite !near_simpl; apply: (have_near G).
@@ -1026,15 +1041,15 @@ Definition continuous_at d (T : nbhsType d) d' (U : nbhsType d')
 Notation continuous f := (forall x, continuous_at x f).
 
 Lemma continuous_comp d1 (R : nbhsType d1) d2 (S : nbhsType d2)
-  d3 (T : nbhsType d3) (f : R -> S) (g : S -> T) x :
+    d3 (T : nbhsType d3) (f : R -> S) (g : S -> T) x :
   {for x, continuous f} -> {for (f x), continuous g} ->
   {for x, continuous (g \o f)}.
 Proof. exact: cvg_comp. Qed.
+Arguments continuous_comp {d1 R d2 S d3 T} f g {x}.
 
 HB.mixin Record isSubNbhs
-  d' d (V : nbhsType d) (S : pred V) U & SubChoice V S U & Nbhs d' U := {
-  continuous_valE : continuous (val : U -> V)
-}.
+    d' d (V : nbhsType d) (S : pred V) U & SubChoice V S U & Nbhs d' U :=
+  { continuous_valE : continuous (val : U -> V) }.
 
 #[short(type="subNbhsType")]
 HB.structure Definition SubNbhs d' d (V : nbhsType d) (S : pred V) :=
@@ -1047,7 +1062,7 @@ Lemma near_fun d (T : nbhsType d) d' (T' : nbhsType d')
 Proof. exact. Qed.
 Arguments near_fun {d T d' T'} f x.
 
-(* globally filter *)
+(** Globally filter *)
 
 Definition globally {T : Type} (A : set T) : set_system T :=
    [set P : set T | forall x, A x -> P x].
@@ -1069,7 +1084,7 @@ Proof. by move=> Aa; apply: Build_ProperFilter => /(_ a); exact. Qed.
 (** Specific filters *)
 
 Section frechet_filter.
-Variable T : Type.
+Context {T : Type}.
 
 Definition frechet_filter := [set S : set T | finite_set (~` S)].
 

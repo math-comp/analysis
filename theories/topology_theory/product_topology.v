@@ -54,7 +54,7 @@ HB.instance Definition _ := Nbhs_isNbhsTopological.Build _ (T * U)%type
 End Prod_Topology.
 
 Lemma fst_open {d1} {U : topologicalType d1} {d2} {V : topologicalType d2}
-  (A : set (U * V)) :
+    (A : set (U * V)) :
   open A -> open (fst @` A).
 Proof.
 rewrite !openE => oA z [[a b/=] Aab <-]; rewrite /interior.
@@ -63,7 +63,7 @@ by exists (p, b) => //=; apply: pqA; split=> //=; exact: nbhs_singleton.
 Qed.
 
 Lemma snd_open {d1} {U : topologicalType d1} {d2} {V : topologicalType d2}
-  (A : set (U * V)) :
+    (A : set (U * V)) :
   open A -> open (snd @` A).
 Proof.
 rewrite !openE => oA z [[a b/=] Aab <-]; rewrite /interior.
@@ -71,7 +71,7 @@ have [[P Q] [Pa Qb] pqA] := oA _ Aab; apply: (@filterS _ _ _ Q) => // q Qq.
 by exists (a, q) => //=; apply: pqA; split => //; exact: nbhs_singleton.
 Qed.
 
-(** product of two uniform spaces *)
+(**md Product of two uniform spaces: *)
 Section prod_Uniform.
 Local Open Scope relation_scope.
 Context {d1} {U : uniformType d1} {d2} {V : uniformType d2}.
@@ -282,7 +282,7 @@ Qed.
 End Nbhs_fct2.
 
 Lemma compact_setX {d1} {U : topologicalType d1} {d2} {V : topologicalType d2}
-  (P : set U) (Q : set V) :
+    (P : set U) (Q : set V) :
   compact P -> compact Q -> compact (P `*` Q).
 Proof.
 rewrite !compact_near_coveringP => cptP cptQ I F Pr Ff cvfPQ.

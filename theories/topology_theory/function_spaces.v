@@ -48,42 +48,74 @@ From mathcomp Require Import topology_structure uniform_structure
 (* - Cartesian closedness for the category of locally compact topologies      *)
 (*                                                                            *)
 (* ## Function space notations                                                *)
-(* ```                                                                        *)
-(*             {uniform` A -> V} == the space U -> V, equipped with the       *)
-(*                                  topology of uniform convergence from      *)
-(*                                  a `set A` to V, where V is a uniformType  *)
-(*              {uniform U -> V} := {uniform` [set: U] -> V}                  *)
-(*           uniform_display A V == display for {uniform` A -> V}             *)
-(*          {uniform A, F --> f} == F converges to f in {uniform A -> V}      *)
-(*            {uniform, F --> f} := {uniform setT, F --> f}                   *)
-(*             prod_topology I T == the topology of pointwise convergence on  *)
-(*                                  the dependent space `forall (i:I), T i`   *)
-(*        arrow_uniform_type U V == the topology of uniform convergence on    *)
-(*                                  the type `U -> V`                         *)
-(*     arrow_uniform_display U V == display for `arrow_uniform_type U V`      *)
-(*                 {ptws U -> V} == prod_topology for the non-dependent       *)
-(*                                  product                                   *)
-(*              ptws_display U V == display for {ptws U -> V}                 *)
-(* separate_points_from_closed f == for a closed set U and point x outside    *)
-(*                                  some member of the family f, it sends     *)
-(*                                  f_i(x) outside (closure (f_i @` U))       *)
-(*                                  Used together with join_product.          *)
-(*                join_product f == the function (x => f ^~ x)                *)
-(*                                  When the family f separates points from   *)
-(*                                  closed sets, join_product is an embedding.*)
-(*               {ptws, F --> f} == F converges to f in {ptws U -> V}         *)
-(*          {family fam, U -> V} == the supremum of {uniform A -> f} for each *)
-(*                                  A in `fam`                                *)
-(*                                  In particular, {family compact, U -> V}   *)
-(*                                  is the topology of compact convergence.   *)
-(*         {family fam, F --> f} == F converges to f in {family fam, U -> V}  *)
-(*     uniform_fam_display fam V == display for {family fam, U -> V}          *)
-(*        {compact_open, U -> V} == compact-open topology                     *)
-(*       {compact_open, F --> f} == F converges to f in {compact_open, U -> V}*)
-(*      compact_open_display U V == display for {compact_open, U -> V}        *)
-(*                          eval == the evaluation map for continuous         *)
-(*                                  functions                                 *)
-(* ```                                                                        *)
+(*                                                                            *)
+(* `` {uniform` A -> V} ``                                                    *)
+(* : the space `U -> V`, equipped with the topology of uniform convergence    *)
+(* : from a `set A` to `V`, where `V` is a uniformType                        *)
+(*                                                                            *)
+(* `{uniform U -> V}`                                                         *)
+(* : `` := {uniform` [set: U] -> V} ``                                        *)
+(*                                                                            *)
+(* `uniform_display A V`                                                      *)
+(* : display for `` {uniform` A -> V} ``                                      *)
+(*                                                                            *)
+(* `{uniform A, F --> f}`                                                     *)
+(* : `F` converges to `f` in `` {uniform` A -> V} ``                          *)
+(*                                                                            *)
+(* `{uniform, F --> f}`                                                       *)
+(* : `` := {uniform` setT, F --> f} ``                                        *)
+(*                                                                            *)
+(* `prod_topology I T`                                                        *)
+(* : the topology of pointwise convergence on the dependent space             *)
+(* : `forall i : I, T i`                                                      *)
+(*                                                                            *)
+(* `arrow_uniform_type U V`                                                   *)
+(* : the topology of uniform convergence on the type `U -> V`                 *)
+(*                                                                            *)
+(* `arrow_uniform_display U V`                                                *)
+(* : display for `arrow_uniform_type U V`                                     *)
+(*                                                                            *)
+(* `{ptws U -> V}`                                                            *)
+(* : `prod_topology` for the non-dependent product                            *)
+(*                                                                            *)
+(* `ptws_display U V`                                                         *)
+(* : display for `{ptws U -> V}`                                              *)
+(*                                                                            *)
+(* `separate_points_from_closed f`                                            *)
+(* : for a closed set `U` and point `x` outside some member of the family     *)
+(* : `f`, it sends `f_i(x)` outside `closure (f_i @` U)`                      *)
+(* : Used together with join_product.                                         *)
+(*                                                                            *)
+(* `join_product f`                                                           *)
+(* : the function `x => f ^~ x`                                               *)
+(* : When the family `f` separates points from closed sets, `join_product`    *)
+(* : is an embedding.                                                         *)
+(*                                                                            *)
+(* `{ptws, F --> f}`                                                          *)
+(* : `F` converges to `f` in `{ptws U -> V}`                                  *)
+(*                                                                            *)
+(* `{family fam, U -> V}`                                                     *)
+(* : the supremum of `{uniform A -> f}` for each `A` in `fam`                 *)
+(* : In particular, `{family compact, U -> V}` is the topology of compact     *)
+(* : convergence.                                                             *)
+(*                                                                            *)
+(* `{family fam, F --> f}`                                                    *)
+(* : `F` converges to `f` in `{family fam, U -> V}`                           *)
+(*                                                                            *)
+(* `uniform_fam_display fam V`                                                *)
+(* : display for `{family fam, U -> V}`                                       *)
+(*                                                                            *)
+(* `{compact_open, U -> V}`                                                   *)
+(* : compact-open topology                                                    *)
+(*                                                                            *)
+(* `{compact_open, F --> f}`                                                  *)
+(* : `F` converges to `f` in `{compact_open, U -> V}`                         *)
+(*                                                                            *)
+(* `compact_open_display U V`                                                 *)
+(* : display for `{compact_open, U -> V}`                                     *)
+(*                                                                            *)
+(* `eval`                                                                     *)
+(*  : the evaluation map for continuous functions                             *)
 (*                                                                            *)
 (* ## Ascoli's theorem notations                                              *)
 (* ```                                                                        *)
@@ -117,7 +149,6 @@ Reserved Notation "{ 'compact-open' , U -> V }"
 Reserved Notation "{ 'compact-open' , F --> f }"
   (at level 0, F at level 69, format "{ 'compact-open' ,  F  -->  f }").
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -339,8 +370,8 @@ Qed.
   are equivalent (the last equivalence seems to require `accessible_space`). *)
 Section product_embeddings.
 Context {d} {T : topologicalType d} {I : choiceType} {d'}
-  {U_ : forall i : I, topologicalType (d' i)}.
-Variable (f_ : forall i, T -> U_ i).
+  {U_ : forall i : I, topologicalType (d' i)}
+  (f_ : forall i, T -> U_ i).
 
 Definition separate_points_from_closed := forall (U : set T) x,
   closed U -> ~ U x -> exists i, ~ (closure (f_ i @` U)) (f_ i x).
@@ -446,8 +477,8 @@ Qed.
 
 End product_embeddings.
 
-Global Instance prod_topology_filter U d 
-  (T : forall u : U, ptopologicalType (d u)) (f : prod_topology T) :
+Global Instance prod_topology_filter U d
+    (T : forall u : U, ptopologicalType (d u)) (f : prod_topology T) :
   ProperFilter (nbhs f).
 Proof. exact: nbhs_pfilter. Qed.
 
@@ -456,7 +487,7 @@ End product_spaces.
 (*HB.instance Definition _ (U : Type) (T : U -> ptopologicalType) :=
   Pointed.copy (forall x : U, T x) (prod_topology T).*)
 
-(**md the uniform topologies type *)
+(**md the uniform topologies type: *)
 Definition arrow_uniform_type T U : Type := T -> U.
 
 Fact arrow_uniform_display (T U : Type) : filter_display.
@@ -719,6 +750,9 @@ Lemma pointwise_cvgE {U} {d} {V : topologicalType d}
   {ptws, F --> f} = (F --> (f : {ptws U -> V})).
 Proof. by []. Qed.
 
+(**md We use this function to help Coq identify the correct notation to use
+  when printing. Otherwise you get goals like `F --> f -> F --> f`.
+  (Note that this comment predates the introduction of displays for topologies.) *)
 Definition uniform_fun_family {U} V (fam : set U -> Prop) := U -> V.
 
 Fact uniform_fam_display {U} (V : Type) (fam : set_system U) : filter_display.
@@ -951,7 +985,7 @@ Definition compact_open T U : Type := T -> U.
 
 Fact compact_open_display (T U : Type) : filter_display.
 Proof. by []. Qed.
-  
+
 Section compact_open.
 Context {d} {T : topologicalType d} {d'} {U : topologicalType d'}.
 
@@ -1010,12 +1044,12 @@ Definition compact_open_def :=
   sup_topology (fun i : sigT (@compact _ T) =>
     Topological.class (@compact_openK (projT1 i))).
 
-HB.instance Definition _ := 
-  Nbhs.copy compact_open 
+HB.instance Definition _ :=
+  Nbhs.copy compact_open
     (with_fdisp (compact_open_display T U) compact_open_def).
 
 HB.instance Definition _ : Nbhs_isTopological _ compact_open :=
-  Topological.copy compact_open 
+  Topological.copy compact_open
     (with_fdisp (compact_open_display T U) compact_open_def).
 
 Lemma compact_open_cvgP (F : set_system compact_open) (f : compact_open) :
@@ -1047,7 +1081,6 @@ HB.instance Definition _  {d} {U : topologicalType d}
 HB.instance Definition _ {d} {U : topologicalType d}
     {d'} {V : ptopologicalType d'} :=
   Pointed.on (@compact_open U V).
-
 
 Notation "{ 'compact-open' , U -> V }" := (@compact_open U V).
 Notation "{ 'compact-open' , F --> f }" :=
@@ -1170,7 +1203,7 @@ Lemma pointwise_cvg_family_singleton F (f : U -> V):
   Filter F -> {ptws, F --> f} = {family @singletons U, F --> f}.
 Proof.
 move=> FF; apply/propext.
-rewrite (@fam_cvgP _ _ _ singletons). (* BUG: slowdown if no arguments *)
+rewrite (@fam_cvgP _ _ _ singletons). (* NB: (slight) slowdown if no arguments *)
 rewrite cvg_sup; split.
   move=> + A [x _ <-] => /(_ x); rewrite uniform_set1.
   rewrite cvg_image; first by rewrite eqEsubset; split=> v // _; exists (cst v).
@@ -1474,7 +1507,7 @@ Lemma continuous_curry (f : U * V -> W) :
     continuous (curry f) /\ forall u, continuous (curry f u).
 Proof.
 move=> ctsf; split; first last.
-  by move=> u z; apply: (continuous_comp _ (ctsf (u, z))); exact: cvg_pair.
+  by move=> u z; apply: continuous_comp (ctsf (u, z)); exact: cvg_pair.
 move=> x; apply/compact_open_cvgP => K O /= cptK oO fKO.
 near=> z => w /= [+ + <-]; near: z.
 move/compact_near_coveringP/near_covering_withinP : cptK; apply.

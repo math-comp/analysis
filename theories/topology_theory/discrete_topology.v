@@ -6,6 +6,7 @@ From mathcomp Require Import order_topology pseudometric_structure compact.
 
 (**md**************************************************************************)
 (* # Discrete Topology                                                        *)
+(*                                                                            *)
 (* ```                                                                        *)
 (*              discreteNbhsType == neighborhoods are principal filters       *)
 (*                  discrete_ent == entourages of the discrete uniformity     *)
@@ -23,11 +24,12 @@ From mathcomp Require Import order_topology pseudometric_structure compact.
 (*                                  are singletons                            *)
 (*           discrete_topology T == alias attaching discrete structures for   *)
 (*                                  topology, uniformity, and pseudometric    *)
-(*            discrete_display T == display for `discrete_topology T`         *)
 (* ```                                                                        *)
+(*                                                                            *)
+(* `discrete_display T`                                                       *)
+(* : display for `discrete_topology T`                                        *)
+(*                                                                            *)
 (******************************************************************************)
-
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
@@ -47,11 +49,11 @@ HB.instance Definition _ d' d (T : discreteNbhsType d) :=
 Definition discrete_ent {T} : set_system (T * T) :=
   globally (range (fun x => (x, x))).
 
-(** Note: having the discrete topology does not guarantee the discrete
-    uniformity. Likewise for the discrete metric. Consider [set 1/n | n in R] *)
-HB.mixin Record Discrete_ofUniform d T & Uniform d T := {
-  uniform_discrete : @entourage _ T = discrete_ent
-}.
+(**md Note: having the discrete topology does not guarantee the discrete
+  uniformity. Likewise for the discrete metric.
+  Consider $\{ 1/n \,|\, n \in \mathbb{R}\}$. *)
+HB.mixin Record Discrete_ofUniform d T & Uniform d T :=
+  { uniform_discrete : @entourage _ T = discrete_ent }.
 
 Definition discrete_ball {R : numDomainType} {T} (x : T) (eps : R) y : Prop :=
   x = y.

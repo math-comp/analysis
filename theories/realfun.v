@@ -111,7 +111,7 @@ Lemma cvg_addrl_Ny (M : R) : M + r @[r --> -oo] --> -oo.
 Proof. by under eq_fun do rewrite addrC; exact: cvg_addrr_Ny. Qed.
 
 (* NB: see cvg_centern in sequences.v *)
-Lemma cvg_centerr d (M : R) (T : topologicalType d) (f : R -> T) (l : T) :
+Lemma cvg_centerr {d} {T : topologicalType d} (M : R) (f : R -> T) (l : T) :
   (f (n - M) @[n --> +oo] --> l) = (f r @[r --> +oo] --> l).
 Proof.
 rewrite propeqE; split; last by apply: cvg_comp; exact: cvg_addrr.
@@ -122,7 +122,7 @@ by under [X in X @ _ --> l]funext => n do rewrite addrK.
 Qed.
 
 (* NB: see cvg_shiftn in sequence.v *)
-Lemma cvg_shiftr d (M : R) (T : topologicalType d) (f : R -> T) (l : T) :
+Lemma cvg_shiftr {d} {T : topologicalType d} (M : R) (f : R -> T) (l : T) :
   (f (n + M) @[n --> +oo]--> l) = (f r @[r --> +oo] --> l).
 Proof.
 rewrite propeqE; split; last by apply: cvg_comp; exact: cvg_addrr.
@@ -1532,7 +1532,7 @@ Proof. by split=> x /=; rewrite oppr_itvcc. Qed.
 HB.instance Definition _ a b := itv_oppr_is_fun a b.
 End negation_itv.
 
-(** The condition "f b <= f a" is unnecessary---see seg...increasing above    *)
+(**md The condition `f b <= f a` is unnecessary---see `seg...increasing` above. *)
 Lemma segment_can_ge a b f g : a <= b ->
     {within `[a, b], continuous f} ->
     {in `[a, b], cancel f g} ->
@@ -1543,7 +1543,7 @@ apply: (@segment_can_le (- b) (- a) (f \o -%R) (- g));
     rewrite /= ?lerN2 ?opprK //.
   pose fun_neg : subspace `[-b,-a] -> subspace `[a,b] := itvN_oppr a b.
   move=> z.
-  apply: (@continuous_comp _ _ _ _ _ _ [fun of fun_neg]); last exact: fC.
+  apply: (continuous_comp fun_neg); last exact: fC.
   exact/subspaceT_continuous/continuous_subspaceT/oppr_continuous.
 by move=> z zab; rewrite -[- g]/(@GRing.opp _ \o g)/= fK ?opprK// oppr_itvcc.
 Qed.

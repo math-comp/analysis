@@ -5,24 +5,27 @@ From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
 From mathcomp Require Import reals topology wedge_sigT.
 
 (**md**************************************************************************)
-(* # Paths                                                                    *)
-(* Paths from biPointed spaces.                                               *)
+(* # Paths from biPointed spaces.                                             *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*    mk_path ctsf f0 f1 == constructs a value in `pathType x y` given proofs *)
-(*                          that the endpoints of `f` are `x` and `y`         *)
-(*  reparameterize f phi == the path `f` with a different parameterization    *)
-(*        chain_path f g == the path which follows f, then follows g          *)
-(*                          Only makes sense when `f one = g zero`. The       *)
-(*                          domain is the wedge of domains of `f` and `g`.    *)
-(* ```                                                                        *)
+(* `mk_path ctsf f0 f1`                                                       *)
+(* : constructs a value in `pathType x y` given proofs that the endpoints of  *)
+(* : `f` are `x` and `y`                                                      *)
+(*                                                                            *)
+(* `reparameterize f phi`                                                     *)
+(* : the path `f` with a different parameterization                           *)
+(*                                                                            *)
+(* `chain_path f g`                                                           *)
+(* : the path which follows `f`, then follows `g`                             *)
+(* : Only makes sense when `f one = g zero`.                                  *)
+(* : The domain is the wedge of domains of `f` and `g`.                       *)
+(*                                                                            *)
 (* The type `{path i from x to y in T}` is the continuous functions on the    *)
-(* bipointed space i that go from x to y staying in T. It is endowed with     *)
-(* - Topology via the compact-open topology                                   *)
+(* bipointed space `i` that go from `x` to `y` staying in `T`. It is endowed  *)
+(* with:                                                                      *)
+(* - topology via the compact-open topology                                   *)
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -79,7 +82,7 @@ Qed.
 End path_eq.
 
 Section cst_path.
-Context {d} {T : topologicalType d} {d'} {i : bpTopologicalType d'} (x: T).
+Context {d} {T : topologicalType d} {d'} {i : bpTopologicalType d'} (x : T).
 
 HB.instance Definition _ := @isPath.Build _ i _ T x x (cst x) erefl erefl.
 End cst_path.
@@ -91,7 +94,7 @@ End path_domain_path.
 
 Section path_compose.
 Context {d1} {T : topologicalType d1} {d2} {U : topologicalType d2}
-  {d3} (i: bpTopologicalType d3) (x y : T).
+  {d3} (i : bpTopologicalType d3) (x y : T).
 Context (f : continuousType T U) (p : {path i from x to y}).
 
 Local Lemma fp_zero : (f \o p) zero = f x.
@@ -107,13 +110,12 @@ End path_compose.
 
 Section path_reparameterize.
 Context {d1} {T : topologicalType d1} {d2} (i : bpTopologicalType d2)
-  {d3} (j: bpTopologicalType d3) (x y : T).
+  {d3} (j : bpTopologicalType d3) (x y : T).
 Context (f : {path i from x to y}) (phi : {path j from zero to one in i}).
 
-(* we use reparameterize, as opposed to just `\o` because we can simplify the
-   endpoints. So we don't end up with `f \o p : {path j from f zero to f one}`
-   but rather `{path j from zero to one}`
-*)
+(**md We use reparameterize, as opposed to just `\o` because we can simplify the
+   endpoints. So we do not end up with `f \o p : {path j from f zero to f one}`
+   but rather `{path j from zero to one}`.  *)
 Definition reparameterize := f \o phi.
 
 Let fphi_zero : reparameterize zero = x.

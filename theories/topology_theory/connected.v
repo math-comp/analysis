@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra all_classical.
 From mathcomp Require Import topology_structure.
@@ -15,7 +15,6 @@ From mathcomp Require Import topology_structure.
 (* ```                                                                        *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -54,8 +53,8 @@ rewrite -propeqE; apply: notLR; rewrite propeqE.
 split=> [conE [E [E0 EU [E1 E2]]]|conE B B0 [C oC BAC] [D cD BAD]].
   suff : E true = A.
     move/esym/(congr1 (setD^~ (closure (E true)))); rewrite EU setDUl.
-    have := @subset_closure _ _ (E true)
-      ; rewrite -setD_eq0 => ->; rewrite setU0.
+    have := @subset_closure _ _ (E true).
+    rewrite -setD_eq0 => ->; rewrite setU0.
     by move/setDidPl : E2 => ->; exact/eqP/set0P.
   apply: (conE _ (E0 true)).
   - exists (~` (closure (E false))); first exact/closed_openC/closed_closure.
@@ -153,8 +152,8 @@ suff : A `<=` U.
 rewrite -setIidPl; apply: ctdA.
 - move: U0; rewrite C1E => -[z [clAx C1z]]; have [] := clAx C1.
     exact: open_nbhs_nbhs.
-  by move=> w [Aw C1w]; exists w
-    ; rewrite setIA (setIidl (@subset_closure _ _ _)).
+  move=> w [Aw C1w]; exists w.
+  by rewrite setIA (setIidl (@subset_closure _ _ _)).
 - by exists C1 => //; rewrite C1E setIA (setIidl (@subset_closure _ _ _)).
 - by exists C2 => //; rewrite C2E setIA (setIidl (@subset_closure _ _ _)).
 Qed.

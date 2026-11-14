@@ -1,20 +1,21 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra all_classical.
 From mathcomp Require Import topology_structure.
 
 (**md**************************************************************************)
-(* # quotient topology                                                        *)
+(* # Quotient topology                                                        *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*          quotient_topology Q == the quotient topology corresponding to     *)
-(*                                 quotient Q : quotType T where T has type   *)
-(*                                 topologicalType                            *)
-(*           quotient_display Q == display for `quotient_topology T`          *)
-(* ```                                                                        *)
+(* `quotient_topology Q`                                                      *)
+(* : the quotient topology corresponding to `quotient Q : quotType T` where   *)
+(* : `T` has type `topologicalType`                                           *)
+(*                                                                            *)
+(* `quotient_display Q`                                                       *)
+(* : display for `quotient_topology T`                                        *)
+(*                                                                            *)
+(*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

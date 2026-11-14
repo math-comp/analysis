@@ -284,7 +284,7 @@ by apply/xsectionP; move: xy yz; exact: entourage_split.
 Qed.
 
 Lemma continuous_withinNx {d} {U : uniformType d} {d'} {V : uniformType d'}
-  (f : U -> V) x :
+    (f : U -> V) x :
   {for x, continuous f} <-> f @ x^' --> f x.
 Proof.
 split=> - cfx P /= fxP.
@@ -295,7 +295,7 @@ by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
 Unshelve. all: by end_near. Qed.
 
 Lemma continuous_injective_withinNx d (T : topologicalType d)
-  d' (U : topologicalType d') (f : T -> U) (x : T) :
+    d' (U : topologicalType d') (f : T -> U) (x : T) :
   {for x, continuous f} ->
   (forall y, f y = f x -> y = x) -> f @ x^' --> (f x)^'.
 Proof.
@@ -306,7 +306,7 @@ by apply/seteqP; split=> y/=;
   have /contra_neq /(_ yx) := fI y; tauto.
 Qed.
 
-(* This property is primarily useful for metrizability on uniform spaces *)
+(** This property is primarily useful for metrizability on uniform spaces. *)
 Definition countable_uniformity d (T : uniformType d) :=
   exists R : set_system (T * T), [/\
     countable R,

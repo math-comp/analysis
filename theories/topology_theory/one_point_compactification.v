@@ -11,10 +11,12 @@ From mathcomp Require Import pseudometric_structure compact initial_topology.
 (* results are that the compactification is indeed compact, and that `X`      *)
 (* embeds into its one-point compactification.                                *)
 (*                                                                            *)
-(*      one_point_compactification X == the one-point compactification of `X` *)
-(*                                      as an alias of `option X`             *)
-(*                     opc_display X == display for                           *)
-(*                                      `one_point_compactification X`        *)
+(* `one_point_compactification X`                                             *)
+(* : the one-point compactification of `X` as an alias of `option X`          *)
+(*                                                                            *)
+(* `opc_display X`                                                            *)
+(* : display for `one_point_compactification X`                               *)
+(*                                                                            *)
 (******************************************************************************)
 
 Local Open Scope classical_set_scope.

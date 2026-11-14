@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import interval zmodp.
@@ -10,7 +10,6 @@ From mathcomp Require Import ereal reals topology normedtype.
 (* `realsum.v`).                                                              *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -39,11 +38,11 @@ Qed.
 Definition partial_sum {I : choiceType} {R : zmodType}
   (x : I -> R) (A : {fset I}) : R := \sum_(i : A) x (val i).
 
-Definition sum (I : choiceType) d {K : numDomainType} {R : normedModType d K}
-   (x : I -> R) : R := lim (partial_sum x @ totally).
+Definition sum {I : choiceType} {d} {K : numDomainType} {R : normedModType d K}
+  (x : I -> R) : R := lim (partial_sum x @ totally).
 
-Definition summable (I : choiceType) d {K : realType} {R : normedModType d K}
-   (x : I -> R) :=
+Definition summable {I : choiceType} {d} {K : realType} {R : normedModType d K}
+     (x : I -> R) :=
    \forall M \near +oo%R, \forall J \near totally,
    (partial_sum (fun i => `|x i|) J <= M)%R.
 

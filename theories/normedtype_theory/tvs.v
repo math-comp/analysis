@@ -79,6 +79,9 @@ From mathcomp Require Import pseudometric_normed_Zmodule.
 (* : builds a `convexTvsType` structure on a `Lmodule` from a nonempty family *)
 (* : of seminorms                                                             *)
 (*                                                                            *)
+(* `seminorm_display P`                                                       *)
+(* : display for `P : set (Norm.SemiNorm.type E)` with `E : lmodType R`       *)
+(*                                                                            *)
 (* `seminorm_subbasis`                                                        *)
 (* : the subbasis of neighbourhoods for `seminorm_on`, built as the reverse   *)
 (* : image by the seminorms of open balls centered at 0                       *)
@@ -194,9 +197,8 @@ Unshelve. all: by end_near. Qed.
 End properties_of_preTopologicalLmodule.
 
 HB.mixin Record TopologicalZmodule_isTopologicalLmodule d (R : numDomainType) M
-    & PreTopologicalLmodule d R M := {
-  scale_continuous : continuous (fun z : R^o * M => z.1 *: z.2)
-}.
+    & PreTopologicalLmodule d R M :=
+  { scale_continuous : continuous (fun z : R^o * M => z.1 *: z.2) }.
 
 #[short(type="topologicalLmodType")]
 HB.structure Definition TopologicalLmodule d (K : numDomainType) :=
@@ -280,8 +282,8 @@ End TopologicalLmodule_numDomain.
 
 Section TopologicalLmodule_numField.
 
-Lemma openZ d (R : numFieldType) (E : topologicalLmodType d R)
-  (U : set E) (r : R) :
+Lemma openZ {d} {R : numFieldType} {E : topologicalLmodType d R}
+    (U : set E) (r : R) :
   r != 0 -> open U -> open ( *:%R r @` U ).
 Proof.
 move=> r0; rewrite openE /interior /= => openU z /= [x Ux <-].
@@ -657,7 +659,7 @@ HB.instance Definition _ := Uniform_isConvexTvs.Build _ R E locally_convex.
 HB.end.
 
 HB.factory Record NbhsBasisAt0_isConvexTvs
-  (d : filter_display) (R : numFieldType) (E : Type) & GRing.Lmodule R E := {
+    (d : filter_display) (R : numFieldType) (E : Type) & GRing.Lmodule R E := {
   nbhsbasis_at0 : set_system E ;
   nonempty_nbhsbasis_at0 : nbhsbasis_at0 !=set0 ;
   mem0_nbhsbasis_at0 : forall B, nbhsbasis_at0 B -> B 0 ;
@@ -1029,17 +1031,17 @@ HB.instance Definition _ :=
 End prod_ConvexTvs.
 
 HB.structure Definition LinearContinuous d (K : numDomainType)
-  (E : NbhsLmodule.type d K) d' (F : NbhsZmodule.type d') (s : K -> F -> F) :=
+    (E : NbhsLmodule.type d K) d' (F : NbhsZmodule.type d') (s : K -> F -> F) :=
   {f of @GRing.Linear K E F s f & @Continuous d E d' F f }.
 
 (* see https://github.com/math-comp/math-comp/issues/1536
    we use GRing.Scale.law even though it is claimed to be internal *)
 HB.factory Structure isLinearContinuous d (K : numDomainType)
-  (E : NbhsLmodule.type d K) d' (F : NbhsZmodule.type d')
-  (s : GRing.Scale.law K F) (f : E -> F) := {
-    linearP : linear_for s f ;
-    continuousP : continuous f
-  }.
+    (E : NbhsLmodule.type d K) d' (F : NbhsZmodule.type d')
+    (s : GRing.Scale.law K F) (f : E -> F) := {
+  linearP : linear_for s f ;
+  continuousP : continuous f
+}.
 
 HB.builders Context d K E d' F s f & @isLinearContinuous d K E d' F s f.
 
@@ -1201,7 +1203,7 @@ End lcfunproperties.
 Local Open Scope convex_scope.
 
 Section openbasis.
-Context d (R : realType) (E : convexTvsType d R).
+Context {d} {R : realType} {E : convexTvsType d R}.
 
 Definition nbhsbasis_convextvs := sval (cid2 (@locally_convex _ _ E)).
 
@@ -1266,6 +1268,8 @@ by rewrite /ball_ /= sub0r normrN gtr0_norm ?divr_gt0// gtr_pMr// invf_lt1// ltr
 Qed.
 
 End openbasis.
+Arguments basis_opennbhsbasis {d R} E.
+Arguments has_open_nbhs_basis {d R} E.
 
 Definition gauge_fun (K : realType) (V : lmodType K) (A : set V)
     (absA : absolutely_convex_set A) (absorbA : absorbing_set A) : V -> K :=
@@ -1649,7 +1653,7 @@ have contid : {for x, continuous (id : E -> seminormE)}.
  by have [contid' _] := seminorm_convextvs; exact: contid'.
 have cq : {for x, continuous (q : seminormE -> R^o)}.
   exact: (@continuous_seminorm R^o E seminorm_of _ (id x)).
-exact: (continuous_comp contid cq).
+exact: continuous_comp contid cq.
 Qed.
 
 #[local] Definition cst0 : E -> R := fun x => 0.

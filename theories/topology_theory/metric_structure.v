@@ -32,7 +32,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 HB.mixin Record PseudoMetric_isMetric d (K : numDomainType) M
-  & PseudoMetric d K M := {
+    & PseudoMetric d K M := {
   mdist : M -> M -> K ;
   mdist_ge0 : forall x y, 0 <= mdist x y ;
   mdist_positivity : forall x y, mdist x y = 0 -> x = y;

@@ -1179,7 +1179,7 @@ Proof. by move=> ->; apply: eqOE; rewrite {1}[g](idO F) addrC addfO. Qed.
 Lemma equiv_refl F (f : T -> V) : f ~_F f.
 Proof. by apply/eqaddoP; rewrite subrr. Qed.
 
-Lemma equivoRL d'' (W' : normedModType d'' K) F (f g : T -> V) (h : T -> W') :
+Lemma equivoRL d2 (W' : normedModType d2 K) F (f g : T -> V) (h : T -> W') :
   f ~_F g -> [o_F g of h] =o_F f.
 Proof.
 move=> ->; apply/eqoP; move=> _/posnumP[eps]; near=> x.
@@ -1197,14 +1197,14 @@ move=> fg; have /(canLR (addrK _))<- := fg.
 by apply:eqaddoE; rewrite oppo (equivoRL _ fg).
 Qed.
 
-Lemma equivoLR d'' (W' : normedModType d'' K) F (f g : T -> V) (h : T -> W') :
+Lemma equivoLR d2 (W' : normedModType d2 K) F (f g : T -> V) (h : T -> W') :
   f ~_F g -> [o_F f of h] =o_F g.
 Proof. by move/equiv_sym/equivoRL. Qed.
 
 Lemma equivORL F (f g : T -> V) : f ~_F g -> g =O_F f.
 Proof. by move/equiv_sym/equivOLR. Qed.
 
-Lemma eqoaddo d'' (W' : normedModType d'' K) F (f g : T -> V) (h : T -> W') :
+Lemma eqoaddo d2 (W' : normedModType d2 K) F (f g : T -> V) (h : T -> W') :
   [o_F f + [o_F f of g] of h] =o_F f.
 Proof. by apply: equivoLR. Qed.
 

@@ -976,7 +976,7 @@ rewrite /continuous_at; wlog r0 : r / (r > 0)%R => [hwlog|].
     by move=> x; rewrite mul0e; apply: cvg_near_cst; near=> y; rewrite mul0e.
   have -> : *%E r%:E = \- ( *%E (- r)%:E ).
     by apply/funeqP=> x /=; rewrite EFinN mulNe oppeK.
-  move=> x; apply: (continuous_comp (hwlog (- r)%R _ _)); rewrite ?oppr_gt0//.
+  move=> x; apply: continuous_comp (hwlog (- r)%R _ _) _; rewrite ?oppr_gt0//.
   exact: oppe_continuous.
 move=> [s||]/=.
 - rewrite -EFinM; apply: cvg_EFin => /=.
@@ -2123,12 +2123,12 @@ Qed.
 
 Section Closed_Ball_normedModType.
 
-Lemma closed_closed_ball_ d (R : realFieldType) (V : normedModType d R)
+Lemma closed_closed_ball_ {d} {R : realFieldType} {V : normedModType d R}
   (x : V) (e : R) : closed (closed_ball_ normr x e).
 Proof.
 rewrite /closed_ball_ -/((normr \o (fun y => x - y)) @^-1` [set x | x <= e]).
 apply: (preimage_closed _ (@closed_le _ _)) => y _.
-apply: (continuous_comp _ (@norm_continuous _ _ _ _)).
+apply: continuous_comp (@norm_continuous _ _ _ _).
 exact: (continuousB (@cst_continuous _ _ _ _ _ _)).
 Qed.
 
@@ -2781,7 +2781,7 @@ by rewrite ler_pM2r// le_max lexx orbT.
 Unshelve. all: by end_near. Qed.
 
 Lemma linear_findim_continuous d (V : normedVectType d R)
-  d' (W : normedModType d' R) (f : {linear V -> W}) :
+    d' (W : normedModType d' R) (f : {linear V -> W}) :
   continuous f.
 Proof.
 set V' := @fullv _ V.

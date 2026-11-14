@@ -239,7 +239,7 @@ Context {d} {M : topologicalZmodType d}.
 
 Lemma sub_continuous : continuous (fun x : M * M => x.1 - x.2).
 Proof.
-move=> x; apply: (@continuous_comp _ _ _ _ _ _ (fun x => (x.1, - x.2))
+move=> x; apply: (continuous_comp (fun x => (x.1, - x.2))
   (fun x : M * M => x.1 + x.2)); last exact: add_continuous.
 apply: cvg_pair; first exact: cvg_fst.
 by apply: continuous_comp; [exact: cvg_snd|exact: opp_continuous].
@@ -277,7 +277,7 @@ Proof.
 move=> x; rewrite /continuous_at.
 rewrite -(@eq_cvg _ _ _ (fun x => 0 - x)); first by move=> y; exact: add0r.
 rewrite -[- x]add0r.
-apply: (@continuous_comp _ _ _ _ _ _ (fun x => (0, x)) (fun x => x.1 - x.2)).
+apply: (continuous_comp (fun x => (0, x)) (fun x => x.1 - x.2)).
   exact: cvg_pair.
 exact: sub_continuous.
 Qed.
@@ -288,7 +288,7 @@ move=> x; rewrite /continuous_at.
 rewrite -(@eq_cvg _ _ _ (fun x => x.1 - (- x.2))).
   by move=> y; rewrite opprK.
 rewrite -[in x.1 + _](opprK x.2).
-apply: (continuous_comp (f := fun x => (x.1, - x.2)) (g := fun x => x.1 - x.2)).
+apply: (continuous_comp (fun x => (x.1, - x.2)) (fun x => x.1 - x.2)).
   apply: cvg_pair; first exact: cvg_fst.
   by apply: continuous_comp; [exact: cvg_snd|exact: opp_continuous].
 exact: sub_continuous.
@@ -362,12 +362,12 @@ End within_continuous_topologicalZmodType.
 HB.structure Definition PreUniformNmodule d :=
   {M of Uniform d M & GRing.Nmodule M}.
 
-HB.mixin Record PreUniformNmodule_isUniformNmodule d M & PreUniformNmodule d M := {
-  add_unif_continuous : unif_continuous (fun x : M * M => x.1 + x.2)
-}.
+HB.mixin Record PreUniformNmodule_isUniformNmodule d M & PreUniformNmodule d M :=
+  { add_unif_continuous : unif_continuous (fun x : M * M => x.1 + x.2) }.
 
 HB.structure Definition UniformNmodule d :=
-  {M of PreUniformNmodule d M & PreUniformNmodule_isUniformNmodule d M & TopologicalNmodule d M}.
+  {M of PreUniformNmodule d M & PreUniformNmodule_isUniformNmodule d M &
+        TopologicalNmodule d M}.
 
 Section prod_TopologicalNmodule.
 Context {d} {E : topologicalNmodType d} {d'} {F : topologicalNmodType d'}.
@@ -420,9 +420,8 @@ HB.structure Definition PreUniformZmodule d :=
   {M of Uniform d M & GRing.Zmodule M}.
 
 HB.mixin Record UniformNmodule_isUniformZmodule d M
-    & PreUniformZmodule d M := {
-  opp_unif_continuous : unif_continuous (-%R : M -> M)
-}.
+    & PreUniformZmodule d M :=
+  { opp_unif_continuous : unif_continuous (-%R : M -> M) }.
 
 HB.structure Definition UniformZmodule d :=
   {M of UniformNmodule d M & GRing.Zmodule M
@@ -464,9 +463,8 @@ HB.instance Definition _ := UniformNmodule_isUniformZmodule.Build
 End prod_UniformZmodule.
 
 HB.factory Record PreUniformNmodule_isUniformZmodule d M
-    & PreUniformZmodule d M := {
-  sub_unif_continuous : unif_continuous (fun x : M * M => x.1 - x.2)
-}.
+    & PreUniformZmodule d M :=
+  { sub_unif_continuous : unif_continuous (fun x : M * M => x.1 - x.2) }.
 
 HB.builders Context d M & PreUniformNmodule_isUniformZmodule d M.
 
@@ -881,6 +879,10 @@ by rewrite -ball_normE/= -opprD Num.normrN.
 Qed.
 
 End PseudoMetricNormedZmodule_numFieldType.
+Arguments distm_lt_split {d R V} z {x y e}.
+Arguments distm_lt_splitr {d R V} z {x y e}.
+Arguments distm_lt_splitl {d R V} z {x y e}.
+
 #[global]
 Hint Extern 0 (hausdorff_space _) => solve[apply: norm_hausdorff] : core.
 
@@ -1529,11 +1531,10 @@ Lemma limB f g : cvg (f @ F) -> cvg (g @ F) ->
    lim (f - g @ F) = lim (f @ F) - lim (g @ F).
 Proof. by move=> ? ?; apply: cvg_lim => //; apply: cvgB. Qed.
 
-Lemma lim_norm f : cvg (f @ F) -> lim ((fun x => `|f x| : K) @ F) = `|lim (f @ F)|.
+Lemma lim_norm f : cvg (f @ F) ->
+  lim ((fun x => `|f x| : K) @ F) = `|lim (f @ F)|.
 Proof.
-move=> ?; apply: cvg_lim.
-  exact: (@norm_hausdorff _ K K^o).
-exact: cvg_norm.
+by move=> ?; apply: cvg_lim; [exact: (@norm_hausdorff _ K K^o)|exact: cvg_norm].
 Qed.
 
 End limit_composition_metricNormedZmodType.
@@ -1754,8 +1755,8 @@ by rewrite (le_trans (ler_normD _ _))//; apply: lerD; [exact:Mf_ub|exact:Mg_ub].
 Qed.
 
 Lemma bounded_itvbb od (T : orderType od) td (K : realFieldType)
-  (V : metricNormedZmodType td K) (f : T -> V)
-  (a b : T) (b1 b2 b1' b2' : bool) :
+    (V : metricNormedZmodType td K) (f : T -> V)
+    (a b : T) (b1 b2 b1' b2' : bool) :
   [bounded f x | x in [set` Interval (BSide b1 a) (BSide b2 b)]] ->
   [bounded f x | x in [set` Interval (BSide b1' a) (BSide b2' b)]].
 Proof.
@@ -1766,17 +1767,17 @@ rewrite -(setUitv_set2 b1 b2)//.
 by apply/bounded_setU; last exact/bounded_setU.
 Qed.
 
-Lemma eq_bounded T d (K : numFieldType) (V : metricNormedZmodType d K)
-  (f g : T -> V) (A : set T) :
+Lemma eq_bounded {T} {d} {K : numFieldType} {V : metricNormedZmodType d K}
+    (f g : T -> V) (A : set T) :
   {in A, f =1 g} -> [bounded f x | x in A] = [bounded g x | x in A].
 Proof.
 move=> fg; apply: eq_near => M; apply/propeqP; apply: eq_forall => x.
 by apply: eq_forall => Ax /=; rewrite fg ?inE.
 Qed.
 
-Lemma continuous_compact_bounded d (T : topologicalType d)
-  d' (K : realFieldType) (V : metricNormedZmodType d' K)
-  (A : set T) (f : T -> V) :
+Lemma continuous_compact_bounded {d} {T : topologicalType d}
+    {d'} {K : realFieldType} {V : metricNormedZmodType d' K}
+    (A : set T) (f : T -> V) :
   compact A -> {within A, continuous f} -> [bounded f x | x in A].
 Proof.
 by move=> cA cf; exact/bounded_image/compact_bounded/continuous_compact.
@@ -1815,7 +1816,7 @@ Lemma standard_scale_continuous {R : numFieldType} :
 Proof.
 move=> [/= k x]; apply/cvgrPdist_lt => _/posnumP[e]; near +oo_R => M.
 near=> l z => /=; have M0 : 0 < M by [].
-rewrite (@distm_lt_split _ _ _ (k *: z)) // -?(scalerBr, scalerBl) normrM.
+rewrite (distm_lt_split (k *: z)) // -?(scalerBr, scalerBl) normrM.
   rewrite (@le_lt_trans _ _ (M * `|x - z|)) ?ler_wpM2r -?ltr_pdivlMl//.
   by near: z; apply: cvgr_dist_lt; rewrite // mulr_gt0 ?invr_gt0.
 rewrite (@le_lt_trans _ _ (`|k - l| * M)) ?ler_wpM2l -?ltr_pdivlMr//.

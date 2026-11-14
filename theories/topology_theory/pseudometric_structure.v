@@ -72,7 +72,7 @@ Lemma entourage_E {R : numDomainType} {T T'} (ball : T -> R -> set T') :
 Proof. by []. Qed.
 
 HB.mixin Record Uniform_isPseudoMetric d (R : numDomainType) M
-  & Uniform d M := {
+    & Uniform d M := {
   ball : M -> R -> M -> Prop ;
   ball_center_subproof : forall x (e : R), 0 < e -> ball x e x ;
   ball_sym_subproof : forall x y (e : R), ball x e y -> ball y e x ;
@@ -189,7 +189,7 @@ rewrite -entourage_ballE; move=> [A [e egt0 sbeA] sAP].
 by exists e => // ? ?; exact/sAP/xsectionP/sbeA.
 Qed.
 
-Lemma filter_from_ballE d {R : numDomainType} {M : pseudoMetricType d R} x :
+Lemma filter_from_ballE {d} {R : numDomainType} {M : pseudoMetricType d R} x :
   @filter_from R _ [set x : R | 0 < x] (@ball d R M x) = nbhs x.
 Proof. by rewrite -nbhs_ballE. Qed.
 
@@ -197,7 +197,7 @@ Module Export NbhsBall.
 Definition nbhs_simpl := (nbhs_simpl,@filter_from_ballE,@nbhs_ballE).
 End NbhsBall.
 
-Lemma nbhs_ballP d {R : numDomainType} {M : pseudoMetricType d R} (x : M) P :
+Lemma nbhs_ballP {d} {R : numDomainType} {M : pseudoMetricType d R} (x : M) P :
   nbhs x P <-> nbhs_ball x P.
 Proof. by rewrite nbhs_simpl. Qed.
 
@@ -284,7 +284,7 @@ End pseudoMetricType_numDomainType.
 
 #[global] Hint Resolve nbhsx_ballx : core.
 
-Global Instance entourage_proper_filter d {R : numDomainType}
+Global Instance entourage_proper_filter {d} {R : numDomainType}
   {M : pseudoPMetricType d R} : ProperFilter (@entourage d M).
 Proof.
 apply: Build_ProperFilter_ex; rewrite -entourage_ballE => A [_/posnumP[e] sbeA].
@@ -311,6 +311,9 @@ Lemma ball_splitl z x y (e : R) :
 Proof. by move=> bxz /ball_sym /(ball_split bxz). Qed.
 
 End pseudoMetricType_numFieldType.
+Arguments ball_split {d R M} z {x y e}.
+Arguments ball_splitr {d R M} z {x y e}.
+Arguments ball_splitl {d R M} z {x y e}.
 
 Lemma cvg_withinP {d} {T : topologicalType d} {d'} {R : archiRealFieldType}
   {M : pseudoMetricType d' R} (f : M -> T) (p : M) (l : T) (A : set M) :
@@ -379,7 +382,7 @@ Lemma countable_uniformity_metric {d} {R : realType} {T : pseudoMetricType d R}:
 Proof.
 apply/countable_uniformityP.
 exists (fun n => [set xy : T * T | ball xy.1 n.+1%:R^-1 xy.2]); last first.
-  by move=> n; apply: (entourage_ball _ n.+1%:R^-1%:pos).
+  by move=> n; exact: (entourage_ball _ n.+1%:R^-1%:pos).
 move=> E; rewrite -entourage_ballE => -[e e0 subE].
 exists (Num.truncn e^-1); apply: subset_trans subE => xy; apply: le_ball.
 by rewrite /= -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0// ltW// truncnS_gt.
@@ -460,15 +463,15 @@ HB.structure Definition CompletePseudoMetric d R :=
 HB.instance Definition _ d' d R (T : completePseudoMetricType d R) :=
   CompletePseudoMetric.on (with_fdisp d' T).
 
-Definition cauchy_ex d {R : numDomainType} {T : pseudoMetricType d R}
+Definition cauchy_ex {d} {R : numDomainType} {T : pseudoMetricType d R}
     (F : set_system T) :=
   forall eps : R, 0 < eps -> exists x, F (ball x eps).
 
-Definition cauchy_ball d {R : numDomainType} {T : pseudoMetricType d R}
+Definition cauchy_ball {d} {R : numDomainType} {T : pseudoMetricType d R}
     (F : set_system T) :=
   forall e, e > 0 -> \forall x & y \near F, ball x e y.
 
-Lemma cauchy_ballP d (R : numDomainType) (T  : pseudoMetricType d R)
+Lemma cauchy_ballP {d} (R : numDomainType) (T  : pseudoMetricType d R)
     (F : set_system T) (FF : Filter F) :
   cauchy_ball F <-> cauchy F.
 Proof.
@@ -479,13 +482,13 @@ by near do apply: xyepsU; apply: cauchyF.
 Unshelve. all: by end_near. Qed.
 Arguments cauchy_ballP {d R T} F {FF}.
 
-Lemma cauchy_exP d (R : numFieldType) (T : pseudoMetricType d R)
+Lemma cauchy_exP {d} (R : numFieldType) (T : pseudoMetricType d R)
     (F : set_system T) (FF : Filter F) :
   cauchy_ex F -> cauchy F.
 Proof.
 move=> Fc A; rewrite !nbhs_simpl /= -entourage_ballE => -[_/posnumP[e] sdeA].
 have /Fc [z /= Fze] := [gt0 of e%:num / 2]; near=> x y; apply: sdeA => /=.
-by apply: (@ball_splitr _ _ _ z); [near: x|near: y].
+by apply: (ball_splitr z); [near: x|near: y].
 Unshelve. all: by end_near. Qed.
 Arguments cauchy_exP {d R T} F {FF}.
 
@@ -502,7 +505,7 @@ Arguments cauchyP {d R T} F {PF}.
 Definition closed_ball_ {R : numDomainType} {V : zmodType} (norm : V -> R)
   (x : V) (e : R) := [set y | norm (x - y) <= e].
 
-Definition closed_ball d {R : numDomainType} {V : pseudoMetricType d R}
+Definition closed_ball {d} {R : numDomainType} {V : pseudoMetricType d R}
   (x : V) (e : R) := closure (ball x e).
 
 Section closed_ball_lemmas.
