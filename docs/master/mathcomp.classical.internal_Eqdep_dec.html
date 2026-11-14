@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Module mathcomp.classical.internal_Eqdep_dec</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis eca10f8 2026.11.12-23:36">
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis eca10f8 2026.11.13-23:46">
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -77,60 +77,105 @@ Qed.</div></details>
 <br>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="Equivalences.U" class="id"><span name="Equivalences.U" class="id anchor tooltip">U<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L34" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>.<br>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_rect_eq_on" class="id"><span name="Eq_rect_eq_on" class="id anchor tooltip">Eq_rect_eq_on<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>powerset_filter_from : forall {Y : Type}, set_system Y -&gt; set_system (set Y)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_rect_eq_on" class="id"><span name="Eq_rect_eq_on" class="id anchor tooltip">Eq_rect_eq_on<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>prod_filter_on :
+forall [T U : Type], filter_on T -&gt; filter_on U -&gt; filter_on (T * U)
 
-powerset_filter_from is not universe polymorphic
-Arguments powerset_filter_from {Y}%_type_scope F _
-powerset_filter_from is transparent
-Expands to: Constant mathcomp.classical.filter.powerset_filter_from
-Declared in library mathcomp.classical.filter, line 1273, characters 11-31
+prod_filter_on is not universe polymorphic
+Arguments prod_filter_on [T U]%_type_scope F G
+prod_filter_on is transparent
+Expands to: Constant mathcomp.classical.filter.prod_filter_on
+Declared in library mathcomp.classical.filter, line 1038, characters 10-24
 </p><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L36" target="_blank">Source code</a></span></span></span>&nbsp;(<span id="p:27" class="id"><span name="p:27" class="id anchor tooltip">p<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L36" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Equivalences.U">U</a></span>)&nbsp;(<span id="Q:28" class="id"><span name="Q:28" class="id anchor tooltip">Q<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L36" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Equivalences.U">U</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> </span><span class="gallina-kwd">Type</span>)&nbsp;(<span id="x:29" class="id"><span name="x:29" class="id anchor tooltip">x<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L36" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Q:28">Q</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:27">p</a></span>)<span class="id"> :=</span><br>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span>&nbsp;(<span id="h:30" class="id"><span name="h:30" class="id anchor tooltip">h<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L37" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:27">p</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:27">p</a></span>)<span class="id">,</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:29">x</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#eq_rect">eq_rect</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:27">p</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Q:28">Q</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:29">x</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:27">p</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#h:30">h</a></span>.<br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_rect_eq" class="id"><span name="Eq_rect_eq" class="id anchor tooltip">Eq_rect_eq<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>principal_filter : forall {X : Type}, X -&gt; set_system X
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_rect_eq" class="id"><span name="Eq_rect_eq" class="id anchor tooltip">Eq_rect_eq<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>in_filter_prod :
+forall {T U : Type} {F : set_system T} {G : set_system U},
+in_filter (T:=T) F -&gt;
+in_filter (T:=U) G -&gt; in_filter (T:=T * U) (filter_prod F G)
 
-principal_filter is not universe polymorphic
-Arguments principal_filter {X}%_type_scope x _
-principal_filter is transparent
-Expands to: Constant mathcomp.classical.filter.principal_filter
-Declared in library mathcomp.classical.filter, line 1366, characters 11-27
+in_filter_prod is not universe polymorphic
+Arguments in_filter_prod {T U}%_type_scope {F G} P Q
+in_filter_prod is transparent
+Expands to: Constant mathcomp.classical.filter.in_filter_prod
+Declared in library mathcomp.classical.filter, line 1064, characters 19-33
 </p><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L38" target="_blank">Source code</a></span></span></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="p:31" class="id"><span name="p:31" class="id anchor tooltip">p<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L38" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="Q:32" class="id"><span name="Q:32" class="id anchor tooltip">Q<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L38" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="x:33" class="id"><span name="x:33" class="id anchor tooltip">x<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L38" target="_blank">Source code</a></span></span></span><span class="id">,</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Eq_rect_eq_on">Eq_rect_eq_on</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:31">p</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Q:32">Q</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:33">x</a></span>.<br>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_dep_eq_on" class="id"><span name="Eq_dep_eq_on" class="id anchor tooltip">Eq_dep_eq_on<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>principal_filter_type : Type -&gt; Type
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_dep_eq_on" class="id"><span name="Eq_dep_eq_on" class="id anchor tooltip">Eq_dep_eq_on<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>near_simpl :
+(forall (U : Type) (T : filteredType U) (x : T) (P : set U),
+ (\forall x0 \near nbhs x, P x0) = (\forall x0 \near x, P x0)) *
+(forall (X : Type) (fX : filteredType X) (x : fX) (P : set X),
+ nbhs x P = (\forall x0 \near x, P x0)) *
+(forall (T : Type) (F : filter_on T) (P : set T),
+ (\forall x \near F, P x) = (\forall x \near F, P x)) *
+(forall (T U : Type) (f : T -&gt; U) (F : set_system T) (P : set U),
+ (\forall y \near (f x @[x --&gt; F])%classic, P y) =
+ (\forall x \near F, P (f x))) *
+(forall (T U : Type) (f : T -&gt; set U) (F : set_system T) (P : set U),
+ (\forall y \near (f x `@[x --&gt; F])%classic, P y) =
+ (\forall x \near F, exists y : U, f x y /\ P y)) *
+(forall (T T' U U' : Type) (f : T -&gt; U) (g : T' -&gt; U') 
+   (F : set_system T) (G : set_system T') (P : U -&gt; set U'),
+ Filter F -&gt;
+ Filter G -&gt;
+ (\forall y \near (f x @[x --&gt; F])%classic &amp; y' \near 
+  (g x @[x --&gt; G])%classic, P y y') =
+ (\forall x \near F &amp; x' \near G, P (f x) (g x')))
 
-principal_filter_type is not universe polymorphic
-Arguments principal_filter_type P%_type_scope
-principal_filter_type is transparent
-Expands to: Constant mathcomp.classical.filter.principal_filter_type
-Declared in library mathcomp.classical.filter, line 1370, characters 11-32
+near_simpl is not universe polymorphic
+near_simpl is transparent
+Expands to: Constant mathcomp.classical.filter.NearMap.near_simpl
+Declared in library mathcomp.classical.filter, line 1134, characters 11-21
 </p><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L40" target="_blank">Source code</a></span></span></span>&nbsp;(<span id="P:34" class="id"><span name="P:34" class="id anchor tooltip">P<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L40" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Equivalences.U">U</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> </span><span class="gallina-kwd">Type</span>)&nbsp;(<span id="p:35" class="id"><span name="p:35" class="id anchor tooltip">p<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L40" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Equivalences.U">U</a></span>)&nbsp;(<span id="x:36" class="id"><span name="x:36" class="id anchor tooltip">x<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L40" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:34">P</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:35">p</a></span>)<span class="id"> :=</span><br>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span>&nbsp;(<span id="y:37" class="id"><span name="y:37" class="id anchor tooltip">y<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L41" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:34">P</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:35">p</a></span>)<span class="id">,</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#eq_dep">eq_dep</a></span><span class="id"> _</span><span class="id"> _</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:35">p</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:36">x</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:35">p</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#y:37">y</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:36">x</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#y:37">y</a></span>.<br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_dep_eq" class="id"><span name="Eq_dep_eq" class="id anchor tooltip">Eq_dep_eq<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>filterI_iter : forall {T : Type}, set_system T -&gt; nat -&gt; set (set T)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Eq_dep_eq" class="id"><span name="Eq_dep_eq" class="id anchor tooltip">Eq_dep_eq<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>cvg_to_comp_2 :
+forall [T U V W : Type] [F : set_system T] [G : set_system U]
+  [H : set_system V] [I : set_system W],
+Filter F -&gt;
+Filter G -&gt;
+Filter H -&gt;
+forall [f : T -&gt; U] [g : T -&gt; V] [h : U -&gt; V -&gt; W],
+(f x @[x --&gt; F] --&gt; G)%classic -&gt;
+(g x @[x --&gt; F] --&gt; H)%classic -&gt;
+(h x.1 x.2 @[x --&gt; (G, H)] --&gt; I)%classic -&gt;
+(h (f x) (g x) @[x --&gt; F] --&gt; I)%classic
 
-filterI_iter is not universe polymorphic
-Arguments filterI_iter {T}%_type_scope F n%_nat_scope _
-filterI_iter is transparent
-Expands to: Constant mathcomp.classical.filter.filterI_iter
-Declared in library mathcomp.classical.filter, line 1518, characters 9-21
+cvg_to_comp_2 is not universe polymorphic
+Expanded type for implicit arguments
+cvg_to_comp_2 :
+forall [T U V W : Type] [F : set_system T] [G : set_system U]
+  [H : set_system V] [I : set_system W],
+Filter F -&gt;
+Filter G -&gt;
+Filter H -&gt;
+forall [f : T -&gt; U] [g : T -&gt; V] [h : U -&gt; V -&gt; W],
+(f x @[x --&gt; F] --&gt; G)%classic -&gt;
+(g x @[x --&gt; F] --&gt; H)%classic -&gt;
+(h x.1 x.2 @[x --&gt; (G, H)] --&gt; I)%classic -&gt;
+forall [t : set W],
+nbhs I t -&gt; F ((fun x : T =&gt; h (f x) (g x)) @^-1` t)%classic
+
+Arguments cvg_to_comp_2 [T U V W]%_type_scope [F G H I] 
+  FF FG FH [f g h]%_function_scope _ _ _ [t] _
+cvg_to_comp_2 is transparent
+Expands to: Constant mathcomp.classical.filter.cvg_to_comp_2
+Declared in library mathcomp.classical.filter, line 1160, characters 11-24
 </p><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L42" target="_blank">Source code</a></span></span></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="P:38" class="id"><span name="P:38" class="id anchor tooltip">P<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L42" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="p:39" class="id"><span name="p:39" class="id anchor tooltip">p<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L42" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="x:40" class="id"><span name="x:40" class="id anchor tooltip">x<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L42" target="_blank">Source code</a></span></span></span><span class="id">,</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Eq_dep_eq_on">Eq_dep_eq_on</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:38">P</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:39">p</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:40">x</a></span>.<br>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Streicher_K_on_" class="id"><span name="Streicher_K_on_" class="id anchor tooltip">Streicher_K_on_<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>open_finI_from :
-forall [I : choiceType] [T : Type], set I -&gt; (I -&gt; set T) -&gt; set (set T)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Streicher_K_on_" class="id"><span name="Streicher_K_on_" class="id anchor tooltip">Streicher_K_on_<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>within : forall {T : Type}, set T -&gt; set_system T -&gt; set_system T
 
-open_finI_from is not universe polymorphic
-Arguments open_finI_from [I] [T]%_type_scope D%_classical_set_scope
-  f%_function_scope _
-open_finI_from is transparent
-Expands to: Constant mathcomp.classical.filter.open_finI_from
-Declared in library mathcomp.classical.filter, line 1550, characters 11-25
+within is not universe polymorphic
+Arguments within {T}%_type_scope D%_classical_set_scope F _
+within is transparent
+Expands to: Constant mathcomp.classical.filter.within
+Declared in library mathcomp.classical.filter, line 1182, characters 11-17
 </p><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L44" target="_blank">Source code</a></span></span></span>&nbsp;(<span id="x:41" class="id"><span name="x:41" class="id anchor tooltip">x<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L44" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Equivalences.U">U</a></span>)&nbsp;(<span id="P:42" class="id"><span name="P:42" class="id anchor tooltip">P<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L44" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:41">x</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:41">x</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> </span><span class="gallina-kwd">Prop</span>)<span class="id"> :=</span><br>
 &nbsp;&nbsp;<span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:42">P</a></span>&nbsp;(<span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#eq_refl">eq_refl</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:41">x</a></span>)<span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> </span><span class="gallina-kwd">forall</span><span class="id"> </span><span id="p:43" class="id"><span name="p:43" class="id anchor tooltip">p<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L45" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:41">x</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:41">x</a></span><span class="id">,</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:42">P</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:43">p</a></span>.<br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Streicher_K_" class="id"><span name="Streicher_K_" class="id anchor tooltip">Streicher_K_<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>finI : forall [I : choiceType] [T : Type], set I -&gt; (I -&gt; set T) -&gt; Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Streicher_K_" class="id"><span name="Streicher_K_" class="id anchor tooltip">Streicher_K_<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>within_filter_on : forall [T : Type], set T -&gt; filter_on T -&gt; filter_on T
 
-finI is not universe polymorphic
-Arguments finI [I] [T]%_type_scope D%_classical_set_scope f%_function_scope
-finI is transparent
-Expands to: Constant mathcomp.classical.filter.finI
-Declared in library mathcomp.classical.filter, line 1623, characters 11-15
+within_filter_on is not universe polymorphic
+Arguments within_filter_on [T]%_type_scope D%_classical_set_scope F
+within_filter_on is transparent
+Expands to: Constant mathcomp.classical.filter.within_filter_on
+Declared in library mathcomp.classical.filter, line 1228, characters 10-26
 </p><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L46" target="_blank">Source code</a></span></span></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="x:44" class="id"><span name="x:44" class="id anchor tooltip">x<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L46" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="P:45" class="id"><span name="P:45" class="id anchor tooltip">P<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L46" target="_blank">Source code</a></span></span></span><span class="id">,</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Streicher_K_on_">Streicher_K_on_</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:44">x</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:45">P</a></span>.<br>
 <br>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eq_rect_eq_on__eq_dep1_eq_on" class="id"><span name="eq_rect_eq_on__eq_dep1_eq_on" class="id anchor tooltip">eq_rect_eq_on__eq_dep1_eq_on<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L48" target="_blank">Source code</a></span></span></span>&nbsp;(<span id="p:46" class="id"><span name="p:46" class="id anchor tooltip">p<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L48" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Equivalences.U">U</a></span>)&nbsp;(<span id="P:47" class="id"><span name="P:47" class="id anchor tooltip">P<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L48" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Equivalences.U">U</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> </span><span class="gallina-kwd">Type</span>)&nbsp;(<span id="y:48" class="id"><span name="y:48" class="id anchor tooltip">y<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L48" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:47">P</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:46">p</a></span>)<span class="id"> :</span><br>
@@ -270,24 +315,24 @@ Qed.</div></details>
 <br>
 <span class="vernacular">Variable</span><span class="id"> </span><span id="Eq_dec.Corollaries.U" class="id"><span name="Eq_dec.Corollaries.U" class="id anchor tooltip">U<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L149" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>.<br>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Inj_dep_pair_on" class="id"><span name="Inj_dep_pair_on" class="id anchor tooltip">Inj_dep_pair_on<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>Eq_rect_eq_on : forall (U : Type) (p : U) (Q : U -&gt; Type), Q p -&gt; Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Inj_dep_pair_on" class="id"><span name="Inj_dep_pair_on" class="id anchor tooltip">Inj_dep_pair_on<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>subset_filter :
+forall [T : finType] (p : T -&gt; bool) [s1 s2 : seq T],
+s1 \subset s2 -&gt; [seq a &lt;- s1 | p a] \subset [seq a &lt;- s2 | p a]
 
-Eq_rect_eq_on is not universe polymorphic
-Arguments Eq_rect_eq_on U%_type_scope p Q%_function_scope x
-Eq_rect_eq_on is transparent
-Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Eq_rect_eq_on
-Declared in
-library mathcomp.classical.internal_Eqdep_dec, line 36, characters 11-24
+subset_filter is not universe polymorphic
+Arguments subset_filter [T] p%_function_scope [s1 s2]%_seq_scope _
+subset_filter is opaque
+Expands to: Constant mathcomp.boot.fintype.subset_filter
+Declared in library mathcomp.boot.fintype, line 710, characters 6-19
 </p><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L151" target="_blank">Source code</a></span></span></span>&nbsp;(<span id="P:139" class="id"><span name="P:139" class="id anchor tooltip">P<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L151" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Eq_dec.Corollaries.U">U</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> </span><span class="gallina-kwd">Type</span>)&nbsp;(<span id="p:140" class="id"><span name="p:140" class="id anchor tooltip">p<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L151" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Eq_dec.Corollaries.U">U</a></span>)&nbsp;(<span id="x:141" class="id"><span name="x:141" class="id anchor tooltip">x<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L151" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:139">P</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:140">p</a></span>)<span class="id"> :=</span><br>
 &nbsp;&nbsp;<span class="gallina-kwd">forall</span>&nbsp;(<span id="y:142" class="id"><span name="y:142" class="id anchor tooltip">y<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L152" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:139">P</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:140">p</a></span>)<span class="id">,</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:139">P</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:140">p</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:141">x</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#existT">existT</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:139">P</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:140">p</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#y:142">y</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:141">x</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#y:142">y</a></span>.<br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Inj_dep_pair" class="id"><span name="Inj_dep_pair" class="id anchor tooltip">Inj_dep_pair<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>Eq_rect_eq : Type -&gt; Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Inj_dep_pair" class="id"><span name="Inj_dep_pair" class="id anchor tooltip">Inj_dep_pair<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>powerset_filter_from : forall {Y : Type}, set_system Y -&gt; set_system (set Y)
 
-Eq_rect_eq is not universe polymorphic
-Arguments Eq_rect_eq U%_type_scope
-Eq_rect_eq is transparent
-Expands to: Constant mathcomp.classical.internal_Eqdep_dec.Eq_rect_eq
-Declared in
-library mathcomp.classical.internal_Eqdep_dec, line 38, characters 11-21
+powerset_filter_from is not universe polymorphic
+Arguments powerset_filter_from {Y}%_type_scope F _
+powerset_filter_from is transparent
+Expands to: Constant mathcomp.classical.filter.powerset_filter_from
+Declared in library mathcomp.classical.filter, line 1273, characters 11-31
 </p><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L153" target="_blank">Source code</a></span></span></span><span class="id"> :=</span><span class="gallina-kwd"> forall</span><span class="id"> </span><span id="P:143" class="id"><span name="P:143" class="id anchor tooltip">P<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L153" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="p:144" class="id"><span name="p:144" class="id anchor tooltip">p<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L153" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="x:145" class="id"><span name="x:145" class="id anchor tooltip">x<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L153" target="_blank">Source code</a></span></span></span><span class="id">,</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Inj_dep_pair_on">Inj_dep_pair_on</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:143">P</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:144">p</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#x:145">x</a></span>.<br>
 <br>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="eq_dep_eq_on__inj_pair2_on" class="id"><span name="eq_dep_eq_on__inj_pair2_on" class="id anchor tooltip">eq_dep_eq_on__inj_pair2_on<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L155" target="_blank">Source code</a></span></span></span>&nbsp;(<span id="P:146" class="id"><span name="P:146" class="id anchor tooltip">P<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L155" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Eq_dec.Corollaries.U">U</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="gallina-kwd"> </span><span class="gallina-kwd">Type</span>)&nbsp;(<span id="p:147" class="id"><span name="p:147" class="id anchor tooltip">p<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L155" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#Eq_dec.Corollaries.U">U</a></span>)&nbsp;(<span id="x:148" class="id"><span name="x:148" class="id anchor tooltip">x<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/classical/internal_Eqdep_dec.v#L155" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#P:146">P</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.classical.internal_Eqdep_dec.html#p:147">p</a></span>)<span class="id"> :</span><br>

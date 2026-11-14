@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Module mathcomp.analysis.topology_theory.order_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis eca10f8 2026.11.12-23:36">
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis eca10f8 2026.11.13-23:46">
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -281,29 +281,43 @@ Qed.</div></details>
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> rray_closed</span><span class="id"> :</span><span class="id"> core</span>.<br>
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> itv_closed</span><span class="id"> :</span><span class="id"> core</span>.<br>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="order_topology" class="id"><span name="order_topology" class="id anchor tooltip">order_topology<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>quotient_open :
-forall {T : topologicalType} {Q0 : quotType T},
-set (quotient_topology Q0) -&gt; Prop
+<span class="vernacular">Definition</span><span class="id"> </span><span id="order_topology" class="id"><span name="order_topology" class="id anchor tooltip">order_topology<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>compact_near : forall {X : topologicalType}, set_system X -&gt; Prop
 
-quotient_open is not universe polymorphic
-Arguments quotient_open {T Q0} U%_classical_set_scope
-quotient_open is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.quotient_topology.quotient_open
+compact_near is not universe polymorphic
+Arguments compact_near {X} F
+compact_near is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.compact_near
 Declared in
-library mathcomp.analysis.topology_theory.quotient_topology, line 37, characters 11-24
-quotient_topologicalType_mixin :
-forall {T : topologicalType} {Q0 : quotType T},
-isOpenTopological.axioms_ (quotient_topology Q0)
-  quotient_topology.HB_unnamed_mixin_11 quotient_topology.HB_unnamed_mixin_10
+library mathcomp.analysis.topology_theory.compact, line 254, characters 11-23
+precompact : forall {X : topologicalType}, set X -&gt; Prop
 
-quotient_topologicalType_mixin is not universe polymorphic
-Arguments quotient_topologicalType_mixin {T Q0}
-quotient_topologicalType_mixin is transparent
-Expands to: Constant
-            mathcomp.analysis.topology_theory.quotient_topology.quotient_topologicalType_mixin
+precompact is not universe polymorphic
+Arguments precompact {X} C%_classical_set_scope
+precompact is transparent
+Expands to: Constant mathcomp.analysis.topology_theory.compact.precompact
 Declared in
-library mathcomp.analysis.topology_theory.quotient_topology, line 39, characters 19-49
+library mathcomp.analysis.topology_theory.compact, line 257, characters 11-21
+locally_compact : forall {X : topologicalType}, set X -&gt; Prop
+
+locally_compact is not universe polymorphic
+Arguments locally_compact {X} A%_classical_set_scope
+locally_compact is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.locally_compact
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 281, characters 11-26
+finite_subset_cover :
+forall [I : choiceType],
+set I -&gt; forall [U : Type], (I -&gt; set U) -&gt; set U -&gt; Prop
+
+finite_subset_cover is not universe polymorphic
+Arguments finite_subset_cover [I] D%_classical_set_scope 
+  [U]%_type_scope F%_function_scope A%_classical_set_scope
+finite_subset_cover is transparent
+Expands to: Constant
+            mathcomp.analysis.topology_theory.compact.finite_subset_cover
+Declared in
+library mathcomp.analysis.topology_theory.compact, line 285, characters 11-30
 </p><hr>Used by
 <ul><li>mathcomp.analysis.topology_theory.initial_topology</li></ul><hr><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/order_topology.v#L197" target="_blank">Source code</a></span></span></span>&nbsp;(<span id="T:61" class="id"><span name="T:61" class="id anchor tooltip">T<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/eca10f89bd852201c8148ff2f597c7c7346d6df2/theories/topology_theory/order_topology.v#L197" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.order_topology.html#T:61">T</a></span>.<br>
 <br>
