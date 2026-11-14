@@ -214,8 +214,7 @@ Local Open Scope classical_set_scope.
 
 Let cfsin n : continuous (fsin n).
 Proof.
-move=> x.
-by apply: cvgM => /=; [exact: continuous_horner|exact: continuous_sin].
+by move=> x; apply: cvgM =>/=; [exact: continuous_horner|exact: continuous_sin].
 Qed.
 
 Goal forall (p : {poly R}) c, p.[x] @[x --> c^'+] --> p.[c].
@@ -297,44 +296,7 @@ rewrite in_itv/= => /andP[mdz zmd]; rewrite in_itv/=; apply/andP; split.
   rewrite (lt_le_trans _ mdz)// subr_gt0.
   by rewrite ltr_pM2l// ?pi_gt0// ltf_pV2// ?posrE// ltr_nat.
 rewrite (le_lt_trans zmd)// -mulrDr gtr_pMr// ?pi_gt0//.
-(* (* lra looks efficient enough here *)
-rewrite -[_ < _]andbT -[_ < _]meetxx; apply/andP; split.
-  apply/andP; split.
-    Profile by rewrite -ltrBrDl [X in _ < X - _](splitr 1) div1r addrK ltf_pV2 ?posrE// ltr_nat.
-    (*
-      major words: 5.23E+04 words
-      minor words: 0 words
-      major collections: 0
-      minor collections: 0
-      instructions: 159620453
-
-      Proofview.apply:  057ms 261us, 5 calls
-      pretyping:        028ms 701us, 71 calls
-      unification:      027ms 266us, 811 calls
-      Conversion:       011ms 896us, 641 calls
-      intern:           002ms 307us, 37 calls
-      typeclass search: 002ms 677us, 2 calls
-      vm_compile:       213us 908ns, 2 calls
-    *)
-  Profile lra.
-  (*
-    major words: 0 words
-    minor words: 0 words
-    major collections: 0
-    minor collections: 0
-    instructions: 223934175
-
-    Proofview.apply:     045ms 085us, 3 calls
-    unification:         009ms 288us, 527 calls
-    pretyping:           004ms 723us, 5 calls
-    Conversion:          003ms 408us, 43 calls
-    unfreeze_full_state: 938us 939ns, 2 calls
-    kernel:              693us 844ns, 14 calls
-    vm_compile:          179us 291ns, 3 calls
-  *)
-*)
-by rewrite -ltrBrDl [X in _ < X - _](splitr 1) div1r addrK ltf_pV2 ?posrE// ltr_nat.
-(* that would be immediate with lra... *)
+by rewrite [ltRHS]splitr div1r ltrD2l ltf_pV2 ?posrE// ltr_nat.
 Qed.
 
 Let min_fsin (m : R := pi / 2) (d := pi / 4) n : (0 < n)%N ->
@@ -353,13 +315,13 @@ move=> x /set_mem; rewrite closed_ball_itv//=; last exact: Hc.
 by rewrite divr_gt0// pi_gt0.
 Qed.
 
-Let fsin_ge0 n (x : R) : 0 <= x <= pi -> (0 <= (fsin n x)%:E)%E.
+Let fsin_ge0 n (x : R) : x \in `[0, pi]%R -> (0 <= (fsin n x)%:E)%E.
 Proof.
-move=> /andP[x0 xpi]; rewrite lee_fin mulr_ge0//.
+move=> /itvP x0pi; rewrite lee_fin mulr_ge0//.
   rewrite !hornerE mulr_ge0//=.
-    by rewrite mulr_ge0// exprn_ge0.
-  by rewrite exprn_ge0// abx_ge0// piratE x0.
-by rewrite sin_ge0_pi// x0.
+    by rewrite mulr_ge0// exprn_ge0// x0pi.
+  by rewrite exprn_ge0// abx_ge0// piratE// !x0pi.
+by rewrite sin_ge0_pi// !x0pi.
 Qed.
 
 Lemma intfsin_gt0 n : 0 < intfsin n.
@@ -368,20 +330,17 @@ have [->|n0] := eqVneq n 0.
   rewrite fine_gt0// /fsin; under eq_integral do rewrite f0 mul1r.
   by rewrite intsin ltry andbT.
 have pi4_gt0 : 0 < pi / 4 :> R by rewrite mulr_gt0// pi_gt0.
-apply: Rintegral_gt0_itvcc.
-- exact: pi_gt0.
-- apply: (continuous_subspaceW (subsetT _)) => /=.
-  by rewrite continuous_open_subspace//; exact: openT.
+rewrite (Rintegral_gt0_itvcc pi_gt0)//.
+- exact: continuous_subspaceT.
 - exact: fsin_ge0.
 rewrite -lt0n in n0.
-have [r r0] := @min_fsin _ n0.
-set m : R := pi / 2; set d : R := pi / 4; move=> rn.
+have [/= r r0] := @min_fsin _ n0.
+set m : R := pi / 2; set d : R := pi / 4 => rn.
 have md : closed_ball m d (m - d).
   by rewrite closed_ball_itv//= bound_itvE lerD2l gerN// ltW.
 apply/existsNP; exists (m - d); apply/not_implyP; split.
-  have := small_ballS md => /=.
-  by apply: subitvP; rewrite subitvE !bnd_simp.
-by apply/negP/lt0r_neq0/(lt_le_trans r0)/rn; rewrite inE.
+  exact: (subset_itv_oo_cc (small_ballS md)).
+exact/negP/lt0r_neq0/(lt_le_trans r0)/rn/mem_set.
 Qed.
 
 Lemma intfsin_small (e : R) : 0 < e -> \forall n \near \oo, 0 < intfsin n < e.

@@ -192,6 +192,18 @@ by exists (~` [set y]); rewrite !inE/=; split;
   [rewrite openC; exact: h|exact/eqP|].
 Qed.
 
+Lemma separated_set1 (a b : T) : accessible_space ->
+  a != b -> separated [set a] [set b].
+Proof.
+move=> T1 ab; split.
+- have := @accessible_closed_set1 T1 a; rewrite closure_id => <-.
+  rewrite -subset0 => x/= [xa xb].
+  by move: ab; rewrite -xa -xb eqxx.
+- have := @accessible_closed_set1 T1 b; rewrite closure_id => <-.
+  rewrite -subset0 => x/= [xa xb].
+  by move: ab; rewrite -xa -xb eqxx.
+Qed.
+
 End point_separation_axioms.
 
 Arguments hausdorff_space {d} T.

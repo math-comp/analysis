@@ -23,9 +23,11 @@ From mathcomp Require Import cardinality set_interval reals real_interval
 (*  bigcup_ointsub U q == union of open real intervals included               *)
 (*                        in U and that contain the rational                  *)
 (*                        number q                                            *)
-(*         itvoo_basis == set of all open intervals in (R : realType);        *)
-(*                        proved to be a basis for R                          *)
 (* ```                                                                        *)
+(*                                                                            *)
+(* `itvoo_basis`                                                              *)
+(* : set of all open intervals in `R : realType`, proved to be a basis for    *)
+(* : $\mathbb{R}$                                                             *)
 (*                                                                            *)
 (* ```                                                                        *)
 (*   f @`[ a , b ], f @`] a , b [ == notations for images of intervals,       *)
@@ -846,12 +848,9 @@ Definition itvoo_basis : set_system R :=
 
 Lemma itvoo_basis_is_basis : basis itvoo_basis.
 Proof.
-split; first by move=> U [] x _ [] y _ <-; exact: interval_open.
-move=> x U [] e /= e0 bU.
-exists (ball_ Num.Def.normr x e) => //=.
-rewrite subrr normr0; split => //.
-exists (x - e) => //; exists (x + e) => //.
-by rewrite -ball_itv.
+split=> [U [x _] [y _] <-//|/= x U [e/= e0] bU].
+exists (ball_ normr x e) => //=; rewrite subrr normr0; split => //.
+by exists (x - e) => //; exists (x + e) => //; rewrite -ball_itv.
 Qed.
 
 End real_itvoo_basis.

@@ -27,28 +27,32 @@
   + instance `is_derive1_powRl`
 
 - in `filter.v`:
-  + new type `filter_display`.
-  + new definition `with_fdisp`.
+  + type `filter_display`
+  + definition `with_fdisp`
 - in `discrete_topology.v`:
-  + new definition `discrete_display`.
+  + definition `discrete_display`
 - in `function_spaces.v`:
-  + new definitions `ptws_display`, `arrow_uniform_display`, `uniform_display`, `uniform_fam_display`, `compact_open_display`.
+  + definitions `ptws_display`, `arrow_uniform_display`, `uniform_display`, `uniform_fam_display`, `compact_open_display`
 - in `initial_topology.v`:
-  + new definition `initial_display`.
+  + definition `initial_display`
 - in `one_point_compactification.v`:
-  + new definition `opc_display`.
+  + definition `opc_display`
 - in `order_topology.v`:
-  + new definition `order_display`.
+  + definition `order_display`
 - in `quotient_topology.v`:
-  + new definition `quotient_display`.
+  + definition `quotient_display`
 - in `subspace_topology.v`:
-  + new definition `subspace_display`.
+  + definition `subspace_display`
 - in `subtype_topology.v`:
-  + new definition `set_type_topology_def`.
+  + definition `set_type_topology_def`
 - in `sup_topology.v`:
-  + new definition `supremum_display`.
+  + definition `supremum_display`
 - in `tvs.v`:
-  + new definition `seminorm_display`.
+  + definition `seminorm_display`
+
+- in `separation_axioms.v`:
+  + lemma `separated_set1`
+
 ### Moved
 
 - from `pseudometric_normed_Zmodule.v` to `num_topology.v`
@@ -80,6 +84,9 @@
   + implicit arguments of `ball_split`, `ball_splitr`, `ball_splitl`
 
 ### Renamed
+
+- in `lebesgue_measure.v`:
+  + `compact_finite_measure` -> `compact_lebesgue_measure_lty`
 
 ### Generalized
 
