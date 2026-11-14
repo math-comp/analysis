@@ -36,6 +36,13 @@ Proof. by move=> ? ? [? ?]; rewrite set0I. Qed.
 Definition separated A B :=
   (closure A) `&` B = set0 /\ A `&` (closure B) = set0.
 
+Lemma separated_set1 (a b : T) : closed [set a] -> closed [set b] ->
+  a != b -> separated [set a] [set b].
+Proof.
+move=> ca cb /negPf ab.
+by split; rewrite -(closure_id [set _]).1// set1I in_set1 ab.
+Qed.
+
 Lemma separatedC A B : separated A B = separated B A.
 Proof. by rewrite /separated andC setIC (setIC _ B). Qed.
 

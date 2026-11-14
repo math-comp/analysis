@@ -117,6 +117,13 @@ case => [][[[]l|[]]] [[]r|[]] []//= _.
 - by move=> _; rewrite set_itvE subTset => ->; exists 1 => /=.
 Qed.
 
+Lemma ball_itv {R : realFieldType} (x r : R^o) :
+  ball x r = `]x - r, x + r[%classic.
+Proof.
+rewrite /ball/= set_itvE funeqE => y/=.
+by rewrite ltr_distlC.
+Qed.
+
 Module numFieldTopology.
 
 #[export, non_forgetful_inheritance]

@@ -821,7 +821,7 @@ Context (rT : realType).
 Let mu : measure _ _ := @lebesgue_measure rT.
 Import MeasurableR.
 
-Lemma compact_finite_measure (A : set rT) : compact A -> (mu A < +oo)%E.
+Lemma compact_lebesgue_measure_lty (A : set rT) : compact A -> (mu A < +oo)%E.
 Proof.
 move=> /[dup]/compact_measurable => mA /compact_bounded[N [_ N1x]].
 have AN1 : A `<=` `[- (`|N| + 1), `|N| + 1].
@@ -831,6 +831,8 @@ by rewrite lebesgue_measure_itv/= lte_fin gtrN// EFinD ltry.
 Qed.
 
 End compact_finite_measure.
+#[deprecated(since="mathcomp-analysis 1.20.0", note="renamed to `compact_lebesgue_measure_lty`")]
+Notation compact_finite_measure := compact_lebesgue_measure_lty (only parsing).
 
 Lemma lebesgue_measure_rat (R : realType) :
   lebesgue_measure (range ratr : set R) = 0%E.

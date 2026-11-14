@@ -1039,13 +1039,6 @@ HB.instance Definition _ := UniformNmodule_isUniformZmodule.Build
 
 End standard_topology_pseudoMetricNormedZmod.
 
-Lemma ball_itv {R : realFieldType} (x r : R) :
-  ball x r = `]x - r, x + r[%classic.
-Proof.
-rewrite -(@ball_normE _ _ R^o) /ball_ set_itvE.
-by apply/seteqP; split => t/=; rewrite ltr_distlC.
-Qed.
-
 (** Normed vector spaces have some continuous functions that are in fact continuous on metricNormedZmodType *)
 Section continuity_metricNormedZmodType.
 Context {d} {K : numFieldType} {V : metricNormedZmodType d K}.

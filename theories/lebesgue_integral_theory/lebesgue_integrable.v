@@ -6,7 +6,7 @@ From mathcomp Require Import archimedean interval_inference finmap.
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
 From mathcomp Require Import reals real_interval topology ereal.
-From mathcomp Require Import normedtype sequences esum measure.
+From mathcomp Require Import normedtype sequences derive esum measure.
 From mathcomp Require Import real_measure numfun realfun simple_functions.
 From mathcomp Require Import measurable_fun_approximation.
 From mathcomp Require Import lebesgue_integral_definition.
@@ -1101,3 +1101,23 @@ rewrite h set_neq_lt setIUr measureU//; [exact: measurable_lte..| |].
 Qed.
 
 End integral_ae_eq.
+
+Lemma compact_continuous_Rintegrable {R : realType} (D : set R) (f : R -> R) :
+  D !=set0 -> compact D -> {within D, continuous f} ->
+  lebesgue_measure.-integrable D (EFin \o f).
+Proof.
+move=> D_neq0 compactD cf.
+apply/integrableP; split.
+  by apply/measurable_EFinP; apply: subspace_continuous_measurable_fun;
+    [exact: compact_measurable|exact: cf].
+have : {within D, continuous (fun t => `|f t|)}.
+  by apply: within_continuous_comp => // x _; exact: norm_continuous.
+move=> /(compact_EVT_max D_neq0 compactD)[/= x xD x_ub].
+have ? := compact_measurable compactD.
+apply: (@le_lt_trans _ _ (\int[lebesgue_measure]_(d in D) cst `|f x|%:E d)%E).
+  rewrite ge0_le_integral//.
+    apply/measurable_EFinP/measurableT_comp => //.
+    exact: subspace_continuous_measurable_fun.
+  by move=> /= ? ?; exact/x_ub/mem_set.
+by rewrite integral_cst//= lte_mul_pinfty// compact_lebesgue_measure_lty.
+Qed.
