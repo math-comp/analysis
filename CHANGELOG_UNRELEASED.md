@@ -57,6 +57,11 @@
 
 - from `pseudometric_normed_Zmodule.v` to `num_topology.v`
   + lemma `ball_itv`
+  + new definition `seminorm_display`.
+- in `metric_structure.v`:
+  + lemma `ball_open`
+  + lemma `ball_open_nbhs`
+  + lemma `metric_accessible`
 
 ### Changed
 
@@ -87,6 +92,9 @@
 
 - in `lebesgue_measure.v`:
   + `compact_finite_measure` -> `compact_lebesgue_measure_lty`
+- in `pseudometric_normed_Zmodule.v`:
+  + `ball_open` -> `pseudo_ball_open`
+  + `ball_open_nbhs` -> `pseudo_ball_open_nbhs`
 
 ### Generalized
 

@@ -76,7 +76,37 @@ apply/negPn/negPn => [/eqP/esym/mdist_positivity/eqP//|/eqP ->].
 by rewrite [eqbRHS]mdistxx.
 Qed.
 
+Lemma ball_open (x : T) (r : R) : open (ball x r).
+Proof.
+rewrite openE => y; rewrite ballEmdist /interior/= => xyr.
+apply/nbhs_ballP.
+have [[e /andP[e0 erxy]]|abs] := pselect (exists e, 0 < e < r - mdist x y).
+- exists e => // z yez/=.
+  have xrey : ball x (r - e) y by rewrite ballEmdist/= ltrBrDl -ltrBrDr.
+  have /= := ball_triangle xrey yez.
+  by rewrite subrK// ballEmdist.
+- exists (r - mdist x y) => /=.
+    by rewrite subr_gt0.
+  move=> z; rewrite ballEmdist /= => yz.
+  have := mdist_ge0 y z; rewrite le_eqVlt => /predU1P[|d0].
+    by move/esym/mdist_positivity => <-.
+  absurd: abs => /=.
+  by exists (mdist y z); rewrite d0 yz.
+Qed.
+
+Lemma ball_open_nbhs (x : T) (r : R) : 0 < r -> open_nbhs x (ball x r).
+Proof. by move=> e0; split; [exact: ball_open|exact: ballxx]. Qed.
+
 End metric_numDomainType.
+
+Lemma metric_accessible {d} {R : numFieldType} (T : metricType d R) :
+  accessible_space T.
+Proof.
+move=> x y xy.
+exists (ball x (mdist x y / 2)); split; rewrite ?inE /=; first exact: ball_open.
+  by apply: ballxx; rewrite divr_gt0// mdist_gt0.
+by rewrite ballEmdist/= ltr_pdivlMr//= gtr_pMr ?ltrn1// mdist_gt0.
+Qed.
 
 Section metric_numFieldType.
 Context {d} {R : numFieldType} (T : metricType d R).

@@ -34,7 +34,6 @@ From mathcomp Require Import normed_module.
 
 Reserved Notation "k *` A" (at level 40, left associativity, format "k  *`  A").
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -391,13 +390,13 @@ move=> B0 tD.
 have : trivIset D (fun i => ball (cpoint (B i)) (radius (B i))%:num).
   move=> i j Di Dj BiBj; apply: tD => //.
   by apply: subsetI_neq0 BiBj => //; exact: subset_closed_ball.
-apply: separated_open_countable => //; first by move=> i; exact: ball_open.
+apply: separated_open_countable => //.
+  by move=> i; exact: metric_structure.ball_open.
 by move=> i; eexists; exact: ballxx.
 Qed.
 
 Section vitali_lemma_infinite.
-Context {R : realType} {I : eqType}.
-Variables (B : I -> set R) (V : set I) (r : R).
+Context {R : realType} {I : eqType} (B : I -> set R) (V : set I) (r : R).
 Hypothesis is_ballB : forall i, is_ball (B i).
 Hypothesis Bset0 : forall i, (radius (B i))%:num > 0.
 Hypothesis VBr : forall i, V i -> (radius (B i))%:num <= r.

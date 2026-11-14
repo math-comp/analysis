@@ -2222,11 +2222,11 @@ move=> oS /set_mem/(open_subball oS)[r/= r0 rS].
 have [y yxr] : exists y, ball x (r / 4) (ratr y).
   suff : ball x (r / 4) `&` range ratr !=set0.
     by move=> [/= _ []] /[swap] -[y _ <-]; exists y.
-  apply: dense_rat; last exact: ball_open.
+  apply: dense_rat; last exact: metric_structure.ball_open.
   by exists x; apply: ballxx; rewrite divr_gt0.
 have [q /andP[rq qr]] : exists q, r / 4 < ratr q < r / 2.
   have : ball (r / 3) (r / 12) `&` range ratr !=set0.
-    apply: dense_rat; last exact: ball_open.
+    apply: dense_rat; last exact: metric_structure.ball_open.
     by exists (r / 3); apply: ballxx; rewrite divr_gt0.
   move=> [/= _ []] /[swap] -[z _ <-].
   rewrite ball_itv/= in_itv/= => /andP[rz zr]; exists z; apply/andP; split.
@@ -2273,7 +2273,7 @@ have [e Sxe] : exists e : {posnum R},
   by rewrite /ball_/= sub0r normrN gtr0_norm// gtr_pMr// invf_lt1// ltr1n.
 have [c [r [xcr crxe]]] : exists c r,
   let B : set R := ball (@ratr R c) (ratr r) in x \in B /\ B `<=` ball x e%:num.
-  by apply: open_subball_rat; [exact: ball_open|exact/mem_set/ballxx].
+  by apply: open_subball_rat; [exact: metric_structure.ball_open|exact/mem_set/ballxx].
 by exists (c, r); split=> //= y /Sxe /[!inE] /[swap] /crxe /[swap] /[apply].
 Qed.
 
@@ -2312,7 +2312,7 @@ Lemma interior_closed_ballE d (R : realType) (V : normedModType d R) (x : V)
   (r : R) : 0 < r -> (closed_ball x r)° = ball x r.
 Proof.
 move=> r0; rewrite eqEsubset; split; last first.
-  by rewrite -open_subsetE; [exact: ball_open | exact: subset_closure].
+  by rewrite -open_subsetE; [exact: metric_structure.ball_open | exact: subset_closure].
 move=> /= t; rewrite closed_ballE // /interior /= -nbhs_ballE => [[]] s s0.
 have [-> _|nxt] := eqVneq t x; first exact: ballxx.
 near ((0 : R^o)^') => e; rewrite -ball_normE /closed_ball_ => tsxr.
@@ -2350,7 +2350,7 @@ have [e /= e0 eU] := open_subball oU Uq.
 pose B := ball (@ratr R q) (e / 2).
 have Bq : B (ratr q) by apply: ballxx; rewrite divr_gt0.
 apply/mem_set; exists B => //; split => //; split.
-- exact: ball_open.
+- exact: metric_structure.ball_open.
 - by rewrite /B ball_itv; exact: interval_is_interval.
 - apply: eU => //; last by rewrite divr_gt0.
   rewrite ball_normE/= /ball/= sub0r normrN gtr0_norm ?divr_gt0//.
