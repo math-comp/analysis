@@ -2355,16 +2355,170 @@ Hypothesis ndF : {in `[a, b] &, nondecreasing_fun F}.
 Let Fr z := lim (F x @[x --> z^'+]).
 Let Fl z := lim (F x @[x --> z^'-]).
 
-Lemma nondecreasing_discontinuity x : 
+#[deprecated(since="mathcomp-analysis 1.20.0", note="This lemma was use to prove `discontinuity_countable` but a shorter proof has been found since.")]
+Lemma nondecreasing_fun_sum_le (s : seq R) :
+  itv_partition a b s ->
+  \sum_(1 <= i < size s) (Fr (nth b (a :: s) i) - Fl (nth b (a :: s) i))
+  <= F b - F a.
+Proof.
+move=> abs; have [s0|s0] := eqVneq s [::].
+  by move: abs; rewrite s0/= big_nil => /itv_partition_nil ->; rewrite subrr.
+have [s' ss'b] : exists s', s = rcons s' b.
+  move: s abs s0; apply: last_ind => // s x ih [_ +] sx0.
+  by move/eqP; rewrite last_rcons => <-; exists s.
+pose x_ : R^nat := nth b (a :: s).
+set t := map (fun n => (x_ n + x_ n.+1) / 2) (iota 0%N (size s)).
+have [path_at sizets asts] : [/\ path <%R a t, size t = size s &
+    (forall k, (k < size s)%N -> nth b (a :: s) k < nth b t k < nth b s k)].
+  split.
+  - apply/(pathP b) => -[|n].
+    + rewrite [in X in X -> _]size_map [in X in X -> _]size_iota => {}s0/=.
+      rewrite /t ss'b size_rcons/= midf_lt// -[a]/(nth b (a :: s) 0%N).
+      by have /pathP := abs.1; exact.
+    + rewrite [in X in X -> _]size_map [in X in X -> _]size_iota => ns/=.
+      rewrite !(nth_map 0%N) ?size_iota//; first exact: (leq_trans _ ns).
+      rewrite !nth_iota// ?add0n; first exact: (leq_trans _ ns).
+      rewrite (@lt_trans _ _ (x_ n.+1))// midf_lt//.
+        by have /pathP := abs.1; apply; exact: (leq_trans _ ns).
+      by have /pathP := abs.1; exact.
+  - by rewrite size_map size_iota.
+  - move=> k ks; apply/andP; split.
+      rewrite (nth_map 0%N) ?size_iota// nth_iota// add0n midf_lt//.
+      by have /pathP := abs.1; exact.
+    rewrite (nth_map 0%N _ (fun n => (x_ n + x_ n.+1) / 2)) ?size_iota//.
+    rewrite nth_iota// add0n midf_lt//.
+    by have /pathP := abs.1; exact.
+pose y_ : R^nat := nth b (a :: t).
+have ast k : (k < size s)%N -> nth b (a :: s) k < nth b t k.
+  by move=> /asts /andP[].
+have ts k : (k < size s)%N -> nth b t k < nth b s k by move=> /asts /andP[].
+have yxl i : (0 < i)%N -> (i < size (a :: s))%N -> F (y_ i) <= Fl (x_ i).
+  move=> i0 ias; apply: limr_ge.
+  - have near_subab : \forall x \near (x_ i)^'-, `]x, (x_ i)[ `<=` `[a, b].
+      near=> x; apply: subset_itvW; last exact: itv_partition_nth_le.
+      near: x; apply: nbhs_left_ge.
+      rewrite -[a]/(x_ 0%N).
+      move: abs.1.
+      by rewrite lt_path_pairwise => /pairwiseP; exact.
+    apply: nondecreasing_at_left_is_cvgr.
+      by near do apply: itv_sub_in2 ndF.
+    near=> x.
+    exists (F b) => _ /= [z zxxi <-].
+    apply: ndF.
+    + by move: z zxxi; near: x.
+    + by rewrite in_itv/= lexx andbT (itv_partition_le abs).
+    + move: zxxi; rewrite in_itv/= => /andP [_ /ltW] /le_trans; apply.
+      exact: itv_partition_nth_le.
+  - near=> x; apply: ndF.
+    + rewrite in_itv/=; apply/andP; split.
+        apply/ltW.
+        have /allP := lt_path_min path_at; apply.
+        by rewrite /y_ /= -(prednK i0)/= mem_nth// prednK// sizets.
+      apply: (@le_trans _ _ (x_ i)); last exact: itv_partition_nth_le.
+      by rewrite ltW// -(prednK i0)/= ts// prednK.
+    + rewrite in_itv/=; apply/andP; split.
+      * near: x; apply: nbhs_left_ge.
+        have /allP := lt_path_min abs.1; apply.
+        by rewrite /x_ -(prednK i0)/= mem_nth// prednK.
+      * by rewrite (@le_trans _ _ (x_ i))//; exact: itv_partition_nth_le.
+    + near: x; apply: nbhs_left_ge.
+      by rewrite -(prednK i0)/= ts// prednK.
+have xry i : (0 < i)%N -> (i < size s)%N -> Fr (x_ i) <= F (y_ i.+1).
+  move=> i0 ilts; apply: limr_le.
+  - apply: nondecreasing_at_right_is_cvgr.
+    + near=> x; apply: (@itv_sub_in2 _ _ _ `[a, b]) ndF.
+      apply: subset_itvW.
+        by apply: itv_partition_nth_ge (abs); rewrite ltnS ltnW.
+      near: x; apply: nbhs_right_le.
+      apply: (@lt_le_trans _ _ (y_ i.+1)); first exact: ast.
+      apply: (@le_trans _ _ (x_ i.+1)); first exact/ltW/ts.
+      exact: itv_partition_nth_le.
+    + near=> x.
+      exists (F (x_ i)) => _/= [z + <-] => /[!in_itv]/= /andP[xiz zx].
+      apply: ndF; last exact: ltW.
+      * rewrite in_itv/=; apply/andP; split.
+          by apply: itv_partition_nth_ge (abs); exact: (ltn_trans ilts).
+        by apply: itv_partition_nth_le (abs); exact: (ltn_trans ilts).
+      * rewrite in_itv/=; apply/andP; split.
+          apply: le_trans (ltW xiz).
+          apply: itv_partition_nth_ge (abs).
+          exact: (ltn_trans ilts).
+        apply: (le_trans (ltW zx)).
+        apply: (@le_trans _ _ (x_ i.+1)) => //.
+          near: x; apply: nbhs_right_le.
+          by have /pathP := abs.1; exact.
+        by apply: itv_partition_nth_le (abs); exact: ilts.
+  - near=> x; apply: ndF.
+    + rewrite in_itv/=; apply/andP; split.
+        apply: (@le_trans _ _ (x_ i)) => //.
+        by apply: itv_partition_nth_ge (abs); exact: (@leq_trans (size s)).
+      near: x; apply: nbhs_right_le.
+      apply: (@lt_le_trans _ _ (x_ i.+1)); last exact: itv_partition_nth_le.
+      by have /pathP := abs.1; exact.
+    + rewrite in_itv/=; apply/andP; split.
+        rewrite ltW//.
+        have /allP := lt_path_min path_at; apply.
+        by apply: mem_nth; rewrite sizets.
+      apply: (@le_trans _ _ (x_ i.+1)); first exact/ltW/ts.
+      exact: itv_partition_nth_le.
+  - by near: x; apply: nbhs_right_le; exact: ast.
+apply: (@le_trans _ _ (\sum_(1 <= i < size s) (F (y_ i.+1) - F (y_ i)))).
+  rewrite big_nat_cond [leRHS]big_nat_cond; apply: ler_sum => n.
+  rewrite andbT => /andP[n0 ns].
+  by apply: lerB; [exact: xry|rewrite yxl//= ltnS ltnW].
+have sizes0 : (0 < size s)%N.
+  by rewrite lt0n; apply: contra s0 => /eqP/size0nil ->.
+rewrite telescope_sumr// lerB//.
+- apply: ndF.
+  + rewrite in_itv/=; apply/andP; split.
+    * rewrite ltW//.
+      have /allP := lt_path_min path_at; apply.
+      rewrite -sizets /y_ -last_nth//.
+      have [ht [r ->]] : exists x t', t = rcons x t'.
+        move: t path_at sizets asts y_ ast ts yxl xry.
+        apply: last_ind => //.
+          by move=> _ /esym /= /size0nil; move/eqP : s0.
+        by move=> ht tt _ _ _ _ _ _ _ _ _; exists ht, tt.
+      by rewrite mem_rcons last_rcons mem_head.
+    * rewrite /y_ /t.
+      have /pathP := abs.1 => /(_ b).
+      move: (sizes0) => /prednK.
+      set m := (size s).-1 => <- H.
+      rewrite -[leLHS]/(nth b [seq ((x_ i + x_ i.+1) / 2) | i <- iota 0 m.+1] m).
+      rewrite (nth_map 0%N); first by rewrite size_iota.
+      rewrite nth_iota// add0n.
+      apply: (@le_trans _ _ (x_ m.+1)).
+        by rewrite midf_le// ltW// H.
+      by apply: itv_partition_nth_le abs; rewrite prednK.
+  + by rewrite in_itv/= lexx andbT; exact: itv_partition_le abs.
+  + have /eqP := abs.2.
+    rewrite (last_nth b) => <-.
+    rewrite /y_ /t.
+    move: (sizes0) => /prednK <-.
+    set m := (size s).-1.
+    rewrite -[leLHS]/(nth b [seq ((x_ i + x_ i.+1) / 2) | i <- iota 0 m.+1] m).
+    rewrite (nth_map 0%N); first by rewrite size_iota.
+    rewrite nth_iota// add0n midf_le// ltW//.
+    have /pathP := abs.1; apply.
+    by rewrite (prednK sizes0).
+have ay1 : a <= y_ 1%N by rewrite -[a]/(nth b (a :: s) 0%N) ltW// ast.
+apply: ndF => //.
+  by rewrite in_itv/= lexx andTb; exact: itv_partition_le abs.
+rewrite in_itv/=; apply/andP; split => //.
+apply: (@le_trans _ _ (x_ 1%N)); last exact: itv_partition_nth_le.
+by rewrite /y_/x_ ltW//= ts.
+Unshelve. all: end_near. Qed.
+
+Lemma nondecreasing_discontinuity x :
   x \in `]a, b[ -> discontinuity F x -> Fl x < Fr x.
 Proof.
 move=> xab [cvgl cvgr].
 rewrite /Fl /Fr lt_neqAle => -> /=.
-exact: (nondecreasing_at_left_at_right ndF xab).
+exact: (nondecreasing_at_left_at_right ndF).
 Qed.
 
 Lemma discontinuity_countable :
-  countable [set x | x \in (`]a, b[) /\ discontinuity F x].
+  countable [set x | (x \in `]a, b[) /\ discontinuity F x].
 Proof.
 have [ba|ab] := leP b a.
   apply: sub_countable (countable0 R).
@@ -2372,7 +2526,7 @@ have [ba|ab] := leP b a.
   by rewrite bnd_simp ltNge ba.
 apply: sub_countable (countableP [set: rat]).
 apply/pcard_injP/ex_of_sigT.
-have [f hf] : {f : R -> rat & 
+have [f hf] : {f : R -> rat &
     forall x, x \in `]a, b[ -> discontinuity F x -> Fl x < ratr (f x) < Fr x}.
   apply: (@choice _ _ (fun x fx => _ -> _ -> _ < ratr fx < _)) => x.
   case: (EM (discontinuity F x)) => dFx; last by exists 0.
@@ -2387,16 +2541,16 @@ move=> /set_mem[/[dup] yab /andP[ay yb] /[dup] dFy [cvg_fyl _ _]].
 have /andP[fyl _] := hf _ yab dFy.
 rewrite -(ltr_rat R); apply: (lt_trans fxr); apply: le_lt_trans fyl.
 rewrite /Fr /Fl -fmap_at_right0E -fmap_at_left0P.
-apply: (@ler_lim _ _ _ _ _ (fun e => F (x + e)) (fun e => F (y - e))).
+apply: ler_lim.
 - by rewrite (fmap_at_right0E x F); exact: cvg_fxr.
 - by rewrite (fmap_at_left0P y F); exact: cvg_fyl.
-near=> e; apply: ndF; rewrite ?in_itv/=; try (apply/andP; split).
-- by apply: (le_trans (ltW ax)); rewrite lerDl. 
-- near: e; apply/(nbhs_right0P _ (fun z => z <= b)).
-  by apply: nbhs_right_le.
+near=> e; apply: ndF; rewrite ?in_itv/=.
+- rewrite (le_trans (ltW ax)) ?lerDl//=.
+  near: e; apply/(nbhs_right0P _ (fun z => z <= b)).
+  exact: nbhs_right_le.
+- rewrite (le_trans _ (ltW yb)) ?gerBl ?andbT//=.
 - near: e; apply/(nbhs_left0P _ (fun z => a <= z)).
-  by apply: nbhs_left_ge.
-- by apply: le_trans (ltW yb); rewrite gerBl.
+  exact: nbhs_left_ge.
 - rewrite lerBrDr -addrA -lerBrDl -mulr2n -mulr_natr -ler_pdivlMr//.
   by near: e; apply: nbhs_right_le; rewrite ltr_pdivlMr// mul0r subr_gt0.
 Unshelve. all: by end_near. Qed.

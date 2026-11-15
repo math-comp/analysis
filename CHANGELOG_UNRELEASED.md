@@ -53,29 +53,25 @@
 - in `separation_axioms.v`:
   + lemma `separated_set1`
 
-### Moved
-
-- from `pseudometric_normed_Zmodule.v` to `num_topology.v`
-  + lemma `ball_itv`
-  + new definition `seminorm_display`.
 - in `metric_structure.v`:
   + lemma `ball_open`
   + lemma `ball_open_nbhs`
   + lemma `metric_accessible`
 
 - in `realfun.v`:
-  + lemma `nondecreasing_discontinuity`.
+  + lemma `nondecreasing_discontinuity`
+
 ### Changed
 
 - in `lebesgue_integral_nonneg.v`, generalized and deprecated:
   + lemma `ge0_integralZl_EFin` (no condition on `k`)
 - in file `function_spaces.v`,
   + new lemma `within_continuous_big`.
-- in file `nat_topology.v`,
+- in `nat_topology.v`:
   + new lemma `near_infty_after`.
-- in file `num_topology.v`,
-  + new lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
-    `at_left_shift`, and `at_right_shift`.
+- in `num_topology.v`;
+  + lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
+    `at_left_shift`, `at_right_shift`
 - in `realfun.v`:
   + lemmas `derivable_oo_LRcontinuousZ`, `derivable_oo_LRcontinuousD`, 
     `derivable_oo_LRcontinuousN`, `derivable_oo_LRcontinuous_shift`,
@@ -90,10 +86,14 @@
 - in `pseudometric_structure.v`:
   + implicit arguments of `ball_split`, `ball_splitr`, `ball_splitl`
 
+- moved from `pseudometric_normed_Zmodule.v` to `num_topology.v`
+  + lemma `ball_itv`
+
 ### Renamed
 
 - in `lebesgue_measure.v`:
   + `compact_finite_measure` -> `compact_lebesgue_measure_lty`
+
 - in `pseudometric_normed_Zmodule.v`:
   + `ball_open` -> `pseudo_ball_open`
   + `ball_open_nbhs` -> `pseudo_ball_open_nbhs`
@@ -105,10 +105,10 @@
 
 ### Deprecated
 
-### Removed
-
 - in `realfun.v`:
-  + lemma `nondecreasing_fun_sum_le`.
+  + lemma `nondecreasing_fun_sum_le`
+
+### Removed
 
 ### Infrastructure
 
