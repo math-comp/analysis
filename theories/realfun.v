@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order finmap ssralg ssrnum ssrint.
-From mathcomp Require Import archimedean interval interval_inference.
+From mathcomp Require Import rat archimedean interval interval_inference.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality contra.
@@ -2355,6 +2355,7 @@ Hypothesis ndF : {in `[a, b] &, nondecreasing_fun F}.
 Let Fr z := lim (F x @[x --> z^'+]).
 Let Fl z := lim (F x @[x --> z^'-]).
 
+#[deprecated(since="mathcomp-analysis 1.20.0", note="This lemma was use to prove `discontinuity_countable` but a shorter proof has been found since.")]
 Lemma nondecreasing_fun_sum_le (s : seq R) :
   itv_partition a b s ->
   \sum_(1 <= i < size s) (Fr (nth b (a :: s) i) - Fl (nth b (a :: s) i))
@@ -2508,113 +2509,51 @@ apply: (@le_trans _ _ (x_ 1%N)); last exact: itv_partition_nth_le.
 by rewrite /y_/x_ ltW//= ts.
 Unshelve. all: end_near. Qed.
 
-Lemma discontinuity_countable :
-  countable [set x | x \in (`]a, b[) /\ discontinuity F x].
+Lemma nondecreasing_discontinuity x :
+  x \in `]a, b[ -> discontinuity F x -> Fl x < Fr x.
 Proof.
-have [|ab] := leP b a.
-  rewrite le_eqVlt => /predU1P[->|ba].
-    set S := (X in countable X).
-    suff Sa : S `<=` [set a] by exact/finite_set_countable/(sub_finite_set Sa).
-    move=> x; rewrite /S/= in_itv/= => [[/andP[/ltW]]].
-    by rewrite ltNge => ->.
-  set S := (X in countable X).
-  rewrite (_ : S = set0)// -subset0 => x.
-  rewrite /S/= in_itv/= => -[/andP[]] /lt_trans /[apply].
-  by rewrite ltNge ltW.
-set A : set R := [set x | _].
-pose elt_type := set_type A.
-have FrBFl (x : elt_type) : exists m, m.+1%:R ^-1 < Fr (sval x) - Fl (sval x).
-  have [Fc Fd cd] : discontinuity F (sval x) by case: x => /= r /[!inE] => -[].
-  have FlFr : Fl (sval x) <= Fr (sval x).
-    apply: (@nondecreasing_at_left_at_right _ _ a b) => //.
-    by case: x {Fc Fd cd} => x/= /[1!inE] -[].
-  have {}FlFr : Fl (sval x) < Fr (sval x) by rewrite lt_neqAle FlFr andbT.
-  exists (truncn (Fr (sval x) - Fl (sval x))^-1).
-  by rewrite invf_plt ?posrE ?subr_gt0// truncnS_gt.
-pose S m := [set x | x \in (`]a, b[) /\ m.+1%:R ^-1 < Fr x - Fl x].
-have jumpfafb m (s : seq R) : (forall i, (i < size s)%N -> nth b s i \in S m) ->
-  path <%R a s ->
-    \sum_(0 <= i < size s) (Fr (nth b s i) - Fl (nth b s i)) <= F b - F a.
-  move=> Hs pas.
-  have : itv_partition a b (rcons s b).
-    split; last by rewrite last_rcons.
-    move: s Hs pas; apply: last_ind => /=; first by rewrite ab.
-    move=> s ls _ H.
-    rewrite rcons_path => /andP[pas lasls].
-    rewrite !rcons_path pas lasls/= last_rcons.
-    have := nth_rcons b s ls (size s).
-    rewrite ltnn eq_refl => <-.
-    have := H (size s).
-    rewrite size_rcons => /(_ (ltnSn (size s))).
-    by rewrite inE => -[+ _] => /[!in_itv]/= /andP[].
-  move/nondecreasing_fun_sum_le.
-  rewrite size_rcons (big_addn 0%N _ 1%N) subn1/= big_nat/=.
-  under eq_bigr.
-    move=> i si.
-    rewrite addn1/= nth_rcons si.
-    over.
-  by rewrite -big_nat.
-have fin_S m : finite_set (S m).
-  apply: contrapT => /infinite_set_fset.
-  move=> /(_ (m.+1 * (truncn (F b - F a)).+1).+1)[B BSm mFbFaB].
-  set s := sort <=%R B.
-  have := jumpfafb m s.
-  have HsSm n : (n < size s)%N -> nth b s n \in S m.
-    move=> ns; apply/mem_set/BSm/set_mem.
-    by rewrite mem_setE -(@mem_sort _ <=%R) mem_nth.
-  move/(_ HsSm){HsSm}.
-  have Hpas : path <%R a s.
-    rewrite lt_path_sortedE; apply/andP; split.
-      apply/allP => x.
-      rewrite mem_sort => /BSm[+ _].
-      by rewrite in_itv/= => /andP[].
-    by rewrite sort_lt_sorted; exact: fset_uniq.
-  move/(_ Hpas){Hpas}.
-  contra; rewrite -ltNge => _.
-  rewrite (lt_le_trans (truncnS_gt _))//.
-  apply: (@le_trans _ _ (m.+1%:R^-1 * #|` B|%:R)).
-    by rewrite ler_pdivlMl// -natrM ler_nat ltnW.
-  rewrite card_fset_sum1 natr_sum mulr_sumr mulr1 big_tnth cardfE.
-  rewrite -(big_mkord xpredT (fun=> m.+1%:R^-1)) size_sort cardfE.
-  rewrite ler_sum_nat// => k /[!leq0n]/= kB.
-  have : nth b s k \in S m.
-    apply/mem_set/BSm => /=; rewrite -(@mem_sort _ <=%R).
-    by apply/mem_nth; rewrite size_sort cardfE.
-  by rewrite /S inE/= => -[_ /ltW].
-suff -> : A = \bigcup_m S m.
-  by apply: bigcup_countable => // n _; exact: finite_set_countable.
-rewrite eqEsubset; split.
-- move=> x Ax.
-  pose z : elt_type := exist (fun x => x \in A) x (mem_set Ax).
-  have [m Hz] := FrBFl z.
-  exists m => //.
-  by split; [move: (Ax) => -[]|exact: Hz].
-- move=> x [m _ []] /[dup] xab /[!in_itv]/= /andP[ax xb] mx.
-  split => //; split.
-  + apply: nondecreasing_at_left_is_cvgr; near=> r.
-    * apply: itv_sub_in2 ndF.
-      apply: (subset_itvW _ _ _ (ltW xb)).
-      by near: r; exact: nbhs_left_ge.
-    * exists (F x) => _/= [z zrx <-].
-      apply: ndF.
-      - apply: (subset_itvW _ _ _ (ltW xb) zrx).
-        by near: r; exact: nbhs_left_ge.
-      - exact: subset_itv_oo_cc.
-      - by move: zrx => /[!in_itv]/= /andP[_ /ltW].
-  + apply: nondecreasing_at_right_is_cvgr; near=> r.
-    * apply: itv_sub_in2 ndF.
-      apply: (subset_itvW _ _ (ltW ax)).
-      by near: r; exact: nbhs_right_le.
-    * exists (F x) => _/= [z zxr <-].
-      apply: ndF.
-      - exact: subset_itv_oo_cc.
-      - apply: (subset_itvW _ _ (ltW ax) _ zxr).
-        by near: r; exact: nbhs_right_le.
-      - by move: zxr => /[!in_itv]/= /andP[/ltW].
-  + apply/negP => /eqP Fxlr.
-    contra: mx; rewrite -leNgt => _.
-    by rewrite /Fl Fxlr subrr.
-Unshelve. all: end_near. Qed.
+move=> xab [cvgl cvgr].
+rewrite /Fl /Fr lt_neqAle => -> /=.
+exact: (nondecreasing_at_left_at_right ndF).
+Qed.
+
+Lemma discontinuity_countable :
+  countable [set x | (x \in `]a, b[) /\ discontinuity F x].
+Proof.
+have [ba|ab] := leP b a.
+  apply: sub_countable (countable0 R).
+  apply/card_le0P; rewrite -subset0 => x [/itv_boundlr_lt].
+  by rewrite bnd_simp ltNge ba.
+apply: sub_countable (countableP [set: rat]).
+apply/pcard_injP/ex_of_sigT.
+have [f hf] : {f : R -> rat &
+    forall x, x \in `]a, b[ -> discontinuity F x -> Fl x < ratr (f x) < Fr x}.
+  apply: (@choice _ _ (fun x fx => _ -> _ -> _ < ratr fx < _)) => x.
+  case: (EM (discontinuity F x)) => dFx; last by exists 0.
+  case: (EM (x \in `]a,b[)) => xab; last by exists 0.
+  have /rat_in_itvoo[q +] := nondecreasing_discontinuity xab dFx.
+  by rewrite (in_itv (ratr _)) /=; exists q.
+exists f.
+apply/inc_inj_in/le_mono_in => x y + + xy.
+move=> /set_mem[/[dup] xab /andP[ax xb] /[dup] dFx [_ cvg_fxr _]].
+have /andP[_ fxr] := hf _ xab dFx.
+move=> /set_mem[/[dup] yab /andP[ay yb] /[dup] dFy [cvg_fyl _ _]].
+have /andP[fyl _] := hf _ yab dFy.
+rewrite -(ltr_rat R); apply: (lt_trans fxr); apply: le_lt_trans fyl.
+rewrite /Fr /Fl -fmap_at_right0E -fmap_at_left0P.
+apply: ler_lim.
+- by rewrite (fmap_at_right0E x F); exact: cvg_fxr.
+- by rewrite (fmap_at_left0P y F); exact: cvg_fyl.
+near=> e; apply: ndF; rewrite ?in_itv/=.
+- rewrite (le_trans (ltW ax)) ?lerDl//=.
+  near: e; apply/(nbhs_right0P _ (fun z => z <= b)).
+  exact: nbhs_right_le.
+- rewrite (le_trans _ (ltW yb)) ?gerBl ?andbT//=.
+- near: e; apply/(nbhs_left0P _ (fun z => a <= z)).
+  exact: nbhs_left_ge.
+- rewrite lerBrDr -addrA -lerBrDl -mulr2n -mulr_natr -ler_pdivlMr//.
+  by near: e; apply: nbhs_right_le; rewrite ltr_pdivlMr// mul0r subr_gt0.
+Unshelve. all: by end_near. Qed.
 
 End discontinuity_countable.
 
