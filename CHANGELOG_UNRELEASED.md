@@ -92,7 +92,10 @@
   + lemma `ball_itv`
 
 - moved from `theories` to `number_theory`:
-  + files `pi_irrational.v`, `pnt.v`
+  + files `pi_irrational.v`
+
+- moved from `theories/showcase` to `number_theory`:
+  + files `pnt.v`
 
 ### Renamed
 
