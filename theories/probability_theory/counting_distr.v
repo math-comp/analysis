@@ -60,7 +60,6 @@ Notation "f '<=1' g" := (forall x, f x <= g x)
   (at level 70, no associativity).
 Notation "f '<=2' g" := (forall x y, f x y <= g x y)
   (at level 70, no associativity).
-Local Notation "\`| f |" := (fun x => `|f x|) (at level 2).
 
 Definition discrete_measurable_space (T : choiceType) : Type := T.
 
@@ -259,7 +258,7 @@ rewrite (@measure_fin_bigcup _ _ _ P _ [set` J] (fun j : R => X @^-1` [set j]))/
 - exact: trivIset_preimage1.
 - rewrite fsbig_seq//; apply: eq_fsbigr => j _.
   by rewrite /pmf fineK// fin_num_measure.
-Qed.
+[Qed.
 
 Let pmf_uniq_le1 (J : seq R) : uniq J -> (\sum_(j <- J) pmf X j <= 1)%R.
 Proof.
