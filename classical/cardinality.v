@@ -415,7 +415,6 @@ apply/idP/idP=> [/card_leP[f]|?];
 by have /leq_card := in2TT 'inj_(IIord \o f \o IIord^-1); rewrite !card_ord.
 Qed.
 
-
 Lemma ocard_eqP {T U} {A : set T} {B : set U} :
   reflect $|{bij A >-> some @` B}| (A #= B).
 Proof.
