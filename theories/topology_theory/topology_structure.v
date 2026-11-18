@@ -283,6 +283,10 @@ move=> A B; rewrite !open_nbhs_mem => -[Aop Ap] [Bop Bp]; split => //.
 exact: openI.
 Qed.
 
+#[deprecated(since="mathcomp-analysis 1.20.0", note="remove: true by definition, shouldn't be needed")]
+Lemma open_nbhs_nbhs (p : T) (A : set T) : open_nbhs p A -> nbhs p A.
+Proof. by case. Qed.
+
 Lemma open_mem_nbhs (p : T) (A : set T) : open A -> A p -> nbhs p A.
 Proof. by move=> oA; move/(conj oA); rewrite -open_nbhs_mem => -[]. Qed.
 

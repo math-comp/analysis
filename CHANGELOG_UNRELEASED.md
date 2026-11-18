@@ -403,6 +403,10 @@
 - in `realfun.v`:
   + lemma `nondecreasing_fun_sum_le`
 
+- in `topology_structure.v`
+  + lemma `open_nbhsE`
+  + lemma `open_nbhs_nbhs`
+
 ### Removed
 
 - in `derive.v` (old):
