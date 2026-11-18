@@ -16,6 +16,9 @@ From mathcomp Require Import reals ereal sequences.
 (*             prime_seq == the sequence of prime numbers                     *)
 (* ```                                                                        *)
 (*                                                                            *)
+(* Acknowledgment: This work was a collaboration with Lucas Malaizier.        *)
+(* https://github.com/LucasMalaizier                                          *)
+(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.

@@ -61,6 +61,9 @@
 - in `realfun.v`:
   + lemma `nondecreasing_discontinuity`
 
+- new subdirectory `number_theory`
+  + new file `number.v`
+
 ### Changed
 
 - in `lebesgue_integral_nonneg.v`, generalized and deprecated:
@@ -88,6 +91,12 @@
 
 - moved from `pseudometric_normed_Zmodule.v` to `num_topology.v`
   + lemma `ball_itv`
+
+- moved from `theories` to `number_theory`:
+  + files `pi_irrational.v`
+
+- moved from `theories/showcase` to `number_theory`:
+  + files `pnt.v`
 
 ### Renamed
 

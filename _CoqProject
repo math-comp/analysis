@@ -142,6 +142,9 @@ theories/lebesgue_integral_theory/counting_lebesgue.v
 theories/ftc.v
 theories/hoelder.v
 
+theories/number_theory/pi_irrational.v
+theories/number_theory/pnt.v
+
 theories/probability_theory/random_variable.v
 theories/probability_theory/bernoulli_distribution.v
 theories/probability_theory/binomial_distribution.v
@@ -156,13 +159,11 @@ theories/probability_theory/independence.v
 theories/convex.v
 theories/charge.v
 theories/kernel.v
-theories/pi_irrational.v
 theories/gauss_integral.v
 
 theories/all_analysis.v
 
 theories/showcase/summability.v
-theories/showcase/pnt.v
 
 analysis_stdlib/Rstruct_topology.v
 analysis_stdlib/showcase/uniform_bigO.v
