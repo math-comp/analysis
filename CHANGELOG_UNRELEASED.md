@@ -103,9 +103,6 @@
   + definition `open_nbhs`
   + lemma `open_nbhs_nbhs` changed to `open_mem_nbhs`
 
-
-### Changed
-
 ### Renamed
 
 - in `lebesgue_measure.v`:
@@ -124,6 +121,10 @@
 
 - in `realfun.v`:
   + lemma `nondecreasing_fun_sum_le`
+
+- in `topology_structure.v`
+  + lemma `open_nbhsE`
+  + lemma `open_nbhs_nbhs`
 
 ### Removed
 
