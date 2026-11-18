@@ -68,8 +68,10 @@ elementary_functions/trigonometry_functions.v
 elementary_functions/trigonometry_integral.v
 elementary_functions/trigo.v
 
+derive/differential.v
+derive/derive.v
+
 esum.v
-derive.v
 numfun.v
 
 measure_theory/measurable_structure.v

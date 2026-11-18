@@ -61,6 +61,11 @@
 - in `realfun.v`:
   + lemma `nondecreasing_discontinuity`
 
+- in `realfun.v`:
+  + lemmas `derivable_oo_LRcontinuousZ`, `derivable_oo_LRcontinuousD`,
+    `derivable_oo_LRcontinuousN`, `derivable_oo_LRcontinuous_shift`,
+    `derivable_oo_LRcontinuousS`
+
 - new subdirectory `number_theory`
   + new file `number.v`
 
@@ -175,22 +180,13 @@
     `pmf_expectation_bind`
   + lemmas `nondecreasing_esum_Efn`, `esum_pmf_lim_r`, `esum_pmf_lim_r_r`, `esum_pmf_lim`
   + lemma `pmf_lim_limn`
+- new subdirectory `derive`
+  + new files `differential.v`, `derive_matrix.v`
 
 ### Changed
 
 - in `lebesgue_integral_nonneg.v`, generalized and deprecated:
   + lemma `ge0_integralZl_EFin` (no condition on `k`)
-- in file `function_spaces.v`,
-  + new lemma `within_continuous_big`.
-- in `nat_topology.v`:
-  + new lemma `near_infty_after`.
-- in `num_topology.v`;
-  + lemmas `at_rightD`, `at_leftD`, `near_at_rightD`, `near_at_leftD`, 
-    `at_left_shift`, `at_right_shift`
-- in `realfun.v`:
-  + lemmas `derivable_oo_LRcontinuousZ`, `derivable_oo_LRcontinuousD`, 
-    `derivable_oo_LRcontinuousN`, `derivable_oo_LRcontinuous_shift`,
-    `derivable_oo_LRcontinuousS`
 
 - in `filter.v`:
   + implicit arguments of `continuous_comp`
@@ -215,6 +211,26 @@
 
 - in `normed_module.v`:
   + `segment_compact` is now a hint
+- the contents of `derive.v` (old) have been transferred to `differential.v`
+  (unless stated otherwise)
+
+- moved from `derive.v` (old) to `derive_matrix.v`
+  + lemmas `EVT_max_rV`, `EVT_min_rV`
+  + definition `jacobian`
+  + lemma `deriveEjacobian`
+  + lemma `differentiable_coord`
+  + lemmas `differentiable_rsubmx`, `differentiable_lsubmx`
+  + lemma `derivable_mxP`
+  + lemmas `derive_mx`, `is_derive_mx`, `derivable_trmx`, `derive_trmx`
+  + instance `is_derive_trmx`
+  + lemma `dmx`, `diffmx`
+  + instances `is_derive_mx_coord`, `is_derive_mulmx`
+  + instance `is_diff_mx`
+  + lemmas `derivable_row_mx`, `derive_row_mx`
+  + instance `is_derive_row_mx`
+  + lemma `eqo_row_mx`
+  + lemmas `drow_mx`, `diff_row_mx`, `differentiable_row_mx`
+  + instance `is_diff_row_mx`
 
 ### Renamed
 
@@ -248,6 +264,9 @@
   + lemma `nondecreasing_fun_sum_le`
 
 ### Removed
+
+- in `derive.v` (old):
+  + notation `derivemxE` (deprecated since 1.13.0)
 
 ### Infrastructure
 
