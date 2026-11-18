@@ -1749,3 +1749,30 @@ Qed.
 
 Lemma proper_meetsxx T (F : set_system T) (FF : ProperFilter F) : F `#` F.
 Proof. by rewrite meetsxx. Qed.
+
+Section eventually_addn.
+
+Lemma eventually_addn (m : nat) : (m + x)%N @[x --> \oo] = \oo.
+Proof.
+apply/seteqP; split => X /=.
+  case=> n _ /= H.
+  exists (m + n)%N => // k/= mnk.
+  have mk:= leq_trans (leq_addr _ _) mnk.
+  have:= H (k - m)%N => /=.
+  rewrite leq_subRL// subnKC//.
+  exact.
+case=> n _ /= H.
+exists (n - m)%N => // k/= nmk.
+apply: H => /=.
+by rewrite -leq_subLR.
+Qed.
+
+Lemma cvgn_addn d (T : pnbhsType d) (f : nat -> T) (m : nat) :
+  cvgn (f \o addn m) = cvgn f.
+Proof. by rewrite fmap_comp eventually_addn. Qed.
+
+Lemma limn_addn d (T : pnbhsType d) (f : nat -> T) (m : nat) :
+  limn (f \o addn m) = limn f.
+Proof. by rewrite fmap_comp eventually_addn. Qed.
+
+End eventually_addn.
