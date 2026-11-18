@@ -1,3 +1,6 @@
+(* Subpmf library is experimental.                                             *)
+(* Caution: the interface may change in the future.                            *)
+
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra.
 #[warning="-warn-library-file-internal-analysis"]
@@ -14,24 +17,61 @@ From mathcomp Require Import numfun.
 (**md**************************************************************************)
 (* # Subprobability mass function                                             *)
 (*                                                                            *)
-(* `SubPmf T R`                                                               *)
-(* : subprobability mass function for choicetype `T` with values in `R`       *)
+(* `R.-pmf T`                                                                 *)
+(* :  subprobability mass function for choicetype `T` with values in `R`      *)
 (*                                                                            *)
-(* `isSubpmf`                                                                 *)
-(* : interface for functions that satisfy the property of subprobability mass *)
-(* : function                                                                 *)
+(* `isSubPmf`                                                                 *)
+(* :  interface for functions that satisfy the property of subprobability     *)
+(* :  mass function                                                           *)
+(*                                                                            *)
+(* `\P_[mu] E`                                                                *)
+(* :  probability of the event `E` w.r.t. the subpmf `mu`                     *)
+(*                                                                            *)
+(* `\P_[mu, A] E`                                                             *)
+(* :  probability of the event `E` conditioned on the event `A`               *)
+(*                                                                            *)
+(* `\E_[mu] f`                                                                *)
+(* :  expectation of the real-valued function `f` w.r.t. the subpmf `mu`      *)
+(*                                                                            *)
+(* `pmf_esummable mu f`                                                       *)
+(* :  summability of the function `f` weighted by the subpmf `mu`             *)
 (*                                                                            *)
 (* `pmf_zero`                                                                 *)
-(* : the zero subpmf                                                          *)
+(* :  the zero subpmf                                                         *)
 (*                                                                            *)
-(* `pmf_ret`                                                                  *)
-(* : degenerated subpmf                                                       *)
+(* `pmf_restr p mu`                                                           *)
+(* :  restriction of `mu` to the predicate `p`, zero outside of it            *)
 (*                                                                            *)
-(* `pmf_bind`                                                                 *)
-(* : monadic bind for subpmf                                                  *)
+(* `pmf_count s`                                                              *)
+(* :  subpmf on the elements of the sequence `s`, each weighted by its        *)
+(* :  number of occurrences in `s`                                            *)
 (*                                                                            *)
-(* `pmf_lim`                                                                  *)
-(* : limit for index subpmf                                                   *)
+(* `pmf_ret x`                                                                *)
+(* :  degenerated subpmf                                                      *)
+(*                                                                            *)
+(* `pmf_uniform s`                                                            *)
+(* :  uniform subpmf on the elements of the sequence `s`                      *)
+(*                                                                            *)
+(* `pmf_flip r`                                                               *)
+(* :  subpmf on booleans, `true` with probability `r` clamped to `[0, 1]`     *)
+(*                                                                            *)
+(* `\bind_(i <- d) E`                                                         *)
+(* :  monadic bind for subpmf                                                 *)
+(*                                                                            *)
+(* `pmf_bindr f`                                                              *)
+(* :  reverse monadic bind                                                    *)
+(*                                                                            *)
+(* `pmf_iter n f`                                                             *)
+(* :  `n`-fold iteration of `pmf_bindr f` from a degenerated subpmf           *)
+(*                                                                            *)
+(* `\lim_(n) E`                                                               *)
+(* :  limit for index subpmf                                                  *)
+(*                                                                            *)
+(* `pmf_margin h mu`                                                          *)
+(* :  image of the subpmf `mu` along the function `h`                         *)
+(*                                                                            *)
+(* `pmf_swap mu`                                                              *)
+(* :  image of a subpmf on pairs under the swapping of the components         *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -258,7 +298,7 @@ rewrite (@measure_fin_bigcup _ _ _ P _ [set` J] (fun j : R => X @^-1` [set j]))/
 - exact: trivIset_preimage1.
 - rewrite fsbig_seq//; apply: eq_fsbigr => j _.
   by rewrite /pmf fineK// fin_num_measure.
-[Qed.
+Qed.
 
 Let pmf_uniq_le1 (J : seq R) : uniq J -> (\sum_(j <- J) pmf X j <= 1)%R.
 Proof.
@@ -298,7 +338,7 @@ Local Notation "\P_[ mu ] E"     := (pmf_prob mu E).
 
 Definition pmf_cprob mu E A := \P_[mu] [predI E & A] / \P_[mu] A.
 
-Notation "\P_[ mu , A ] E" := (pmf_cprob mu A E).
+Local Notation "\P_[ mu , A ] E" := (pmf_cprob mu A E).
 
 Definition pmf_expectation mu f := fine (\esum_(x in [set: T]) (f x * mu x)%:E).
 
@@ -632,12 +672,6 @@ End Bind.
 
 Notation "\bind_ ( i <- d ) E" := (pmf_bind (fun i => E) d).
 
-Definition pmf_bindr {R : realType} {T : choiceType} (f : T -> R.-pmf T) :=
-  fun d => \bind_(x <- d) f x.
-
-Definition pmf_iter {R : realType} {T : choiceType} n (f : T -> R.-pmf T) :=
-  fun a => (iter n (pmf_bindr f) (pmf_ret a)).
-
 (* -------------------------------------------------------------------- *)
 Section BindTheory.
 Variables (R : realType) (T U : choiceType).
@@ -796,6 +830,12 @@ by  move=> /eqP ; rewrite eqe mulf_eq0 (negbTE mu_x) /= => /eqP.
 Qed.
 
 End BindTheory.
+
+Definition pmf_bindr {R : realType} {T : choiceType} (f : T -> R.-pmf T) :=
+  fun d => \bind_(x <- d) f x.
+
+Definition pmf_iter {R : realType} {T : choiceType} n (f : T -> R.-pmf T) :=
+  fun a => (iter n (pmf_bindr f) (pmf_ret a)).
 
 (* -------------------------------------------------------------------- *)
 Section MeasureOfPmf_Bind.
