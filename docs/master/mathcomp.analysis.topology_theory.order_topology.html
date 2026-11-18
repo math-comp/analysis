@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Module mathcomp.analysis.topology_theory.order_topology</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis c53943d 2026.11.17-01:58">
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis c53943d 2026.11.18-01:04">
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -296,16 +296,17 @@ Qed.</div></details>
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> rray_closed</span><span class="id"> :</span><span class="id"> core</span>.<br>
 <span class="vernacular">Hint</span><span class="id"> Resolve</span><span class="id"> itv_closed</span><span class="id"> :</span><span class="id"> core</span>.<br>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="order_topology" class="id"><span name="order_topology" class="id anchor tooltip">order_topology<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>set_nbhs :
-forall {d : filter_display} {T : topologicalType d}, set T -&gt; set (set T)
+<span class="vernacular">Definition</span><span class="id"> </span><span id="order_topology" class="id"><span name="order_topology" class="id anchor tooltip">order_topology<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>gauge.gauge :
+forall {d : filter_display} {T : uniformType d},
+set (T * T) -&gt; set_system (T * T)
 
-set_nbhs is not universe polymorphic
-Arguments set_nbhs {d}%_fdisp_scope {T} A%_classical_set_scope _
-set_nbhs is transparent
+gauge.gauge is not universe polymorphic
+Arguments gauge.gauge {d}%_fdisp_scope {T} E%_classical_set_scope _
+gauge.gauge is transparent
 Expands to: Constant
-            mathcomp.analysis.topology_theory.separation_axioms.set_nbhs
+            mathcomp.analysis.topology_theory.separation_axioms.gauge.gauge
 Declared in
-library mathcomp.analysis.topology_theory.separation_axioms, line 66, characters 11-19
+library mathcomp.analysis.topology_theory.separation_axioms, line 1027, characters 11-16
 </p><hr>Used by
 <ul><li>mathcomp.analysis.topology_theory.initial_topology</li></ul><hr><a href="https://github.com/math-comp/analysis/tree/c53943d46e0587211554fe3a8152048342067ac0/theories/topology_theory/order_topology.v#L211" target="_blank">Source code</a></span></span></span>&nbsp;(<span id="T:73" class="id"><span name="T:73" class="id anchor tooltip">T<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/c53943d46e0587211554fe3a8152048342067ac0/theories/topology_theory/order_topology.v#L211" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="gallina-kwd"> Type</span>)<span class="id"> :</span><span class="gallina-kwd"> Type</span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.analysis.topology_theory.order_topology.html#T:73">T</a></span>.<br>
 <br>
