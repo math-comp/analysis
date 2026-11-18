@@ -7,7 +7,7 @@
 + in `filter.v`:
   + lemmas `eventually_addn`, `cvgn_addn`, `limn_addn`
 
-+ in `unstbale.v`"
++ in `unstable.v`"
   + lemma `big_nat_addn`
 
 + in `sequenses.v`
