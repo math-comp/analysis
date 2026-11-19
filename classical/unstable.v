@@ -1018,26 +1018,3 @@ apply: EndlessDense.subitvP.
 Qed.
 
 End interval_realFieldType.
-
-Section big_nat_addn.
-
-Lemma big_nat_addn
-  (R : Type) (idx : R) (op : R -> R -> R) (k m n : nat) (F : nat -> R) :
-  \big[op/idx]_(m <= i < n) F (k + i)%N = \big[op/idx]_(k + m <= i < k + n) F i.
-Proof.
-move: m n; elim: k.
-  by move=> ? ?; rewrite !add0n; under [LHS]eq_bigr do rewrite add0n.
-move=> k IHk m n.
-have[|mn] := leqP n m.
-  rewrite leqNgt=> /negPf mn.
-  rewrite big_nat big_pred0.
-    move=> i; apply/negbTE/negP=> /andP [] /leq_ltn_trans /[apply].
-    by rewrite mn.
-  rewrite big_nat big_pred0//.
-  move=> i; apply/negbTE/negP=> /andP [] /leq_ltn_trans /[apply].
-  by rewrite ltn_add2l mn.
-rewrite !addSn -!addnS -IHk big_nat_recl//-big_ltn//.
-by under eq_bigr do rewrite addSn -addnS.
-Qed.
-
-End big_nat_addn.
