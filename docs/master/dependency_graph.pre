@@ -1985,6 +1985,30 @@ subgraph cluster_Analysis {
   "theories/real_measure/real_measure" -> "theories/hoelder";
   "theories/sequences" -> "theories/hoelder";
   "theories/topology_theory/topology" -> "theories/hoelder";
+  "classical/boolp" -> "theories/number_theory/pi_irrational";
+  "classical/cardinality" -> "theories/number_theory/pi_irrational";
+  "classical/classical_sets" -> "theories/number_theory/pi_irrational";
+  "classical/functions" -> "theories/number_theory/pi_irrational";
+  "reals/reals" -> "theories/number_theory/pi_irrational";
+  "theories/derive" -> "theories/number_theory/pi_irrational";
+  "theories/elementary_functions/trigo" -> "theories/number_theory/pi_irrational";
+  "theories/ereal" -> "theories/number_theory/pi_irrational";
+  "theories/ftc" -> "theories/number_theory/pi_irrational";
+  "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/number_theory/pi_irrational";
+  "theories/measure_theory/measure" -> "theories/number_theory/pi_irrational";
+  "theories/normedtype_theory/normedtype" -> "theories/number_theory/pi_irrational";
+  "theories/numfun" -> "theories/number_theory/pi_irrational";
+  "theories/real_measure/real_measure" -> "theories/number_theory/pi_irrational";
+  "theories/realfun" -> "theories/number_theory/pi_irrational";
+  "theories/sequences" -> "theories/number_theory/pi_irrational";
+  "theories/topology_theory/topology" -> "theories/number_theory/pi_irrational";
+  "classical/boolp" -> "theories/number_theory/pnt";
+  "classical/classical_sets" -> "theories/number_theory/pnt";
+  "classical/unstable" -> "theories/number_theory/pnt";
+  "reals/reals" -> "theories/number_theory/pnt";
+  "theories/ereal" -> "theories/number_theory/pnt";
+  "theories/sequences" -> "theories/number_theory/pnt";
+  "theories/topology_theory/topology" -> "theories/number_theory/pnt";
 
 subgraph cluster_Probability {
     "theories/probability_theory/random_variable"[
@@ -2290,31 +2314,6 @@ subgraph cluster_Analysis {
   "theories/topology_theory/topology" -> "theories/kernel";
 
 subgraph cluster_Analysis {
-    "theories/pi_irrational"[
-        label="pi_irrational",
-        URL="mathcomp.analysis.pi_irrational.html",
-        fillcolor=aquamarine
-    ]
-}
-  "classical/boolp" -> "theories/pi_irrational";
-  "classical/cardinality" -> "theories/pi_irrational";
-  "classical/classical_sets" -> "theories/pi_irrational";
-  "classical/functions" -> "theories/pi_irrational";
-  "reals/reals" -> "theories/pi_irrational";
-  "theories/derive" -> "theories/pi_irrational";
-  "theories/elementary_functions/trigo" -> "theories/pi_irrational";
-  "theories/ereal" -> "theories/pi_irrational";
-  "theories/ftc" -> "theories/pi_irrational";
-  "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/pi_irrational";
-  "theories/measure_theory/measure" -> "theories/pi_irrational";
-  "theories/normedtype_theory/normedtype" -> "theories/pi_irrational";
-  "theories/numfun" -> "theories/pi_irrational";
-  "theories/real_measure/real_measure" -> "theories/pi_irrational";
-  "theories/realfun" -> "theories/pi_irrational";
-  "theories/sequences" -> "theories/pi_irrational";
-  "theories/topology_theory/topology" -> "theories/pi_irrational";
-
-subgraph cluster_Analysis {
     "theories/gauss_integral"[
         label="gauss_integral",
         URL="mathcomp.analysis.gauss_integral.html",
@@ -2363,8 +2362,8 @@ subgraph cluster_Analysis {
   "theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/all_analysis";
   "theories/measure_theory/measure" -> "theories/all_analysis";
   "theories/normedtype_theory/normedtype" -> "theories/all_analysis";
+  "theories/number_theory/pi_irrational" -> "theories/all_analysis";
   "theories/numfun" -> "theories/all_analysis";
-  "theories/pi_irrational" -> "theories/all_analysis";
   "theories/probability_theory/probability" -> "theories/all_analysis";
   "theories/real_measure/lebesgue_measure" -> "theories/all_analysis";
   "theories/real_measure/lebesgue_stieltjes_measure" -> "theories/all_analysis";
@@ -2385,21 +2384,6 @@ subgraph cluster_Analysis {
   "theories/ereal" -> "theories/showcase/summability";
   "theories/normedtype_theory/normedtype" -> "theories/showcase/summability";
   "theories/topology_theory/topology" -> "theories/showcase/summability";
-
-subgraph cluster_Analysis {
-    "theories/showcase/pnt"[
-        label="pnt",
-        URL="mathcomp.analysis.showcase.pnt.html",
-        fillcolor=aquamarine
-    ]
-}
-  "classical/boolp" -> "theories/showcase/pnt";
-  "classical/classical_sets" -> "theories/showcase/pnt";
-  "classical/unstable" -> "theories/showcase/pnt";
-  "reals/reals" -> "theories/showcase/pnt";
-  "theories/ereal" -> "theories/showcase/pnt";
-  "theories/sequences" -> "theories/showcase/pnt";
-  "theories/topology_theory/topology" -> "theories/showcase/pnt";
 
 subgraph cluster_AnalysisStdlib {
     "analysis_stdlib/Rstruct_topology"[

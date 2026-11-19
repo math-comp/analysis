@@ -155,18 +155,12 @@ digraph dependencies {
 		"theories/charge"	[URL="mathcomp.analysis.charge.html",
 			fillcolor=aquamarine,
 			label=charge];
-		"theories/pi_irrational"	[URL="mathcomp.analysis.pi_irrational.html",
-			fillcolor=aquamarine,
-			label=pi_irrational];
 		"theories/all_analysis"	[URL="mathcomp.analysis.all_analysis.html",
 			fillcolor=aquamarine,
 			label=all_analysis];
 		"theories/showcase/summability"	[URL="mathcomp.analysis.showcase.summability.html",
 			fillcolor=aquamarine,
 			label=summability];
-		"theories/showcase/pnt"	[URL="mathcomp.analysis.showcase.pnt.html",
-			fillcolor=aquamarine,
-			label=pnt];
 	}
 	subgraph cluster_ElementaryFunctions {
 		graph [label=ElementaryFunctions];
@@ -531,7 +525,7 @@ digraph dependencies {
 	"theories/real_measure/real_measure" -> "theories/borel_hierarchy";
 	"theories/real_measure/real_measure" -> "theories/lebesgue_integral_theory/simple_functions";
 	"theories/sequences" -> "theories/numfun";
-	"theories/sequences" -> "theories/showcase/pnt";
+	"theories/sequences" -> "theories/number_theory/pnt";
 	"theories/cantor" -> "theories/all_analysis";
 	"theories/normedtype_theory/num_normedtype" -> "theories/normedtype_theory/pseudometric_normed_Zmodule";
 	"theories/normedtype_theory/num_normedtype" -> "theories/normedtype_theory/ereal_normedtype";
@@ -566,8 +560,8 @@ digraph dependencies {
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/probability_theory/poisson_distribution";
 	"theories/lebesgue_integral_theory/lebesgue_integral" -> "theories/charge";
 	"theories/real_measure/lebesgue_measure" -> "theories/real_measure/real_measure";
+	"theories/elementary_functions/trigo" -> "theories/number_theory/pi_irrational";
 	"theories/elementary_functions/trigo" -> "theories/gauss_integral";
-	"theories/elementary_functions/trigo" -> "theories/pi_irrational";
 	"theories/measure_theory/measurable_structure" -> "theories/measure_theory/measurable_function";
 	"theories/measure_theory/measure_function" -> "theories/measure_theory/counting_measure";
 	"theories/measure_theory/measure_function" -> "theories/measure_theory/dirac_measure";
@@ -602,6 +596,7 @@ digraph dependencies {
 	"theories/lebesgue_integral_theory/counting_lebesgue" -> "theories/lebesgue_integral_theory/lebesgue_integral";
 	"theories/lebesgue_integral_theory/radon_nikodym" -> "theories/lebesgue_integral_theory/lebesgue_integral";
 	"theories/hoelder" -> "theories/probability_theory/random_variable";
+	"theories/number_theory/pi_irrational" -> "theories/all_analysis";
 	"theories/probability_theory/random_variable" -> "theories/probability_theory/independence";
 	"theories/probability_theory/bernoulli_distribution" -> "theories/probability_theory/binomial_distribution";
 	"theories/probability_theory/bernoulli_distribution" -> "theories/probability_theory/beta_distribution";
@@ -616,6 +611,5 @@ digraph dependencies {
 	"theories/probability_theory/beta_distribution" -> "theories/probability_theory/probability";
 	"theories/probability_theory/probability" -> "theories/all_analysis";
 	"theories/probability_theory/independence" -> "theories/probability_theory/probability";
-	"theories/pi_irrational" -> "theories/all_analysis";
 	"analysis_stdlib/Rstruct_topology" -> "analysis_stdlib/showcase/uniform_bigO";
 }
