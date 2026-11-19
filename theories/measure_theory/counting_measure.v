@@ -28,7 +28,6 @@ Arguments counting {T R}.
 Section measure_count.
 Local Open Scope ereal_scope.
 Context d (T : sigmaRingType d) (R : realType).
-Variables (D : set T) (mD : measurable D).
 
 Local Notation counting := (@counting T R).
 
