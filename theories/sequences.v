@@ -501,17 +501,15 @@ Lemma seriesZ (R : pzRingType) (V : lmodType R) (f : V ^nat) k :
   series (k *: f) = k *: series f.
 Proof. by rewrite funeqE => n; rewrite /series /= -scaler_sumr. Qed.
 
-Lemma series_comp_addn (V : zmodType) (u_ : (V) ^nat) (m : nat) :
-  series (u_ \o addn m) = (series u_) \o (addn m) - (fun=> series u_ m).
+Lemma series_comp_addn (V : zmodType) (u_ : V ^nat) m :
+  series (u_ \o addn m) = series u_ \o addn m - (fun=> series u_ m).
 Proof.
-have->: (series u_ \o addn m) = (series u_ \o addn^~ m).
-  by apply: funext=> ? /=; rewrite addnC.
-apply: funext=> k /=.
-apply/eqP.
-rewrite eq_sym subr_eq/=.
-rewrite series_addn addrC.
-apply/eqP; congr +%R.
-by rewrite /series/= big_nat_addn addn0 addnC.
+rewrite [X in X - _](_ : _ = series u_ \o addn^~ m).
+  by apply: funext => ? /=; rewrite addnC.
+apply: funext => k /=; apply/esym/eqP; rewrite subr_eq/=.
+rewrite series_addn addrC; apply/eqP; congr +%R.
+rewrite -(add0n m) big_addn add0n addnK.
+by under eq_bigr do rewrite addnC.
 Qed.
 
 Section partial_sum_numFieldType.
