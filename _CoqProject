@@ -94,6 +94,8 @@ theories/normedtype_theory/normedtype.v
 theories/functional_analysis/hahn_banach_theorem.v
 
 theories/sequences.v
+theories/negligible_seq.v
+theories/negligible_seq_harmonic.v
 theories/realfun.v
 theories/exp.v
 
