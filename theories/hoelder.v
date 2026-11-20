@@ -24,7 +24,8 @@ From mathcomp Require Import numfun exp real_measure lebesgue_integral.
 (* Lp-spaces and properties of Lp-norms:                                      *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*    finite_norm mu p f := the L-norm of real-valued function f is finite    *)
+(*    finite_norm mu p f := the L-norm of extended real-valued function f is  *)
+(*                          finite    *)
 (*                          The parameter p is an extended real.              *)
 (*        LfunType mu p1 == type of measurable functions f with a finite      *)
 (*                          L-norm                                            *)
@@ -785,15 +786,15 @@ Qed.
 End minkowski.
 
 Definition finite_norm d (T : measurableType d) (R : realType)
-    (mu : {measure set T -> \bar R}) (p : \bar R) (f : T -> R) :=
-  ('N[ mu ]_p [ EFin \o f ] < +oo)%E.
+    (mu : {measure set T -> \bar R}) (p : \bar R) (f : T -> \bar R) :=
+  ('N[ mu ]_p [ f ] < +oo)%E.
 
 Import MeasurableR.
 
 HB.mixin Record isLfunction d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E) (f : T -> R)
   & @MeasurableFun d _ T R f := {
-  Lfunction_finite : finite_norm mu p f
+  Lfunction_finite : finite_norm mu p (EFin \o f)
 }.
 
 #[short(type=LfunType)]
@@ -865,7 +866,7 @@ Import numFieldNormedType.Exports HBNNSimple.
 HB.mixin Record isFinLebesgue d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E)
     (f : {mfun_ mu, T >-> R}) := {
-  Lebesgue_finite : finite_norm mu p f
+  Lebesgue_finite : finite_norm mu p (EFin \o f)
 }.
 
 #[short(type=LspaceType)]
@@ -896,7 +897,7 @@ Section Lfun_pred.
 Context {d} {T : measurableType d} {R : realType}
   (mu : {measure set T -> \bar R}) (p : \bar R).
 
-Definition finLfun : {pred _ -> _} := mem [set f | finite_norm mu p f].
+Definition finLfun : {pred _ -> _} := mem [set f : T -> R | finite_norm mu p (EFin \o f)].
 Definition Lfun : {pred _ -> _} := [predI @mfun _ _ T R & finLfun].
 Definition Lfun_key : pred_key Lfun. Proof. exact. Qed.
 Canonical Lfun_keyed := KeyedPred Lfun_key.

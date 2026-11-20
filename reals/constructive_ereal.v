@@ -529,7 +529,7 @@ HB.instance Definition _ := Order.hasTop.Build ereal_display (\bar R) leey.
 End ERealOrder_realDomainType.
 
 Section ERealZmodule.
-Context {R : zmodType}.
+Context {R : baseZmodType}.
 Implicit Types x y z : \bar R.
 
 Definition oppe x :=
@@ -1189,6 +1189,13 @@ Proof. by move: x y => [x| |] [y| |]. Qed.
 Lemma fin_numM x y : x \is a fin_num -> y \is a fin_num ->
   x * y \is a fin_num.
 Proof. by move: x y => [x| |] [y| |]. Qed.
+
+Lemma fin_numMK (a b : \bar R):
+  fine (a * b) = (fine a * fine b)%R.
+Proof.
+by case: a => [r| |]; case: b => [s| |]//=;
+rewrite /mule/= ?mulr0 ?mul0r//; do ![case: ifPn => //= _].
+Qed.
 
 Lemma prode_fin_num (I : Type) (s : seq I) (P : pred I) (f : I -> \bar R) :
   (forall i, P i -> f i \is a fin_num) ->
