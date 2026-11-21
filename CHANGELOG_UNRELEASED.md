@@ -70,7 +70,7 @@
   + new file `number.v`
 
 - new subdirectory `derive`
-  + new files `differential.v`, `directional_derive.v`, `derive_matrix.v`
+  + new files `differential.v`, `derivable.v`, `directional_derive_lemmas.v`, `derive_matrix.v`
 
 ### Changed
 
@@ -97,6 +97,18 @@
 
 - the contents of `derive.v` (old) have been transferred to `differential.v`
   (unless stated otherwise)
+
+- moved from `derive.v` (old) to `derivable.v`
+  + definitions `derive`, `is_derive`
+  + class `is_derive`
+  + lemmas `derivable_nbhs`, `derivable_nbhsP`, `derivable_nbhsx`, `derivable_nbhsxP`,
+    `derivable0`, `derive0`, `is_derive0`
+  + lemma `deriveE`
+  + definition `derive1`
+  + lemmas `derive1E`, `derive1E'`, `derive1n0`, `derive1n1`, `derive1nS`,
+    `derive1Sn`, `derive1Dn`
+  + lemmas `deriv1E`, `diff1E`, `derivable1_diffP`, `derivable1P`,
+    `diff_derivable`
 
 - moved from `derive.v` (old) to `directional_derive.v`
   + lemma `deriv1E`
