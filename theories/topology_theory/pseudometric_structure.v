@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra archimedean all_classical.
-From mathcomp Require Import interval_inference reals topology_structure.
+From mathcomp Require Import interval_inference topology_structure.
 From mathcomp Require Import uniform_structure.
 
 (**md**************************************************************************)
@@ -374,7 +374,8 @@ Qed.
 
 End entourages.
 
-Lemma countable_uniformity_metric {d} {R : realType} {T : pseudoMetricType d R}:
+Lemma countable_uniformity_metric {d} {R : archiRealFieldType}
+    {T : pseudoMetricType d R}:
   countable_uniformity T.
 Proof.
 apply/countable_uniformityP.
