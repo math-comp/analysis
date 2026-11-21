@@ -18,6 +18,9 @@ my %clusters = ( #         directory => [ Cluster Name, Color, URL ]
     'theories/functional_analysis'   => [ "FunctionalAnalysis", "chartreuse",
                                           "analysis.functional_analysis.%s"],
 
+    'theories/derive'                => [ "Derive", "aquamarine",
+                                          "analysis.derive.%s"],
+
     'theories/measure_theory'        => [ "Measure", "orange",
                                           "analysis.measure_theory.%s" ],
 
@@ -33,6 +36,9 @@ my %clusters = ( #         directory => [ Cluster Name, Color, URL ]
 
     'theories/probability_theory'    => [ "Probability", "gold",
                                           "analysis.probability_theory.%s" ],
+
+    'theories/number_theory'         => [ "Number", "chocolate",
+                                          "analysis.number_theory.%s"],
 
     reals_stdlib                     => [ "Reals", "lightskyblue",  "" ],
     analysis_stdlib                  => [ "AnalysisStdlib", "lightpink", "" ],
