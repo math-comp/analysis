@@ -7,7 +7,7 @@ From mathcomp Require Import poly sesquilinear.
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp contra classical_sets functions reals.
 From mathcomp Require Import topology tvs normedtype landau differential
-  directional_derive.
+  derivative derivative_lemmas.
 
 (**md**************************************************************************)
 (* # Differentiation for matrices                                             *)
