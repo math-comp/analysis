@@ -69,6 +69,7 @@ elementary_functions/trigonometry_integral.v
 elementary_functions/trigo.v
 
 derive/differential.v
+derive/directional_derive.v
 derive/derive.v
 
 esum.v
