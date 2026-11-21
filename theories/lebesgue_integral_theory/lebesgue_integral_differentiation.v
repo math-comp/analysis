@@ -44,7 +44,6 @@ From mathcomp Require Import lebesgue_Rintegral.
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -677,7 +676,7 @@ move: fx => /cvgrPdist_le /= fx'.
 near (0%R:R)^'+ => e.
 have e0 : (0 < e)%R by near: e; exact: nbhs_right_gt.
 have [r /= r0 {}fx'] := fx' _ e0.
-have [d/= d0 dxU] := open_subball xU.1 xU.2.
+have [d/= d0 dxU] := open_subball xU.1 (nbhs_singleton xU.2).
 near=> t; rewrite ge0_fin_numE ?integral_ge0//.
 have [t0|t0] := leP t 0%R; first by rewrite ((ball0 _ _).2 t0) integral_set0.
 have xtU : ball x t `<=` U by apply: dxU => //=.
@@ -711,7 +710,7 @@ apply/cvgrPdist_le => e e0.
 move: fx => /cvgrPdist_le /= fx'.
 have [r /= r0 {}fx'] := fx' _ e0.
 have [d /= d0 dfx] := continuous_davg_fin_num.
-have [l/= l0 lxU] := open_subball xU.1 xU.2.
+have [l/= l0 lxU] := open_subball xU.1 (nbhs_singleton xU.2).
 near=> t.
 have [t0|t0] := leP t 0%R; first by rewrite /= davg0//= subrr normr0 ltW.
 rewrite sub0r normrN /= ger0_norm; first by rewrite fine_ge0// davg_ge0.
@@ -753,7 +752,7 @@ Lemma lim_sup_davg_le f g x (U : set R) : open_nbhs x U -> measurable U ->
 Proof.
 move=> xU mY mf /= mg; apply: le_trans (lime_supD _); last first.
   by rewrite ge0_adde_def// inE; exact: lim_sup_davg_ge0.
-have [e/= e0 exU] := open_subball xU.1 xU.2.
+have [e/= e0 exU] := open_subball xU.1 (nbhs_singleton xU.2).
 apply: lime_sup_le; near=> r => y; rewrite neq_lt => /orP[y0|y0 ry].
   by rewrite !davg0 ?adde0// ltW.
 apply: davgD.
@@ -991,13 +990,15 @@ have davgfEe : B k `&` [set x | (f_ k)^* x > e%:E] `<=` Ee.
       B k `&` [set x | e%:E < (f_ k \- g_B n)%R^* x]).
     apply/seteqP; split => [x [Ex] /=|x [Ex] /=].
       rewrite (@lim_sup_davgB _ _ _ _ (B k))//.
-      by split; [exact: ball_open|exact: Ex].
-      by move/measurable_EFinP : mf; apply: measurable_funS.
-      by apply: cg_B; rewrite inE.
+      - rewrite open_nbhs_mem.
+        by split; [exact: ball_open|exact: Ex].
+      - by move/measurable_EFinP : mf; apply: measurable_funS.
+      - by apply: cg_B; rewrite inE.
     rewrite (@lim_sup_davgB _ _ _ _ (B k))//.
-    by split; [exact: ball_open|exact: Ex].
-    by move/measurable_EFinP : mf; apply: measurable_funS.
-    by apply: cg_B; rewrite inE.
+    - rewrite open_nbhs_mem.
+      by split; [exact: ball_open|exact: Ex].
+    - by move/measurable_EFinP : mf; apply: measurable_funS.
+    - by apply: cg_B; rewrite inE.
   move=> r /= [Er] efgnr; split => //.
   have {}efgnr := lt_le_trans efgnr (lim_sup_davgT_HL_maximal r (locf_g_B n)).
   have [|h] := ltP (e / 2)%:E (HL_maximal (f_ k \- g_B n)%R r); first by left.
