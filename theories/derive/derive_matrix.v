@@ -6,10 +6,11 @@ From mathcomp Require Import poly sesquilinear.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp contra classical_sets functions reals.
-From mathcomp Require Import topology tvs normedtype landau differential.
+From mathcomp Require Import topology tvs normedtype landau differential
+  directional_derive.
 
 (**md**************************************************************************)
-(* # Differentiation                                                          *)
+(* # Differentiation for matrices                                             *)
 (*                                                                            *)
 (* This file contains lemmas about differentiation and matrices.              *)
 (*                                                                            *)

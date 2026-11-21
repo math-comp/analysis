@@ -102,6 +102,7 @@ theories/elementary_functions/trigonometry_integral.v
 theories/elementary_functions/trigo.v
 
 theories/derive/differential.v
+theories/derive/directional_derive.v
 theories/derive/derive_matrix.v
 theories/derive/derive.v
 
