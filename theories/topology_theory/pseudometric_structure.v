@@ -51,7 +51,6 @@ From mathcomp Require Import uniform_structure.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -62,11 +61,6 @@ Obligation Tactic := idtac.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
-
-Lemma entourage_E {R : numDomainType} {T T'} (ball : T -> R -> set T') :
-  entourage_ ball =
-  @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
-Proof. by []. Qed.
 
 HB.mixin Record Uniform_isPseudoMetric d (R : numDomainType) M
     & Uniform d M := {
