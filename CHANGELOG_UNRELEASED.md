@@ -8,7 +8,7 @@
   + lemma `in1_mksetP`
 
 - in `topology_structure.v`
-  + lemmas `open_bigcup_basis`, `continuous_on_basis`
+  + lemmas `basis_open_bigcup`, `continuous_on_basis`
 
 - in `num_normedtype.v`
   + definition `itvoo_basis`
