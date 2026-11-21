@@ -106,7 +106,7 @@
 - from `separation_axioms.v` to `uniform_metrizable.v`:
   + module `countable_uniform`
   + notation `countable_uniform`
-  + definition `sup_pseudometric`
+  + definition `sup_pseudometric` (generalized to `archiRealFieldType`)
   + module `gauge`
     * definition `gauge`
     * lemma `iter_split_ent`
@@ -117,7 +117,7 @@
     * lemma `gauge_split`
     * lemma `gauge_countable_uniformity`
     * definition `type`
-  + lemma `uniform_pseudometric_sup`
+  + lemma `uniform_pseudometric_sup` (generalized to `archiRealFieldType`)
 
 - from `separation_axioms.v` to `topology_structure.v`:
   + definition `perfect_set`
@@ -136,6 +136,9 @@
 
 - in `lebesgue_integral_nonneg.v`:
   + lemmas `ge0_integralZl`, `ge0_integralZr`
+
+- in `topology_structure.v`:
+  + lemma `countable_uniformity_metric` (from `realType` to `archiRealFieldType`)
 
 ### Deprecated
 

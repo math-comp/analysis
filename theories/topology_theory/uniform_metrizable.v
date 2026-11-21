@@ -43,7 +43,7 @@ Local Open Scope ring_scope.
 Module countable_uniform.
 Section countable_uniform.
 Local Open Scope relation_scope.
-Context {R : realType} {d} {T : uniformType d}.
+Context {R : archiRealFieldType} {d} {T : uniformType d}.
 
 Hypothesis cnt_unif : @countable_uniformity _ T.
 
@@ -344,12 +344,12 @@ Export countable_uniform.Exports.
 
 Notation countable_uniform := countable_uniform.type.
 
-Definition sup_pseudometric (Ii : Type) (d : Ii -> _) (R : realType) (T : Type)
-    (Tc : forall i, PseudoMetric (d i) R T) (Icnt : countable [set: Ii])
-  : Type := T.
+Definition sup_pseudometric (Ii : Type) (d : Ii -> _) (R : archiRealFieldType)
+    (T : Type) (Tc : forall i, PseudoMetric (d i) R T)
+    (Icnt : countable [set: Ii]) : Type := T.
 
 Section sup_pseudometric.
-Context {Ii : Type} {d : Ii -> _} {R : realType} {T : choiceType}
+Context {Ii : Type} {d : Ii -> _} {R : archiRealFieldType} {T : choiceType}
   (Tc : forall i, PseudoMetric (d i) R T).
 
 Hypothesis Icnt : countable [set: Ii].
@@ -357,7 +357,6 @@ Hypothesis Icnt : countable [set: Ii].
 Local Notation S := (sup_pseudometric Tc Icnt).
 
 Let TS := fun i => PseudoMetric.Pack (Tc i).
-
 
 Let countable_uniformityT := @countable_sup_ent Ii d T Tc Icnt
   (fun i => @countable_uniformity_metric _ _ (TS i)).
@@ -445,8 +444,7 @@ Module Exports. HB.reexport. End Exports.
 End gauge.
 Export gauge.Exports.
 
-
-Lemma uniform_pseudometric_sup {d} {R : realType} {T : puniformType d} :
+Lemma uniform_pseudometric_sup {d} {R : archiRealFieldType} {T : puniformType d} :
   @entourage _ T =
   @sup_ent {E : set (T * T) | @entourage _ T E} _ _
     (fun e => Uniform.class (@gauge.type _ T (projT1 e) (projT2 e))).
