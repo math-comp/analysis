@@ -64,6 +64,8 @@
 - new subdirectory `number_theory`
   + new file `number.v`
 
+- new file `uniform_metrizable.v`
+
 ### Changed
 
 - in `lebesgue_integral_nonneg.v`, generalized and deprecated:
@@ -98,6 +100,30 @@
 - moved from `theories/showcase` to `number_theory`:
   + files `pnt.v`
 
+- from `pseudometric_structure.v` to `uniform_structure.v`:
+  + definition `entourage_`
+  + lemma `entourage_E`
+
+- from `separation_axioms.v` to `uniform_metrizable.v`:
+  + module `countable_uniform`
+  + notation `countable_uniform`
+  + definition `sup_pseudometric` (generalized to `archiRealFieldType`)
+  + module `gauge`
+    * definition `gauge`
+    * lemma `iter_split_ent`
+    * lemma `gauge_ent`
+    * lemma `gauge_filter`
+    * lemma `gauge_refl`
+    * lemma `gauge_inv`
+    * lemma `gauge_split`
+    * lemma `gauge_countable_uniformity`
+    * definition `type`
+  + lemma `uniform_pseudometric_sup` (generalized to `archiRealFieldType`)
+
+- from `separation_axioms.v` to `topology_structure.v`:
+  + definition `perfect_set`
+  + lemmas `perfectP`, `perfectTP`, `perfectTP_ex`
+
 ### Renamed
 
 - in `lebesgue_measure.v`:
@@ -111,6 +137,9 @@
 
 - in `lebesgue_integral_nonneg.v`:
   + lemmas `ge0_integralZl`, `ge0_integralZr`
+
+- in `topology_structure.v`:
+  + lemma `countable_uniformity_metric` (from `realType` to `archiRealFieldType`)
 
 ### Deprecated
 

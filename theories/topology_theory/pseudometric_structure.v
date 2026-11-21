@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import boot order algebra archimedean all_classical.
-From mathcomp Require Import interval_inference reals topology_structure.
+From mathcomp Require Import interval_inference topology_structure.
 From mathcomp Require Import uniform_structure.
 
 (**md**************************************************************************)
@@ -51,7 +51,6 @@ From mathcomp Require Import uniform_structure.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -62,14 +61,6 @@ Obligation Tactic := idtac.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
-
-Definition entourage_ {R : numDomainType} {T T'} (ball : T -> R -> set T') :=
-  @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
-
-Lemma entourage_E {R : numDomainType} {T T'} (ball : T -> R -> set T') :
-  entourage_ ball =
-  @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
-Proof. by []. Qed.
 
 HB.mixin Record Uniform_isPseudoMetric d (R : numDomainType) M
     & Uniform d M := {
@@ -377,7 +368,8 @@ Qed.
 
 End entourages.
 
-Lemma countable_uniformity_metric {d} {R : realType} {T : pseudoMetricType d R}:
+Lemma countable_uniformity_metric {d} {R : archiRealFieldType}
+    {T : pseudoMetricType d R}:
   countable_uniformity T.
 Proof.
 apply/countable_uniformityP.
