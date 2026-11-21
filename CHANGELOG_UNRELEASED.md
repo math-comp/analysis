@@ -63,6 +63,11 @@
 
 - new subdirectory `number_theory`
   + new file `number.v`
+- in `cardinality.v`:
+  + lemma `infinite_setD`
+- in new file `gamma.v`:
+  - a definition `Gamma`.
+  - lemmas `Gamma1`, `Gamma_add1`, `Gamma_nat`.
 
 ### Changed
 
