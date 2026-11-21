@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Module mathcomp.reals_stdlib.Rstruct</title>
-<meta name="description" content="Documentation of Coq module Mathcomp Analysis 14508f5 2026.11.20-00:58">
+<meta name="description" content="Documentation of Coq module Mathcomp Analysis 14508f5 2026.11.21-00:20">
 <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist/dist/markdown-it-deflist.min.js"></script>
@@ -74,16 +74,14 @@ end, one can use tactics like `apply: RleP` or `rewrite !RealsE`
 <span class="id">by</span><span class="id"> right=&gt;</span><span class="id"> r1Er2;</span><span class="id"> case:</span>&nbsp;(<span class="id link"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.RIneq.html#Rlt_irrefl">Rlt_irrefl</a></span><span class="id"> r1</span>)<span class="id">;</span><span class="id"> rewrite</span><span class="id"> {1}r1Er2</span>.<br>
 Qed.</div></details>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="eqr" class="id"><span name="eqr" class="id anchor tooltip">eqr<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>kzero :
-forall [d d' : measure_display] [X : measurableType d]
-  (Y : measurableType d') (R : realType),
-X -&gt; {measure set Y -&gt; \bar R}%R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="eqr" class="id"><span name="eqr" class="id anchor tooltip">eqr<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>sequence : Type -&gt; Type
 
-kzero is not universe polymorphic
-Arguments kzero [d d']%_measure_display_scope [X] Y R _
-kzero is transparent
-Expands to: Constant mathcomp.analysis.kernel.kzero
-Declared in library mathcomp.analysis.kernel, line 231, characters 11-16
+sequence is not universe polymorphic
+Arguments sequence R%_type_scope
+sequence is transparent
+Expands to: Constant mathcomp.classical.classical_sets.sequence
+Declared in
+library mathcomp.classical.classical_sets, line 2245, characters 11-19
 </p><hr><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L58" target="_blank">Source code</a></span></span></span>&nbsp;(<span id="r1:3" class="id"><span name="r1:3" class="id anchor tooltip">r1<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L58" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="r2:4" class="id"><span name="r2:4" class="id anchor tooltip">r2<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L58" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rdefinitions.html#RbaseSymbolsImpl.R">R</a></span>)<span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#bool">bool</a></span><span class="id"> :=</span><br>
 &nbsp;&nbsp;<span class="gallina-kwd">if</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#Req_EM_T">Req_EM_T</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r1:3">r1</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r2:4">r2</a></span><span class="id"> is</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#left">left</a></span><span class="id"> _</span><span class="gallina-kwd"> then</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="gallina-kwd"> else</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span>.<br>
 <br>
@@ -102,17 +100,16 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="id"> exact:</span>&nbsp;(<span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#inhabits">inhabits</a></span><span class="id"> 0</span>). Qed.</div></details>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="pickR" class="id"><span name="pickR" class="id anchor tooltip">pickR<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>kdirac :
-forall {d d' : measure_display} {X : measurableType d}
-  {Y : measurableType d'} {R : realType} {f : X -&gt; Y},
-measurable_fun (T:=X) (U:=Y) [set: X] f -&gt; X -&gt; {measure set Y -&gt; \bar R}%R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="pickR" class="id"><span name="pickR" class="id anchor tooltip">pickR<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>bigcup2 : forall [T : Type], set T -&gt; set T -&gt; (set T) ^nat
 
-kdirac is not universe polymorphic
-Arguments kdirac {d d'}%_measure_display_scope {X Y R} 
-  {f}%_function_scope mf x
-kdirac is transparent
-Expands to: Constant mathcomp.analysis.kernel.kdirac
-Declared in library mathcomp.analysis.kernel, line 712, characters 11-17
+bigcup2 is not universe polymorphic
+Arguments bigcup2 [T]%_type_scope (A B)%_classical_set_scope n / _
+  (where some original arguments have been renamed)
+The reduction tactics unfold bigcup2 when applied to 4 arguments
+bigcup2 is transparent
+Expands to: Constant mathcomp.classical.classical_sets.bigcup2
+Declared in
+library mathcomp.classical.classical_sets, line 2249, characters 11-18
 </p><hr><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L71" target="_blank">Source code</a></span></span></span>&nbsp;(<span id="P:5" class="id"><span name="P:5" class="id anchor tooltip">P<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L71" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssrbool.html#pred">pred</a></span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rdefinitions.html#RbaseSymbolsImpl.R">R</a></span>)&nbsp;(<span id="n:6" class="id"><span name="n:6" class="id anchor tooltip">n<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L71" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#nat">nat</a></span>)<span class="id"> :=</span><br>
 &nbsp;&nbsp;<span class="gallina-kwd">let</span><span class="id"> </span><span id="x:7" class="id"><span name="x:7" class="id anchor tooltip">x<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L72" target="_blank">Source code</a></span></span></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Logic.Epsilon.html#epsilon">epsilon</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#inhR">inhR</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#P:5">P</a></span><span class="gallina-kwd"> in</span><span class="gallina-kwd"> </span><span class="gallina-kwd link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x">if</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#P:5">P</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#x:7">x</a></span><span class="gallina-kwd link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> then</a></span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#Some">Some</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#x:7">x</a></span><span class="gallina-kwd link"><a href="https://rocq-prover.org/corelib/Corelib.ssr.ssreflect.html#::boolean_if_scope:'if'_x_'then'_x_'else'_x"> else</a></span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#None">None</a></span>.<br>
 <br>
@@ -182,16 +179,14 @@ Qed.</div></details>
 <span id="RbaseSymbolsImpl_Rplus__canonical__Monoid_AddLaw" class="id"><span id="HB_unnamed_factory_72" class="id"><span name="RbaseSymbolsImpl_Rplus__canonical__Monoid_AddLaw" class="hierarchy-builder anchor tooltip">HB<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L120" target="_blank">Source code</a></span></span></span></span>.<span id="RbaseSymbolsImpl_Rplus__canonical__Monoid_AddLaw" class="id"><span id="HB_unnamed_factory_72" class="id"><span name="RbaseSymbolsImpl_Rplus__canonical__Monoid_AddLaw" class="id anchor tooltip">instance<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L120" target="_blank">Source code</a></span></span></span></span><span id="RbaseSymbolsImpl_Rplus__canonical__Monoid_AddLaw" class="id"><span id="HB_unnamed_factory_72" class="id"><span name="RbaseSymbolsImpl_Rplus__canonical__Monoid_AddLaw" class="vernacular anchor tooltip"> Definition<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L120" target="_blank">Source code</a></span></span></span></span><span id="RbaseSymbolsImpl_Rplus__canonical__Monoid_AddLaw" class="id"><span id="HB_unnamed_factory_72" class="id"><span name="RbaseSymbolsImpl_Rplus__canonical__Monoid_AddLaw" class="id anchor tooltip"> _<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L120" target="_blank">Source code</a></span></span></span></span><span id="RbaseSymbolsImpl_Rplus__canonical__Monoid_AddLaw" class="id"><span id="HB_unnamed_factory_72" class="id"><span name="RbaseSymbolsImpl_Rplus__canonical__Monoid_AddLaw" class="id anchor tooltip"> :=<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L120" target="_blank">Source code</a></span></span></span></span><span id="RbaseSymbolsImpl_Rplus__canonical__Monoid_AddLaw" class="id"><span id="HB_unnamed_factory_72" class="id"><span name="RbaseSymbolsImpl_Rplus__canonical__Monoid_AddLaw" class="id anchor tooltip"> isAddLaw<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L120" target="_blank">Source code</a></span></span></span></span>.<span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.bigop.html#Monoid.isAddLaw.Build">Build</a></span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rdefinitions.html#RbaseSymbolsImpl.R">R</a></span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult">Rmult</a></span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus">Rplus</a></span><br>
 &nbsp;&nbsp;<span class="id link"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.RIneq.html#Rmult_plus_distr_r">Rmult_plus_distr_r</a></span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Raxioms.html#Rmult_plus_distr_l">Rmult_plus_distr_l</a></span>.<br>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="unit_R" class="id"><span name="unit_R" class="id anchor tooltip">unit_R<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>kadd :
-forall [d d' : measure_display] [X : measurableType d]
-  [Y : measurableType d'] [R : realType],
-R.-ker X ~&gt; Y -&gt; R.-ker X ~&gt; Y -&gt; X -&gt; {measure set Y -&gt; \bar R}%R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="unit_R" class="id"><span name="unit_R" class="id anchor tooltip">unit_R<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>smallest : forall {T : Type}, (set T -&gt; Prop) -&gt; set T -&gt; set T
 
-kadd is not universe polymorphic
-Arguments kadd [d d']%_measure_display_scope [X Y R] k1 k2 x
-kadd is transparent
-Expands to: Constant mathcomp.analysis.kernel.kadd
-Declared in library mathcomp.analysis.kernel, line 774, characters 11-15
+smallest is not universe polymorphic
+Arguments smallest {T}%_type_scope C%_function_scope G%_classical_set_scope _
+smallest is transparent
+Expands to: Constant mathcomp.classical.classical_sets.smallest
+Declared in
+library mathcomp.classical.classical_sets, line 2505, characters 11-19
 </p><hr><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L123" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="r:16" class="id"><span name="r:16" class="id anchor tooltip">r<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L123" target="_blank">Source code</a></span></span></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r:16">r</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id"> </span><span class="id">0</span>.<br>
 <br>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="intro_unit_R" class="id"><span name="intro_unit_R" class="id anchor tooltip">intro_unit_R<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L125" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="x:17" class="id"><span name="x:17" class="id anchor tooltip">x<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L125" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="y:18" class="id"><span name="y:18" class="id anchor tooltip">y<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L125" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#y:18">y</a></span><span class="id link"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"> *</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#x:17">x</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"> </span><span class="id">1</span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"> /\</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#x:17">x</a></span><span class="id link"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"> *</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#y:18">y</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"> =</a></span><span class="id"> </span><span class="id">1</span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#unit_R">unit_R</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#x:17">x</a></span>.<br>
@@ -269,55 +264,41 @@ Qed.</div></details>
 <br>
 <div class="doc">Reflect the order on the reals to bool </div>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Rleb" class="id"><span name="Rleb" class="id anchor tooltip">Rleb<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>knormalize :
-forall {d d' : measure_display} {X : measurableType d}
-  {Y : measurableType d'} {R : realType},
-R.-ker X ~&gt; Y -&gt; probability Y R -&gt; X -&gt; {measure set Y -&gt; \bar R}%R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Rleb" class="id"><span name="Rleb" class="id anchor tooltip">Rleb<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>bigcap_closed : forall {T : Type}, set_system T -&gt; Prop
 
-knormalize is not universe polymorphic
-Arguments knormalize {d d'}%_measure_display_scope {X Y R} f P _
-knormalize is transparent
-Expands to: Constant mathcomp.analysis.kernel.knormalize
-Declared in library mathcomp.analysis.kernel, line 838, characters 11-21
+bigcap_closed is not universe polymorphic
+Arguments bigcap_closed {T}%_type_scope C
+bigcap_closed is transparent
+Expands to: Constant mathcomp.classical.classical_sets.bigcap_closed
+Declared in
+library mathcomp.classical.classical_sets, line 2532, characters 11-24
 </p><hr><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L179" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="r1:24" class="id"><span name="r1:24" class="id anchor tooltip">r1<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L179" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="r2:25" class="id"><span name="r2:25" class="id anchor tooltip">r2<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L179" target="_blank">Source code</a></span></span></span><span class="id"> :=</span><span class="gallina-kwd"> if</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.RIneq.html#Rle_dec">Rle_dec</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r1:24">r1</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r2:25">r2</a></span><span class="id"> is</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Specif.html#left">left</a></span><span class="id"> _</span><span class="gallina-kwd"> then</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#true">true</a></span><span class="gallina-kwd"> else</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#false">false</a></span>.<br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Rltb" class="id"><span name="Rltb" class="id anchor tooltip">Rltb<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>kcomp :
-forall [d1 d2 d3 : measure_display] [X : measurableType d1]
-  [Y : measurableType d2] [Z : measurableType d3] 
-  [R : realType],
-(X -&gt; {measure set Y -&gt; \bar R}%R) -&gt;
-(X * Y -&gt; {measure set Z -&gt; \bar R}%R) -&gt;
-X -&gt; set Z -&gt; GRing.BaseAddMagma.sort \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Rltb" class="id"><span name="Rltb" class="id anchor tooltip">Rltb<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>is_subset1 : forall {T : Type}, set T -&gt; Prop
 
-kcomp is not universe polymorphic
-Arguments kcomp [d1 d2 d3]%_measure_display_scope 
-  [X Y Z R] (l k)%_function_scope x U%_classical_set_scope
-kcomp is transparent
-Expands to: Constant mathcomp.analysis.kernel.kcomp
-Declared in library mathcomp.analysis.kernel, line 921, characters 11-16
+is_subset1 is not universe polymorphic
+Arguments is_subset1 {T}%_type_scope A%_classical_set_scope
+is_subset1 is transparent
+Expands to: Constant mathcomp.classical.classical_sets.is_subset1
+Declared in
+library mathcomp.classical.classical_sets, line 2554, characters 11-21
 </p><hr><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L180" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="r1:26" class="id"><span name="r1:26" class="id anchor tooltip">r1<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L180" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="r2:27" class="id"><span name="r2:27" class="id anchor tooltip">r2<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L180" target="_blank">Source code</a></span></span></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#Rleb">Rleb</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r1:26">r1</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r2:27">r2</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"> &amp;&amp;</a></span>&nbsp;(<span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r1:26">r1</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.eqtype.html#c385a484ee9d1b4e0615924561a9b75e"> !=</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r2:27">r2</a></span>).<br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Rgeb" class="id"><span name="Rgeb" class="id anchor tooltip">Rgeb<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>mkcomp :
-forall [d1 d2 d3 : measure_display] [X : measurableType d1]
-  [Y : measurableType d2] [Z : measurableType d3] 
-  [R : realType],
-R.-ker X ~&gt; Y -&gt; R.-ker X * Y ~&gt; Z -&gt; X -&gt; {measure set Z -&gt; \bar R}%R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Rgeb" class="id"><span name="Rgeb" class="id anchor tooltip">Rgeb<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>is_fun : forall {T1 T2 : Type}, (T1 -&gt; T2 -&gt; Prop) -&gt; Prop
 
-mkcomp is not universe polymorphic
-Arguments mkcomp [d1 d2 d3]%_measure_display_scope [X Y Z R] l k _
-mkcomp is transparent
-Expands to: Constant mathcomp.analysis.kernel.mkcomp
-Declared in library mathcomp.analysis.kernel, line 953, characters 11-17
+is_fun is not universe polymorphic
+Arguments is_fun {T1 T2}%_type_scope f%_function_scope
+is_fun is transparent
+Expands to: Constant mathcomp.classical.classical_sets.is_fun
+Declared in
+library mathcomp.classical.classical_sets, line 2555, characters 11-17
 </p><hr><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L181" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="r1:28" class="id"><span name="r1:28" class="id anchor tooltip">r1<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L181" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="r2:29" class="id"><span name="r2:29" class="id anchor tooltip">r2<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L181" target="_blank">Source code</a></span></span></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#Rleb">Rleb</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r2:29">r2</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r1:28">r1</a></span>.<br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="Rgtb" class="id"><span name="Rgtb" class="id anchor tooltip">Rgtb<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>kfcomp :
-forall {d1 d2 : measure_display} {T1 : measurableType d1}
-  {T2 : measurableType d2} {R : realType},
-(T1 -&gt; {measure set T2 -&gt; \bar R}%R) -&gt; (T1 * T2 -&gt; \bar R) -&gt; T1 -&gt; \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="Rgtb" class="id"><span name="Rgtb" class="id anchor tooltip">Rgtb<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>is_total : forall {T1 T2 : Type}, (T1 -&gt; T2 -&gt; Prop) -&gt; Prop
 
-kfcomp is not universe polymorphic
-Arguments kfcomp {d1 d2}%_measure_display_scope {T1 T2 R}
-  (k f)%_function_scope _
-kfcomp is transparent
-Expands to: Constant mathcomp.analysis.kernel.kfcomp
-Declared in library mathcomp.analysis.kernel, line 1226, characters 11-17
+is_total is not universe polymorphic
+Arguments is_total {T1 T2}%_type_scope f%_function_scope
+is_total is transparent
+Expands to: Constant mathcomp.classical.classical_sets.is_total
+Declared in
+library mathcomp.classical.classical_sets, line 2556, characters 11-19
 </p><hr><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L182" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="r1:30" class="id"><span name="r1:30" class="id anchor tooltip">r1<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L182" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="r2:31" class="id"><span name="r2:31" class="id anchor tooltip">r2<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L182" target="_blank">Source code</a></span></span></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#Rltb">Rltb</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r2:31">r2</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r1:30">r1</a></span>.<br>
 <br>
 <span class="vernacular">Lemma</span><span class="id"> </span><span id="RlebP" class="id"><span name="RlebP" class="id anchor tooltip">RlebP<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L184" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="r1:32" class="id"><span name="r1:32" class="id anchor tooltip">r1<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L184" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="r2:33" class="id"><span name="r2:33" class="id anchor tooltip">r2<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L184" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#reflect">reflect</a></span>&nbsp;(<span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r1:32">r1</a></span><span class="id link"><a href="https://rocq-prover.org/doc/V9.1.0/stdlib/Stdlib.Reals.Rdefinitions.html#77d341fe206b2891763e25999ffddca2"> &lt;=</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r2:33">r2</a></span>)&nbsp;(<span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#Rleb">Rleb</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r1:32">r1</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r2:33">r2</a></span>).<br>
@@ -813,19 +794,14 @@ Qed.</div></details>
 <div class="proofscript">
 <span class="id"> by</span><span class="id"> elim:</span><span class="id"> n</span><span class="id"> =&gt;</span><span class="id"> //=</span><span class="id"> n</span><span class="id"> ih;</span><span class="id"> rewrite</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.ssrnat.html#factS">factS</a></span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.ssrnat.html#mulSn">mulSn</a></span><span class="id"> ih</span>. Qed.</div></details>
 <br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="RealsE" class="id"><span name="RealsE" class="id anchor tooltip">RealsE<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>kproduct_snd :
-forall [d0 d1 d2 : measure_display] [T0 : measurableType d0]
-  [T1 : measurableType d1] [T2 : measurableType d2] 
-  {R : realType},
-(T0 -&gt; {measure set T1 -&gt; \bar R}%R) -&gt;
-(T1 -&gt; {measure set T2 -&gt; \bar R}%R) -&gt; T0 -&gt; set (T1 * T2) -&gt; \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="RealsE" class="id"><span name="RealsE" class="id anchor tooltip">RealsE<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>fun_of_rel : forall [T : Type], rel T -&gt; T -&gt; pred T
 
-kproduct_snd is not universe polymorphic
-Arguments kproduct_snd [d0 d1 d2]%_measure_display_scope 
-  [T0 T1 T2] {R} (k1 k2)%_function_scope _ _%_classical_set_scope
-kproduct_snd is transparent
-Expands to: Constant mathcomp.analysis.kernel.kproduct_snd
-Declared in library mathcomp.analysis.kernel, line 1455, characters 11-23
+fun_of_rel is not universe polymorphic
+Arguments fun_of_rel [T]%_type_scope _ _ _
+fun_of_rel is a reversible coercion
+fun_of_rel is transparent
+Expands to: Constant mathcomp.classical.boolp.fun_of_rel
+Declared in library mathcomp.classical.boolp, line 617, characters 18-28
 </p><hr>Used by
 <ul><li>mathcomp.analysis_stdlib.Rstruct_topology</li></ul><hr><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L551" target="_blank">Source code</a></span></span></span><span class="id"> :=</span>&nbsp;(<span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#RplusE">RplusE</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#RminusE">RminusE</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#RmultE">RmultE</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#RoppE">RoppE</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#RinvE">RinvE</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#RdivE">RdivE</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><br>
 &nbsp;&nbsp;<span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#INRE">INRE</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#R0E">R0E</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#R1E">R1E</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#Pos_to_natE">Pos_to_natE</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#IZRposE">IZRposE</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#RsqrtE">RsqrtE</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#RpowE">RpowE</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#RmaxE">RmaxE</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#RminE">RminE</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Datatypes.html#e6756e10c36f149b18b4a8741ed83079">,</a></span><br>
@@ -835,18 +811,14 @@ Declared in library mathcomp.analysis.kernel, line 1455, characters 11-23
 <span class="vernacular">Context</span><span class="id"> {</span><span id="ssreal_struct_contd.bigmaxr.R" class="id"><span name="ssreal_struct_contd.bigmaxr.R" class="id anchor tooltip">R<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L556" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.numdomain.html#Num.RealDomain.Exports.realDomainType">realDomainType</a></span><span class="id">}</span>.<br>
 <br>
 <span class="id">#[deprecated</span>(<span class="id">note=</span><span class="quoted id">&quot;To be removed. Use order.v's bigmax/min lemmas instead.&quot;</span>)<span class="id">]</span><br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="bigmaxr" class="id"><span name="bigmaxr" class="id anchor tooltip">bigmaxr<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>mkproduct :
-forall [d0 d1 d2 : measure_display] [T0 : measurableType d0]
-  [T1 : measurableType d1] [T2 : measurableType d2] 
-  {R : realType},
-R.-ftker T0 ~&gt; T1 -&gt;
-R.-ftker T0 * T1 ~&gt; T2 -&gt; T0 -&gt; {measure set (T1 * T2) -&gt; \bar R}%R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="bigmaxr" class="id"><span name="bigmaxr" class="id anchor tooltip">bigmaxr<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>unsquash : forall {T : Type}, $| T | -&gt; T
 
-mkproduct is not universe polymorphic
-Arguments mkproduct [d0 d1 d2]%_measure_display_scope [T0 T1 T2] {R} k1 k2 _
-mkproduct is transparent
-Expands to: Constant mathcomp.analysis.kernel.mkproduct
-Declared in library mathcomp.analysis.kernel, line 1517, characters 11-20
+unsquash is not universe polymorphic
+Arguments unsquash {T}%_type_scope s
+unsquash is transparent
+Expands to: Constant mathcomp.classical.classical_sets.unsquash
+Declared in
+library mathcomp.classical.classical_sets, line 2713, characters 11-19
 </p><hr><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L560" target="_blank">Source code</a></span></span></span>&nbsp;(<span id="r:140" class="id"><span name="r:140" class="id anchor tooltip">r<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L560" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#ssreal_struct_contd.bigmaxr.R">R</a></span>)<span class="id"> </span><span id="s:141" class="id"><span name="s:141" class="id anchor tooltip">s<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L560" target="_blank">Source code</a></span></span></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.bigop.html#93a42d9430a115f2544a09cba4cf05ca">\big[</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.max">Num</a></span>.<span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.algebra.numeric_hierarchy.orderedzmod.html#Num.max">max</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.bigop.html#93a42d9430a115f2544a09cba4cf05ca">/</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.seq.html#head">head</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#r:140">r</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#s:141">s</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.bigop.html#93a42d9430a115f2544a09cba4cf05ca">]_</a></span>(<span id="i:144" class="id"><span id="i:143" class="id"><span id="i:142" class="id"><span name="i:144" class="id anchor tooltip">i<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L560" target="_blank">Source code</a></span></span></span></span></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.bigop.html#93a42d9430a115f2544a09cba4cf05ca"> &lt;-</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#s:141">s</a></span>)<span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#i:142">i</a></span>.<br>
 <br>
 <span class="id">#[deprecated</span>(<span class="id">note=</span><span class="quoted id">&quot;To be removed. Use order.v's bigmax/min lemmas instead.&quot;</span>)<span class="id">]</span><br>
@@ -1041,19 +1013,14 @@ Qed.</div></details>
 <br>
 <span class="id">#[deprecated</span>(<span class="id">note=</span><span class="quoted id">&quot;To be removed. Use order.v's bigmax/min lemmas instead.&quot;</span>)<span class="id">]</span><br>
 <span class="id">#[warning=</span><span class="quoted id">&quot;-deprecated&quot;</span><span class="id">]</span><br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="bmaxrf" class="id"><span name="bmaxrf" class="id anchor tooltip">bmaxrf<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>kcomp_noparam :
-forall [d0 d1 d2 : measure_display] [T0 : measurableType d0]
-  [T1 : measurableType d1] [T2 : measurableType d2] 
-  {R : realType},
-(T0 -&gt; {measure set T1 -&gt; \bar R}%R) -&gt;
-(T1 -&gt; {measure set T2 -&gt; \bar R}%R) -&gt; T0 -&gt; set T2 -&gt; \bar R
+<span class="vernacular">Definition</span><span class="id"> </span><span id="bmaxrf" class="id"><span name="bmaxrf" class="id anchor tooltip">bmaxrf<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>Builders_64.pickle : forall [T : Type], T -&gt; nat
 
-kcomp_noparam is not universe polymorphic
-Arguments kcomp_noparam [d0 d1 d2]%_measure_display_scope 
-  [T0 T1 T2] {R} (k1 k2)%_function_scope x A%_classical_set_scope
-kcomp_noparam is transparent
-Expands to: Constant mathcomp.analysis.kernel.kcomp_noparam
-Declared in library mathcomp.analysis.kernel, line 1587, characters 11-24
+Builders_64.pickle is not universe polymorphic
+Arguments Builders_64.pickle [T]%_type_scope _
+Builders_64.pickle is transparent
+Expands to: Constant mathcomp.classical.classical_sets.Builders_64.pickle
+Declared in
+library mathcomp.classical.classical_sets, line 2731, characters 11-17
 </p><hr><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L730" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="n:206" class="id"><span name="n:206" class="id anchor tooltip">n<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L730" target="_blank">Source code</a></span></span></span>&nbsp;(<span id="f:207" class="id"><span name="f:207" class="id anchor tooltip">f<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L730" target="_blank">Source code</a></span></span></span><span class="id"> :</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.finfun.html#31493a873acc18a8368490ef56022c0c">{ffun</a></span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.fintype.html#:::'''I_'_x">'I_</a></span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#n:206">n</a></span>.<span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.ssrnat.html#bda89d73ec4a8f23ae92b565ffb5aaa6">+1</a></span><span class="id link"><a href="https://rocq-prover.org/corelib/Corelib.Init.Notations.html#::type_scope:x_'-&gt;'_x"> -&gt;</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#ssreal_struct_contd.bigmaxr.R">R</a></span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.finfun.html#31493a873acc18a8368490ef56022c0c">}</a></span>)<span class="id"> :=</span><br>
 &nbsp;&nbsp;<span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#bigmaxr">bigmaxr</a></span>&nbsp;(<span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#f:207">f</a></span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.fintype.html#ord0">ord0</a></span>)&nbsp;(<span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.fintype.html#codom">codom</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#f:207">f</a></span>).<br>
 <br>
@@ -1089,7 +1056,14 @@ Qed.</div></details>
 <br>
 <span class="id">#[deprecated</span>(<span class="id">note=</span><span class="quoted id">&quot;To be removed. Use order.v's bigmax/min lemmas instead.&quot;</span>)<span class="id">]</span><br>
 <span class="id">#[warning=</span><span class="quoted id">&quot;-deprecated&quot;</span><span class="id">]</span><br>
-<span class="vernacular">Definition</span><span class="id"> </span><span id="index_bmaxrf" class="id"><span name="index_bmaxrf" class="id anchor tooltip">index_bmaxrf<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>kernel_snd not a defined object.
+<span class="vernacular">Definition</span><span class="id"> </span><span id="index_bmaxrf" class="id"><span name="index_bmaxrf" class="id anchor tooltip">index_bmaxrf<span class="tooltip-area"><!-- html-validate-disable-block element-permitted-content --><p>Builders_64.unpickle : forall T : Type, nat -&gt; option T
+
+Builders_64.unpickle is not universe polymorphic
+Arguments Builders_64.unpickle T%_type_scope _%_nat_scope
+Builders_64.unpickle is transparent
+Expands to: Constant mathcomp.classical.classical_sets.Builders_64.unpickle
+Declared in
+library mathcomp.classical.classical_sets, line 2732, characters 11-19
 </p><hr><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L761" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="n:213" class="id"><span name="n:213" class="id anchor tooltip">n<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L761" target="_blank">Source code</a></span></span></span><span class="id"> </span><span id="f:214" class="id"><span name="f:214" class="id anchor tooltip">f<span class="tooltip-area"><a href="https://github.com/math-comp/analysis/tree/14508f5a2ee30eab979cf649f93dd40729d11eee/reals_stdlib/Rstruct.v#L761" target="_blank">Source code</a></span></span></span><span class="id"> :=</span><span class="id"> </span><span class="id link"><a href="https://math-comp.github.io/htmldoc_2_6_0/mathcomp.boot.fintype.html#Ordinal">Ordinal</a></span>&nbsp;(<span class="id">@</span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#bmaxrf_index">bmaxrf_index</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#n:213">n</a></span><span class="id"> </span><span class="id link"><a href="mathcomp.reals_stdlib.Rstruct.html#f:214">f</a></span>).<br>
 <br>
 <span class="id">#[deprecated</span>(<span class="id">note=</span><span class="quoted id">&quot;To be removed. Use order.v's bigmax/min lemmas instead.&quot;</span>)<span class="id">]</span><br>
