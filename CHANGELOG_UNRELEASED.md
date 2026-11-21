@@ -340,6 +340,7 @@
   + lemma `differentiable_comp` (`f` and `g` are now explicit)
 - from `pseudometric_structure.v` to `uniform_structure.v`:
   + definition `entourage_`
+  + lemma `entourage_E`
 
 - from `separation_axioms.v` to `uniform_metrizable.v`:
   + module `countable_uniform`
