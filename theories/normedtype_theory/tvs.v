@@ -408,21 +408,21 @@ HB.structure Definition SubConvexTvs d' d (R : numDomainType)
     & @GRing.SubLmodule R V S U }.
 
 Section ConvexTvs_theory.
-Context {R : numFieldType} {E : convexTvsType R}.
+Context {d} {R : numFieldType} {E : convexTvsType d R}.
 
 Lemma closure_convextvs (b : set E) :
   closure b = \bigcap_(a in nbhs (0 : E)) (b `+ a).
 Proof.
-have [absconv [] nbhs0 basis] := svalP (cid2 (@locally_convex _ E)).
+have [absconv [] nbhs0 basis] := svalP (cid2 (@locally_convex _ _ E)).
 apply/seteqP; split => z H.
   move=> a' /basis [/=a /[dup] /mem_set /absconv [_ bala]].
   move=> /nbhs0 /[dup] na /(nbhs_add1set z)/H  [y [by' [? -> [t ta zty]]]] aa'.
   exists y => //; exists (- t); last by apply/eqP; rewrite subr_eq zty.
   by rewrite -scaleN1r; apply/aa'/(bala (- 1)); rewrite ?normrN1//=; exists t.
-move=> d; rewrite nbhsE0.
-move=>  [dz] [/=a /basis [/= a'/[dup] /mem_set /= /absconv [_ bala]]].
-move=> /nbhs0 /H [x bx [y ay]] xyz  aa' zcd.
-exists x; split => //; apply: zcd; exists (- y).
+move=> r; rewrite nbhsE0.
+move=>  [rz] [/=a /basis [/= a'/[dup] /mem_set /= /absconv [_ bala]]].
+move=> /nbhs0 /H [x bx [y ay]] xyz  aa' zcr.
+exists x; split => //; apply: zcr; exists (- y).
   by rewrite -scaleN1r; apply/aa'/(bala (- 1)); rewrite ?normrN1//=; exists y.
 by  apply/eqP; rewrite subr_eq xyz.
 Qed.
@@ -1322,16 +1322,16 @@ Arguments has_open_nbhs_basis {d R} E.
 (**md This section shows that every convexTvsType admits a basis of closed
   absolutely convex sets *)
 Section closedbasis.
-Context {R : realFieldType} {E : convexTvsType R}.
+Context {d} {R : realType} {E : convexTvsType d R}.
 
 Definition closed_nbhsbasis_ctvs :=
-  [set closure b | b in @nbhsbasis_convextvs R E].
+  [set closure b | b in @nbhsbasis_convextvs d R E].
 
 Lemma has_closed_nbhs_basis :
   nbhs_basis 0 closed_nbhsbasis_ctvs
   /\ (forall b, closed_nbhsbasis_ctvs b -> closed b /\ absolutely_convex_set b).
 Proof.
-have [absconv [nbhs0 basis]] := svalP (cid2 (@locally_convex _ E)).
+have [absconv [nbhs0 basis]] := svalP (cid2 (@locally_convex _ _ E)).
 split.
   split => /= a /=.
     by move=> [b /nbhs0 nbhsb <-]; apply: filterS; first exact: subset_closure.
@@ -1894,7 +1894,7 @@ Qed.
 End generating_seminorm.
 
 Section kernel.
-Context {R : realFieldType} {F : convexTvsType R}.
+Context {d} {R : realFieldType} {F : convexTvsType d R}.
 
 (* TODO: Introduce a notation for kernels? *)
 Lemma continuous_closedkernel (f : {linear F -> R^o}) :
@@ -1909,7 +1909,7 @@ have [h _|] := eqVneq (f @^-1` [set 0]) [set: F].
   by move/seteqP : h => [_ /(_ x)] ->.
 move=> s0 /closed_Ndense => /(_ s0) /existsNP[/= U] /not_implyP[[x Ux]].
 move=> /not_implyP[oU] /forallNP /= Uf.
-have [B Bconv [B0 Bbasis]] := @locally_convex _ F.
+have [B Bconv [B0 Bbasis]] := @locally_convex _ _ F.
 have /nbhsE0 [_ [V' /Bbasis [/= V BV VV'] VU]] : nbhs x U.
   by rewrite nbhsE; exists U.
 have [_ aV] : absolutely_convex_set V by exact/Bconv/mem_set.

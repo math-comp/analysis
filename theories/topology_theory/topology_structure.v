@@ -1135,7 +1135,7 @@ apply/not_implyP; split; first exact: openT.
 by rewrite setTI => -[].
 Qed.
 
-Lemma closed_Ndense {T : topologicalType} (A : set T) :
+Lemma closed_Ndense {d} {T : topologicalType d} (A : set T) :
   A != [set: T] -> closed A ->  ~ dense A.
 Proof.
 move=> AT.

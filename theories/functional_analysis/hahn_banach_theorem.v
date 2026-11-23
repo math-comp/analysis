@@ -513,7 +513,7 @@ Qed.
 (*END TBA *)
 
 (* 7.2.3 in Jarchow *)
-Corollary hahn_banach_extension_hausdorff (R : realType) (V : convexTvsType R) :
+Corollary hahn_banach_extension_hausdorff d (R : realType) (V : convexTvsType d R) :
   hausdorff_space V <->
   forall x : V,  x != 0 -> exists l : {linear_continuous V -> R^o}, l x != 0.
 Proof.
@@ -524,18 +524,18 @@ the set of seminorms generating the topology - it probably lacks an argument
 saying that continuous seminorms are always bounded by this set of seminorms,
 which we haven't formalised here *)
   move => H.
-  pose P := @seminorm_of R V.
-  pose P0 := @seminorm_ofneq0 R V.
+  pose P := @seminorm_of d R V.
+  pose P0 := @seminorm_ofneq0 d R V.
   suff : hausdorff_space (seminorm_on P0).
-    have [contVs _ ] := @seminorm_convextvs _ V.
+    have [contVs _ ] := @seminorm_convextvs _ _ V.
     by move=> + x y cs; apply => a b /contVs nsa /contVs nsb; exact: cs.
   apply/hausdorff_seminorm_on=> x /H [l].
   have [l0|l0|] := ltrgtP (l x) (0 : R) => //.
     have /linear_continuous_seminorm[p [sp _]/= lp] :=
-  @continuous_fun _ _ (-1 *: l).
+  @continuous_fun _ _ _ _ (-1 *: l).
     exists p => //; apply: lt_le_trans (lp _).
     by rewrite scaleN1r ltrNr oppr0.
-  have /linear_continuous_seminorm[p [sp _] /= lp] := @continuous_fun _ _ l.
+  have /linear_continuous_seminorm[p [sp _] /= lp] := @continuous_fun _ _ _ _ l.
   by exists p => //; exact: lt_le_trans (lp _).
 move=> haus x x0.
 pose l := fun y : line x => xchoose (line_linepred y).
@@ -559,7 +559,7 @@ have lcont : continuous linl.
     by move/(scaler_eq0 x0).
   apply: accessible_closed_set1; apply: hausdorff_accessible.
   exact: hausdorff_init_convextvs.
-pose contlP := isContinuous.Build _ _ _ lcont.
+pose contlP := isContinuous.Build _ _ _ _ _ lcont.
 pose lcl : {linear_continuous (init_subconvextvs (line x)) -> R^o} :=
   HB.pack (l : (init_subconvextvs (line x)) -> R^o) linlP contlP.
 have := (hahn_banach_extension_initialsubctvs lcl) => -[g Pg]; exists g.
