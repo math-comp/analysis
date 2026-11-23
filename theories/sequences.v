@@ -1515,6 +1515,22 @@ Lemma ereal_nondecreasing_is_cvgn (R : realType) (u_ : (\bar R) ^nat) :
   nondecreasing_seq u_ -> cvgn u_.
 Proof. by move=> ?; apply/cvg_ex; eexists; exact: ereal_nondecreasing_cvgn. Qed.
 
+Lemma ereal_nondecreasing_sum_limn {R : realType} {T} {u : T -> (\bar R)^nat} :
+    (forall j, nondecreasing_seq (u j)) ->
+    (forall j, limn (u j) \is a fin_num) ->
+  forall L, (\sum_(j <- L) limn (u j) = limn (fun n => \sum_(j <- L) u j n)).
+Proof.
+move=> ndu fu; elim => [|a L ih].
+- rewrite big_nil; apply/esym/cvg_lim => //.
+  by apply: cvg_near_cst; apply: nearW => n; rewrite big_nil.
+- rewrite big_cons ih.
+  under [in RHS]eq_fun => n do rewrite big_cons.
+  apply/esym/cvg_lim => //.
+  apply: cvgeD; [exact: fin_num_adde_defr|exact: ereal_nondecreasing_is_cvgn|].
+  apply: ereal_nondecreasing_is_cvgn => n m nm.
+  by apply: lee_sum => j _; exact: ndu.
+Qed.
+
 Lemma ereal_nonincreasing_cvgn (R : realType) (u_ : (\bar R)^nat) :
   nonincreasing_seq u_ -> u_ @ \oo --> ereal_inf (u_ @` setT).
 Proof.

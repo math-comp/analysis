@@ -1190,13 +1190,6 @@ Lemma fin_numM x y : x \is a fin_num -> y \is a fin_num ->
   x * y \is a fin_num.
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
-Lemma fin_numMK (a b : \bar R):
-  fine (a * b) = (fine a * fine b)%R.
-Proof.
-by case: a => [r| |]; case: b => [s| |]//=;
-rewrite /mule/= ?mulr0 ?mul0r//; do ![case: ifPn => //= _].
-Qed.
-
 Lemma prode_fin_num (I : Type) (s : seq I) (P : pred I) (f : I -> \bar R) :
   (forall i, P i -> f i \is a fin_num) ->
   \prod_(i <- s | P i) f i \is a fin_num.
@@ -1211,8 +1204,17 @@ Proof. by move=> [r| |] [s| |]. Qed.
 Lemma fineB : {in @fin_num R &, {morph fine : x y / x - y >-> (x - y)%R}}.
 Proof. by move=> [r| |] [s| |]. Qed.
 
-Lemma fineM : {in @fin_num R &, {morph fine : x y / x * y >-> (x * y)%R}}.
-Proof. by move=> [x| |] [y| |]. Qed.
+Lemma fin_numMK (a b : \bar R):
+  fine (a * b) = (fine a * fine b)%R.
+Proof.
+by case: a => [r| |]; case: b => [s| |]//=;
+rewrite /mule/= ?mulr0 ?mul0r//; do ![case: ifPn => //= _].
+Qed.
+
+Lemma fineM : {morph @fine R : x y / x * y >-> (x * y)%R}.
+Proof.
+by case => [r| |] [s| |]//=; rewrite ?(mulr0,mul0r)//= /mule/=; do !case: ifPn.
+Qed.
 
 Lemma fineK x : x \is a fin_num -> (fine x)%:E = x.
 Proof. by case: x. Qed.
