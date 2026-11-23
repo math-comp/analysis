@@ -370,20 +370,22 @@ Qed.
 Section pmf_zero.
 Context {R : realType} {T : choiceType}.
 
-Definition pmf_zero (x : T) : R := 0.
+Definition zero (x : T) : R := 0.
 
-Let sub_pmf_pmf_zero : sub_pmf pmf_zero.
+Let sub_pmf_pmf_zero : sub_pmf zero.
 Proof. by split=> // J _; rewrite big1 ?ler01. Qed.
 
 HB.instance Definition _ :=
-  @uniq_isSubPmf.Build R T pmf_zero sub_pmf_pmf_zero.1 sub_pmf_pmf_zero.2.
+  @uniq_isSubPmf.Build R T zero sub_pmf_pmf_zero.1 sub_pmf_pmf_zero.2.
+
+Definition pmf_zero : R.-pmf T := zero.
 
 End pmf_zero.
 
 (* -------------------------------------------------------------------- *)
 Lemma lef_pmf_zero {R : realType} {T : choiceType} (mu : R.-pmf T) :
   pmf_zero <=1 mu.
-Proof. by move=> x; rewrite /pmf_zero. Qed.
+Proof. by move=> x /=; rewrite /zero. Qed.
 
 (* -------------------------------------------------------------------- *)
 Section MeasureOfPmf_Zero.
@@ -401,13 +403,13 @@ End MeasureOfPmf_Zero.
 Section Restr.
 Context (R : realType) (T : choiceType) (p : pred T).
 
-Definition pmf_restr (mu : R.-pmf T) := fun x => if p x then mu x else 0.
+Definition restr (mu : R.-pmf T) := fun x => if p x then mu x else 0.
 
-Let is_pmf_restr (mu : R.-pmf T) : sub_pmf (pmf_restr mu).
+Let is_pmf_restr (mu : R.-pmf T) : sub_pmf (restr mu).
 Proof.
-split=> [x|J]; first by rewrite /pmf_restr; case: ifP.
+split=> [x|J]; first by rewrite /restr; case: ifP.
 move=> eqJ; apply/(@le_trans _ _ (\sum_(j <- J) `|mu j|)).
-- by apply/ler_sum=> i _; rewrite /pmf_restr; case: ifPn => _ //; exact: ler_norm.
+- by apply/ler_sum=> i _; rewrite /restr; case: ifPn => _ //; exact: ler_norm.
 - rewrite -lee_fin.
   apply/(le_trans _ (subpmf_sum_le1 mu)).
   case mu => //= {}mu [[?]]; rewrite esummableE => ? _.
@@ -417,7 +419,9 @@ move=> eqJ; apply/(@le_trans _ _ (\sum_(j <- J) `|mu j|)).
 Qed.
 
 HB.instance Definition _ (mu : R.-pmf T) :=
-  @uniq_isSubPmf.Build R T (pmf_restr mu) (is_pmf_restr mu).1 (is_pmf_restr mu).2.
+  @uniq_isSubPmf.Build R T (restr mu) (is_pmf_restr mu).1 (is_pmf_restr mu).2.
+
+Definition pmf_restr  : R.-pmf T -> R.-pmf T := restr.
 
 End Restr.
 
@@ -434,7 +438,7 @@ Lemma measure_of_pmf_pmf_restr (p : pred T) (mu : R.-pmf T)
 Proof.
 rewrite /mrestr /measure_of_pmf esum_mkcondr.
 apply: eq_esum => x _ /=.
-rewrite /pmf_restr mem_setE unfold_in.
+rewrite /restr mem_setE unfold_in.
 by case: ifPn.
 Qed.
 
@@ -493,14 +497,14 @@ Context {R : realType} {T : choiceType}.
 
 Lemma pmf_restrD (mu : R.-pmf T) (p : pred T) x :
   mu x = pmf_restr p mu x + pmf_restr (predC p) mu x.
-Proof. by rewrite /pmf_restr !inE; case: ifPn; rewrite /= (addr0, add0r). Qed.
+Proof. by rewrite /= /restr !inE; case: ifPn; rewrite /= (addr0, add0r). Qed.
 
 Lemma dinsupp_restr (mu : R.-pmf T) (p : pred T) x :
   (x \in dinsupp (pmf_restr p mu)) = (x \in dinsupp mu) && p x.
 Proof.
 apply/dinsuppP/idP.
-- by rewrite /= /pmf_restr; case: ifP=> // _ /dinsuppP ->.
-- by case/andP; rewrite /= /pmf_restr => /dinsuppP ? ->.
+- by rewrite /= /restr; case: ifP=> // _ /dinsuppP ->.
+- by case/andP; rewrite /= /restr => /dinsuppP ? ->.
 Qed.
 
 End RestrTheory.
@@ -510,13 +514,13 @@ Section DCount.
 Context {R : realType} (T : choiceType).
 Implicit Types (s : seq T).
 
-Definition pmf_count (s : seq T) : T -> R :=
+Definition count (s : seq T) : T -> R :=
   fun x : T => (count (pred1 x) s)%:R / (size s)%:R.
 
-Lemma pmf_count_ge0 s x : 0 <= pmf_count s x.
+Lemma pmf_count_ge0 s x : 0 <= count s x.
 Proof. by rewrite mulr_ge0 ?invr_ge0 // ler0n. Qed.
 
-Lemma has_sup_pmf_count s J : uniq J -> \sum_(i <- J) pmf_count s i <= 1.
+Lemma has_sup_pmf_count s J : uniq J -> \sum_(i <- J) count s i <= 1.
 Proof.
 move=> uqJ; rewrite -mulr_suml /= -natr_sum; case: (size s =P 0%N).
   by move=> ->; rewrite invr0 mulr0 ler01.
@@ -533,7 +537,7 @@ apply/uniq_perm; rewrite ?filter_uniq ?undup_uniq //.
 by move=> x; rewrite !mem_filter mem_undup andbC.
 Qed.
 
-Lemma pmf_count_sup s : (0 < size s)%N -> \sum_(i <- undup s) pmf_count s i = 1.
+Lemma pmf_count_sup s : (0 < size s)%N -> \sum_(i <- undup s) count s i = 1.
 Proof.
 move=> gt0_s; rewrite -mulr_suml -natr_sum.
 apply/(mulIf (x := (size s)%:R)); first by rewrite pnatr_eq0 -lt0n.
@@ -542,23 +546,25 @@ rewrite -sum1_size -[in RHS]big_undup_iterop_count/=; apply: eq_bigr => i _.
 by rewrite Monoid.iteropE iter_addn addn0 mul1n.
 Qed.
 
-Lemma summable_pmf_count s: esummable [set :T] (EFin \o (pmf_count s)).
+Lemma summable_pmf_count s: esummable [set :T] (EFin \o (count s)).
 Proof.
 rewrite /esummable (@le_lt_trans _ _ 1%:E) ?ltey//.
 rewrite ge0_esum.
 + by move => ? _;rewrite lee_fin.
 rewrite ge_ereal_sup//= => _ [X [finX _]] <-.
 rewrite fsumEFin // lee_fin fsbig_finite //=.
-rewrite (eq_bigr (pmf_count s)).
+rewrite (eq_bigr (count s)).
   by move => ? ?; rewrite ger0_norm ?pmf_count_ge0.
 by apply/has_sup_pmf_count.
 Qed.
 
-Let is_pmf_count s : sub_pmf (pmf_count s).
+Let is_pmf_count s : sub_pmf (count s).
 Proof. by split; [exact/pmf_count_ge0|exact/has_sup_pmf_count]. Qed.
 
 HB.instance Definition _ (s : seq T) :=
-  @uniq_isSubPmf.Build R T (pmf_count s) (is_pmf_count s).1 (is_pmf_count s).2.
+  @uniq_isSubPmf.Build R T (count s) (is_pmf_count s).1 (is_pmf_count s).2.
+
+Definition pmf_count (s : seq T) : R.-pmf T := count s.
 
 End DCount.
 
@@ -571,28 +577,28 @@ Context {R : realType} {T : choiceType}.
 Implicit Types (x y : T) (s : seq T).
 
 Lemma pmf_ret1E x y : pmf_ret x y = (x == y)%:R :> R.
-Proof. by rewrite unlock/= /pmf_count/= addn0 divr1. Qed.
+Proof. by rewrite unlock /= /count/= addn0 divr1. Qed.
 
 Lemma pmf_ret_id x : pmf_ret x x = 1 :> R.
 Proof. by rewrite pmf_ret1E eqxx. Qed.
 
 Lemma pmf_ret_diff x y : x <> y -> (pmf_ret x) y = 0 :> R.
-Proof. by rewrite unlock/= /pmf_count /= addn0 divr1 => /eqP /negPf ->. Qed.
+Proof. by rewrite unlock /= /count /= addn0 divr1 => /eqP /negPf ->. Qed.
 
 Lemma in_pmf_ret (t t' : T) : t' \in @dinsupp R _ (pmf_ret t) -> t' = t :> T.
 Proof.
-by rewrite in_dinsupp unlock/= /pmf_count/= addn0 divr1 pnatr_eq0 eqb0 negbK => /eqP.
+by rewrite in_dinsupp unlock /= /count/= addn0 divr1 pnatr_eq0 eqb0 negbK => /eqP.
 Qed.
 
 End pmf_ret.
 
-Definition pmf_uniform {R : realType} {T : choiceType} (s : seq T) : T -> R :=
+Definition pmf_uniform {R : realType} {T : choiceType} (s : seq T) : R.-pmf T :=
   pmf_count (undup s).
 
 Lemma pmf_uniform1E {R : realType} {T : choiceType} (s : seq T) x :
   (pmf_uniform s) x = (x \in s)%:R / (size (undup s))%:R :> R.
 Proof.
-by rewrite /pmf_uniform /pmf_count count_uniq_mem ?(mem_undup, undup_uniq).
+by rewrite /= /count count_uniq_mem ?(mem_undup, undup_uniq).
 Qed.
 
 (* -------------------------------------------------------------------- *)
@@ -620,9 +626,9 @@ Context {R : realType}.
 
 Local Abbreviation clamp := (@clamp R 0 1).
 
-Definition pmf_flip (xt : R) := fun b => if b then clamp xt else 1 - clamp xt.
+Definition flip (xt : R) := fun b => if b then clamp xt else 1 - clamp xt.
 
-Let is_pmf_flip xt : sub_pmf (pmf_flip xt).
+Let is_pmf_flip xt : sub_pmf (flip xt).
 Proof.
 apply/sub_pmfP; split=> [b|].
 + by case: b; rewrite ?subr_ge0 clamp_gele.
@@ -630,7 +636,9 @@ apply/sub_pmfP; split=> [b|].
 Qed.
 
 HB.instance Definition _ (xt : R) :=
-  @uniq_isSubPmf.Build R _ (pmf_flip xt) (is_pmf_flip xt).1 (is_pmf_flip xt).2.
+  @uniq_isSubPmf.Build R _ (flip xt) (is_pmf_flip xt).1 (is_pmf_flip xt).2.
+
+Definition pmf_flip r : R.-pmf bool:= flip r.
 
 End Flip.
 
@@ -638,18 +646,18 @@ End Flip.
 Section Bind.
 Context {R : realType} {T U : choiceType} (f : T -> R.-pmf U) (mu : R.-pmf T).
 
-Definition pmf_bind (y : U) := fine (\esum_(x in [set:T]) (mu x * f x y)%:E).
+Definition bind (y : U) := fine (\esum_(x in [set:T]) (mu x * f x y)%:E).
 
 Let pmf_bind_ge0 x : 0 <= fine (\esum_(x0 in [set: T]) (mu x0 * f x0 x)%:E).
 Proof.
 by rewrite fine_ge0// esum_ge0//= => t _; rewrite lee_fin mulr_ge0.
 Qed.
 
-Let is_pmf_bind : sub_pmf pmf_bind.
+Let is_pmf_bind : sub_pmf bind.
 Proof.
 split=> [x|J uqJ].
   exact: pmf_bind_ge0.
-rewrite /pmf_bind -lee_fin.
+rewrite /bind -lee_fin.
 have hpos : (forall x i, 0 <= (mu x * f x i)%:E )%E.
 + by move => ?? ;rewrite EFinM mule_ge0  //= lee_tofin.
 apply /le_trans.
@@ -666,7 +674,9 @@ by rewrite -esummableE.
 Qed.
 
 HB.instance Definition _ :=
-  @uniq_isSubPmf.Build R U pmf_bind is_pmf_bind.1 is_pmf_bind.2.
+  @uniq_isSubPmf.Build R U bind is_pmf_bind.1 is_pmf_bind.2.
+
+Definition pmf_bind : R.-pmf U := bind.
 
 End Bind.
 
@@ -680,12 +690,12 @@ Implicit Types (f g : T -> R.-pmf U) (mu nu : R.-pmf T).
 
 Lemma pmf_bind_zero f : \bind_(x <- pmf_zero) f x =1 pmf_zero.
 Proof.
-by move=> x; rewrite /pmf_bind esum1// => ? ?; rewrite /= EFinM mul0e.
+by move=> x /=; rewrite /bind esum1//  => ? ?; rewrite /= EFinM mul0e.
 Qed.
 
 Lemma pmf_bind_ret f v : \bind_(y <- pmf_ret v) f y =1 f v.
 Proof.
-move=> y; rewrite /pmf_bind.
+move=> y /=; rewrite /bind.
 rewrite  (esumID ([set v]%classic)).
 + by move => ??; rewrite lee_tofin // mulr_ge0.
 rewrite setI1 //= in_setT esum_set1.
@@ -697,7 +707,7 @@ Qed.
 
 Lemma pmf_bind_pmf_ret_id mu : \bind_(t <- mu) (pmf_ret t) =1 mu.
 Proof.
-move=> v; rewrite /pmf_bind.
+move=> v /=; rewrite /bind.
 rewrite  (esumID ([set v]%classic)).
 + by move => ??; rewrite lee_tofin // mulr_ge0.
 rewrite setI1 //= in_setT esum_set1.
@@ -709,7 +719,7 @@ Qed.
 Lemma eq_in_pmf_bind f g mu nu : {in dinsupp mu, f =2 g} -> mu =1 nu ->
   pmf_bind f mu =1 pmf_bind g nu.
 Proof.
-move=> eq_f eq_mu y; rewrite /pmf_bind.
+move=> eq_f eq_mu y /=; rewrite /bind.
 have -> //= : (\esum_(x in [set: T]) (mu x * f x y)%:E =
             \esum_(x in [set: T]) (nu x * g x y)%:E).
 apply /eq_esum.
@@ -770,7 +780,7 @@ Qed.
 Lemma pmf_bindC (mu : R.-pmf T) (nu : R.-pmf U) y :
   (\bind_(_ <- mu) nu) y = dweight mu * nu y.
 Proof.
-rewrite /pmf_bind /pmf_prob //=.
+rewrite /= /bind /pmf_prob //=.
 under eq_esum do rewrite mulrC EFinM.
 rewrite esumZ ?lee_tofin //= => [?| ]; rewrite ?lee_tofin //.
 rewrite fineM => //=;last first.
@@ -783,7 +793,7 @@ Lemma dinsupp_pmf_bind f mu y :
     y \in dinsupp (\bind_(x <- mu) f x) ->
   exists2 x, x \in dinsupp mu & f x y != 0.
 Proof.
-rewrite in_dinsupp /= /pmf_bind => nz_pmf_bind.
+rewrite in_dinsupp /= /bind => nz_pmf_bind.
 have /esum_neq0[x _] : \esum_(x in [set: T]) (mu x * f x y)%:E != 0.
 + by apply: contra nz_pmf_bind => /eqP ->; rewrite fine0.
 rewrite eqe mulf_eq0 negb_or => /andP[nz_mu nz_f].
@@ -812,7 +822,7 @@ Qed.
 Lemma pmf_bind_eq0 (f : T -> U) mu y :
   {in dinsupp mu, forall x, f x != y} -> (\bind_(x <- mu) pmf_ret (f x)) y = 0.
 Proof.
-move=> h; rewrite /pmf_bind.
+move=> h /=; rewrite /bind.
 have -> : \esum_(x in [set: T]) (mu x * pmf_ret (f x) y)%:E = 0.
 + apply: esum1 => x _.
   case/boolP: (x \in dinsupp mu) => [xin|/dinsuppPn ->].
@@ -824,7 +834,7 @@ Qed.
 Lemma eq0_pmf_bind (mu : R.-pmf T) (F : T -> R.-pmf U ) y :
   (\bind_(x <- mu) F x) y = 0 -> forall x, x \in dinsupp mu -> F x y = 0.
 Proof.
-rewrite /pmf_bind => /fine_esum0 => h x.
+rewrite /= /bind => /fine_esum0 => h x.
 move => /dinsuppP /eqP mu_x. move: (h x).
 by  move=> /eqP ; rewrite eqe mulf_eq0 (negbTE mu_x) /= => /eqP.
 Qed.
@@ -883,7 +893,7 @@ Lemma pmf_bind_pmf_bind (mu : R.-pmf T) :
   \bind_(x <- \bind_(y <- mu) f1 y) f2 x =1
   \bind_(y <- mu) (\bind_(x <- f1 y) f2 x).
 Proof.
-move=> z; rewrite /pmf_bind.
+move=> z /=; rewrite /bind.
 pose S y x := mu x * f1 x y * f2 y z.
 rewrite (eq_esum _ _ (fun y => \esum_(x in [set: T]) (S y x)%:E)%E).
 + move => y ?; subst S; rewrite EFinM pmf_bind_EFin //.
@@ -908,7 +918,7 @@ Lemma pmf_bind_additive (f : T -> R.-pmf U) z :
   (forall x, mu x = mu1 x + mu2 x) ->
   (\bind_(x <- mu) f x) z = (\bind_(x <- mu1) f x) z + (\bind_(x <- mu2) f x) z.
 Proof.
-move=> muD; rewrite /pmf_bind.
+move=> muD /=; rewrite /bind.
 under eq_esum do rewrite muD mulrDl EFinD.
 rewrite esumD.
 1-2: by move => ??; rewrite /S EFinM lee_tofin // !mulr_ge0.
@@ -924,7 +934,7 @@ Implicit Types (f g : nat -> R.-pmf T).
 
 Import numFieldNormedType.Exports.
 
-Definition pmf_lim f : T -> R := fun x => fine (limn_einf (fun n => (f n x)%:E)).
+Definition lim f : T -> R := fun x => fine (limn_einf (fun n => (f n x)%:E)).
 
 Lemma liminf_ge0 f x : (0 <= limn_einf (fun n => (f n x)%:E))%E.
 Proof.
@@ -947,8 +957,8 @@ rewrite ge0_fin_numE//.
 by apply: le_lt_trans; [exact: liminf_le1 |exact: ltry].
 Qed.
 
-Lemma pmf_lim_EFin f x : (pmf_lim f x)%:E = limn_einf (fun n => (f n x)%:E).
-Proof. by rewrite /pmf_lim fineK// fin_liminf. Qed.
+Lemma pmf_lim_EFin f x : (lim f x)%:E = limn_einf (fun n => (f n x)%:E).
+Proof. by rewrite /lim fineK// fin_liminf. Qed.
 
 Let sumlim {u : T -> (\bar R)^nat} :
   (forall j, nondecreasing_seq (u j)) -> (forall j, limn (u j) \is a fin_num) ->
@@ -967,10 +977,10 @@ move=> ndu fu; elim => [|a L IH].
     by apply: lee_sum => j _; exact: ndu.
 Qed.
 
-Let is_pmf_lim f : sub_pmf (pmf_lim f).
+Let is_pmf_lim f : sub_pmf (lim f).
 Proof.
 split=> [x|J uqJ].
-  by rewrite /pmf_lim; exact/fine_ge0/liminf_ge0.
+  by rewrite /lim; exact/fine_ge0/liminf_ge0.
 have ndE (j : T) : nondecreasing_seq (einfs (fun n => (f n j)%:E)).
   exact: nondecreasing_einfs.
 have finE (j : T) : limn (einfs (fun n => (f n j)%:E)) \is a fin_num.
@@ -988,12 +998,14 @@ exact: sum_esum_ge.
 Qed.
 
 HB.instance Definition _ f :=
-  @uniq_isSubPmf.Build R T (pmf_lim f) (is_pmf_lim f).1 (is_pmf_lim f).2.
+  @uniq_isSubPmf.Build R T (lim f) (is_pmf_lim f).1 (is_pmf_lim f).2.
+
+Definition pmf_lim : ((nat -> R .-pmf T) -> R.-pmf T) := lim.
 
 Lemma pmf_lim_limE f : nondecreasing_fun (f : _ -> _ -> R) ->
   forall x, pmf_lim f x = fine (limn (fun n => (f n x)%:E)).
 Proof.
-move=> ndf x; rewrite /pmf_lim is_cvg_limn_einfE//=.
+move=> ndf x /=; rewrite /lim is_cvg_limn_einfE//=.
 apply: ereal_nondecreasing_is_cvgn => m n mn.
 by rewrite lee_fin; exact/lefP/ndf.
 Qed.
@@ -1024,16 +1036,16 @@ Context {R : realType} {T U : choiceType}.
 Implicit Types (f g : nat -> R.-pmf T) (h : T -> R.-pmf U) (mu : R.-pmf T).
 
 Lemma pmf_limC mu : \lim_(n) mu =1 mu.
-Proof. by move=> x; rewrite /pmf_lim limn_einf_cst. Qed.
+Proof. by move=> x /=; rewrite /lim limn_einf_cst. Qed.
 
 Lemma pmf_lim_bump f : \lim_(n) f n.+1 =1 pmf_lim f.
 Proof.
-by move=> x; rewrite /pmf_lim (limn_einf_shiftS (fun n => (f n x)%:E)).
+by move=> x /=; rewrite /lim (limn_einf_shiftS (fun n => (f n x)%:E)).
 Qed.
 
 Lemma pmf_lim_lift f p : \lim_(n) f (n + p)%N =1 pmf_lim f.
 Proof.
-by move=> x; rewrite /pmf_lim (limn_einf_shift_new (fun n => (f n x)%:E) p).
+by move=> x /=; rewrite /lim (limn_einf_shift_new (fun n => (f n x)%:E) p).
 Qed.
 
 Lemma pmf_lim_ge0 f x : 0 <= pmf_lim f x.
@@ -1099,7 +1111,7 @@ Lemma pmf_bind_lim f h : nondecreasing_fun (f : _ -> _ -> _) ->
   \bind_(x <- pmf_lim f) h x =1 \lim_(n) (\bind_(x <- f n) h x).
 Proof.
 move=> ndf y; apply: EFin_inj.
-have nd : nondecreasing_fun (fun n => pmf_bind h (f n)).
+have nd : nondecreasing_fun (fun n => bind h (f n)).
   move=> n m hnm; apply/lefP => x.
   by apply: le_mu_pmf_bind => ?; exact/lefP/ndf.
 rewrite pmf_bind_EFin (pmf_lim_sup nd).
@@ -1126,7 +1138,7 @@ Proof.
 have nd1 y : nondecreasing_fun (f ^~ y : _ -> _ -> _).
   move=> n m hnm; apply/lefP => x.
   exact: hmono.
-have nd2 : nondecreasing_fun (fun n => pmf_bind (f n) mu).
+have nd2 : nondecreasing_fun (fun n => bind (f n) mu).
   move=> n m hnm; apply/lefP => x.
   apply: le_in_pmf_bind => z _.
   exact: hmono.
@@ -1231,7 +1243,7 @@ Context (hd : nondecreasing_fun (d : nat -> _ -> R)).
 Context (Hmono: (forall k n1 n2, (n1 <= n2)%N -> h n1 k <=1 h n2 k)).
 
 Lemma dhomo_nmu_pmf_bind (nmu : nat -> R.-pmf T) :
-  nondecreasing_fun (nmu : nat -> _ -> R) -> nondecreasing_fun (fun n => pmf_bind (h n) (nmu n)).
+  nondecreasing_fun (nmu : nat -> _ -> R) -> nondecreasing_fun (fun n => bind (h n) (nmu n)).
 Proof.
 move=> hnmu n m hnm; apply/lefP => x.
 apply: le_dinsupp_pmf_bind.
@@ -1274,7 +1286,7 @@ End pmf_bind_pmf_lim_diag.
 Section Marginals.
 Context {R : realType} {T U : choiceType} (h : T -> U) (mu : R.-pmf T).
 
-Definition pmf_margin := \bind_(x <- mu) (pmf_ret (h x)).
+Definition pmf_margin : R.-pmf U := \bind_(x <- mu) (pmf_ret (h x)).
 
 End Marginals.
 
@@ -1342,7 +1354,7 @@ Context {R : realType} {A B : choiceType} (mu : R.-pmf (A * B)%type).
 Lemma pmf_swapE xy : pmf_swap mu xy = mu (xy.2, xy.1).
 Proof.
 rewrite /pmf_swap/=.
-rewrite /= /pmf_bind (esumID [set (xy.2, xy.1)]%classic).
+rewrite /= /bind (esumID [set (xy.2, xy.1)]%classic).
   by move=> ??; rewrite lee_tofin // mulr_ge0.
 rewrite setI1 //= in_setT esum_set1.
 rewrite esum1 //=.
