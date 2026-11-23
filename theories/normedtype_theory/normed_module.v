@@ -2648,7 +2648,7 @@ Local Definition nbhs (x : M) : set_system M :=
 
 Local Lemma nbhsE : nbhs = nbhs_ ent. Proof. by []. Qed.
 
-HB.instance Definition _ := hasNbhs.Build M nbhs.
+HB.instance Definition _ := hasNbhs.Build default_fdisp M nbhs.
 
 Local Lemma ball_center x (e : K) : 0 < e -> ball x e x.
 Proof. by rewrite /ball/= subrr normr0. Qed.
@@ -2667,7 +2667,7 @@ Qed.
 Local Lemma entourageE : ent = entourage_ ball.
 Proof. by []. Qed.
 
-HB.instance Definition _ := @Nbhs_isPseudoMetric.Build K M
+HB.instance Definition _ := @Nbhs_isPseudoMetric.Build default_fdisp K M
   ent nbhsE ball ball_center ball_sym ball_triangle entourageE.
 
 End isnormedmodule.

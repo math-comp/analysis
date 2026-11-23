@@ -306,8 +306,8 @@ by apply/seteqP; split=> y/=;
   have /contra_neq /(_ yx) := fI y; tauto.
 Qed.
 
-Lemma within_continuous_withinNx
-  (T U : topologicalType) (f : T -> U) (x : T) :
+Lemma within_continuous_withinNx d
+  (T U : topologicalType d) (f : T -> U) (x : T) :
   {for x, continuous f} ->
   (forall y, f y = f x -> y = x) -> f @ x^' --> (f x)^'.
 Proof.

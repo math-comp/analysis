@@ -163,7 +163,6 @@ theories/convex.v
 theories/charge.v
 theories/kernel.v
 theories/gauss_integral.v
-theories/holomorphy.v
 
 theories/all_analysis.v
 
