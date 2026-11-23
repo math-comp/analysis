@@ -76,6 +76,8 @@ in {
       interval.job = false;  # not yet available for 9.3
       ssprove.job = false;  # not yet available for 9.3
       mathcomp-infotheo.job = false;  # interval not yet available for 9.3
+    };
+  };
 
   bundles."master" = {
     rocqPackages = common-bundle // {
