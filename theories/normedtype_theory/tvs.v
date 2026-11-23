@@ -206,16 +206,6 @@ HB.structure Definition TopologicalLmodule d (K : numDomainType) :=
   {M of TopologicalZmodule d M & GRing.Lmodule K M
         & TopologicalZmodule_isTopologicalLmodule d K M}.
 
-(* TBD when PR#2166 is merged *)
-Lemma accessible_field (K : numFieldType) : accessible_space K^o.
-Proof.
-move=> x y xy.
-exists (ball x (`|x-y|/2)); split; rewrite ?inE /=; first by apply: ball_open.
-  by apply: ballxx; rewrite mulr_gt0 ?normr_gt0 ?invr_gt0 ?subr_eq0.
-rewrite /ball /= ltr_pdivlMr //= gtr_pMr ?normr_gt0 ?subr_eq0 //.
-by rewrite ltrn1.
-Qed.
-
 Section TopologicalLmodule_theory.
 Context {d} {R : numFieldType} (E : topologicalLmodType d R).
 
@@ -1902,7 +1892,7 @@ Lemma continuous_closedkernel (f : {linear F -> R^o}) :
 Proof.
 split.
   move=> /continuous_closedP /(_ [set 0]); apply.
-  exact/accessible_closed_set1/accessible_field.
+  exact/accessible_closed_set1/metric_accessible.
 have [h _|] := eqVneq (f @^-1` [set 0]) [set: F].
   suff -> : f = (fun y=> 0) :> (F -> R) by exact: cst_continuous.
   apply: funext => x.
