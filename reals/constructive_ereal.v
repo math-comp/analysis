@@ -1204,13 +1204,6 @@ Proof. by move=> [r| |] [s| |]. Qed.
 Lemma fineB : {in @fin_num R &, {morph fine : x y / x - y >-> (x - y)%R}}.
 Proof. by move=> [r| |] [s| |]. Qed.
 
-Lemma fin_numMK (a b : \bar R):
-  fine (a * b) = (fine a * fine b)%R.
-Proof.
-by case: a => [r| |]; case: b => [s| |]//=;
-rewrite /mule/= ?mulr0 ?mul0r//; do ![case: ifPn => //= _].
-Qed.
-
 Lemma fineM : {morph @fine R : x y / x * y >-> (x * y)%R}.
 Proof.
 by case => [r| |] [s| |]//=; rewrite ?(mulr0,mul0r)//= /mule/=; do !case: ifPn.

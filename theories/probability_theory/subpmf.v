@@ -4,12 +4,9 @@ From mathcomp Require Import boot order algebra.
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions filter.
 From mathcomp Require Import cardinality fsbigop reals discrete.
-From mathcomp Require Import topology normedtype sequences esum ereal.
+From mathcomp Require Import topology normedtype sequences esum ereal numfun.
 From mathcomp Require Import measure lebesgue_measure measurable_realfun
   lebesgue_integral giry hoelder random_variable.
-
-(* Should be removed *)
-From mathcomp Require Import numfun.
 
 (**md**************************************************************************)
 (* # Subprobability mass function                                             *)
@@ -1349,12 +1346,8 @@ Lemma pmf_expectationZ mu f c : (forall x, 0 <= f x) ->
 Proof.
 move=> h1; rewrite /pmf_expectation.
 under eq_esum => x do rewrite /= -mulrA EFinM.
-have hnneg x : (0 <= (f x * mu x)%:E)%E.
-  by rewrite lee_fin mulr_ge0 ?h1.
-rewrite esumZ//=.
-have hsum : (0 <= \esum_(i in [set: T]) (f i * mu i)%:E)%E.
-  exact: esum_ge0.
-by rewrite fin_numMK.
+have hnneg x : (0 <= (f x * mu x)%:E)%E by rewrite lee_fin mulr_ge0 ?h1.
+by rewrite esumZ//= fineM.
 Qed.
 
 Lemma pmf_expectation_cst mu r : \E_[mu] (fun=> r) = \P_[mu] predT * r.
