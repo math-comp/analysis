@@ -420,7 +420,7 @@ Import MeasurableR.
 Context {d} {T : pmeasurableType d} {R : realType} (P : probability T R)
   (X : {dRV P >-> R}).
 
-Local Abbreviation pmfX := (@pmf _ _ _ P X).
+Local Notation pmfX := (@pmf _ _ _ P X).
 
 Lemma esum_pmf_setT :
   esum [set: R] (EFin \o pmfX) = \esum_(r in range X) (pmfX r)%:E.
@@ -586,7 +586,7 @@ Qed.
 Section Flip.
 Context {R : realType}.
 
-Local Abbreviation clamp := (@clamp R 0 1).
+Local Notation clamp := (@clamp R 0 1).
 
 Definition pmf_flip' (xt : R) := fun b => if b then clamp xt else 1 - clamp xt.
 
@@ -1225,8 +1225,8 @@ under eq_integral do rewrite measure_of_pmf_ret diracE.
 by rewrite /giry_map/= /pushforward -(setIT (h @^-1` S)) -integral_indic.
 Qed.
 
-Abbreviation pmf1 mu := (pmf_margin fst mu).
-Abbreviation pmf2 mu := (pmf_margin snd mu).
+Notation pmf1 mu := (pmf_margin fst mu) : subpmf_scope.
+Notation pmf2 mu := (pmf_margin snd mu) : subpmf_scope.
 
 Section DSwap.
 Context {R : realType} {A B : choiceType} (mu : R.-pmf (A * B)%type).
@@ -1487,7 +1487,7 @@ Import MeasurableR.
 Context {d} {T : pmeasurableType d} {R : realType} (P : probability T R)
   (X : {dRV P >-> R}).
 
-Local Abbreviation pmfX := (@pmf d T R P X).
+Local Notation pmfX := (@pmf d T R P X).
 
 Local Open Scope ereal_scope.
 
