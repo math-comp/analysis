@@ -129,4 +129,7 @@ charge.v
 kernel.v
 gauss_integral.v
 all_analysis.v
+
+cpo.v
+
 showcase/summability.v
