@@ -3,7 +3,7 @@ From mathcomp Require Import boot order algebra.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions filter.
-From mathcomp Require Import cardinality fsbigop reals discrete.
+From mathcomp Require Import cardinality fsbigop reals.
 From mathcomp Require Import topology normedtype sequences esum ereal numfun.
 From mathcomp Require Import measure lebesgue_measure measurable_realfun
   lebesgue_integral giry hoelder random_variable.
