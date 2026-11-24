@@ -63,6 +63,118 @@
 
 - new subdirectory `number_theory`
   + new file `number.v`
+- in `realsum.v`:
+  + lemma `esum_summableP`
+
+- in `esum.v`:
+  + lemma `fsetsTE`
+- in `ftc.v`:
+  + lemma `ge0_integration_by_substitution_shift_itvy`,
+    `ge0_integration_by_substitution_shift_itvNy`
+- in `derive.v`:
+  + lemmas `derivable_row_mx`, `derive_row_mx`
+  + instance `is_derive_row_mx`
+
+- in `matrix_normedtype.v`
+  + lemmas `norm_row_mx`, `norm_row_mx0r`, `norm_row_mx0l`, `cvg_row_mx`
+
+- in `unstable.v`:
+  + lemma `sub_row_mx`
+
+- in `derive.v`:
+  + lemmas `eqo_row_mx`, `drow_mx`, `diff_row_mx`,
+    `differentiable_row_mx`
+  + instance `is_diff_row_mx`
+
+- in `functions.v`:
+  + lemmas `zerofctE`, `onefctE`
+- in `unstable.v`
+  + lemmas `scalecE`, `normcr`, `Im_mul`, `mulrnc`, `complexA`, `normc_natmul`,
+    `nomrc_mulrn`, `gt0_normc`, `gt0_realC`, `ltc0E`, `ltc0P`, `ltcP`, `lecP`,
+    `realC_gt0`, `Creal_gtE`, `realC_norm`, `eqCr`, `eqCI`, `neqCr0`,
+    `real_normc_ler`, `im_normc_ler`
+  + notations `f %:Rfun`, `v %:Rc`
+  + lemmas `realCZ`, `realC_alg`, `scalecr`, `scalecV`
+
+- in `function_spaces.v`
+  + lemmas `cvg_big`, `continuous_big`
+
+- file `holomorphy.v`
+  + instance of `normedModType` on `complex`
+  + definition `ball_Rcomplex`
+  + lemmas `entourage_RcomplexE`, `normcZ`, `Rcomplex_findim`
+  + instance of `normedVectType` on `complex`
+  + definitions `holomorphic`, `Rdifferentiable`, `realC`, `CauchyRiemannEq`
+  + lemmas `holomorphicP`, `continuous_realC`, `Rdiff1`, `Rdiffi`, `littleoCo`,
+    `holo_differentiable`, `holo_CauchyRiemann`, `Diff_CR_holo`,
+    `holomorphic_Rdiff`
+
+- in `landau.v`
+  + lemma `littleoE0`
+
+- in `normed_module.v`
+  + structure `normedVectType`
+  + lemmas `dnbhs0_le`, `nbhs0_le`, `dnbrg0_lt`, `nbhs0_lt`
+  + definition `pseudometric`
+  + instance of `normedZmodType`, `pointedType` and `pseudoMetricType`
+    on `pseudometric`
+  + definitions `oo_norm`, `oo_space`,
+  + instance of `normedModType` on `oo_space`
+  + lemmas `oo_closed_ball_compact`, `equivalence_norms`,
+    `linear_findim_continuous`
+
+- in `num_topology.v`
+  + instance of `pseudoMetricType` on `GRing.regular`
+
+- in `uniform_structure`
+  + lemma `within_continuous_withinNx`
+
+- in `tvs.v`
+  + lemmas `cvg_sum`, `sum_continuous`, `entourage_nbhsE`
+  + instance of `UniformZmodule.type` on `GRing.regular`
+
+### Changed
+
+- in `functions.v`:
+  + lemmas `linfunP`, `linfun_eqP`
+  + instances of `SubLmodule` and `pointedType` on `{linear _->_ | _ }`
+
+- in `tvs.v`:
+  + structure `LinearContinuous`
+  + factory `isLinearContinuous`
+  + instance of `ChoiceType` on `{linear_continuous _ -> _ }`
+  + instance of `LinearContinuous` with the composition of two functions of type `LinearContinuous`
+  + instance of `LinearContinuous` with the sum of two functions of type `LinearContinuous`
+  + instance of `LinearContinuous` with the scalar multiplication of a function of type
+    `LinearContinuous`
+  + instance of `Continuous` on \-f when f is of type `LinearContinuous`
+  + instance of `SubModClosed` on `{linear_continuous _ -> _}`
+  + instance of `SubLModule` on  `{linear_continuous _ -> _ }`
+  + instance of `LinearContinuous` on the null function
+  + notations `{linear_continuous _ -> _ | _ }` and `{linear_continuous _ -> _ }`
+  + definitions `lcfun`, `lcfun_key`, `lcfunP`
+  + lemmas `lcfun_eqP`, `null_fun_continuous`, `fun_cvgD`,
+   `fun_cvgN`, `fun_cvgZ`, `fun_cvgZr`
+  + lemmas `lcfun_continuous` and `lcfun_linear`
+
+- new files `signed_measure.v` and `radon_nikodym.v`
+  + with the contents of `charge.v` (deprecated)
+
+- in `esum.v`:
+  + lemma `ge0_esum`
+  + lemma `esum_ge`
+
+- in `functions.v`:
+  + lemma `preimageD1`
+
+- in `measure_function.v`:
+  + lemmas `cvg_measure_bigcap`, `cvg_measure_bigcup`
+
+- in `classical_sets.v`:
+  + lemma `bigcup_bigsetU`
+
+- in `measurable_structure.v`:
+  + lemmas `countable_bigcap_measurable`, `countable_bigcup_measurable`
 
 ### Changed
 
