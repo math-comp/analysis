@@ -91,22 +91,21 @@
   + abbreviation `dweight`
   + definition `subpmf_sum`, lemma `subpmf_sumP`
   + definition `pmf_zero`
-  + lemma `measure_of_pmf_zero`
+  + lemma `pmf_zeroE`, `measure_of_pmf_zero`
   + definition `pmf_restr`
   + lemma `measure_of_pmf_restr`
   + lemmas `esum_pmf_setT`, `esum_pmf_range1`, `esum_pmf_pred`
   + lemma `pmf_prob_dRV`
   + lemmas `pmf_restrD`, `supp_pmf_restr`
   + definition `pmf_count`
-  + lemmas `pmf_count_ge0`, `pmf_count_sum_le1`, `pmf_count_sum_eq1`,
-    `esummable_pmf_count`
+  + lemmas `pmf_countE`, `pmf_count_sum_eq1`, `esummable_pmf_count`
   + definition `pmf_ret`
   + lemmas `pmf_retE`, `pmf_retxx`, `pmf_ret0`, `in_pmf_ret`, `measure_of_pmf_ret`
   + definition `pmf_uniform`
   + lemma `pmf_uniformE`
-  + definition `pmf_flip`
+  + definition `pmf_flip`, lemma `pmf_flipE`
   + definition `pmf_bind`, notation `\bind_(i <- d) E`,
-  + lemmas `pmf_bind_zero`, `pmf_ret_bind`, `pmf_bind_ret`
+  + lemmas `pmf_bindE`, `pmf_bind_zero`, `pmf_ret_bind`, `pmf_bind_ret`
   + lemma `supp_eq_pmf_bind`
   + lemma `esummable_pmf_bind_elt`
   + lemma `pmf_bind_is_fin_num`
@@ -175,6 +174,7 @@
     `le_pmf_esummable`, `pmf_esummable_expectation`,
     `pmf_expectation_bind`
   + lemmas `nondecreasing_esum_Efn`, `esum_pmf_lim_r`, `esum_pmf_lim_r_r`, `esum_pmf_lim`
+  + lemma `pmf_lim_limn`
 
 ### Changed
 
