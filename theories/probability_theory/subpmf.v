@@ -1225,8 +1225,8 @@ under eq_integral do rewrite measure_of_pmf_ret diracE.
 by rewrite /giry_map/= /pushforward -(setIT (h @^-1` S)) -integral_indic.
 Qed.
 
-Notation pmf1 mu := (pmf_margin fst mu) : subpmf_scope.
-Notation pmf2 mu := (pmf_margin snd mu) : subpmf_scope.
+Notation pmf1 mu := (pmf_margin fst mu).
+Notation pmf2 mu := (pmf_margin snd mu).
 
 Section DSwap.
 Context {R : realType} {A B : choiceType} (mu : R.-pmf (A * B)%type).
