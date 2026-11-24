@@ -64,6 +64,18 @@
 - new subdirectory `number_theory`
   + new file `number.v`
 
+- in `unstable.v`:
+  + lemma `split3r`
+
+- in `subspace_topology.v`:
+  + lemmas `unif_continuous_set0`, `unif_continuous_set1`
+
+- in `normed_module.v`:
+  + lemma `itv_bounded_fun`
+
+- in `realfun.v`:
+  + lemma `within_continuous_unif`
+
 ### Changed
 
 - in `lebesgue_integral_nonneg.v`, generalized and deprecated:
