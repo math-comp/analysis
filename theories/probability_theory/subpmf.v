@@ -88,6 +88,8 @@ Reserved Notation "\lim_ ( n ) E"
   (at level 36, E at level 36, n at level 50,
      format "'[' \lim_ ( n ) '/  '  E ']'").
 
+Declare Scope subpmf_scope.
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -153,7 +155,8 @@ Arguments subpmf_sum_le1 {R T} _.
 #[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: subpmf_ge0] : core.
 #[global] Hint Resolve subpmf_summable : core.
 
-Notation "R '.-pmf'  T" := (@SubPmf.type R T) : type_scope.
+Notation "R '.-pmf'  T" := (@SubPmf.type R T) : subpmf_scope.
+Local Open Scope subpmf_scope.
 
 Lemma subpmf_eqP {R : realType} {T : choiceType} (f1 f2 : R.-pmf T) :
   f1 =1 f2 <-> f1 = f2.
@@ -334,10 +337,10 @@ Definition pmf_esummable mu f := esummable [set: T] (EFin \o (f \* mu)).
 
 End StdDefs.
 
-Notation "\P_[ mu ] E"     := (pmf_prob mu E).
-Notation "\P_[ mu , A ] E" := (pmf_cprob mu E A).
-Notation "\E_[ mu ] f"     := (pmf_expectation mu f).
-Notation "\E_[ mu , A ] f" := (pmf_cexpectation mu f A).
+Notation "\P_[ mu ] E"     := (pmf_prob mu E) : subpmf_scope.
+Notation "\P_[ mu , A ] E" := (pmf_cprob mu E A) : subpmf_scope.
+Notation "\E_[ mu ] f"     := (pmf_expectation mu f) : subpmf_scope.
+Notation "\E_[ mu , A ] f" := (pmf_cexpectation mu f A) : subpmf_scope.
 Abbreviation dweight mu := (\P_[mu] predT).
 
 Definition subpmf_sum {R : realType} {T : choiceType} (mu : T -> R) :=
@@ -621,7 +624,7 @@ HB.instance Definition _ :=
 
 End Bind.
 
-Notation "\bind_ ( i <- d ) E" := (pmf_bind (fun i => E) d).
+Notation "\bind_ ( i <- d ) E" := (pmf_bind (fun i => E) d) : subpmf_scope.
 
 Section BindTheory.
 Context {R : realType} {T U : choiceType}.
@@ -928,7 +931,7 @@ Qed.
 
 End pmf_lim.
 
-Notation "\lim_ ( n ) E" := (pmf_lim (fun n => E)).
+Notation "\lim_ ( n ) E" := (pmf_lim (fun n => E)) : subpmf_scope.
 
 Section Pmf_LimTheory.
 Context {R : realType} {T U : choiceType}.
