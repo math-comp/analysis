@@ -3,6 +3,31 @@
 ## [Unreleased]
 
 ### Added
+- in `topology_structure.v`
+  + lemma `closed_Ndense`
+
+- in `pseudometric_normed_Zmodule.v`
+  + lemma `nbhs0_add`
+  + lemma `hausdorff_convextvs`
+
+- in `tvs.v`
+  + lemmas `continuousfor0_continuous`, `closure_convextvs`, `closure_addset`
+  + lemma `accessible_field`
+  + lemma `hausdorff_init_convextvs`
+  + definition `closed_nbhsbasis_convextvs`
+  + lemma `has_closed_nbhs_basis`
+  + lemma `hausdorff_seminorm_on`
+  + lemma `seminorm_of_neq0`
+  + lemma `continuous_closedkernel`
+
+- in `unstable.v`:
+  + lemma `scaleIl`
+
+- in `hahn_banach_theorem.v`
+  + definition `linepred` and `line`
+  + lemma `line_linepred`
+  + `subLmodule` structure on `line`
+  + lemma hahn_banach_extension_hausdorff
 
 - in `classical_sets.v`
   + lemma `in1_mksetP`

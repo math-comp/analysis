@@ -1038,3 +1038,10 @@ apply: EndlessDense.subitvP.
 Qed.
 
 End interval_realFieldType.
+
+Lemma scaleIl {R : numFieldType} {V : lmodType R} (a : V) :
+  a != 0 -> injective (fun t => t *: a).
+Proof.
+move=> a0 s t => /eqP; rewrite -subr_eq0 -scalerBl scaler_eq0 (negbTE a0) orbF.
+by rewrite subr_eq0 => /eqP.
+Qed.
