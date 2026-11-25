@@ -494,7 +494,7 @@ End hahn_banach_extension_ctvs.
 (* 7.2.3 in Jarchow *)
 Corollary hahn_banach_extension_hausdorff d (R : realType) (V : convexTvsType d R) :
   hausdorff_space V <->
-  forall x : V,  x != 0 -> exists l : {linear_continuous V -> R^o}, l x != 0.
+  forall x : V, x != 0 -> exists l : {linear_continuous V -> R^o}, l x != 0.
 Proof.
 split; last first.
 (* proof in here is different than in the book - Jarchow mentions "a" continuous
@@ -502,53 +502,50 @@ seminorm in 7.2.3 but refers to 2.7.1 which proves the results for a seminorm of
 the set of seminorms generating the topology - it probably lacks an argument
 saying that continuous seminorms are always bounded by this set of seminorms,
 which we haven't formalised here *)
-  move => H.
+  move=> H.
   pose P := @seminorm_of d R V.
   pose P0 := @seminorm_ofneq0 d R V.
   suff : hausdorff_space (seminorm_on P0).
-    have [contVs _ ] := @seminorm_convextvs _ _ V.
-    by move=> + x y cs; apply => a b /contVs nsa /contVs nsb; exact: cs.
-  apply/hausdorff_seminorm_on=> x /H [l].
-  have [l0|l0|] := ltrgtP (l x) (0 : R) => //.
-    have /linear_continuous_seminorm[p [sp _]/= lp] :=
-  @continuous_fun _ _ _ _ (-1 *: l).
-    exists p => //; apply: lt_le_trans (lp _).
-    by rewrite scaleN1r ltrNr oppr0.
+    have [contVs _] := @seminorm_convextvs _ _ V.
+    by move=> + x y cs; apply=> a b /contVs nsa /contVs nsb; exact: cs.
+  apply/hausdorff_seminorm_on=> x /H[l].
+  have [l0|l0|] := ltrgtP (l x) 0 => // _.
+    have := @continuous_fun _ _ _ _ (-1 *: l).
+    move=> /linear_continuous_seminorm[p [sp _]/= lp].
+    by exists p => //; rewrite (lt_le_trans _ (lp _))// scaleN1r oppr_gt0.
   have /linear_continuous_seminorm[p [sp _] /= lp] := @continuous_fun _ _ _ _ l.
   by exists p => //; exact: lt_le_trans (lp _).
 move=> haus x x0.
-pose l := fun y : line x => xchoose (line_linepred y).
-have llinear : linear_for ( *:%R) l.
-  rewrite /l /= => t /= u v; apply: scaleIl; first exact: x0.
+pose l (y : line x) := xchoose (line_linepred y).
+have llinear : linear_for ( *:%R ) l.
+  move=> t /= u v; apply: scaleIl; first exact: x0.
   rewrite scalerDl -scalerA.
-  move/eqP : (xchooseP (line_linepred u)) => <-.
-  move/eqP : (xchooseP (line_linepred v)) => <-.
-  move/eqP : (xchooseP (line_linepred (t *: u + v))) => <-.
+  rewrite -(eqP (xchooseP (line_linepred u))).
+  rewrite -(eqP (xchooseP (line_linepred v))).
+  rewrite -[LHS](eqP (xchooseP (line_linepred _))).
   by rewrite (@GRing.valD _ _ (line x)) GRing.valZ.
 pose linlP := GRing.isLinear.Build _ _ _ _ l llinear.
 pose linl : {linear (init_subconvextvs (line x)) -> R^o} := HB.pack l linlP.
 have lcont : continuous linl.
   apply/continuous_closedkernel.
-  have -> : linl @^-1` [set 0] = [set 0].
+  rewrite [X in closed X](_ : _ = [set 0]).
     apply/seteqP; split => u /=.
       move/eqP : (xchooseP (line_linepred u)) => /[swap]; rewrite /l => ->.
       by rewrite scale0r -(@GRing.val0 _ _ (line x)) => /val_inj.
     move=> u0; move/eqP: (xchooseP (line_linepred u)).
-    rewrite u0 /= /l; move/eqP; rewrite eq_sym.
+    rewrite u0 /= /l => /esym/eqP.
     by rewrite scaler_eq0 (negbTE x0) orbF => /eqP.
-  apply: accessible_closed_set1; apply: hausdorff_accessible.
-  exact: hausdorff_init_convextvs.
+  exact/accessible_closed_set1/hausdorff_accessible/hausdorff_init_convextvs.
 pose contlP := isContinuous.Build _ _ _ _ _ lcont.
 pose lcl : {linear_continuous (init_subconvextvs (line x)) -> R^o} :=
-  HB.pack (l : (init_subconvextvs (line x)) -> R^o) linlP contlP.
-have := (hahn_banach_extension_initialsubctvs lcl) => -[g Pg]; exists g.
+  HB.pack (l : init_subconvextvs (line x) -> R) linlP contlP.
+have [g Pg] := hahn_banach_extension_initialsubctvs lcl; exists g.
 have xlinepred : (linepred x) x by apply/asboolP; exists 1; rewrite scale1r.
-pose xline := exist (linepred x) _ xlinepred; have <- : \val xline = x by [].
-rewrite Pg.
+pose xline := exist (linepred x) _ xlinepred.
+rewrite -[x]/(\val xline) Pg.
 suff -> : lcl xline = 1 by [].
 move/eqP : (xchooseP (line_linepred xline)).
-have {1}-> : \val xline = x by []; rewrite -{1}(scale1r (x : V)).
-by move/scaleIl => /(_ _)/esym; exact.
+by rewrite -[\val xline]/x -[X in X = _ -> _]scale1r => /scaleIl => /(_ x0).
 Qed.
 
 (* TODO : more hahn banach separation theorems *)

@@ -263,7 +263,7 @@ apply: funext => z /=; apply: propext; split=> [Az|[_ -> [y By]]].
 by rewrite addrC => /addIr <-.
 Qed.
 
-Lemma nbhs0_add (A : set M) : nbhs 0 A ->  exists2 B, nbhs 0 B & B `+ B `<=` A.
+Lemma nbhs0_add (A : set M) : nbhs 0 A -> exists2 B, nbhs 0 B & B `+ B `<=` A.
 Proof.
 move=> na.
 have := add_continuous 0 A.
@@ -275,17 +275,17 @@ Qed.
 Lemma hausdorff_convextvs : hausdorff_space M <-> closed [set 0 : M].
 Proof.
 split=> [|cl].
-  move=> /(_ (0:M)) hF x /= cl; apply/esym/hF.
-  move=> a b n0a /(cl b) [? [-> b0]].
-  by exists 0; split => //; exact: nbhs_singleton.
+  move=> /(_ 0) h x /= x0; apply/esym/h.
+  rewrite clusterE => A A0.
+  by apply: closureS x0 => y ->; exact: nbhs_singleton.
 (* NB: simpler proof using the closed subbasis? *)
-move=> x y H; apply: subr0_eq.
-move: (H); contra => xy0.
+move=> x y xy; apply: subr0_eq.
+move: (xy); contra => xy0.
 have nxy : nbhs (x - y) (~` [set 0]).
   by apply: open_nbhs_nbhs; split => /=; [exact: closed_openC|exact/eqP].
-have /(_ (~` [set 0]) nxy) [] : continuous_at (x, y) (fun z => z.1 - z.2).
+have /(_ (~` [set 0]) nxy)[] : continuous_at (x, y) (fun z => z.1 - z.2).
   exact: sub_continuous.
-move=> [a b] /= [na nb] ab0; exists a; exists b => //; split => // z az bz.
+move=> [a b] /= [na nb] ab0; exists a, b => //; split => // z az bz.
 by have := ab0 (z, z) => /=; rewrite subrr; exact.
 Qed.
 
