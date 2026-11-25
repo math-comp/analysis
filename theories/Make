@@ -123,7 +123,6 @@ probability_theory/poisson_distribution.v
 probability_theory/beta_distribution.v
 probability_theory/probability.v
 probability_theory/independence.v
-probability_theory/subpmf.v
 
 convex.v
 charge.v

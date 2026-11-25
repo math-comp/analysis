@@ -263,7 +263,8 @@ under eq_integral do rewrite fctE/= EFinM.
 have ? : mu.-integrable `[0, 1] (fun y => (gauss_fun (y * x))%:E).
   apply: continuous_compact_integrable => //; first exact: segment_compact.
   by apply: continuous_subspaceT => z; exact: continuous_gaussM.
-by rewrite integralZr//= fineM//= mulrC.
+rewrite integralZr//= fineM//=; first exact: integrable_fin_num.
+by rewrite mulrC.
 Qed.
 
 Let h0 : h 0 = pi / 4.

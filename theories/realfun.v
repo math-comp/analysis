@@ -2166,12 +2166,13 @@ have ffin: TV a x f \is a fin_num.
 have Nffin : TV a x (\- f) \is a fin_num.
   apply/bounded_variationP => //; apply/bounded_variationN.
   exact: (bounded_variationl ax xb).
-rewrite /pos_tv /neg_tv /= total_variationN -fineB -?muleBl ?fineM//.
-- by rewrite fin_numM // fin_numD ffin.
-- by rewrite fin_numM // fin_numD ffin.
-- by apply: fin_num_adde_defl; rewrite fin_numN fin_numD ffin.
-- rewrite addeAC oppeD //= ?fin_num_adde_defl//.
-  by rewrite addeA subee// add0e -EFinD//= opprK mulrDl -splitr.
+rewrite /pos_tv /neg_tv /= total_variationN -fineB -?muleBl // ?fineM //.
+- by rewrite fin_numM // fin_numD; apply/andP; split.
+- by rewrite fin_numM // fin_numD; apply/andP; split.
+- by apply: fin_num_adde_defl; rewrite fin_numN fin_numD; apply/andP; split.
+- by rewrite fin_numB ?fin_numD ?ffin; apply/andP; split.
+- rewrite addeAC oppeD //= ?fin_num_adde_defl //.
+  by rewrite addeA subee // add0e -EFinD //= opprK mulrDl -splitr.
 Qed.
 
 Lemma fine_neg_tv_nondecreasing a b f : BV a b f ->

@@ -889,7 +889,7 @@ Section subadditive_countable.
 Local Open Scope ereal_scope.
 Context {d} {T : measurableType d} {R : realType} (mu : {measure set T -> \bar R}).
 
-Lemma integrable_bigcup_esummable_integral (F : (set T)^nat) (g : T -> \bar R):
+Lemma integrable_esummable (F : (set T)^nat) (g : T -> \bar R):
   trivIset setT F -> (forall k, measurable (F k)) ->
   mu.-integrable (\bigcup_k F k) g ->
   esummable [set: nat] (fun i => \int[mu]_(x in F i) g x).
@@ -937,23 +937,21 @@ transitivity ((\sum_(i <oo) \int[mu]_(x in F i) g^\+ x) -
 rewrite [X in X - _]nneseries_esum; first by move=> n _; exact: integral_ge0.
 rewrite [X in _ - X]nneseries_esum; first by move=> n _; exact: integral_ge0.
 rewrite set_true -esumB//=.
-  - apply: integrable_bigcup_esummable_integral => //.
-    by apply: integrable_funepos => //; exact: bigcup_measurable.
-  - apply: integrable_bigcup_esummable_integral => //.
-    by apply: integrable_funeneg => //; exact: bigcup_measurable.
+  - apply: integrable_esummable => //; apply: integrable_funepos => //.
+    exact: bigcup_measurable.
+  - apply: integrable_esummable => //; apply: integrable_funeneg => //.
+    exact: bigcup_measurable.
   - by move=> n _; exact: integral_ge0.
   - by move=> n _; exact: integral_ge0.
 rewrite esummable_eseries.
   under [X in esummable _ X]eq_fun do rewrite -integralE.
-  by rewrite fun_true; exact: integrable_bigcup_esummable_integral.
+  by rewrite fun_true; exact: integrable_esummable.
 by congr (_ - _)%E; rewrite nneseries_esum// set_true.
 Qed.
 
 End subadditive_countable.
-#[deprecated(since="mathcomp-analysis 1.18.0", use=integrable_bigcup_esummable_integral)]
-Notation integrable_summable := integrable_bigcup_esummable_integral (only parsing).
-#[deprecated(since="mathcomp-analysis 1.20.0", use=integrable_bigcup_esummable_integral)]
-Notation integrable_esummable := integrable_bigcup_esummable_integral (only parsing).
+#[deprecated(since="mathcomp-analysis 1.18.0", use=integrable_esummable)]
+Notation integrable_summable := integrable_esummable (only parsing).
 
 Section sequence_of_measures.
 Local Open Scope ereal_scope.
