@@ -449,7 +449,6 @@ Lemma uniform_pseudometric_sup {d} {R : archiRealFieldType} {T : puniformType d}
   @sup_ent {E : set (T * T) | @entourage _ T E} _ _
     (fun e => Uniform.class (@gauge.type _ T (projT1 e) (projT2 e))).
 Proof.
-Proof.
 rewrite eqEsubset; split => [E entE|E].
   exists E => //=.
   pose pe : {classic {E0 : set (T * T) | _}} * _ := (exist _ E entE, E).
