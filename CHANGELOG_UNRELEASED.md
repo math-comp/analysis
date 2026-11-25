@@ -180,6 +180,7 @@
     `pmf_expectation_bind`
   + lemmas `nondecreasing_esum_Efn`, `esum_pmf_lim_r`, `esum_pmf_lim_r_r`, `esum_pmf_lim`
   + lemma `pmf_lim_limn`
+
 - new subdirectory `derive`
   + new files `differential.v`, `derivable.v`, `directional_derive_lemmas.v`, `derive_matrix.v`
 
