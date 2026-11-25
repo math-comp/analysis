@@ -94,7 +94,6 @@ Lemma RintegralZl D f r : measurable D -> mu.-integrable D (EFin \o f) ->
   \int[mu]_(x in D) (r * f x) = r * \int[mu]_(x in D) f x.
 Proof.
 move=> mD intf; rewrite (_ : r = fine r%:E)// -fineM//.
-  exact: integrable_fin_num.
 by congr fine; under eq_integral do rewrite EFinM; exact: integralZl.
 Qed.
 
@@ -151,15 +150,7 @@ Proof. by rewrite /Rintegral integral_set0. Qed.
 
 Lemma Rintegral_cst D : d.-measurable D ->
   forall r, \int[mu]_(_ in D) r = r * fine (mu D).
-Proof.
-move=> mD r; rewrite /Rintegral/= integral_cst//.
-have := leey (mu D); rewrite le_eqVlt => /predU1P[->/=|muy]; last first.
-  by rewrite fineM// ge0_fin_numE.
-rewrite mulr0 mulr_infty/=; have [_|r0|r0] := sgrP r.
-- by rewrite mul0e.
-- by rewrite mul1e.
-- by rewrite mulN1e.
-Qed.
+Proof. by move=> mD r; rewrite /Rintegral/= integral_cst// fineM. Qed.
 
 Lemma le_Rintegral D f1 f2 : measurable D ->
   mu.-integrable D (EFin \o f1) ->
@@ -442,8 +433,7 @@ have cf_oo := continuous_subspaceW ooabScc cf.
 have := f_neq0 => /existsNP[p] /not_implyP[pab] /negP fp_neq0.
 have fp_gt0 : 0 < f p by rewrite lt_neqAle eq_sym fp_neq0/= f_ge0.
 have f_ble : mu.-integrable `[a, b] (EFin \o f).
-  apply: compact_continuous_Rintegrable => //; first by exists p.
-  exact: segment_compact.
+  by apply: compact_continuous_Rintegrable => //; exists p.
 have f_ble_oo : mu.-integrable `]a, b[ (EFin \o f) by exact: integrableS f_ble.
 suff : (0 < \int[mu]_(x in `[a, b]) (f x)%:E)%E.
   by move/fine_lt; apply => //; exact: integrable_fin_num.

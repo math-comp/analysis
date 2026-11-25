@@ -169,7 +169,7 @@ Local Notation mu := lebesgue_measure.
 
 Lemma integrable_XMonemX a b : mu.-integrable `[0, 1] (EFin \o XMonemX a b).
 Proof.
-apply: continuous_compact_integrable => //; first exact: segment_compact.
+apply: continuous_compact_integrable => //.
 by apply: continuous_in_subspaceT => x _; exact: continuous_XMonemX.
 Qed.
 

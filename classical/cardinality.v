@@ -9,18 +9,26 @@ From mathcomp Require Import boolp classical_sets functions.
 (* This file provides an account of cardinality properties of classical sets. *)
 (* This includes standard results of set theory such as the Pigeon Hole       *)
 (* principle, the Cantor-Bernstein Theorem, or lemmas about the cardinal of   *)
-(* nat, nat * nat, and rat.                                                   *)
+(* `nat`, `nat * nat`, and `rat`.                                             *)
 (*                                                                            *)
 (* Since universe polymorphism is not yet available in our framework, we      *)
 (* develop a relational theory of cardinals: there is no type for cardinals   *)
-(* only relations A #<= B and A #= B to compare the cardinals of two sets     *)
+(* only relations `A #<= B` and `A #= B` to compare the cardinals of two sets *)
 (* (on two possibly different types).                                         *)
 (*                                                                            *)
+(* `A #<= B`                                                                  *)
+(* : the cardinal of `A` is smaller or equal to the one of `B`                *)
+(*                                                                            *)
+(* `A #>= B`                                                                  *)
+(* : `:= B #<= A`                                                             *)
+(*                                                                            *)
+(* `A #= B`                                                                   *)
+(* : the cardinal of `A` is equal to the cardinal of `B`                      *)
+(*                                                                            *)
+(* `A #!= B`                                                                  *)
+(* : `~~ (A #= B)`                                                            *)
+(*                                                                            *)
 (* ```                                                                        *)
-(*           A #<= B == the cardinal of A is smaller or equal to the one of B *)
-(*           A #>= B := B #<= A                                               *)
-(*            A #= B == the cardinal of A is equal to the cardinal of B       *)
-(*           A #!= B := ~~ (A #= B)                                           *)
 (*      finite_set A == the set A is finite                                   *)
 (*                   := exists n, A #= `I_n                                   *)
 (*                   <-> exists X : {fset T}, A = [set` X]                    *)
@@ -38,7 +46,6 @@ From mathcomp Require Import boolp classical_sets functions.
 (*                                                                            *)
 (******************************************************************************)
 
-Unset SsrOldRewriteGoalsOrder.  (* remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -609,9 +616,9 @@ Proof.
 by move=> ?; rewrite !finite_setPn; apply: contra_not => /card_le_trans; apply.
 Qed.
 
-Lemma sub_finite_set T (A B : set T) : A `<=` B ->
+Lemma sub_finite_set T (B A : set T) : A `<=` B ->
   finite_set B -> finite_set A.
-Proof. by move=> ?; apply/card_le_finite/subset_card_le. Qed.
+Proof. by move=> ?; exact/card_le_finite/subset_card_le. Qed.
 
 Lemma sub_cofinite_set T (A B : set T) : A `<=` B ->
   cofinite_set A -> cofinite_set B.
@@ -1325,7 +1332,7 @@ Notation "[ 'fimfun' 'of' f ]" := [the {fimfun _ >-> _} of f] : form_scope.
 
 Lemma fimfun_inP {aT rT} (f : {fimfun aT >-> rT}) (D : set aT) :
   finite_set (f @` D).
-Proof. by apply: (@sub_finite_set _ _ (range f)) => // y [x]; exists x. Qed.
+Proof. by apply: (@sub_finite_set _ (range f)) => // y [x]; exists x. Qed.
 
 #[global] Hint Resolve fimfun_inP : core.
 

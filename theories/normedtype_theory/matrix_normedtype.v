@@ -264,8 +264,7 @@ Proof.
 move=> [M [Mreal normAltM]] Acl.
 have Mnco : compact
     [set v : 'rV[R]_n | forall i, v ord0 i \in `[(- (M + 1)), (M + 1)]].
-  apply: (@rV_compact _ _ _ (fun=> `[(- (M + 1)), (M + 1)]%classic)).
-  by move=> _; apply: segment_compact.
+  exact: (@rV_compact _ _ _ (fun=> `[(- (M + 1)), (M + 1)]%classic)).
 apply: subclosed_compact Acl Mnco _ => v /normAltM normvleM i.
 suff : `|v ord0 i : R| <= M + 1 by rewrite ler_norml.
 apply: le_trans (normvleM _ _); last by rewrite ltrDl.

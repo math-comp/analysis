@@ -122,10 +122,7 @@ apply: (@cvg_at_right_left_dnbhs _ R^o).
   set g := _ \o _ => gf.
   set h := (f in f n @[n --> \oo] --> _).
   suff : g = h by move=> <-.
-  apply/funext => n.
-  rewrite /g /h /= fineM//.
-  apply: integrable_fin_num => //; first exact: (nice_E _).1.
-  by apply: integrableS intf => //; exact: (nice_E _).1.
+  by apply/funext => n; rewrite /g /h /= fineM.
 - apply/cvg_at_leftP => d [d_gt0 d0].
   have {}Nd_gt0 n : (0 < - d n)%R by rewrite ltrNr oppr0.
   pose E x n := `]x + d n, x]%classic%R.
@@ -207,11 +204,7 @@ apply: (@cvg_at_right_left_dnbhs _ R^o).
   move/fine_cvgP => [_ /=].
   set g := _ \o _ => gf.
   rewrite (@eq_cvg _ _ _ _ g)// => n.
-  rewrite /g /= fineM//=.
-  - by rewrite muE inver oppr_eq0 lt_eqF.
-  - apply: integrable_fin_num => //; first exact: (nice_E _).1.
-    by apply: integrableS intf => //; exact: (nice_E _).1.
-  by rewrite muE/= inver oppr_eq0 lt_eqF// invrN mulNr -mulrN.
+  by rewrite /g /= fineM//= muE/= inver oppr_eq0 lt_eqF// invrN mulNr -mulrN.
 Unshelve. all: by end_near. Qed.
 
 Let FTC0_restrict f a x (u : R) : (x < u)%R ->
@@ -807,14 +800,14 @@ have FGfg : {in `]a, b[, (F * G)^`() =1 f * G + F * g}%R.
 have := continuous_FTC2 ab cfg FGab FGfg; rewrite -EFinB => <-.
 under [X in _ = X - _]eq_integral do rewrite EFinD.
 have ? : mu.-integrable `[a, b] (fun x => ((f * G) x)%:E).
-  apply: continuous_compact_integrable => //; first exact: segment_compact.
+  apply: continuous_compact_integrable => //.
   apply/subspace_continuousP => x abx; apply: cvgM.
   + by move/subspace_continuousP : cf; exact.
   + have := derivable_oo_LRcontinuous_within Gab.
     by move/subspace_continuousP; exact.
 rewrite /= integralD//=; last first.
   by rewrite addeAC subee ?add0e// integrable_fin_num.
-apply: continuous_compact_integrable => //; first exact: segment_compact.
+apply: continuous_compact_integrable => //.
 apply/subspace_continuousP => x abx;apply: cvgM.
 - have := derivable_oo_LRcontinuous_within Fab.
   by move/subspace_continuousP; exact.
@@ -890,7 +883,7 @@ have [dc _|cd cday] := leP d c.
 rewrite integral_itvob_itvcb/=.
   by apply/measurable_EFinP; exact: measurable_funS mfG.
 apply: integrable_fin_num => //=.
-apply: continuous_compact_integrable; first exact: segment_compact.
+apply: continuous_compact_integrable => //.
 apply: continuous_subspaceW cfG.
 by move/closureS: cday; rewrite !itv_closureE//; exact/neitvP.
 Qed.
@@ -1139,8 +1132,7 @@ suff: mu.-integrable `[a, b] (fun x => (f x * G x)%:E).
   move=> /integrableP[? abfG]; apply: fin_real.
   rewrite (_ : -oo = - +oo)%E// -lte_absl.
   by apply: le_lt_trans abfG; exact: le_abse_integral.
-apply: continuous_compact_integrable.
-  exact: segment_compact.
+apply: continuous_compact_integrable => //.
 move=> /= z; apply: continuousM; [exact: cf|].
 exact: (derivable_oo_LRcontinuous_within Gab).
 Qed.
@@ -1339,7 +1331,7 @@ have mGFF' : measurable_fun `]a, b[ ((G \o F) * F^`())%R.
 have {}mGFF' : measurable_fun `[a, b] ((G \o F) * F^`())%R.
   exact: measurable_fun_itvbb_itvcc mGFF'.
 have intG : mu.-integrable `[F b, F a] (EFin \o G).
-  by apply: continuous_compact_integrable => //; exact: segment_compact.
+  exact: continuous_compact_integrable.
 pose PG x := parameterized_integral mu (F b) x G.
 have PGFbFa : derivable_oo_LRcontinuous PG (F b) (F a).
   have [/= dF rF lF] := Fab; split => /=.
