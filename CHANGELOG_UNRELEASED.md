@@ -98,6 +98,9 @@
 - moved from `theories/showcase` to `number_theory`:
   + files `pnt.v`
 
+- in `cardinality.v`:
+  + `sub_finite_set` (order of parameters)
+
 ### Renamed
 
 - in `lebesgue_measure.v`:
