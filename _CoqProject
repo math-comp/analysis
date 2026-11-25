@@ -102,8 +102,13 @@ theories/elementary_functions/trigonometry_functions.v
 theories/elementary_functions/trigonometry_integral.v
 theories/elementary_functions/trigo.v
 
+theories/derive/differential.v
+theories/derive/derivative.v
+theories/derive/derivative_lemmas.v
+theories/derive/derive_matrix.v
+theories/derive/derive.v
+
 theories/esum.v
-theories/derive.v
 theories/numfun.v
 
 theories/measure_theory/measurable_structure.v
