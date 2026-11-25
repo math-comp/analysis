@@ -93,7 +93,7 @@
   + definition `pmf_zero`
   + lemma `pmf_zeroE`, `measure_of_pmf_zero`
   + definition `pmf_restr`
-  + lemma `measure_of_pmf_restr`
+  + lemmas `pmf_restrE` `measure_of_pmf_restr`
   + lemmas `esum_pmf_setT`, `esum_pmf_range1`, `esum_pmf_pred`
   + lemma `pmf_prob_dRV`
   + lemmas `pmf_restrD`, `supp_pmf_restr`

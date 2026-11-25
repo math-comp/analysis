@@ -386,13 +386,13 @@ Proof. by rewrite /measure_of_pmf esum1. Qed.
 Section Restr.
 Context {R : realType} {T : choiceType} (p : pred T).
 
-Definition pmf_restr (mu : R.-pmf T) := fun x => if p x then mu x else 0.
+Definition pmf_restr' (mu : R.-pmf T) := fun x => if p x then mu x else 0.
 
-Let subpmf_restr (mu : R.-pmf T) : subpmf_sum (pmf_restr mu).
+Let subpmf_restr (mu : R.-pmf T) : subpmf_sum (pmf_restr' mu).
 Proof.
-split=> [x|J]; first by rewrite /pmf_restr; case: ifP.
+split=> [x|J]; first by rewrite /pmf_restr'; case: ifP.
 move=> eqJ; apply/(@le_trans _ _ (\sum_(j <- J) `|mu j|)).
-- apply/ler_sum=> i _; rewrite /pmf_restr; case: ifPn => _ //.
+- apply/ler_sum=> i _; rewrite /pmf_restr'; case: ifPn => _ //.
   exact: ler_norm.
 - rewrite -lee_fin (le_trans _ (subpmf_sum_le1 mu))//.
   rewrite (@eq_esum _ _ _ _ (fun y => `|(EFin \o mu) y|%E))//=.
@@ -401,9 +401,15 @@ move=> eqJ; apply/(@le_trans _ _ (\sum_(j <- J) `|mu j|)).
 Qed.
 
 HB.instance Definition _ (mu : R.-pmf T) := @uniq_isSubPmf.Build R T
-  (pmf_restr mu) (subpmf_restr mu).1 (subpmf_restr mu).2.
+  (pmf_restr' mu) (subpmf_restr mu).1 (subpmf_restr mu).2.
+
+Definition pmf_restr : R .-pmf T -> R .-pmf T := pmf_restr'.
 
 End Restr.
+
+Lemma pmf_restrE {R : realType} {T : choiceType} p mu {x:T} :
+  pmf_restr p mu x = if p x then mu x else 0 :>R.
+Proof. by []. Qed.
 
 Lemma measure_of_pmf_restr {R : realType} {T : choiceType} (p : pred T)
     (mu : R.-pmf T)
@@ -466,14 +472,14 @@ Context {R : realType} {T : choiceType}.
 
 Lemma pmf_restrD (mu : R.-pmf T) (p : pred T) x :
   mu x = pmf_restr p mu x + pmf_restr (predC p) mu x.
-Proof. by rewrite /= /pmf_restr !inE; case: ifPn; rewrite (addr0, add0r). Qed.
+Proof. by rewrite 2!pmf_restrE !inE; case: ifPn; rewrite (addr0, add0r). Qed.
 
 Lemma supp_pmf_restr (mu : R.-pmf T) (p : pred T) x :
   (x \in supp (pmf_restr p mu)) = (x \in supp mu) && p x.
 Proof.
 apply/mem_suppP/idP.
-- by rewrite /= /pmf_restr; case: ifP=> // _ /mem_suppP ->.
-- by case/andP; rewrite /= /pmf_restr => /mem_suppP ? ->.
+- by rewrite pmf_restrE; case: ifP=> // _ /mem_suppP ->.
+- by case/andP; rewrite pmf_restrE => /mem_suppP ? ->.
 Qed.
 
 End RestrTheory.
