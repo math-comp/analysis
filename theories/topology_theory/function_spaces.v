@@ -6,7 +6,7 @@ From mathcomp Require Import generic_quotient finmap.
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions cardinality fsbigop.
 From mathcomp Require Import reals.
-From mathcomp Require Import topology_structure uniform_structure
+From mathcomp Require Import topology_structure uniform_structure uniform_metrizable
   supremum_topology initial_topology pseudometric_structure separation_axioms
   compact connected subspace_topology product_topology.
 

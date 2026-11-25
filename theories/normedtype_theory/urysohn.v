@@ -39,8 +39,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section urysohn_separator.
-Context {d} {T : uniformType d} {R : realType}.
-Context (A B : set T) (E : set (T * T)).
+Context {d} {T : uniformType d} {R : realType} (A B : set T) (E : set (T * T)).
 Hypothesis entE : entourage E.
 Hypothesis AB0 : A `*` B `&` E = set0.
 
