@@ -442,8 +442,7 @@ have cf_oo := continuous_subspaceW ooabScc cf.
 have := f_neq0 => /existsNP[p] /not_implyP[pab] /negP fp_neq0.
 have fp_gt0 : 0 < f p by rewrite lt_neqAle eq_sym fp_neq0/= f_ge0.
 have f_ble : mu.-integrable `[a, b] (EFin \o f).
-  apply: compact_continuous_Rintegrable => //; first by exists p.
-  exact: segment_compact.
+  by apply: compact_continuous_Rintegrable => //; exists p.
 have f_ble_oo : mu.-integrable `]a, b[ (EFin \o f) by exact: integrableS f_ble.
 suff : (0 < \int[mu]_(x in `[a, b]) (f x)%:E)%E.
   by move/fine_lt; apply => //; exact: integrable_fin_num.

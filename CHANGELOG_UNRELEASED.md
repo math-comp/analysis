@@ -101,6 +101,9 @@
 - in `cardinality.v`:
   + `sub_finite_set` (order of parameters)
 
+- in `normed_module.v`:
+  + `segment_compact` is now a hint
+
 ### Renamed
 
 - in `lebesgue_measure.v`:

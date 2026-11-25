@@ -78,7 +78,7 @@ Let continuous_integral0_gauss x : (0 <= x)%R ->
 Proof.
 move=> x0; rewrite /integral0_gauss.
 apply: parameterized_integral_continuous => //=.
-apply: continuous_compact_integrable => //; first exact: segment_compact.
+apply: continuous_compact_integrable => //.
 by apply: continuous_subspaceT; exact: continuous_gauss_fun.
 Qed.
 
@@ -183,7 +183,7 @@ have [M M0 HM] := partial1_u_local_ub c e0.
 rewrite [X in _ --> X](_ : _ =
     \int[mu]_(y in `[0, 1]) ('d1 u) x y)//.
   rewrite /= -RintegralZl//.
-    apply: continuous_compact_integrable => /=; first exact: segment_compact.
+    apply: continuous_compact_integrable => //.
     by apply/continuous_subspaceT => x0; exact: continuous_gaussM.
   by apply: eq_Rintegral => z z01; rewrite partial1_u.
 have /= := @cvg_differentiation_under_integral
@@ -191,10 +191,9 @@ have /= := @cvg_differentiation_under_integral
 apply => //=.
 - by rewrite ball_itv/= in cex.
 - move=> z z01; apply: continuous_compact_integrable => //.
-    exact: segment_compact.
   by apply: continuous_subspaceT; exact: continuous_u.
 - by move=> _; exact: ltW.
-- apply: continuous_compact_integrable => //; first exact: segment_compact.
+- apply: continuous_compact_integrable => //.
   by apply: continuous_subspaceT; exact: cst_continuous.
 Unshelve. all: end_near. Qed.
 
@@ -216,7 +215,7 @@ Proof.
 move=> x0.
 apply: (@continuous_FTC1 R gauss_fun (BLeft 0) _ (x + 1) _ _ _ _).
 - by rewrite ltrDl.
-- apply: continuous_compact_integrable => //; first exact: segment_compact.
+- apply: continuous_compact_integrable => //.
   by apply: continuous_subspaceT; exact: continuous_gauss_fun.
 - by rewrite /=; rewrite lte_fin.
 - by move=> ?; exact: continuous_gauss_fun.
@@ -261,7 +260,7 @@ rewrite -/mu mul0r mul1r => ->//=.
 rewrite derM.
 under eq_integral do rewrite fctE/= EFinM.
 have ? : mu.-integrable `[0, 1] (fun y => (gauss_fun (y * x))%:E).
-  apply: continuous_compact_integrable => //; first exact: segment_compact.
+  apply: continuous_compact_integrable => //.
   by apply: continuous_subspaceT => z; exact: continuous_gaussM.
 rewrite integralZr//= fineM//=; first exact: integrable_fin_num.
 by rewrite mulrC.
@@ -290,10 +289,10 @@ have -> : gauss_fun x = \int[mu]_(t in `[0, 1]) cst (gauss_fun x) t.
   by rewrite /mu/= lebesgue_measure_itv//= lte01 oppr0 addr0 mulr1.
 rewrite fine_le//.
 - apply: integrable_fin_num => //=.
-  apply: continuous_compact_integrable; first exact: segment_compact.
+  apply: continuous_compact_integrable => //.
   by apply: continuous_in_subspaceT => z _; exact: continuous_u.
 - apply: integrable_fin_num => //=.
-  apply: continuous_compact_integrable; first exact: segment_compact.
+  apply: continuous_compact_integrable => //.
   exact: cst_within_continuous.
 apply: ge0_le_integral => //=.
 - by move=> y _; rewrite lee_fin u_ge0.

@@ -284,8 +284,7 @@ Qed.
 
 Let integrable_fsin n : mu.-integrable `[0%R, pi] (EFin \o fsin n).
 Proof.
-apply: continuous_compact_integrable; first exact: segment_compact.
-exact: continuous_subspaceT.
+by apply: continuous_compact_integrable => //; exact: continuous_subspaceT.
 Qed.
 
 Let small_ballS (m : R := pi / 2) (d := pi / 4) :
@@ -350,8 +349,7 @@ rewrite intfsin_gt0/=.
 apply: (@le_lt_trans _ _
     (\int[mu]_(x in `[0, pi]) (pi ^+ n * a ^+ n / n`!%:R))).
   apply: le_Rintegral => //=.
-  - apply/continuous_compact_integrable; first exact: segment_compact.
-    exact: cst_within_continuous.
+  - by apply/continuous_compact_integrable => //; exact: cst_within_continuous.
   - move=> x.
     have ? : 0 <= pi ^+ n * a ^+ n / n`!%:R :> R.
       by rewrite mulr_ge0// mulr_ge0// exprn_ge0// pi_ge0.

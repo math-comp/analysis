@@ -1736,6 +1736,8 @@ Qed.
 
 End segment.
 
+#[global] Hint Extern 0 (compact `[_, _]) => solve [apply: segment_compact] : core.
+
 Lemma IVT (R : realType) (f : R -> R) (a b v : R) :
   a <= b -> {within `[a, b], continuous f} ->
   minr (f a) (f b) <= v <= maxr (f a) (f b) ->
@@ -2174,7 +2176,7 @@ Qed.
 Lemma closed_ballR_compact (R : realType) (x e : R) : 0 < e ->
   compact (closed_ball x e).
 Proof.
-move=> e_gt0; have : compact `[x - e, x + e] by apply: segment_compact.
+move=> e_gt0; have : compact `[x - e, x + e] by [].
 by rewrite closed_ballE//; under eq_set do rewrite in_itv -ler_distlC.
 Qed.
 
@@ -2724,9 +2726,8 @@ have -> : [set x : max_space V | `|x| <= 1] =
 apply: (@continuous_compact _ _ _ _ (f : _ -> max_space V)).
 - apply/continuous_subspaceT/sum_continuous => /= i _ x.
   exact/continuousZr_tmp/(proj_continuous (i := i)).
-- apply (@tychonoff 'I_(\dim (@fullv _ V)) _ (fun=> R^o)
-    (fun=> `[-1, 1]%classic)) => _.
-  exact: segment_compact.
+- exact: (@tychonoff 'I_(\dim (@fullv _ V)) _ (fun=> R)
+    (fun=> `[-1, 1]%classic)).
 Qed.
 
 Lemma equivalence_norms (V : vectType R) (N N' : Norm.Norm.type V) :
