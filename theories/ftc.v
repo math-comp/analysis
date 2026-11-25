@@ -122,10 +122,7 @@ apply: (@cvg_at_right_left_dnbhs _ R^o).
   set g := _ \o _ => gf.
   set h := (f in f n @[n --> \oo] --> _).
   suff : g = h by move=> <-.
-  apply/funext => n.
-  rewrite /g /h /= fineM//.
-  apply: integrable_fin_num => //; first exact: (nice_E _).1.
-  by apply: integrableS intf => //; exact: (nice_E _).1.
+  by apply/funext => n; rewrite /g /h /= fineM.
 - apply/cvg_at_leftP => d [d_gt0 d0].
   have {}Nd_gt0 n : (0 < - d n)%R by rewrite ltrNr oppr0.
   pose E x n := `]x + d n, x]%classic%R.
@@ -207,11 +204,7 @@ apply: (@cvg_at_right_left_dnbhs _ R^o).
   move/fine_cvgP => [_ /=].
   set g := _ \o _ => gf.
   rewrite (@eq_cvg _ _ _ _ g)// => n.
-  rewrite /g /= fineM//=.
-  - by rewrite muE inver oppr_eq0 lt_eqF.
-  - apply: integrable_fin_num => //; first exact: (nice_E _).1.
-    by apply: integrableS intf => //; exact: (nice_E _).1.
-  by rewrite muE/= inver oppr_eq0 lt_eqF// invrN mulNr -mulrN.
+  by rewrite /g /= fineM//= muE/= inver oppr_eq0 lt_eqF// invrN mulNr -mulrN.
 Unshelve. all: by end_near. Qed.
 
 Let FTC0_restrict f a x (u : R) : (x < u)%R ->

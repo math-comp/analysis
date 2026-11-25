@@ -13,6 +13,9 @@ From mathcomp Require Import vector archimedean interval matrix.
 (* Once a result is backported to mathcomp, please move it to mathcomp_extra.v*)
 (* and mention it in the changelog.                                           *)
 (*                                                                            *)
+(* `supp f`                                                                   *)
+(* : support of the function `f`                                              *)
+(*                                                                            *)
 (* ```                                                                        *)
 (*                clamp x := max (min x max) min                              *)
 (*                 swap x := (x.2, x.1)                                       *)
@@ -97,6 +100,23 @@ Lemma clamp_max : clamp max = max.
 Proof. by rewrite minmax_clamp// lexx minmax. Qed.
 
 End Clamp.
+
+Section supp.
+Context {R : zmodType} (T : eqType).
+Implicit Types (f : T -> R).
+
+Definition supp f := fun x => f x != 0 :> R.
+
+Lemma mem_supp f x : (x \in supp f) = (f x != 0).
+Proof. by []. Qed.
+
+Lemma mem_suppP f x : reflect (f x <> 0) (x \in supp f).
+Proof. by apply: (iffP idP) => /eqP. Qed.
+
+Lemma memNsuppP f x : reflect (f x = 0) (x \notin supp f).
+Proof. by rewrite -topredE /supp /= negbK; exact/eqP. Qed.
+
+End supp.
 
 Module Order.
 Import Order.

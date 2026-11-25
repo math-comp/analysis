@@ -399,6 +399,11 @@ rewrite funenegN (@ge0_funeposE _ _ B)// => y By; apply: f0.
 by case: AB => _; exact.
 Qed.
 
+Lemma esum_abse (f : T -> R) :
+  (forall i, 0 <= f i)%R ->
+  (\esum_(x in [set: T]) (f x)%:E = \esum_(x in [set: T]) `|(f x)%:E|)%E.
+Proof. by move => ?; apply eq_esum => ?? ; rewrite gee0_abs // lee_tofin. Qed.
+
 End esum.
 Arguments eq_esum {R T} A f g.
 
@@ -603,9 +608,10 @@ Qed.
 Arguments infinite_esum_cst {R T} c.
 
 Section esumZ.
-Context {R : realType} {T : choiceType} (A : set T) (f : T -> \bar R).
+Context {R : realType} {T : choiceType} (A : set T).
 
-Let ge0_esumZ c : 0 <= c -> (forall t, A t -> 0 <= f t) ->
+Let ge0_esumZ c (f : T -> \bar R) :
+  0 <= c -> (forall t, A t -> 0 <= f t) ->
   \esum_(t in A) c * f t = c * \esum_(t in A) f t.
 Proof.
 rewrite le_eqVlt => /predU1P[<- _|c0 f0].
@@ -614,7 +620,8 @@ rewrite [in LHS]ge0_esum; first by move=> x /f0 ax0; rewrite ?mule_ge0// ltW.
 by rewrite ge0_esum//; apply: PosEsum.pos_esumZ => //; exact: ltW.
 Qed.
 
-Lemma esumZ c : (forall x, A x -> 0 <= f x) ->
+Lemma esumZ c (f : T -> \bar R) :
+  (forall x, A x -> 0 <= f x) ->
   \esum_(x in A) c * f x = c * \esum_(x in A) f x.
 Proof.
 move=> h; rewrite (eq_esum _ _ (fun x => esg c * (`|c| * f x))).
@@ -630,6 +637,15 @@ transitivity (esg c * \esum_(x in A) `|c| * f x).
   - under eq_esum do rewrite esg0 mul0e.
     by rewrite esg0 mul0e esum1.
 by rewrite (eq_esum _ _ (fun x => `|c| * f x))// ge0_esumZ// muleA -numEesg.
+Qed.
+
+Lemma EFin_esumZ (c : R) (f : T -> R) :
+  (0 <= c)%R -> (forall i, 0 <= f i)%R ->
+  \esum_(i in A) (c * f i)%:E = (c%:E * \esum_(i in A) (f i)%:E)%E.
+Proof.
+  move=> c0 a0; rewrite -esumZ.
+- by move=> i ?; rewrite lee_fin; exact: a0.
+- by apply: eq_esum => i _; rewrite EFinM.
 Qed.
 
 End esumZ.

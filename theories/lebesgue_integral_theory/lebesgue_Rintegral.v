@@ -94,7 +94,6 @@ Lemma RintegralZl D f r : measurable D -> mu.-integrable D (EFin \o f) ->
   \int[mu]_(x in D) (r * f x) = r * \int[mu]_(x in D) f x.
 Proof.
 move=> mD intf; rewrite (_ : r = fine r%:E)// -fineM//.
-  exact: integrable_fin_num.
 by congr fine; under eq_integral do rewrite EFinM; exact: integralZl.
 Qed.
 
@@ -151,15 +150,7 @@ Proof. by rewrite /Rintegral integral_set0. Qed.
 
 Lemma Rintegral_cst D : d.-measurable D ->
   forall r, \int[mu]_(_ in D) r = r * fine (mu D).
-Proof.
-move=> mD r; rewrite /Rintegral/= integral_cst//.
-have := leey (mu D); rewrite le_eqVlt => /predU1P[->/=|muy]; last first.
-  by rewrite fineM// ge0_fin_numE.
-rewrite mulr0 mulr_infty/=; have [_|r0|r0] := sgrP r.
-- by rewrite mul0e.
-- by rewrite mul1e.
-- by rewrite mulN1e.
-Qed.
+Proof. by move=> mD r; rewrite /Rintegral/= integral_cst// fineM. Qed.
 
 Lemma le_Rintegral D f1 f2 : measurable D ->
   mu.-integrable D (EFin \o f1) ->
