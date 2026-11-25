@@ -227,8 +227,7 @@ Let derive_h x : 0 < x -> h^`() x = 0.
 Proof.
 move=> x0.
 rewrite /h derive1E deriveD//=.
-  apply/diff_derivable.
-  apply: (@differentiable_comp _ _ _ _ _ _ _ integral0_gauss (fun x => x ^+ 2)).
+  apply/diff_derivable/(differentiable_comp integral0_gauss (fun x => x ^+ 2)).
     apply/derivable1_diffP.
     by have [] := derive_integral0_gauss x0.
   by apply/derivable1_diffP; exact: exprn_derivable.

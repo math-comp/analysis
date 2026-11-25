@@ -310,6 +310,9 @@
   + lemmas `drow_mx`, `diff_row_mx`, `differentiable_row_mx`
   + instance `is_diff_row_mx`
 
+- in `differential.com` (was `derive.v` (old))
+  + lemma `differentiable_comp` (`f` and `g` are now explicit)
+
 ### Renamed
 
 - in `lebesgue_measure.v`:
