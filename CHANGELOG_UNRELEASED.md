@@ -398,6 +398,7 @@
   + lemma `fineM`
 - in `topology_structure.v`:
   + lemma `countable_uniformity_metric` (from `realType` to `archiRealFieldType`)
+  + factories `isBaseTopological`, `isSubBaseTopological` (index type from `pointedType` to `choiceType`)
 
 ### Deprecated
 

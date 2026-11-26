@@ -119,7 +119,7 @@ From mathcomp Require Export filter.
 (*                                     It builds the mixin for a topological  *)
 (*                                     space from the properties of a base of *)
 (*                                     open sets; the type of indices must be *)
-(*                                     a pointedType                          *)
+(*                                     a choiceType                           *)
 (*             isSubBaseTopological == factory for a topology defined by a    *)
 (*                                     subbase of open sets                   *)
 (*                                     It builds the mixin for a topological  *)
@@ -601,7 +601,7 @@ Notation open_from := openU_from (only parsing).
 (** Topology defined by a base of open sets *)
 
 HB.factory Record isBaseTopological (d : filter_display) T & Choice T := {
-  I : pointedType ;
+  I : choiceType ;
   D : set I ;
   b : I -> set T ;
   b_cover : \bigcup_(i in D) b i = setT ;
@@ -619,6 +619,8 @@ Proof. exists D => //; exact: b_cover. Qed.
 Let openU_fromI : setI_closed openU_from.
 Proof.
 move=> A B [DA sDAD AeUbA] [DB sDBD BeUbB].
+case: (pselectT I) => [/setF_eq0 h0|point].
+  by exists set0 => //; rewrite -AeUbA -BeUbB !h0 !bigcup_set0 setI0.
 have ABU t : (A `&` B) t ->
   exists it, [/\ D it, b it t & b it `<=` A `&` B].
   move=> [At Bt].
@@ -631,11 +633,11 @@ have ABU t : (A `&` B) t ->
   have [i [Di bit sbiAB]] := b_join DiA DiB biAt biBt.
   by exists i; split=> // s /sbiAB [/sbiA ? /sbiB].
 set Dt := fun t => [set it | [/\ D it, b it t & b it `<=` A `&` B]].
-exists [set get (Dt t) | t in A `&` B].
-  by move=> _ [t ABt <-]; have /ABU/getPex [] := ABt.
+exists [set xget point (Dt t) | t in A `&` B].
+  by move=> _ [t ABt <-]; have /ABU/(xgetPex point) [] := ABt.
 rewrite predeqE => t; split=> [[_ [s ABs <-] bDtst]|ABt].
-  by have /ABU/getPex [_ _] := ABs; exact.
-by exists (get (Dt t)); [exists t| have /ABU/getPex [?]:= ABt].
+  by have /ABU/(xgetPex point) [_ _] := ABs; exact.
+by exists (xget point (Dt t)); [exists t| have /ABU/(xgetPex point) [?]:= ABt].
 Qed.
 
 Let openU_from_bigU (I0 : Type) (f : I0 -> set T) :
@@ -659,7 +661,7 @@ HB.instance Definition _ := isOpenTopological.Build d T
 HB.end.
 
 HB.factory Record isSubBaseTopological (d : filter_display) T & Choice T := {
-  I : pointedType ;
+  I : choiceType ;
   D : set I ;
   b : I -> set T
 }.
