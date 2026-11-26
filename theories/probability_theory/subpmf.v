@@ -945,8 +945,8 @@ apply: ereal_nondecreasing_is_cvgn => m n mn.
 by rewrite lee_fin; exact/lefP/ndf.
 Qed.
 
-Local Lemma EFin_pmf_lim f x : (pmf_lim' f x)%:E = limn_einf (fun n => (f n x)%:E).
-Proof. by rewrite /lim fineK// fin_liminf. Qed.
+Lemma EFin_pmf_lim f x : (pmf_lim f x)%:E = limn_einf (fun n => (f n x)%:E).
+Proof. exact: EFin_pmf_lim'. Qed.
 
 Lemma EFin_pmf_lim_limn f : nondecreasing_fun (f : _ -> _ -> R) ->
   forall x, (pmf_lim f x)%:E = limn (fun n => (f n x)%:E).

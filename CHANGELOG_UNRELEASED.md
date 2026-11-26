@@ -158,6 +158,7 @@
   + definition `pmf_lim`, notation `\lim_(n) E`
   + lemma `EFin_pmf_lim`
   + lemma `pmf_limE`
+  + lemma `EFin_pmf_lim`
   + lemma `EFin_pmf_lim_limn`
   + lemma `EFin_pmf_lim_sup`
   + lemmas `pmf_limC`, `pmf_lim_bump`, `pmf_lim_lift`, `pmf_lim_ge0`, `pmf_lim_le1`,
