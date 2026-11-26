@@ -95,7 +95,7 @@ have [[e /andP[e0 erxy]]|abs] := pselect (exists e, 0 < e < r - mdist x y).
 Qed.
 
 Lemma ball_open_nbhs (x : T) (r : R) : 0 < r -> open_nbhs x (ball x r).
-Proof. by move=> e0; split; [exact: ball_open|exact: ballxx]. Qed.
+Proof. by move=> e0; split; [exact: ball_open|exact: nbhsx_ballx]. Qed.
 
 End metric_numDomainType.
 

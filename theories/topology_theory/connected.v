@@ -7,12 +7,16 @@ From mathcomp Require Import topology_structure.
 (* # Connectedness                                                            *)
 (* This file provides connected and its related notions.                      *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*                   connected A <-> the only non empty subset of A which is  *)
-(*                                   both open and closed in A is A           *)
-(*                  separated A B == the two sets A and B are separated       *)
-(*          connected_component x == the connected component of point x       *)
-(* ```                                                                        *)
+(* `connected A`                                                              *)
+(* : the only non empty subset of `A` which is both open and closed in `A`    *)
+(* : is `A`                                                                   *)
+(*                                                                            *)
+(* `separated A B`                                                            *)
+(* : the two sets `A` and `B` are separated                                   *)
+(*                                                                            *)
+(* `connected_component x`                                                    *)
+(* : the connected component of point `x`                                     *)
+(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -158,7 +162,7 @@ suff : A `<=` U.
   by apply: closedI => //; exact: closed_closure.
 rewrite -setIidPl; apply: ctdA.
 - move: U0; rewrite C1E => -[z [clAx C1z]]; have [] := clAx C1.
-    exact: open_nbhs_nbhs.
+    exact: open_mem_nbhs.
   move=> w [Aw C1w]; exists w.
   by rewrite setIA (setIidl (@subset_closure _ _ _)).
 - by exists C1 => //; rewrite C1E setIA (setIidl (@subset_closure _ _ _)).

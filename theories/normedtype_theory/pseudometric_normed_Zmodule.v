@@ -282,7 +282,7 @@ split=> [|cl].
 move=> x y xy; apply: subr0_eq.
 move: (xy); contra => xy0.
 have nxy : nbhs (x - y) (~` [set 0]).
-  by apply: open_nbhs_nbhs; split => /=; [exact: closed_openC|exact/eqP].
+  by apply: open_mem_nbhs => /=; [exact: closed_openC|exact/eqP].
 have /(_ (~` [set 0]) nxy)[] : continuous_at (x, y) (fun z => z.1 - z.2).
   exact: sub_continuous.
 move=> [a b] /= [na nb] ab0; exists a, b => //; split => // z az bz.
@@ -611,9 +611,7 @@ by apply: le_lt_trans; rewrite [in leRHS]addrC ler_distD.
 Qed.
 
 Lemma pseudo_ball_open_nbhs (x : V) (r : K) : 0 < r -> open_nbhs x (ball x r).
-Proof.
-by move=> e0; split; [exact: pseudo_ball_open|exact: ballxx].
-Qed.
+Proof. by move=> e0; split; [exact: pseudo_ball_open|exact: nbhsx_ballx]. Qed.
 
 (**md Neighborhoods defined by the norm: *)
 Local Notation ball_norm := (ball_ (@Num.norm K V)).

@@ -73,11 +73,12 @@ move=> C D FC f_D; have {}f_D :
   set Pj := fun j Bj => open_nbhs (f j) Bj /\ Bj `<=` E ord0 j.
   have exPj : forall j, exists Bj, open_nbhs (f j) Bj /\ Bj `<=` E ord0 j.
     move=> j; have := f_E ord0 j; rewrite nbhsE => - [Bj].
-    by rewrite row_simpl'; exists Bj.
+    by rewrite row_simpl' -open_nbhs_mem; exists Bj.
   exists [set g | forall j, (get (Pj j)) (g j)]; last first.
     move=> g Pg; apply: sED => i j; rewrite ord1 row_simpl'.
     by have /getPex [_ /(_ _ (Pg j))] := exPj j.
-  split; last by move=> j; have /getPex [[]] := exPj j.
+  split; last first.
+     by move=> j; have /getPex [[? /nbhs_singleton]] := exPj j.
   exists [set [set g | forall j, get (Pj j) (g j)] | k in [set x | 'I_n.+1 x]];
     last first.
     rewrite predeqE => g; split; first by move=> [_ [_ _ <-]].
