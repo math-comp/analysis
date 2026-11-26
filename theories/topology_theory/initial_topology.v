@@ -122,6 +122,7 @@ Lemma continuous_initial_topology e (U : topologicalType e) (g : U -> W):
   continuous g <-> (continuous (f \o g)).
 Proof.
 split => cont x.
+   apply: continuous_comp => //.
    apply: continuous_comp; first by exact: cont.
    exact: initial_continuous.
 move => /= A [B/=]; rewrite /initial_topology /= => -[[C] oC fBC] Bgx BA.
@@ -406,7 +407,8 @@ Lemma continuous_init_fam e (V : topologicalType e) (f : V -> W) :
  (forall i, continuous ((F i) \o (f : V -> S))) <-> continuous f.
 Proof.
 split=> cont; last first.
-  move=> i x; apply: (continuous_comp); first by apply: cont.
+  move=> i x; apply: continuous_comp => //.
+  apply: continuous_comp ; first by apply: cont.
   by apply: initial_fam_continuous.
 move => x /= A; rewrite /nbhs /= => -[/= B] [Bfrom Bfx BA] /=.
 apply: filterS; first by apply: preimage_subset BA.
@@ -551,7 +553,8 @@ Lemma continuous_init_sup e (V : topologicalType e) (f : V -> W) :
  (forall i, continuous ((F i) \o (f : V -> S))) <-> continuous f.
 Proof.
 split=> cont; last first.
-  move=> i x; apply: continuous_comp; first by apply: cont.
+  move=> i x; apply: continuous_comp => //.
+  apply: continuous_comp ; first by apply: cont.
   by apply: initial_sup_continuous.
 move => x A; rewrite /nbhs /= => -[/= B] [Bfrom Bfx BA] /=.
 apply: filterS; first by apply: preimage_subset BA.
