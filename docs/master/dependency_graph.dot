@@ -131,9 +131,6 @@ digraph dependencies {
 		"theories/realfun"	[URL="mathcomp.analysis.realfun.html",
 			fillcolor=aquamarine,
 			label=realfun];
-		"theories/derive"	[URL="mathcomp.analysis.derive.html",
-			fillcolor=aquamarine,
-			label=derive];
 		"theories/exp"	[URL="mathcomp.analysis.exp.html",
 			fillcolor=aquamarine,
 			label=exp];
@@ -161,6 +158,24 @@ digraph dependencies {
 		"theories/showcase/summability"	[URL="mathcomp.analysis.showcase.summability.html",
 			fillcolor=aquamarine,
 			label=summability];
+	}
+	subgraph cluster_Derive {
+		graph [label=Derive];
+		"theories/derive/derive"	[URL="mathcomp.analysis.derive.derive.html",
+			fillcolor=aquamarine,
+			label=derive];
+		"theories/derive/differential"	[URL="mathcomp.analysis.derive.differential.html",
+			fillcolor=aquamarine,
+			label=differential];
+		"theories/derive/derivative"	[URL="mathcomp.analysis.derive.derivative.html",
+			fillcolor=aquamarine,
+			label=derivative];
+		"theories/derive/derivative_lemmas"	[URL="mathcomp.analysis.derive.derivative_lemmas.html",
+			fillcolor=aquamarine,
+			label=derivative_lemmas];
+		"theories/derive/derive_matrix"	[URL="mathcomp.analysis.derive.derive_matrix.html",
+			fillcolor=aquamarine,
+			label=derive_matrix];
 	}
 	subgraph cluster_ElementaryFunctions {
 		graph [label=ElementaryFunctions];
@@ -248,6 +263,9 @@ digraph dependencies {
 		"theories/topology_theory/topology_structure"	[URL="mathcomp.analysis.topology_theory.topology_structure.html",
 			fillcolor=lightpink,
 			label=topology_structure];
+		"theories/topology_theory/uniform_metrizable"	[URL="mathcomp.analysis.topology_theory.uniform_metrizable.html",
+			fillcolor=lightpink,
+			label=uniform_metrizable];
 		"theories/topology_theory/uniform_structure"	[URL="mathcomp.analysis.topology_theory.uniform_structure.html",
 			fillcolor=lightpink,
 			label=uniform_structure];
@@ -381,6 +399,15 @@ digraph dependencies {
 			fillcolor=lightgreen,
 			label=vitali_lemma];
 	}
+	subgraph cluster_Number {
+		graph [label=Number];
+		"theories/number_theory/pi_irrational"	[URL="mathcomp.analysis.number_theory.pi_irrational.html",
+			fillcolor=chocolate,
+			label=pi_irrational];
+		"theories/number_theory/pnt"	[URL="mathcomp.analysis.number_theory.pnt.html",
+			fillcolor=chocolate,
+			label=pnt];
+	}
 	subgraph cluster_Probability {
 		graph [label=Probability];
 		"theories/probability_theory/random_variable"	[URL="mathcomp.analysis.probability_theory.random_variable.html",
@@ -413,6 +440,9 @@ digraph dependencies {
 		"theories/probability_theory/independence"	[URL="mathcomp.analysis.probability_theory.independence.html",
 			fillcolor=gold,
 			label=independence];
+		"theories/probability_theory/subpmf"	[URL="mathcomp.analysis.probability_theory.subpmf.html",
+			fillcolor=gold,
+			label=subpmf];
 	}
 	subgraph cluster_RealMeasure {
 		graph [label=RealMeasure];
@@ -456,7 +486,8 @@ digraph dependencies {
 	"reals/reals" -> "experimental_reals/discrete";
 	"reals/reals" -> "reals_stdlib/Rstruct";
 	"reals/reals" -> "reals_stdlib/nsatz_realtype";
-	"reals/reals" -> "theories/topology_theory/pseudometric_structure";
+	"reals/reals" -> "theories/topology_theory/compact";
+	"reals/reals" -> "theories/topology_theory/uniform_metrizable";
 	"reals/reals" -> "theories/measure_theory/measurable_structure";
 	"reals/real_interval" -> "reals/all_reals";
 	"reals/all_reals" -> "theories/topology_theory/discrete_topology";
@@ -478,7 +509,7 @@ digraph dependencies {
 	"theories/topology_theory/topology" -> "theories/normedtype_theory/num_normedtype";
 	"theories/topology_theory/topology" -> "theories/convex";
 	"theories/landau" -> "theories/sequences";
-	"theories/landau" -> "theories/derive";
+	"theories/landau" -> "theories/derive/differential";
 	"theories/normedtype_theory/normedtype" -> "theories/landau";
 	"theories/normedtype_theory/normedtype" -> "theories/functional_analysis/hahn_banach_theorem";
 	"theories/normedtype_theory/normedtype" -> "theories/showcase/summability";
@@ -503,6 +534,7 @@ digraph dependencies {
 	"theories/topology_theory/product_topology" -> "theories/topology_theory/order_topology";
 	"theories/topology_theory/pseudometric_structure" -> "theories/topology_theory/compact";
 	"theories/topology_theory/pseudometric_structure" -> "theories/topology_theory/matrix_topology";
+	"theories/topology_theory/pseudometric_structure" -> "theories/topology_theory/uniform_metrizable";
 	"theories/topology_theory/quotient_topology" -> "theories/topology_theory/topology";
 	"theories/topology_theory/separation_axioms" -> "theories/topology_theory/function_spaces";
 	"theories/topology_theory/separation_axioms" -> "theories/topology_theory/metric_structure";
@@ -510,10 +542,11 @@ digraph dependencies {
 	"theories/topology_theory/subspace_topology" -> "theories/topology_theory/sigT_topology";
 	"theories/topology_theory/subspace_topology" -> "theories/topology_theory/subtype_topology";
 	"theories/topology_theory/subtype_topology" -> "theories/topology_theory/topology";
-	"theories/topology_theory/supremum_topology" -> "theories/topology_theory/separation_axioms";
+	"theories/topology_theory/supremum_topology" -> "theories/topology_theory/uniform_metrizable";
 	"theories/topology_theory/topology_structure" -> "theories/topology_theory/connected";
 	"theories/topology_theory/topology_structure" -> "theories/topology_theory/quotient_topology";
 	"theories/topology_theory/topology_structure" -> "theories/topology_theory/uniform_structure";
+	"theories/topology_theory/uniform_metrizable" -> "theories/topology_theory/separation_axioms";
 	"theories/topology_theory/uniform_structure" -> "theories/topology_theory/pseudometric_structure";
 	"theories/topology_theory/uniform_structure" -> "theories/topology_theory/supremum_topology";
 	"theories/topology_theory/edist" -> "theories/normedtype_theory/urysohn";
@@ -543,8 +576,8 @@ digraph dependencies {
 	"theories/normedtype_theory/vitali_lemma" -> "theories/normedtype_theory/normedtype";
 	"theories/realfun" -> "theories/exp";
 	"theories/realfun" -> "theories/real_measure/lebesgue_stieltjes_measure";
-	"theories/derive" -> "theories/realfun";
-	"theories/derive" -> "theories/measure_theory/signed_measure";
+	"theories/derive/derive" -> "theories/realfun";
+	"theories/derive/derive" -> "theories/measure_theory/signed_measure";
 	"theories/exp" -> "theories/elementary_functions/trigonometry_functions";
 	"theories/exp" -> "theories/real_measure/measurable_realfun";
 	"theories/elementary_functions/trigonometry_functions" -> "theories/elementary_functions/trigonometry_integral";
@@ -562,6 +595,10 @@ digraph dependencies {
 	"theories/real_measure/lebesgue_measure" -> "theories/real_measure/real_measure";
 	"theories/elementary_functions/trigo" -> "theories/number_theory/pi_irrational";
 	"theories/elementary_functions/trigo" -> "theories/gauss_integral";
+	"theories/derive/differential" -> "theories/derive/derivative";
+	"theories/derive/derivative" -> "theories/derive/derivative_lemmas";
+	"theories/derive/derivative_lemmas" -> "theories/derive/derive_matrix";
+	"theories/derive/derive_matrix" -> "theories/derive/derive";
 	"theories/measure_theory/measurable_structure" -> "theories/measure_theory/measurable_function";
 	"theories/measure_theory/measure_function" -> "theories/measure_theory/counting_measure";
 	"theories/measure_theory/measure_function" -> "theories/measure_theory/dirac_measure";
@@ -595,9 +632,11 @@ digraph dependencies {
 	"theories/lebesgue_integral_theory/lebesgue_integral_differentiation" -> "theories/lebesgue_integral_theory/lebesgue_integral";
 	"theories/lebesgue_integral_theory/counting_lebesgue" -> "theories/lebesgue_integral_theory/lebesgue_integral";
 	"theories/lebesgue_integral_theory/radon_nikodym" -> "theories/lebesgue_integral_theory/lebesgue_integral";
+	"theories/lebesgue_integral_theory/giry" -> "theories/probability_theory/subpmf";
 	"theories/hoelder" -> "theories/probability_theory/random_variable";
 	"theories/number_theory/pi_irrational" -> "theories/all_analysis";
 	"theories/probability_theory/random_variable" -> "theories/probability_theory/independence";
+	"theories/probability_theory/random_variable" -> "theories/probability_theory/subpmf";
 	"theories/probability_theory/bernoulli_distribution" -> "theories/probability_theory/binomial_distribution";
 	"theories/probability_theory/bernoulli_distribution" -> "theories/probability_theory/beta_distribution";
 	"theories/kernel" -> "theories/probability_theory/bernoulli_distribution";

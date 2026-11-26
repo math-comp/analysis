@@ -82,7 +82,7 @@ div.doc {
 }
 
 summary.toggleproof {
-  list-style-position: outside;
+  list-style-position: inside;
   font-size: 0.8em;
   text-decoration: underline;
 }
@@ -171,6 +171,20 @@ div.md th {
     background-color: #ddd;
     font-weight: bold;
 }
+
+/* Section/Module block. */
+.block {
+    display: block;
+    border-left: 2px solid var(--accent-line);
+    background-color: var(--accent-wash);
+    padding-left: 4px;
+    margin-left: -4px;
+    padding-right: 4px;
+    margin-right: -4px;
+  }
+
+.block.section { --accent-line: #6a9a94; --accent-wash: rgba(106,154,148,0.12); }
+.block.module  { --accent-line: #7a84ad; --accent-wash: rgba(122,132,173,0.12); }
 
 .warning {
     color: #cd0000;
