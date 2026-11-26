@@ -425,7 +425,7 @@ Lemma join_product_continuous : continuous join_product.
 Proof.
 suff : continuous (join_product : initialT -> PU).
   by move=> cts x U => /cts; rewrite nbhs_simpl /= -initial_sep_nbhsE.
-move=> x; apply/cvg_sup; first exact/fmap_filter/(nbhs_filter (x : initialT)).
+move=> x; apply/cvg_sup; first try exact/fmap_filter/(nbhs_filter (x : initialT)).
 move=> i; move: x.
 apply/(@continuousP _ _ _ (initial_topology (@^~ i))) => A [B ? E].
 rewrite -E (_ : @^~ i =  proj i) //.
@@ -1557,7 +1557,7 @@ Lemma curry_continuous (f : (U * V)%type -> W) : continuous f ->
   regular_space U -> {for f, continuous curry}.
 Proof.
 move=> ctsf regU; apply/compact_open_cvgP.
-  by apply: fmap_filter; exact: nbhs_filter.
+  all: try by apply: fmap_filter; exact: nbhs_filter.
 move=> K ? cptK [D OfinIo <-] fKD /=; near=> z => w [+ + <-]; near: z.
 move/compact_near_coveringP/near_covering_withinP : (cptK); apply => u Ku.
 have [] := fKD (curry f u); first by exists u.
@@ -1595,7 +1595,7 @@ Lemma uncurry_continuous (f : U -> V -> W) :
   {for f, continuous uncurry}.
 Proof.
 move=> lcV regV regU ctsf ctsfp; apply/compact_open_cvgP.
-  by apply: fmap_filter; exact:nbhs_filter.
+  all: try by apply: fmap_filter; exact:nbhs_filter.
 move=> /= K O cptK oO fKO; near=> h => ? [+ + <-]; near: h.
 move/compact_near_coveringP/near_covering_withinP: (cptK); apply.
 case=> u v Kuv.

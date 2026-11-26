@@ -812,7 +812,7 @@ rewrite /arithmetic_mean /= seriesEnat /= big_nat_recl //=.
 under eq_bigr do rewrite [u_ _]eq_sum_telescope.
 rewrite big_split /= big_const_nat iter_addr addr0 addrA -mulrS mulrDr.
 rewrite -(mulr_natl (u_ O)) mulKf ?pnatr_eq0//.
-rewrite eq_sum_telescope (addrC (u_ O)) addrKA.
+rewrite [u_ n.+1]eq_sum_telescope (addrC (u_ O)) addrKA.
 rewrite [X in _ - _ * X](_ : _ =
     \sum_(0 <= i < n.+1) \sum_(0 <= k < n.+1 | (k < i.+1)%N) a_ k).
   rewrite !big_mkord; apply: eq_bigr => i _.

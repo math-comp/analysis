@@ -141,7 +141,7 @@ Lemma wedge_point_nbhs i0 :
 Proof.
 rewrite eqEsubset; split => //= U /=; rewrite ?nbhs_simpl.
   case=> V [/= oV Vp] VU j _; apply: wedge_lift_continuous.
-  apply: (filterS VU); first exact: (@nbhs_filter _ wedge).
+  apply: (filterS VU); first try exact: (@nbhs_filter _ wedge).
   apply: open_nbhs_nbhs; split => //.
   by rewrite (wedge_liftE (p0 i0)).
 move=> Uj; have V_ : forall i, {V : set (X i) |

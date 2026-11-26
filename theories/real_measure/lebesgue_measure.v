@@ -1007,7 +1007,7 @@ rewrite -[mu D]fineK// => /fine_cvg/(_ (interior (ball (fine (mu D)) eps)))[].
   exact/nbhs_interior/nbhsx_ballx.
 move=> n _ /(_ _ (leqnn n))/interior_subset muDN.
 exists (-n%:R, n%:R)%R; rewrite measureD//=.
-move: muDN; rewrite /ball/= /ereal_ball/= -fineB//=; first exact: finDn.
+move: muDN; rewrite /ball/= /ereal_ball/= -fineB//=; first try exact: finDn.
 rewrite -lte_fin; apply: le_lt_trans.
 have finDDn : mu D - mu (Dn n) \is a fin_num
   by rewrite ?fin_numB ?finD /= ?(finDn n).
