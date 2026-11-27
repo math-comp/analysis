@@ -29,6 +29,12 @@
   + `subLmodule` structure on `line`
   + lemma hahn_banach_extension_hausdorff
 
++ in `filter.v`:
+  + lemmas `eventually_addn`, `cvgn_addn`, `limn_addn`
+
++ in `sequenses.v`
+  + lemmas `series_comp_addn`, `cvgn_series_comp_addn`, `limn_series_split`
+
 - in `classical_sets.v`
   + lemma `in1_mksetP`
 
