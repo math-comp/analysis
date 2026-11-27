@@ -240,6 +240,10 @@
   + lemma `open_nbhs_nbhs` changed to `open_mem_nbhs`
 
 
+- new file `absolute_continuity.v`
+  + definitions `abs_cont`, `abs_cont_order`
+  + lemma `abs_contP`
+
 ### Changed
 
 - in `cardinality.v`:

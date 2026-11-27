@@ -135,5 +135,8 @@ convex.v
 charge.v
 kernel.v
 gauss_integral.v
+
+absolute_continuity.v
+
 all_analysis.v
 showcase/summability.v
