@@ -144,8 +144,8 @@ Local Open Scope ring_scope.
 HB.mixin Record Nbhs_isTopological d (T : Type) & Nbhs d T := {
   open : set_system T;
   nbhs_pfilter_subproof : forall p : T, ProperFilter (nbhs p) ;
-  nbhsE_subproof : forall p : T, nbhs p =
-    [set A : set T | exists B : set T, [/\ open B, B p & B `<=` A] ] ;
+  nbhsE : forall p : T, nbhs p =
+    [set A : set T | exists2 B : set T, open B /\ B p & B `<=` A ] ;
   openE_subproof : open = [set A : set T | A `<=` nbhs^~ A ]
 }.
 
@@ -167,7 +167,7 @@ HB.structure Definition SubTopological d' d (V : topologicalType d)
 
 HB.instance Definition _ d' d (T : topologicalType d) :=
   @Nbhs_isTopological.Build d' (with_fdisp d' T) open nbhs_pfilter_subproof
-    nbhsE_subproof openE_subproof.
+    nbhsE openE_subproof.
 HB.instance Definition _ d' d (T : ptopologicalType d) :=
   PointedTopological.on (with_fdisp d' T).
 
@@ -185,21 +185,13 @@ Proof. exact: (@nbhs_pfilter). Qed.
 
 Canonical nbhs_filter_on (x : T) := FilterType (nbhs x) (@nbhs_filter x).
 
-Lemma nbhsE (p : T) :
-  nbhs p = [set A : set T | exists2 B : set T, open B /\ B p & B `<=` A].
-Proof.
-have -> : nbhs p = [set A : set T | exists B, [/\ open B, B p & B `<=` A] ].
-  exact: nbhsE_subproof.
-by rewrite predeqE => A; split=> [[B [?]]|[B[]]]; exists B.
-Qed.
-
 Lemma nbhs_singleton (p : T) (A : set T) : nbhs p A -> A p.
-Proof. by rewrite nbhsE_subproof/= => -[B [oB Bp]]; exact. Qed.
+Proof. by rewrite nbhsE/= => -[B [oB Bp]]; exact. Qed.
 
 Lemma open_nbhs_mem (p : T) (A : set T) : open_nbhs p A = (open A /\ A p).
 Proof.
 apply/propext; split => [[oA /nbhs_singleton//]|[oA Ap]].
-by split=> //; rewrite nbhsE_subproof/=; exists A; split.
+by split=> //; rewrite nbhsE/=; exists A.
 Qed.
 
 Definition interior (A : set T) := (@nbhs _ _ T)^~ A.
@@ -526,12 +518,12 @@ HB.builders Context d T & Nbhs_isNbhsTopological d T.
 Definition open_of_nbhs := [set A : set T | A `<=` nbhs^~ A].
 
 Let nbhsE_subproof (p : T) :
-  nbhs p = [set A | exists B, [/\ open_of_nbhs B, B p & B `<=` A] ].
+  nbhs p = [set A | exists2 B, open_of_nbhs B /\ B p & B `<=` A ].
 Proof.
 rewrite predeqE => A; split=> [p_A|]; last first.
   move=> [B [Bop Bp sBA]]; apply: filterS sBA _; last exact: Bop.
   exact/nbhs_filter.
-exists (nbhs^~ A); split=> //; first by move=> ?; apply: nbhs_nbhs.
+exists (nbhs^~ A); first by split=> // ?; exact: nbhs_nbhs.
 by move=> q /nbhs_singleton.
 Qed.
 
@@ -573,8 +565,10 @@ by exists C; split=> //; apply: subset_trans sAB.
 Qed.
 
 Let nbhsE_subproof (p : T) :
-  nbhs p = [set A | exists B, [/\ op B, B p & B `<=` A] ].
-Proof. by []. Qed.
+  nbhs p = [set A | exists2 B, op B /\ B p & B `<=` A].
+Proof.
+by apply/seteqP; split => [A [B [? ? ?]]|A [B [? ? ?]]]; exists B.
+Qed.
 
 Let openE_subproof : op = [set A : set T | A `<=` nbhs^~ A].
 Proof.

@@ -239,9 +239,6 @@
   + definition `open_nbhs`
   + lemma `open_nbhs_nbhs` changed to `open_mem_nbhs`
 
-
-### Changed
-
 - in `cardinality.v`:
   + `sub_finite_set` (order of parameters)
 
@@ -370,6 +367,9 @@
 - from `separation_axioms.v` to `topology_structure.v`:
   + definition `perfect_set`
   + lemmas `perfectP`, `perfectTP`, `perfectTP_ex`
+
+- in `function_spaces.v`:
+  + `compact_openK_nbhsE_subproof`, `compact_openK_openE_subproof` changed from `Lemma` to `Let`
 
 ### Renamed
 

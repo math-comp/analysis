@@ -1019,18 +1019,18 @@ HB.instance Definition _ :=
 
 Definition compact_open_of_nbhs := [set A : set compact_openK | A `<=` nbhs^~ A].
 
-Lemma compact_openK_nbhsE_subproof (p : compact_openK) :
+Let compact_openK_nbhsE_subproof (p : compact_openK) :
   compact_openK_nbhs p =
-    [set A | exists B : set compact_openK,
-      [/\ compact_open_of_nbhs B, B p & B `<=` A]].
+    [set A | exists2 B : set compact_openK,
+      compact_open_of_nbhs B /\ B p & B `<=` A ].
 Proof.
 rewrite eqEsubset; split => A /=.
-  case=> B /= [fKB oB gKBA]; exists [set g | g @` K `<=` B]; split => //.
-  by move=> h /= hKB; exists B.
+  case=> B /= [fKB oB gKBA]; exists [set g | g @` K `<=` B] => //.
+  by split => // h /= hKB; exists B.
 by case=> B [oB Bf /filterS]; apply; exact: oB.
 Qed.
 
-Lemma compact_openK_openE_subproof :
+Let compact_openK_openE_subproof :
   compact_open_of_nbhs = [set A | A `<=` compact_openK_nbhs^~ A].
 Proof. by []. Qed.
 
@@ -1069,7 +1069,7 @@ Proof.
 pose C := [set g | g @` K `<=` O]; move=> cptK oO.
 exists [set C]; last by rewrite bigcup_set1.
 move=> _ ->; exists (fset1 C) => //; last by rewrite set_fset1 bigcap_set1.
-by move=> _ /[!inE] ->; exists (existT _ _ cptK) => // z Cz; exists O.
+by move=> _ /[!inE] ->; exists (existT _ _ cptK) => //; move=> c Cz; exists O.
 Qed.
 
 End compact_open.

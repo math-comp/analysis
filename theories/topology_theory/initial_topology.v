@@ -287,7 +287,7 @@ Let InitialU : topologicalType _ := initial_topology (val : sub_type Y -> X).
 
 Lemma open_order_initial (U : set Y) : @open _ OrdU U -> @open _ InitialU U.
 Proof.
-rewrite ?openE /= /interior => + x Ux => /(_ x Ux); rewrite itv_nbhsE /=.
+rewrite 2!openE /= /interior => + x Ux => /(_ x Ux); rewrite itv_nbhsE /=.
 move=> [][][[]l|[]] [[]r|[]][]//= _ xlr /filterS; apply.
 - exists `]l, r[%classic; split => //=; exists `]\val l, \val r[%classic.
     exact: itv_open.
