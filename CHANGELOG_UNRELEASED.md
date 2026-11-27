@@ -209,10 +209,22 @@
   + lemmas `nondecreasing_esum_Efn`, `esum_pmf_lim_r`, `esum_pmf_lim_r_r`, `esum_pmf_lim`
   + lemma `pmf_lim_limn`
 - new file `uniform_metrizable.v`
+- in `functions.v`:
+  + lemmas `zerofctE`, `onefctE`
+- in `initial_topology.v`:
+  + lemmas `cvg_image` `continuous_initial_topology` `bigsetI_open`
+    `initial_fam_continuous` `cvg_init_fam` `cvg_image_init_fam`
+    `continuous_init_fam`
+  + definition `initial_fam_topology`
+  + instance of `Topological` on `initial_fam_topology`
+
+### Changed
 
 - new subdirectory `derive`
   + new files `differential.v`, `derivable.v`, `directional_derive_lemmas.v`, `derive_matrix.v`
 
+- in `initial_topology.v`:
+  + lemma `cvg_image` renamed `cvg_initial`
 ### Changed
 
 - in `lebesgue_integral_nonneg.v`, generalized and deprecated:
