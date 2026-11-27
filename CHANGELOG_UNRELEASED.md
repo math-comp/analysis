@@ -212,6 +212,18 @@
 
 - new subdirectory `derive`
   + new files `differential.v`, `derivable.v`, `directional_derive_lemmas.v`, `derive_matrix.v`
+- in `cardinality.v`:
+
+- in `exponential_distribution.v`:
+  + lemma `exponential_prob_itvNy0`
+
+- in `exp.v`:
+  + lemma `powRMexpR_ge0`
+  + lemma `within_continuous_powR`
+
+- new file `gamma.v`:
+  - definition `Gamma`.
+  - lemmas `Gamma1`, `Gammar1`, `GammaS`.
 
 ### Changed
 

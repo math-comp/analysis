@@ -139,6 +139,11 @@ apply: (@continuous_FTC2 _ _ (fun x => - expR (- rate * x))) => //.
   by apply: derive1_exponential_pdf; rewrite in_itv/= andbT.
 Qed.
 
+Lemma exponential_prob_itvNy0 : exponential_prob rate `]-oo, 0[ = 0.
+Proof.
+by apply: integral0_eq => x /= /[!in_itv]/= x0; rewrite lt0_exponential_pdf.
+Qed.
+
 Lemma integral_exponential_pdf : 0 < rate ->
   (\int[mu]_x (exponential_pdf rate x)%:E = 1)%E.
 Proof.

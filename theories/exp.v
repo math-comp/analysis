@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2026 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import boot order ssralg ssrint ssrnum matrix.
-From mathcomp Require Import interval rat interval_inference.
+From mathcomp Require Import interval rat interval_inference archimedean.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import boolp classical_sets functions.
@@ -1114,6 +1114,22 @@ apply/lt0_cvgMlNy => //.
 by rewrite ln_lt0// z_gt0.
 Unshelve. all: by end_near. Qed.
 
+Lemma within_continuous_powR (x : R) : 0 < x ->
+  {within `[0, +oo[, continuous (powR ^~ x)}.
+Proof.
+move=> a0; apply/continuous_within_itvcyP; split; last first.
+  by rewrite powR0 ?gt_eqF ?subr_gt0//; exact: powR_cvg0.
+move=> y; rewrite in_itv/= andbT => y0.
+rewrite /continuous_at/= /powR gt_eqF ?subr_gt0//.
+apply: (@cvg_trans _ (expR (x * ln z) @[z --> y])).
+  apply: near_eq_cvg.
+  near do rewrite gt_eqF//.
+  exact: lt_nbhsr.
+apply: (cvg_comp _ expR).
+  by apply: cvgM => //; exact: continuous_ln.
+by rewrite gt_eqF//; exact: continuous_expR.
+Unshelve. all: end_near. Qed.
+
 Lemma derivable_powR v x : {in `]0, +oo[, forall a, derivable (powR ^~ x) a v}.
 Proof.
 have [-> y _|] := eqVneq v 0; first exact/derivable0.
@@ -1512,6 +1528,12 @@ End riemannR_series.
 
 Section exponential_domination.
 Context {R : realType}.
+
+Lemma powRMexpR_ge0 (b : R) :
+  {in `[0, +oo[%R, forall x, 0 <= (x `^ b * expR (- x))}.
+Proof.
+by move=> x; rewrite in_itv/= andbT => x0; rewrite mulr_ge0// powR_ge0.
+Qed.
 
 Lemma pownMexpR_cvgr0 n (b : R) :
   b < 0 -> x ^+ n * expR (b * x) @[x --> +oo] --> 0.
