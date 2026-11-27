@@ -213,10 +213,6 @@
 - new subdirectory `derive`
   + new files `differential.v`, `derivable.v`, `directional_derive_lemmas.v`, `derive_matrix.v`
 - in `cardinality.v`:
-  + lemma `infinite_setD`
-- in new file `gamma.v`:
-  - a definition `Gamma`.
-  - lemmas `Gamma1`, `Gamma_add1`, `Gamma_nat`.
 
 - in `exponential_distribution.v`:
   + lemma `exponential_prob_itvNy0`
