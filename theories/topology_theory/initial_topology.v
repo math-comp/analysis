@@ -207,7 +207,7 @@ Qed.
 Let initial_ent_nbhs : nbhs = nbhs_ initial_ent.
 Proof.
 rewrite predeq2E => x V; split.
-  case=> [? [[B  ? <-] ? BsubV]]; have: nbhs (f x) B by exact: open_mem_nbhs.
+  case=> [? [[B  ? <-] ? BsubV]]; have: nbhs (f x) B by exact: open_mem_nbhs. 
   move=> /nbhsP [W ? WsubB]; exists ((map_pair f) @^-1` W); first by exists W.
   by move=> ? ?; exact/BsubV/WsubB.
 case=> W [V' entV' V'subW] /filterS; apply.
@@ -472,18 +472,37 @@ Qed.
 Let initial_fam_ent_nbhs : nbhs = nbhs_ initial_fam_ent.
 Proof.
 rewrite predeq2E => x V; split.
-  case=> [P [[/= B Q <-] Bx BsubV]].
-  have: nbhs ( x)  (\bigcup_(i in B) i).
-    apply: open_nbhs_nbhs; split => //.
-(*  move/nbhsP. [W ? WsubB]; exists ((map_pair f) @^-1` W); first by exists W.
+  case=> [P [[/= B Q <-]]] [b /[dup] Bb /Q] [/= J]. rewrite /init_fam_subbase /= => JF.
+  move=> <- Jx BV.
+  (* TODO : show that we have for every O such that J O and O = (F i) @^-1` A  :  nbhs (F ) x A, and thenuse /nbhsP on it to deduce the entourage to put in the proof *) admit.
+case=> A [V' entV' V'subW] /filterS; apply.
+have : forall i, nbhs (F i x) (xsection V' (F i x)). by move=> i; apply/nbhsP; exists V'.
+move=> H. 
+exists (\bigcap_i (F i) @^-1` (xsection V' (F i x))); split => /=.
+ - rewrite /openU_from /=.  admit.
+ - move=> /= i _; apply: nbhs_singleton; apply: H.
+ - move=> a /= biga; apply/mem_set/V'subW => i /= _; rewrite /map_pair /=.
+   by have:= biga i => /=; rewrite /xsection /= => VF; apply/set_mem/VF.
+rewrite (@nbhsE _ T) => [[O [openU Ofx Osub]]].
+(exists (f @^-1` O); repeat split => //); first by exists O => //.
+by move=> w ?; apply/mem_set; apply: V'subW; apply/set_mem; exact: Osub.
+Admitted.
+
+
+(* proof in the initial case :
+Let initial_ent_nbhs : nbhs = nbhs_ initial_ent.
+Proof.
+rewrite predeq2E => x V; split.
+  case=> [? [[B  ? <-] ? BsubV]]; have: nbhs (f x) B by exact: open_mem_nbhs.
+  move=> /nbhsP [W ? WsubB]; exists ((map_pair f) @^-1` W); first by exists W.
   by move=> ? ?; exact/BsubV/WsubB.
 case=> W [V' entV' V'subW] /filterS; apply.
 have : nbhs (f x) (xsection V' (f x)) by apply/nbhsP; exists V'.
-rewrite (@nbhsE U) => [[O [openU Ofx Osub]]].
+rewrite (@nbhsE _ U) => [[O [openU Ofx Osub]]].
 (exists (f @^-1` O); repeat split => //); first by exists O => //.
 by move=> w ?; apply/mem_set; apply: V'subW; apply/set_mem; exact: Osub.
-Qed.*)
-Admitted.
+Qed.
+*)
 
 HB.instance Definition _ := @Nbhs_isUniform.Build d (initial_fam_topology F)
   initial_fam_ent initial_fam_ent_filter initial_fam_ent_refl initial_fam_ent_inv
