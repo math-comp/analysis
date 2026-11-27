@@ -157,13 +157,13 @@ Lemma set_itv1 x : `[x, x]%classic = [set x].
 Proof. by apply/seteqP; split=> y /=; rewrite itvxx ?inE (rwP eqP). Qed.
 
 Lemma set_itvoo0 x : `]x, x[%classic = set0.
-Proof. by rewrite -subset0 => y /=; rewrite itv_ge//= bnd_simp ltxx. Qed.
+Proof. by rewrite -subset0 => y /=; rewrite itv_ge//= !bnd_simp. Qed.
 
 Lemma set_itvoc0 x : `]x, x]%classic = set0.
-Proof. by rewrite -subset0 => y /=; rewrite itv_ge//= bnd_simp ltxx. Qed.
+Proof. by rewrite -subset0 => y /=; rewrite itv_ge//= !bnd_simp. Qed.
 
 Lemma set_itvco0 x : `[x, x[%classic = set0.
-Proof. by rewrite -subset0 => y /=; rewrite itv_ge//= bnd_simp ltxx. Qed.
+Proof. by rewrite -subset0 => y /=; rewrite itv_ge//= !bnd_simp. Qed.
 
 Lemma set_itvNyy : `]-oo, +oo[%classic = @setT T.
 Proof. by rewrite predeqE. Qed.
